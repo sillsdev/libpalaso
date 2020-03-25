@@ -358,7 +358,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Resets all of the properties of the writing system definition that might not get set when reading the LDML file.
 		/// </summary>
-		private void ResetWritingSystemDefinition(WritingSystemDefinition ws)
+		private static void ResetWritingSystemDefinition(WritingSystemDefinition ws)
 		{
 			ws.VersionNumber = null;
 			ws.VersionDescription = null;
@@ -377,7 +377,7 @@ namespace SIL.WritingSystems
 			ws.KnownKeyboards.Clear();
 		}
 
-		private void CheckVersion(XElement specialElem, WritingSystemDefinition ws)
+		private static void CheckVersion(XElement specialElem, WritingSystemDefinition ws)
 		{
 			// Flag invalid versions (0-2 inclusive) from reading legacy LDML files
 			// We're intentionally not using WritingSystemLDmlVersionGetter and the
@@ -402,7 +402,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void ReadTopLevelSpecialElement(XElement specialElem, WritingSystemDefinition ws)
+		private static void ReadTopLevelSpecialElement(XElement specialElem, WritingSystemDefinition ws)
 		{
 			XElement externalResourcesElem = specialElem.Element(Sil + "external-resources");
 			if (externalResourcesElem != null)
@@ -413,7 +413,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void ReadFontElement(XElement externalResourcesElem, WritingSystemDefinition ws)
+		private static void ReadFontElement(XElement externalResourcesElem, WritingSystemDefinition ws)
 		{
 			foreach (XElement fontElem in externalResourcesElem.NonAltElements(Sil + "font"))
 			{
@@ -479,7 +479,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void ReadSpellcheckElement(XElement externalResourcesElem, WritingSystemDefinition ws)
+		private static void ReadSpellcheckElement(XElement externalResourcesElem, WritingSystemDefinition ws)
 		{
 			foreach (XElement scElem in externalResourcesElem.NonAltElements(Sil + "spellcheck"))
 			{
@@ -496,7 +496,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void ReadKeyboardElement(XElement externalResourcesElem, WritingSystemDefinition ws)
+		private static void ReadKeyboardElement(XElement externalResourcesElem, WritingSystemDefinition ws)
 		{
 			foreach (XElement kbdElem in externalResourcesElem.NonAltElements(Sil + "kbd"))
 			{
@@ -517,7 +517,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void ReadIdentityElement(XElement identityElem, WritingSystemDefinition ws)
+		private static void ReadIdentityElement(XElement identityElem, WritingSystemDefinition ws)
 		{
 			Debug.Assert(identityElem.Name == "identity");
 			XElement versionElem = identityElem.Element("version");
@@ -566,7 +566,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void ReadCharactersElement(XElement charactersElem, WritingSystemDefinition ws)
+		private static void ReadCharactersElement(XElement charactersElem, WritingSystemDefinition ws)
 		{
 			foreach (XElement exemplarCharactersElem in charactersElem.NonAltElements("exemplarCharacters"))
 				ReadExemplarCharactersElem(exemplarCharactersElem, ws);
@@ -583,16 +583,33 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void ReadExemplarCharactersElem(XElement exemplarCharactersElem, WritingSystemDefinition ws)
+		private static void ReadExemplarCharactersElem(XElement exemplarCharactersElem, WritingSystemDefinition ws)
 		{
 			string type = (string) exemplarCharactersElem.Attribute("type") ?? "main";
 			var csd = new CharacterSetDefinition(type);
 			var unicodeSet = (string) exemplarCharactersElem;
-			csd.Characters.AddRange(csd.IsSequenceType ? unicodeSet.Trim('[', ']').Split(' ').Select(c => c.Trim('{', '}')) : UnicodeSet.ToCharacters(unicodeSet));
-			ws.CharacterSets.Add(csd);
+			try
+			{
+				var attributeArray = exemplarCharactersElem.Attributes().ToArray();
+				var attrCount = attributeArray.Length;
+				var tooManyAttributes = attributeArray.Any(attr => attr.Name == "type")
+					? attrCount > 1
+					: attrCount > 0;
+				if (!tooManyAttributes)
+					csd.Characters.AddRange(csd.IsSequenceType ? unicodeSet.Trim('[', ']').Split(' ').Select(c => c.Trim('{', '}')) : UnicodeSet.ToCharacters(unicodeSet));
+					ws.CharacterSets.Add(csd);
+			}
+			catch (ArgumentException exc)
+			{
+				// I would use SIL.Reporting.Logger here if it didn't mean importing all of SIL.Core.Desktop!
+				//Logger.WriteError()
+				Debug.WriteLine("LdmlDataMapper tried to add more than one list of exemplar characters of the same type.");
+				Debug.WriteLine($"  Exception: {exc.Message}");
+				Debug.WriteLine($"  CharacterSetDefinition: {csd}");
+			}
 		}
 
-		private void ReadDelimitersElement(XElement delimitersElem, WritingSystemDefinition ws)
+		private static void ReadDelimitersElement(XElement delimitersElem, WritingSystemDefinition ws)
 		{
 			string open, close;
 			string level1Continue = null;
@@ -675,7 +692,7 @@ namespace SIL.WritingSystems
 			ws.QuotationMarks.AddRange(specialQuotationMarks);
 		}
 
-		private void ReadLayoutElement(XElement layoutElem, WritingSystemDefinition ws)
+		private static void ReadLayoutElement(XElement layoutElem, WritingSystemDefinition ws)
 		{
 			// The orientation node has two attributes, "lines" and "characters" which define direction of writing.
 			// The valid values are: "top-to-bottom", "bottom-to-top", "left-to-right", and "right-to-left"
@@ -699,7 +716,7 @@ namespace SIL.WritingSystems
 		/// The content was not valid LDML.
 		/// The numbering system is added as a NumberingSystemDefinition
 		/// </summary>
-		private void ReadIntermediateVersion3NumbersElement(XElement numbersElem, WritingSystemDefinition ws)
+		private static void ReadIntermediateVersion3NumbersElement(XElement numbersElem, WritingSystemDefinition ws)
 		{
 			XElement defaultNumberingSystemElem = numbersElem.NonAltElement("defaultNumberingSystem");
 			if (defaultNumberingSystemElem != null)
@@ -727,7 +744,7 @@ namespace SIL.WritingSystems
 		/// Read the numbers element, expecting only a defaultNumberingSystem element.
 		/// The numbering system is added as a NumberingSystemDefinition
 		/// </summary>
-		private void ReadNumbersElement(XElement numbersElem, WritingSystemDefinition ws)
+		private static void ReadNumbersElement(XElement numbersElem, WritingSystemDefinition ws)
 		{
 			XElement defaultNumberingSystemElem = numbersElem.NonAltElement("defaultNumberingSystem");
 			if (defaultNumberingSystemElem != null)
@@ -748,7 +765,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Parses text similar to 'other(0123456789)' returns true if valid
 		/// </summary>
-		private bool ParseCustomNumberingSystem(string id, out string digits)
+		private static bool ParseCustomNumberingSystem(string id, out string digits)
 		{
 			var regex = new Regex("other\\((.*)\\)");
 			var match = regex.Match(id.Trim());
@@ -816,7 +833,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private SimpleRulesCollationDefinition ReadCollationRulesForCustomSimple(XElement collationElem, XElement specialElem, string collationType)
+		private static SimpleRulesCollationDefinition ReadCollationRulesForCustomSimple(XElement collationElem, XElement specialElem, string collationType)
 		{
 			XElement simpleElem = specialElem.Element(Sil + "simple");
 			bool needsCompiling = (bool?) specialElem.Attribute(Sil + "needscompiling") ?? false;
@@ -842,7 +859,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		/// <param name="element">parent element of the special element</param>
 		/// <returns></returns>
-		private XElement GetOrCreateSpecialElement(XElement element)
+		private static XElement GetOrCreateSpecialElement(XElement element)
 		{
 			// Create element
 			XElement specialElem = element.GetOrCreateElement("special");
@@ -855,7 +872,7 @@ namespace SIL.WritingSystems
 		/// but false for "<element></element>", we have to check both cases
 		/// </summary>
 		/// <param name="element">XElement to remove if it's empty or has 0 contents/attributes/elements</param>
-		private void RemoveIfEmpty(ref XElement element)
+		private static void RemoveIfEmpty(ref XElement element)
 		{
 			if (element != null)
 			{
@@ -1054,7 +1071,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void WriteLanguageTagElements(XElement identityElem, string languageTag) 
+		private static void WriteLanguageTagElements(XElement identityElem, string languageTag) 
 		{
 			string language, script, region, variant;
 			IetfLanguageTag.TryGetParts(languageTag, out language, out script, out region, out variant);
@@ -1070,7 +1087,7 @@ namespace SIL.WritingSystems
 				identityElem.SetAttributeValue("variant", "type", variant);
 		}
 				
-		private void WriteCharactersElement(XElement charactersElem, WritingSystemDefinition ws)
+		private static void WriteCharactersElement(XElement charactersElem, WritingSystemDefinition ws)
 		{
 			Debug.Assert(charactersElem != null);
 			Debug.Assert(ws != null);
