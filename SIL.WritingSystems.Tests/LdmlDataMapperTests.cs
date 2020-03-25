@@ -596,6 +596,40 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void BadLdmlCharacters_Throws()
+		{
+			// Because we don't write elements with extra attributes (e.g. 'draft' at time of test creation),
+			// this test starts by writing a set content.
+			// The idea is to throw at the highest level of reading a downloaded LDML file,
+			// so that we can catch it in SldrWritingSystemFactory and save the file to {name}.bad
+			// and log the error.
+			using (var environment = new TestEnvironment())
+			{
+				var content =
+					@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version number='VERSION' />
+		<language type='en' />
+		<script type='Latn' />
+	</identity>
+	<characters>
+		<exemplarCharacters>[a-z{az}]</exemplarCharacters>
+		<exemplarCharacters unknownAttribute='unknownAttributeData'>[A-Z{AZ}]</exemplarCharacters>
+	</characters>
+</ldml>".Replace("VERSION", LdmlDataMapper.CurrentLdmlLibraryVersion.ToString()).Replace("\'", "\"");
+
+				var filePath = environment.FilePath("test.ldml");
+				File.WriteAllText(filePath, content);
+
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+				var wsFromLdml = new WritingSystemDefinition();
+				Assert.That(() => ldmlAdaptor.Read(filePath, wsFromLdml),
+					Throws.Exception.TypeOf<ArgumentException>());
+			}
+		}
+
+		[Test]
 		public void Roundtrip_LdmlDelimiters()
 		{
 			using (var environment = new TestEnvironment())

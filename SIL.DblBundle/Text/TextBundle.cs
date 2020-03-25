@@ -141,7 +141,14 @@ namespace SIL.DblBundle.Text
 			var ldmlAdaptor = new LdmlDataMapper(new WritingSystemFactory());
 
 			var wsFromLdml = new WritingSystemDefinition();
-			ldmlAdaptor.Read(LdmlFilePath, wsFromLdml);
+			try
+			{
+				ldmlAdaptor.Read(LdmlFilePath, wsFromLdml);
+			}
+			catch (Exception exception)
+			{
+				LdmlDataMapper.RenameAndLogBadLdmlFile(exception, LdmlFilePath);
+			}
 
 			return wsFromLdml;
 		}

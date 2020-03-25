@@ -9,7 +9,9 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using Icu;
+using SIL.Code;
 using SIL.Extensions;
+using SIL.IO;
 using SIL.Keyboarding;
 using SIL.Xml;
 
@@ -206,6 +208,12 @@ namespace SIL.WritingSystems
 			_writingSystemFactory = writingSystemFactory;
 		}
 
+		/// <summary>
+		/// If ReadLdml() fails for any reason, it should throw. Any consumer of this method
+		/// should catch any exceptions and call LdmlDataMapper.RenameAndLogBadLdmlFile().
+		/// </summary>
+		/// <param name="filePath"></param>
+		/// <param name="ws"></param>
 		public void Read(string filePath, WritingSystemDefinition ws)
 		{
 			if (filePath == null)
@@ -358,7 +366,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Resets all of the properties of the writing system definition that might not get set when reading the LDML file.
 		/// </summary>
-		private void ResetWritingSystemDefinition(WritingSystemDefinition ws)
+		private static void ResetWritingSystemDefinition(WritingSystemDefinition ws)
 		{
 			ws.VersionNumber = null;
 			ws.VersionDescription = null;
@@ -377,7 +385,7 @@ namespace SIL.WritingSystems
 			ws.KnownKeyboards.Clear();
 		}
 
-		private void CheckVersion(XElement specialElem, WritingSystemDefinition ws)
+		private static void CheckVersion(XElement specialElem, WritingSystemDefinition ws)
 		{
 			// Flag invalid versions (0-2 inclusive) from reading legacy LDML files
 			// We're intentionally not using WritingSystemLDmlVersionGetter and the
@@ -402,7 +410,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void ReadTopLevelSpecialElement(XElement specialElem, WritingSystemDefinition ws)
+		private static void ReadTopLevelSpecialElement(XElement specialElem, WritingSystemDefinition ws)
 		{
 			XElement externalResourcesElem = specialElem.Element(Sil + "external-resources");
 			if (externalResourcesElem != null)
@@ -413,7 +421,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void ReadFontElement(XElement externalResourcesElem, WritingSystemDefinition ws)
+		private static void ReadFontElement(XElement externalResourcesElem, WritingSystemDefinition ws)
 		{
 			foreach (XElement fontElem in externalResourcesElem.NonAltElements(Sil + "font"))
 			{
@@ -479,7 +487,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void ReadSpellcheckElement(XElement externalResourcesElem, WritingSystemDefinition ws)
+		private static void ReadSpellcheckElement(XElement externalResourcesElem, WritingSystemDefinition ws)
 		{
 			foreach (XElement scElem in externalResourcesElem.NonAltElements(Sil + "spellcheck"))
 			{
@@ -496,7 +504,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void ReadKeyboardElement(XElement externalResourcesElem, WritingSystemDefinition ws)
+		private static void ReadKeyboardElement(XElement externalResourcesElem, WritingSystemDefinition ws)
 		{
 			foreach (XElement kbdElem in externalResourcesElem.NonAltElements(Sil + "kbd"))
 			{
@@ -517,7 +525,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void ReadIdentityElement(XElement identityElem, WritingSystemDefinition ws)
+		private static void ReadIdentityElement(XElement identityElem, WritingSystemDefinition ws)
 		{
 			Debug.Assert(identityElem.Name == "identity");
 			XElement versionElem = identityElem.Element("version");
@@ -566,7 +574,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void ReadCharactersElement(XElement charactersElem, WritingSystemDefinition ws)
+		private static void ReadCharactersElement(XElement charactersElem, WritingSystemDefinition ws)
 		{
 			foreach (XElement exemplarCharactersElem in charactersElem.NonAltElements("exemplarCharacters"))
 				ReadExemplarCharactersElem(exemplarCharactersElem, ws);
@@ -583,7 +591,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void ReadExemplarCharactersElem(XElement exemplarCharactersElem, WritingSystemDefinition ws)
+		private static void ReadExemplarCharactersElem(XElement exemplarCharactersElem, WritingSystemDefinition ws)
 		{
 			string type = (string) exemplarCharactersElem.Attribute("type") ?? "main";
 			var csd = new CharacterSetDefinition(type);
@@ -592,7 +600,7 @@ namespace SIL.WritingSystems
 			ws.CharacterSets.Add(csd);
 		}
 
-		private void ReadDelimitersElement(XElement delimitersElem, WritingSystemDefinition ws)
+		private static void ReadDelimitersElement(XElement delimitersElem, WritingSystemDefinition ws)
 		{
 			string open, close;
 			string level1Continue = null;
@@ -675,7 +683,7 @@ namespace SIL.WritingSystems
 			ws.QuotationMarks.AddRange(specialQuotationMarks);
 		}
 
-		private void ReadLayoutElement(XElement layoutElem, WritingSystemDefinition ws)
+		private static void ReadLayoutElement(XElement layoutElem, WritingSystemDefinition ws)
 		{
 			// The orientation node has two attributes, "lines" and "characters" which define direction of writing.
 			// The valid values are: "top-to-bottom", "bottom-to-top", "left-to-right", and "right-to-left"
@@ -699,7 +707,7 @@ namespace SIL.WritingSystems
 		/// The content was not valid LDML.
 		/// The numbering system is added as a NumberingSystemDefinition
 		/// </summary>
-		private void ReadIntermediateVersion3NumbersElement(XElement numbersElem, WritingSystemDefinition ws)
+		private static void ReadIntermediateVersion3NumbersElement(XElement numbersElem, WritingSystemDefinition ws)
 		{
 			XElement defaultNumberingSystemElem = numbersElem.NonAltElement("defaultNumberingSystem");
 			if (defaultNumberingSystemElem != null)
@@ -727,7 +735,7 @@ namespace SIL.WritingSystems
 		/// Read the numbers element, expecting only a defaultNumberingSystem element.
 		/// The numbering system is added as a NumberingSystemDefinition
 		/// </summary>
-		private void ReadNumbersElement(XElement numbersElem, WritingSystemDefinition ws)
+		private static void ReadNumbersElement(XElement numbersElem, WritingSystemDefinition ws)
 		{
 			XElement defaultNumberingSystemElem = numbersElem.NonAltElement("defaultNumberingSystem");
 			if (defaultNumberingSystemElem != null)
@@ -748,7 +756,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Parses text similar to 'other(0123456789)' returns true if valid
 		/// </summary>
-		private bool ParseCustomNumberingSystem(string id, out string digits)
+		private static bool ParseCustomNumberingSystem(string id, out string digits)
 		{
 			var regex = new Regex("other\\((.*)\\)");
 			var match = regex.Match(id.Trim());
@@ -816,7 +824,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private SimpleRulesCollationDefinition ReadCollationRulesForCustomSimple(XElement collationElem, XElement specialElem, string collationType)
+		private static SimpleRulesCollationDefinition ReadCollationRulesForCustomSimple(XElement collationElem, XElement specialElem, string collationType)
 		{
 			XElement simpleElem = specialElem.Element(Sil + "simple");
 			bool needsCompiling = (bool?) specialElem.Attribute(Sil + "needscompiling") ?? false;
@@ -842,7 +850,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		/// <param name="element">parent element of the special element</param>
 		/// <returns></returns>
-		private XElement GetOrCreateSpecialElement(XElement element)
+		private static XElement GetOrCreateSpecialElement(XElement element)
 		{
 			// Create element
 			XElement specialElem = element.GetOrCreateElement("special");
@@ -855,7 +863,7 @@ namespace SIL.WritingSystems
 		/// but false for "<element></element>", we have to check both cases
 		/// </summary>
 		/// <param name="element">XElement to remove if it's empty or has 0 contents/attributes/elements</param>
-		private void RemoveIfEmpty(ref XElement element)
+		private static void RemoveIfEmpty(ref XElement element)
 		{
 			if (element != null)
 			{
@@ -1054,7 +1062,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void WriteLanguageTagElements(XElement identityElem, string languageTag) 
+		private static void WriteLanguageTagElements(XElement identityElem, string languageTag) 
 		{
 			string language, script, region, variant;
 			IetfLanguageTag.TryGetParts(languageTag, out language, out script, out region, out variant);
@@ -1070,7 +1078,7 @@ namespace SIL.WritingSystems
 				identityElem.SetAttributeValue("variant", "type", variant);
 		}
 				
-		private void WriteCharactersElement(XElement charactersElem, WritingSystemDefinition ws)
+		private static void WriteCharactersElement(XElement charactersElem, WritingSystemDefinition ws)
 		{
 			Debug.Assert(charactersElem != null);
 			Debug.Assert(ws != null);
@@ -1516,6 +1524,47 @@ namespace SIL.WritingSystems
 					}
 				}
 				externalResourcesElem.Add(kbdElem);
+			}
+		}
+
+		/// <summary>
+		/// Any time we try to read an LDML file from outside or inside our system and it throws
+		/// an exception, we should run this method to quarantine the bad file and report it
+		/// the best we can.
+		/// </summary>
+		/// <param name="exception"></param>
+		/// <param name="pathToBadFile"></param>
+		public static void RenameAndLogBadLdmlFile(Exception exception, string pathToBadFile)
+		{
+			// ldml file is not valid, rename it so it is no longer used
+			Guard.Against(Path.GetDirectoryName(pathToBadFile) == string.Empty, "'pathToBadFile' should be a complete path.");
+			string badFile = pathToBadFile + ".bad";
+			if (RobustFile.Exists(badFile))
+				RobustFile.Delete(badFile);
+			RobustFile.Move(pathToBadFile, badFile);
+			// We want to log this, but we don't want any SIL.Core.Desktop dependencies.
+			// So we'll use a more basic method
+			//Logger.WriteError("Encountered bad LDML file in Global repository. Moved to '" + badFile + "'", exc);
+			try
+			{
+				var path = Path.GetDirectoryName(badFile);
+				var filename = Path.GetFileName(badFile);
+				using (FileStream fs = File.Open(Path.Combine(path, "badldml.log"),
+					FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
+				{
+					var sb = new StringBuilder();
+					sb.AppendFormat("({0} UTC)" + Environment.NewLine + "Encountered a bad LDML file in the Global repository.", DateTime.UtcNow);
+					sb.AppendLine(Environment.NewLine + "Exception: " + exception.Message);
+					sb.AppendFormat("Moved {0} to {1}.bad", badFile, filename);
+					sb.AppendLine(Environment.NewLine);
+					var encoding = Encoding.GetEncoding("utf-8");
+					fs.Write(encoding.GetBytes(sb.ToString()), 0, sb.Length);
+				}
+			}
+			catch (Exception)
+			{
+				// Can't afford to let any exceptions stand in our way while logging an error.
+				// If logging causes an exception, forget it!
 			}
 		}
 	}

@@ -1,4 +1,5 @@
-﻿using System.IO;
+using System;
+using System.IO;
 
 namespace SIL.WritingSystems
 {
@@ -42,7 +43,14 @@ namespace SIL.WritingSystems
 			{
 				ws = ConstructDefinition();
 				var loader = new LdmlDataMapper(this);
-				loader.Read(templatePath, ws);
+				try
+				{
+					loader.Read(templatePath, ws);
+				}
+				catch (Exception exception)
+				{
+					LdmlDataMapper.RenameAndLogBadLdmlFile(exception, templatePath);
+				}
 				ws.Template = templatePath;
 				return true;
 			}

@@ -182,7 +182,14 @@ namespace SIL.WritingSystems
 				var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 				if (File.Exists(filePath))
 				{
-					ldmlDataMapper.Read(filePath, wsFromFile);
+					try
+					{
+						ldmlDataMapper.Read(filePath, wsFromFile);
+					}
+					catch (Exception exception)
+					{
+						LdmlDataMapper.RenameAndLogBadLdmlFile(exception, filePath);
+					}
 					foreach (ICustomDataMapper<T> customDataMapper in _customDataMappers)
 						customDataMapper.Read(wsFromFile);
 					wsFromFile.Id = Path.GetFileNameWithoutExtension(filePath);

@@ -1567,7 +1567,14 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 			var adaptor = new LdmlDataMapper(_writingSystemFactory);
 			WritingSystemDefinition ws = _writingSystemFactory.Create();
-			adaptor.Read(fileName, ws);
+			try
+			{
+				adaptor.Read(fileName, ws);
+			}
+			catch (Exception exception)
+			{
+				LdmlDataMapper.RenameAndLogBadLdmlFile(exception, fileName);
+			}
 			WritingSystemDefinitions.Add(ws);
 			OnAddOrDelete();
 			CurrentDefinition = ws;
