@@ -16,7 +16,7 @@ namespace SIL.Acknowledgements
 		private static readonly string[] Exclusions =
 		{
 			"Interop.WIA.dll", "vshost.exe", "CommandLine.dll",
-			"nunit.framework.dll", ".Tests.dll", ".Tests.exe", "TestApp.dll", "TestApp.exe"
+			"nunit.framework.dll", ".Tests.dll", ".Tests.exe", "TestApp.dll", "TestApp.exe", "oleaut32.dll"
 
 			// Use this version to see the TestApp dependencies in SIL.Windows.Forms.TestApp.AssemblyInfo.cs
 			//"Interop.WIA.dll", "vshost.exe", "CommandLine.dll",
