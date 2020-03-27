@@ -102,16 +102,20 @@ namespace SIL.WritingSystems
 						// hopefully that is good enough for our purposes here
 						if (_lastFileStats[id].Item1 != fi.LastWriteTime || _lastFileStats[id].Item2 != fi.Length)
 						{
+							var errorEncountered = false;
 							// modified writing system
 							if (!_addedWritingSystems.Contains(id))
 							{
-								ldmlDataMapper.Read(file, ws);
+								ldmlDataMapper.Read(file, ws, e => { errorEncountered = true; });
 								if (string.IsNullOrEmpty(ws.Id))
 									ws.Id = ws.LanguageTag;
 								ws.AcceptChanges();
 							}
 
-							_lastFileStats[id] = Tuple.Create(fi.LastWriteTime, fi.Length);
+							// if an error was encountered in reading the file above, the file will have been moved
+							_lastFileStats[id] = Tuple.Create(
+								errorEncountered ? DateTime.MinValue : fi.LastWriteTime,
+								errorEncountered ? 0 : fi.Length);
 						}
 					}
 					removedIds.Remove(id);
@@ -119,27 +123,16 @@ namespace SIL.WritingSystems
 				else
 				{
 					// new writing system
-					try
-					{
-						ws = WritingSystemFactory.Create();
-						ldmlDataMapper.Read(file, ws);
-						ws.Id = ws.LanguageTag;
-						ws.AcceptChanges();
-						WritingSystems[id] = ws;
-						_lastFileStats[id] = Tuple.Create(fi.LastWriteTime, fi.Length);
-					}
-					catch (Exception exception)
-					{
-						// ldml file is not valid, rename it so it is no longer used
-						string badFile = file + ".bad";
-						if (RobustFile.Exists(badFile))
-							RobustFile.Delete(badFile);
-						RobustFile.Move(file, badFile);
-						// We want to log this, but we don't want any SIL.Core.Desktop dependencies.
-						// So we'll use a more basic method
-						//Logger.WriteError("Encountered bad LDML file in Global repository. Moved to '" + badFile + "'", exc);
-						LogBadLDML(exception, file);
-					}
+					ws = WritingSystemFactory.Create();
+					var errorEncountered = false;
+					ldmlDataMapper.Read(file, ws, e => { errorEncountered = true; });
+					ws.Id = ws.LanguageTag;
+					ws.AcceptChanges();
+					WritingSystems[id] = ws;
+					// if an error was encountered in reading the file above, the file will have been moved
+					_lastFileStats[id] = Tuple.Create(
+						errorEncountered ? DateTime.MinValue : fi.LastWriteTime,
+						errorEncountered ? 0 : fi.Length);
 				}
 			}
 
@@ -148,31 +141,6 @@ namespace SIL.WritingSystems
 				// preserve this repo's changes
 				if (!WritingSystems[id].IsChanged && !_addedWritingSystems.Contains(id))
 					base.Remove(id);
-			}
-		}
-
-		private static void LogBadLDML(Exception exception, string badFile)
-		{
-			try
-			{
-				var path = Path.GetDirectoryName(badFile);
-				var filename = Path.GetFileName(badFile);
-				using (FileStream fs = File.Open(Path.Combine(path, "badldml.log"),
-					FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
-				{
-					var sb = new StringBuilder();
-					sb.AppendFormat("({0} UTC)" + Environment.NewLine + "Encountered a bad LDML file in the Global repository.", DateTime.UtcNow);
-					sb.AppendLine(Environment.NewLine + "Exception: " + exception.Message);
-					sb.AppendFormat("Moved {0} to {1}.bad", badFile, filename);
-					sb.AppendLine(Environment.NewLine);
-					var encoding = Encoding.GetEncoding("utf-8");
-					fs.Write(encoding.GetBytes(sb.ToString()), 0, sb.Length);
-				}
-			}
-			catch (Exception)
-			{
-				// Can't afford to let any exceptions stand in our way while logging an error.
-				// If logging causes an exception, forget it!
 			}
 		}
 
