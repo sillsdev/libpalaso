@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SIL.Keyboarding;
+using SIL.PlatformUtilities;
 using Timer = System.Windows.Forms.Timer;
 
 namespace SIL.Windows.Forms.Keyboarding.Windows
@@ -66,15 +67,12 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				}
 
 				_expectedKeyboard = keyboard;
-#if !MONO
-				return SwitchByProfile(keyboard);
-#endif
+				return Platform.IsMono || SwitchByProfile(keyboard);
 			}
 			finally
 			{
 				IsSwitchingKeyboards = false;
 			}
-			return true;
 		}
 
 		private bool SwitchByProfile(WinKeyboardDescription keyboard)
