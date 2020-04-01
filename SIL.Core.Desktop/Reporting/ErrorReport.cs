@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using Microsoft.Win32;
 using SIL.IO;
 using SIL.PlatformUtilities;
 using SIL.Reflection;
@@ -120,14 +121,6 @@ namespace SIL.Reporting
 
 		protected static string s_emailAddress = null;
 		protected static string s_emailSubject = "Exception Report";
-
-		/// <summary>
-		/// a list of name, string value pairs that will be included in the details of the error report.
-		/// </summary>
-		private static Dictionary<string, string> s_properties =
-			new Dictionary<string, string>();
-
-		private static bool s_isOkToInteractWithUser = true;
 		private static Action<Exception, string> s_onShowDetails;
 		private static bool s_justRecordNonFatalMessagesForTesting=false;
 		private static string s_previousNonFatalMessage;
@@ -151,13 +144,6 @@ namespace SIL.Reporting
 			s_emailSubject = subject.ToString();
 		}
 
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="error"></param>
-		/// <returns></returns>
-		/// ------------------------------------------------------------------------------------
 		public static string GetExceptionText(Exception error)
 		{
 			UpdateEmailSubject(error);
@@ -195,13 +181,17 @@ namespace SIL.Reporting
 				var file = PathHelper.StripFilePrefix(asm.CodeBase);
 				var fi = new FileInfo(file);
 
-				return string.Format(
-					"Version {0}.{1}.{2} Built on {3}",
-					ver.Major,
-					ver.Minor,
-					ver.Build,
-					fi.CreationTime.ToString("dd-MMM-yyyy")
-				);
+				return $"Version {ver.Major}.{ver.Minor}.{ver.Build} Built on {fi.CreationTime:dd-MMM-yyyy}";
+			}
+		}
+
+		public static string DotNet4Version()
+		{
+			using (var key64 = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full"))
+			using (var key32 = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\NET Framework Setup\NDP\v4\Full"))
+			{
+				var key = key64 ?? key32;
+				return key == null ? "(unable to determine)" : $"{key.GetValue("Version")} ({key.GetValue("Release")})";
 			}
 		}
 
@@ -285,29 +275,9 @@ namespace SIL.Reporting
 		/// <summary>
 		/// a list of name, string value pairs that will be included in the details of the error report.
 		/// </summary>
-		public static Dictionary<string, string> Properties
-		{
-			get
-			{
-				return s_properties;
-			}
-			set
-			{
-				s_properties = value;
-			}
-		}
+		public static Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
 
-		public static bool IsOkToInteractWithUser
-		{
-			get
-			{
-				return s_isOkToInteractWithUser;
-			}
-			set
-			{
-				s_isOkToInteractWithUser = value;
-			}
-		}
+		public static bool IsOkToInteractWithUser { get; set; } = true;
 
 		/// <summary>
 		/// Software using ErrorReport's NotifyUserOfProblem methods can set this to their own method
@@ -317,8 +287,7 @@ namespace SIL.Reporting
 		{
 			get
 			{
-				return s_onShowDetails ??
-				       (s_onShowDetails = ErrorReport.ReportNonFatalExceptionWithMessage);
+				return s_onShowDetails ?? (s_onShowDetails = ReportNonFatalExceptionWithMessage);
 			}
 			set
 			{
@@ -335,24 +304,25 @@ namespace SIL.Reporting
 		{
 			//avoid an error if the user changes the value of something,
 			//which happens in FieldWorks, for example, when you change the language project.
-			if (s_properties.ContainsKey(label))
+			if (Properties.ContainsKey(label))
 			{
-				s_properties.Remove(label);
+				Properties.Remove(label);
 			}
 
-			s_properties.Add(label, contents);
+			Properties.Add(label, contents);
 		}
 
 		public static void AddStandardProperties()
 		{
-			AddProperty("Version", ErrorReport.GetVersionForErrorReporting());
+			AddProperty("Version", GetVersionForErrorReporting());
 			AddProperty("CommandLine", Environment.CommandLine);
 			AddProperty("CurrentDirectory", Environment.CurrentDirectory);
 			AddProperty("MachineName", Environment.MachineName);
 			AddProperty("OSVersion", GetOperatingSystemLabel());
 			if (Platform.IsUnix)
 				AddProperty("DesktopEnvironment", Platform.DesktopEnvironmentInfoString);
-			AddProperty("DotNetVersion", Environment.Version.ToString());
+			AddProperty("DotNetVersion", DotNet4Version());
+			AddProperty("CLR Version (deprecated)", Environment.Version.ToString());
 			AddProperty("WorkingSet", Environment.WorkingSet.ToString());
 			AddProperty("UserDomainName", Environment.UserDomainName);
 			AddProperty("UserName", Environment.UserName);
@@ -366,14 +336,15 @@ namespace SIL.Reporting
 		public static Dictionary<string, string> GetStandardProperties()
 		{
 			var props = new Dictionary<string,string>();
-			props.Add("Version", ErrorReport.GetVersionForErrorReporting());
+			props.Add("Version", GetVersionForErrorReporting());
 			props.Add("CommandLine", Environment.CommandLine);
 			props.Add("CurrentDirectory", Environment.CurrentDirectory);
 			props.Add("MachineName", Environment.MachineName);
 			props.Add("OSVersion", GetOperatingSystemLabel());
 			if (Platform.IsUnix)
 				props.Add("DesktopEnvironment", Platform.DesktopEnvironmentInfoString);
-			props.Add("DotNetVersion", Environment.Version.ToString());
+			props.Add("DotNetVersion", DotNet4Version());
+			props.Add("CLR Version (deprecated)", Environment.Version.ToString());
 			props.Add("WorkingSet", Environment.WorkingSet.ToString());
 			props.Add("UserDomainName", Environment.UserDomainName);
 			props.Add("UserName", Environment.UserName);

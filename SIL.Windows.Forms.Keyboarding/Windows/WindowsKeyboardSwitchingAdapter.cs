@@ -74,7 +74,9 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			{
 				IsSwitchingKeyboards = false;
 			}
+#if MONO
 			return true;
+#endif
 		}
 
 		private bool SwitchByProfile(WinKeyboardDescription keyboard)
