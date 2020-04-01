@@ -596,6 +596,43 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void BadLdmlCharacters_GeneratesLog()
+		{
+			// Because we don't write elements with extra attributes (e.g. 'draft' at time of test creation),
+			// this test starts by writing a set content.
+			// The idea is to throw at the highest level of reading a downloaded LDML file,
+			// so that we can catch it in SldrWritingSystemFactory and save the file to {name}.bad
+			// and log the error.
+			using (var environment = new TestEnvironment())
+			{
+				var content =
+					@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version number='VERSION' />
+		<language type='en' />
+		<script type='Latn' />
+	</identity>
+	<characters>
+		<exemplarCharacters>[a-z{az}]</exemplarCharacters>
+		<exemplarCharacters unknownAttribute='unknownAttributeData'>[A-Z{AZ}]</exemplarCharacters>
+	</characters>
+</ldml>".Replace("VERSION", LdmlDataMapper.CurrentLdmlLibraryVersion.ToString()).Replace("\'", "\"");
+
+				var filePath = environment.FilePath("test.ldml");
+				File.WriteAllText(filePath, content);
+
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+				var wsFromLdml = new WritingSystemDefinition();
+				// SUT
+				ldmlAdaptor.Read(filePath, wsFromLdml);
+				var logFilePath = Path.Combine(Path.GetDirectoryName(filePath), "badldml.log");
+				Assert.That(File.Exists(logFilePath));
+				File.Delete(logFilePath); // don't want it to possibly mess up other tests in this fixture
+			}
+		}
+
+		[Test]
 		public void Roundtrip_LdmlDelimiters()
 		{
 			using (var environment = new TestEnvironment())
@@ -1267,18 +1304,18 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Read_V0Ldml_ThrowFriendlyException()
+		public void Read_V0Ldml_ReportsBadVersion()
 		{
 			using (var file = new TempFile())
 			{
 				WriteVersion0Ldml("en", "", "", "", file);
 				var ws = new WritingSystemDefinition();
 				var dataMapper = new LdmlDataMapper(new TestWritingSystemFactory());
-				Assert.That(() => dataMapper.Read(file.Path, ws),
-								Throws.Exception.TypeOf<ApplicationException>()
-										.With.Property("Message")
-										.EqualTo(String.Format("The LDML tag 'en' is version 0.  Version {0} was expected.",
-										LdmlDataMapper.CurrentLdmlLibraryVersion)));
+				// SUT
+				dataMapper.Read(file.Path, ws);
+				var logFilePath = Path.Combine(Path.GetDirectoryName(file.Path), "badldml.log");
+				Assert.That(File.Exists(logFilePath));
+				File.Delete(logFilePath); // don't want it to possibly mess up other tests in this fixture
 			}
 		}
 
@@ -1291,11 +1328,11 @@ namespace SIL.WritingSystems.Tests
 				WriteVersion1Ldml("en", "", "", "", file);
 				var ws = new WritingSystemDefinition();
 				var dataMapper = new LdmlDataMapper(new TestWritingSystemFactory());
-				Assert.That(() => dataMapper.Read(file.Path, ws),
-								Throws.Exception.TypeOf<ApplicationException>()
-										.With.Property("Message")
-										.EqualTo(String.Format("The LDML tag 'en' is version 2.  Version {0} was expected.",
-										LdmlDataMapper.CurrentLdmlLibraryVersion)));
+				// SUT
+				dataMapper.Read(file.Path, ws);
+				var logFilePath = Path.Combine(Path.GetDirectoryName(file.Path), "badldml.log");
+				Assert.That(File.Exists(logFilePath));
+				File.Delete(logFilePath); // don't want it to possibly mess up other tests in this fixture
 			}
 		}
 
@@ -1371,8 +1408,11 @@ namespace SIL.WritingSystems.Tests
 				var ws = new WritingSystemDefinition();
 				var dataMapper = new LdmlDataMapper(new TestWritingSystemFactory());
 
-				var message = Assert.Throws<ArgumentException>(() => dataMapper.Read(tempFile.Path, ws)).Message;
-				StringAssert.IsMatch("The font .* is defined twice in .*\\.ldml", message);
+				// SUT
+				dataMapper.Read(tempFile.Path, ws);
+				var logFilePath = Path.Combine(Path.GetDirectoryName(tempFile.Path), "badldml.log");
+				Assert.That(File.Exists(logFilePath));
+				File.Delete(logFilePath); // don't want it to possibly mess up other tests in this fixture
 			}
 		}
 
