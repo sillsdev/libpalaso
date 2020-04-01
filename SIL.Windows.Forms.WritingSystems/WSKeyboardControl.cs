@@ -317,7 +317,6 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private void _windowsKeyboardSettingsLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			string arguments;
 			var program = KeyboardController.GetKeyboardSetupApplication();
 			if (program == null)
 			{

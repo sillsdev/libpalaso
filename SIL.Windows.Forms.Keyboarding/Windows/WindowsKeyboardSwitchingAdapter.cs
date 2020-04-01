@@ -66,15 +66,12 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				}
 
 				_expectedKeyboard = keyboard;
-#if !MONO
-				return SwitchByProfile(keyboard);
-#endif
+				return PlatformUtilities.Platform.IsMono || SwitchByProfile(keyboard);
 			}
 			finally
 			{
 				IsSwitchingKeyboards = false;
 			}
-			return true;
 		}
 
 		private bool SwitchByProfile(WinKeyboardDescription keyboard)
