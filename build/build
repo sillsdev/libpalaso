@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+# Usage: ./build [targets [configuration]]
+#   Where targets is a semicolon delimited list of build targets.
+#   Examples:
+#     ./build 'Clean;Compile' ReleaseMonoStrongName
+#     AssertUiEnabled=false ./build Test
+
+set -e -o pipefail
+script_dir="$(dirname "$0")"
+
+mono --version
+which msbuild
+
+cd "${script_dir}/.."
+msbuild "/target:${1-Build}" /property:Configuration="${2-DebugMonoStrongName}" build/Palaso.proj
