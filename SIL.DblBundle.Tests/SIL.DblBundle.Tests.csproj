@@ -22,7 +22,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\output\Debug\SIL.DblBundle.Tests.XML</DocumentationFile>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
