@@ -1,0 +1,11 @@
+{
+  "project_identifier": "sil-common-libraries",
+  "api_key_env": "CROWDIN_COMMONLIB_KEY",
+  "base_path": ".",
+  "files": [
+    {
+      "source": "Chorus.en.xlf",
+      "translation": "Chorus.%locale%.xlf",
+    }
+  ]
+}
