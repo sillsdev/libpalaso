@@ -305,7 +305,7 @@ namespace SIL.WritingSystems
 						}
 						redirected = false;
 					}
-					catch (XmlException xe)
+					catch (XmlException)
 					{
 						// Download failed so check SLDR cache
 						sldrCacheFilePath = GetSldrCacheFilePath(uid, sldrLanguageTag);
