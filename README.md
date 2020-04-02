@@ -25,4 +25,14 @@ To get the source code, you'll need Git. Then from a command line, give this com
 
 Development
 -----------
+
 For instructions on building and contributing, see <https://github.com/sillsdev/libpalaso/wiki/Development>.
+
+API Policy
+----------
+
+The palaso library is still under active development the current deprecation policy is:
+
+- public API's that become deprecated will be marked as obsolete, with an explanation in the default branch.
+- The API and its obsolete tag will remain through the beta.
+- The API will be removed when the library moves to stable.
