@@ -13,4 +13,4 @@ mono --version
 which msbuild
 
 cd "${script_dir}/.."
-msbuild "/target:${1-Build}" /property:Configuration="${2-DebugMonoStrongName}" build/Palaso.proj
+msbuild "/target:${1-Compile}" /property:Configuration="${2-DebugMonoStrongName}" build/Palaso.proj
