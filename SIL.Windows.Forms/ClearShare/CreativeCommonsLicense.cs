@@ -85,9 +85,7 @@ namespace SIL.Windows.Forms.ClearShare
 		/// Other values are not guaranteed to work, though at present they will.
 		/// Enhance: Possibly we should try to verify that the token is a valid CCL one?
 		/// </summary>
-		/// <param name="token"></param>
-		/// <returns></returns>
-		public static LicenseInfo FromToken(string token)
+		public new static LicenseInfo FromToken(string token)
 		{
 			var result = new CreativeCommonsLicense();
 			// Note (JH): Since version was set to default, as I add the qualifier, I'm going to let it be default as well.

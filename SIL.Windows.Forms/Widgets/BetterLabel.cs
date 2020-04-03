@@ -14,6 +14,7 @@ namespace SIL.Windows.Forms.Widgets
 	{
 		private Brush _backgroundBrush;
 		private bool _isTextSelectable;
+		private bool _inOnSizeChanged;
 
 		public BetterLabel()
 		{
@@ -163,8 +164,21 @@ namespace SIL.Windows.Forms.Widgets
 
 		protected override void OnSizeChanged(EventArgs e)
 		{
-			DetermineHeight();
-			base.OnSizeChanged(e);
+			if (_inOnSizeChanged)
+			{
+				// Don't end up getting called recursively.
+				return;
+			}
+			try
+			{
+				_inOnSizeChanged = true;
+				DetermineHeight();
+				base.OnSizeChanged(e);
+			}
+			finally
+			{
+				_inOnSizeChanged = false;
+			}
 		}
 
 		protected override void OnVisibleChanged(EventArgs e)
