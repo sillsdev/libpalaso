@@ -7,6 +7,7 @@ using SIL.Progress;
 
 namespace SIL.Lift.Validation
 {
+	[Flags]
 	public enum ValidationOptions
 	{
 		CheckLIFT = 1,
@@ -87,15 +88,15 @@ namespace SIL.Lift.Validation
 		/// Parse the given LIFT file and return a string containing all the validation errors
 		/// (if any).  Progress reporting is supported.
 		///</summary>
-		static public string GetAnyValidationErrors(string path, IValidationProgress progress, ValidationOptions validationOptions)
+		public static string GetAnyValidationErrors(string path, IValidationProgress progress, ValidationOptions validationOptions)
 		{
 			string errors = "";
-			if ((validationOptions & ValidationOptions.CheckLIFT) != null)
+			if ((validationOptions & ValidationOptions.CheckLIFT) != 0)
 			{
 				errors += GetSchemaValidationErrors(path, progress);
 			}
 
-			if ((validationOptions & ValidationOptions.CheckGUIDs)!=null)
+			if ((validationOptions & ValidationOptions.CheckGUIDs) != 0)
 			{
 				errors += GetDuplicateGuidErrors(path, progress);
 			}
