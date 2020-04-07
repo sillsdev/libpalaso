@@ -1,4 +1,5 @@
-﻿using System.IO;
+using System;
+using System.IO;
 
 namespace SIL.WritingSystems
 {
@@ -46,9 +47,16 @@ namespace SIL.WritingSystems
 			{
 				ws = ConstructDefinition();
 				var loader = new LdmlDataMapper(this);
-				loader.Read(templatePath, ws);
-				ws.Template = templatePath;
-				return sldrStatus == SldrStatus.FromSldr;
+				var errorEncountered = false;
+				loader.Read(templatePath, ws, e => {
+					sldrStatus = SldrStatus.NotFound;
+					errorEncountered = true;
+				});
+				if (!errorEncountered)
+				{
+					ws.Template = templatePath;
+					return sldrStatus == SldrStatus.FromSldr;
+				}
 			}
 
 			return base.Create(ietfLanguageTag, out ws) && sldrStatus == SldrStatus.NotFound;

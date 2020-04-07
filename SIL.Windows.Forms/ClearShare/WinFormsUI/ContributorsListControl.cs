@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -232,7 +232,10 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 					var rc = _grid.GetCellDisplayRectangle(col, e.RowIndex, true);
 					var pt = new Point(rc.X + (rc.Width / 2), rc.Y + 4);
 					_msgWindow.Show(kvp.Value, _grid.PointToScreen(pt));
-					_grid.CurrentCell = _grid[col, e.RowIndex];
+
+					// Invoking here because of "reentrant call to the SetCurrentCellAddressCore" exception.
+					// Setting the CurrentCell can trigger validation again.
+					BeginInvoke((Action)(() =>_grid.CurrentCell = _grid[col, e.RowIndex]));
 				}
 			}
 		}

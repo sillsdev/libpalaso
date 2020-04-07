@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using SIL.Windows.Forms;
@@ -15,7 +15,7 @@ namespace SIL.Archiving
 		protected readonly string _launchButtonTextFormat;
 
 		/// ------------------------------------------------------------------------------------
-		/// <summary>Caller can use this to retrieve and persist form settings (typicvally
+		/// <summary>Caller can use this to retrieve and persist form settings (typically
 		/// after form is closed).</summary>
 		/// ------------------------------------------------------------------------------------
 		public FormSettings FormSettings

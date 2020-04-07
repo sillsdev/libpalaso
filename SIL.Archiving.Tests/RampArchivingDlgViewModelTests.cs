@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -438,6 +438,8 @@ namespace SIL.Archiving.Tests
 		{
 			IgnoreTestIfRampIsNotInstalled();
 
+			Assert.Ignore("This test is no longer valid because RAMP 3.0 does not have a languages file");
+
 			_helper.SetContentLanguages("eng", "fra");
 			var data = _helper.GetMetadata();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
@@ -622,6 +624,8 @@ namespace SIL.Archiving.Tests
 		{
 			IgnoreTestIfRampIsNotInstalled();
 
+			Assert.Ignore("This test is no longer valid because RAMP 3.0 does not have a languages file");
+
 			var langName = _helper.GetLanguageName("eng");
 			Assert.AreEqual(langName, "English");
 		}
@@ -644,6 +648,8 @@ namespace SIL.Archiving.Tests
 		public void GetLanguageName_ArchivingLanguage_ReturnsCorrectName()
 		{
 			IgnoreTestIfRampIsNotInstalled();
+
+			Assert.Ignore("This test is no longer valid because RAMP 3.0 does not have a languages file");
 
 			// FieldWorks associates the name "Chinese" with the ISO3 Code "cmn"
 			ArchivingLanguage lang = new ArchivingLanguage("cmn", "Chinese");

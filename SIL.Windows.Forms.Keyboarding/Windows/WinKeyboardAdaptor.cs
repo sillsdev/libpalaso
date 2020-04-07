@@ -168,7 +168,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			{
 				profilesEnumerator = ProfileManager.EnumProfiles((short)inputLanguage.Culture.KeyboardLayoutId);
 			}
-			catch (Exception)
+			catch
 			{
 				Debug.WriteLine($"Error looking up keyboards for language {inputLanguage.Culture.Name} - {(short)inputLanguage.Culture.KeyboardLayoutId}");
 				yield break;

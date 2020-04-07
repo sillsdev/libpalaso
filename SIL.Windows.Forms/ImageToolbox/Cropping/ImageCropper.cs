@@ -93,6 +93,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 		{
 			return;
 			// REVIEW: Is this code intentionally disabled?
+			// REVIEW (Hasso) 2020.04: looks like hatton started work on this in 2010-12 and gave up in 2012-04
 			Grip hStart, vStart, hEnd, vEnd;
 
 			Point mouse = PointToClient(MousePosition);

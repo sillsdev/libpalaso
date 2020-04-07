@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net461</TargetFrameworks>
@@ -29,7 +29,7 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DialogAdapters" Version="0.1.6.21495" />
+    <PackageReference Include="DialogAdapters" Version="0.1.4.30000" />
     <PackageReference Include="Enchant.Net" Version="1.4.2" />
     <PackageReference Include="L10NSharp" Version="4.0.0" />
     <PackageReference Include="MarkdownDeep.NET.Patched" Version="1.5.0.2" />

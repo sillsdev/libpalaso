@@ -150,16 +150,15 @@ namespace SIL.Windows.Forms.WritingSystems
 			if(_listView.SelectedIndices != null && _listView.SelectedIndices.Count > 0)
 			{
 				ListViewItem item = _listView.Items[_listView.SelectedIndices[0]];
-				var oldLangInfo = SelectedLanguage;
 				var newLangInfo = (LanguageInfo) item.Tag;
-				// If the user has already set some Script/Region/Variant info, and the link to the
-				// Script/Region/Variant dialog isn't available, we don't want to undo that just because
-				// the listview is set to that main language in the search.
-				if (!_scriptsAndVariantsLink.Visible && _model.LanguageTagContainsScriptRegionVariantInfo &&
-				    newLangInfo.LanguageTag == _model.LanguageTagWithoutScriptRegionVariant)
+				// If the user has already set some Script/Region/Variant info, or a DesiredName for a language,
+				// we don't want to undo that just because the listview is set to that main language in the search
+				// (unless eventually the user specifically removes said info).
+				if (_model.OriginalLanguageTagContainsSubtags &&
+				    newLangInfo.LanguageTag == _model.OriginalLanguageTagWithoutSubtags)
 				{
-					newLangInfo.DesiredName = oldLangInfo.DesiredName;
-					newLangInfo.LanguageTag = oldLangInfo.LanguageTag;
+					// Set our SelectedLanguage to our stored clone of what the user had when they came into the dialog.
+					newLangInfo = _model.OriginalLanguageInfo;
 				}
 				SelectedLanguage = newLangInfo;
 			}
