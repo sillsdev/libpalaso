@@ -13,6 +13,7 @@
     <Copyright>Copyright © 2010-2020 SIL International</Copyright>
     <OutputPath>../../output/$(Configuration)</OutputPath>
     <SignAssembly>true</SignAssembly>
+    <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
     <AssemblyOriginatorKeyFile>../../palaso.snk</AssemblyOriginatorKeyFile>
     <IsPackable>false</IsPackable>
   </PropertyGroup>

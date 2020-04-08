@@ -37,6 +37,7 @@
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     <BaseIntermediateOutputPath>obj\Designer</BaseIntermediateOutputPath>
     <SignAssembly>true</SignAssembly>
+    <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
     <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
