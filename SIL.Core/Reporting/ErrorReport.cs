@@ -192,6 +192,9 @@ namespace SIL.Reporting
 		/// </remarks>
 		public static string DotNet4VersionFromWindowsRegistry()
 		{
+#if NETSTANDARD
+			return ".NET Standard";
+#else
 			if (!Platform.IsWindows)
 				return string.Empty;
 
@@ -199,6 +202,7 @@ namespace SIL.Reporting
 			{
 				return key == null ? "(unable to determine)" : $"{key.GetValue("Version")} ({key.GetValue("Release")})";
 			}
+#endif
 		}
 
 		/// <summary>
