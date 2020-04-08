@@ -97,9 +97,10 @@ namespace SIL.Windows.Forms.HtmlBrowser
 						{
 							return (IWebBrowser) Activator.CreateInstance(browser, this);
 						}
-						catch (Exception)
+						catch (Exception e)
 						{
 							//Eat exceptions creating the GeckoFxWebBrowserAdapter
+							Console.WriteLine($"Ignoring problem creating GeckoFxWebBrowserAdapter: {e.Message}");
 						}
 					}
 					//We failed to Create the GeckoFxWebBrowserAdapter, so drop into the fallback case
