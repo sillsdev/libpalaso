@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e -o pipefail
+script_dir="$(dirname "$0")"
+
+msbuild /t:RestorePackages build/Palaso.proj

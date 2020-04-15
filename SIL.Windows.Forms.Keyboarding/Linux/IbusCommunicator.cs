@@ -352,10 +352,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		private void OnCommitText(object text)
 		{
-			if (CommitText != null)
-			{
-				CommitText(IBusText.FromObject(text));
-			}
+			CommitText?.Invoke(IBusText.FromObject(text));
 		}
 
 		private void OnUpdatePreeditText(object text, uint cursor_pos, bool visible)
@@ -368,20 +365,17 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		private void OnDeleteSurroundingText(int offset, uint nChars)
 		{
-			if (DeleteSurroundingText != null)
-				DeleteSurroundingText(offset, (int)nChars);
+			DeleteSurroundingText?.Invoke(offset, (int)nChars);
 		}
 
 		private void OnHidePreeditText()
 		{
-			if (HidePreeditText != null)
-				HidePreeditText();
+			HidePreeditText?.Invoke();
 		}
 
 		private void OnKeyEvent(uint keyval, uint keycode, uint modifiers)
 		{
-			if (KeyEvent != null)
-				KeyEvent((int)keyval, (int)keycode, (int)modifiers);
+			KeyEvent?.Invoke((int)keyval, (int)keycode, (int)modifiers);
 		}
 
 		#endregion

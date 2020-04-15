@@ -15,7 +15,7 @@ namespace X11.XKlavier
 	{
 		private struct XklState
 		{
-#pragma warning disable 649
+#pragma warning disable 649 // the struct is initialized by marshaling pointers
 			public int Group;
 			public int Indicators;
 #pragma warning restore 649

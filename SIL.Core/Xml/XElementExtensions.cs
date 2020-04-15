@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -38,6 +38,18 @@ namespace SIL.Xml
 		public static IEnumerable<XElement> NonAltElements(this XElement element)
 		{
 			return element.Elements().Where(e => e.Attribute("alt") == null);
+		}
+
+		/// <summary>
+		/// Returns a collection of the child elements of this element.  Only elements that have a matching XName
+		/// and don't have an "alt" attribute or a "draft" attribute are included in the collection
+		/// </summary>
+		/// <param name="element">The element.</param>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
+		public static IEnumerable<XElement> NonAltNonDraftElements(this XElement element, XName name)
+		{
+			return element.Elements(name).Where(e => e.Attribute("alt") == null && e.Attribute("draft") == null);
 		}
 
 		/// <summary>

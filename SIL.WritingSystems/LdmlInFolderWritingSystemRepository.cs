@@ -176,31 +176,29 @@ namespace SIL.WritingSystems
 		protected virtual void LoadDefinition(string filePath)
 		{
 			T wsFromFile;
-			try
+			wsFromFile = WritingSystemFactory.Create();
+			var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
+			if (File.Exists(filePath))
 			{
-				wsFromFile = WritingSystemFactory.Create();
-				var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
-				if (File.Exists(filePath))
-				{
-					ldmlDataMapper.Read(filePath, wsFromFile);
-					foreach (ICustomDataMapper<T> customDataMapper in _customDataMappers)
-						customDataMapper.Read(wsFromFile);
-					wsFromFile.Id = Path.GetFileNameWithoutExtension(filePath);
-				}
-			}
-			catch (Exception e)
-			{
-				// Add the exception to our list of problems and continue loading
-				var problem = new WritingSystemRepositoryProblem
+				var errorEncountered = false;
+				ldmlDataMapper.Read(filePath, wsFromFile, e =>
 					{
-						Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
-						Exception = e,
-						FilePath = filePath
-					};
-				_loadProblems.Add(problem);
-				return;
+						// Add the exception to our list of problems and continue loading
+						var problem = new WritingSystemRepositoryProblem
+						{
+							Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
+							Exception = e,
+							FilePath = filePath
+						};
+						_loadProblems.Add(problem);
+						errorEncountered = true;
+					});
+				if (errorEncountered)
+					return;
+				foreach (ICustomDataMapper<T> customDataMapper in _customDataMappers)
+					customDataMapper.Read(wsFromFile);
+				wsFromFile.Id = Path.GetFileNameWithoutExtension(filePath);
 			}
-
 			if (!StringComparer.InvariantCultureIgnoreCase.Equals(wsFromFile.Id, wsFromFile.LanguageTag))
 			{
 				// Add the exception to our list of problems and continue loading
@@ -298,17 +296,10 @@ namespace SIL.WritingSystems
 					return;
 			}
 
-			MemoryStream oldData = null;
+			var oldData = GetDataToMergeWithInSave(writingSystemFilePath);
 			if (File.Exists(writingSystemFilePath))
 			{
-				// load old data to preserve stuff in LDML that we don't use, but don't throw up an error if it fails
-				try
-				{
-					oldData = new MemoryStream(File.ReadAllBytes(writingSystemFilePath), false);
-				}
-				catch {}
-				// What to do?  Assume that the UI has already checked for existing, asked, and allowed the overwrite.
-				File.Delete(writingSystemFilePath); //!!! Should this be move to trash?
+				File.Delete(writingSystemFilePath);
 			}
 			var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 			ldmlDataMapper.Write(writingSystemFilePath, ws, oldData);

@@ -426,7 +426,7 @@ namespace SIL.WritingSystems.Tests
 			IEnumerable<VariantSubtag> variantSubtags;
 			IetfLanguageTag.TryGetVariantSubtags("x-code1-code2", out variantSubtags, "x-name1,name2");
 			Assert.AreEqual(2, variantSubtags.Count());
-			int index = 0;
+			var index = 0;
 			foreach (VariantSubtag variantSubtag in variantSubtags)
 			{
 				if (index == 0) //For first VariantSubTag
@@ -441,6 +441,16 @@ namespace SIL.WritingSystems.Tests
 				}
 				index++;
 			}
+		}
+
+		[TestCase("x-a#b")] // non alpha numeric
+		[TestCase("x-thisiswaytoolong")] // > 15 characters (should be 8 but langtags.json has up to 15)
+		public void TryGetVariantSubtags_PrivateUseRulesHonored(string privateUseVariantTag)
+		{
+			IEnumerable<VariantSubtag> variantSubtags;
+			// Test both with and without custom name
+			Assert.That(IetfLanguageTag.TryGetVariantSubtags(privateUseVariantTag, out variantSubtags, "Bad Variant"), Is.False);
+			Assert.That(IetfLanguageTag.TryGetVariantSubtags(privateUseVariantTag, out variantSubtags), Is.False);
 		}
 
 		[Test]

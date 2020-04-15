@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using System.Xml;
+using System.Text;
 using SIL.IO;
 using SIL.PlatformUtilities;
 using SIL.Threading;
@@ -102,16 +102,20 @@ namespace SIL.WritingSystems
 						// hopefully that is good enough for our purposes here
 						if (_lastFileStats[id].Item1 != fi.LastWriteTime || _lastFileStats[id].Item2 != fi.Length)
 						{
+							var errorEncountered = false;
 							// modified writing system
 							if (!_addedWritingSystems.Contains(id))
 							{
-								ldmlDataMapper.Read(file, ws);
+								ldmlDataMapper.Read(file, ws, e => { errorEncountered = true; });
 								if (string.IsNullOrEmpty(ws.Id))
 									ws.Id = ws.LanguageTag;
 								ws.AcceptChanges();
 							}
 
-							_lastFileStats[id] = Tuple.Create(fi.LastWriteTime, fi.Length);
+							// if an error was encountered in reading the file above, the file will have been moved
+							_lastFileStats[id] = Tuple.Create(
+								errorEncountered ? DateTime.MinValue : fi.LastWriteTime,
+								errorEncountered ? 0 : fi.Length);
 						}
 					}
 					removedIds.Remove(id);
@@ -119,23 +123,16 @@ namespace SIL.WritingSystems
 				else
 				{
 					// new writing system
-					try
-					{
-						ws = WritingSystemFactory.Create();
-						ldmlDataMapper.Read(file, ws);
-						ws.Id = ws.LanguageTag;
-						ws.AcceptChanges();
-						WritingSystems[id] = ws;
-						_lastFileStats[id] = Tuple.Create(fi.LastWriteTime, fi.Length);
-					}
-					catch (XmlException)
-					{
-						// ldml file is not valid, rename it so it is no longer used
-						string badFile = file + ".bad";
-						if (RobustFile.Exists(badFile))
-							RobustFile.Delete(badFile);
-						RobustFile.Move(file, badFile);
-					}
+					ws = WritingSystemFactory.Create();
+					var errorEncountered = false;
+					ldmlDataMapper.Read(file, ws, e => { errorEncountered = true; });
+					ws.Id = ws.LanguageTag;
+					ws.AcceptChanges();
+					WritingSystems[id] = ws;
+					// if an error was encountered in reading the file above, the file will have been moved
+					_lastFileStats[id] = Tuple.Create(
+						errorEncountered ? DateTime.MinValue : fi.LastWriteTime,
+						errorEncountered ? 0 : fi.Length);
 				}
 			}
 
@@ -370,18 +367,12 @@ namespace SIL.WritingSystems
 			if (ws.IsChanged)
 				ws.DateModified = DateTime.UtcNow;
 
-			MemoryStream oldData = null;
+			MemoryStream oldData = GetDataToMergeWithInSave(writingSystemFilePath);
 			if (File.Exists(writingSystemFilePath))
 			{
-				// load old data to preserve stuff in LDML that we don't use, but don't throw up an error if it fails
-				try
-				{
-					oldData = new MemoryStream(File.ReadAllBytes(writingSystemFilePath), false);
-				}
-				catch {}
-				// What to do?  Assume that the UI has already checked for existing, asked, and allowed the overwrite.
-				File.Delete(writingSystemFilePath); //!!! Should this be move to trash?
+				File.Delete(writingSystemFilePath);
 			}
+
 			var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 			try
 			{

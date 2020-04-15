@@ -32,7 +32,7 @@ namespace SIL.Windows.Forms.Reporting
 			set { _reoccurenceMessage.Text = value;}
 		}
 
-		public Image Icon
+		public new Image Icon
 		{
 			get { return _icon.Image; }
 			set { _icon.Image = value; }
