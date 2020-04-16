@@ -4,30 +4,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using SIL.Lift.Options;
-using SIL.ObjectModel;
 using SIL.Reporting;
 using SIL.Text;
 
 namespace SIL.Lift
 {
-	public interface IPalasoDataObjectProperty : ICloneable<IPalasoDataObjectProperty>, IEquatable<IPalasoDataObjectProperty>
-	{
-		PalasoDataObject Parent { set; }
-	}
-
-	public interface IReceivePropertyChangeNotifications
-	{
-		void NotifyPropertyChanged(string property);
-	}
-
-	public interface IReferenceContainer
-	{
-		string TargetId { get; set; }
-		string Key { get; set; }
-	}
-
 	public abstract class PalasoDataObject: INotifyPropertyChanged,
 											IReceivePropertyChangeNotifications
 	{
@@ -59,7 +41,7 @@ namespace SIL.Lift
 		/// </summary>
 		public PalasoDataObject Parent
 		{
-			get { return _parent; }
+			get => _parent;
 			set
 			{
 				Debug.Assert(value != null);
@@ -71,11 +53,11 @@ namespace SIL.Lift
 		{
 			get
 			{
-				if (_properties == null)
-				{
-					_properties = new List<KeyValuePair<string, IPalasoDataObjectProperty>>();
-					NotifyPropertyChanged("properties dictionary");
-				}
+				if (_properties != null)
+					return _properties;
+
+				_properties = new List<KeyValuePair<string, IPalasoDataObjectProperty>>();
+				NotifyPropertyChanged("properties dictionary");
 
 				return _properties;
 			}
@@ -96,11 +78,7 @@ namespace SIL.Lift
 			}
 		}
 
-		public bool HasPropertiesForPurposesOfDeletion
-		{
-			get
-			{ return _properties.Any(pair => !IsPropertyEmptyForPurposesOfDeletion(pair.Value)); }
-		}
+		public bool HasPropertiesForPurposesOfDeletion => _properties.Any(pair => !IsPropertyEmptyForPurposesOfDeletion(pair.Value));
 
 		#region INotifyPropertyChanged Members
 
@@ -180,7 +158,7 @@ namespace SIL.Lift
 
 		/// <summary>
 		/// BE CAREFUL about when this is called. Empty properties *should exist*
-		/// as long as the record is being editted
+		/// as long as the record is being edited
 		/// </summary>
 		public void RemoveEmptyProperties()
 		{
@@ -202,9 +180,9 @@ namespace SIL.Lift
 				}
 
 				object property = Properties[i].Value;
-				if (property is IReportEmptiness)
+				if (property is IReportEmptiness emptiness)
 				{
-					((IReportEmptiness) property).RemoveEmptyStuff();
+					emptiness.RemoveEmptyStuff();
 				}
 
 				if (IsPropertyEmpty(property))
@@ -218,21 +196,21 @@ namespace SIL.Lift
 
 		private static bool IsPropertyEmpty(object property)
 		{
-			if (property is MultiText)
+			if (property is MultiText text)
 			{
-				return MultiTextBase.IsEmpty((MultiText) property);
+				return MultiTextBase.IsEmpty(text);
 			}
-			else if (property is OptionRef)
+			else if (property is OptionRef optionRef)
 			{
-				return ((OptionRef) property).IsEmpty;
+				return optionRef.IsEmpty;
 			}
-			else if (property is OptionRefCollection)
+			else if (property is OptionRefCollection collection)
 			{
-				return ((OptionRefCollection) property).IsEmpty;
+				return collection.IsEmpty;
 			}
-			else if (property is IReportEmptiness)
+			else if (property is IReportEmptiness emptiness)
 			{
-				return ((IReportEmptiness) property).ShouldBeRemovedFromParentDueToEmptiness;
+				return emptiness.ShouldBeRemovedFromParentDueToEmptiness;
 			}
 			//            Debug.Fail("Unknown property type");
 			return false; //don't throw it away if you don't know what it is
@@ -240,31 +218,24 @@ namespace SIL.Lift
 
 		private static bool IsPropertyEmptyForPurposesOfDeletion(object property)
 		{
-			if (property is MultiText)
+			switch (property)
 			{
-				return IsPropertyEmpty(property);
+				case MultiText _:
+					return IsPropertyEmpty(property);
+				case OptionRef _:
+					return true;
+				case OptionRefCollection collection:
+					return collection.ShouldHoldUpDeletionOfParentObject;
+				case IReportEmptiness _:
+					return IsPropertyEmpty(property);
+				default:
+					return false; //don't throw it away if you don't know what it is
 			}
-			else if (property is OptionRef)
-			{
-				return true;
-			}
-			else if (property is OptionRefCollection)
-			{
-				return ((OptionRefCollection) property).ShouldHoldUpDeletionOfParentObject;
-			}
-			else if (property is IReportEmptiness)
-			{
-				return IsPropertyEmpty(property);
-			}
-			return false; //don't throw it away if you don't know what it is
 		}
 
 		public virtual void NotifyPropertyChanged(string propertyName)
 		{
-			if (PropertyChanged != null)
-			{
-				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 		protected virtual void OnChildObjectPropertyChanged(object sender,
@@ -288,9 +259,9 @@ namespace SIL.Lift
 			newGuy.Parent = this;
 
 			//temp hack until mt's use parents for notification
-			if (newGuy is MultiText)
+			if (newGuy is MultiText guy)
 			{
-				WireUpChild((INotifyPropertyChanged) newGuy);
+				WireUpChild(guy);
 			}
 
 			return newGuy;
@@ -302,9 +273,9 @@ namespace SIL.Lift
 			field.Parent = this;
 
 			//temp hack until mt's use parents for notification
-			if (field is MultiText)
+			if (field is MultiText text)
 			{
-				WireUpChild((INotifyPropertyChanged)field);
+				WireUpChild(text);
 			}
 		}
 
@@ -317,18 +288,17 @@ namespace SIL.Lift
 			//, IParentable
 		{
 			KeyValuePair<string, IPalasoDataObjectProperty> found = Properties.Find(p => p.Key == fieldName);
-			if (found.Key == fieldName)
-			{
-				Debug.Assert(found.Value is  TContents, "Currently we assume that there is only a single type of object for a given name.");
+			if (found.Key != fieldName)
+				return null;
 
-				//temp hack until mt's use parents for notification);on
-				if (found.Value is MultiText)
-				{
-					WireUpChild((INotifyPropertyChanged) found.Value);
-				}
-				return found.Value as TContents;
+			Debug.Assert(found.Value is  TContents, "Currently we assume that there is only a single type of object for a given name.");
+
+			//temp hack until mt's use parents for notification);on
+			if (found.Value is MultiText text)
+			{
+				WireUpChild(text);
 			}
-			return null;
+			return found.Value as TContents;
 		}
 
 
@@ -341,11 +311,10 @@ namespace SIL.Lift
 				p => p.Key == incoming.Key
 			);
 
-			if (existing.Value is OptionRefCollection)
+			if (existing.Value is OptionRefCollection optionRefCollection)
 			{
 				if (existing.Key == incoming.Key)
 				{
-					var optionRefCollection = existing.Value as OptionRefCollection;
 					var incomingRefCollection = incoming.Value as OptionRefCollection;
 					optionRefCollection.MergeByKey(incomingRefCollection);
 				} else
@@ -366,9 +335,9 @@ namespace SIL.Lift
 			incoming.Value.Parent = this;
 
 			//temp hack until mt's use parents for notification
-			if (incoming.Value is MultiText)
+			if (incoming.Value is MultiText text)
 			{
-				WireUpChild((INotifyPropertyChanged)incoming.Value);
+				WireUpChild(text);
 			}
 		}
 
@@ -376,11 +345,7 @@ namespace SIL.Lift
 		public bool GetHasFlag(string propertyName)
 		{
 			FlagState flag = GetProperty<FlagState>(propertyName);
-			if (flag == null)
-			{
-				return false;
-			}
-			return flag.Value;
+			return flag != null && flag.Value;
 		}
 
 		/// <summary>
@@ -436,9 +401,9 @@ namespace SIL.Lift
 			return name + "-xml";
 		}
 
-		public override bool Equals(Object obj)
+		public override bool Equals(object obj)
 		{
-			return obj is PalasoDataObject palasoDataObject && Equals(palasoDataObject);
+			return Equals(obj as PalasoDataObject);
 		}
 
 		public bool Equals(PalasoDataObject other)
@@ -447,109 +412,16 @@ namespace SIL.Lift
 				return false;
 			return ReferenceEquals(this, other) || _properties.SequenceEqual(other._properties);
 		}
-	}
 
-	public interface IReportEmptiness
-	{
-		bool ShouldHoldUpDeletionOfParentObject { get; }
-		bool ShouldCountAsFilledForPurposesOfConditionalDisplay { get; }
-
-		bool ShouldBeRemovedFromParentDueToEmptiness { get; }
-
-		void RemoveEmptyStuff();
-	}
-
-	/// <summary>
-	/// This class enables creating the necessary event subscriptions. It was added
-	/// before we were forced to add "parent" fields to everything.  I could probably
-	/// be removed now, since that field could be used by children to cause the wiring,
-	/// but we are hoping that the parent field might go away with future version of db4o.
-	/// </summary>
-	public class ListEventHelper
-	{
-		private readonly string _listName;
-		private readonly PalasoDataObject _listOwner;
-
-		public ListEventHelper(PalasoDataObject listOwner, IBindingList list, string listName)
+		public override int GetHashCode()
 		{
-			_listOwner = listOwner;
-			_listName = listName;
-			list.ListChanged += OnListChanged;
-			foreach (INotifyPropertyChanged x in list)
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
 			{
-				_listOwner.WireUpChild(x);
+				var hash = 13;
+				hash *= 71 + _properties.GetHashCode();
+				return hash;
 			}
-		}
-
-		private void OnListChanged(object sender, ListChangedEventArgs e)
-		{
-			if (e.ListChangedType == ListChangedType.ItemAdded)
-			{
-				IBindingList list = (IBindingList) sender;
-				INotifyPropertyChanged newGuy = (INotifyPropertyChanged) list[e.NewIndex];
-				_listOwner.WireUpChild(newGuy);
-				if (newGuy is PalasoDataObject)
-				{
-					((PalasoDataObject) newGuy).Parent = _listOwner;
-				}
-			}
-			_listOwner.NotifyPropertyChanged(_listName);
-		}
-	}
-
-	public class EmbeddedXmlCollection: IPalasoDataObjectProperty
-	{
-		private List<string> _values;
-		private PalasoDataObject _parent;
-
-		public EmbeddedXmlCollection()
-		{
-			_values = new List<string>();
-		}
-
-		public PalasoDataObject Parent
-		{
-			set { _parent = value; }
-		}
-
-		public List<string> Values
-		{
-			get { return _values; }
-			set { _values = value; }
-		}
-
-		public IPalasoDataObjectProperty Clone()
-		{
-			var clone = new EmbeddedXmlCollection();
-			clone._values.AddRange(_values);
-			return clone;
-		}
-
-		public override bool Equals(object other)
-		{
-			return Equals((EmbeddedXmlCollection)other);
-		}
-
-		public bool Equals(IPalasoDataObjectProperty other)
-		{
-			return Equals((EmbeddedXmlCollection) other);
-		}
-
-		public bool Equals(EmbeddedXmlCollection other)
-		{
-			if (other == null) return false;
-			if (!_values.SequenceEqual(other._values)) return false; //order is relevant
-			return true;
-		}
-
-		public override string ToString()
-		{
-			var builder = new StringBuilder();
-			foreach (var part in Values)
-			{
-				builder.Append(part.ToString() + " ");
-			}
-			return builder.ToString().Trim();
 		}
 	}
 }
