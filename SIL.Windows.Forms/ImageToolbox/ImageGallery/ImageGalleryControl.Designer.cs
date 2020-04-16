@@ -19,6 +19,11 @@
 			disposed = true;
 			if (disposing)
 			{
+				if (_thumbnailViewer != null)
+					_thumbnailViewer.Closing(); //this guy was working away in the background
+				if (_messageLabel != null)
+					_messageLabel.SizeChanged -= MessageLabelSizeChanged;
+
 				if (components != null)
 					components.Dispose();
 				if (_thumbnailViewer != null)
@@ -55,9 +60,9 @@
 			((System.ComponentModel.ISupportInitialize)(this._localizationHelper)).BeginInit();
 			this._collectionToolStrip.SuspendLayout();
 			this.SuspendLayout();
-			// 
+			//
 			// _searchButton
-			// 
+			//
 			this._searchButton.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._searchButton.Image = global::SIL.Windows.Forms.Properties.Resources.search18x18;
 			this._searchButton.Location = new System.Drawing.Point(175, 35);
@@ -67,9 +72,9 @@
 			this._searchButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
 			this._searchButton.UseVisualStyleBackColor = true;
 			this._searchButton.Click += new System.EventHandler(this._searchButton_Click);
-			// 
+			//
 			// _searchResultStats
-			// 
+			//
 			this._searchResultStats.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
 			this._searchResultStats.Font = new System.Drawing.Font("Segoe UI", 10F);
 			this._searchResultStats.Location = new System.Drawing.Point(9, 70);
@@ -77,9 +82,9 @@
 			this._searchResultStats.Size = new System.Drawing.Size(375, 22);
 			this._searchResultStats.TabIndex = 12;
 			this._searchResultStats.Text = "~Search Result Stats";
-			// 
+			//
 			// _labelSearch
-			// 
+			//
 			this._labelSearch.AutoSize = true;
 			this._labelSearch.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._labelSearch.Location = new System.Drawing.Point(8, 8);
@@ -87,10 +92,10 @@
 			this._labelSearch.Size = new System.Drawing.Size(120, 20);
 			this._labelSearch.TabIndex = 14;
 			this._labelSearch.Text = "Image Galleries";
-			// 
+			//
 			// toolStrip1
-			// 
-			this.toolStrip1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			//
+			this.toolStrip1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.toolStrip1.AutoSize = false;
 			this.toolStrip1.BackColor = System.Drawing.Color.Transparent;
@@ -105,19 +110,19 @@
 			this.toolStrip1.Size = new System.Drawing.Size(200, 28);
 			this.toolStrip1.TabIndex = 15;
 			this.toolStrip1.Text = "toolStrip1";
-			// 
+			//
 			// _searchLanguageMenu
-			// 
+			//
 			this._searchLanguageMenu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this._searchLanguageMenu.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this._searchLanguageMenu.Name = "_searchLanguageMenu";
 			this._searchLanguageMenu.Size = new System.Drawing.Size(107, 19);
 			this._searchLanguageMenu.Text = "Language Name";
 			this._searchLanguageMenu.Visible = false;
-			// 
+			//
 			// _downloadInstallerLink
-			// 
-			this._downloadInstallerLink.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			//
+			this._downloadInstallerLink.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
 			this._downloadInstallerLink.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this._downloadInstallerLink.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline);
@@ -134,10 +139,10 @@
 			this._downloadInstallerLink.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			this._downloadInstallerLink.URL = "http://bloomlibrary.org/#/artofreading";
 			this._downloadInstallerLink.Visible = false;
-			// 
+			//
 			// _messageLabel
-			// 
-			this._messageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			//
+			this._messageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
 			this._messageLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this._messageLabel.Enabled = false;
@@ -153,20 +158,20 @@
 			this._messageLabel.TabStop = false;
 			this._messageLabel.Text = "~No matching images";
 			this._messageLabel.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
+			//
 			// _searchTermsBox
-			// 
+			//
 			this._searchTermsBox.Font = new System.Drawing.Font("Tahoma", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._searchTermsBox.Location = new System.Drawing.Point(12, 35);
 			this._searchTermsBox.Name = "_searchTermsBox";
 			this._searchTermsBox.Size = new System.Drawing.Size(157, 28);
 			this._searchTermsBox.TabIndex = 0;
 			this._searchTermsBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this._searchTermsBox_KeyDown);
-			// 
+			//
 			// _thumbnailViewer
-			// 
-			this._thumbnailViewer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+			//
+			this._thumbnailViewer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
 			this._thumbnailViewer.CaptionMethod = null;
 			this._thumbnailViewer.Location = new System.Drawing.Point(12, 95);
@@ -176,14 +181,14 @@
 			this._thumbnailViewer.ThumbBorderColor = System.Drawing.Color.Wheat;
 			this._thumbnailViewer.ThumbNailSize = 95;
 			this._thumbnailViewer.DoubleClick += new System.EventHandler(this._thumbnailViewer_DoubleClick);
-			// 
+			//
 			// _localizationHelper
-			// 
+			//
 			this._localizationHelper.Parent = this;
-			// 
+			//
 			// _collectionToolStrip
-			// 
-			this._collectionToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			//
+			this._collectionToolStrip.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
 			this._collectionToolStrip.AutoSize = false;
 			this._collectionToolStrip.BackColor = System.Drawing.Color.Transparent;
@@ -198,9 +203,9 @@
 			this._collectionToolStrip.Size = new System.Drawing.Size(133, 28);
 			this._collectionToolStrip.TabIndex = 18;
 			this._collectionToolStrip.Text = "_collectionToolStrip";
-			// 
+			//
 			// _collectionDropDown
-			// 
+			//
 			this._collectionDropDown.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
 			this._collectionDropDown.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._collectionDropDown.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -208,9 +213,9 @@
 			this._collectionDropDown.Size = new System.Drawing.Size(64, 19);
 			this._collectionDropDown.Text = "Galleries";
 			this._collectionDropDown.Visible = false;
-			// 
+			//
 			// ArtOfReadingChooser
-			// 
+			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this._labelSearch);

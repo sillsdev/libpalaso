@@ -31,6 +31,7 @@ namespace SIL.Windows.Forms.Progress.Commands
 		/// </summary>
 		/// <param name="parentForm">The parent, or owning form for the ProgressDialog</param>
 		/// <param name="command">The AsyncCommand c</param>
+		[CLSCompliant (false)]
 		public ProgressDialogHandler(Form parentForm, BasicCommand command)
 			: this(parentForm, command, "From Handler for: " + command.GetType())
 		{
@@ -42,6 +43,7 @@ namespace SIL.Windows.Forms.Progress.Commands
 		/// <param name="parentForm">The parent, or owning form for the ProgressDialog</param>
 		/// <param name="command">The AsyncCommand c</param>
 		/// <param name="progressTitleText">The title to use on the ProgressDialog</param>
+		[CLSCompliant (false)]
 		public ProgressDialogHandler(Form parentForm, BasicCommand command, string progressTitleText)
 			: this(parentForm, command, progressTitleText, false)
 		{
@@ -54,6 +56,7 @@ namespace SIL.Windows.Forms.Progress.Commands
 		/// <param name="command">The AsyncCommand c</param>
 		/// <param name="progressTitleText">The title to use on the ProgressDialog</param>
 		/// <param name="showModally">true if you want to use this modally, false otherwise. If you pass true, you must use ShowModal later to show the ProgressDialog</param>
+		[CLSCompliant (false)]
 		public ProgressDialogHandler(Form parentForm, BasicCommand command, string progressTitleText, bool showModally)
 		{
 			_parentForm = parentForm;

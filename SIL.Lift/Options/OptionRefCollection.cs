@@ -38,10 +38,7 @@ namespace SIL.Lift.Options
 			NotifyPropertyChanged();
 		}
 
-		public bool IsEmpty
-		{
-			get { return _members.Count == 0; }
-		}
+		public bool IsEmpty => _members.Count == 0;
 
 		#region ICollection<string> Members
 
@@ -98,10 +95,7 @@ namespace SIL.Lift.Options
 			//return Keys.Contains(key);
 		}
 
-		public int Count
-		{
-			get { return _members.Count; }
-		}
+		public int Count => _members.Count;
 
 		public void Clear()
 		{
@@ -144,7 +138,7 @@ namespace SIL.Lift.Options
 
 		public PalasoDataObject Parent
 		{
-			set { _parent = value; }
+			set => _parent = value;
 		}
 
 		#endregion
@@ -152,17 +146,10 @@ namespace SIL.Lift.Options
 		protected void NotifyPropertyChanged()
 		{
 			//tell any data binding
-			if (PropertyChanged != null)
-			{
-				PropertyChanged(this, new PropertyChangedEventArgs("option"));
-				//todo
-			}
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("option"));
 
 			//tell our parent
-			if (_parent != null)
-			{
-				_parent.NotifyPropertyChanged("option");
-			}
+			_parent?.NotifyPropertyChanged("option");
 		}
 
 		/// <summary>
@@ -208,27 +195,19 @@ namespace SIL.Lift.Options
 
 		#region IReportEmptiness Members
 
-		public bool ShouldHoldUpDeletionOfParentObject
-		{
-			get
-			{
-				//this one is a conundrum.  Semantic domain gathering involves making senses
-				//and adding to their semantic domain collection, without (necessarily) adding
-				//a definition.  We don't want this info lost just because some eager-beaver decides
-				//to clean up.
-				// OTOH, we would like to have this *not* prevent deletion, if it looks like
-				//the user is trying to delete the sense.
-				//It will take more code to have both of these desiderata at the same time. For
-				//now, we'll choose the first one, in interest of not loosing data.  It will just
-				//be impossible to delete such a sense until we have SD editing.
-				return ShouldBeRemovedFromParentDueToEmptiness;
-			}
-		}
+		public bool ShouldHoldUpDeletionOfParentObject =>
+			//this one is a conundrum.  Semantic domain gathering involves making senses
+			//and adding to their semantic domain collection, without (necessarily) adding
+			//a definition.  We don't want this info lost just because some eager-beaver decides
+			//to clean up.
+			// OTOH, we would like to have this *not* prevent deletion, if it looks like
+			//the user is trying to delete the sense.
+			//It will take more code to have both of these desiderata at the same time. For
+			//now, we'll choose the first one, in interest of not loosing data.  It will just
+			//be impossible to delete such a sense until we have SD editing.
+			ShouldBeRemovedFromParentDueToEmptiness;
 
-		public bool ShouldCountAsFilledForPurposesOfConditionalDisplay
-		{
-			get { return !(IsEmpty); }
-		}
+		public bool ShouldCountAsFilledForPurposesOfConditionalDisplay => !(IsEmpty);
 
 		public bool ShouldBeRemovedFromParentDueToEmptiness
 		{
@@ -256,10 +235,7 @@ namespace SIL.Lift.Options
 			}
 		}
 
-		public IBindingList Members
-		{
-			get { return _members; }
-		}
+		public IBindingList Members => _members;
 
 		public string KeyAtIndex(int index)
 		{
@@ -326,7 +302,7 @@ namespace SIL.Lift.Options
 			}
 			if (!(obj is OptionRefCollection))
 			{
-				throw new ArgumentException("Can not compare to anything but OptionRefs.");
+				throw new ArgumentException($"Can not compare to anything but {nameof(OptionRefCollection)}s.");
 			}
 			OptionRefCollection other = (OptionRefCollection) obj;
 			int order = _members.Count.CompareTo(other.Members.Count);
@@ -393,10 +369,14 @@ namespace SIL.Lift.Options
 			return clone;
 		}
 
-		public override bool Equals(Object obj)
+		public override bool Equals(object obj)
 		{
-			if (!(obj is OptionRefCollection)) return false;
-			return Equals((OptionRefCollection)obj);
+			return Equals(obj as OptionRefCollection);
+		}
+
+		public bool Equals(IPalasoDataObjectProperty other)
+		{
+			return Equals(other as OptionRefCollection);
 		}
 
 		public bool Equals(OptionRefCollection other)
@@ -407,9 +387,15 @@ namespace SIL.Lift.Options
 			return true;
 		}
 
-		public bool Equals(IPalasoDataObjectProperty other)
+		public override int GetHashCode()
 		{
-			return Equals((object) other);
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 23;
+				hash *= 29 + _members.GetHashCode();
+				return hash;
+			}
 		}
 	}
 }

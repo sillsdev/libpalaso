@@ -40,16 +40,13 @@ namespace SIL.Lift.Options
 			_humanReadableKey = key;
 		}
 
-		public bool IsEmpty
-		{
-			get { return string.IsNullOrEmpty(Value); }
-		}
+		public bool IsEmpty => string.IsNullOrEmpty(Value);
 
 		#region IParentable Members
 
 		public PalasoDataObject Parent
 		{
-			set { _parent = value; }
+			set => _parent = value;
 		}
 
 		#endregion
@@ -63,13 +60,13 @@ namespace SIL.Lift.Options
 
 		public string Key
 		{
-			get { return Value; }
-			set { Value = value; }
+			get => Value;
+			set => Value = value;
 		}
 
 		public string Value
 		{
-			get { return _humanReadableKey; }
+			get => _humanReadableKey;
 			set
 			{
 				if (value != null)
@@ -88,7 +85,7 @@ namespace SIL.Lift.Options
 		// IReferenceContainer
 		public string TargetId
 		{
-			get { return _humanReadableKey; }
+			get => _humanReadableKey;
 			set
 			{
 				if (value == _humanReadableKey ||
@@ -126,40 +123,22 @@ namespace SIL.Lift.Options
 		private void NotifyPropertyChanged()
 		{
 			if (_suspendNotification)
-			{
 				return;
-			}
+
 			//tell any data binding
-			if (PropertyChanged != null)
-			{
-				PropertyChanged(this, new PropertyChangedEventArgs("option"));
-				//todo
-			}
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("option"));
 
 			//tell our parent
-
-			if (_parent != null)
-			{
-				_parent.NotifyPropertyChanged("option");
-			}
+			_parent?.NotifyPropertyChanged("option");
 		}
 
 		#region IReportEmptiness Members
 
-		public bool ShouldHoldUpDeletionOfParentObject
-		{
-			get { return false; }
-		}
+		public bool ShouldHoldUpDeletionOfParentObject => false;
 
-		public bool ShouldCountAsFilledForPurposesOfConditionalDisplay
-		{
-			get { return !IsEmpty; }
-		}
+		public bool ShouldCountAsFilledForPurposesOfConditionalDisplay => !IsEmpty;
 
-		public bool ShouldBeRemovedFromParentDueToEmptiness
-		{
-			get { return IsEmpty; }
-		}
+		public bool ShouldBeRemovedFromParentDueToEmptiness => IsEmpty;
 
 		public void RemoveEmptyStuff()
 		{
@@ -181,24 +160,19 @@ namespace SIL.Lift.Options
 			}
 			if(!(obj is OptionRef))
 			{
-				throw new ArgumentException("Can not compare to anythiong but OptionRefs.");
+				throw new ArgumentException($"Can not compare to anything but {nameof(OptionRef)}s.");
 			}
 			OptionRef other = (OptionRef) obj;
 			int order = Key.CompareTo(other.Key);
 			return order;
 		}
 
-		public IPalasoDataObjectProperty Clone()
+		public new IPalasoDataObjectProperty Clone()
 		{
 			var clone = new OptionRef(Key);
 			clone.EmbeddedXmlElements = new List<string>(EmbeddedXmlElements);
-			clone.Annotation = Annotation == null ? null : Annotation.Clone();
+			clone.Annotation = Annotation?.Clone();
 			return clone;
-		}
-
-		public bool Equals(IPalasoDataObjectProperty other)
-		{
-			return Equals((OptionRef) other);
 		}
 
 		public override string ToString()
@@ -206,10 +180,14 @@ namespace SIL.Lift.Options
 			return Value;
 		}
 
-		public override bool Equals(Object obj)
+		public override bool Equals(object obj)
 		{
-			if (!(obj is OptionRef)) return false;
-			return Equals((OptionRef) obj);
+			return Equals(obj as OptionRef);
+		}
+
+		public bool Equals(IPalasoDataObjectProperty other)
+		{
+			return Equals(other as OptionRef);
 		}
 
 		public bool Equals(OptionRef other)
@@ -221,6 +199,19 @@ namespace SIL.Lift.Options
 			if ((Annotation != null && !Annotation.Equals(other.Annotation)) || (other.Annotation != null && !other.Annotation.Equals(Annotation))) return false;
 			if (!EmbeddedXmlElements.SequenceEqual(other.EmbeddedXmlElements)) return false;
 			return true;
+		}
+
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 3;
+				hash *= 41 + Key.GetHashCode();
+				hash *= 41 + Annotation.GetHashCode();
+				hash *= 41 + EmbeddedXmlElements.GetHashCode();
+				return hash;
+			}
 		}
 	}
 }

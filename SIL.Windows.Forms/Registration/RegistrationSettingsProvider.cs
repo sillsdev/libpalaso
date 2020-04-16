@@ -1,4 +1,5 @@
-﻿using SIL.Settings;
+﻿using System;
+using SIL.Settings;
 
 namespace SIL.Windows.Forms.Registration
 {
@@ -11,6 +12,7 @@ namespace SIL.Windows.Forms.Registration
 	/// to register separately for each channel, and prevents us from counting the same user
 	/// multiple times in different channels.
 	/// </summary>
+	[CLSCompliant (false)]
 	public class RegistrationSettingsProvider : CrossPlatformSettingsProvider
 	{
 		public RegistrationSettingsProvider()

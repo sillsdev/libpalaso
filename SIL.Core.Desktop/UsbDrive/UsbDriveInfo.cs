@@ -11,7 +11,6 @@ using SIL.UsbDrive.Windows;
 namespace SIL.UsbDrive
 {
 
-	[CLSCompliant (false)]
 	public interface IUsbDriveInfo
 	{
 		bool IsReady { get; }
@@ -28,7 +27,6 @@ namespace SIL.UsbDrive
 	/// 3) full drives
 	/// 4) locked drives(not today, but maybe soon)
 	/// </summary>
-	[CLSCompliant (false)]
 	public class UsbDriveInfoForTests : IUsbDriveInfo
 	{
 		public UsbDriveInfoForTests(string path)
@@ -47,13 +45,11 @@ namespace SIL.UsbDrive
 		public ulong AvailableFreeSpace{get; set;}
 	}
 
-	[CLSCompliant(false)]
 	public interface IRetrieveUsbDriveInfo
 	{
 		List<IUsbDriveInfo> GetDrives();
 	}
 
-	[CLSCompliant(false)]
 	public class RetrieveUsbDriveInfo : IRetrieveUsbDriveInfo
 	{
 		public List<IUsbDriveInfo> GetDrives()
@@ -65,7 +61,6 @@ namespace SIL.UsbDrive
 	/// <summary>
 	/// This class allows tests to set up pretend usb drives
 	/// </summary>
-	[CLSCompliant(false)]
 	public class RetrieveUsbDriveInfoForTests : IRetrieveUsbDriveInfo
 	{
 		private readonly List<IUsbDriveInfo> _driveInfos;
@@ -81,7 +76,6 @@ namespace SIL.UsbDrive
 		}
 	}
 
-	[CLSCompliant (false)]
 	public abstract class UsbDriveInfo : IUsbDriveInfo
 	{
 		public abstract bool IsReady

@@ -58,7 +58,7 @@ namespace SIL.Tests.Data
 
 		public List<PalasoChildTestItem> ChildItemList
 		{
-			get { return _childItemList; }
+			get => _childItemList;
 			set
 			{
 				_childItemList = value;
@@ -70,7 +70,7 @@ namespace SIL.Tests.Data
 
 		public PalasoChildTestItem Child
 		{
-			get { return _childTestItem; }
+			get => _childTestItem;
 			set
 			{
 				_childTestItem = value;
@@ -109,22 +109,12 @@ namespace SIL.Tests.Data
 
 		public override string ToString()
 		{
-			return StoredInt + ". " + StoredString + " " + StoredDateTime;
+			return $"{StoredInt}. {StoredString} {StoredDateTime}";
 		}
 
 		public override bool Equals(object obj)
 		{
-			if (obj == null)
-			{
-				return false;
-			}
-			var item = obj as PalasoTestItem;
-			if (item == null)
-			{
-				return false;
-			}
-
-			return Equals(item);
+			return Equals(obj as PalasoTestItem);
 		}
 
 		public bool Equals(PalasoTestItem item)
@@ -134,52 +124,65 @@ namespace SIL.Tests.Data
 				return false;
 			}
 
-			return (_storedInt == item._storedInt) && (_storedString == item._storedString) &&
-				   (_storedDateTime == item._storedDateTime);
+			return _storedInt == item._storedInt && _storedString == item._storedString &&
+				_storedDateTime == item._storedDateTime;
+		}
+
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 31;
+				hash *= 23 + _storedInt.GetHashCode();
+				hash *= 23 + _storedString.GetHashCode();
+				hash *= 23 + _storedDateTime.GetHashCode();
+				return hash;
+			}
 		}
 
 		public int StoredInt
 		{
-			get { return _storedInt; }
+			get => _storedInt;
 			set
 			{
-				if (_storedInt != value)
-				{
-					_storedInt = value;
-					OnPropertyChanged(new PropertyChangedEventArgs("StoredInt"));
-				}
+				if (_storedInt == value)
+					return;
+
+				_storedInt = value;
+				OnPropertyChanged(new PropertyChangedEventArgs("StoredInt"));
 			}
 		}
 
 		public string StoredString
 		{
-			get { return _storedString; }
+			get => _storedString;
 			set
 			{
-				if (_storedString != value)
-				{
-					_storedString = value;
-					OnPropertyChanged(new PropertyChangedEventArgs("StoredString"));
-				}
+				if (_storedString == value)
+					return;
+
+				_storedString = value;
+				OnPropertyChanged(new PropertyChangedEventArgs("StoredString"));
 			}
 		}
 
 		public DateTime StoredDateTime
 		{
-			get { return _storedDateTime; }
+			get => _storedDateTime;
 			set
 			{
-				if (_storedDateTime != value)
-				{
-					_storedDateTime = value;
-					OnPropertyChanged(new PropertyChangedEventArgs("StoredDateTime"));
-				}
+				if (_storedDateTime == value)
+					return;
+
+				_storedDateTime = value;
+				OnPropertyChanged(new PropertyChangedEventArgs("StoredDateTime"));
 			}
 		}
 
 		public List<string> StoredList
 		{
-			get { return _storedList; }
+			get => _storedList;
 			set
 			{
 				_storedList = value;
@@ -193,10 +196,7 @@ namespace SIL.Tests.Data
 
 		protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
 		{
-			if (PropertyChanged != null)
-			{
-				PropertyChanged(this, e);
-			}
+			PropertyChanged?.Invoke(this, e);
 		}
 
 		#endregion

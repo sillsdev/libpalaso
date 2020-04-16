@@ -23,7 +23,7 @@ namespace SIL.Lift
 
 		public PalasoDataObject Parent
 		{
-			set { _parent = value; }
+			set => _parent = value;
 		}
 
 		#endregion
@@ -31,22 +31,16 @@ namespace SIL.Lift
 		private void NotifyPropertyChanged()
 		{
 			//tell any data binding
-			if (PropertyChanged != null)
-			{
-				PropertyChanged(this, new PropertyChangedEventArgs("picture"));
-			}
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("picture"));
 
 			//tell our parent
 
-			if (_parent != null)
-			{
-				_parent.NotifyPropertyChanged("picture");
-			}
+			_parent?.NotifyPropertyChanged("picture");
 		}
 
 		public string Value
 		{
-			get { return _fileName; }
+			get => _fileName;
 			set
 			{
 				_fileName = value;
@@ -56,26 +50,17 @@ namespace SIL.Lift
 
 		public MultiText Caption
 		{
-			get { return _caption; }
-			set { _caption = value; }
+			get => _caption;
+			set => _caption = value;
 		}
 
 		#region IReportEmptiness Members
 
-		public bool ShouldHoldUpDeletionOfParentObject
-		{
-			get { return false; }
-		}
+		public bool ShouldHoldUpDeletionOfParentObject => false;
 
-		public bool ShouldCountAsFilledForPurposesOfConditionalDisplay
-		{
-			get { return !string.IsNullOrEmpty(_fileName); }
-		}
+		public bool ShouldCountAsFilledForPurposesOfConditionalDisplay => !string.IsNullOrEmpty(_fileName);
 
-		public bool ShouldBeRemovedFromParentDueToEmptiness
-		{
-			get { return string.IsNullOrEmpty(_fileName); }
-		}
+		public bool ShouldBeRemovedFromParentDueToEmptiness => string.IsNullOrEmpty(_fileName);
 
 		public void RemoveEmptyStuff() {}
 
@@ -85,18 +70,18 @@ namespace SIL.Lift
 		{
 			var clone = new PictureRef();
 			clone._fileName = _fileName;
-			clone._caption = _caption == null ? null:(MultiText) _caption.Clone();
+			clone._caption = (MultiText) _caption?.Clone();
 			return clone;
 		}
 
 		public override bool Equals(object other)
 		{
-			return Equals((PictureRef) other);
+			return Equals(other as PictureRef);
 		}
 
 		public bool Equals(IPalasoDataObjectProperty other)
 		{
-			return Equals((PictureRef)other);
+			return Equals(other as PictureRef);
 		}
 
 		public bool Equals(PictureRef other)
@@ -105,6 +90,18 @@ namespace SIL.Lift
 			if ((_fileName != null && !_fileName.Equals(other._fileName)) || (other._fileName != null && !other._fileName.Equals(_fileName))) return false;
 			if ((_caption != null && !_caption.Equals(other._caption)) || (other._caption != null && !other._caption.Equals(_caption))) return false;
 			return true;
+		}
+
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 47;
+				hash *= 61 + _caption.GetHashCode();
+				hash *= 61 + _fileName.GetHashCode();
+				return hash;
+			}
 		}
 	}
 }

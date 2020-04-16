@@ -19,5 +19,17 @@ namespace SIL.Keyboarding
 		{
 			return Id == (obj as UnsupportedKeyboardDefinition)?.Id;
 		}
+
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 71;
+				hash *= 31 + Id.GetHashCode();
+				hash *= 31 + base.GetHashCode();
+				return hash;
+			}
+		}
 	}
 }

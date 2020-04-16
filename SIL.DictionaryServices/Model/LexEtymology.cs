@@ -50,10 +50,9 @@ namespace SIL.DictionaryServices.Model
 			return clone;
 		}
 
-		public override bool Equals(Object obj)
+		public override bool Equals(object obj)
 		{
-			if (!(obj is LexEtymology)) return false;
-			return Equals((LexEtymology)obj);
+			return Equals(obj as LexEtymology);
 		}
 
 		public bool Equals(LexEtymology other)
@@ -68,6 +67,23 @@ namespace SIL.DictionaryServices.Model
 			if (!Type.Equals(other.Type)) return false;
 			if (!Source.Equals(other.Source)) return false;
 			return true;
+		}
+
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 47;
+				hash *= 67 + Gloss.GetHashCode();
+				hash *= 67 + Comment.GetHashCode();
+				hash *= 67 + Traits.GetHashCode();
+				hash *= 67 + Fields.GetHashCode();
+				hash *= 67 + Type.GetHashCode();
+				hash *= 67 + Source.GetHashCode();
+				hash *= 67 + base.GetHashCode();
+				return hash;
+			}
 		}
 	}
 }

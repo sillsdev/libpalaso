@@ -29,10 +29,9 @@ namespace SIL.DictionaryServices.Model
 			return clone;
 		}
 
-		public override bool Equals(Object obj)
+		public override bool Equals(object obj)
 		{
-			if (!(obj is LexReversal)) return false;
-			return Equals((LexReversal) obj);
+			return Equals(obj as LexReversal);
 		}
 
 		public bool Equals(LexReversal other)
@@ -40,6 +39,17 @@ namespace SIL.DictionaryServices.Model
 			if (!base.Equals(other)) return false;
 			if (Type != other.Type) return false;
 			return true;
+		}
+
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 47;
+				hash *= 23 + Type.GetHashCode();
+				return hash;
+			}
 		}
 	}
 }

@@ -19,13 +19,12 @@ namespace SIL.Windows.Forms.SettingProtection
 			{
 				components.Dispose();
 			}
-			base.Dispose(disposing); 
+			base.Dispose(disposing);
 			_checkForCtrlKeyTimer.Dispose();
 			if(!_isDisposed)
 			{
 				_isDisposed = true;
 				_controlIsUnderSettingsProtection.Clear();
-				Disposed(this, new EventArgs());
 			}
 		}
 
