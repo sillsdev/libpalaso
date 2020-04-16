@@ -1,4 +1,4 @@
-﻿//
+//
 // Authors:
 //   Patrik Torstensson (Patrik.Torstensson@labs2.com)
 //   Wictor Wilén (decode/encode functions) (wictor@ibizkit.se)
@@ -605,11 +605,8 @@ namespace SIL.Network
 				result.WriteByte((byte)c);
 				return;
 			}
-			if (c == ' ')
-			{
-				result.WriteByte((byte)'+');
-				return;
-			}
+			// `c < '0'` includes ' '. We are choosing to encode ' ' as %20 rather than + because LanguageDepot users may wish to have spaces in
+			// their passwords, and we need to be able to distinguish between these two characters when the password is included in the URL.
 			if ((c < '0') ||
 				(c < 'A' && c > '9') ||
 				(c > 'Z' && c < 'a') ||

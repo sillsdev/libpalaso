@@ -1,4 +1,4 @@
-﻿//
+//
 // System.Web.HttpUtility
 //
 // Authors:
@@ -353,13 +353,13 @@ Actually when we go to net 4, I (hatton) think we can get rid of this. .net 4 cl
 			return UrlEncode(str, Encoding.UTF8);
 		}
 
-		public static string UrlEncode (string s, Encoding Enc)
+		public static string UrlEncode (string s, Encoding enc)
 		{
 			if (s == null)
 				return null;
 
-			if (s == String.Empty)
-				return String.Empty;
+			if (s == string.Empty)
+				return string.Empty;
 
 			bool needEncode = false;
 			int len = s.Length;
@@ -378,8 +378,8 @@ Actually when we go to net 4, I (hatton) think we can get rid of this. .net 4 cl
 				return s;
 
 			// avoided GetByteCount call
-			byte [] bytes = new byte[Enc.GetMaxByteCount(s.Length)];
-			int realLen = Enc.GetBytes (s, 0, s.Length, bytes, 0);
+			byte [] bytes = new byte[enc.GetMaxByteCount(s.Length)];
+			int realLen = enc.GetBytes (s, 0, s.Length, bytes, 0);
 			return Encoding.ASCII.GetString (UrlEncodeToBytes (bytes, 0, realLen));
 		}
 
