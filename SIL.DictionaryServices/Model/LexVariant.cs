@@ -36,10 +36,9 @@ namespace SIL.DictionaryServices.Model
 			return clone;
 		}
 
-		public override bool Equals(Object obj)
+		public override bool Equals(object obj)
 		{
-			if (!(obj is LexVariant)) return false;
-			return Equals((LexVariant)obj);
+			return Equals(obj as LexVariant);
 		}
 
 		public bool Equals(LexVariant other)
@@ -50,6 +49,19 @@ namespace SIL.DictionaryServices.Model
 			if (!Traits.SequenceEqual(other.Traits)) return false;
 			if (!Fields.SequenceEqual(other.Fields)) return false;
 			return true;
+		}
+
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 17;
+				hash *= 37 + Traits.GetHashCode();
+				hash *= 37 + Fields.GetHashCode();
+				hash *= 37 + base.GetHashCode();
+				return hash;
+			}
 		}
 	}
 }

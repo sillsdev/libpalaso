@@ -43,10 +43,9 @@ namespace SIL.DictionaryServices.Model
 			return clone;
 		}
 
-		public override bool Equals(Object obj)
+		public override bool Equals(object obj)
 		{
-			if (!(obj is LexNote)) return false;
-			return Equals((LexNote)obj);
+			return Equals(obj as LexNote);
 		}
 
 		public bool Equals(LexNote other)
@@ -58,6 +57,20 @@ namespace SIL.DictionaryServices.Model
 			if (!base.Equals(other)) return false;
 			if (!Type.Equals(other.Type)) return false;
 			return true;
+		}
+
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 47;
+				hash *= 29 + Traits.GetHashCode();
+				hash *= 29 + Fields.GetHashCode();
+				hash *= 29 + Type.GetHashCode();
+				hash *= 29 + base.GetHashCode();
+				return hash;
+			}
 		}
 	}
 }
