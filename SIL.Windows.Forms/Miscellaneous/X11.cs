@@ -29,9 +29,9 @@ namespace SIL.Windows.Forms.Miscellaneous
 				{
 					if (_monoWinFormsAssembly == null)
 					{
-#pragma warning disable 0612 // Using Obsolete method LoadWithPartialName.
+#pragma warning disable 0612,0618 // Using Obsolete method LoadWithPartialName.
 						_monoWinFormsAssembly = Assembly.LoadWithPartialName("System.Windows.Forms");
-#pragma warning restore 0612
+#pragma warning restore 0612,0618
 					}
 
 					return _monoWinFormsAssembly;

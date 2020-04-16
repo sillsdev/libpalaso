@@ -35,6 +35,17 @@ namespace SIL.DictionaryServices.Model
 			return Equals((LexReversal) obj);
 		}
 
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 47;
+				hash *= 23 + Type.GetHashCode();
+				return hash;
+			}
+		}
+
 		public bool Equals(LexReversal other)
 		{
 			if (!base.Equals(other)) return false;

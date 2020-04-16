@@ -42,6 +42,18 @@ namespace SIL.DictionaryServices.Model
 			return Equals((LexVariant)obj);
 		}
 
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 17;
+				hash *= 37 + Traits.GetHashCode();
+				hash *= 37 + Fields.GetHashCode();
+				hash *= 37 + base.GetHashCode();
+				return hash;
+			}
+		}
 		public bool Equals(LexVariant other)
 		{
 			if (ReferenceEquals(null, other)) return false;

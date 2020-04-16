@@ -16,17 +16,16 @@ namespace SIL.Lift
 	/// <summary>
 	/// MultiText holds an array of LanguageForms, indexed by writing system ID.
 	/// </summary>
-	//NO: we haven't been able to do a reasonalbly compact xml representation except with custom deserializer
+	//NO: we haven't been able to do a reasonably compact xml representation except with custom deserializer
 	//[ReflectorType("multiText")]
 	[XmlInclude(typeof (LanguageForm))]
 	public class MultiText : MultiTextBase, IPalasoDataObjectProperty, IReportEmptiness, IXmlSerializable
 	{
-		private PalasoDataObject _parent;
 		public List<string> EmbeddedXmlElements = new List<string>();
 
 		public MultiText(PalasoDataObject parent)
 		{
-			_parent = parent;
+			Parent = parent;
 		}
 
 		public MultiText() {}
@@ -55,19 +54,12 @@ namespace SIL.Lift
 		/// 23 Jan 07, note: starting to switch to using these for notifying parent of changes, too.
 		/// </summary>
 		[XmlIgnore]
-		public PalasoDataObject Parent
-		{
-			protected get { return _parent; }
-			set { _parent = value; }
-		}
+		public PalasoDataObject Parent { get; set; }
 
 		/// <summary>
 		/// Subclasses should provide a "Parent" property which set the proper class.
 		/// </summary>
-		public PalasoDataObject ParentAsObject
-		{
-			get { return Parent; }
-		}
+		public PalasoDataObject ParentAsObject => Parent;
 
 		///<summary>
 		/// required by IXmlSerializable
@@ -122,20 +114,12 @@ namespace SIL.Lift
 
 		#region IReportEmptiness Members
 
-		public bool ShouldHoldUpDeletionOfParentObject
-		{
-			get { return Empty; }
-		}
+		public bool ShouldHoldUpDeletionOfParentObject => Empty;
 
-		public bool ShouldCountAsFilledForPurposesOfConditionalDisplay
-		{
-			get { return !Empty; }
-		}
+		public bool ShouldCountAsFilledForPurposesOfConditionalDisplay => !Empty;
 
-		public bool ShouldBeRemovedFromParentDueToEmptiness
-		{
-			get { return Empty; }
-		}
+		public bool ShouldBeRemovedFromParentDueToEmptiness => Empty;
+
 		/*
 		/// <summary>
 		/// skip those forms which are in audio writing systems
@@ -232,7 +216,7 @@ namespace SIL.Lift
 			//Sort the Span markers by position
 			foreach (LiftSpan span in liftString.Spans)
 			{
-				string openMarker = buildOpenMarker(span);
+				string openMarker = BuildOpenMarker(span);
 				spanSorter.Add(new KeyValuePair<int, string>(span.Index, openMarker), null);
 
 				string closeMarker = "</span>";
@@ -247,7 +231,7 @@ namespace SIL.Lift
 			return stringWithSpans;
 		}
 
-		private static string buildOpenMarker(LiftSpan span)
+		private static string BuildOpenMarker(LiftSpan span)
 		{
 			string openMarker = string.Format(
 				"<span");
@@ -349,6 +333,20 @@ namespace SIL.Lift
 			if (obj.GetType() != typeof(MultiText)) return false;
 			return Equals((MultiText)obj);
 		}
+
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 43;
+				hash *= 67 + Count.GetHashCode();
+				hash *= 67 + EmbeddedXmlElements.GetHashCode();
+				hash *= 67 + base.GetHashCode();
+				return hash;
+			}
+		}
+
 
 		public bool Equals(MultiText multiText)
 		{

@@ -25,7 +25,7 @@ namespace SIL.Lift
 
 		public PalasoDataObject Parent
 		{
-			set { _parent = value; }
+			set => _parent = value;
 		}
 
 		#endregion
@@ -33,22 +33,16 @@ namespace SIL.Lift
 		private void NotifyPropertyChanged()
 		{
 			//tell any data binding
-			if (PropertyChanged != null)
-			{
-				PropertyChanged(this, new PropertyChangedEventArgs("checkBox")); //todo
-			}
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("checkBox")); //todo
 
 			//tell our parent
 
-			if (_parent != null)
-			{
-				_parent.NotifyPropertyChanged("checkBox");
-			}
+			_parent?.NotifyPropertyChanged("checkBox");
 		}
 
 		public bool Value
 		{
-			get { return _isChecked; }
+			get => _isChecked;
 			set
 			{
 				_isChecked = value;
@@ -59,20 +53,11 @@ namespace SIL.Lift
 
 		#region IReportEmptiness Members
 
-		public bool ShouldHoldUpDeletionOfParentObject
-		{
-			get { return false; }
-		}
+		public bool ShouldHoldUpDeletionOfParentObject => false;
 
-		public bool ShouldCountAsFilledForPurposesOfConditionalDisplay
-		{
-			get { return _isChecked; } //review: is that right? or always true?
-		}
+		public bool ShouldCountAsFilledForPurposesOfConditionalDisplay => _isChecked; //review: is that right? or always true?
 
-		public bool ShouldBeRemovedFromParentDueToEmptiness
-		{
-			get { return !_isChecked; }
-		}
+		public bool ShouldBeRemovedFromParentDueToEmptiness => !_isChecked;
 
 		public void RemoveEmptyStuff() {}
 
@@ -80,8 +65,7 @@ namespace SIL.Lift
 
 		public virtual IPalasoDataObjectProperty Clone()
 		{
-			var clone = new FlagState();
-			clone._isChecked = _isChecked;
+			var clone = new FlagState { _isChecked = _isChecked };
 			return clone;
 		}
 
@@ -90,6 +74,16 @@ namespace SIL.Lift
 			return Equals((FlagState) other);
 		}
 
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 71;
+				hash *= 41 + _isChecked.GetHashCode();
+				return hash;
+			}
+		}
 		public bool Equals(IPalasoDataObjectProperty other)
 		{
 			return Equals((FlagState)other);
@@ -97,9 +91,7 @@ namespace SIL.Lift
 
 		public bool Equals(FlagState other)
 		{
-			if (other == null) return false;
-			if (!_isChecked.Equals(other._isChecked)) return false;
-			return true;
+			return other != null && _isChecked.Equals(other._isChecked);
 		}
 	}
 }

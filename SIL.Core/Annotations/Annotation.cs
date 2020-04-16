@@ -53,6 +53,18 @@ namespace SIL.Annotations
 			if ((Annotation != null && !Annotation.Equals(other.Annotation)) || (other.Annotation != null && !other.Annotation.Equals(Annotation))) return false;
 			return true;
 		}
+
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 37;
+				hash *= 7 + IsStarred.GetHashCode();
+				hash *= 7 + Annotation.GetHashCode();
+				return hash;
+			}
+		}
 	}
 
 	/// <summary>
@@ -82,20 +94,19 @@ namespace SIL.Annotations
 
 		public bool IsOn
 		{
-			get
-			{
-				return _status != 0;
-			}
-			set
-			{
-				_status = value?1:0;
-			}
+			get => _status != 0;
+			set => _status = value?1:0;
 		}
 
 		public override bool Equals(Object obj)
 		{
 			if (!(obj is Annotation)) return false;
 			return Equals((Annotation)obj);
+		}
+
+		public override int GetHashCode()
+		{
+			return _status.GetHashCode();
 		}
 
 		public bool Equals(Annotation other)

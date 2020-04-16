@@ -35,6 +35,18 @@ namespace SIL.DictionaryServices.Model
 			return Equals((LexTrait)obj);
 		}
 
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 47;
+				hash *= 67 + Name.GetHashCode();
+				hash *= 67 + Value.GetHashCode();
+				return hash;
+			}
+		}
+
 		public bool Equals(LexTrait other)
 		{
 			if (ReferenceEquals(null, other)) return false;
@@ -75,6 +87,19 @@ namespace SIL.DictionaryServices.Model
 		{
 			if (!(obj is LexField)) return false;
 			return Equals((LexField)obj);
+		}
+
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 47;
+				hash *= 61 + Type.GetHashCode();
+				hash *= 61 + Traits.GetHashCode();
+				hash *= 61 + base.GetHashCode();
+				return hash;
+			}
 		}
 
 		public bool Equals(LexField other)

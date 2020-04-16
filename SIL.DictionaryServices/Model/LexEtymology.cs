@@ -56,6 +56,23 @@ namespace SIL.DictionaryServices.Model
 			return Equals((LexEtymology)obj);
 		}
 
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 47;
+				hash *= 67 + Gloss.GetHashCode();
+				hash *= 67 + Comment.GetHashCode();
+				hash *= 67 + Traits.GetHashCode();
+				hash *= 67 + Fields.GetHashCode();
+				hash *= 67 + Type.GetHashCode();
+				hash *= 67 + Source.GetHashCode();
+				hash *= 67 + base.GetHashCode();
+				return hash;
+			}
+		}
+
 		public bool Equals(LexEtymology other)
 		{
 			if (ReferenceEquals(null, other)) return false;
