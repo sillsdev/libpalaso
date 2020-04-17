@@ -65,8 +65,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DialogAdapters, Version=0.1.6.21495, Culture=neutral, PublicKeyToken=7dc842182b0626dc">
-      <HintPath>..\packages\DialogAdapters.0.1.6.21495\lib\net45\DialogAdapters.dll</HintPath>
+    <Reference Include="DialogAdapters, Version=0.1.9.0, Culture=neutral, PublicKeyToken=7dc842182b0626dc">
+      <HintPath>..\packages\DialogAdapters.Gtk2.0.1.9\lib\net461\DialogAdapters.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Enchant.Net">

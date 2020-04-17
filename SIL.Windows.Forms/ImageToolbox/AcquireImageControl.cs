@@ -141,7 +141,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 					// Call OpenFile asynchronously.
 					// Explorer instance from which file is dropped is not responding
 					// all the time when DragDrop handler is active, so we need to return
-					// immidiately (especially if OpenFile shows MessageBox).
+					// immediately (especially if OpenFile shows MessageBox).
 
 					BeginInvoke(new Action<string>(OpenFileFromDrag), s);
 
@@ -230,7 +230,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			}
 			catch (WIA_Version2_MissingException)
 			{
-				_messageLabel.Text = "Windows XP does not come with a crucial DLL that lets you use a WIA scanner with this program. Get a technical person to downloand and follow the directions at http://vbnet.mvps.org/files/updates/wiaautsdk.zip";
+				_messageLabel.Text = "Windows XP does not come with a crucial DLL that lets you use a WIA scanner with this program. Get a technical person to download and follow the directions at http://vbnet.mvps.org/files/updates/wiaautsdk.zip";
 				_messageLabel.Visible = true;
 			}
 			catch (Exception error)
