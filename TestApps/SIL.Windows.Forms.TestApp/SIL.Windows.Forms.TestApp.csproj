@@ -16,6 +16,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Geckofx45" Version="45.0.34" />
+    <PackageReference Include="Geckofx45.32.Linux" Version="45.0.37" />
+    <PackageReference Include="Geckofx45.64" Version="45.0.34" />
+    <PackageReference Include="Geckofx45.64.Linux" Version="45.0.37" />
     <PackageReference Include="GitVersionTask" Version="5.0.1">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
