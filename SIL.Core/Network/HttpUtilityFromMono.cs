@@ -41,6 +41,7 @@ namespace SIL.Network
 
 // Actually when we go to net 4, I (hatton) think we can get rid of this. .net 4 client profile contains the "WebUtility" class
 
+	[Obsolete("Use System.Web.HttpUtility instead")]
 	public sealed class HttpUtilityFromMono
 	{
 		sealed class HttpQSCollection : NameValueCollection
