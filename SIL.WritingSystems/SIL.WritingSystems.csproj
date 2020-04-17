@@ -37,6 +37,10 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="System.Web" Condition="'$(TargetFramework)' == 'net461'" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
   </ItemGroup>
 
