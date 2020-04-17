@@ -59,6 +59,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Merge `Interop.WIA.dll`, `DialogAdapters.dll`, and `MarkdownDeep.dll` into the assembly
 - [SIL.Media] Fix missing `irrKlang.NET4.dll` exception by copying it to lib folder in output
 
+### Deprecated
+
+- [SIL.Core] Deprecate `HttpUtilityFromMono` class. Use `System.Web.HttpUtility` instead.
+
 ## [7.0.0] - 2019-08-29
 
 ### Changed
