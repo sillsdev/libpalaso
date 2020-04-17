@@ -39,14 +39,8 @@ using System.Text;
 namespace SIL.Network
 {
 
-#if NET_4_0
-Actually when we go to net 4, I (hatton) think we can get rid of this. .net 4 client profile contains the "WebUtility" class
-#endif
+// Actually when we go to net 4, I (hatton) think we can get rid of this. .net 4 client profile contains the "WebUtility" class
 
-#if !MOBILE
-	// CAS - no InheritanceDemand here as the class is sealed
-	//[AspNetHostingPermission (SecurityAction.LinkDemand, Level = AspNetHostingPermissionLevel.Minimal)]
-#endif
 	public sealed class HttpUtilityFromMono
 	{
 		sealed class HttpQSCollection : NameValueCollection
@@ -80,32 +74,15 @@ Actually when we go to net 4, I (hatton) think we can get rid of this. .net 4 cl
 		public static void HtmlAttributeEncode (string s, TextWriter output)
 		{
 			if (output == null) {
-#if NET_4_0
-				throw new ArgumentNullException ("output");
-#else
 				throw new NullReferenceException (".NET emulation");
-#endif
 			}
-#if NET_4_0
-			HttpEncoderFromMono.Current.HtmlAttributeEncode (s, output);
-#else
+
 			output.Write (HttpEncoderFromMono.HtmlAttributeEncode (s));
-#endif
 		}
 
 		public static string HtmlAttributeEncode (string s)
 		{
-#if NET_4_0
-			if (s == null)
-				return null;
-
-			using (var sw = new StringWriter ()) {
-				HttpEncoderFromMono.Current.HtmlAttributeEncode (s, sw);
-				return sw.ToString ();
-			}
-#else
 			return HttpEncoderFromMono.HtmlAttributeEncode (s);
-#endif
 		}
 
 		public static string UrlDecode (string str)
@@ -437,11 +414,7 @@ Actually when we go to net 4, I (hatton) think we can get rid of this. .net 4 cl
 		{
 			if (bytes == null)
 				return null;
-#if NET_4_0
-			return HttpEncoderFromMono.Current.UrlEncode (bytes, offset, count);
-#else
 			return HttpEncoderFromMono.UrlEncodeToBytes (bytes, offset, count);
-#endif
 		}
 
 		public static string UrlEncodeUnicode (string str)
@@ -474,17 +447,7 @@ Actually when we go to net 4, I (hatton) think we can get rid of this. .net 4 cl
 		/// <returns>The decoded text.</returns>
 		public static string HtmlDecode (string s)
 		{
-#if NET_4_0
-			if (s == null)
-				return null;
-
-			using (var sw = new StringWriter ()) {
-				HttpEncoderFromMono.Current.HtmlDecode (s, sw);
-				return sw.ToString ();
-			}
-#else
 			return HttpEncoderFromMono.HtmlDecode (s);
-#endif
 		}
 
 		/// <summary>
@@ -495,35 +458,17 @@ Actually when we go to net 4, I (hatton) think we can get rid of this. .net 4 cl
 		public static void HtmlDecode(string s, TextWriter output)
 		{
 			if (output == null) {
-#if NET_4_0
-				throw new ArgumentNullException ("output");
-#else
 				throw new NullReferenceException (".NET emulation");
-#endif
 			}
 
 			if (!String.IsNullOrEmpty (s)) {
-#if NET_4_0
-				HttpEncoderFromMono.Current.HtmlDecode (s, output);
-#else
 				output.Write (HttpEncoderFromMono.HtmlDecode (s));
-#endif
 			}
 		}
 
 		public static string HtmlEncode (string s)
 		{
-#if NET_4_0
-			if (s == null)
-				return null;
-
-			using (var sw = new StringWriter ()) {
-				HttpEncoderFromMono.Current.HtmlEncode (s, sw);
-				return sw.ToString ();
-			}
-#else
 			return HttpEncoderFromMono.HtmlEncode (s);
-#endif
 		}
 
 		/// <summary>
@@ -534,115 +479,17 @@ Actually when we go to net 4, I (hatton) think we can get rid of this. .net 4 cl
 		public static void HtmlEncode(string s, TextWriter output)
 		{
 			if (output == null) {
-#if NET_4_0
-				throw new ArgumentNullException ("output");
-#else
 				throw new NullReferenceException (".NET emulation");
-#endif
 			}
 
 			if (!String.IsNullOrEmpty (s)) {
-#if NET_4_0
-				HttpEncoderFromMono.Current.HtmlEncode (s, output);
-#else
 				output.Write (HttpEncoderFromMono.HtmlEncode (s));
-#endif
 			}
 		}
-#if NET_4_0
-		public static string HtmlEncode (object value)
-		{
-			if (value == null)
-				return null;
 
-			IHtmlString htmlString = value as IHtmlString;
-			if (htmlString != null)
-				return htmlString.ToHtmlString ();
-
-			return HtmlEncode (value.ToString ());
-		}
-
-		public static string JavaScriptStringEncode (string value)
-		{
-			return JavaScriptStringEncode (value, false);
-		}
-
-		public static string JavaScriptStringEncode (string value, bool addDoubleQuotes)
-		{
-			if (String.IsNullOrEmpty (value))
-				return addDoubleQuotes ? "\"\"" : String.Empty;
-
-			int len = value.Length;
-			bool needEncode = false;
-			char c;
-			for (int i = 0; i < len; i++) {
-				c = value [i];
-
-				if (c >= 0 && c <= 31 || c == 34 || c == 39 || c == 60 || c == 62 || c == 92) {
-					needEncode = true;
-					break;
-				}
-			}
-
-			if (!needEncode)
-				return addDoubleQuotes ? "\"" + value + "\"" : value;
-
-			var sb = new StringBuilder ();
-			if (addDoubleQuotes)
-				sb.Append ('"');
-
-			for (int i = 0; i < len; i++) {
-				c = value [i];
-				if (c >= 0 && c <= 7 || c == 11 || c >= 14 && c <= 31 || c == 39 || c == 60 || c == 62)
-					sb.AppendFormat ("\\u{0:x4}", (int)c);
-				else switch ((int)c) {
-						case 8:
-							sb.Append ("\\b");
-							break;
-
-						case 9:
-							sb.Append ("\\t");
-							break;
-
-						case 10:
-							sb.Append ("\\n");
-							break;
-
-						case 12:
-							sb.Append ("\\f");
-							break;
-
-						case 13:
-							sb.Append ("\\r");
-							break;
-
-						case 34:
-							sb.Append ("\\\"");
-							break;
-
-						case 92:
-							sb.Append ("\\\\");
-							break;
-
-						default:
-							sb.Append (c);
-							break;
-					}
-			}
-
-			if (addDoubleQuotes)
-				sb.Append ('"');
-
-			return sb.ToString ();
-		}
-#endif
 		public static string UrlPathEncode (string s)
 		{
-#if NET_4_0
-			return HttpEncoderFromMono.Current.UrlPathEncode (s);
-#else
 			return HttpEncoderFromMono.UrlPathEncode (s);
-#endif
 		}
 
 		public static NameValueCollection ParseQueryString (string query)
