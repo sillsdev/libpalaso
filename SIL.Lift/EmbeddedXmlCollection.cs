@@ -58,7 +58,7 @@ namespace SIL.Lift
 			unchecked // Overflow is fine, just wrap
 			{
 				var hash = 47;
-				hash *= 61 + _values.GetHashCode();
+				hash *= 61 + _values?.GetHashCode() ?? 0;
 				return hash;
 			}
 		}

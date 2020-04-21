@@ -207,9 +207,9 @@ namespace SIL.Lift.Options
 			unchecked // Overflow is fine, just wrap
 			{
 				var hash = 3;
-				hash *= 41 + Key.GetHashCode();
-				hash *= 41 + Annotation.GetHashCode();
-				hash *= 41 + EmbeddedXmlElements.GetHashCode();
+				hash *= 41 + Key?.GetHashCode() ?? 0;
+				hash *= 41 + Annotation?.GetHashCode() ?? 0;
+				hash *= 41 + EmbeddedXmlElements?.GetHashCode() ?? 0;
 				return hash;
 			}
 		}

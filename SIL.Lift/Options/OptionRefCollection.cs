@@ -393,7 +393,7 @@ namespace SIL.Lift.Options
 			unchecked // Overflow is fine, just wrap
 			{
 				var hash = 23;
-				hash *= 29 + _members.GetHashCode();
+				hash *= 29 + _members?.GetHashCode() ?? 0;
 				return hash;
 			}
 		}

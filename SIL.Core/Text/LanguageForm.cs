@@ -91,10 +91,10 @@ namespace SIL.Text
 			{
 				var hash = 61;
 				hash *= 71 + IsStarred.GetHashCode();
-				hash *= 71 + WritingSystemId.GetHashCode();
-				hash *= 71 + Form.GetHashCode();
-				hash *= 71 + Annotation.GetHashCode();
-				hash *= 71 + Spans.GetHashCode();
+				hash *= 71 + WritingSystemId?.GetHashCode() ?? 0;
+				hash *= 71 + Form?.GetHashCode() ?? 0;
+				hash *= 71 + Annotation?.GetHashCode() ?? 0;
+				hash *= 71 + Spans?.GetHashCode() ?? 0;
 				hash *= 71 + base.GetHashCode();
 				return hash;
 			}

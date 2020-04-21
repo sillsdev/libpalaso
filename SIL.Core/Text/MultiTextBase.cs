@@ -508,7 +508,7 @@ namespace SIL.Text
 			{
 				var hash = 23;
 				hash *= 29 + Count.GetHashCode();
-				hash *= 29 + Forms.GetHashCode();
+				hash *= 29 + Forms?.GetHashCode() ?? 0;
 				return hash;
 			}
 		}

@@ -15,16 +15,14 @@ namespace SIL.DictionaryServices.Tests.Model
 			return new LexSense();
 		}
 
-		public override string ExceptionList
-		{
+		public override string ExceptionList =>
 			//_id: Ids should be unique, even between clones
 			//_listEventHelpers: no good way to clone events.
 			//_parent: We are doing top down clones. Children shouldn't make clones of their parents, but parents of their children.
 			//PropertyChanged: No good way to clone eventhandlers
 			//EmptyObjectsRemoved: No good way to clone eventhandlers. The parent should be taking care of this rather than the clone() method.
 			//PropertyChanged: No good way to clone eventhandlers
-			get { return "|_id|_listEventHelpers|_parent|PropertyChanged|EmptyObjectsRemoved|"; }
-		}
+			"|Id|_listEventHelpers|_parent|PropertyChanged|EmptyObjectsRemoved|";
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
 		{

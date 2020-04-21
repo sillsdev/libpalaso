@@ -63,7 +63,7 @@ namespace SIL.Annotations
 			{
 				var hash = 37;
 				hash *= 7 + IsStarred.GetHashCode();
-				hash *= 7 + Annotation.GetHashCode();
+				hash *= 7 + Annotation?.GetHashCode() ?? 0;
 				return hash;
 			}
 		}

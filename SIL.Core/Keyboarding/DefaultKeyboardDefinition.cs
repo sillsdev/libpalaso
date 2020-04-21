@@ -116,14 +116,14 @@ namespace SIL.Keyboarding
 			unchecked // Overflow is fine, just wrap
 			{
 				var hash = 31;
-				hash *= 71 + Id.GetHashCode();
-				hash *= 71 + Name.GetHashCode();
-				hash *= 71 + LocalizedName.GetHashCode();
-				hash *= 71 + Locale.GetHashCode();
-				hash *= 71 + Layout.GetHashCode();
+				hash *= 71 + Id?.GetHashCode() ?? 0;
+				hash *= 71 + Name?.GetHashCode() ?? 0;
+				hash *= 71 + LocalizedName?.GetHashCode() ?? 0;
+				hash *= 71 + Locale?.GetHashCode() ?? 0;
+				hash *= 71 + Layout?.GetHashCode() ?? 0;
 				hash *= 71 + UseNfcContext.GetHashCode();
 				hash *= 71 + IsAvailable.GetHashCode();
-				hash *= 71 + Urls.GetHashCode();
+				hash *= 71 + Urls?.GetHashCode() ?? 0;
 				return hash;
 			}
 		}

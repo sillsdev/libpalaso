@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -7,34 +6,6 @@ using SIL.UiBindings;
 
 namespace SIL.DictionaryServices.Model
 {
-	public class LexRelationType
-	{
-		public enum Multiplicities
-		{
-			One,
-			Many
-		}
-
-		public enum TargetTypes
-		{
-			Entry,
-			Sense
-		}
-
-		public LexRelationType(string id, Multiplicities multiplicity, TargetTypes targetType)
-		{
-			ID = id;
-			TargetType = targetType;
-			Multiplicity = multiplicity;
-		}
-
-		public string ID { get; }
-
-		public Multiplicities Multiplicity { get; }
-
-		public TargetTypes TargetType { get; }
-	}
-
 	public class LexRelation: IPalasoDataObjectProperty,
 							  IValueHolder<string>,
 							  IReferenceContainer,
@@ -201,137 +172,12 @@ namespace SIL.DictionaryServices.Model
 
 		public override int GetHashCode()
 		{
-			// https://stackoverflow.com/a/263416/487503
-			unchecked // Overflow is fine, just wrap
-			{
-				var hash = 19;
-				hash *= 23 + EmbeddedXmlElements.GetHashCode();
-				hash *= 23 + FieldId.GetHashCode();
-				hash *= 23 + _targetId.GetHashCode();
-				hash *= 23 + Traits.GetHashCode();
-				hash *= 23 + Fields.GetHashCode();
-				return hash;
-			}
-		}
-	}
-
-	public class LexRelationCollection: IPalasoDataObjectProperty, IReportEmptiness
-	{
-		#region IParentable Members
-
-		public PalasoDataObject Parent { set; get; }
-
-		#endregion
-
-		public List<LexRelation> Relations { get; private set; } = new List<LexRelation>();
-
-		//
-		//        public bool IsEmpty
-		//        {
-		//            get
-		//            {
-		//                foreach (LexRelation relation in _relations)
-		//                {
-		//                    if (!relation.ShouldCountAsFilledForPurposesOfConditionalDisplay)
-		//                    {
-		//                        return false;
-		//                    }
-		//                }
-		//                return true;
-		//            }
-		//        }
-
-		#region IReportEmptiness Members
-
-		public bool ShouldHoldUpDeletionOfParentObject => false; //don't hold up deleting just because of these
-
-		public bool ShouldCountAsFilledForPurposesOfConditionalDisplay
-		{
-			get
-			{
-				foreach (LexRelation relation in Relations)
-				{
-					if (relation.ShouldCountAsFilledForPurposesOfConditionalDisplay)
-					{
-						return true;
-					}
-				}
-				return false;
-			}
-		}
-
-		public bool ShouldBeRemovedFromParentDueToEmptiness
-		{
-			get
-			{
-				//if we can find one child that thinks he is non-empty, then we too should stick around
-				foreach (LexRelation relation in Relations)
-				{
-					if (!relation.ShouldBeRemovedFromParentDueToEmptiness)
-					{
-						return false;
-					}
-				}
-				return true;
-			}
-		}
-
-		public void RemoveEmptyStuff()
-		{
-			//we do this in two passes because you can't remove items from a collection you are iterating over
-			List<LexRelation> condemed = new List<LexRelation>();
-			foreach (LexRelation relation in Relations)
-			{
-				if (relation.ShouldBeRemovedFromParentDueToEmptiness)
-				{
-					condemed.Add(relation);
-				}
-			}
-
-			foreach (LexRelation relation in condemed)
-			{
-				Relations.Remove(relation);
-			}
-		}
-
-		#endregion
-
-		public IPalasoDataObjectProperty Clone()
-		{
-			var clone = new LexRelationCollection();
-			clone.Relations = new List<LexRelation>(Relations);
-			return clone;
-		}
-
-		public virtual bool Equals(IPalasoDataObjectProperty other)
-		{
-			return Equals((object)other);
-		}
-
-		public override bool Equals(Object obj)
-		{
-			if (obj == null) return false;
-			if (obj.GetType() != typeof(LexRelationCollection)) return false;
-			return Equals((LexRelationCollection)obj);
-		}
-
-		public override int GetHashCode()
-		{
-			// https://stackoverflow.com/a/263416/487503
-			unchecked // Overflow is fine, just wrap
-			{
-				var hash = 19;
-				hash *= 59 + Relations.GetHashCode();
-				return hash;
-			}
-		}
-
-		public bool Equals(LexRelationCollection other)
-		{
-			if (ReferenceEquals(null, other)) return false;
-			if (ReferenceEquals(this, other)) return true;
-			if (!Relations.SequenceEqual(other.Relations)) return false;
-			return true;
+			// For this class we want a hash code based on the the object's reference so that we
+			// can store and retrieve the object in the LiftLexEntryRepository. However, this is
+			// not ideal and Microsoft warns: "Do not use the hash code as the key to retrieve an
+			// object from a keyed collection."
+			// https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8#remarks
+			return base.GetHashCode();
 		}
 	}
 }

@@ -98,8 +98,8 @@ namespace SIL.Lift
 			unchecked // Overflow is fine, just wrap
 			{
 				var hash = 47;
-				hash *= 61 + _caption.GetHashCode();
-				hash *= 61 + _fileName.GetHashCode();
+				hash *= 61 + _caption?.GetHashCode() ?? 0;
+				hash *= 61 + _fileName?.GetHashCode() ?? 0;
 				return hash;
 			}
 		}

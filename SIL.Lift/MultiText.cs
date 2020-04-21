@@ -349,7 +349,7 @@ namespace SIL.Lift
 			{
 				var hash = 43;
 				hash *= 67 + Count.GetHashCode();
-				hash *= 67 + EmbeddedXmlElements.GetHashCode();
+				hash *= 67 + EmbeddedXmlElements?.GetHashCode() ?? 0;
 				hash *= 67 + base.GetHashCode();
 				return hash;
 			}

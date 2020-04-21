@@ -135,7 +135,7 @@ namespace SIL.Tests.Data
 			{
 				var hash = 31;
 				hash *= 23 + _storedInt.GetHashCode();
-				hash *= 23 + _storedString.GetHashCode();
+				hash *= 23 + _storedString?.GetHashCode() ?? 0;
 				hash *= 23 + _storedDateTime.GetHashCode();
 				return hash;
 			}

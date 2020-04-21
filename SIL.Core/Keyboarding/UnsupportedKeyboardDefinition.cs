@@ -26,7 +26,7 @@ namespace SIL.Keyboarding
 			unchecked // Overflow is fine, just wrap
 			{
 				var hash = 71;
-				hash *= 31 + Id.GetHashCode();
+				hash *= 31 + Id?.GetHashCode() ?? 0;
 				hash *= 31 + base.GetHashCode();
 				return hash;
 			}

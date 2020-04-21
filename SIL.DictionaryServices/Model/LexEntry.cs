@@ -160,21 +160,12 @@ namespace SIL.DictionaryServices.Model
 
 		public override int GetHashCode()
 		{
-			// https://stackoverflow.com/a/263416/487503
-			unchecked // Overflow is fine, just wrap
-			{
-				var hash = 47;
-				hash *= 67 + _lexicalForm.GetHashCode();
-				hash *= 67 + _orderInFile.GetHashCode();
-				hash *= 67 + _orderInFile.GetHashCode();
-				hash *= 67 + _senses.GetHashCode();
-				hash *= 67 + _variants.GetHashCode();
-				hash *= 67 + _notes.GetHashCode();
-				hash *= 67 + _pronunciations.GetHashCode();
-				hash *= 67 + _etymologies.GetHashCode();
-				hash *= 67 + base.GetHashCode();
-				return hash;
-			}
+			// For this class we want a hash code based on the the object's reference so that we
+			// can store and retrieve the object in the LiftLexEntryRepository. However, this is
+			// not ideal and Microsoft warns: "Do not use the hash code as the key to retrieve an
+			// object from a keyed collection."
+			// https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8#remarks
+			return base.GetHashCode();
 		}
 
 		public override string ToString()

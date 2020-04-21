@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using NUnit.Framework;
 using SIL.DictionaryServices.Model;
 using SIL.Lift;
@@ -8,11 +8,11 @@ using SIL.Text;
 namespace SIL.DictionaryServices.Tests.Model
 {
 	[TestFixture]
-	public class LexReversalCloneableTests : CloneableTests<IPalasoDataObjectProperty>
+	public class LexFieldCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
 		public override IPalasoDataObjectProperty CreateNewCloneable()
 		{
-			return new LexReversal();
+			return new LexField("type");
 		}
 
 		public override string ExceptionList =>
@@ -25,11 +25,15 @@ namespace SIL.DictionaryServices.Tests.Model
 			get
 			{
 				return new List<ValuesToSet>
-							 {
-								new ValuesToSet("to be", "!(to be)"),
-								new ValuesToSet(new List<string>{"to", "be"}, new List<string>{"!","to","be"}),
-								new ValuesToSet(new []{new LanguageForm("en", "en_form", null)}, new []{new LanguageForm("de", "de_form", null)})
-							 };
+				{
+					new ValuesToSet("to be", "!(to be)"),
+					new ValuesToSet(new[] {new LanguageForm("en", "en_form", null)},
+						new[] {new LanguageForm("de", "de_form", null)}),
+					new ValuesToSet(
+						new List<LexTrait> {new LexTrait("one", "eins"), new LexTrait("two", "zwei")},
+						new List<LexTrait> {new LexTrait("three", "drei"), new LexTrait("four", "vier")}),
+					new ValuesToSet(new List<string> {"to", "be"}, new List<string> {"!", "to", "be"})
+				};
 			}
 		}
 	}
