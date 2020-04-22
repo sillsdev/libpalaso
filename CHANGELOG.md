@@ -17,19 +17,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
-- [SIL.DblBundle] DblMetadata.Load overload to allow deserialization from a TextReader.
-- [SIL.Scripture] Versification.Table.Load overload to allow deserialization from a TextReader.
-- [SIL.DblBundle] TextBundle<TM, TL>.GetVersification (to replace deprecated CopyVersificationFile)
-- [SIL.DblBundle] TextBundle<TM, TL>.GetFonts (to replace deprecated CopyFontFiles)
-- [SIL.DblBundle] TextBundle<TM, TL>.GetLdml (to replace deprecated CopyLdmlFile)
-- [SIL.Scripture] ScrVers.Save overload to allow serialization to a TextWriter.
-- [SIL.Core] XmlSerializationHelper.Serialize<T> to allow serialization to a TextWriter.
-- [SIL.Core] XmlSerializationHelper.Deserialize<T> to allow deserialization from a TextReader.
+- [SIL.DblBundle] `DblMetadata.Load` overload to allow deserialization from a `TextReader`.
+- [SIL.Scripture] `Versification.Table.Load` overload to allow deserialization from a `TextReader`.
+- [SIL.DblBundle] `TextBundle<TM, TL>.GetVersification` (to replace deprecated `CopyVersificationFile`)
+- [SIL.DblBundle] `TextBundle<TM, TL>.GetFonts` (to replace deprecated `CopyFontFiles`)
+- [SIL.DblBundle] `TextBundle<TM, TL>.GetLdml` (to replace deprecated `CopyLdmlFile`)
+- [SIL.Scripture] `ScrVers.Save` overload to allow serialization to a `TextWriter`.
+- [SIL.Core] `XmlSerializationHelper.Serialize<T>` to allow serialization to a `TextWriter`.
+- [SIL.Core] `XmlSerializationHelper.Deserialize<T>` to allow deserialization from a `TextReader`.
 
 ### Changed
 
-- Add build number to AssemblyFileVersion
-- [SIL.Core] and [SIL.Core.Desktop] Move several classes back to SIL.Core from SIL.Core.Desktop to make
+- Add build number to `AssemblyFileVersion`
+- Improve nuget symbol packages
+- Use NUnit 3 for unit tests
+- [SIL.Core, SIL.Core.Desktop] Move several classes back to `SIL.Core` from `SIL.Core.Desktop` to make
   them available to .NET Standard clients.
   - IO/PathUtilities
   - IO/TempFileForSafeWriting
@@ -43,25 +45,29 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - Reporting/Logger
   - Reporting/ReportingSettings
   - Reporting/UsageReporter
-- [SIL.Windows.Forms] Remove unnecessary dependency on NAudio
-- [SIL.Core] Deprecate `ExceptionHandler.Init()` method in favor of more explicit version
-  `ExceptionHandler.Init(ExceptionHandler)`, e.g. `ExceptionHandler.Init(new WinFormsExceptionHandler())`
+- [SIL.Windows.Forms] Remove unnecessary dependency on `NAudio`
 - [SIL.Core] Move `HandleUnhandledException()` method from derived classes to base class
 - [SIL.DblBundle.Tests] Create nuget package
-- Improve nuget symbol packages
-- Changed to use the new Registered trademark logo (in About Box). Removed 132x148 logo.
-- [SIL.DblBundle] Deprecated CopyVersificationFile, CopyFontFiles and CopyLdmlFile in favor of Get...
+- [SIL.Windows.Forms] Use the new Registered trademark logo (in About Box). Remove 132x148 logo.
 
 ### Fixed
 
-- [SIL.Windows.Forms.Keyboarding] Merge missing `Keyman*Interop.dll` into the assembly (#865)
-- [SIL.Windows.Forms] Use signed version of `ibusdotnet.dll` (#865)
-- [SIL.Windows.Forms] Merge `Interop.WIA.dll`, `DialogAdapters.dll`, and `MarkdownDeep.dll` into the assembly
-- [SIL.Media] Fix missing `irrKlang.NET4.dll` exception by copying it to lib folder in output
+- [SIL.Windows.Forms.Keyboarding] Use signed version of `Keyman*Interop.dll` (#865)
+- [SIL.Windows.Forms] Use signed versions of `ibusdotnet.dll`, `Interop.WIA.dll`, `DialogAdapters.dll`,
+  and `MarkdownDeep.dll` (#865)
+- [SIL.Media] Fix missing `irrKlang.NET4.dll` exception by copying it to `lib` folder in output
 
 ### Deprecated
 
+- [SIL.Core] Deprecate `ExceptionHandler.Init()` method in favor of more explicit version
+  `ExceptionHandler.Init(ExceptionHandler)`, e.g. `ExceptionHandler.Init(new WinFormsExceptionHandler())`
 - [SIL.Core] Deprecate `HttpUtilityFromMono` class. Use `System.Web.HttpUtility` instead.
+- [SIL.DblBundle] Deprecate `TextBundle.CopyVersificationFile`, `CopyFontFiles` and `CopyLdmlFile` in favor
+  of `GetVersificationFile`, `GetFontFiles`, and `GetLdmlFile`.
+
+### Removed
+
+- [SIL.NUnit3Compatibility] Remove this project because we're using NUnit 3 now.
 
 ## [7.0.0] - 2019-08-29
 
