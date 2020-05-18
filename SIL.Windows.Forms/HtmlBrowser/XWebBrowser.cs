@@ -8,6 +8,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 using SIL.PlatformUtilities;
+using SIL.Reporting;
 
 namespace SIL.Windows.Forms.HtmlBrowser
 {
@@ -97,9 +98,9 @@ namespace SIL.Windows.Forms.HtmlBrowser
 						{
 							return (IWebBrowser) Activator.CreateInstance(browser, this);
 						}
-						catch (Exception)
+						catch (Exception e)
 						{
-							//Eat exceptions creating the GeckoFxWebBrowserAdapter
+							Logger.WriteError("Ignoring problem creating GeckoFxWebBrowserAdapter.", e);
 						}
 					}
 					//We failed to Create the GeckoFxWebBrowserAdapter, so drop into the fallback case
@@ -319,7 +320,7 @@ namespace SIL.Windows.Forms.HtmlBrowser
 					}
 					if (!localPathWorked)
 						throw;
-				}			
+				}
 				e.Cancel = true;
 			}
 			else if (Navigating != null)

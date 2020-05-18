@@ -30,3 +30,12 @@ Development
 -----------
 
 For instructions on building and contributing, see [Development](https://github.com/sillsdev/libpalaso/wiki/Development).
+
+API Policy
+----------
+
+The palaso library follows semantic versioning. For APIs this means:
+
+ * public APIs that become deprecated will be marked as obsolete.
+ * The API and its obsolete tag will remain through the beta versions and at least one more stable version.
+ * The API will be removed in one of the next stable versions.
