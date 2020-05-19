@@ -28,10 +28,10 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.0.1">
+    <PackageReference Include="GitVersionTask" Version="5.3.3">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="L10NSharp" Version="4.0.0" />
+    <PackageReference Include="L10NSharp" Version="4.0.3" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="SIL.ReleaseTasks" Version="[2.3.1,)" PrivateAssets="All" />
     <PackageReference Include="System.Globalization" Version="4.3.0" />

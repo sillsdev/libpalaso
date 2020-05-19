@@ -28,8 +28,8 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetZip" Version="1.13.3" />
-    <PackageReference Include="GitVersionTask" Version="5.0.1">
+    <PackageReference Include="DotNetZip" Version="1.13.7" />
+    <PackageReference Include="GitVersionTask" Version="5.3.3">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />

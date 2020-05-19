@@ -18,8 +18,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetZip" Version="1.13.3" />
-    <PackageReference Include="GitVersionTask" Version="5.0.1">
+    <PackageReference Include="DotNetZip" Version="1.13.7" />
+    <PackageReference Include="GitVersionTask" Version="5.3.3">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="NUnit" Version="3.12.0" />
