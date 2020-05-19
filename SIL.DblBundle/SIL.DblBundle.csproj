@@ -32,7 +32,7 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="[2.2.0,)" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="[2.3.1,)" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
