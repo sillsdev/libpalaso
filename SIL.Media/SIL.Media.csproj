@@ -34,9 +34,7 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="SIL.NAudio" Version="1.9.0-beta0074">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="SIL.NAudio" Version="1.9.0-beta0074" />
     <PackageReference Include="SIL.ReleaseTasks" Version="[2.3.1,)" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>

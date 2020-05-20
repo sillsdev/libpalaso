@@ -236,13 +236,6 @@
       <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
       <Name>SIL.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="SIL.Media.csproj">
-      <Project>{66B3504A-3B4E-45CB-903A-A9A75B22EF68}</Project>
-      <Name>SIL.Media</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Changes.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
