@@ -66,15 +66,16 @@
     <Reference Include="irrKlang.NET4">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="NAudio, Version=1.9.0.0, Culture=neutral, PublicKeyToken=b4c4708b866de817, processorArchitecture=MSIL">
+      <HintPath>..\packages\SIL.NAudio.1.9.0-beta0074\lib\net40\NAudio.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="NAudio">
-      <HintPath>..\packages\NAudio.1.8.4\lib\net35\NAudio.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="lib/win-x64/*.dll">
@@ -235,6 +236,13 @@
       <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
       <Name>SIL.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="SIL.Media.csproj">
+      <Project>{66B3504A-3B4E-45CB-903A-A9A75B22EF68}</Project>
+      <Name>SIL.Media</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Changes.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
