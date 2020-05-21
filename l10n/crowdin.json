@@ -4,8 +4,8 @@
   "base_path": ".",
   "files": [
     {
-      "source": "Chorus.en.xlf",
-      "translation": "Chorus.%locale%.xlf",
+      "source": "Palaso.en.xlf",
+      "translation": "%local%/Palaso.%locale%.xlf",
     }
   ]
 }

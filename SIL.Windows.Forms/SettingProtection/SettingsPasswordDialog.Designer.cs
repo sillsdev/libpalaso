@@ -1,4 +1,4 @@
-﻿using SIL.Windows.Forms.Widgets;
+using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.SettingProtection
 {
@@ -116,7 +116,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			this._explanation.Size = new System.Drawing.Size(368, 48);
 			this._explanation.TabIndex = 6;
 			this._explanation.TabStop = false;
-			this._explanation.Text = "To prevent accidental changes which could cause this tool to stop working for you" +
+			this._explanation.Text = "To prevent accidental changes which could cause this program to stop working for you" +
 	", these settings have been locked.";
 			//
 			// l10NSharpExtender1
