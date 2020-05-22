@@ -141,7 +141,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._rightToLeftCheckBox.Name = "_rightToLeftCheckBox";
 			this._rightToLeftCheckBox.Size = new System.Drawing.Size(472, 24);
 			this._rightToLeftCheckBox.TabIndex = 3;
-			this._rightToLeftCheckBox.Text = "This is a &right to left writing system.";
+			this._rightToLeftCheckBox.Text = "This is a &right-to-left writing system.";
 			this._rightToLeftCheckBox.UseVisualStyleBackColor = false;
 			this._rightToLeftCheckBox.CheckedChanged += new System.EventHandler(this.RightToLeftCheckBox_CheckedChanged);
 			// 
