@@ -15,6 +15,7 @@
     <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
     <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
     <IsPackable>false</IsPackable>
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
   </PropertyGroup>
 
   <ItemGroup>

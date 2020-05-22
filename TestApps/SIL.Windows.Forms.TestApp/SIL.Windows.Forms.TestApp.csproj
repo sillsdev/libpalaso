@@ -13,6 +13,7 @@
     <Copyright>Copyright © 2010-2020 SIL International</Copyright>
     <OutputPath>../../output/$(Configuration)</OutputPath>
     <IsPackable>false</IsPackable>
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
   </PropertyGroup>
 
   <ItemGroup>
