@@ -20,7 +20,7 @@
     <PackageReference Include="Geckofx45.32.Linux" Version="45.0.37" />
     <PackageReference Include="Geckofx45.64" Version="45.0.34" />
     <PackageReference Include="Geckofx45.64.Linux" Version="45.0.37" />
-    <PackageReference Include="GitVersionTask" Version="5.3.3">
+    <PackageReference Include="GitVersionTask" Version="5.3.4">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Icu4c.Win.Min" Version="56.1.82" />

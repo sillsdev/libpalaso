@@ -30,7 +30,7 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
     </AppendToReleaseNotesProperty>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.3.3">
+    <PackageReference Include="GitVersionTask" Version="5.3.4">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />

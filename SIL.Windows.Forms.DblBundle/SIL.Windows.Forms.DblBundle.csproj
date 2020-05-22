@@ -30,7 +30,7 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.3.3">
+    <PackageReference Include="GitVersionTask" Version="5.3.4">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="L10NSharp" Version="4.0.3" />
