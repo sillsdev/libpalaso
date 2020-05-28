@@ -47,9 +47,8 @@
       <HintPath>..\packages\Enchant.Net.1.4.2\lib\net461\Enchant.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="L10NSharp, Version=4.0.0.0, Culture=neutral, PublicKeyToken=fd0b3e309a5b7c28">
-      <HintPath>..\packages\L10NSharp.4.0.3\lib\net461\L10NSharp.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="L10NSharp, Version=4.1.0.0, Culture=neutral, PublicKeyToken=fd0b3e309a5b7c28, processorArchitecture=MSIL">
+      <HintPath>..\packages\L10NSharp.4.1.0-beta0036\lib\net461\L10NSharp.dll</HintPath>
     </Reference>
     <Reference Include="sysglobl" />
     <Reference Include="System" />

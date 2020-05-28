@@ -117,9 +117,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="L10NSharp, Version=4.0.0.0, Culture=neutral, PublicKeyToken=fd0b3e309a5b7c28">
-      <HintPath>..\packages\L10NSharp.4.0.3\lib\net461\L10NSharp.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="L10NSharp, Version=4.1.0.0, Culture=neutral, PublicKeyToken=fd0b3e309a5b7c28, processorArchitecture=MSIL">
+      <HintPath>..\packages\L10NSharp.4.1.0-beta0036\lib\net461\L10NSharp.dll</HintPath>
     </Reference>
     <Reference Include="MarkdownDeep, Version=1.5.7366.28328, Culture=neutral, PublicKeyToken=a3790ba34fe8597c">
       <HintPath>..\packages\MarkdownDeep.NET.Patched.1.5.0.2\lib\net35\MarkdownDeep.dll</HintPath>
