@@ -33,7 +33,7 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
   <ItemGroup>
     <PackageReference Include="DialogAdapters.Gtk2" Version="0.1.9" />
     <PackageReference Include="Enchant.Net" Version="1.4.2" />
-    <PackageReference Include="L10NSharp" Version="4.0.3" />
+    <PackageReference Include="L10NSharp" Version="4.1.0-beta0036" />
     <PackageReference Include="MarkdownDeep.NET.Patched" Version="1.5.0.2" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="TagLibSharp" Version="2.2.0" />
