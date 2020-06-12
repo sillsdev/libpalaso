@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SIL.Email
 {
-	class MAPI
+	internal class MAPI
 	{
 		public bool AddRecipientTo(string email)
 		{
@@ -40,7 +40,7 @@ namespace SIL.Email
 
 
 		[DllImport("MAPI32.DLL")]
-		static extern int MAPISendMail(IntPtr sess, IntPtr hwnd, MapiMessage message, int flg, int rsv);
+		private static extern int MAPISendMail(IntPtr sess, IntPtr hwnd, MapiMessage message, int flg, int rsv);
 
 		/// <summary>
 		///
@@ -49,7 +49,7 @@ namespace SIL.Email
 		/// <param name="strBody"></param>
 		/// <param name="how"></param>
 		/// <returns>true if successful</returns>
-		bool SendMail(string strSubject, string strBody, int how)
+		private bool SendMail(string strSubject, string strBody, int how)
 		{
 			MapiMessage msg = new MapiMessage();
 			msg.subject = strSubject;
@@ -66,10 +66,10 @@ namespace SIL.Email
 			var success = m_lastError == 0; // m_lastError gets reset by Cleanup()
 
 			Cleanup(ref msg);
-			return success;//NB: doesn't seem to cach user "denial" using outlook's warning dialog
+			return success;//NB: doesn't seem to catch user "denial" using outlook's warning dialog
 		}
 
-		bool AddRecipient(string email, HowTo howTo)
+		private bool AddRecipient(string email, HowTo howTo)
 		{
 			MapiRecipDesc recipient = new MapiRecipDesc();
 
@@ -83,7 +83,7 @@ namespace SIL.Email
 			return true;
 		}
 
-		IntPtr GetRecipients(out int recipCount)
+		private IntPtr GetRecipients(out int recipCount)
 		{
 			recipCount = 0;
 			if (m_recipients.Count == 0)
@@ -92,18 +92,18 @@ namespace SIL.Email
 			int size = Marshal.SizeOf(typeof(MapiRecipDesc));
 			IntPtr intPtr = Marshal.AllocHGlobal(m_recipients.Count * size);
 
-			IntPtr ptr = intPtr;
-			foreach (MapiRecipDesc mapiDesc in m_recipients)
+			var ptr = intPtr;
+			foreach (var mapiDesc in m_recipients)
 			{
-				Marshal.StructureToPtr(mapiDesc, (IntPtr)ptr, false);
-				ptr += size;
+				Marshal.StructureToPtr(mapiDesc, ptr, false);
+				IntPtr.Add(ptr, size);
 			}
 
 			recipCount = m_recipients.Count;
 			return intPtr;
 		}
 
-		IntPtr GetAttachments(out int fileCount)
+		private IntPtr GetAttachments(out int fileCount)
 		{
 			fileCount = 0;
 			if (m_attachments == null)
@@ -115,23 +115,23 @@ namespace SIL.Email
 			int size = Marshal.SizeOf(typeof(MapiFileDesc));
 			IntPtr intPtr = Marshal.AllocHGlobal(m_attachments.Count * size);
 
-			MapiFileDesc mapiFileDesc = new MapiFileDesc();
+			var mapiFileDesc = new MapiFileDesc();
 			mapiFileDesc.position = -1;
-			int ptr = (int)intPtr;
+			var ptr = intPtr;
 
-			foreach (string strAttachment in m_attachments)
+			foreach (var strAttachment in m_attachments)
 			{
 				mapiFileDesc.name = Path.GetFileName(strAttachment);
 				mapiFileDesc.path = strAttachment;
-				Marshal.StructureToPtr(mapiFileDesc, (IntPtr)ptr, false);
-				ptr += size;
+				Marshal.StructureToPtr(mapiFileDesc, ptr, false);
+				IntPtr.Add(ptr, size);
 			}
 
 			fileCount = m_attachments.Count;
 			return intPtr;
 		}
 
-		void Cleanup(ref MapiMessage msg)
+		private void Cleanup(ref MapiMessage msg)
 		{
 			int size = Marshal.SizeOf(typeof(MapiRecipDesc));
 			IntPtr ptr;
@@ -142,7 +142,7 @@ namespace SIL.Email
 				for (int i = 0; i < msg.recipCount; i++)
 				{
 					Marshal.DestroyStructure(ptr, typeof(MapiRecipDesc));
-					ptr += size;
+					IntPtr.Add(ptr, size);
 				}
 				Marshal.FreeHGlobal(msg.recips);
 			}
@@ -155,7 +155,7 @@ namespace SIL.Email
 				for (int i = 0; i < msg.fileCount; i++)
 				{
 					Marshal.DestroyStructure(ptr, typeof(MapiFileDesc));
-					ptr += size;
+					IntPtr.Add(ptr, size);
 				}
 				Marshal.FreeHGlobal(msg.files);
 			}
