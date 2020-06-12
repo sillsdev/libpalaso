@@ -13,7 +13,8 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 {
 	class ImageToolboxTests
 	{
-		[Test, Ignore("by hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		[STAThread]
 		public void ShowToolbox()
 		{
@@ -33,7 +34,8 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 			}
 		}
 
-		[Test, Ignore("by hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		[STAThread]
 		public void ShowGeckoToolbox()
 		{
@@ -52,7 +54,8 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 			}
 		}
 
-		[Test, Ignore("by hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		[STAThread]
 		public void ShowToolboxWith_PreExisting_Image_WithMetadata()
 		{
@@ -72,7 +75,8 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 			}
 		}
 
-		[Test, Ignore("by hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		[STAThread]
 		public void ShowToolboxWith_PreExisting_EnsureRawFormatUnchanged()
 		{

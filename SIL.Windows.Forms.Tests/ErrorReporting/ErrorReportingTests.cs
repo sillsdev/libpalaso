@@ -24,14 +24,16 @@ namespace SIL.Windows.Forms.Tests.ErrorReporting
 			HasLargePhysicalMemory = MemoryManagement.GetMemoryInformation().TotalPhysicalMemory >= 8192000000L;
 		}
 
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void NotifyUserOfProblem_Message()
 		{
 			string message = "Oh no! This is quite a long message to see if it will wrap so I will have to keep typing to see if this will work now. And then some more.";
 			ErrorReport.NotifyUserOfProblem(message);
 		}
 
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void NotifyUserOfProblem_OncePerSession()
 		{
 			ShowOncePerSessionBasedOnExactMessagePolicy.Reset();
@@ -41,7 +43,8 @@ namespace SIL.Windows.Forms.Tests.ErrorReporting
 			ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), message);
 		}
 
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void NotifyUserOfProblem_WithAlternateButton()
 		{
 			ShowOncePerSessionBasedOnExactMessagePolicy.Reset();
@@ -52,14 +55,16 @@ namespace SIL.Windows.Forms.Tests.ErrorReporting
 											message);
 		}
 
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void NotifyUserOfProblem_SmallMessage()
 		{
 			string message = "Oh no!";
 			ErrorReport.NotifyUserOfProblem(message);
 		}
 
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void NotifyUserOfProblem_SmallWithAlternateButton()
 		{
 			ShowOncePerSessionBasedOnExactMessagePolicy.Reset();
@@ -70,7 +75,8 @@ namespace SIL.Windows.Forms.Tests.ErrorReporting
 											message);
 		}
 
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void NotifyUserOfProblem_ReallyLong()
 		{
 			string message = "Oh no! This is quite a long message to see if it will wrap so I will have to keep typing to see if this will work now. And then some more." +
@@ -102,7 +108,8 @@ namespace SIL.Windows.Forms.Tests.ErrorReporting
 				"CheckMemory didn't detect danger");
 		}
 
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void CheckMemory_1GUsed_DisplaysDialogOnlyOnce()
 		{
 			// We'll grab some big chunks but not demand we can get it all. Keep them small enough to stay out of Large Object Heap

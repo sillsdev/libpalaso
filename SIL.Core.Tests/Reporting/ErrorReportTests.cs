@@ -11,7 +11,7 @@ namespace SIL.Tests.Reporting
 	public class ErrorReportTests
 	{
 		[Test]
-		[Ignore("by hand only")]
+		[Explicit("By hand only")]
 		public void ReportNonFatalException()
 		{
 			ErrorReport.EmailAddress = "pretend@8ksdfj83jls8.com";
