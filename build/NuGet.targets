@@ -75,7 +75,11 @@
 				try {
 					OutputFilename = Path.GetFullPath(OutputFilename);
 
-					Log.LogMessage("Downloading latest version of NuGet.exe...");
+					Log.LogMessage("Downloading latest version of nuget.exe...");
+
+					ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
+					Log.LogMessage("Enabled Protocols: " + ServicePointManager.SecurityProtocol);
+
 					WebClient webClient = new WebClient();
 					webClient.DownloadFile("$(NuGetExeUrl)", OutputFilename);
 
