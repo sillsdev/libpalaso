@@ -66,15 +66,15 @@
     <Reference Include="irrKlang.NET4">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="NAudio, Version=1.10.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.10.0\lib\net35\NAudio.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="NAudio">
-      <HintPath>..\packages\NAudio.1.8.4\lib\net35\NAudio.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="lib/win-x64/*.dll">
@@ -85,12 +85,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AudioIrrKlangSession.cs" />
+    <Compile Include="IAudioPlayer.cs" />
+    <Compile Include="IAudioRecorder.cs" />
+    <Compile Include="IRecordingDevice.cs" />
     <Compile Include="Naudio\AudioPlayer.cs" />
     <Compile Include="Naudio\AudioRecorder.cs" />
     <Compile Include="Naudio\FileWriterThread.cs" />
-    <Compile Include="Naudio\IAudioPlayer.cs" />
-    <Compile Include="Naudio\IRecordingDevice.cs" />
     <Compile Include="Naudio\RecordingDevice.cs" />
     <Compile Include="Naudio\TrimWaveStream.cs" />
     <Compile Include="Naudio\UI\AudioDeviceIcons.Designer.cs">
@@ -111,8 +111,6 @@
       <DependentUpon>RecordingDeviceIndicator.cs</DependentUpon>
     </Compile>
     <Compile Include="Naudio\SampleAggregator.cs" />
-    <Compile Include="Naudio\IAudioRecorder.cs" />
-    <Compile Include="Naudio\RecordingState.cs" />
     <Compile Include="AlsaAudio\AlsaAudioDevice.cs" />
     <Compile Include="AlsaAudio\AudioAlsaSession.cs" />
     <Compile Include="AlsaAudio\AudioRecorder.cs" />
@@ -122,6 +120,7 @@
     <Compile Include="FFmpegRunner.cs" />
     <Compile Include="ISimpleAudioSession.cs" />
     <Compile Include="MediaInfo.cs" />
+    <Compile Include="RecordingState.cs" />
     <Compile Include="ShortSoundFieldControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -140,6 +139,7 @@
     <Compile Include="SoundFieldControl.Designer.cs">
       <DependentUpon>SoundFieldControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="WindowsAudioSession.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
