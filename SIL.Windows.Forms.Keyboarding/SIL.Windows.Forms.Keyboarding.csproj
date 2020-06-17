@@ -58,6 +58,17 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
     <Reference Include="Mono.Posix" Condition="'$(OS)' != 'Windows_NT'" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="../lib/Keyman*.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
+    </None>
+    <Content Include="SIL.Windows.Forms.Keyboarding.targets">
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
+    </Content>
+  </ItemGroup>
 
   <PropertyGroup>
     <!-- See https://github.com/dotnet/sdk/issues/987#issuecomment-286307697 why that is needed -->

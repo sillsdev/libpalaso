@@ -77,4 +77,16 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
     <Reference Include="System.Security" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="../lib/Interop.WIA.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
+    </None>
+    <Content Include="SIL.Windows.Forms.targets">
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
+    </Content>
+  </ItemGroup>
+
 </Project>
