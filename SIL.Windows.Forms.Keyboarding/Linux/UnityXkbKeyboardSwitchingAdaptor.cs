@@ -16,11 +16,13 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		protected override void SelectKeyboard(KeyboardDescription keyboard)
 		{
 			var xkbKeyboard = keyboard as XkbKeyboardDescription;
-			if (xkbKeyboard != null)
-			{
-				if (xkbKeyboard.GroupIndex >= 0)
-					UnityIbusKeyboardSwitchingAdaptor.SelectKeyboard((uint)xkbKeyboard.GroupIndex);
-			}
+			if (xkbKeyboard == null || xkbKeyboard.GroupIndex < 0)
+				return;
+
+			var switchingAdaptor = KeyboardController.Instance
+				.Adaptors[KeyboardAdaptorType.OtherIm]
+				.SwitchingAdaptor as IUnityKeyboardSwitchingAdaptor;
+			switchingAdaptor.SelectKeyboard((uint) xkbKeyboard.GroupIndex);
 		}
 	}
 }
