@@ -325,5 +325,17 @@ namespace SIL.PlatformUtilities
 		public static string ProcessArchitecture => Environment.Is64BitProcess ? x64 : x86;
 
 		public static bool IsRunning64Bit => Environment.Is64BitProcess;
+
+		public static bool IsGnomeShell
+		{
+			get
+			{
+				if (!IsLinux)
+					return false;
+
+				var pids = RunTerminalCommand("pidof", "gnome-shell");
+				return !string.IsNullOrEmpty(pids);
+			}
+		}
 	}
 }

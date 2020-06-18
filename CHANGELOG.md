@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
+
 - [SIL.DblBundle] `DblMetadata.Load` overload to allow deserialization from a `TextReader`.
 - [SIL.Scripture] `Versification.Table.Load` overload to allow deserialization from a `TextReader`.
 - [SIL.DblBundle] `TextBundle<TM, TL>.GetVersification` (to replace deprecated `CopyVersificationFile`)
@@ -25,14 +26,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Scripture] `ScrVers.Save` overload to allow serialization to a `TextWriter`.
 - [SIL.Core] `XmlSerializationHelper.Serialize<T>` to allow serialization to a `TextWriter`.
 - [SIL.Core] `XmlSerializationHelper.Deserialize<T>` to allow deserialization from a `TextReader`.
+- [SIL.Core] `Platform.IsGnomeShell` to detect if executing in a Gnome Shell
 
 ### Changed
 
 - Add build number to `AssemblyFileVersion`
 - Improve nuget symbol packages
 - Use NUnit 3 for unit tests
-- [SIL.Core, SIL.Core.Desktop] Move several classes back to `SIL.Core` from `SIL.Core.Desktop` to make
-  them available to .NET Standard clients.
+- [SIL.Core, SIL.Core.Desktop] Move several classes back to `SIL.Core` from `SIL.Core.Desktop` to
+  make them available to .NET Standard clients:
   - IO/PathUtilities
   - IO/TempFileForSafeWriting
   - Reporting/AnalyticsEventSender
@@ -53,8 +55,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - [SIL.Windows.Forms.Keyboarding] Use signed version of `Keyman*Interop.dll` (#865)
-- [SIL.Windows.Forms] Use signed versions of `ibusdotnet.dll`, `Interop.WIA.dll`, `DialogAdapters.dll`,
-  and `MarkdownDeep.dll` (#865)
+- [SIL.Windows.Forms.Keyboarding] Fixed keyboard switching for Ubuntu 18.04 (#887)
+- [SIL.Windows.Forms] Use signed versions of `ibusdotnet.dll`, `Interop.WIA.dll`,
+  `DialogAdapters.dll`, and `MarkdownDeep.dll` (#865)
 - [SIL.Media] Fix missing `irrKlang.NET4.dll` exception by copying it to `lib` folder in output
 
 ### Deprecated
@@ -62,8 +65,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Deprecate `ExceptionHandler.Init()` method in favor of more explicit version
   `ExceptionHandler.Init(ExceptionHandler)`, e.g. `ExceptionHandler.Init(new WinFormsExceptionHandler())`
 - [SIL.Core] Deprecate `HttpUtilityFromMono` class. Use `System.Web.HttpUtility` instead.
-- [SIL.DblBundle] Deprecate `TextBundle.CopyVersificationFile`, `CopyFontFiles` and `CopyLdmlFile` in favor
-  of `GetVersificationFile`, `GetFontFiles`, and `GetLdmlFile`.
+- [SIL.DblBundle] Deprecate `TextBundle.CopyVersificationFile`, `CopyFontFiles` and
+  `CopyLdmlFile` in favor of `GetVersificationFile`, `GetFontFiles`, and `GetLdmlFile`.
 
 ### Removed
 
