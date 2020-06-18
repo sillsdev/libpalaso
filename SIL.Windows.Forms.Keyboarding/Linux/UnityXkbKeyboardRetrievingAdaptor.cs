@@ -20,10 +20,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		#region Specific implementations of IKeyboardRetriever
 
-		public override bool IsApplicable
-		{
-			get { return _helper.IsApplicable; }
-		}
+		public override bool IsApplicable => _helper.IsApplicable;
 
 		public override void Initialize()
 		{
@@ -50,27 +47,22 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 			var configRegistry = XklConfigRegistry.Create(XklEngine);
 			var layouts = configRegistry.Layouts;
-			Dictionary<string, XkbKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<XkbKeyboardDescription>().ToDictionary(kd => kd.Id);
+			var curKeyboards = KeyboardController.Instance.Keyboards.OfType<XkbKeyboardDescription>().ToDictionary(kd => kd.Id);
 			foreach (var kvp in layouts)
 			{
 				foreach (var layout in kvp.Value)
 				{
-					uint index;
 					// Custom keyboards may omit defining a country code.  Try to survive such cases.
-					string codeToMatch;
-					if (layout.CountryCode == null)
-						codeToMatch = layout.LanguageCode.ToLowerInvariant();
-					else
-						codeToMatch = layout.CountryCode.ToLowerInvariant();
-					if ((keyboards.TryGetValue(layout.LayoutId, out index) && (layout.LayoutId == codeToMatch)) ||
-						keyboards.TryGetValue(string.Format("{0}+{1}", codeToMatch, layout.LayoutId), out index))
+					var codeToMatch = layout.CountryCode == null ? layout.LanguageCode.ToLowerInvariant() : layout.CountryCode.ToLowerInvariant();
+					if ((keyboards.TryGetValue(layout.LayoutId, out var index) && (layout.LayoutId == codeToMatch)) ||
+						keyboards.TryGetValue($"{codeToMatch}+{layout.LayoutId}", out index))
 					{
 						AddKeyboardForLayout(curKeyboards, layout, index, SwitchingAdaptor);
 					}
 				}
 			}
 
-			foreach (XkbKeyboardDescription existingKeyboard in curKeyboards.Values)
+			foreach (var existingKeyboard in curKeyboards.Values)
 				existingKeyboard.SetIsAvailable(false);
 		}
 	}

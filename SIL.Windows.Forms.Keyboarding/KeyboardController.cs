@@ -57,9 +57,9 @@ namespace SIL.Windows.Forms.Keyboarding
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine("Got exception {0} initalizing keyboard controller", e.GetType());
+				Console.WriteLine("Got exception {0} initializing keyboard controller", e.GetType());
 				Console.WriteLine(e.StackTrace);
-				Logger.WriteEvent("Got exception {0} initalizing keyboard controller", e.GetType());
+				Logger.WriteEvent("Got exception {0} initializing keyboard controller", e.GetType());
 				Logger.WriteEvent(e.StackTrace);
 
 				if (Keyboard.Controller != null)
@@ -84,7 +84,7 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// <summary>
 		/// Returns <c>true</c> if KeyboardController.Initialize() got called before.
 		/// </summary>
-		public static bool IsInitialized { get { return Instance != null; } }
+		public static bool IsInitialized => Instance != null;
 
 		/// <summary>
 		/// Register the control for keyboarding, optionally providing an event handler for
@@ -96,8 +96,7 @@ namespace SIL.Windows.Forms.Keyboarding
 		public static void RegisterControl(Control control, object eventHandler = null)
 		{
 			Instance._eventHandlers[control] = eventHandler;
-			if (Instance.ControlAdded != null)
-				Instance.ControlAdded(Instance, new RegisterEventArgs(control, eventHandler));
+			Instance.ControlAdded?.Invoke(Instance, new RegisterEventArgs(control, eventHandler));
 		}
 
 		/// <summary>
@@ -107,8 +106,7 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// </summary>
 		public static void UnregisterControl(Control control)
 		{
-			if (Instance.ControlRemoving != null)
-				Instance.ControlRemoving(Instance, new ControlEventArgs(control));
+			Instance.ControlRemoving?.Invoke(Instance, new ControlEventArgs(control));
 			Instance._eventHandlers.Remove(control);
 		}
 		/// <summary/>
@@ -119,10 +117,7 @@ namespace SIL.Windows.Forms.Keyboarding
 			if (!HasSecondaryKeyboardSetupApplication && Instance.Adaptors.ContainsKey(KeyboardAdaptorType.OtherIm))
 				program = Instance.Adaptors[KeyboardAdaptorType.OtherIm].GetKeyboardSetupAction();
 
-			if (program == null)
-				program = Instance.Adaptors[KeyboardAdaptorType.System].GetKeyboardSetupAction();
-
-			return program;
+			return program ?? Instance.Adaptors[KeyboardAdaptorType.System].GetKeyboardSetupAction();
 		}
 
 		public static Action GetSecondaryKeyboardSetupApplication()
@@ -138,14 +133,9 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// Returns <c>true</c> if there is a secondary keyboard application available, e.g.
 		/// Keyman setup dialog on Windows.
 		/// </summary>
-		public static bool HasSecondaryKeyboardSetupApplication
-		{
-			get
-			{
-				return Instance.Adaptors.ContainsKey(KeyboardAdaptorType.OtherIm) &&
-					Instance.Adaptors[KeyboardAdaptorType.OtherIm].IsSecondaryKeyboardSetupApplication;
-			}
-		}
+		public static bool HasSecondaryKeyboardSetupApplication =>
+			Instance.Adaptors.ContainsKey(KeyboardAdaptorType.OtherIm) &&
+			Instance.Adaptors[KeyboardAdaptorType.OtherIm].IsSecondaryKeyboardSetupApplication;
 
 		// delegate used to detect input processor, like KeyMan
 		private delegate bool IsUsingInputProcessorDelegate();
@@ -237,22 +227,22 @@ namespace SIL.Windows.Forms.Keyboarding
 		private void SetKeyboardAdaptors(IKeyboardRetrievingAdaptor[] adaptors)
 		{
 			_keyboards.Clear();
-			foreach (IKeyboardRetrievingAdaptor adaptor in _adaptors.Values)
+			foreach (var adaptor in _adaptors.Values)
 				adaptor.Dispose();
 			_adaptors.Clear();
 
-			foreach (IKeyboardRetrievingAdaptor adaptor in adaptors)
+			foreach (var adaptor in adaptors)
 			{
-				if (adaptor.IsApplicable)
-				{
-					if ((adaptor.Type & KeyboardAdaptorType.System) == KeyboardAdaptorType.System)
-						_adaptors[KeyboardAdaptorType.System] = adaptor;
-					if ((adaptor.Type & KeyboardAdaptorType.OtherIm) == KeyboardAdaptorType.OtherIm)
-						_adaptors[KeyboardAdaptorType.OtherIm] = adaptor;
-				}
+				if (!adaptor.IsApplicable)
+					continue;
+
+				if ((adaptor.Type & KeyboardAdaptorType.System) == KeyboardAdaptorType.System)
+					_adaptors[KeyboardAdaptorType.System] = adaptor;
+				if ((adaptor.Type & KeyboardAdaptorType.OtherIm) == KeyboardAdaptorType.OtherIm)
+					_adaptors[KeyboardAdaptorType.OtherIm] = adaptor;
 			}
 
-			foreach (IKeyboardRetrievingAdaptor adaptor in adaptors)
+			foreach (var adaptor in adaptors)
 			{
 				if (!_adaptors.ContainsValue(adaptor))
 					adaptor.Dispose();
@@ -261,7 +251,7 @@ namespace SIL.Windows.Forms.Keyboarding
 			// Now that we know who can deal with the keyboards we can retrieve all available
 			// keyboards, as well as add the used keyboard adaptors as error report property.
 			var bldr = new StringBuilder();
-			foreach (IKeyboardRetrievingAdaptor adaptor in _adaptors.Values)
+			foreach (var adaptor in _adaptors.Values)
 			{
 				adaptor.Initialize();
 
@@ -275,24 +265,15 @@ namespace SIL.Windows.Forms.Keyboarding
 
 		public void UpdateAvailableKeyboards()
 		{
-			foreach (IKeyboardRetrievingAdaptor adaptor in _adaptors.Values)
+			foreach (var adaptor in _adaptors.Values)
 				adaptor.UpdateAvailableKeyboards();
 		}
 
-		internal IKeyedCollection<string, KeyboardDescription> Keyboards
-		{
-			get { return _keyboards; }
-		}
+		internal IKeyedCollection<string, KeyboardDescription> Keyboards => _keyboards;
 
-		internal IDictionary<KeyboardAdaptorType, IKeyboardRetrievingAdaptor> Adaptors
-		{
-			get { return _adaptors; }
-		}
+		internal IDictionary<KeyboardAdaptorType, IKeyboardRetrievingAdaptor> Adaptors => _adaptors;
 
-		internal IDictionary<Control, object> EventHandlers
-		{
-			get { return _eventHandlers; }
-		}
+		internal IDictionary<Control, object> EventHandlers => _eventHandlers;
 
 		#region Disposable stuff
 		/// <summary/>
@@ -319,7 +300,7 @@ namespace SIL.Windows.Forms.Keyboarding
 			if (fDisposing && !IsDisposed)
 			{
 				// dispose managed and unmanaged objects
-				foreach (IKeyboardRetrievingAdaptor adaptor in _adaptors.Values)
+				foreach (var adaptor in _adaptors.Values)
 					adaptor.Dispose();
 				_adaptors.Clear();
 			}
@@ -327,17 +308,11 @@ namespace SIL.Windows.Forms.Keyboarding
 		}
 		#endregion
 
-		public IKeyboardDefinition DefaultKeyboard
-		{
-			get { return _adaptors[KeyboardAdaptorType.System].SwitchingAdaptor.DefaultKeyboard; }
-		}
+		public IKeyboardDefinition DefaultKeyboard => _adaptors[KeyboardAdaptorType.System].SwitchingAdaptor.DefaultKeyboard;
 
 		public IKeyboardDefinition GetKeyboard(string id)
 		{
-			IKeyboardDefinition keyboard;
-			if (TryGetKeyboard(id, out keyboard))
-				return keyboard;
-			return NullKeyboard;
+			return TryGetKeyboard(id, out var keyboard) ? keyboard : NullKeyboard;
 		}
 
 		public bool TryGetKeyboard(string id, out IKeyboardDefinition keyboard)
@@ -348,14 +323,13 @@ namespace SIL.Windows.Forms.Keyboarding
 				return false;
 			}
 
-			KeyboardDescription kd;
-			if (_keyboards.TryGet(id, out kd))
+			if (_keyboards.TryGet(id, out var kd))
 			{
 				keyboard = kd;
 				return true;
 			}
 
-			string[] parts = id.Split('|');
+			var parts = id.Split('|');
 			if (parts.Length == 2)
 			{
 				// This is the way Paratext stored IDs in 7.4-7.5 while there was a temporary bug-fix in place)
@@ -371,7 +345,7 @@ namespace SIL.Windows.Forms.Keyboarding
 			parts = id.Split('-');
 			if (parts.Length > 1)
 			{
-				for (int i = 1; i < parts.Length; i++)
+				for (var i = 1; i < parts.Length; i++)
 				{
 					keyboard = GetKeyboard(string.Join("-", parts.Take(i)), string.Join("-", parts.Skip(i)));
 					if (keyboard != NullKeyboard)
@@ -385,10 +359,7 @@ namespace SIL.Windows.Forms.Keyboarding
 
 		public IKeyboardDefinition GetKeyboard(string layoutName, string locale)
 		{
-			IKeyboardDefinition keyboard;
-			if (TryGetKeyboard(layoutName, locale, out keyboard))
-				return keyboard;
-			return NullKeyboard;
+			return TryGetKeyboard(layoutName, locale, out var keyboard) ? keyboard : NullKeyboard;
 		}
 
 		public bool TryGetKeyboard(string layoutName, string locale, out IKeyboardDefinition keyboard)
@@ -405,10 +376,7 @@ namespace SIL.Windows.Forms.Keyboarding
 
 		public IKeyboardDefinition GetKeyboard(IInputLanguage language)
 		{
-			IKeyboardDefinition keyboard;
-			if (TryGetKeyboard(language, out keyboard))
-				return keyboard;
-			return NullKeyboard;
+			return TryGetKeyboard(language, out var keyboard) ? keyboard : NullKeyboard;
 		}
 
 		public bool TryGetKeyboard(IInputLanguage language, out IKeyboardDefinition keyboard)
@@ -421,10 +389,7 @@ namespace SIL.Windows.Forms.Keyboarding
 
 		public IKeyboardDefinition GetKeyboard(int windowsLcid)
 		{
-			IKeyboardDefinition keyboard;
-			if (TryGetKeyboard(windowsLcid, out keyboard))
-				return keyboard;
-			return NullKeyboard;
+			return TryGetKeyboard(windowsLcid, out var keyboard) ? keyboard : NullKeyboard;
 		}
 
 		public bool TryGetKeyboard(int windowsLcid, out IKeyboardDefinition keyboard)
@@ -432,7 +397,7 @@ namespace SIL.Windows.Forms.Keyboarding
 			keyboard = _keyboards.FirstOrDefault(
 				kbd =>
 				{
-					if (kbd.InputLanguage == null || kbd.InputLanguage.Culture == null)
+					if (kbd.InputLanguage?.Culture == null)
 						return false;
 					return kbd.InputLanguage.Culture.LCID == windowsLcid;
 				});
@@ -461,8 +426,7 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// </summary>
 		public IKeyboardDefinition CreateKeyboard(string id, KeyboardFormat format, IEnumerable<string> urls)
 		{
-			KeyboardDescription keyboard;
-			if (!_keyboards.TryGet(id, out keyboard))
+			if (!_keyboards.TryGet(id, out var keyboard))
 			{
 				var firstCompatibleAdapter = _adaptors.Values.FirstOrDefault(adaptor => adaptor.CanHandleFormat(format));
 				if (firstCompatibleAdapter == null)
@@ -475,12 +439,12 @@ namespace SIL.Windows.Forms.Keyboarding
 			}
 
 			keyboard.Format = format;
-			if (urls != null)
+			if (urls == null)
+				return keyboard;
+
+			foreach (var url in urls)
 			{
-				foreach (string url in urls)
-				{
-					keyboard.Urls.Add(url);
-				}
+				keyboard.Urls.Add(url);
 			}
 			return keyboard;
 		}
@@ -492,27 +456,25 @@ namespace SIL.Windows.Forms.Keyboarding
 		{
 			get
 			{
-				if (_activeKeyboard == null)
-				{
-					_activeKeyboard = Adaptors[KeyboardAdaptorType.System].SwitchingAdaptor.ActiveKeyboard;
-					if (_activeKeyboard == null || _activeKeyboard == NullKeyboard)
-					{
-						try
-						{
-							var lang = InputLanguage.CurrentInputLanguage;
-							_activeKeyboard = GetKeyboard(lang.LayoutName, lang.Culture.Name);
-						}
-						catch (CultureNotFoundException)
-						{
-						}
-					}
+				if (_activeKeyboard != null)
+					return _activeKeyboard;
 
-					if (_activeKeyboard == null)
-						_activeKeyboard = NullKeyboard;
+				_activeKeyboard = Adaptors[KeyboardAdaptorType.System].SwitchingAdaptor.ActiveKeyboard;
+				if (_activeKeyboard == null || _activeKeyboard == NullKeyboard)
+				{
+					try
+					{
+						var lang = InputLanguage.CurrentInputLanguage;
+						_activeKeyboard = GetKeyboard(lang.LayoutName, lang.Culture.Name);
+					}
+					catch (CultureNotFoundException)
+					{
+					}
 				}
-				return _activeKeyboard;
+
+				return _activeKeyboard ?? (_activeKeyboard = NullKeyboard);
 			}
-			set { _activeKeyboard = value; }
+			set => _activeKeyboard = value;
 		}
 
 		internal static void GetLayoutAndLocaleFromLanguageId(string id, out string layout, out string locale)

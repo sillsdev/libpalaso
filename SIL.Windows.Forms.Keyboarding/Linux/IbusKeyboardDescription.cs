@@ -28,22 +28,19 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// </summary>
 		private static string FormatKeyboardIdentifier(string layout, string locale)
 		{
-			string languageCode = AlternateLanguageCodes.GetLanguageCode(locale);
-			string languageName = string.IsNullOrEmpty(languageCode) ? OtherLanguage :
+			var languageCode = AlternateLanguageCodes.GetLanguageCode(locale);
+			var languageName = string.IsNullOrEmpty(languageCode) ? OtherLanguage :
 				new Locale(languageCode).GetDisplayName(new Locale(Application.CurrentCulture.TwoLetterISOLanguageName));
 			if (languageCode != null && languageCode.ToLowerInvariant() == languageName.ToLowerInvariant())
 				languageName = OtherLanguage;
-			return string.Format("{0} - {1}", languageName, layout);
+			return $"{languageName} - {layout}";
 		}
 
-		public string ParentLayout
-		{
-			get { return IBusKeyboardEngine.Layout; }
-		}
+		public string ParentLayout => IBusKeyboardEngine.Layout;
 
 		public IBusEngineDesc IBusKeyboardEngine
 		{
-			get { return _ibusKeyboard; }
+			get => _ibusKeyboard;
 			set
 			{
 				_ibusKeyboard = value;

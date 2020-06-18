@@ -15,7 +15,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// </summary>
 	public class UnityIbusKeyboardRetrievingAdaptor : IbusKeyboardRetrievingAdaptor
 	{
-		private readonly UnityKeyboardRetrievingHelper _helper = new UnityKeyboardRetrievingHelper();
+		protected readonly UnityKeyboardRetrievingHelper _helper = new UnityKeyboardRetrievingHelper();
 
 		#region Specific implementations of IKeyboardRetriever
 
@@ -45,31 +45,30 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			if (keyboards.Count <= 0)
 				return;
 
-			Dictionary<string, IbusKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<IbusKeyboardDescription>().ToDictionary(kd => kd.Id);
+			var curKeyboards = KeyboardController.Instance.Keyboards.OfType<IbusKeyboardDescription>().ToDictionary(kd => kd.Id);
 			var missingLayouts = new List<string>(keyboards.Keys);
 			foreach (var ibusKeyboard in GetAllIBusKeyboards())
 			{
-				if (keyboards.ContainsKey(ibusKeyboard.LongName))
+				if (!keyboards.ContainsKey(ibusKeyboard.LongName))
+					continue;
+
+				missingLayouts.Remove(ibusKeyboard.LongName);
+				var id = $"{ibusKeyboard.Language}_{ibusKeyboard.LongName}";
+				if (curKeyboards.TryGetValue(id, out var keyboard))
 				{
-					missingLayouts.Remove(ibusKeyboard.LongName);
-					string id = string.Format("{0}_{1}", ibusKeyboard.Language, ibusKeyboard.LongName);
-					IbusKeyboardDescription keyboard;
-					if (curKeyboards.TryGetValue(id, out keyboard))
+					if (!keyboard.IsAvailable)
 					{
-						if (!keyboard.IsAvailable)
-						{
-							keyboard.SetIsAvailable(true);
-							keyboard.IBusKeyboardEngine = ibusKeyboard;
-						}
-						curKeyboards.Remove(id);
+						keyboard.SetIsAvailable(true);
+						keyboard.IBusKeyboardEngine = ibusKeyboard;
 					}
-					else
-					{
-						keyboard = new IbusKeyboardDescription(id, ibusKeyboard, SwitchingAdaptor);
-						KeyboardController.Instance.Keyboards.Add(keyboard);
-					}
-					keyboard.SystemIndex = keyboards[ibusKeyboard.LongName];
+					curKeyboards.Remove(id);
 				}
+				else
+				{
+					keyboard = new IbusKeyboardDescription(id, ibusKeyboard, SwitchingAdaptor);
+					KeyboardController.Instance.Keyboards.Add(keyboard);
+				}
+				keyboard.SystemIndex = keyboards[ibusKeyboard.LongName];
 			}
 
 			foreach (IbusKeyboardDescription existingKeyboard in curKeyboards.Values)
