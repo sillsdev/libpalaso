@@ -319,5 +319,17 @@ namespace SIL.PlatformUtilities
 			return output.Trim();
 		}
 
+
+		public static bool IsGnomeShell
+		{
+			get
+			{
+				if (!IsLinux)
+					return false;
+
+				var pids = RunTerminalCommand("pidof", "gnome-shell");
+				return !string.IsNullOrEmpty(pids);
+			}
+		}
 	}
 }

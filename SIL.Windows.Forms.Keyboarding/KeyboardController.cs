@@ -229,7 +229,8 @@ namespace SIL.Windows.Forms.Keyboarding
 					{
 						new XkbKeyboardRetrievingAdaptor(), new IbusKeyboardRetrievingAdaptor(),
 						new UnityXkbKeyboardRetrievingAdaptor(), new UnityIbusKeyboardRetrievingAdaptor(),
-						new CombinedIbusKeyboardRetrievingAdaptor()
+						new CombinedIbusKeyboardRetrievingAdaptor(),
+						new GnomeShellIbusKeyboardRetrievingAdaptor()
 					}
 			);
 		}

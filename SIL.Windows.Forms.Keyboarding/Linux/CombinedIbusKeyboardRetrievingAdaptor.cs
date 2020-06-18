@@ -154,7 +154,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				}
 				var list = GetMyKeyboards(_settingsGeneral);
 				return list != null && list.Length > 0 && Platform.DesktopEnvironment != "unity"
-					&& Platform.DesktopEnvironment != "gnome";
+					&& !Platform.DesktopEnvironment.Contains("gnome");
 			}
 		}
 
