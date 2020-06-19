@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using IBusDotNet;
 using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
@@ -23,7 +24,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		public CombinedIbusKeyboardRetrievingAdaptor()
 		{
-			KeyboardRetrievingHelper.InitGlib();
+			GlibHelper.InitGlib();
 		}
 
 		/// <summary>
@@ -52,7 +53,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			var sources = Unmanaged.g_settings_get_value(settingsGeneral, "preload-engines");
 			if (sources == IntPtr.Zero)
 				return null;
-			var list = KeyboardRetrievingHelper.GetStringArrayFromGVariantArray(sources);
+			var list = GlibHelper.GetStringArrayFromGVariantArray(sources);
 			Unmanaged.g_variant_unref(sources);
 
 			// Call these only once per run of the program.
@@ -118,7 +119,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			var value = Unmanaged.g_settings_get_value(settingsGeneral, "xkb-latin-layouts");
 			CombinedIbusKeyboardSwitchingAdaptor.LatinLayouts =
-				KeyboardRetrievingHelper.GetStringArrayFromGVariantArray(value);
+				GlibHelper.GetStringArrayFromGVariantArray(value);
 			Unmanaged.g_variant_unref(value);
 
 			CombinedIbusKeyboardSwitchingAdaptor.UseXmodmap = Unmanaged.g_settings_get_boolean(
@@ -138,7 +139,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			{
 				try
 				{
-					if (!KeyboardRetrievingHelper.SchemaIsInstalled(GSettingsSchema))
+					if (!GlibHelper.SchemaIsInstalled(GSettingsSchema))
 						return false;
 					_settingsGeneral = Unmanaged.g_settings_new(GSettingsSchema);
 					if (_settingsGeneral == IntPtr.Zero)
@@ -245,6 +246,5 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			}
 			base.Dispose(disposing);
 		}
-
 	}
 }

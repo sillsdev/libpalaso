@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SIL.PlatformUtilities;
 using X11.XKlavier;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
@@ -16,11 +17,11 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// </summary>
 	public class UnityXkbKeyboardRetrievingAdaptor : XkbKeyboardRetrievingAdaptor
 	{
-		private readonly UnityKeyboardRetrievingHelper _helper = new UnityKeyboardRetrievingHelper();
+		private readonly GnomeKeyboardRetrievingHelper _helper = new GnomeKeyboardRetrievingHelper();
 
 		#region Specific implementations of IKeyboardRetriever
 
-		public override bool IsApplicable => _helper.IsApplicable;
+		public override bool IsApplicable => _helper.IsApplicable && !Platform.IsGnomeShell;
 
 		public override void Initialize()
 		{
@@ -30,7 +31,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		protected override string GetKeyboardSetupApplication(out string arguments)
 		{
-			var program = _helper.GetKeyboardSetupApplication(out arguments);
+			var program = GnomeKeyboardRetrievingHelper.GetKeyboardSetupApplication(out arguments);
 			return string.IsNullOrEmpty(program) ? base.GetKeyboardSetupApplication(out arguments) : program;
 		}
 		#endregion
@@ -40,7 +41,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			_helper.InitKeyboards(type => type == "xkb", RegisterKeyboards);
 		}
 
-		private void RegisterKeyboards(IDictionary<string, uint> keyboards)
+		private void RegisterKeyboards(IDictionary<string, uint> keyboards, (string, string) firstKeyboard)
 		{
 			if (keyboards.Count <= 0)
 				return;

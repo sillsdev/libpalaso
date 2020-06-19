@@ -16,7 +16,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// </summary>
 	public class UnityIbusKeyboardRetrievingAdaptor : IbusKeyboardRetrievingAdaptor
 	{
-		protected readonly UnityKeyboardRetrievingHelper _helper = new UnityKeyboardRetrievingHelper();
+		private readonly GnomeKeyboardRetrievingHelper _helper = new GnomeKeyboardRetrievingHelper();
 
 		#region Specific implementations of IKeyboardRetriever
 
@@ -24,19 +24,14 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		public override void Initialize()
 		{
-			SwitchingAdaptor = CreateSwitchingAdaptor();
+			SwitchingAdaptor = new UnityIbusKeyboardSwitchingAdaptor(IbusCommunicator);
 			KeyboardRetrievingHelper.AddIbusVersionAsErrorReportProperty();
 			InitKeyboards();
 		}
 
-		protected virtual IKeyboardSwitchingAdaptor CreateSwitchingAdaptor()
-		{
-			return new UnityIbusKeyboardSwitchingAdaptor(IbusCommunicator);
-		}
-
 		protected override string GetKeyboardSetupApplication(out string arguments)
 		{
-			var program = _helper.GetKeyboardSetupApplication(out arguments);
+			var program = GnomeKeyboardRetrievingHelper.GetKeyboardSetupApplication(out arguments);
 			return string.IsNullOrEmpty(program) ? base.GetKeyboardSetupApplication(out arguments) : program;
 		}
 		#endregion
@@ -46,7 +41,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			_helper.InitKeyboards(type => type != "xkb", RegisterKeyboards);
 		}
 
-		private void RegisterKeyboards(IDictionary<string, uint> keyboards)
+		private void RegisterKeyboards(IDictionary<string, uint> keyboards, (string, string) firstKeyboard)
 		{
 			if (keyboards.Count <= 0)
 				return;
