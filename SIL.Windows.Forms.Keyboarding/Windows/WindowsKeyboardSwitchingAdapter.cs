@@ -61,7 +61,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			IsSwitchingKeyboards = true;
 			try
 			{
-				if (keyboard?.InputLanguage?.Culture == null)
+				if (keyboard?.InputLanguage?.Culture == null || keyboard.InputProcessorProfile.LangId == 0)
 				{
 					return false;
 				}
