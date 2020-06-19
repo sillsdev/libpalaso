@@ -57,5 +57,19 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		[DllImport("libglib-2.0.so")]
 		internal static extern bool g_variant_get_boolean(IntPtr value);
+
+		[DllImport("libglib-2.0.so")]
+		internal static extern void g_list_free(IntPtr list);
+
+		[DllImport("libgnome-desktop-3.so.17")]
+		internal static extern IntPtr gnome_xkb_info_new();
+
+		[DllImport("libgnome-desktop-3.so.17")]
+		internal static extern IntPtr gnome_xkb_info_get_all_layouts(IntPtr self);
+
+		[DllImport("libgnome-desktop-3.so.17")]
+		internal static extern bool gnome_xkb_info_get_layout_info(IntPtr self, IntPtr id,
+			out IntPtr displayName, out IntPtr shortName, out IntPtr xkbLayout,
+			out IntPtr xkbVariant);
 	}
 }
