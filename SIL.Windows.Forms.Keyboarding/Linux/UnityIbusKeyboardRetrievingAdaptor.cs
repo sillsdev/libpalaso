@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
@@ -16,17 +17,22 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	[CLSCompliant(false)]
 	public class UnityIbusKeyboardRetrievingAdaptor : IbusKeyboardRetrievingAdaptor
 	{
-		private readonly UnityKeyboardRetrievingHelper _helper = new UnityKeyboardRetrievingHelper();
+		protected readonly UnityKeyboardRetrievingHelper _helper = new UnityKeyboardRetrievingHelper();
 
 		#region Specific implementations of IKeyboardRetriever
 
-		public override bool IsApplicable => _helper.IsApplicable;
+		public override bool IsApplicable => _helper.IsApplicable && !Platform.IsGnomeShell;
 
 		public override void Initialize()
 		{
-			SwitchingAdaptor = new UnityIbusKeyboardSwitchingAdaptor(IbusCommunicator);
+			SwitchingAdaptor = CreateSwitchingAdaptor();
 			KeyboardRetrievingHelper.AddIbusVersionAsErrorReportProperty();
 			InitKeyboards();
+		}
+
+		protected virtual IKeyboardSwitchingAdaptor CreateSwitchingAdaptor()
+		{
+			return new UnityIbusKeyboardSwitchingAdaptor(IbusCommunicator);
 		}
 
 		protected override string GetKeyboardSetupApplication(out string arguments)
