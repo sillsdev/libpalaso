@@ -27,7 +27,7 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
   <ItemGroup>
     <PackageReference Include="ibusdotnet" Version="2.0.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Moq" Version="4.14.1" />
+    <PackageReference Include="Moq" Version="4.7.145" />
     <PackageReference Include="NDesk.DBus" Version="0.15.0" />
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="RhinoMocks" Version="3.6.1" />

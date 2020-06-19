@@ -30,6 +30,8 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 
 			public void FocusIn()
 			{
+				// if this fails when running a test in debugger you might want to downgrade
+				// Moq nuget package to 4.7.x
 				GlobalCachedInputContext.InputContext = new Mock<IInputContext>().Object;
 			}
 
