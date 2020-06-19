@@ -63,14 +63,13 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			if (value == IntPtr.Zero)
 				return new string[0];
-			uint size = Unmanaged.g_variant_n_children(value);
-			string[] list = new string[size];
+			var size = Unmanaged.g_variant_n_children(value);
+			var list = new string[size];
 			for (uint i = 0; i < size; ++i)
 			{
-				IntPtr child = Unmanaged.g_variant_get_child_value(value, i);
-				int length;
+				var child = Unmanaged.g_variant_get_child_value(value, i);
 				// handle must not be freed -- it points into the actual GVariant memory for child!
-				IntPtr handle = Unmanaged.g_variant_get_string(child, out length);
+				var handle = Unmanaged.g_variant_get_string(child, out var length);
 				var rawbytes = new byte[length];
 				Marshal.Copy(handle, rawbytes, 0, length);
 				list[i] = Encoding.UTF8.GetString(rawbytes);
@@ -93,14 +92,14 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			if (value == IntPtr.Zero)
 				return new string[0];
-			uint size = Unmanaged.g_variant_n_children(value);
-			string[] list = new string[size];
+			var size = Unmanaged.g_variant_n_children(value);
+			var list = new string[size];
 			for (uint i = 0; i < size; ++i)
 			{
-				IntPtr duple = Unmanaged.g_variant_get_child_value(value, i);
+				var duple = Unmanaged.g_variant_get_child_value(value, i);
 				var values = GetStringArrayFromGVariantArray(duple);
 				Debug.Assert(values.Length == 2);
-				list[i] = String.Format("{0};;{1}", values[0], values[1]);
+				list[i] = $"{values[0]};;{values[1]}";
 				Unmanaged.g_variant_unref(duple);
 				//Console.WriteLine("DEBUG GetStringArrayFromGVariantListArray(): list[{0}] = \"{1}\"", i, list[i]);
 			}

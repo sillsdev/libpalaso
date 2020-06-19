@@ -271,10 +271,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			_ibusComm.FocusOut();
 
 			var eventHandler = GetEventHandlerForControl(sender as Control);
-			if (eventHandler == null)
-				return;
 
-			eventHandler.CommitOrReset();
+			eventHandler?.CommitOrReset();
 		}
 
 		/// <summary>

@@ -49,10 +49,7 @@ namespace X11.XKlavier
 			}
 		}
 
-		public int NumGroups
-		{
-			get { return xkl_engine_get_num_groups(Engine); }
-		}
+		public int NumGroups => xkl_engine_get_num_groups(Engine);
 
 		/// <summary>
 		/// Gets the non-localized, English names of the installed XKB keyboards
@@ -97,25 +94,16 @@ namespace X11.XKlavier
 			}
 		}
 
-		public int NextGroup
-		{
-			get { return xkl_engine_get_next_group(Engine); }
-		}
+		public int NextGroup => xkl_engine_get_next_group(Engine);
 
-		public int PrevGroup
-		{
-			get { return xkl_engine_get_prev_group(Engine); }
-		}
+		public int PrevGroup => xkl_engine_get_prev_group(Engine);
 
-		public int CurrentWindowGroup
-		{
-			get { return xkl_engine_get_current_window_group(Engine); }
-		}
+		public int CurrentWindowGroup => xkl_engine_get_current_window_group(Engine);
 
 		public int DefaultGroup
 		{
-			get { return xkl_engine_get_default_group(Engine); }
-			set { xkl_engine_set_default_group(Engine, value); }
+			get => xkl_engine_get_default_group(Engine);
+			set => xkl_engine_set_default_group(Engine, value);
 		}
 
 		public void SetGroup(int grp)
@@ -128,10 +116,7 @@ namespace X11.XKlavier
 			xkl_engine_set_group_per_toplevel_window(Engine, fGlobal);
 		}
 
-		public bool IsToplevelWindowGroup
-		{
-			get { return xkl_engine_is_group_per_toplevel_window(Engine); }
-		}
+		public bool IsToplevelWindowGroup => xkl_engine_is_group_per_toplevel_window(Engine);
 
 		public int CurrentState
 		{
@@ -148,8 +133,7 @@ namespace X11.XKlavier
 			get
 			{
 				var window = xkl_engine_get_current_window(Engine);
-				IntPtr statePtr;
-				if (xkl_engine_get_state(Engine, window, out statePtr))
+				if (xkl_engine_get_state(Engine, window, out var statePtr))
 				{
 					var state = (XklState)Marshal.PtrToStructure(statePtr, typeof(XklState));
 					return state.Group;

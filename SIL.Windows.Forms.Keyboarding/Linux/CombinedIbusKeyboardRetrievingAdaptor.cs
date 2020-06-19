@@ -36,7 +36,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 		}
 
-		private static string GSettingsSchema { get { return "org.freedesktop.ibus.general"; } }
+		private static string GSettingsSchema => "org.freedesktop.ibus.general";
 
 		// To find the corresponding schema for a dconf path, e.g. /desktop/ibus/general/preload-engines:
 		//     $ gsettings list-schemas | grep desktop.ibus.general
@@ -72,41 +72,43 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// </remarks>
 		private static void LoadDefaultXkbSettings()
 		{
-			var startInfo = new ProcessStartInfo();
-			startInfo.FileName = "/usr/bin/setxkbmap";
-			startInfo.Arguments = "-query";
-			startInfo.RedirectStandardOutput = true;
-			startInfo.UseShellExecute = false;
-			startInfo.CreateNoWindow = true;
+			var startInfo = new ProcessStartInfo {
+				FileName = "/usr/bin/setxkbmap",
+				Arguments = "-query",
+				RedirectStandardOutput = true,
+				UseShellExecute = false,
+				CreateNoWindow = true
+			};
 			string stdout;
-			using (Process process = Process.Start(startInfo))
+			using (var process = Process.Start(startInfo))
 			{
 				stdout = process.StandardOutput.ReadToEnd();
 				process.WaitForExit();
 			}
-			if (!string.IsNullOrEmpty(stdout))
+
+			if (string.IsNullOrEmpty(stdout))
+				return;
+
+			var lines = stdout.Split(new[]{ '\n' }, StringSplitOptions.RemoveEmptyEntries);
+			foreach (var line in lines)
 			{
-				var lines = stdout.Split(new char[]{ '\n' }, StringSplitOptions.RemoveEmptyEntries);
-				for (int i = 0; i < lines.Length; ++i)
+				var parts = line.Split(new[]{ ':' }, StringSplitOptions.None);
+				switch (parts[0])
 				{
-					var parts = lines[i].Split(new char[]{ ':' }, StringSplitOptions.None);
-					switch (parts[0])
-					{
-						case "layout":
-							CombinedIbusKeyboardSwitchingAdaptor.DefaultLayout = parts[1].Trim();
-							break;
-						case "variant":
-							CombinedIbusKeyboardSwitchingAdaptor.DefaultVariant = parts[1].Trim();
-							break;
-						case "options":
-							CombinedIbusKeyboardSwitchingAdaptor.DefaultOption = parts[1].Trim();
-							break;
-					}
+					case "layout":
+						CombinedIbusKeyboardSwitchingAdaptor.DefaultLayout = parts[1].Trim();
+						break;
+					case "variant":
+						CombinedIbusKeyboardSwitchingAdaptor.DefaultVariant = parts[1].Trim();
+						break;
+					case "options":
+						CombinedIbusKeyboardSwitchingAdaptor.DefaultOption = parts[1].Trim();
+						break;
 				}
 			}
-			//Console.WriteLine("DEBUG _defaultLayout = \"{0}\"", Adaptor.DefaultLayout);
-			//Console.WriteLine("DEBUG _defaultVariant = \"{0}\"", Adaptor.DefaultVariant);
-			//Console.WriteLine("DEBUG _defaultOption = \"{0}\"", Adaptor.DefaultOption);
+			//Console.WriteLine("DEBUG defaultLayout = \"{0}\"", CombinedIbusKeyboardSwitchingAdaptor.DefaultLayout);
+			//Console.WriteLine("DEBUG defaultVariant = \"{0}\"", CombinedIbusKeyboardSwitchingAdaptor.DefaultVariant);
+			//Console.WriteLine("DEBUG defaultOption = \"{0}\"", CombinedIbusKeyboardSwitchingAdaptor.DefaultOption);
 		}
 
 		/// <summary>
@@ -114,7 +116,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// </summary>
 		private static void LoadLatinLayouts(IntPtr settingsGeneral)
 		{
-			IntPtr value = Unmanaged.g_settings_get_value(settingsGeneral, "xkb-latin-layouts");
+			var value = Unmanaged.g_settings_get_value(settingsGeneral, "xkb-latin-layouts");
 			CombinedIbusKeyboardSwitchingAdaptor.LatinLayouts =
 				KeyboardRetrievingHelper.GetStringArrayFromGVariantArray(value);
 			Unmanaged.g_variant_unref(value);
@@ -157,22 +159,19 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			}
 		}
 
-		public override KeyboardAdaptorType Type
-		{
-			get { return KeyboardAdaptorType.System | KeyboardAdaptorType.OtherIm; }
-		}
+		public override KeyboardAdaptorType Type => KeyboardAdaptorType.System | KeyboardAdaptorType.OtherIm;
 
 		public override void Initialize()
 		{
 			// We come here twice, for both KeyboardType.System and KeyboardType.OtherIm.
 			// We want to create a new switching adaptor only the first time otherwise we're
 			// getting into trouble
-			if (SwitchingAdaptor == null)
-			{
-				SwitchingAdaptor = new CombinedIbusKeyboardSwitchingAdaptor(IbusCommunicator);
-				KeyboardRetrievingHelper.AddIbusVersionAsErrorReportProperty();
-				InitKeyboards();
-			}
+			if (SwitchingAdaptor != null)
+				return;
+
+			SwitchingAdaptor = new CombinedIbusKeyboardSwitchingAdaptor(IbusCommunicator);
+			KeyboardRetrievingHelper.AddIbusVersionAsErrorReportProperty();
+			InitKeyboards();
 		}
 
 		public override KeyboardDescription CreateKeyboardDefinition(string id)
@@ -212,9 +211,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				else
 					continue;
 
-				string id = string.Format("{0}_{1}", ibusKeyboard.Language, ibusKeyboard.LongName);
-				IbusKeyboardDescription keyboard;
-				if (curKeyboards.TryGetValue(id, out keyboard))
+				string id = $"{ibusKeyboard.Language}_{ibusKeyboard.LongName}";
+				if (curKeyboards.TryGetValue(id, out var keyboard))
 				{
 					if (!keyboard.IsAvailable)
 					{

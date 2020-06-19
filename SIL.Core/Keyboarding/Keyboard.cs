@@ -17,8 +17,8 @@ namespace SIL.Keyboarding
 		/// </summary>
 		public static IKeyboardController Controller
 		{
-			get { return _controller ?? (_controller = new DefaultKeyboardController()); }
-			set { _controller = value; }
+			get => _controller ?? (_controller = new DefaultKeyboardController());
+			set => _controller = value;
 		}
 	}
 }

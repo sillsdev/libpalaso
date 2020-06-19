@@ -19,10 +19,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			}
 
 			// No matter what we want this to be active
-			public override bool IsApplicable
-			{
-				get { return true; }
-			}
+			public override bool IsApplicable => true;
 
 			protected override void InitKeyboards()
 			{
@@ -57,7 +54,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			engineDescMock.Setup(x => x.LongName).Returns(longname);
 			engineDescMock.Setup(x => x.Language).Returns(language);
 
-			return new IbusKeyboardDescription(string.Format("{0}_{1}", language, name), engineDescMock.Object, Adaptor) {SystemIndex = systemIndex};
+			return new IbusKeyboardDescription($"{language}_{name}", engineDescMock.Object, Adaptor) {SystemIndex = systemIndex};
 		}
 
 		[TestCase("us", "xkb:us::eng", ExpectedResult="English - English (US)",

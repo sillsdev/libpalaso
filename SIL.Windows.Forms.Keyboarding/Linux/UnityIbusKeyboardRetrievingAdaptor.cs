@@ -77,11 +77,11 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				keyboard.SystemIndex = keyboards[ibusKeyboard.LongName];
 			}
 
-			foreach (IbusKeyboardDescription existingKeyboard in curKeyboards.Values)
+			foreach (var existingKeyboard in curKeyboards.Values)
 				existingKeyboard.SetIsAvailable(false);
 
 			foreach (var layout in missingLayouts)
-				Console.WriteLine("{0}: Didn't find {1}", GetType().Name, layout);
+				Console.WriteLine($"{GetType().Name}: Didn't find {layout}");
 		}
 	}
 }

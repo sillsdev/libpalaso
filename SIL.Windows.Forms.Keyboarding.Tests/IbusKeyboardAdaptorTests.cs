@@ -57,28 +57,16 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			{
 			}
 
-			public bool IsDisposed
-			{
-				get { return false; }
-			}
+			public bool IsDisposed => false;
 
-			public bool Connected
-			{
-				get { return true; }
-			}
+			public bool Connected => true;
 
 			public void NotifySelectionLocationAndHeight(int x, int y, int height)
 			{
 				throw new NotImplementedException();
 			}
 
-			public IBusConnection Connection
-			{
-				get
-				{
-					throw new NotImplementedException();
-				}
-			}
+			public IBusConnection Connection => throw new NotImplementedException();
 
 			public void Dispose()
 			{
@@ -91,11 +79,9 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			{
 			}
 
-			public override bool IsApplicable
-			{
+			public override bool IsApplicable =>
 				// No matter what we want this to be active
-				get { return true; }
-			}
+				true;
 
 			protected override void InitLocales()
 			{
@@ -108,11 +94,9 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			{
 			}
 
-			public override bool IsApplicable
-			{
+			public override bool IsApplicable =>
 				// No matter what we want this to be active
-				get { return true; }
-			}
+				true;
 
 			protected override void InitKeyboards()
 			{

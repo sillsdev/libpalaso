@@ -35,20 +35,11 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		/// <summary>
 		/// Gets the default keyboard of the system.
 		/// </summary>
-		public KeyboardDescription DefaultKeyboard
-		{
-			get
-			{
-				throw new NotImplementedException("Only keyboards of the type KeyboardAdaptorTypeSystem need to return a DefaultKeyboard. KeymanKeyboards are not of that type.");
-			}
-		}
+		public KeyboardDescription DefaultKeyboard => throw new NotImplementedException("Only keyboards of the type KeyboardAdaptorTypeSystem need to return a DefaultKeyboard. KeymanKeyboards are not of that type.");
 
 		/// <summary>
 		/// Implementation is not required because this is not the primary (Type System) adapter.
 		/// </summary>
-		public KeyboardDescription ActiveKeyboard
-		{
-			get { throw new NotImplementedException(); }
-		}
+		public KeyboardDescription ActiveKeyboard => throw new NotImplementedException();
 	}
 }

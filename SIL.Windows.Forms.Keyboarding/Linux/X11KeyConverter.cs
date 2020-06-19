@@ -132,9 +132,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			EnsureInitialized();
 
-			int scanCode;
-
-			if (KeyMap.TryGetValue(keySym, out scanCode))
+			if (KeyMap.TryGetValue(keySym, out var scanCode))
 				return scanCode;
 			return -1;
 		}

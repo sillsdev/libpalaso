@@ -50,8 +50,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			// between ComObjects and managed object.
 			Application.ThreadExit += (sender, args) =>
 								{
-									if (m_connection != null)
-										m_connection.Dispose();
+									m_connection?.Dispose();
 									m_connection = null;
 								};
 
@@ -88,8 +87,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			if (fDisposing && !IsDisposed)
 			{
 				// dispose managed and unmanaged objects
-				if (m_connection != null)
-					m_connection.Dispose();
+				m_connection?.Dispose();
 			}
 			m_connection = null;
 			IsDisposed = true;
@@ -147,18 +145,12 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// <summary>
 		/// Returns true if we have a connection to Ibus.
 		/// </summary>
-		public bool Connected
-			{
-			get { return m_connection != null; }
-		}
+		public bool Connected => m_connection != null;
 
 		/// <summary>
 		/// Gets the connection to IBus.
 		/// </summary>
-		public IBusConnection Connection
-		{
-			get { return m_connection; }
-		}
+		public IBusConnection Connection => m_connection;
 
 		/// <summary>
 		/// If we have a valid inputContext Focus it. Also set the GlobalCachedInputContext.

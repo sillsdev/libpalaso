@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using SIL.Extensions;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
@@ -181,7 +182,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 						desired = $"xkb:{DefaultLayout}:{DefaultVariant}:";
 					var pattern = string.Format("[^A-Za-z]{0}[^A-Za-z]|^{0}[^A-Za-z]|.*[^A-Za-z]{0}$",
 						DefaultLayout);
-					var regex = new System.Text.RegularExpressions.Regex(pattern);
+					var regex = new Regex(pattern);
 					KeyboardDescription first = null;
 					foreach (var kbd in KeyboardController.Instance.AvailableKeyboards.OfType<KeyboardDescription>())
 					{
@@ -213,9 +214,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// Implementation is not required because the default implementation of KeyboardController
 		/// is sufficient.
 		/// </summary>
-		public override KeyboardDescription ActiveKeyboard
-		{
-			get { return null; }
-		}
+		public override KeyboardDescription ActiveKeyboard => null;
 	}
 }

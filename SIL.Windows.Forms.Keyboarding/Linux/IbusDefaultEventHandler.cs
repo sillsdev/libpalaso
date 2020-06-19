@@ -49,7 +49,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			if (m_InReset)
 				return false;
 
-			bool retVal = false;
+			var retVal = false;
 			m_InReset = true;
 			if (cancel && m_SelectionStart > -1)
 			{
@@ -96,7 +96,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			if (!text.StartsWith(backSpace.ToString()))
 				return 0;
 
-			int count = text.Length - text.TrimStart(backSpace).Length;
+			var count = text.Length - text.TrimStart(backSpace).Length;
 			text = text.TrimStart(backSpace);
 			return count;
 		}
@@ -373,10 +373,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// <summary>
 		/// Called by the IbusKeyboardAdapter to find out if a preedit is active.
 		/// </summary>
-		public bool IsPreeditActive
-		{
-			get { return m_SelectionStart > -1; }
-		}
+		public bool IsPreeditActive => m_SelectionStart > -1;
+
 		#endregion
 	}
 }

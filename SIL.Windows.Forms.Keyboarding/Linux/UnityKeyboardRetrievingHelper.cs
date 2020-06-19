@@ -33,8 +33,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			var keyboards = new Dictionary<string, uint>();
 			var list = GetMyKeyboards();
 			uint kbdIndex = 0;
-			for (int i = 0; i < list.Length; ++i)
-				AddKeyboard(list[i], ref kbdIndex, keyboards, keyboardTypeMatches);
+			foreach (var t in list)
+				AddKeyboard(t, ref kbdIndex, keyboards, keyboardTypeMatches);
 
 			registerKeyboards(keyboards);
 		}
