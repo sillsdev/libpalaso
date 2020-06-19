@@ -191,10 +191,19 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				LayoutName layoutName;
 				if (profiles[0].Hkl == IntPtr.Zero)
 				{
+					try
+					{
+						layoutName = new LayoutName(inputLanguage.LayoutName,
+							ProcessorProfiles.GetLanguageProfileDescription(ref profiles[0].ClsId, profiles[0].LangId,
+								ref profiles[0].GuidProfile), profiles[0]);
+					}
+					catch
+					{
+						// this exception has happened in testing, doesn't seem to be anything we can do
+						// except just ignore this keyboard
+						continue;
+					}
 					returnedLanguage = true;
-					layoutName = new LayoutName(inputLanguage.LayoutName,
-						ProcessorProfiles.GetLanguageProfileDescription(ref profiles[0].ClsId, profiles[0].LangId,
-							ref profiles[0].GuidProfile), profiles[0]);
 					yield return layoutName;
 				}
 				else
