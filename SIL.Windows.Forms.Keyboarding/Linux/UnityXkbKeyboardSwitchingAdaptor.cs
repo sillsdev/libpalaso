@@ -19,10 +19,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			if (xkbKeyboard == null || xkbKeyboard.GroupIndex < 0)
 				return;
 
-			var switchingAdaptor = KeyboardController.Instance
-				.Adaptors[KeyboardAdaptorType.OtherIm]
-				.SwitchingAdaptor as IUnityKeyboardSwitchingAdaptor;
-			switchingAdaptor.SelectKeyboard((uint) xkbKeyboard.GroupIndex);
+			UnityIbusKeyboardSwitchingAdaptor.SelectKeyboard((uint)xkbKeyboard.GroupIndex);
 		}
 	}
 }

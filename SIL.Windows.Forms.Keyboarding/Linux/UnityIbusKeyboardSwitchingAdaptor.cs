@@ -9,20 +9,20 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// <summary>
 	/// Class for dealing with ibus keyboards on Unity (as found in Trusty >= 13.10 < 18.04)
 	/// </summary>
-	public class UnityIbusKeyboardSwitchingAdaptor : IbusKeyboardSwitchingAdaptor, IUnityKeyboardSwitchingAdaptor
+	public class UnityIbusKeyboardSwitchingAdaptor : IbusKeyboardSwitchingAdaptor
 	{
 		public UnityIbusKeyboardSwitchingAdaptor(IIbusCommunicator ibusCommunicator) :
 			base(ibusCommunicator)
 		{
 		}
 
-		void IUnityKeyboardSwitchingAdaptor.SelectKeyboard(uint index)
+		internal static void SelectKeyboard(uint index)
 		{
 			const string schema = "org.gnome.desktop.input-sources";
 			bool okay = true;
 			try
 			{
-				okay &= KeyboardRetrievingHelper.SchemaIsInstalled(schema);
+				okay &= GlibHelper.SchemaIsInstalled(schema);
 				if (!okay)
 					return;
 
@@ -47,7 +47,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			var ibusKeyboard = (IbusKeyboardDescription) keyboard;
 			var systemIndex = ibusKeyboard.SystemIndex;
-			((IUnityKeyboardSwitchingAdaptor)this).SelectKeyboard(systemIndex);
+			SelectKeyboard(systemIndex);
 		}
 
 	}

@@ -68,7 +68,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			return ibusWrapper.ListActiveEngines();
 		}
 
-		internal IBusEngineDesc[] GetAllIBusKeyboards()
+		protected virtual IBusEngineDesc[] GetAllIBusKeyboards()
 		{
 			if (!_ibusComm.Connected)
 				return new IBusEngineDesc[0];
