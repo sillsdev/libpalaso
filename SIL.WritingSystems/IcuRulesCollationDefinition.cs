@@ -14,7 +14,6 @@ namespace SIL.WritingSystems
 			: base(type)
 		{
 			_imports = new BulkObservableList<IcuCollationImport>();
-			IsValid = true;
 			SetupCollectionChangeListeners();
 		}
 
