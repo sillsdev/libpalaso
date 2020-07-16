@@ -310,7 +310,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			var keyboards = Keyboard.Controller.AvailableKeyboards.OrderBy(kbd => kbd.Id).ToArray();
 			// It seems that Dutch (Belgium) got added recently, so some machines are missing
 			// this.
-			Assert.That(keyboards.Length == 3 || keyboards.Length == 2);
+			Assert.That(keyboards.Length, Is.EqualTo(3).Or.EqualTo(2));
 			var expectedKeyboardIds = new List<string>()
 				{ "de-BE_be", "fr-BE_be" };
 
@@ -375,7 +375,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		/// layouts (smi_FIN and sme_FIN), but ICU returns a LCID only for one of them.
 		/// </summary>
 		[Test]
-		public void InstalledKeyboards_NorthernSami()
+		public void InstalledKeyboards_NorthernSaami()
 		{
 			XklEngineResponder.SetGroupNames = new[] { KeyboardFinlandNorthernSaami };
 
