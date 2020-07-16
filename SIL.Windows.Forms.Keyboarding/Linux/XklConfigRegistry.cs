@@ -1,11 +1,13 @@
-﻿// Copyright (c) 2011-2015 SIL International
+﻿// Copyright (c) 2011-2020 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Icu;
 using SIL.Windows.Forms.Keyboarding.Linux;
 
+// ReSharper disable once CheckNamespace
 namespace X11.XKlavier
 {
 	/// <summary>
@@ -93,17 +95,17 @@ namespace X11.XKlavier
 		}
 		#endregion
 
-		private Dictionary<string, List<LayoutDescription>> m_Layouts;
+		private Dictionary<string, List<LayoutDescription>> _layouts;
 
 		public static XklConfigRegistry Create(IXklEngine engine)
 		{
 			var configRegistry = xkl_config_registry_get_instance(engine.Engine);
 			if (!xkl_config_registry_load(configRegistry, true))
-				throw new ApplicationException("Got error trying to load config registry: " + engine.LastError);
+				throw new ApplicationException($"Got error trying to load config registry: {engine.LastError}");
 			return new XklConfigRegistry(configRegistry);
 		}
 
-		internal IntPtr ConfigRegistry { get; private set; }
+		private IntPtr ConfigRegistry { get; }
 
 		private XklConfigRegistry(IntPtr configRegistry)
 		{
@@ -118,9 +120,9 @@ namespace X11.XKlavier
 		{
 			get
 			{
-				if (m_Layouts == null)
+				if (_layouts == null)
 				{
-					m_Layouts = new Dictionary<string, List<LayoutDescription>>();
+					_layouts = new Dictionary<string, List<LayoutDescription>>();
 					// add layouts with standard language code (in /usr/share/locale)
 					xkl_config_registry_foreach_language(ConfigRegistry,
 						ProcessLanguage, IntPtr.Zero);
@@ -131,18 +133,18 @@ namespace X11.XKlavier
 					xkl_config_registry_foreach_layout(ConfigRegistry,
 						ProcessMainLayout, IntPtr.Zero);
 				}
-				return m_Layouts;
+				return _layouts;
 			}
 		}
 
-		private static string Get2LetterLanguageCode(string langCode3letter)
+		private static string Get2LetterLanguageCode(string langCode3Letter)
 		{
-			return new Locale(AlternateLanguageCodes.GetLanguageCode(langCode3letter)).Language;
+			return new Locale(AlternateLanguageCodes.GetLanguageCode(langCode3Letter)).Language;
 		}
 
 		private void ProcessLanguage(IntPtr configRegistry, ref XklConfigItem item, IntPtr unused)
 		{
-			IntPtr dataPtr = Marshal.AllocHGlobal(Marshal.SizeOf(item));
+			var dataPtr = Marshal.AllocHGlobal(Marshal.SizeOf(item));
 			try
 			{
 				Marshal.StructureToPtr(item, dataPtr, false);
@@ -159,13 +161,15 @@ namespace X11.XKlavier
 			ref XklConfigItem subitem, IntPtr data)
 		{
 			var subitemIsNull = subitem.Parent.RefCount == IntPtr.Zero;
-			XklConfigItem language = (XklConfigItem)Marshal.PtrToStructure(data, typeof(XklConfigItem));
+			var language = (XklConfigItem)Marshal.PtrToStructure(data, typeof(XklConfigItem));
 			var description = subitemIsNull ? item.Description : subitem.Description;
+			var name = subitemIsNull ? item.Name : subitem.Name;
+			var variant = subitemIsNull ? string.Empty : subitem.Description;
 			var layouts = GetLayoutList(description);
 			var newLayout = new LayoutDescription {
-				LayoutId = subitemIsNull ? item.Name : subitem.Name,
+				LayoutId = name,
 				Description = description,
-				LayoutVariant = subitemIsNull ? string.Empty : subitem.Description,
+				LayoutVariant = variant,
 				LanguageCode = Get2LetterLanguageCode(language.Name),
 				CountryCode = item.Name.ToUpper()
 			};
@@ -174,7 +178,7 @@ namespace X11.XKlavier
 
 		private void ProcessCountry(IntPtr configRegistry, ref XklConfigItem item, IntPtr unused)
 		{
-			IntPtr dataPtr = Marshal.AllocHGlobal(Marshal.SizeOf(item));
+			var dataPtr = Marshal.AllocHGlobal(Marshal.SizeOf(item));
 			try
 			{
 				Marshal.StructureToPtr(item, dataPtr, false);
@@ -191,16 +195,14 @@ namespace X11.XKlavier
 			ref XklConfigItem subitem, IntPtr data)
 		{
 			var subitemIsNull = subitem.Parent.RefCount == IntPtr.Zero;
-			XklConfigItem country = (XklConfigItem)Marshal.PtrToStructure(data, typeof(XklConfigItem));
+			var country = (XklConfigItem)Marshal.PtrToStructure(data, typeof(XklConfigItem));
 			var description = subitemIsNull ? item.Description : subitem.Description;
 			var name = subitemIsNull ? item.Name : subitem.Name;
 			var variant = subitemIsNull ? String.Empty : subitem.Description;
 			var layouts = GetLayoutList(description);
-			foreach (var desc in layouts)
-			{
-				if (desc.LayoutId == name && desc.Description == description && desc.LayoutVariant == variant)
+			if (layouts.Any(desc => desc.LayoutId == name && desc.Description == description && desc.LayoutVariant == variant))
 					return;
-			}
+
 			var langCode = subitemIsNull ? item.Short_Description : subitem.Short_Description;
 			if (String.IsNullOrEmpty(langCode))
 				langCode = subitemIsNull ? item.Name : subitem.Name;
@@ -216,7 +218,7 @@ namespace X11.XKlavier
 
 		private void ProcessMainLayout(IntPtr configRegistry, ref XklConfigItem item, IntPtr data)
 		{
-			IntPtr dataPtr = Marshal.AllocHGlobal(Marshal.SizeOf(item));
+			var dataPtr = Marshal.AllocHGlobal(Marshal.SizeOf(item));
 			try
 			{
 				StoreLayoutInfo(item, data);
@@ -235,16 +237,14 @@ namespace X11.XKlavier
 			StoreLayoutInfo(item, data);
 		}
 
-		void StoreLayoutInfo(XklConfigItem item, IntPtr data)
+		private void StoreLayoutInfo(XklConfigItem item, IntPtr data)
 		{
 			var description = item.Description;
 			var variant = data != IntPtr.Zero ? description : String.Empty;
 			var layouts = GetLayoutList(description);
-			foreach (var desc in layouts)
-			{
-				if (desc.LayoutId == item.Name && desc.Description == description && desc.LayoutVariant == variant)
+			if (layouts.Any(desc => desc.LayoutId == item.Name && desc.Description == description && desc.LayoutVariant == variant))
 					return;
-			}
+
 			var newLayout = new LayoutDescription {
 				LayoutId = item.Name,
 				Description = description,
@@ -252,7 +252,7 @@ namespace X11.XKlavier
 			};
 			if (data != IntPtr.Zero)
 			{
-				XklConfigItem parent = (XklConfigItem)Marshal.PtrToStructure(data, typeof(XklConfigItem));
+				var parent = (XklConfigItem)Marshal.PtrToStructure(data, typeof(XklConfigItem));
 				var langCode = String.IsNullOrEmpty(item.Short_Description) ? parent.Short_Description : item.Short_Description;
 				if (String.IsNullOrEmpty(langCode))
 					langCode = String.IsNullOrEmpty(item.Name) ? parent.Name : item.Name;
@@ -269,27 +269,30 @@ namespace X11.XKlavier
 			layouts.Add(newLayout);
 		}
 
-		List<LayoutDescription> GetLayoutList(string description)
+		private List<LayoutDescription> GetLayoutList(string description)
 		{
 			List<LayoutDescription> layouts;
-			if (m_Layouts.ContainsKey(description))
+			if (_layouts.ContainsKey(description))
 			{
-				layouts = m_Layouts[description];
+				layouts = _layouts[description];
 			}
 			else
 			{
 				layouts = new List<LayoutDescription>();
-				m_Layouts[description] = layouts;
+				_layouts[description] = layouts;
 			}
 			return layouts;
 		}
 
 		#region p/invoke related
+		// ReSharper disable FieldCanBeMadeReadOnly.Local
+		// ReSharper disable MemberCanBePrivate.Local
+		// ReSharper disable InconsistentNaming
 		[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
 		private struct XklConfigItem
 		{
 			private const int XKL_MAX_CI_NAME_LENGTH = 32;
-			private const int XKL_MAX_CI_SHORT_DESC_LENGTH = 10;
+			// private const int XKL_MAX_CI_SHORT_DESC_LENGTH = 10;
 			private const int XKL_MAX_CI_DESC_LENGTH = 192;
 
 			[StructLayout(LayoutKind.Sequential)]
@@ -310,6 +313,9 @@ namespace X11.XKlavier
 			[MarshalAs(UnmanagedType.ByValTStr, SizeConst=XKL_MAX_CI_DESC_LENGTH)]
 			public string Description;
 		}
+		// ReSharper restore FieldCanBeMadeReadOnly.Local
+		// ReSharper restore MemberCanBePrivate.Local
+		// ReSharper restore InconsistentNaming
 
 		private delegate void ConfigItemProcessFunc(IntPtr configRegistry, ref XklConfigItem item, IntPtr data);
 		private delegate void TwoConfigItemsProcessFunc(IntPtr configRegistry,
@@ -317,33 +323,33 @@ namespace X11.XKlavier
 
 
 		[DllImport("libxklavier")]
-		private extern static IntPtr xkl_config_registry_get_instance(IntPtr engine);
+		private static extern IntPtr xkl_config_registry_get_instance(IntPtr engine);
 
 		[DllImport("libxklavier")]
-		private extern static bool xkl_config_registry_load(IntPtr configRegistry, bool fExtrasNeeded);
+		private static extern bool xkl_config_registry_load(IntPtr configRegistry, bool fExtrasNeeded);
 
 		[DllImport("libxklavier")]
-		private extern static void xkl_config_registry_foreach_language(IntPtr configRegistry,
+		private static extern void xkl_config_registry_foreach_language(IntPtr configRegistry,
 			ConfigItemProcessFunc func, IntPtr data);
 
 		[DllImport("libxklavier")]
-		private extern static void xkl_config_registry_foreach_language_variant(IntPtr configRegistry,
+		private static extern void xkl_config_registry_foreach_language_variant(IntPtr configRegistry,
 			string languageCode, TwoConfigItemsProcessFunc func, IntPtr data);
 
 		[DllImport("libxklavier")]
-		private extern static void xkl_config_registry_foreach_country(IntPtr configRegistry,
+		private static extern void xkl_config_registry_foreach_country(IntPtr configRegistry,
 			ConfigItemProcessFunc func, IntPtr data);
 
 		[DllImport("libxklavier")]
-		private extern static void xkl_config_registry_foreach_country_variant(IntPtr configRegistry,
+		private static extern void xkl_config_registry_foreach_country_variant(IntPtr configRegistry,
 			string countryCode, TwoConfigItemsProcessFunc func, IntPtr data);
 
 		[DllImport("libxklavier")]
-		private extern static void xkl_config_registry_foreach_layout(IntPtr configRegistry,
+		private static extern void xkl_config_registry_foreach_layout(IntPtr configRegistry,
 			ConfigItemProcessFunc func, IntPtr data);
 
 		[DllImport("libxklavier")]
-		private extern static void xkl_config_registry_foreach_layout_variant(IntPtr configRegistry,
+		private static extern void xkl_config_registry_foreach_layout_variant(IntPtr configRegistry,
 			string layoutCode, ConfigItemProcessFunc func, IntPtr data);
 		#endregion
 	}
