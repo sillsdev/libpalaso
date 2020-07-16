@@ -92,6 +92,35 @@ namespace X11.XKlavier
 					"CountryCode={6}, Country={7}]", LayoutId, Description, LayoutVariant,
 					LocaleId, LanguageCode, Language, CountryCode, Country);
 			}
+
+			public override bool Equals(object obj)
+			{
+				if (!(obj is LayoutDescription))
+					return false;
+
+				var other = (LayoutDescription)obj;
+				return Equals(other);
+			}
+
+			public bool Equals(LayoutDescription other)
+			{
+				return LayoutId == other.LayoutId && Description == other.Description &&
+						LayoutVariant == other.LayoutVariant &&
+						LanguageCode == other.LanguageCode && CountryCode == other.CountryCode;
+			}
+
+			public override int GetHashCode()
+			{
+				unchecked
+				{
+					var hashCode = (LayoutId != null ? LayoutId.GetHashCode() : 0);
+					hashCode = (hashCode * 397) ^ (Description != null ? Description.GetHashCode() : 0);
+					hashCode = (hashCode * 397) ^ (LayoutVariant != null ? LayoutVariant.GetHashCode() : 0);
+					hashCode = (hashCode * 397) ^ (LanguageCode != null ? LanguageCode.GetHashCode() : 0);
+					hashCode = (hashCode * 397) ^ (CountryCode != null ? CountryCode.GetHashCode() : 0);
+					return hashCode;
+				}
+			}
 		}
 		#endregion
 
@@ -166,6 +195,7 @@ namespace X11.XKlavier
 			var name = subitemIsNull ? item.Name : subitem.Name;
 			var variant = subitemIsNull ? string.Empty : subitem.Description;
 			var layouts = GetLayoutList(description);
+
 			var newLayout = new LayoutDescription {
 				LayoutId = name,
 				Description = description,
@@ -173,7 +203,9 @@ namespace X11.XKlavier
 				LanguageCode = Get2LetterLanguageCode(language.Name),
 				CountryCode = item.Name.ToUpper()
 			};
-			layouts.Add(newLayout);
+			// don't add same layout twice (LT-20288)
+			if (!layouts.Any(layout => layout.Equals(newLayout)))
+				layouts.Add(newLayout);
 		}
 
 		private void ProcessCountry(IntPtr configRegistry, ref XklConfigItem item, IntPtr unused)
