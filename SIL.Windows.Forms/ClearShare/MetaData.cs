@@ -86,6 +86,16 @@ namespace SIL.Windows.Forms.ClearShare
 				// even in DEBUG mode, because else a lot of simple image tests fail
 				return;
 			}
+			catch (NotImplementedException ex)
+			{
+				// TagLib throws this exception if it encounters (private?) metadata that it doesn't
+				// understand.  This prevents us from even looking at images that have such metadata,
+				// which seems unreasonable.  Other packages like MetadataExtractor don't have this
+				// problem, but have other limitations.
+				// See https://issues.bloomlibrary.org/youtrack/issue/BL-8706 for a user complaint.
+				System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
+				return;
+			}
 			LoadProperties(destinationMetadata._originalTaglibMetadata.ImageTag, destinationMetadata);
 		}
 
