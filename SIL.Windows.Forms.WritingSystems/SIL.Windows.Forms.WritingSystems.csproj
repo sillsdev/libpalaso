@@ -26,6 +26,7 @@
 See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/CHANGELOG.md]]>
     </AppendToReleaseNotesProperty>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -46,13 +47,7 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
 
   <ItemGroup>
     <Compile Remove="artwork\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Remove="artwork\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="artwork\**" />
   </ItemGroup>
 

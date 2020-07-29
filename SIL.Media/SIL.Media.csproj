@@ -29,6 +29,7 @@
 See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/CHANGELOG.md]]>
     </AppendToReleaseNotesProperty>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GitVersionTask" Version="5.3.4">
@@ -45,7 +46,6 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
     <Reference Include="irrKlang.NET4">
       <Private>false</Private>
     </Reference>
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <None Include="lib/win-x64/*.dll">

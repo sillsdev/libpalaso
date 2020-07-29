@@ -22,6 +22,7 @@
 See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/CHANGELOG.md]]>
     </AppendToReleaseNotesProperty>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>

@@ -17,6 +17,7 @@
     <AssemblyOriginatorKeyFile>../../palaso.snk</AssemblyOriginatorKeyFile>
     <IsPackable>false</IsPackable>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,7 +36,6 @@
 
   <ItemGroup>
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
 </Project>

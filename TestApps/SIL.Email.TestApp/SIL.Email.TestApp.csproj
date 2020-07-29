@@ -17,6 +17,7 @@
     <AssemblyOriginatorKeyFile>../../palaso.snk</AssemblyOriginatorKeyFile>
     <IsPackable>false</IsPackable>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>

@@ -17,6 +17,7 @@
     <AssemblyOriginatorKeyFile>../../palaso.snk</AssemblyOriginatorKeyFile>
     <IsPackable>false</IsPackable>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,10 +31,6 @@
     <ProjectReference Include="..\..\SIL.Core\SIL.Core.csproj" />
     <ProjectReference Include="..\..\SIL.Windows.Forms.Keyboarding\SIL.Windows.Forms.Keyboarding.csproj" />
     <ProjectReference Include="..\..\SIL.Windows.Forms.WritingSystems\SIL.Windows.Forms.WritingSystems.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
 </Project>
