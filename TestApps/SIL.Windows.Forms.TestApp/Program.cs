@@ -19,6 +19,7 @@ namespace SIL.Windows.Forms.TestApp
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			Sldr.Initialize();
+			Icu.Wrapper.ConfineIcuVersions(54);
 			var localizationFolder = Path.GetDirectoryName(FileLocationUtilities.GetFileDistributedWithApplication("Palaso.en.tmx"));
 			LocalizationManager.Create(TranslationMemory.Tmx, "fr", "Palaso", "Palaso", "1.0.0", localizationFolder, "SIL/Palaso",
 				null, "");
