@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using SIL.Keyboarding;
 using SIL.Reporting;
+using SIL.WritingSystems;
 
 namespace SIL.Windows.Forms.WritingSystems
 {
@@ -78,7 +79,6 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private void UpdateFromModel()
 		{
-			_rulesValidationTimer.Enabled = false;
 			if (!_model.HasCurrentSelection)
 			{
 				_sortrules_panel.Visible = false;
@@ -114,16 +114,17 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private void _sortRulesTextBox_TextChanged(object sender, EventArgs e)
 		{
-			_changingModel = true;
-			try
+			if (ValidateSortRules())
 			{
-				_model.CurrentCollationRules = _sortRulesTextBox.Text;
-				_rulesValidationTimer.Stop();
-				_rulesValidationTimer.Start();
-			}
-			finally
-			{
-				_changingModel = false;
+				_changingModel = true;
+				try
+				{
+					_model.CurrentCollationRules = _sortRulesTextBox.Text;
+				}
+				finally
+				{
+					_changingModel = false;
+				}
 			}
 		}
 
@@ -149,7 +150,6 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				_sortrules_panel.Visible = true;
 				_languagecombo_panel.Visible = true;
-				_rulesValidationTimer.Enabled = false;
 				if (_languageOptionMap.ContainsKey(_model.CurrentCollationRules))
 				{
 					_languageComboBox.SelectedIndex = (int)_languageOptionMap[_model.CurrentCollationRules];
@@ -233,24 +233,38 @@ namespace SIL.Windows.Forms.WritingSystems
 				return;
 			}
 			_defaultKeyboard.Activate();
-			if (_rulesValidationTimer.Enabled)
-			{
-				_rulesValidationTimer.Enabled = false;
-				ValidateSortRules();
-			}
-		}
-
-		private void _rulesValidationTimer_Tick(object sender, EventArgs e)
-		{
-			_rulesValidationTimer.Enabled = false;
 			ValidateSortRules();
 		}
 
 		private bool ValidateSortRules()
 		{
+			CollationDefinition cd;
+			switch (_model.CurrentCollationRulesType)
+			{
+				case "CustomIcu":
+				{
+					cd = new IcuRulesCollationDefinition((IcuRulesCollationDefinition)_model.CurrentDefinition.DefaultCollation)
+					{
+						IcuRules = _sortRulesTextBox.Text
+					};
+					break;
+				}
+				case "CustomSimple":
+				{
+					cd = new SimpleRulesCollationDefinition((SimpleRulesCollationDefinition)_model.CurrentDefinition.DefaultCollation)
+					{
+						SimpleRules = _sortRulesTextBox.Text
+					};
+					break;
+				}
+				default:
+				{
+					return false;
+				}
+			}
 			string message;
 			const string prefixToMessage = "SORT RULES WILL NOT BE SAVED\r\n";
-			if (!_model.ValidateCurrentSortRules(out message))
+			if (!cd.Validate(out message))
 			{
 				_testSortResult.Text = prefixToMessage + (message ?? String.Empty);
 				_testSortResult.ForeColor = Color.Red;
