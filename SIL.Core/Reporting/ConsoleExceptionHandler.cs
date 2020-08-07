@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace SIL.Reporting
 {
-	internal class ConsoleExceptionHandler: ExceptionHandler
+	public class ConsoleExceptionHandler: ExceptionHandler
 	{
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
