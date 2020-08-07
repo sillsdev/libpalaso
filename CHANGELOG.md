@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - Reporting/UsageReporter
 - [SIL.Windows.Forms] Remove unnecessary dependency on `NAudio`
 - [SIL.Core] Move `HandleUnhandledException()` method from derived classes to base class
+- [SIL.Core] `ConsoleExceptionHandler` class is now public
 - [SIL.DblBundle.Tests] Create nuget package
 - [SIL.Windows.Forms] Use the new Registered trademark logo (in About Box). Remove 132x148 logo.
 

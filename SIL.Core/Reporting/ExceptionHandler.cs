@@ -27,7 +27,7 @@ namespace SIL.Reporting
 		/// Initialize the ExceptionHandler. By default, the exception handler will be initialized with a ConsoleExceptionHandler
 		/// unless the entry assembly uses a dependency on SIL.Windows.Forms.dll. In that case we default to the WinFormsExceptionHandler
 		/// </summary>
-		[Obsolete("Use Init(ExceptionHandler) instead, e.g. Init(new ConsoleExceptionHandler()) or Init(new WinFormsExceptionHandler())")]
+		[Obsolete("Use ExceptionHandler.Init(ExceptionHandler) instead, e.g. ExceptionHandler.Init(new ConsoleExceptionHandler()) or ExceptionHandler.Init(new WinFormsExceptionHandler())")]
 		public static void Init()
 		{
 			if (_singleton != null)
