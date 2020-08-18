@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -43,14 +43,14 @@ namespace SIL.WritingSystems
 			if (_globalRepository != null)
 			{
 				T globalWs;
-				if (_globalRepository.TryGet(ws.LanguageTag, out globalWs))
+				if (_globalRepository.TryGet(ws.Id, out globalWs))
 				{
 					if (ws.DateModified > globalWs.DateModified)
 					{
 						T newWs = WritingSystemFactory.Create(ws, cloneId: true);
 						try
 						{
-							_globalRepository.Replace(ws.LanguageTag, newWs);
+							_globalRepository.Replace(ws.Id, newWs);
 						}
 						catch (Exception)
 						{
@@ -59,7 +59,7 @@ namespace SIL.WritingSystems
 						}
 					}
 				}
-				else
+				else if(_globalRepository.CanSet(ws)) // Don't try to set it in the global store if it claims we can't.
 				{
 					_globalRepository.Set(WritingSystemFactory.Create(ws, cloneId: true));
 				}
@@ -70,11 +70,10 @@ namespace SIL.WritingSystems
 		{
 			foreach (T ws in _globalRepository.AllWritingSystems)
 			{
-				if (WritingSystems.ContainsKey(ws.LanguageTag))
+				if (WritingSystems.ContainsKey(ws.Id))
 				{
-					DateTime lastDateModified;
-					if ((!_writingSystemsToIgnore.TryGetValue(ws.LanguageTag, out lastDateModified) || ws.DateModified > lastDateModified)
-						&& (ws.DateModified > WritingSystems[ws.LanguageTag].DateModified))
+					if ((!_writingSystemsToIgnore.TryGetValue(ws.Id, out var lastDateModified) || ws.DateModified > lastDateModified)
+						&& (ws.DateModified > WritingSystems[ws.Id].DateModified))
 					{
 						yield return WritingSystemFactory.Create(ws);
 					}
@@ -89,7 +88,7 @@ namespace SIL.WritingSystems
 				var results = new List<T>();
 				foreach (T wsDef in WritingSystemsNewerInGlobalRepository())
 				{
-					LastChecked(wsDef.LanguageTag, wsDef.DateModified);
+					LastChecked(wsDef.Id ?? wsDef.LanguageTag, wsDef.DateModified);
 					results.Add(wsDef); // REVIEW Hasso 2013.12: add only if not equal?
 				}
 				return results;
