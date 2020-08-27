@@ -4,6 +4,8 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
@@ -39,14 +41,19 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			registerKeyboards(keyboards);
 		}
 
-		public string GetKeyboardSetupApplication(out string arguments)
+		public static string GetKeyboardSetupApplication(out string arguments)
 		{
 			arguments = "region layouts";
-			if (File.Exists("/usr/bin/unity-control-center"))
-				return "/usr/bin/unity-control-center";
-			if (File.Exists("/usr/bin/gnome-control-center"))
-				return "/usr/bin/gnome-control-center";
-			return null;
+			var programs = Platform.IsGnomeShell
+				? new[] {
+					"/usr/bin/gnome-control-center",
+					"/usr/bin/unity-control-center"
+				}
+				: new[] {
+					"/usr/bin/unity-control-center",
+					"/usr/bin/gnome-control-center"
+				};
+			return programs.FirstOrDefault(File.Exists);
 		}
 		#endregion
 

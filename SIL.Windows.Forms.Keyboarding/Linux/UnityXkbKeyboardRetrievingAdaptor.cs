@@ -34,7 +34,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		protected override string GetKeyboardSetupApplication(out string arguments)
 		{
-			var program = _helper.GetKeyboardSetupApplication(out arguments);
+			var program = UnityKeyboardRetrievingHelper.GetKeyboardSetupApplication(out arguments);
 			return string.IsNullOrEmpty(program) ? base.GetKeyboardSetupApplication(out arguments) : program;
 		}
 		#endregion
