@@ -255,14 +255,15 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'DebugMonoStrongName' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
-    <Reference Include="ibusdotnet">
-      <HintPath>..\packages\ibusdotnet.2.0.0.20771\lib\ibusdotnet.dll</HintPath>
-    </Reference>
     <Reference Include="NDesk.DBus">
       <HintPath>..\packages\NDesk.DBus.0.15.0\lib\NDesk.DBus.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="ibusdotnet, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c9ab93f7b23223fb">
+      <HintPath>..\packages\ibusdotnet.2.0.3\lib\net461\ibusdotnet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
     </Reference>
@@ -332,7 +333,6 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\ibusdotnet.2.0.0.20771\build\ibusdotnet.targets" Condition="Exists('..\packages\ibusdotnet.2.0.0.20771\build\ibusdotnet.targets') And ($(Configuration.Contains('Mono')))" />
   <Import Project="..\packages\NDesk.DBus.0.15.0\build\NDesk.DBus.targets" Condition="Exists('..\packages\NDesk.DBus.0.15.0\build\NDesk.DBus.targets') And ($(Configuration.Contains('Mono')))" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
