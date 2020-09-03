@@ -985,8 +985,6 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			get
 			{
-				// TODO: this is really too simplistic
-				// Changed 2011-04 CP, seems ok to me.
 				if (LockedSpecialCombo != SelectionsForSpecialCombo.None)
 				{
 					return LockedSpecialCombo;
@@ -996,7 +994,11 @@ namespace SIL.Windows.Forms.WritingSystems
 				{
 					return SelectionsForSpecialCombo.Voice;
 				}
-				if (_currentWritingSystem.IpaStatus != IpaStatusChoices.NotIpa)
+				// Ipa writing systems really shouldn't have scripts. We want to clear the script if a user selects Ipa from the combobox
+				// If there is a non-default script present on a LanguageTag with Ipa load it up in the Script/Region/Variant instead.
+				// This will avoid silently clearing script codes from existing Ipa writing systems that didn't follow best practice on scripts.
+				if (_currentWritingSystem.IpaStatus != IpaStatusChoices.NotIpa
+					&& (_currentWritingSystem.Script == null || IetfLanguageTag.IsScriptImplied(_currentWritingSystem.LanguageTag)))
 				{
 					return SelectionsForSpecialCombo.Ipa;
 				}
