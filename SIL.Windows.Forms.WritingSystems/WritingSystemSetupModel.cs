@@ -1646,7 +1646,6 @@ namespace SIL.Windows.Forms.WritingSystems
 		public void IdentifierIpaSelected()
 		{
 			CurrentIsVoice = false;
-			CurrentScriptCode = string.Empty;
 
 			//if we're here, the user wants some kind of ipa
 			if (CurrentIpaStatus == IpaStatusChoices.NotIpa)
