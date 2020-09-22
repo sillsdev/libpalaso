@@ -37,7 +37,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			ProfileManager = ProcessorProfiles as ITfInputProcessorProfileMgr;
 			SwitchingAdaptor = new WindowsKeyboardSwitchingAdapter(this);
 		}
-		
+
 		private static string GetDisplayName(string layout, string locale)
 		{
 			return $"{layout} - {locale}";
@@ -272,6 +272,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					"input.dll")) {}
 			};
 		}
+
+		public Action GetSecondaryKeyboardSetupAction() => null;
 
 		public bool IsSecondaryKeyboardSetupApplication => false;
 		#endregion

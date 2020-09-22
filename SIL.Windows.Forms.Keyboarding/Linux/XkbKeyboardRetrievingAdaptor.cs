@@ -246,10 +246,9 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			return null;
 		}
 
-		public bool IsSecondaryKeyboardSetupApplication
-		{
-			get { return false; }
-		}
+		public Action GetSecondaryKeyboardSetupAction() => null;
+
+		public bool IsSecondaryKeyboardSetupApplication => false;
 
 		#region IDisposable & Co. implementation
 		// Region last reviewed: never

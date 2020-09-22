@@ -1,4 +1,4 @@
-// Copyright (c) 2015 SIL International
+// Copyright (c) 2015-2020 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Diagnostics;
@@ -15,6 +15,9 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// </summary>
 	public class IbusKeyboardRetrievingAdaptor : IKeyboardRetrievingAdaptor
 	{
+		private const string KeymanConfigApp = "/usr/bin/km-config";
+		private const string IbusSetupApp = "/usr/bin/ibus-setup";
+
 		private readonly IIbusCommunicator _ibusComm;
 
 		/// <summary>
@@ -28,7 +31,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// <summary>
 		/// Used in unit tests
 		/// </summary>
-		public IbusKeyboardRetrievingAdaptor(IIbusCommunicator ibusCommunicator)
+		protected IbusKeyboardRetrievingAdaptor(IIbusCommunicator ibusCommunicator)
 		{
 			_ibusComm = ibusCommunicator;
 		}
@@ -82,6 +85,14 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			get { return _ibusComm; }
 		}
+
+		protected virtual string GetKeyboardSetupApplication(out string arguments)
+		{
+			arguments = null;
+			return File.Exists(IbusSetupApp) ? IbusSetupApp : null;
+		}
+
+		private static bool HasKeyman => File.Exists(KeymanConfigApp);
 
 		#region IKeyboardRetrievingAdaptor implementation
 
@@ -137,6 +148,16 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		public bool CanHandleFormat(KeyboardFormat format)
 		{
+			if (!HasKeyman)
+				return false;
+
+			switch (format)
+			{
+				case KeyboardFormat.CompiledKeyman:
+				case KeyboardFormat.Keyman:
+				case KeyboardFormat.KeymanPackage:
+					return true;
+			}
 			return false;
 		}
 
@@ -154,16 +175,19 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			};
 		}
 
-		protected virtual string GetKeyboardSetupApplication(out string arguments)
+		public Action GetSecondaryKeyboardSetupAction()
 		{
-			arguments = null;
-			return File.Exists("/usr/bin/ibus-setup") ? "/usr/bin/ibus-setup" : null;
+			if (!HasKeyman)
+				return null;
+
+			return () =>
+			{
+				using (Process.Start(KeymanConfigApp)) { }
+			};
 		}
 
-		public bool IsSecondaryKeyboardSetupApplication
-		{
-			get { return false; }
-		}
+
+		public bool IsSecondaryKeyboardSetupApplication => HasKeyman;
 
 		#endregion
 
