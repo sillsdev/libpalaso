@@ -28,14 +28,21 @@ namespace TestAppKeyboard
 			LoadKeyboards(currentKeyboard);
 		}
 
-		public void LoadKeyboards(ComboBox comboBox)
+		private static void LoadKeyboards(ComboBox comboBox)
 		{
 			IEnumerable<IKeyboardDefinition> keyboards = Keyboard.Controller.AvailableKeyboards;
-			foreach (IKeyboardDefinition keyboard in keyboards)
+			foreach (var keyboard in keyboards)
 			{
 				comboBox.Items.Add(new WSKeyboardControl.KeyboardDefinitionAdapter(keyboard));
-				Console.WriteLine("added keyboard id: {0}, name: {1}", keyboard.Id, keyboard.Name);
+				Console.WriteLine($"added keyboard id: {keyboard.Id}, name: {keyboard.Name}");
 			}
+
+			if (comboBox.Items.Count <= 0)
+			{
+				Console.WriteLine("WARNING: No available keyboards found!");
+				return;
+			}
+
 			comboBox.SelectedIndex = 0;
 		}
 
