@@ -17,7 +17,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// It also works for other desktop environments that use combined ibus keyboards, e.g.
 	/// XFCE.
 	/// </summary>
-	[CLSCompliant(false)]
 	public class CombinedIbusKeyboardSwitchingAdaptor : IbusKeyboardSwitchingAdaptor
 	{
 		// These should not change while the program is running, and they're expensive to obtain.

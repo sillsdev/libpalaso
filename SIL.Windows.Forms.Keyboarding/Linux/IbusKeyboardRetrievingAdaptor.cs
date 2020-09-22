@@ -188,7 +188,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		/// <summary>
 		/// Finalizer, in case client doesn't dispose it.
-		/// Force Dispose(false) if not already called (i.e. m_isDisposed is true)
+		/// Force Dispose(false) if not already called (i.e. IsDisposed is true)
 		/// </summary>
 		/// <remarks>
 		/// In case some clients forget to dispose it directly.
@@ -207,7 +207,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			Dispose(true);
 			// This object will be cleaned up by the Dispose method.
-			// Therefore, you should call GC.SupressFinalize to
+			// Therefore, you should call GC.SuppressFinalize to
 			// take this object off the finalization queue
 			// and prevent finalization code for this object
 			// from executing a second time.

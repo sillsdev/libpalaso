@@ -7,7 +7,7 @@ using SIL.Reporting;
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
 	/// <summary>
-	/// Class for dealing with ibus keyboards on Unity (as found in Trusty >= 13.10 < 18.04)
+	/// Class for dealing with ibus keyboards on Unity (as found in Trusty &gt;= 13.10 &lt; 18.04)
 	/// </summary>
 	public class UnityIbusKeyboardSwitchingAdaptor : IbusKeyboardSwitchingAdaptor, IUnityKeyboardSwitchingAdaptor
 	{

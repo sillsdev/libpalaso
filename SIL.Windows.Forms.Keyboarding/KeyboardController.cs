@@ -57,9 +57,9 @@ namespace SIL.Windows.Forms.Keyboarding
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine("Got exception {0} initalizing keyboard controller", e.GetType());
+				Console.WriteLine("Got exception {0} initializing keyboard controller", e.GetType());
 				Console.WriteLine(e.StackTrace);
-				Logger.WriteEvent("Got exception {0} initalizing keyboard controller", e.GetType());
+				Logger.WriteEvent("Got exception {0} initializing keyboard controller", e.GetType());
 				Logger.WriteEvent(e.StackTrace);
 
 				if (Keyboard.Controller != null)
