@@ -137,6 +137,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			{
 				try
 				{
+					if (!base.IsApplicable)
+						return false;
 					if (!KeyboardRetrievingHelper.SchemaIsInstalled(GSettingsSchema))
 						return false;
 					_settingsGeneral = Unmanaged.g_settings_new(GSettingsSchema);

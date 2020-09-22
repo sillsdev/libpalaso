@@ -231,6 +231,12 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 						: "keyboard"); // Wasta 14;
 				return "/usr/bin/python";
 			}
+			// Cinnamon in Wasta 20.04
+			if (File.Exists("/usr/bin/cinnamon-settings"))
+			{
+				arguments = "keyboard -t layouts";
+				return "/usr/bin/cinnamon-settings";
+			}
 			// GNOME
 			if (File.Exists("/usr/bin/gnome-control-center"))
 			{
