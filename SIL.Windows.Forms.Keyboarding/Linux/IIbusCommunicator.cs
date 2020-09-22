@@ -93,7 +93,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// <summary>IBus raises this event so that the application can act on the key event,
 		/// e.g. it will pass Backspace as argument so that the application/control can delete
 		/// the character to the left of the IP before IBus commits a new character.</summary>
-		/// <seealso cref="SIL.Windows.Forms.Keyboarding.Interfaces.IIbusEventHandler.OnIbusKeyPress"/>
+		/// <seealso cref="SIL.Windows.Forms.Keyboarding.Linux.IIbusEventHandler.OnIbusKeyPress"/>
 		event Action<int, int, int> KeyEvent;
 	}
 }

@@ -17,7 +17,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// It also works for other desktop environments that use combined ibus keyboards, e.g.
 	/// XFCE.
 	/// </summary>
-	[CLSCompliant(false)]
 	public class CombinedIbusKeyboardRetrievingAdaptor : IbusKeyboardRetrievingAdaptor
 	{
 		private IntPtr _settingsGeneral;
