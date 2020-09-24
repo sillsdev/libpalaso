@@ -81,14 +81,15 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			{
 				var culture = inputLanguage.Culture;
 				cultureName = culture.Name;
-				return culture;
+				return CultureInfo.ReadOnly(culture);
 			}
 			catch (CultureNotFoundException)
 			{
 				// This can happen for old versions of Keyman that created a custom culture that is invalid to .Net.
 				// Also see http://stackoverflow.com/a/24820530/4953232
 				cultureName = UnknownLanguage;
-				return new CultureInfo("en-US");
+				// REVIEW: Can we return the invariant culture instead?
+				return CultureInfo.GetCultureInfo("en-US");
 			}
 		}
 
@@ -109,7 +110,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				foreach (var keyboardLayoutName in GetAvailableKeyboardNames(inputLanguage))
 				{
 					string cultureName;
-					var culture = new CultureInfo(GetCultureInfoFromInputLanguage(inputLanguage, out cultureName).Name);
+					var culture = GetCultureInfoFromInputLanguage(inputLanguage, out cultureName);
 					var keyboardId = $"{cultureName}_{inputLanguage.LayoutName}_{keyboardLayoutName.LocalizedName}";
 
 					WinKeyboardDescription existingKeyboard;
@@ -144,7 +145,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				}
 			}
 
-			// Set each unhanandled keyboard to unavailable
+			// Set each unhandled keyboard to unavailable
 			foreach (var existingKeyboard in curKeyboards.Values)
 			{
 				existingKeyboard.SetIsAvailable(false);
