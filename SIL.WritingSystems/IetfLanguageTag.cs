@@ -785,7 +785,8 @@ namespace SIL.WritingSystems
 				Group languageGroup = match.Groups["language"];
 				if (languageGroup.Success)
 				{
-					if (!StandardSubtags.IsValidIso639LanguageCode(languageGroup.Value))
+					// In addition to known valid codes, all the private use language codes are reasonable values.
+					if (!StandardSubtags.IsValidIso639LanguageCode(languageGroup.Value) && !LanguageSubtag.IsUnlistedCode(languageGroup.Value))
 						return false;
 					language = languageGroup.Value;
 				}
@@ -916,7 +917,8 @@ namespace SIL.WritingSystems
 				}
 				else
 				{
-					if (!StandardSubtags.IsValidIso639LanguageCode(languageCode))
+					// In addition to known valid codes, all the private use language codes are reasonable values.
+					if (!StandardSubtags.IsValidIso639LanguageCode(languageCode) && !LanguageSubtag.IsUnlistedCode(languageCode))
 						return false;
 
 					languageSubtag = languageCode;
