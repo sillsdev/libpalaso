@@ -335,7 +335,9 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 			else
 			{
-				if (_model.LanguageTagContainsScriptRegionVariantInfo)
+				// Usually it's not interesting to see this unless some script, region, or variant data is present.
+				// But when the user has entered a custom unknown language code, this is the only way to confirm it.
+				if (_model.LanguageTagContainsScriptRegionVariantInfo || LanguageSubtag.IsUnlistedCode(_model.SelectedLanguage.LanguageTag))
 				{
 					_scriptsAndVariantsLabel.Text = "(" + _model.LanguageTag + ")";
 					_scriptsAndVariantsLabel.Visible = true;
