@@ -427,5 +427,17 @@ namespace SIL.Tests.Xml
 				Encoding.UTF8);
 			Assert.That(result.Contains("encoding=\"utf-8\""));
 		}
+
+		/// <summary>
+		/// This tests the (probably somewhat nonsensical) case of asking for a UTF-8
+		/// XML string, but suppressing the header.
+		/// </summary>
+		[Test]
+		public void SerializeToString_EncodingSpecifiedWithXmlHeaderOmitted_XmlHeaderOmitted()
+		{
+			var data = new TestObject("Fred");
+			Assert.AreEqual(XmlSerializationHelper.SerializeToString(data, true, Encoding.UTF8),
+				XmlSerializationHelper.SerializeToString(data, true));
+		}
 	}
 }
