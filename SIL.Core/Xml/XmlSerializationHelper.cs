@@ -139,27 +139,35 @@ namespace SIL.Xml
 		/// Serializes an object to an XML string.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static string SerializeToString<T>(T data)
+		public static string SerializeToString<T>(T data, Encoding encoding = null)
 		{
-			return SerializeToString(data, false);
+			return SerializeToString(data, false, encoding);
 		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Serializes an object to an XML string. (Of course, the string is a UTF-16 string.)
+		/// Serializes an object to an XML string. (Of course, the string is a UTF-16 string.
+		/// However, if an alternative encoding is specified, the encoding declaration will
+		/// reflect that. This is useful when the string returned is to be serialized by the
+		/// caller as something other than UTF-16.)
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static string SerializeToString<T>(T data, bool omitXmlDeclaration)
+		public static string SerializeToString<T>(T data, bool omitXmlDeclaration, Encoding encoding = null)
 		{
+			if (encoding == null)
+				encoding = Encoding.Unicode;
 			try
 			{
 				using (var strWriter = new StringWriter())
 				{
-					var settings = new XmlWriterSettings();
-					settings.Indent = true;
-					settings.IndentChars = "\t";
-					settings.CheckCharacters = true;
-					settings.OmitXmlDeclaration = omitXmlDeclaration;
+					var settings = new XmlWriterSettings
+					{
+						Encoding = encoding,
+						Indent = true,
+						IndentChars = "\t",
+						CheckCharacters = true,
+						OmitXmlDeclaration = omitXmlDeclaration
+					};
 
 					using (var xmlWriter = XmlWriter.Create(strWriter, settings))
 					{
