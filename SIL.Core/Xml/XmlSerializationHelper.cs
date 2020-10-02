@@ -112,6 +112,18 @@ namespace SIL.Xml
 
 		#endregion
 
+		#region StringWriterWithEncoding
+		private sealed class StringWriterWithEncoding: StringWriter
+		{
+			public StringWriterWithEncoding(Encoding encoding)
+			{
+				Encoding = encoding;
+			}
+
+			public override Encoding Encoding { get; }
+		}
+		#endregion
+
 		#region Methods for XML serializing and deserializing data
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -146,8 +158,8 @@ namespace SIL.Xml
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Serializes an object to an XML string. (Of course, the string is a UTF-16 string.
-		/// However, if an alternative encoding is specified, the encoding declaration will
+		/// Serializes an object to an XML string. (The default encoding is UTF-16. However, if
+		/// an alternative encoding is specified, the encoding declaration in the XML will
 		/// reflect that. This is useful when the string returned is to be serialized by the
 		/// caller as something other than UTF-16.)
 		/// </summary>
@@ -158,11 +170,10 @@ namespace SIL.Xml
 				encoding = Encoding.Unicode;
 			try
 			{
-				using (var strWriter = new StringWriter())
+				using (var strWriter = encoding.Equals(Encoding.Unicode) ? new StringWriter() : new StringWriterWithEncoding(encoding))
 				{
 					var settings = new XmlWriterSettings
 					{
-						Encoding = encoding,
 						Indent = true,
 						IndentChars = "\t",
 						CheckCharacters = true,

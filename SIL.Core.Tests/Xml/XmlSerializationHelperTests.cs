@@ -414,12 +414,17 @@ namespace SIL.Tests.Xml
 		}
 
 		[Test]
+		public void SerializeToString_NoEncodingSpecified_XmlHeaderHasDefaultUtf16Encoding()
+		{
+			var result = XmlSerializationHelper.SerializeToString(new TestObject("Fred"));
+			Assert.That(result.Contains("encoding=\"utf-16\""));
+		}
+
+		[Test]
 		public void SerializeToString_EncodingSpecified_XmlHeaderHasExpectedEncoding()
 		{
-			var testObj = new TestObject("Fred");
-			var result = XmlSerializationHelper.SerializeToString(testObj);
-			Assert.That(result.Contains("encoding=\"utf-16\""), "Baseline test failed");
-			result = XmlSerializationHelper.SerializeToString(testObj, Encoding.UTF8);
+			var result = XmlSerializationHelper.SerializeToString(new TestObject("Fred"),
+				Encoding.UTF8);
 			Assert.That(result.Contains("encoding=\"utf-8\""));
 		}
 	}
