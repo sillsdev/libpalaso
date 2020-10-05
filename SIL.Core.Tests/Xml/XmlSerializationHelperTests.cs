@@ -417,7 +417,11 @@ namespace SIL.Tests.Xml
 		public void SerializeToString_NoEncodingSpecified_XmlHeaderHasDefaultUtf16Encoding()
 		{
 			var result = XmlSerializationHelper.SerializeToString(new TestObject("Fred"));
-			Assert.That(result.Contains("encoding=\"utf-16\""));
+			var lines = result.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList();
+			Assert.IsTrue(lines[0].StartsWith("<?xml"));
+			Assert.That(lines[0].Contains("encoding=\"utf-16\""));
+			Assert.IsTrue(lines[1].StartsWith("<MyRoot"));
+			Assert.IsTrue(lines.Last().EndsWith("MyRoot>"));
 		}
 
 		[Test]
@@ -425,7 +429,22 @@ namespace SIL.Tests.Xml
 		{
 			var result = XmlSerializationHelper.SerializeToString(new TestObject("Fred"),
 				Encoding.UTF8);
-			Assert.That(result.Contains("encoding=\"utf-8\""));
+			var lines = result.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList();
+			Assert.IsTrue(lines[0].StartsWith("<?xml"));
+			Assert.That(lines[0].Contains("encoding=\"utf-8\""));
+			Assert.IsTrue(lines[1].StartsWith("<MyRoot"));
+			Assert.IsTrue(lines.Last().EndsWith("MyRoot>"));
+		}
+
+		[Test]
+		public void SerializeToString_OmitXmlHeading_XmlHeaderHasExpectedEncoding()
+		{
+			var result = XmlSerializationHelper.SerializeToString(new TestObject("Fred"),
+				true);
+			Assert.IsFalse(result.StartsWith("<?xml"));
+			var lines = result.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList();
+			Assert.IsTrue(lines.First().StartsWith("<MyRoot"));
+			Assert.IsTrue(lines.Last().EndsWith("MyRoot>"));
 		}
 	}
 }
