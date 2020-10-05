@@ -112,6 +112,18 @@ namespace SIL.Xml
 
 		#endregion
 
+		#region StringWriterWithEncoding
+		private sealed class StringWriterWithEncoding: StringWriter
+		{
+			public StringWriterWithEncoding(Encoding encoding)
+			{
+				Encoding = encoding;
+			}
+
+			public override Encoding Encoding { get; }
+		}
+		#endregion
+
 		#region Methods for XML serializing and deserializing data
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -136,30 +148,62 @@ namespace SIL.Xml
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Serializes an object to an XML string.
+		/// Serializes an object to an XML string (having an encoding of UTF-16). The string
+		/// will include the XML header.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static string SerializeToString<T>(T data)
 		{
-			return SerializeToString(data, false);
+			return SerializeToString(data, false, null);
 		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Serializes an object to an XML string. (Of course, the string is a UTF-16 string.)
+		/// Serializes an object to an XML string. The encoding declaration in the XML will
+		/// reflect the requested encoding. This is useful when the string returned is to be
+		/// serialized by the caller as something other than UTF-16.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public static string SerializeToString<T>(T data, Encoding encoding)
+		{
+			return SerializeToString(data, false, encoding);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Serializes an object to an XML string (having an encoding of UTF-16).
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static string SerializeToString<T>(T data, bool omitXmlDeclaration)
 		{
+			return SerializeToString(data, omitXmlDeclaration, null);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Serializes an object to an XML string. (If a null encoding is passed, the default is
+		/// UTF-16. However, if an alternative encoding is specified, the encoding declaration
+		/// in the XML will reflect that.)
+		/// </summary>
+		/// <remarks>This implementation is private because it is nonsensical for a caller to
+		/// request a string in some encoding other than the default if the XML header is being
+		/// omitted.</remarks>
+		/// ------------------------------------------------------------------------------------
+		private static string SerializeToString<T>(T data, bool omitXmlDeclaration, Encoding encoding)
+		{
+			if (encoding == null)
+				encoding = Encoding.Unicode;
 			try
 			{
-				using (var strWriter = new StringWriter())
+				using (var strWriter = encoding.Equals(Encoding.Unicode) ? new StringWriter() : new StringWriterWithEncoding(encoding))
 				{
-					var settings = new XmlWriterSettings();
-					settings.Indent = true;
-					settings.IndentChars = "\t";
-					settings.CheckCharacters = true;
-					settings.OmitXmlDeclaration = omitXmlDeclaration;
+					var settings = new XmlWriterSettings
+					{
+						Indent = true,
+						IndentChars = "\t",
+						CheckCharacters = true,
+						OmitXmlDeclaration = omitXmlDeclaration
+					};
 
 					using (var xmlWriter = XmlWriter.Create(strWriter, settings))
 					{
