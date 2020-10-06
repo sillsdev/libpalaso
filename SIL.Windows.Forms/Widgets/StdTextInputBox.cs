@@ -313,8 +313,7 @@ namespace SIL.Windows.Forms.Widgets
 
 		public void AssignKeyboardFromWritingSystem()
 		{
-			if (_writingSystem != null)
-				_writingSystem.LocalKeyboard.Activate();
+			_writingSystem?.LocalKeyboard?.Activate();
 		}
 
 		protected override void OnLeave(EventArgs e)

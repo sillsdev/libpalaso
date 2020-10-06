@@ -150,9 +150,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		}
 		public void AssignKeyboardFromWritingSystem()
 		{
-			if (_writingSystem == null)
-				return;
-			_writingSystem.LocalKeyboard.Activate();
+			_writingSystem?.LocalKeyboard?.Activate();
 		}
 
 		public void ClearKeyboard()

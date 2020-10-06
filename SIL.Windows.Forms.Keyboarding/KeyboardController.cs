@@ -445,7 +445,7 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// </summary>
 		public void ActivateDefaultKeyboard()
 		{
-			DefaultKeyboard.Activate();
+			DefaultKeyboard?.Activate();
 		}
 
 		/// <summary>
