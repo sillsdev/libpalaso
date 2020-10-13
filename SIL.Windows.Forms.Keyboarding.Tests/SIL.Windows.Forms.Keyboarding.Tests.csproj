@@ -291,6 +291,7 @@
     <Compile Include="KeyboardControllerTests.cs" />
     <Compile Include="LinuxKeyboardControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnityKeyboardRetrievingHelperTests.cs" />
     <Compile Include="WindowsKeyboardControllerTests.cs" />
     <Compile Include="XkbKeyboardAdapterTests.cs" />
     <Compile Include="XklEngineTests.cs" />
