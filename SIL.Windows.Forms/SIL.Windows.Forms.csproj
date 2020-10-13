@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -609,6 +609,11 @@
     </Compile>
     <Compile Include="Miscellaneous\WaitCursor.cs" />
     <Compile Include="Miscellaneous\X11.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Registration\RegistrationSettingsProvider.cs" />
     <Compile Include="Reporting\MemoryManagement.cs" />
     <Compile Include="ScreenHelper.cs" />
@@ -638,11 +643,6 @@
     <Compile Include="Progress\ProgressNotificationProvider.cs" />
     <Compile Include="Progress\TransformWithProgressDialog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources1.Designer.cs">
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
     <Compile Include="PropertyBag-NoTests\FilePathEditor.cs" />
     <Compile Include="PropertyBag-NoTests\PropertyBag.cs" />
     <Compile Include="Registration\Registration.Designer.cs">
@@ -784,6 +784,12 @@
     </Compile>
     <Compile Include="Widgets\HtmlLabel.Designer.cs">
       <DependentUpon>HtmlLabel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Widgets\PasswordBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Widgets\PasswordBox.designer.cs">
+      <DependentUpon>PasswordBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Widgets\Prompt.cs">
       <SubType>Component</SubType>
@@ -938,7 +944,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <SubType>Designer</SubType>
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="ReleaseNotes\ShowReleaseNotesDialog.resx">
       <DependentUpon>ShowReleaseNotesDialog.cs</DependentUpon>
@@ -990,6 +996,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Widgets\HtmlLabel.resx">
       <DependentUpon>HtmlLabel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Widgets\PasswordBox.resx">
+      <DependentUpon>PasswordBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Widgets\StdTextInputBox.resx">
       <DependentUpon>StdTextInputBox.cs</DependentUpon>
@@ -1075,12 +1085,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\File_Cc.logo.circle.svg.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\cc-BY-88x311.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\cc-BY-88x31.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\scanner64x64.png" />
@@ -1180,6 +1184,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\cc0.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\passwordRevealEye16x16.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
