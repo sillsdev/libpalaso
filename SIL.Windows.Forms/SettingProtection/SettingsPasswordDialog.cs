@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 
 namespace SIL.Windows.Forms.SettingProtection
@@ -17,18 +17,12 @@ namespace SIL.Windows.Forms.SettingProtection
 		{
 			_password = password;
 			InitializeComponent();
-			textBox1.PasswordChar = '●';
 			_okButton.Enabled = false;
 
 			if(mode == Mode.MakeSureTheyKnowPassword)
 			{
 				_explanation.Text = "Let's make sure that you know the factory password before we lock things down.";
 			}
-		}
-
-		private void checkBox1_CheckedChanged(object sender, EventArgs e)
-		{
-			textBox1.PasswordChar = (char) (checkBox1.Checked ? 0 : '●');
 		}
 
 		private void _okButton_Click(object sender, EventArgs e)
@@ -45,7 +39,7 @@ namespace SIL.Windows.Forms.SettingProtection
 
 		private void textBox1_TextChanged(object sender, EventArgs e)
 		{
-			_okButton.Enabled = textBox1.Text == _password;
+			_okButton.Enabled = passwordBox.Text == _password;
 		}
 	}
 }
