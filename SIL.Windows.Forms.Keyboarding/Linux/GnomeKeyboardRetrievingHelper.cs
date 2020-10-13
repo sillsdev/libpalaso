@@ -12,17 +12,27 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// </summary>
 	internal class GnomeKeyboardRetrievingHelper
 	{
+		private readonly Func<string[]> _GetKeyboards;
+
 		public GnomeKeyboardRetrievingHelper()
 		{
+			_GetKeyboards = GetMyKeyboards;
 			GlibHelper.InitGlib();
 		}
+
+		// Used in unit tests
+		internal GnomeKeyboardRetrievingHelper(Func<string[]> getKeyboards): this()
+		{
+			_GetKeyboards = getKeyboards;
+		}
+
 
 		#region Public methods and properties
 		public bool IsApplicable
 		{
 			get
 			{
-				var list = GetMyKeyboards();
+				var list = _GetKeyboards();
 				return list != null && list.Length > 0;
 			}
 		}
@@ -30,7 +40,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		public void InitKeyboards(Func<string, bool> keyboardTypeMatches,
 			Action<IDictionary<string, uint>, (string, string)> registerKeyboards)
 		{
-			var list = GetMyKeyboards();
+			var list = _GetKeyboards();
 			if (list == null || list.Length < 1)
 				return;
 
@@ -86,7 +96,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			IDictionary<string, uint> keyboards, Func<string, bool> keyboardTypeMatches)
 		{
 			var (type, layout) = SplitKeyboardEntry(source);
-			if (keyboardTypeMatches(type))
+			if (keyboardTypeMatches(type) && !keyboards.ContainsKey(layout))
 				keyboards.Add(layout, kbdIndex);
 			++kbdIndex;
 		}
