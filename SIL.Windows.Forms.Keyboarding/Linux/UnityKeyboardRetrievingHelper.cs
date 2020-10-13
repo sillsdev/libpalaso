@@ -12,11 +12,20 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// <summary>
 	/// Helper class that implements common functionality for unity keyboard retrieving
 	/// </summary>
-	public class UnityKeyboardRetrievingHelper
+	internal class UnityKeyboardRetrievingHelper
 	{
+		private Func<string[]> _GetKeyboards;
+
 		public UnityKeyboardRetrievingHelper()
 		{
+			_GetKeyboards = GetMyKeyboards;
 			KeyboardRetrievingHelper.InitGlib();
+		}
+
+		// Used in unit tests
+		internal UnityKeyboardRetrievingHelper(Func<string[]> getKeyboards): this()
+		{
+			_GetKeyboards = getKeyboards;
 		}
 
 		#region Public methods and properties
@@ -24,7 +33,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			get
 			{
-				var list = GetMyKeyboards();
+				var list = _GetKeyboards();
 				return list != null && list.Length > 0;
 			}
 		}
@@ -33,10 +42,10 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			Action<IDictionary<string, uint>> registerKeyboards)
 		{
 			var keyboards = new Dictionary<string, uint>();
-			var list = GetMyKeyboards();
+			var list = _GetKeyboards();
 			uint kbdIndex = 0;
-			for (int i = 0; i < list.Length; ++i)
-				AddKeyboard(list[i], ref kbdIndex, keyboards, keyboardTypeMatches);
+			foreach (var typeAndLayout in list)
+				AddKeyboard(typeAndLayout, ref kbdIndex, keyboards, keyboardTypeMatches);
 
 			registerKeyboards(keyboards);
 		}
@@ -61,7 +70,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// Returns the list of keyboards or <c>null</c> if we can't get the combined keyboards
 		/// list.
 		/// </summary>
-		private string[] GetMyKeyboards()
+		private static string[] GetMyKeyboards()
 		{
 			// This is the proper path for the combined keyboard handling, not the path
 			// given in the IBus reference documentation.
@@ -92,7 +101,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				return;
 			var type = parts[0];
 			var layout = parts[1];
-			if (keyboardTypeMatches(type))
+			if (keyboardTypeMatches(type) && !keyboards.ContainsKey(layout))
 				keyboards.Add(layout, kbdIndex);
 			++kbdIndex;
 		}
