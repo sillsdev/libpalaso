@@ -20,10 +20,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		#region Specific implementations of IKeyboardRetriever
 
-		public override bool IsApplicable
-		{
-			get { return _helper.IsApplicable; }
-		}
+		public override bool IsApplicable => _helper.IsApplicable;
 
 		public override void Initialize()
 		{

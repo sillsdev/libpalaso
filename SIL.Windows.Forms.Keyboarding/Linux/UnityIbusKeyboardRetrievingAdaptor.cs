@@ -16,7 +16,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// </summary>
 	public class UnityIbusKeyboardRetrievingAdaptor : IbusKeyboardRetrievingAdaptor
 	{
-		protected readonly UnityKeyboardRetrievingHelper _helper = new UnityKeyboardRetrievingHelper();
+		internal readonly UnityKeyboardRetrievingHelper _helper = new UnityKeyboardRetrievingHelper();
 
 		#region Specific implementations of IKeyboardRetriever
 
