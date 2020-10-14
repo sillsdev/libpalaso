@@ -197,7 +197,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._L10NSharpExtender.SetLocalizingId(this._scriptsAndVariantsLink, "LanguageLookup._scriptsAndVariantsLink");
 			this._scriptsAndVariantsLink.Location = new System.Drawing.Point(3, 0);
 			this._scriptsAndVariantsLink.Name = "_scriptsAndVariantsLink";
-			this._scriptsAndVariantsLink.Size = new System.Drawing.Size(101, 13);
+			this._scriptsAndVariantsLink.Size = new System.Drawing.Size(91, 13);
 			this._scriptsAndVariantsLink.TabIndex = 17;
 			this._scriptsAndVariantsLink.TabStop = true;
 			this._scriptsAndVariantsLink.Text = "Script and Variant";
@@ -210,7 +210,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._L10NSharpExtender.SetLocalizableToolTip(this._scriptsAndVariantsLabel, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._scriptsAndVariantsLabel, null);
 			this._L10NSharpExtender.SetLocalizingId(this._scriptsAndVariantsLabel, "LanguageLookup._scriptsAndVariantsLabel");
-			this._scriptsAndVariantsLabel.Location = new System.Drawing.Point(110, 0);
+			this._scriptsAndVariantsLabel.Location = new System.Drawing.Point(100, 0);
 			this._scriptsAndVariantsLabel.Name = "_scriptsAndVariantsLabel";
 			this._scriptsAndVariantsLabel.Size = new System.Drawing.Size(108, 13);
 			this._scriptsAndVariantsLabel.TabIndex = 18;
@@ -224,7 +224,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this.flowLayoutPanel1.Controls.Add(this._scriptsAndVariantsLabel);
 			this.flowLayoutPanel1.Location = new System.Drawing.Point(-5, 336);
 			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-			this.flowLayoutPanel1.Size = new System.Drawing.Size(247, 19);
+			this.flowLayoutPanel1.Size = new System.Drawing.Size(372, 19);
 			this.flowLayoutPanel1.TabIndex = 18;
 			// 
 			// LanguageLookupControl
