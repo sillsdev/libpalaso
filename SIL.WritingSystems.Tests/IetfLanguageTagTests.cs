@@ -367,6 +367,28 @@ namespace SIL.WritingSystems.Tests
 		}
 		#endregion
 
+		#region TryGetParts
+
+		[TestCase("en", true, "en", null, null, null)]
+		[TestCase("tpi-AR", true, "tpi", null, "AR", null)]
+		[TestCase("tpi-Lepc-BR-fonipa-x-blah", true, "tpi", "Lepc", "BR", "fonipa-x-blah")]
+		[TestCase("a", false, null, null, null, null)]
+		[TestCase("qaa", true, "qaa", null, null, null)]
+		[TestCase("qed", true, "qed", null, null, null)]
+		[TestCase("qed-Lepc-x-rubbish", true, "qed", "Lepc", null, "x-rubbish")]
+		public void TryGetParts_ReturnsExpectedResults(string tag, bool valid, string expectedLanguage, string expectedScript, string expectedRegion, string expectedVariant)
+		{
+			string language, script, region, variant;
+			var result = IetfLanguageTag.TryGetParts(tag, out language, out script, out region, out variant);
+			Assert.That(result, Is.EqualTo(valid));
+			Assert.That(language, Is.EqualTo(expectedLanguage), "parsing " + tag + " produced unexpected language " + language + " instead of " + expectedLanguage);
+			Assert.That(script, Is.EqualTo(expectedScript), "parsing " + tag + " produced unexpected script " + script + " instead of " + expectedScript);
+			Assert.That(region, Is.EqualTo(expectedRegion), "parsing " + tag + " produced unexpected region " + region + " instead of " + expectedRegion);
+			Assert.That(variant, Is.EqualTo(expectedVariant), "parsing " + tag + " produced unexpected variant " + variant + " instead of " + expectedVariant);
+		}
+
+		#endregion
+
 		#region TryGetSubtags
 
 		/// <summary>
@@ -607,6 +629,38 @@ namespace SIL.WritingSystems.Tests
 					out regionSubtag, out variantSubtags), Is.True);
 			Assert.That(languageSubtag, Is.EqualTo((LanguageSubtag)"zh"));
 			Assert.That(scriptSubtag, Is.EqualTo((ScriptSubtag)"Hans"));
+			Assert.That(regionSubtag, Is.EqualTo((RegionSubtag)"CN"));
+			Assert.That(variantSubtags, Is.EqualTo(new VariantSubtag[] { "fonipa", "etic" }));
+		}
+
+		[Test]
+		public void TryGetSubtags_SimplePrivateUseLanguage_ReturnsValidResults()
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			Assert.That(
+				IetfLanguageTag.TryGetSubtags("qtz", out languageSubtag, out scriptSubtag,
+					out regionSubtag, out variantSubtags), Is.True);
+			Assert.That(languageSubtag, Is.EqualTo((LanguageSubtag)"qtz"));
+			Assert.That(scriptSubtag, Is.Null);
+			Assert.That(regionSubtag, Is.Null);
+			Assert.That(variantSubtags, Is.EqualTo(new VariantSubtag[0]));
+		}
+
+		[Test]
+		public void TryGetSubtags_ComplexPrivateLanguageCode_ReturnsValidResults()
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			Assert.That(
+				IetfLanguageTag.TryGetSubtags("qed-Lepc-cN-fonipa-x-etic", out languageSubtag, out scriptSubtag,
+					out regionSubtag, out variantSubtags), Is.True);
+			Assert.That(languageSubtag, Is.EqualTo((LanguageSubtag)"qed"));
+			Assert.That(scriptSubtag, Is.EqualTo((ScriptSubtag)"Lepc"));
 			Assert.That(regionSubtag, Is.EqualTo((RegionSubtag)"CN"));
 			Assert.That(variantSubtags, Is.EqualTo(new VariantSubtag[] { "fonipa", "etic" }));
 		}

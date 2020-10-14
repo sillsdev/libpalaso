@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -68,6 +68,17 @@ namespace SIL.Windows.Forms.ImageToolbox
 			GetImageFileFromSystem();
 		}
 
+		// If this is set, and an image fails to load, the control will use it instead of the standard
+		// ErrorReport.NotifyUserOfProblem to report an image that fails to load. It is passed the path
+		// of the problem image, the exception that was thrown, and the standard message that would
+		// normally be displayed.
+		// Typical exceptions are OutOfMemoryException (hopefully when an image really is too big to
+		// load, but it's the default exception if anything is wrong with a file loaded by
+		// Image.FromFile(), so it could happen with a largish image that's corrupted;
+		// TagLib.CorruptFileException (most cases where file is not valid image data, though
+		// its main meaning is that specfically the metadata can't be read).
+		public Action<string, Exception, string> ImageLoadingExceptionReporter { get; set; }
+
 		private void GetImageFileFromSystem()
 		{
 			try
@@ -102,7 +113,17 @@ namespace SIL.Windows.Forms.ImageToolbox
 						}
 						catch (Exception err) //for example, http://jira.palaso.org/issues/browse/BL-199
 						{
-							ErrorReport.NotifyUserOfProblem(err, "Sorry, there was a problem loading that image.".Localize("ImageToolbox.ProblemLoadingImage"));
+							var msg = "Sorry, there was a problem loading that image.".Localize(
+								"ImageToolbox.ProblemLoadingImage");
+							if (ImageLoadingExceptionReporter!= null)
+							{
+								ImageLoadingExceptionReporter(dlg.FileName, err, msg);
+							}
+							else
+							{
+								ErrorReport.NotifyUserOfProblem(err, msg);
+							}
+
 							return;
 						}
 						_pictureBox.Image = _currentImage.Image;

@@ -67,6 +67,38 @@ namespace SIL.Windows.Forms.ClearShare
 		/// </summary>
 		TagLib.Image.File _originalTaglibMetadata;
 
+		// This is called when we got an out of memory exception reading the image itself.
+		// Often this means the image file is actually corrupt.
+		// This is then called to try to decide whether to report out of memory (if we return true)
+		// or corrupt file (if we return false).
+		// If it returns true, it will add an "imageSize" item to ex.Data, where the value is a
+		// Tuple<int,int> giving the width and height of the image in pixels. This may be useful
+		// in reporting the problem.
+		public bool IsOutOfMemoryPlausible(OutOfMemoryException ex)
+		{
+			if (_originalTaglibMetadata.PossiblyCorrupt)
+				return false; // Taglib already figured it as suspicious
+			if (_originalTaglibMetadata.Properties == null)
+				return false; // valid JPG, PNG, and TIF usually have this
+			// Setting limit here at 10 mega-pixels. Pretty arbitrary, even phones can produce bigger images
+			// these days. It's a bit more than an A4 full page at Bloom's min recommended 300dpi, a bit
+			// more than we need at max recommended 600dpi for a half page in A5. There could be smaller
+			// images that really run us out of memory, or larger ones that only fail because they are
+			// corrupt. But Image.FromFile's bad design forces us to guess somehow. It seems unhelpful
+			// to issue the sorts of advice we give about big files if the image is not unusually large.
+			if ((long) _originalTaglibMetadata.Properties.PhotoHeight *
+				(long) _originalTaglibMetadata.Properties.PhotoWidth > 10000000L)
+			{
+				// It's a pretty big picture, maybe we really are out of memory
+				ex.Data["imageSize"] =
+					Tuple.Create(_originalTaglibMetadata.Properties.PhotoWidth,
+						_originalTaglibMetadata.Properties.PhotoHeight);
+				return true;
+			}
+
+			return false;
+		}
+
 		/// <summary>
 		/// NB: this is used in 2 places; one is loading from the image we are linked to, the other from a sample image we are copying metadata from
 		/// </summary>
