@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 using SIL.Reporting;
 
@@ -19,6 +19,17 @@ namespace SIL.Windows.Forms.ImageToolbox
 			SearchLanguage = "en";	// unless the caller specifies otherwise explicitly
 		}
 		public PalasoImage ImageInfo { get { return _imageToolboxControl.ImageInfo; } }
+		/// <summary>
+		/// Used to report problems loading images. See more detail on AcquireImageControl
+		/// </summary>
+		public Action<string, Exception, string> ImageLoadingExceptionReporter
+		{
+			get { return _imageToolboxControl.ImageLoadingExceptionReporter; }
+			set
+			{
+				_imageToolboxControl.ImageLoadingExceptionReporter = value;
+			}
+		}
 
 		/// <summary>
 		/// Sets the language used in searching for an image by words.
