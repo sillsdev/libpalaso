@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
@@ -109,9 +109,25 @@ namespace SIL.Windows.Forms.Miscellaneous
 #endif
 		}
 
+		// Get an image from the clipboard, ignoring any errors that occur while we attempt to
+		// convert whatever is on the clipboard into an image.
 		public static PalasoImage GetImageFromClipboard()
 		{
-			// N.B.: PalasoImage does not handle .svg files
+			try
+			{
+				return GetImageFromClipboardWithExceptions();
+			}
+			catch (Exception)
+			{}
+
+			return null;
+		}
+
+		// Try to get an image from the clipboard. If there simply isn't anything on the clipboard that
+		// can reasonably be interpreted as an image, return null. If there is something that makes sense
+		// as an image, but trying to load it causes an exception, let the exception propagate.
+		public static PalasoImage GetImageFromClipboardWithExceptions() {
+		// N.B.: PalasoImage does not handle .svg files
 #if MONO
 			if (GtkContainsImage())
 				return PalasoImage.FromImage(GtkGetImage());
@@ -128,7 +144,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			var dataObject = Clipboard.GetDataObject();
 			if (dataObject == null)
 				return null;
-
+			Exception ex = null;
 			var textData = String.Empty;
 			if (dataObject.GetDataPresent(DataFormats.UnicodeText))
 				textData = dataObject.GetData(DataFormats.UnicodeText) as String;
@@ -156,7 +172,9 @@ namespace SIL.Windows.Forms.Miscellaneous
 				catch (Exception e)
 				{
 					Logger.WriteEvent("PortableClipboard.GetImageFromClipboard() failed with message " + e.Message);
-					return plainImage; // at worst, we should return null; if FromFile() failed, we return an image
+					if (plainImage != null)
+						return plainImage; // at worst, we should return null; if FromFile() failed, we return an image
+					throw;
 				}
 			}
 			// the ContainsImage() returns false when copying an PNG from MS Word
@@ -168,8 +186,12 @@ namespace SIL.Windows.Forms.Miscellaneous
 				{
 					return PalasoImage.FromImage(Image.FromStream(o));
 				}
-				catch (Exception)
-				{}
+				catch (Exception e)
+				{
+					// I'm not sure why, but previous versions of this code would continue trying other
+					// options at this point.
+					ex = e;
+				}
 			}
 
 			//People can do a "copy" from the WIndows Photo Viewer but what it puts on the clipboard is a path, not an image
@@ -181,25 +203,19 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 				foreach (var file in files.Where(f => RobustFile.Exists(f)))
 				{
-					try
-					{
-						return PalasoImage.FromFileRobustly(file);
-					}
-					catch (Exception)
-					{}
+					return PalasoImage.FromFileRobustly(file);
 				}
 
 				return null; //not an image
 			}
 
-			if (!Clipboard.ContainsText() || !RobustFile.Exists(Clipboard.GetText())) return null;
-
-			try
-			{
+			if (Clipboard.ContainsText() && RobustFile.Exists(Clipboard.GetText()))
 				return PalasoImage.FromImage( Image.FromStream(new FileStream(Clipboard.GetText(), FileMode.Open)));
+
+			if (ex != null)
+			{
+				throw ex;
 			}
-			catch (Exception)
-			{}
 
 			return null;
 #endif
