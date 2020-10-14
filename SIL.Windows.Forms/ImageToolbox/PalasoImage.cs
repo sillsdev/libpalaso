@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
+using System.Text;
 using SIL.Code;
 using SIL.IO;
 using SIL.Windows.Forms.ClearShare;
@@ -239,6 +241,50 @@ namespace SIL.Windows.Forms.ImageToolbox
 			Metadata.Write(_pathForSavingMetadataChanges);
 		}
 
+		// Figure what extension an image file SHOULD have, based on its contents.
+		// Adapted from code at https://stackoverflow.com/questions/210650/validate-image-from-file-in-c-sharp
+		// by https://stackoverflow.com/users/499558/alex
+		private static string GetCorrectImageExtension(string path)
+		{
+			byte[] bytes = new byte[10];
+			using (var file = File.OpenRead(path))
+			{
+				file.Read(bytes, 0, 10);
+			}
+			// see http://www.mikekunz.com/image_file_header.html  
+				var bmp = Encoding.ASCII.GetBytes("BM");     // BMP
+				var gif = Encoding.ASCII.GetBytes("GIF");    // GIF
+				var png = new byte[] { 137, 80, 78, 71 };    // PNG
+				var tiff = new byte[] { 73, 73, 42 };         // TIFF
+				var tiff2 = new byte[] { 77, 77, 42 };         // TIFF
+				var jpeg = new byte[] { 255, 216, 255, 224 }; // jpeg
+				var jpeg2 = new byte[] { 255, 216, 255, 225 }; // jpeg canon
+
+				if (bmp.SequenceEqual(bytes.Take(bmp.Length)))
+					return "bmp";
+
+				if (gif.SequenceEqual(bytes.Take(gif.Length)))
+					return "gif";
+
+				if (png.SequenceEqual(bytes.Take(png.Length)))
+					return "png";
+
+				if (tiff.SequenceEqual(bytes.Take(tiff.Length)))
+					return "tif";
+
+				if (tiff2.SequenceEqual(bytes.Take(tiff2.Length)))
+					return "tif";
+
+				if (jpeg.SequenceEqual(bytes.Take(jpeg.Length)))
+					return "jpg";
+
+				if (jpeg2.SequenceEqual(bytes.Take(jpeg2.Length)))
+					return "jpg";
+
+				// We can't guess, keep what it came with.
+				return Path.GetExtension(path);
+		}
+
 		private static Image LoadImageWithoutLocking(string path, out string tempPath)
 		{
 			/*          1) Naïve approach:  locks until the image is dispose of some day, which is counter-intuitive to me
@@ -259,7 +305,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 			//if(Path.GetExtension(path)==".jpg")
 			{
-				var leakMe = TempFile.WithExtension(Path.GetExtension(path));
+				var leakMe = TempFile.WithExtension(GetCorrectImageExtension(path));
 				File.Delete(leakMe.Path);
 				File.Copy(path, leakMe.Path);
 
@@ -270,7 +316,20 @@ namespace SIL.Windows.Forms.ImageToolbox
 				//See http://stackoverflow.com/questions/7276212/reading-preserving-a-pixelformat-format48bpprgb-png-bitmap-in-net
 				//There is a second argument here, useEmbeddedColorManagement, that is said to preserve it if set to true, but it doesn't work.
 
-				return Image.FromFile(leakMe.Path, true);
+				try
+				{
+					return Image.FromFile(leakMe.Path, true);
+				}
+				catch (OutOfMemoryException e)
+				{
+					// very often means really that the image file is corrupt.
+					// We'll try to diagnose that by attempting to get metadata. If that throws (probably TagLib.CorruptFileException),
+					// assume it's a better indication of the problem.
+					var metadata = Metadata.FromFile(path);
+					if (metadata.IsOutOfMemoryPlausible(e))
+						throw e; // Deliberately NOT just "throw", that loses the extra information IsOutOfMemoryPlausible added to the exception.
+					throw new TagLib.CorruptFileException("File could not be read and is possible corrupted");
+				}
 			}
 		}
 
@@ -284,7 +343,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 				FileName = Path.GetFileName(path),
 				_originalFilePath = path,
 				_pathForSavingMetadataChanges = path,
-				Metadata = Metadata.FromFile(path),
+				Metadata = Metadata.FromFile(tempPath),
 				_tempFilePath = tempPath
 			};
 			NormalizeImageOrientation(i);

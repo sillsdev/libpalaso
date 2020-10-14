@@ -678,11 +678,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			get
 			{
-				if (CurrentDefinition == null)
-					return null;
-				if (CurrentDefinition.LocalKeyboard != null)
-					return CurrentDefinition.LocalKeyboard;
-				return null;
+				return CurrentDefinition?.LocalKeyboard;
 			}
 			set
 			{
@@ -1504,8 +1500,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		/// </summary>
 		public void ActivateCurrentKeyboard()
 		{
-			if (CurrentDefinition != null && CurrentDefinition.LocalKeyboard != null)
-				CurrentDefinition.LocalKeyboard.Activate();
+			CurrentDefinition?.LocalKeyboard?.Activate();
 		}
 
 		/// <summary>
