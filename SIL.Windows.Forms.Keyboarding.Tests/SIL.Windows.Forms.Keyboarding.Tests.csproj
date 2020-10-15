@@ -281,6 +281,7 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CombinedIbusKeyboardRetrievingAdaptorTests.cs" />
     <Compile Include="CombinedIbusKeyboardSwitchingAdaptorTests.cs" />
     <Compile Include="IBusAdaptorTestsWithIBus.cs" />
     <Compile Include="IBusAdaptorTestsWithoutIBus.cs" />

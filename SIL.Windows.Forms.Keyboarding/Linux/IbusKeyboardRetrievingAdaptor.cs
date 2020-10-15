@@ -110,13 +110,9 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// able to find the available keyboards this property will return <c>true</c>,
 		/// otherwise <c>false</c>.
 		/// </summary>
-		public virtual bool IsApplicable
-		{
-			get
-			{
-				return _ibusComm.Connected && GetIBusKeyboards().Length > 0;
-			}
-		}
+		public virtual bool IsApplicable => _ibusComm.Connected && HasKeyboards;
+
+		protected virtual bool HasKeyboards => GetIBusKeyboards()?.Length > 0;
 
 		/// <summary>
 		/// Gets the keyboard adaptor that deals with keyboards that this class retrieves.

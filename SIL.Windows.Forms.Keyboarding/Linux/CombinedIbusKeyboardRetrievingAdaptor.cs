@@ -45,8 +45,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		//     $ gsettings list-keys org.freedesktop.ibus.general | grep preload-engines
 		//     preload-engines
 
-
-		protected string[] GetMyKeyboards(IntPtr settingsGeneral)
+		protected virtual string[] GetMyKeyboards(IntPtr settingsGeneral)
 		{
 			// This is the proper path for the combined keyboard handling on Cinnamon with IBus.
 			var sources = Unmanaged.g_settings_get_value(settingsGeneral, "preload-engines");
@@ -136,12 +135,12 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			{
 				try
 				{
-					if (!base.IsApplicable)
-						return false;
 					if (!KeyboardRetrievingHelper.SchemaIsInstalled(GSettingsSchema))
 						return false;
 					_settingsGeneral = Unmanaged.g_settings_new(GSettingsSchema);
 					if (_settingsGeneral == IntPtr.Zero)
+						return false;
+					if (!base.IsApplicable)
 						return false;
 				}
 				catch (DllNotFoundException)
@@ -158,6 +157,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 					&& !Platform.DesktopEnvironment.Contains("gnome");
 			}
 		}
+
+		protected override bool HasKeyboards => GetMyKeyboards(_settingsGeneral)?.Length > 0;
 
 		public override KeyboardAdaptorType Type
 		{
