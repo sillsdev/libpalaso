@@ -2,6 +2,7 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
+using System.Reflection;
 using NUnit.Framework;
 using SIL.PlatformUtilities;
 
@@ -152,6 +153,10 @@ namespace SIL.Tests.PlatformUtilities
 			Result = "kde", TestName = "Only XDG_DATA_DIRS set")]
 		[TestCase(null, null, "something", Result = "something", TestName = "Only GDMSESSION set")]
 		[TestCase(null, null, null, Result = "", TestName = "Nothing set")]
+		[TestCase("ubuntu:GNOME", null, "ubuntu", ExpectedResult = "gnome", TestName = "Ubuntu 20.04 (Gnome)")]
+		[TestCase("ubuntu:GNOME", null, "ubuntu-wayland", ExpectedResult = "gnome", TestName = "Ubuntu 20.04 (Gnome + Wayland)")]
+		[TestCase("X-Cinnamon", null, "cinnamon", ExpectedResult = "x-cinnamon", TestName = "Wasta 20 (Cinnamon)")]
+		[TestCase("ubuntu:GNOME", null, "ubuntu", ExpectedResult = "gnome", TestName = "Wasta 20 (Gnome)")]
 		public string DesktopEnvironment_SimulateDesktops(string currDesktop,
 			string dataDirs, string gdmSession)
 		{
@@ -189,6 +194,11 @@ namespace SIL.Tests.PlatformUtilities
 		[TestCase(null, "/usr/share/ubuntu:/usr/share/kde:/usr/local/share/:/usr/share/",
 			"kde-plasma", null, Result = "kde (kde-plasma)", TestName = "KDE on Ubuntu 12_04")]
 		[TestCase(null, null, null, null, Result = " (not set)", TestName = "Nothing set")]
+		[TestCase("ubuntu:GNOME", null, "ubuntu", "", ExpectedResult = "gnome (ubuntu)", TestName = "Ubuntu 20.04 (Gnome)")]
+		[TestCase("ubuntu:GNOME", null, "ubuntu-wayland", "",
+			ExpectedResult = "gnome (ubuntu [display server: Wayland])", TestName = "Ubuntu 20.04 (Gnome + Wayland)")]
+		[TestCase("X-Cinnamon", null, "cinnamon", "", ExpectedResult = "x-cinnamon (cinnamon)", TestName = "Wasta 20 (Cinnamon)")]
+		[TestCase("ubuntu:GNOME", null, "ubuntu", "", ExpectedResult = "gnome (ubuntu)", TestName = "Wasta 20 (Gnome)")]
 		public string DesktopEnvironmentInfoString_SimulateDesktopEnvironments(string currDesktop,
 			string dataDirs, string gdmSession, string mirServerName)
 		{
@@ -216,6 +226,31 @@ namespace SIL.Tests.PlatformUtilities
 		public void MonoPlatform_Windows()
 		{
 			Assert.That(Platform.MonoVersion, Is.Empty);
+		}
+
+		[Platform(Include = "Linux", Reason = "Linux specific test")]
+		[TestCase("/usr/bin/gnome-session", "ubuntu", ExpectedResult = false, TestName = "Ubuntu Gnome")]
+		[TestCase("/usr/bin/cinnamon-session", "cinnamon", ExpectedResult = true, TestName = "Wasta 12/14")]
+		[TestCase("/usr/bin/gnome-session", "cinnamon", ExpectedResult = true, TestName = "Wasta 20 (Cinnamon)")]
+		[TestCase("/usr/bin/gnome-session", "ubuntu", ExpectedResult = false, TestName = "Wasta 20 (Gnome)")]
+		public bool IsCinnamon_SimulateDesktops(string sessionManager, string gdmSession)
+		{
+			// See http://askubuntu.com/a/227669 for actual values on different systems
+
+			// Setup
+			var field = typeof(Platform).GetField("_sessionManager", BindingFlags.Static | BindingFlags.NonPublic);
+			field.SetValue(null, sessionManager);
+			Environment.SetEnvironmentVariable("GDMSESSION", gdmSession);
+
+			// SUT
+			return Platform.IsCinnamon;
+		}
+
+		[Test]
+		[Platform(Include = "Windows", Reason = "Windows specific test")]
+		public void IsCinnamon_Windows()
+		{
+			Assert.That(Platform.IsCinnamon, Is.False);
 		}
 	}
 }

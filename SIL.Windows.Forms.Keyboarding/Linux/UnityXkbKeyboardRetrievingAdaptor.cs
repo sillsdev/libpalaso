@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SIL.PlatformUtilities;
 using X11.XKlavier;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
@@ -20,7 +21,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		#region Specific implementations of IKeyboardRetriever
 
-		public override bool IsApplicable => _helper.IsApplicable;
+		public override bool IsApplicable => _helper.IsApplicable && !Platform.IsGnomeShell && !Platform.IsCinnamon;
 
 		public override void Initialize()
 		{

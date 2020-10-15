@@ -19,7 +19,10 @@ namespace SIL.PlatformUtilities
 
 		public static bool IsUnix => Environment.OSVersion.Platform == PlatformID.Unix;
 		public static bool IsWasta => IsUnix && System.IO.File.Exists("/etc/wasta-release");
-		public static bool IsCinnamon => IsUnix && SessionManager.StartsWith("/usr/bin/cinnamon-session");
+
+		public static bool IsCinnamon => IsUnix &&
+			(SessionManager.StartsWith("/usr/bin/cinnamon-session") ||
+			Environment.GetEnvironmentVariable("GDMSESSION") == "cinnamon");
 
 		public static bool IsMono
 		{
@@ -118,6 +121,8 @@ namespace SIL.PlatformUtilities
 				// Special case for Wasta 12
 				else if (currentDesktop == "GNOME" && Environment.GetEnvironmentVariable("GDMSESSION") == "cinnamon")
 					currentDesktop = Environment.GetEnvironmentVariable("GDMSESSION");
+				else if (currentDesktop.ToLowerInvariant() == "ubuntu:gnome")
+					currentDesktop = "gnome";
 				return currentDesktop?.ToLowerInvariant();
 			}
 		}
@@ -134,12 +139,16 @@ namespace SIL.PlatformUtilities
 
 				// see http://unix.stackexchange.com/a/116694
 				// and http://askubuntu.com/a/227669
-				string currentDesktop = DesktopEnvironment;
-				string mirSession = Environment.GetEnvironmentVariable("MIR_SERVER_NAME");
+				var currentDesktop = DesktopEnvironment;
 				var additionalInfo = string.Empty;
+				var mirSession = Environment.GetEnvironmentVariable("MIR_SERVER_NAME");
 				if (!string.IsNullOrEmpty(mirSession))
 					additionalInfo = " [display server: Mir]";
-				string gdmSession = Environment.GetEnvironmentVariable("GDMSESSION") ?? "not set";
+
+				var gdmSession = Environment.GetEnvironmentVariable("GDMSESSION") ?? "not set";
+				if (gdmSession.ToLowerInvariant().EndsWith("-wayland"))
+					return $"{currentDesktop} ({gdmSession.Split('-')[0]} [display server: Wayland])";
+
 				return $"{currentDesktop} ({gdmSession}{additionalInfo})";
 			}
 		}
@@ -292,7 +301,7 @@ namespace SIL.PlatformUtilities
 				return osName + " (" + osVersion + ")";
 			}
 
-			var distro = RunTerminalCommand("bash", "-c \"[ $(which lsb_release) ] && lsb_release -d -s\"");
+			var distro = RunTerminalCommand("bash", "-c '[ $(which lsb_release) ] && [ -f /etc/wasta-release ] && echo \"$(lsb_release -d -s) ($(cat /etc/wasta-release | grep DESCRIPTION | cut -d\\\" -f 2))\" || lsb_release -d -s'");
 			return string.IsNullOrEmpty(distro) ? "UNIX" : distro;
 		}
 
