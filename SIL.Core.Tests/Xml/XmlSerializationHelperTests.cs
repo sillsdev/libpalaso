@@ -6,6 +6,7 @@ using System.Text;
 using System.Xml.Serialization;
 using NUnit.Framework;
 using SIL.Xml;
+using SomethingWeird;
 
 namespace SIL.Tests.Xml
 {
@@ -446,5 +447,92 @@ namespace SIL.Tests.Xml
 			Assert.IsTrue(lines.First().StartsWith("<MyRoot"));
 			Assert.IsTrue(lines.Last().EndsWith("MyRoot>"));
 		}
+
+		[Test]
+		public void SerializeToString_GenericList_SerializedCorrectly()
+		{
+			var source = new[] {"List Item 1", "List Item 2", "List Item 3"};
+			var data = (from s in source
+				select new XmlTranslation
+					{Reference = "MAT 3:6", PhraseKey = s, Translation = s.ToLower()}).ToList();
+			var result = XmlSerializationHelper.SerializeToString(data, Encoding.UTF8);
+			var lines = result.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList();
+			Assert.IsTrue(lines[0].StartsWith("<?xml"));
+			Assert.That(lines[0].Contains("encoding=\"utf-8\""));
+		}
+	}
+
+		/// ------------------------------------------------------------------------------------
+	/// <summary>
+	/// Little class to support XML serialization
+	/// </summary>
+	/// ------------------------------------------------------------------------------------
+	[XmlType("Translation")]
+	public class XmlTranslation
+	{
+		/// --------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets or sets the reference.
+		/// </summary>
+		/// --------------------------------------------------------------------------------
+		[XmlAttribute("ref")]
+		public string Reference { get; set; }
+		/// --------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets or sets the phrase key (typically the text of the question in English.
+		/// </summary>
+		/// --------------------------------------------------------------------------------
+		[XmlElement("OriginalPhrase")]
+		public string PhraseKey { get; set; }
+		/// --------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets or sets the translation.
+		/// </summary>
+		/// --------------------------------------------------------------------------------
+		public string Translation { get; set; }
+		/// --------------------------------------------------------------------------------
+		/// <summary>
+		/// Initializes a new instance of the <see cref="XmlTranslation"/> class, needed
+		/// for XML serialization.
+		/// </summary>
+		/// --------------------------------------------------------------------------------
+		public XmlTranslation()
+		{
+		}
+
+		/// --------------------------------------------------------------------------------
+		/// <summary>
+		/// Initializes a new instance of the <see cref="XmlTranslation"/> class.
+		/// </summary>
+		/// --------------------------------------------------------------------------------
+		public XmlTranslation(ITranslatablePhrase tp)
+		{
+			Reference = tp.PhraseKey.ScriptureReference;
+			PhraseKey = tp.PhraseKey.Text;
+			Translation = tp.Translation;
+		}
+	}
+}
+
+namespace SomethingWeird
+{
+	public interface ITranslatablePhrase
+	{
+		IQuestionKey PhraseKey { get; }
+		string Translation { get; }
+	}
+
+	public interface IQuestionKey : IRefRange
+	{
+		string ScriptureReference { get; }
+		/// <summary>Text of the question in COMPOSED form</summary>
+		string Text { get; }
+		string PhraseInUse { get; }
+	}
+
+	public interface IRefRange
+	{
+		int StartRef { get;  }
+		int EndRef { get; }
 	}
 }
