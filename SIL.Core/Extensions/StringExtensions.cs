@@ -198,7 +198,11 @@ namespace SIL.Extensions
 
 			foreach (var characterToTest in input)
 			{
-				if (Array.BinarySearch(invalidChars, characterToTest) >= 0 || characterToTest < ' ') // eliminate all control characters too
+				if (Array.BinarySearch(invalidChars, characterToTest) >= 0 ||
+					characterToTest < ' ' || // eliminate all control characters
+					// Apparently Windows allows the ORC in *some* positions in filenames, but
+					// that can't be good, so we'll replace that too.
+					characterToTest == '\uFFFC')
 				{
 					if (result.Length > 0 || errorChar != ' ')
 						result.Append(errorChar);

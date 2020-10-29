@@ -207,8 +207,8 @@ namespace SIL.Tests.Extensions
 		public void SanitizeFilename_LeadingAndTrailingSpacesAndDotsPlusInvalidCharacters_InvalidCharactersReplacedAndLeadingAndTrailingJunkTrimmed(
 			string leading, string trailing)
 		{
-			Assert.AreEqual("My__File__Dude_____.'[];funny()___",
-				(leading + @"My?|File<>Dude\?*:/.'[];funny()" + "\u000a\t" + '"' + trailing).SanitizeFilename('_'));
+			Assert.AreEqual("My__File__Dude_____.'[];funny()____",
+				(leading + @"My?|File<>Dude\?*:/.'[];funny()" + "\u000a\t\uFFFC" + '"' + trailing).SanitizeFilename('_'));
 		}
 
 		/// ------------------------------------------------------------------------------------
