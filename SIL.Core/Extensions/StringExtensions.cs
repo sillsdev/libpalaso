@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
+using static System.Char;
 
 namespace SIL.Extensions
 {
@@ -148,47 +149,99 @@ namespace SIL.Extensions
 		/// </summary>
 		/// <param name="input">the string to clean</param>
 		/// <param name="errorChar">the character which replaces bad characters</param>
-		public static string SanitizeFilename(this string input, char errorChar)
+		/// <param name="replaceNbsp">Flag indicating whether to replace non-breaking spaces with
+		/// normal spaces</param>
+		public static string SanitizeFilename(this string input, char errorChar, bool replaceNbsp)
 		{
 			var invalidFilenameChars = System.IO.Path.GetInvalidFileNameChars();
 			Array.Sort(invalidFilenameChars);
-			return Sanitize(input, invalidFilenameChars, errorChar);
+			return Sanitize(input, invalidFilenameChars, errorChar, replaceNbsp, false);
 		}
+
+		/// <summary>
+		/// Finds and replaces invalid characters in a filename
+		/// </summary>
+		/// <param name="input">the string to clean</param>
+		/// <param name="errorChar">the character which replaces bad characters</param>
+		public static string SanitizeFilename(this string input, char errorChar) =>
+			SanitizeFilename(input, errorChar, false);
 
 		/// <summary>
 		/// Finds and replaces invalid characters in a path
 		/// </summary>
 		/// <param name="input">the string to clean</param>
 		/// <param name="errorChar">the character which replaces bad characters</param>
+		/// normal spaces</param>
+
 		public static string SanitizePath(this string input, char errorChar)
 		{
 			var invalidPathChars = System.IO.Path.GetInvalidPathChars();
 			Array.Sort(invalidPathChars);
-			return Sanitize(input, invalidPathChars, errorChar);
+			return Sanitize(input, invalidPathChars, errorChar, false, true);
 		}
 
-		private static string Sanitize(string input, char[] invalidChars, char errorChar)
+		private static string Sanitize(string input, char[] invalidChars, char errorChar, bool replaceNbsp,
+			bool allowTrailingUpHierarchyDots)
 		{
+			// Caller ensures invalidChars is sorted, so we can use a binary search, which should be lightning fast.
+
 			// null always sanitizes to null
 			if (input == null)
 			{
 				return null;
 			}
+
+			if (Array.BinarySearch(invalidChars, errorChar) >= 0)
+				throw new ArgumentException("", nameof(errorChar));
+
 			var result = new StringBuilder();
+
 			foreach (var characterToTest in input)
 			{
-				// we binary search for the character in the invalid set. This should be lightning fast.
-				if (Array.BinarySearch(invalidChars, characterToTest) >= 0)
+				if (Array.BinarySearch(invalidChars, characterToTest) >= 0 || characterToTest < ' ') // eliminate all control characters too
 				{
-					result.Append(errorChar);
+					if (result.Length > 0 || errorChar != ' ')
+						result.Append(errorChar);
 				}
-				else
+				else if (result.Length > 0 || !characterToTest.IsInvalidFilenameLeadingOrTrailingSpaceChar())
 				{
-					result.Append(characterToTest);
+					result.Append((replaceNbsp && characterToTest == '\u00A0') ? ' ' : characterToTest);
 				}
 			}
-			return result.ToString();
+
+			var lastCharPos = result.Length - 1;
+			while (lastCharPos >= 0)
+			{
+				var lastChar = result[lastCharPos];
+				if ((lastChar == '.' &&
+					(!allowTrailingUpHierarchyDots || lastCharPos < 2 || result[lastCharPos - 1] != '.' ||
+					(result[lastCharPos - 2] != Path.DirectorySeparatorChar &&
+					result[lastCharPos - 2] != Path.AltDirectorySeparatorChar)))
+					|| lastChar.IsInvalidFilenameLeadingOrTrailingSpaceChar())
+				{
+					result.Remove(lastCharPos, 1);
+					lastCharPos--;
+				}
+				else
+					break;
+			}
+
+			return result.Length == 0 ? errorChar.ToString() : result.ToString();
 		}
+
+		/// <summary>
+		/// In addition to all the "normal" space characters covered by Char.IsWhitespace, this
+		/// also returns true for certain formatting characters which have no visible effect on
+		/// a string when used as a leading or trailing character and would likely be confusing
+		/// if allowed at the start or end of a filename. 
+		/// </summary>
+		/// <remarks>Originally, I implemented the second check as
+		/// GetUnicodeCategory(c) == UnicodeCategory.Format, but this seemed to be too aggressive
+		/// since significant formatting marks such as those used to control bidi text could be
+		/// removed.
+		/// </remarks>
+		private static bool IsInvalidFilenameLeadingOrTrailingSpaceChar(this char c) =>
+			IsWhiteSpace(c) || c == '\uFEFF' || c == '\u200B' || c == '\u200C' || c == '\u200D';
 
 		/// <summary>
 		/// Make the first letter of the string upper-case, and the rest lower case. Does not consider words.
@@ -198,13 +251,13 @@ namespace SIL.Extensions
 			if (string.IsNullOrEmpty(source))
 				return string.Empty;
 			var letters = source.ToLowerInvariant().ToCharArray();
-			letters[0] = char.ToUpperInvariant(letters[0]);
+			letters[0] = ToUpperInvariant(letters[0]);
 			return new string(letters);
 		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Removes the ampersand accerlerator prefix from the specified text.
+		/// Removes the ampersand accelerator prefix from the specified text.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static string RemoveAcceleratorPrefix(this string text)
@@ -273,7 +326,7 @@ namespace SIL.Extensions
 
 			foreach (char t in stFormD)
 			{
-				UnicodeCategory uc = char.GetUnicodeCategory(t);
+				UnicodeCategory uc = GetUnicodeCategory(t);
 				if (uc != UnicodeCategory.NonSpacingMark)
 					sb.Append(t);
 			}

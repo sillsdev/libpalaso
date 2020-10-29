@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+using System;
+using NUnit.Framework;
 using SIL.Extensions;
 
 namespace SIL.Tests.Extensions
@@ -165,6 +166,187 @@ namespace SIL.Tests.Extensions
 		public void RemoveDiacritics_ExpectedResults(string str, string expectedResult)
 		{
 			Assert.AreEqual(expectedResult, str.RemoveDiacritics());
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests that we get a valid filename when the filename contains invalid characters.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase('_', ExpectedResult = "My__File__Dude_____.'[];funny()___")]
+		[TestCase('w', ExpectedResult = "MywwFilewwDudewwwww.'[];funny()www")]
+		public string SanitizeFilename_ManyInvalidCharacters_InvalidCharactersReplacedWithSpecifiedCharacter(char errorChar)
+		{
+			return (@"My?|File<>Dude\?*:/.'[];funny()" + "\u000a\t" + '"').SanitizeFilename(errorChar);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests that we get a valid filename when the filename contains invalid characters.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(' ', ExpectedResult = "My  File Dude .'[];funny()")]
+		[TestCase('.', ExpectedResult = ".My..File.Dude..'[];funny()")]
+		public string SanitizeFilename_ReplacingInvalidCharactersWithSpaceOrDot_InvalidCharactersAtStartOrEndOfStringTrimmedIfInvalid(char errorChar)
+		{
+			return (@"<My?|File>Dude\.'[];funny()?*:/").SanitizeFilename(errorChar);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests that we get a valid filename when the filename contains invalid characters
+		/// and has leading/trailing spaces/dots.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(" ", ". ")]
+		[TestCase("  ", "..")]
+		[TestCase(" \u200C ", " .")]
+		[TestCase("\u2002", ". .")]
+		[TestCase("\u2000", "\u200A")]
+		[TestCase("\u200C", "\u200D")]
+		public void SanitizeFilename_LeadingAndTrailingSpacesAndDotsPlusInvalidCharacters_InvalidCharactersReplacedAndLeadingAndTrailingJunkTrimmed(
+			string leading, string trailing)
+		{
+			Assert.AreEqual("My__File__Dude_____.'[];funny()___",
+				(leading + @"My?|File<>Dude\?*:/.'[];funny()" + "\u000a\t" + '"' + trailing).SanitizeFilename('_'));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests that we throw an exception if caller passes a bogus errorChar.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase('<')]
+		[TestCase('?')]
+		public void SanitizeFilename_ErrorCharInvalid_Throws(char errorChar)
+		{
+			Assert.Throws<ArgumentException>(() =>
+				(@"My?|File<>Dude\?*:/.'[];funny()" + "\u000a\t" + '"').SanitizeFilename(errorChar));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests that we get a valid filename when the filename contains invalid characters.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void SanitizeFilename_NoBreakSpace_NbspReplacedWithNormalSpace()
+		{
+			Assert.AreEqual("My File Dude.txt", "My File\u00A0Dude.txt".SanitizeFilename('_', true));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests that final periods and spaces are stripped.
+		/// (See https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file?redirectedfrom=MSDN#naming_conventions)
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(".")]
+		[TestCase(". ")]
+		[TestCase(" .")]
+		[TestCase("..")]
+		[TestCase(". .")]
+		[TestCase("\u2002")]
+		[TestCase("\u2000")]
+		[TestCase("\u200A")]
+		[TestCase("\u200C")]
+		[TestCase("\u200D")]
+		public void SanitizeFilename_EndsWithAndContainsPeriodsAndOrSpaces_TrailingPeriodsAndSpacesRemoved(string trailing)
+		{
+			Assert.AreEqual($"My best{trailing}File", ($"My best{trailing}File" + trailing).SanitizeFilename('_'));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests that final periods and spaces are stripped.
+		/// (See https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file?redirectedfrom=MSDN#naming_conventions)
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(".\u00A0.")]
+		[TestCase("\u00A0")]
+		public void SanitizeFilename_EndsWithPeriodsAndOrSpaces_TrailingPeriodsAndSpacesRemoved(string trailing)
+		{
+			Assert.AreEqual("My best.File", ("My best.File" + trailing).SanitizeFilename('_'));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests that leading spaces and formatting characters are stripped.
+		/// (See https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file?redirectedfrom=MSDN#naming_conventions)
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(" ")]
+		[TestCase("  ")]
+		[TestCase("\u00A0")]
+		[TestCase("\uFEFF")]
+		[TestCase("\u200B")]
+		[TestCase("\u200A")]
+		public void SanitizeFilename_StartsWithSpaces_LeadingPeriodsAndSpacesRemoved(string leading)
+		{
+			Assert.AreEqual("My best.File", (leading + "My best.File").SanitizeFilename('_'));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests that an empty filename or one consisting only of spaces and dots results in
+		/// a single underscore (which is a legal - albeit not very nice) filename. Note:
+		/// Originally I was going to have it throw an exception since it's a really weird edge
+		/// case, but knowing that it is used to come up with a default filename, if ever it
+		/// were to be passed junk like this (which it probably never will), neither crashing
+		/// nor having to deal with it in a try-catch would be helpful.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(".")]
+		[TestCase(". ")]
+		[TestCase(" .")]
+		[TestCase("..")]
+		[TestCase(". .")]
+		[TestCase(" ")]
+		[TestCase("")]
+		[TestCase("\u00A0")]
+		[TestCase("\u00A0.")]
+		public void SanitizeFilename_StringContainsNothingButPeriodsAndOrSpaces_ReturnsSingleUnderscore(string orig)
+		{
+			Assert.AreEqual("_", orig.SanitizeFilename('_'));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests that an empty filename or one consisting only of spaces and dots results in
+		/// a single underscore (which is a legal - albeit not very nice) filename. Note:
+		/// Originally I was going to have it throw an exception since it's a really weird edge
+		/// case, but knowing that it is used to come up with a default filename, if ever it
+		/// were to be passed junk like this (which it probably never will), neither crashing
+		/// nor having to deal with it in a try-catch would be helpful.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(@"..\relative\..\path")]
+		[TestCase(@"c:\root")]
+		public void SanitizePath_StringContainsCharactersThatAreNotValidFileCharactersButAreValidPathCharacters_NoChange(string orig)
+		{
+			Assert.AreEqual(orig, orig.SanitizePath('_'));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests that an empty filename or one consisting only of spaces and dots results in
+		/// a single underscore (which is a legal - albeit not very nice) filename. Note:
+		/// Originally I was going to have it throw an exception since it's a really weird edge
+		/// case, but knowing that it is used to come up with a default filename, if ever it
+		/// were to be passed junk like this (which it probably never will), neither crashing
+		/// nor having to deal with it in a try-catch would be helpful.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(@"blah\blah\.", ExpectedResult = @"blah\blah\")] // This would also be acceptable: blah\blah\.
+		[TestCase(@"c:\root\..", ExpectedResult = @"c:\root\..")]
+		[TestCase(@"My directory is awesome.", ExpectedResult = @"My directory is awesome")]
+		[TestCase(@"..", ExpectedResult = @"_")]
+		[TestCase(@"\.", ExpectedResult = @"\")]// This would also be acceptable: \.
+		[TestCase(@".\..", ExpectedResult = @".\..")]
+		[TestCase(@".\...", ExpectedResult = @".\..")]
+		public string SanitizePath_StringHasTrailingDots_TrailingDotsTrimmed(string orig)
+		{
+			return orig.SanitizePath('_');
 		}
 	}
 }
