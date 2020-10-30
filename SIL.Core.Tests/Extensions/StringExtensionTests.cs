@@ -226,7 +226,8 @@ namespace SIL.Tests.Extensions
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests that we get a valid filename when the filename contains invalid characters.
+		/// Tests that we get a filename with a normal space when the given filename contain a
+		/// non-breaking space.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
@@ -312,12 +313,8 @@ namespace SIL.Tests.Extensions
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests that an empty filename or one consisting only of spaces and dots results in
-		/// a single underscore (which is a legal - albeit not very nice) filename. Note:
-		/// Originally I was going to have it throw an exception since it's a really weird edge
-		/// case, but knowing that it is used to come up with a default filename, if ever it
-		/// were to be passed junk like this (which it probably never will), neither crashing
-		/// nor having to deal with it in a try-catch would be helpful.
+		/// Tests that valid path charcters (: and \) that are invalid in filenames are not
+		/// replaced.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[TestCase(@"..\relative\..\path")]
@@ -329,18 +326,15 @@ namespace SIL.Tests.Extensions
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests that an empty filename or one consisting only of spaces and dots results in
-		/// a single underscore (which is a legal - albeit not very nice) filename. Note:
-		/// Originally I was going to have it throw an exception since it's a really weird edge
-		/// case, but knowing that it is used to come up with a default filename, if ever it
-		/// were to be passed junk like this (which it probably never will), neither crashing
-		/// nor having to deal with it in a try-catch would be helpful.
+		/// Tests that trailing dots are removed from a path unless they are valid relative path
+		/// specifiers.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[TestCase(@"blah\blah\.", ExpectedResult = @"blah\blah\")] // This would also be acceptable: blah\blah\.
 		[TestCase(@"c:\root\..", ExpectedResult = @"c:\root\..")]
 		[TestCase(@"My directory is awesome.", ExpectedResult = @"My directory is awesome")]
-		[TestCase(@"..", ExpectedResult = @"_")]
+		[TestCase(@"..", ExpectedResult = @"..")]
+		[TestCase(@". .", ExpectedResult = @"_")]
 		[TestCase(@"\.", ExpectedResult = @"\")]// This would also be acceptable: \.
 		[TestCase(@".\..", ExpectedResult = @".\..")]
 		[TestCase(@".\...", ExpectedResult = @".\..")]

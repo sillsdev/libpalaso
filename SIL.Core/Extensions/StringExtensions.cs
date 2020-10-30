@@ -171,8 +171,6 @@ namespace SIL.Extensions
 		/// </summary>
 		/// <param name="input">the string to clean</param>
 		/// <param name="errorChar">the character which replaces bad characters</param>
-		/// normal spaces</param>
-
 		public static string SanitizePath(this string input, char errorChar)
 		{
 			var invalidPathChars = System.IO.Path.GetInvalidPathChars();
@@ -192,7 +190,7 @@ namespace SIL.Extensions
 			}
 
 			if (Array.BinarySearch(invalidChars, errorChar) >= 0)
-				throw new ArgumentException("", nameof(errorChar));
+				throw new ArgumentException("The character used to replace bad characters must not itself be an invalid character.", nameof(errorChar));
 
 			var result = new StringBuilder();
 
@@ -217,10 +215,13 @@ namespace SIL.Extensions
 			while (lastCharPos >= 0)
 			{
 				var lastChar = result[lastCharPos];
-				if ((lastChar == '.' &&
-					(!allowTrailingUpHierarchyDots || lastCharPos < 2 || result[lastCharPos - 1] != '.' ||
+				if (lastChar == '.' &&
+					(!allowTrailingUpHierarchyDots ||
+					(lastCharPos < 2 ||
+					result[lastCharPos - 1] != '.' ||
 					(result[lastCharPos - 2] != Path.DirectorySeparatorChar &&
-					result[lastCharPos - 2] != Path.AltDirectorySeparatorChar)))
+					result[lastCharPos - 2] != Path.AltDirectorySeparatorChar)) &&
+					!(lastCharPos == 1 && result[0] == '.'))
 					|| lastChar.IsInvalidFilenameLeadingOrTrailingSpaceChar())
 				{
 					result.Remove(lastCharPos, 1);
