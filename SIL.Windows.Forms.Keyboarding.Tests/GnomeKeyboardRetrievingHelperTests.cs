@@ -11,6 +11,12 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 	[Platform(Include="Linux", Reason="Linux specific tests")]
 	public class GnomeKeyboardRetrievingHelperTests
 	{
+		[OneTimeTearDown]
+		public void OneTimeTearDown()
+		{
+			Unmanaged.LibGnomeDesktopCleanup();
+		}
+
 		[Test]
 		public void InitKeyboards_XkbAndIbus()
 		{

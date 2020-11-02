@@ -17,7 +17,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// The keyboard retrieving part is identical to previous versions but switching keyboards
 	/// changed with 18.04.
 	/// </summary>
-	public class GnomeShellIbusKeyboardRetrievingAdaptor: IbusKeyboardRetrievingAdaptor
+	public class GnomeShellIbusKeyboardRetrievingAdaptor: IbusKeyboardRetrievingAdaptor, IDisposable
 	{
 		private readonly GnomeKeyboardRetrievingHelper _helper = new GnomeKeyboardRetrievingHelper();
 
@@ -37,6 +37,17 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// <remarks>This overload is used in unit tests</remarks>
 		protected GnomeShellIbusKeyboardRetrievingAdaptor(IIbusCommunicator ibusCommunicator): base(ibusCommunicator)
 		{
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing && !IsDisposed)
+			{
+				// dispose managed and unmanaged objects
+				Unmanaged.LibGnomeDesktopCleanup();
+			}
 		}
 
 		public override bool IsApplicable => _helper.IsApplicable && Platform.IsGnomeShell;
@@ -89,8 +100,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				{
 					type = typeof(IbusXkbKeyboardDescription);
 					layout = string.IsNullOrEmpty(ibusKeyboard.LayoutVariant)
-							? ibusKeyboard.Layout
-							: $"{ibusKeyboard.Layout}+{ibusKeyboard.LayoutVariant}";
+						? ibusKeyboard.Layout
+						: $"{ibusKeyboard.Layout}+{ibusKeyboard.LayoutVariant}";
 				}
 				else
 				{
