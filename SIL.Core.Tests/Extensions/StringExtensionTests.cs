@@ -239,7 +239,7 @@ namespace SIL.Tests.Extensions
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Tests that final periods and spaces are stripped.
-		/// (See https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file?redirectedfrom=MSDN#naming_conventions)
+		/// (See https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions)
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[TestCase(".")]
@@ -260,7 +260,7 @@ namespace SIL.Tests.Extensions
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Tests that final periods and spaces are stripped.
-		/// (See https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file?redirectedfrom=MSDN#naming_conventions)
+		/// (See https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions)
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[TestCase(".\u00A0.")]
@@ -273,7 +273,7 @@ namespace SIL.Tests.Extensions
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Tests that leading spaces and formatting characters are stripped.
-		/// (See https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file?redirectedfrom=MSDN#naming_conventions)
+		/// (See https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions)
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[TestCase(" ")]
@@ -313,12 +313,13 @@ namespace SIL.Tests.Extensions
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests that valid path charcters (: and \) that are invalid in filenames are not
-		/// replaced.
+		/// Tests that valid path characters (: and \ and leading dots) that are invalid in
+		/// filenames are not replaced.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[TestCase(@"..\relative\..\path")]
 		[TestCase(@"c:\root")]
+		[TestCase(@".git")]
 		public void SanitizePath_StringContainsCharactersThatAreNotValidFileCharactersButAreValidPathCharacters_NoChange(string orig)
 		{
 			Assert.AreEqual(orig, orig.SanitizePath('_'));
