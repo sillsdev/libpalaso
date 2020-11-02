@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -215,14 +216,9 @@ namespace SIL.Extensions
 			while (lastCharPos >= 0)
 			{
 				var lastChar = result[lastCharPos];
-				if (lastChar == '.' &&
-					(!allowTrailingUpHierarchyDots ||
-					(lastCharPos < 2 ||
-					result[lastCharPos - 1] != '.' ||
-					(result[lastCharPos - 2] != Path.DirectorySeparatorChar &&
-					result[lastCharPos - 2] != Path.AltDirectorySeparatorChar)) &&
-					!(lastCharPos == 1 && result[0] == '.'))
-					|| lastChar.IsInvalidFilenameLeadingOrTrailingSpaceChar())
+				if ((lastChar == '.' && (!allowTrailingUpHierarchyDots ||
+					!TrailingDotIsValidHierarchySpecifier(result, lastChar))) ||
+					lastChar.IsInvalidFilenameLeadingOrTrailingSpaceChar())
 				{
 					result.Remove(lastCharPos, 1);
 					lastCharPos--;
@@ -232,6 +228,29 @@ namespace SIL.Extensions
 			}
 
 			return result.Length == 0 ? errorChar.ToString() : result.ToString();
+		}
+
+		private static bool TrailingDotIsValidHierarchySpecifier(StringBuilder result, int lastCharPos)
+		{
+			Debug.Assert(lastCharPos == result.Length - 1 && result[lastCharPos] == '.');
+
+			if (lastCharPos == 0)
+			{
+				// REVIEW: This is an iffy case. Technically, a single dot is a valid path,
+				// referring to the current directory. But for our purposes, it's not likely to
+				// be useful. If the caller wants that, they could just not specify anything.
+				return false;
+			}
+			if (result[lastCharPos - 1] == '.')
+			{
+				// This is a probably a valid up-one-level specifier.
+				if (lastCharPos == 1 ||
+					result[lastCharPos - 2] == Path.DirectorySeparatorChar &&
+					result[lastCharPos - 2] == Path.AltDirectorySeparatorChar)
+					return true;
+			}
+
+			return false;
 		}
 
 		/// <summary>
