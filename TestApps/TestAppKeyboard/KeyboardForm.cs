@@ -22,9 +22,17 @@ namespace TestAppKeyboard
 			KeyboardController.RegisterControl(testAreaB, eventHandler);
 			KeyboardController.RegisterControl(testAreaC, eventHandler);
 
+			Console.WriteLine();
+			Console.WriteLine("Adding keyboards for Test Area A");
 			LoadKeyboards(keyboardsA);
+			Console.WriteLine();
+			Console.WriteLine("Adding keyboards for Test Area B");
 			LoadKeyboards(keyboardsB);
+			Console.WriteLine();
+			Console.WriteLine("Adding keyboards for Test Area C");
 			LoadKeyboards(keyboardsC);
+			Console.WriteLine();
+			Console.WriteLine("Adding keyboards for Current Keyboard dropdown");
 			LoadKeyboards(currentKeyboard);
 		}
 
