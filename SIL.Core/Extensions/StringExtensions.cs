@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
+using SIL.PlatformUtilities;
 using static System.Char;
 
 namespace SIL.Extensions
@@ -137,7 +140,7 @@ namespace SIL.Extensions
 		/// <example> string path = "my".Combine("stuff", "toys", "ball.txt")</example>
 		public static string CombineForPath(this string rootPath, params string[] partsOfThePath)
 		{
-			string result = rootPath.ToString();
+			string result = rootPath;
 			foreach (var s in partsOfThePath)
 			{
 				result = Path.Combine(result, s);
@@ -154,16 +157,20 @@ namespace SIL.Extensions
 		/// normal spaces</param>
 		public static string SanitizeFilename(this string input, char errorChar, bool replaceNbsp)
 		{
-			var invalidFilenameChars = System.IO.Path.GetInvalidFileNameChars();
+			var invalidFilenameChars = Path.GetInvalidFileNameChars();
 			Array.Sort(invalidFilenameChars);
 			return Sanitize(input, invalidFilenameChars, errorChar, replaceNbsp, false);
 		}
+
+		// ENHANCE: Make versions of these methods that can guarantee a file/path that would be
+		// valid across all known/likely operating systems to ensure better portability.
 
 		/// <summary>
 		/// Finds and replaces invalid characters in a filename
 		/// </summary>
 		/// <param name="input">the string to clean</param>
 		/// <param name="errorChar">the character which replaces bad characters</param>
+		/// <remarks>This is platform-specific.</remarks>
 		public static string SanitizeFilename(this string input, char errorChar) =>
 			SanitizeFilename(input, errorChar, false);
 
@@ -174,9 +181,17 @@ namespace SIL.Extensions
 		/// <param name="errorChar">the character which replaces bad characters</param>
 		public static string SanitizePath(this string input, char errorChar)
 		{
-			var invalidPathChars = System.IO.Path.GetInvalidPathChars();
+			var invalidPathChars = Path.GetInvalidPathChars();
 			Array.Sort(invalidPathChars);
-			return Sanitize(input, invalidPathChars, errorChar, false, true);
+			var sanitized = Sanitize(input, invalidPathChars, errorChar, false, true);
+			if (Platform.IsWindows)
+			{
+				sanitized = Regex.Replace(sanitized, "^(:)(.*)", $"{errorChar}$3");
+				sanitized = Regex.Replace(sanitized, "^([^a-zA-Z])(:)(.*)", $"$1{errorChar}$3");
+				sanitized = new String(sanitized.Take(2).ToArray()) + new String(sanitized.Skip(2).ToArray()).Replace(':', errorChar);
+			}
+
+			return sanitized;
 		}
 
 		private static string Sanitize(string input, char[] invalidChars, char errorChar, bool replaceNbsp,
@@ -217,9 +232,16 @@ namespace SIL.Extensions
 			{
 				var lastChar = result[lastCharPos];
 				if ((lastChar == '.' && (!allowTrailingUpHierarchyDots ||
-					!TrailingDotIsValidHierarchySpecifier(result, lastChar))) ||
+					!TrailingDotIsValidHierarchySpecifier(result, lastCharPos))) ||
 					lastChar.IsInvalidFilenameLeadingOrTrailingSpaceChar())
 				{
+					if (!IsWhiteSpace(lastChar))
+					{
+						// Once we've stripped off anything besides whitespace, we
+						// can't legitimately treat any remaining trailing dots as
+						// valid hierarchy specifiers.
+						allowTrailingUpHierarchyDots = false;
+					}
 					result.Remove(lastCharPos, 1);
 					lastCharPos--;
 				}
@@ -237,15 +259,15 @@ namespace SIL.Extensions
 			if (lastCharPos == 0)
 			{
 				// REVIEW: This is an iffy case. Technically, a single dot is a valid path,
-				// referring to the current directory. But for our purposes, it's not likely to
-				// be useful. If the caller wants that, they could just not specify anything.
-				return false;
+				// referring to the current directory, though it's not likely to be
+				// useful. If the caller wants that, they could just not specify anything.
+				return true;
 			}
 			if (result[lastCharPos - 1] == '.')
 			{
 				// This is a probably a valid up-one-level specifier.
 				if (lastCharPos == 1 ||
-					result[lastCharPos - 2] == Path.DirectorySeparatorChar &&
+					result[lastCharPos - 2] == Path.DirectorySeparatorChar ||
 					result[lastCharPos - 2] == Path.AltDirectorySeparatorChar)
 					return true;
 			}

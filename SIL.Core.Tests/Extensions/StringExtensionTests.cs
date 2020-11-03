@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using SIL.Extensions;
+using static System.String;
 
 namespace SIL.Tests.Extensions
 {
@@ -16,7 +19,7 @@ namespace SIL.Tests.Extensions
 		[Test]
 		public void SplitTrimmed_StringIsEmpty_GivesEmptyList()
 		{
-			Assert.AreEqual(0, string.Empty.SplitTrimmed(',').Count);
+			Assert.AreEqual(0, Empty.SplitTrimmed(',').Count);
 		}
 
 		[Test]
@@ -129,7 +132,7 @@ namespace SIL.Tests.Extensions
 		[Test]
 		public void ToIntArray_EmptyString_ReturnsEmptyArray()
 		{
-			Assert.AreEqual(0, string.Empty.ToIntArray().Length);
+			Assert.AreEqual(0, Empty.ToIntArray().Length);
 		}
 
 		[Test]
@@ -168,6 +171,15 @@ namespace SIL.Tests.Extensions
 			Assert.AreEqual(expectedResult, str.RemoveDiacritics());
 		}
 
+		[Test, TestCaseSource(nameof(GetInvalidFilenameCharacters))]
+		public void SanitizeFilename_InvalidCharacter_Replaced(char invalidChar)
+		{
+			Assert.AreEqual("File name.txt", $"File{invalidChar}name.txt".SanitizeFilename(' '));
+		}
+
+		private static IEnumerable<char> GetInvalidFilenameCharacters() =>
+			System.IO.Path.GetInvalidFileNameChars();
+		
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Tests that we get a valid filename when the filename contains invalid characters.
@@ -177,7 +189,29 @@ namespace SIL.Tests.Extensions
 		[TestCase('w', ExpectedResult = "MywwFilewwDudewwwww.'[];funny()www")]
 		public string SanitizeFilename_ManyInvalidCharacters_InvalidCharactersReplacedWithSpecifiedCharacter(char errorChar)
 		{
+			var invalidFilename = @"My?|File<>Dude\?*:/.'[];funny()" + "\u000a\t" +
+				GetInvalidFilenameCharacters().First();
+			var validFileName = invalidFilename.SanitizeFilename(errorChar);
+			Assert.IsFalse(validFileName.Any(c => GetInvalidFilenameCharacters().Contains(c)));
+			Assert.IsTrue(validFileName.Contains(errorChar));
 			return (@"My?|File<>Dude\?*:/.'[];funny()" + "\u000a\t" + '"').SanitizeFilename(errorChar);
+		}
+		
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests that we get a valid filename that does not end with spaces when the filename
+		/// ends with invalid characters and the error replacement character is a space.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(' ')]
+		[TestCase('\u200C')]
+		public void SanitizeFilename_LastCharIsInvalidAndReplacementCharIsSpace_SanitizedStringDoesNotEndWithSpace(char errorChar)
+		{
+			var invalidFilename = @"My?|File<>Dude\?*:/.'[];funny" +
+				GetInvalidFilenameCharacters().First();
+			var validFileName = invalidFilename.SanitizeFilename(errorChar);
+			Assert.IsFalse(validFileName.Any(c => GetInvalidFilenameCharacters().Contains(c)));
+			Assert.IsTrue(validFileName.EndsWith("funny"));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -189,7 +223,10 @@ namespace SIL.Tests.Extensions
 		[TestCase('.', ExpectedResult = ".My..File.Dude..'[];funny()")]
 		public string SanitizeFilename_ReplacingInvalidCharactersWithSpaceOrDot_InvalidCharactersAtStartOrEndOfStringTrimmedIfInvalid(char errorChar)
 		{
-			return (@"<My?|File>Dude\.'[];funny()?*:/").SanitizeFilename(errorChar);
+			var someInvalidCharacters = Join("", GetInvalidFilenameCharacters().Take(5));
+			var invalidFilename = someInvalidCharacters.First() + @"My?|File>Dude\.'[];funny()" +
+				someInvalidCharacters;
+			return invalidFilename.SanitizeFilename(errorChar);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -207,8 +244,12 @@ namespace SIL.Tests.Extensions
 		public void SanitizeFilename_LeadingAndTrailingSpacesAndDotsPlusInvalidCharacters_InvalidCharactersReplacedAndLeadingAndTrailingJunkTrimmed(
 			string leading, string trailing)
 		{
-			Assert.AreEqual("My__File__Dude_____.'[];funny()____",
-				(leading + @"My?|File<>Dude\?*:/.'[];funny()" + "\u000a\t\uFFFC" + '"' + trailing).SanitizeFilename('_'));
+			var filenameWithLeadingAndTrailingJunk = leading +
+				@"My?|File<>Dude\?*:/.'[];funny()" + GetInvalidFilenameCharacters().Last() + trailing;
+			var sanitizedFilename = filenameWithLeadingAndTrailingJunk.SanitizeFilename('_');
+			Assert.That(sanitizedFilename.StartsWith("My"));
+			Assert.That(sanitizedFilename.EndsWith("funny()_"));
+			Assert.IsFalse(sanitizedFilename.Any(c => GetInvalidFilenameCharacters().Contains(c)));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -216,17 +257,15 @@ namespace SIL.Tests.Extensions
 		/// Tests that we throw an exception if caller passes a bogus errorChar.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestCase('<')]
-		[TestCase('?')]
+		[Test, TestCaseSource(nameof(GetInvalidFilenameCharacters))]
 		public void SanitizeFilename_ErrorCharInvalid_Throws(char errorChar)
 		{
-			Assert.Throws<ArgumentException>(() =>
-				(@"My?|File<>Dude\?*:/.'[];funny()" + "\u000a\t" + '"').SanitizeFilename(errorChar));
+			Assert.Throws<ArgumentException>(() => @"My?|Dude\?funny".SanitizeFilename(errorChar));
 		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests that we get a filename with a normal space when the given filename contain a
+		/// Tests that we get a filename with a normal space when the given filename contains a
 		/// non-breaking space.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
@@ -313,16 +352,35 @@ namespace SIL.Tests.Extensions
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests that valid path characters (: and \ and leading dots) that are invalid in
-		/// filenames are not replaced.
+		/// Tests that valid path characters (colons, slashes and leading dots) that are (at least on
+		/// Windows) invalid in filenames are not replaced.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[TestCase(@"..\relative\..\path")]
+		[TestCase(@"../relative/../path")]
 		[TestCase(@"c:\root")]
+		[TestCase(@"c:root")] // This is valid, though some apps might not allow with it.
 		[TestCase(@".git")]
 		public void SanitizePath_StringContainsCharactersThatAreNotValidFileCharactersButAreValidPathCharacters_NoChange(string orig)
 		{
 			Assert.AreEqual(orig, orig.SanitizePath('_'));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests that on Windows improperly placed colons are replaced.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(@"\:c", ExpectedResult = @"\_c")]
+		[TestCase(@"c::\", ExpectedResult = @"c:_\")]
+		[TestCase(@"c:\:", ExpectedResult = @"c:\_")]
+		[TestCase(@"%:\yeah", ExpectedResult = @"%_\yeah")]
+		[TestCase(@"abc:", ExpectedResult = "abc_")]
+		[TestCase(@"abc:", ExpectedResult = "abc_")]
+		[Platform(Include = "win", Reason = "Rules about colons and slashes only apply to Windows.")]
+		public string SanitizePath_StringContainsBogusColonsOrSlashes_Sanitized(string orig)
+		{
+			return orig.SanitizePath('_');
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -334,11 +392,12 @@ namespace SIL.Tests.Extensions
 		[TestCase(@"blah\blah\.", ExpectedResult = @"blah\blah\")] // This would also be acceptable: blah\blah\.
 		[TestCase(@"c:\root\..", ExpectedResult = @"c:\root\..")]
 		[TestCase(@"My directory is awesome.", ExpectedResult = @"My directory is awesome")]
+		[TestCase(".", ExpectedResult = ".")]
 		[TestCase(@"..", ExpectedResult = @"..")]
 		[TestCase(@". .", ExpectedResult = @"_")]
-		[TestCase(@"\.", ExpectedResult = @"\")]// This would also be acceptable: \.
+		[TestCase(@"\.", ExpectedResult = @"\")] // This would also be acceptable: \.
 		[TestCase(@".\..", ExpectedResult = @".\..")]
-		[TestCase(@".\...", ExpectedResult = @".\..")]
+		[TestCase(@".\...", ExpectedResult = @".\")] // REVIEW: maybe we want: .\_
 		public string SanitizePath_StringHasTrailingDots_TrailingDotsTrimmed(string orig)
 		{
 			return orig.SanitizePath('_');
