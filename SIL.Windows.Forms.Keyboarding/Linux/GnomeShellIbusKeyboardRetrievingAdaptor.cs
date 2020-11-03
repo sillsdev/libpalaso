@@ -185,5 +185,11 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			}
 			return keyboards.ToArray();
 		}
+
+		protected override string GetKeyboardSetupApplication(out string arguments)
+		{
+			return KeyboardRetrievingHelper.GetKeyboardSetupApplication(out arguments);
+		}
+
 	}
 }
