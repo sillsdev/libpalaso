@@ -21,7 +21,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			};
 			var sut = new UnityKeyboardRetrievingHelper(() => installedKeyboards);
 			Assert.That(() => sut.InitKeyboards(s => true,
-				keyboards => registeredKeyboards = keyboards),
+				(keyboards, _) => registeredKeyboards = keyboards),
 				Throws.Nothing);
 			Assert.That(registeredKeyboards, Is.EquivalentTo(new Dictionary<string, int> {
 				{ "us", 0 },
@@ -40,7 +40,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			};
 			var sut = new UnityKeyboardRetrievingHelper(() => installedKeyboards);
 			Assert.That(() => sut.InitKeyboards(s => true,
-				keyboards => registeredKeyboards = keyboards),
+					(keyboards, _) => registeredKeyboards = keyboards),
 				Throws.Nothing); // LT-20410
 			Assert.That(registeredKeyboards, Is.EquivalentTo(new Dictionary<string, int> {
 				{ "km:/home/user/.local/share/keyman/khmer_angkor/khmer_angkor.kmx", 0 },
