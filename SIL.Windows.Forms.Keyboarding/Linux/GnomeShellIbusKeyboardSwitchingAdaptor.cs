@@ -10,15 +10,20 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// <summary>
 	/// Class for dealing with ibus keyboards on Gnome Shell (as found in Ubuntu Bionic >= 18.04)
 	/// </summary>
-	public class GnomeShellIbusKeyboardSwitchingAdaptor: UnityIbusKeyboardSwitchingAdaptor, IUnityKeyboardSwitchingAdaptor
+	public class GnomeShellIbusKeyboardSwitchingAdaptor: IbusKeyboardSwitchingAdaptor
 	{
+		private KeyboardDescription _defaultKeyboard;
+
 		public GnomeShellIbusKeyboardSwitchingAdaptor(IIbusCommunicator ibusCommunicator)
 			: base(ibusCommunicator)
 		{
 		}
 
-		void IUnityKeyboardSwitchingAdaptor.SelectKeyboard(uint index)
+		protected override void SelectKeyboard(KeyboardDescription keyboard)
 		{
+			var ibusKeyboard = (IbusKeyboardDescription) keyboard;
+			var index = ibusKeyboard.SystemIndex;
+
 			var okay = false;
 			// https://askubuntu.com/a/1039964
 			try
@@ -27,7 +32,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 					EnableRaisingEvents = false,
 					StartInfo = {
 						FileName = "/usr/bin/gdbus",
-						Arguments = "call --session --dest org.gnome.Shell --object-path /org/gnome/Shell " +
+						Arguments =
+							"call --session --dest org.gnome.Shell --object-path /org/gnome/Shell " +
 							"--method org.gnome.Shell.Eval " +
 							$"\"imports.ui.status.keyboard.getInputSourceManager().inputSources[{index}].activate()\"",
 						UseShellExecute = false
@@ -43,12 +49,30 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			{
 				if (!okay)
 				{
-					var msg = $"GnomeShellIbusKeyboardSwitchingAdaptor.SelectKeyboard({index}) failed";
+					var msg =
+						$"GnomeShellIbusKeyboardSwitchingAdaptor.SelectKeyboard({index}) failed";
 					Console.WriteLine(msg);
 					Logger.WriteEvent(msg);
 				}
 			}
 		}
 
+		/// <summary>
+		/// This adaptor doesn't make use of XkbKeyboardDefinition objects, so we have to
+		/// figure out the default keyboard ourself. The default keyboard is the first keyboard
+		/// in the input-sources list.
+		/// </summary>
+		public override KeyboardDescription DefaultKeyboard => _defaultKeyboard;
+
+		/// <summary>
+		/// Implementation is not required because the default implementation of KeyboardController
+		/// is sufficient.
+		/// </summary>
+		public override KeyboardDescription ActiveKeyboard => null;
+
+		public void SetDefaultKeyboard(KeyboardDescription keyboard)
+		{
+			_defaultKeyboard = keyboard;
+		}
 	}
 }

@@ -22,7 +22,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			bool okay = true;
 			try
 			{
-				okay &= KeyboardRetrievingHelper.SchemaIsInstalled(schema);
+				okay &= GlibHelper.SchemaIsInstalled(schema);
 				if (!okay)
 					return;
 

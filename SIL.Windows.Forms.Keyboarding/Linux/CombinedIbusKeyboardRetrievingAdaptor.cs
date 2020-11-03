@@ -23,7 +23,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		public CombinedIbusKeyboardRetrievingAdaptor()
 		{
-			KeyboardRetrievingHelper.InitGlib();
 		}
 
 		/// <summary>
@@ -135,7 +134,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			{
 				try
 				{
-					if (!KeyboardRetrievingHelper.SchemaIsInstalled(GSettingsSchema))
+					if (!GlibHelper.SchemaIsInstalled(GSettingsSchema))
 						return false;
 					_settingsGeneral = Unmanaged.g_settings_new(GSettingsSchema);
 					if (_settingsGeneral == IntPtr.Zero)

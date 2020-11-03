@@ -377,9 +377,13 @@
     <Compile Include="Linux\AlternateLanguageCodes.cs" />
     <Compile Include="Linux\CombinedIbusKeyboardRetrievingAdaptor.cs" />
     <Compile Include="Linux\CombinedIbusKeyboardSwitchingAdaptor.cs" />
+    <Compile Include="Linux\GlibHelper.cs" />
+    <Compile Include="Linux\GList.cs" />
     <Compile Include="Linux\GnomeShellIbusKeyboardRetrievingAdaptor.cs" />
     <Compile Include="Linux\GnomeShellIbusKeyboardSwitchingAdaptor.cs" />
+    <Compile Include="Linux\GnomeXkbInfo.cs" />
     <Compile Include="Linux\IbusKeyboardSwitchingAdaptor.cs" />
+    <Compile Include="Linux\IbusXkbKeyboardDescription.cs" />
     <Compile Include="Linux\IUnityKeyboardSwitchingAdaptor.cs" />
     <Compile Include="Linux\KeyboardRetrievingHelper.cs" />
     <Compile Include="Linux\UnityIbusKeyboardRetrievingAdaptor.cs" />
@@ -388,6 +392,7 @@
     <Compile Include="Linux\UnityXkbKeyboardRetrievingAdaptor.cs" />
     <Compile Include="Linux\UnityXkbKeyboardSwitchingAdaptor.cs" />
     <Compile Include="Linux\Unmanaged.cs" />
+    <Compile Include="Linux\XkbIbusEngineDesc.cs" />
     <Compile Include="Linux\XkbKeyboardSwitchingAdaptor.cs" />
     <Compile Include="NullKeyboardDescription.cs" />
     <Compile Include="Linux\GlobalCachedInputContext.cs" />

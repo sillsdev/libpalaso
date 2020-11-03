@@ -14,12 +14,17 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// </summary>
 	internal class UnityKeyboardRetrievingHelper
 	{
+		internal class IbusKeyboardEntry
+		{
+			public string Type;
+			public string Layout;
+		}
+
 		private Func<string[]> _GetKeyboards;
 
 		public UnityKeyboardRetrievingHelper()
 		{
 			_GetKeyboards = GetMyKeyboards;
-			KeyboardRetrievingHelper.InitGlib();
 		}
 
 		// Used in unit tests
@@ -39,15 +44,20 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		}
 
 		public void InitKeyboards(Func<string, bool> keyboardTypeMatches,
-			Action<IDictionary<string, uint>> registerKeyboards)
+			Action<IDictionary<string, uint>, IbusKeyboardEntry> registerKeyboards)
 		{
-			var keyboards = new Dictionary<string, uint>();
 			var list = _GetKeyboards();
-			uint kbdIndex = 0;
-			foreach (var typeAndLayout in list)
-				AddKeyboard(typeAndLayout, ref kbdIndex, keyboards, keyboardTypeMatches);
+			if (list == null || list.Length < 1)
+				return;
 
-			registerKeyboards(keyboards);
+			var installedKeyboards = new Dictionary<string, uint>();
+			uint kbdIndex = 0;
+			foreach (var keyboardEntry in list)
+				AddMatchingKeyboard(keyboardEntry, ref kbdIndex, installedKeyboards, keyboardTypeMatches);
+
+			var firstKeyboard = SplitKeyboardEntry(list[0]);
+
+			registerKeyboards(installedKeyboards, firstKeyboard);
 		}
 
 		public static string GetKeyboardSetupApplication(out string arguments)
@@ -75,7 +85,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			// This is the proper path for the combined keyboard handling, not the path
 			// given in the IBus reference documentation.
 			const string schema = "org.gnome.desktop.input-sources";
-			if (!KeyboardRetrievingHelper.SchemaIsInstalled(schema))
+			if (!GlibHelper.SchemaIsInstalled(schema))
 				return null;
 
 			var settings = Unmanaged.g_settings_new(schema);
@@ -92,18 +102,24 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			return list;
 		}
 
-		private static void AddKeyboard(string source, ref uint kbdIndex,
+		private static void AddMatchingKeyboard(string source, ref uint kbdIndex,
 			IDictionary<string, uint> keyboards, Func<string, bool> keyboardTypeMatches)
 		{
-			var parts = source.Split(new[]{";;"}, StringSplitOptions.None);
-			Debug.Assert(parts.Length == 2);
-			if (parts.Length != 2)
-				return;
-			var type = parts[0];
-			var layout = parts[1];
-			if (keyboardTypeMatches(type) && !keyboards.ContainsKey(layout))
-				keyboards.Add(layout, kbdIndex);
+			var keyboardEntry = SplitKeyboardEntry(source);
+			if (keyboardTypeMatches(keyboardEntry.Type) && !keyboards.ContainsKey(keyboardEntry.Layout))
+				keyboards.Add(keyboardEntry.Layout, kbdIndex);
 			++kbdIndex;
+		}
+
+		/// <summary>
+		/// Split the keyboard entry into type and layout. If <paramref name="source"/> isn't in
+		/// the expected format a default IbusKeyboardEntry is returned.
+		/// </summary>
+		private static IbusKeyboardEntry SplitKeyboardEntry(string source)
+		{
+			var parts = source.Split(new[] { ";;" }, StringSplitOptions.None);
+			Debug.Assert(parts.Length == 2);
+			return parts.Length != 2 ? new IbusKeyboardEntry() : new IbusKeyboardEntry { Type = parts[0], Layout = parts[1] };
 		}
 	}
 }

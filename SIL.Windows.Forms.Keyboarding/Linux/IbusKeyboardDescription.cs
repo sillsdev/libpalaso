@@ -10,7 +10,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	{
 		private const string OtherLanguage = "Other Language";
 
-		private IBusEngineDesc _ibusKeyboard;
+		protected IBusEngineDesc _ibusKeyboard;
 
 		public IbusKeyboardDescription(string id, string layout, string locale, IKeyboardSwitchingAdaptor engine)
 			: base (id, FormatKeyboardIdentifier(layout, locale), layout, locale, false, engine)
@@ -36,6 +36,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			return string.Format("{0} - {1}", languageName, layout);
 		}
 
+		protected virtual string KeyboardIdentifier => FormatKeyboardIdentifier(_ibusKeyboard.Name, _ibusKeyboard.Language);
+
 		public string ParentLayout
 		{
 			get { return IBusKeyboardEngine.Layout; }
@@ -47,7 +49,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			set
 			{
 				_ibusKeyboard = value;
-				Name = FormatKeyboardIdentifier(_ibusKeyboard.Name, _ibusKeyboard.Language);
+				Name = KeyboardIdentifier;
 			}
 		}
 

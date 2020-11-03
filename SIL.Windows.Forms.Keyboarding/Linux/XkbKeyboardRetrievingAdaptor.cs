@@ -216,41 +216,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		protected virtual string GetKeyboardSetupApplication(out string arguments)
 		{
-			// NOTE: if we get false results (e.g. because the user has installed multiple
-			// desktop environments) we could check for the currently running desktop
-			// (Platform.DesktopEnvironment) and return the matching program
-			arguments = null;
-			// XFCE
-			if (File.Exists("/usr/bin/xfce4-keyboard-settings"))
-				return "/usr/bin/xfce4-keyboard-settings";
-			// Cinnamon
-			if (File.Exists("/usr/lib/cinnamon-settings/cinnamon-settings.py") && File.Exists("/usr/bin/python"))
-			{
-				arguments = "/usr/lib/cinnamon-settings/cinnamon-settings.py " +
-					(Platform.DesktopEnvironment == "cinnamon"
-						? "region layouts" // Wasta 12
-						: "keyboard"); // Wasta 14;
-				return "/usr/bin/python";
-			}
-			// Cinnamon in Wasta 20.04
-			if (File.Exists("/usr/bin/cinnamon-settings"))
-			{
-				arguments = "keyboard -t layouts";
-				return "/usr/bin/cinnamon-settings";
-			}
-			// GNOME
-			if (File.Exists("/usr/bin/gnome-control-center"))
-			{
-				arguments = "region layouts";
-				return "/usr/bin/gnome-control-center";
-			}
-			// KDE
-			if (File.Exists("/usr/bin/kcmshell4"))
-			{
-				arguments = "kcm_keyboard";
-				return "/usr/bin/kcmshell4";
-			}
-			return null;
+			return KeyboardRetrievingHelper.GetKeyboardSetupApplication(out arguments);
 		}
 
 		public Action GetSecondaryKeyboardSetupAction() => null;

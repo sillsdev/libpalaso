@@ -46,7 +46,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			_helper.InitKeyboards(type => type != "xkb", RegisterKeyboards);
 		}
 
-		private void RegisterKeyboards(IDictionary<string, uint> keyboards)
+		private void RegisterKeyboards(IDictionary<string, uint> keyboards, UnityKeyboardRetrievingHelper.IbusKeyboardEntry _)
 		{
 			if (keyboards.Count <= 0)
 				return;
