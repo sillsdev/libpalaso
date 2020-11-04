@@ -171,7 +171,7 @@ namespace SIL.Tests.Extensions
 			Assert.AreEqual(expectedResult, str.RemoveDiacritics());
 		}
 
-		[Test, TestCaseSource(nameof(GetInvalidFilenameCharacters))]
+		[TestCaseSource(nameof(GetInvalidFilenameCharacters))]
 		public void SanitizeFilename_InvalidCharacter_Replaced(char invalidChar)
 		{
 			Assert.AreEqual("File name.txt", $"File{invalidChar}name.txt".SanitizeFilename(' '));
@@ -361,6 +361,8 @@ namespace SIL.Tests.Extensions
 		[TestCase(@"c:\root")]
 		[TestCase(@"c:root")] // This is valid, though some apps might not allow with it.
 		[TestCase(@".git")]
+		[TestCase(@"c:")]
+		[TestCase(@"Z:")]
 		public void SanitizePath_StringContainsCharactersThatAreNotValidFileCharactersButAreValidPathCharacters_NoChange(string orig)
 		{
 			Assert.AreEqual(orig, orig.SanitizePath('_'));
@@ -371,13 +373,13 @@ namespace SIL.Tests.Extensions
 		/// Tests that on Windows improperly placed colons are replaced.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[Platform(Include = "win", Reason = "Rules about colons and slashes only apply to Windows.")]
 		[TestCase(@"\:c", ExpectedResult = @"\_c")]
 		[TestCase(@"c::\", ExpectedResult = @"c:_\")]
 		[TestCase(@"c:\:", ExpectedResult = @"c:\_")]
 		[TestCase(@"%:\yeah", ExpectedResult = @"%_\yeah")]
 		[TestCase(@"abc:", ExpectedResult = "abc_")]
-		[TestCase(@"abc:", ExpectedResult = "abc_")]
-		[Platform(Include = "win", Reason = "Rules about colons and slashes only apply to Windows.")]
+		[TestCase(@"c :", ExpectedResult = "c _")]
 		public string SanitizePath_StringContainsBogusColonsOrSlashes_Sanitized(string orig)
 		{
 			return orig.SanitizePath('_');
@@ -390,6 +392,7 @@ namespace SIL.Tests.Extensions
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[TestCase(@"blah\blah\.", ExpectedResult = @"blah\blah\")] // This would also be acceptable: blah\blah\.
+		[TestCase(@"blah\blah/.", ExpectedResult = @"blah\blah/")] // This would also be acceptable: blah\blah/.
 		[TestCase(@"c:\root\..", ExpectedResult = @"c:\root\..")]
 		[TestCase(@"My directory is awesome.", ExpectedResult = @"My directory is awesome")]
 		[TestCase(".", ExpectedResult = ".")]
@@ -397,7 +400,9 @@ namespace SIL.Tests.Extensions
 		[TestCase(@". .", ExpectedResult = @"_")]
 		[TestCase(@"\.", ExpectedResult = @"\")] // This would also be acceptable: \.
 		[TestCase(@".\..", ExpectedResult = @".\..")]
+		[TestCase(@"./..", ExpectedResult = @"./..")]
 		[TestCase(@".\...", ExpectedResult = @".\")] // REVIEW: maybe we want: .\_
+		[TestCase(@"....", ExpectedResult = @"_")]
 		public string SanitizePath_StringHasTrailingDots_TrailingDotsTrimmed(string orig)
 		{
 			return orig.SanitizePath('_');
