@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using SIL.Acknowledgements;
 
 [assembly: System.CLSCompliant(true)]
@@ -11,9 +11,9 @@ using SIL.Acknowledgements;
 [assembly: Acknowledgement("L10NSharp", Url = "https://github.com/sillsdev/l10nsharp/",
 	Copyright = "Copyright © SIL International 2010-2014", LicenseUrl = "https://opensource.org/licenses/MIT",
 	Location = "./L10NSharp.dll")]
-[assembly: Acknowledgement("MarkdownDeep", Url = "https://www.nuget.org/packages/MarkdownDeep.NET/",
-	LicenseUrl = "https://opensource.org/licenses/Apache-2.0", Copyright = "Copyright © 2010-2011 Topten Software",
-	Location = "./MarkdownDeep.dll")]
+[assembly: Acknowledgement("Markdig", Url = "https://github.com/lunet-io/markdig",
+	LicenseUrl = "https://github.com/lunet-io/markdig/blob/master/license.txt", Copyright = "Copyright © 2018-2019, Alexandre Mutel",
+	Location = "./Markdig.dll")]
 
 // LGPL-2.1 license is actually for Enchant, not for Enchant.Net
 [assembly: Acknowledgement("Enchant.Net", Url = "https://github.com/AbiWord/enchantdotnet",

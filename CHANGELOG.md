@@ -53,6 +53,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] `ConsoleExceptionHandler` class is now public
 - [SIL.DblBundle.Tests] Create nuget package
 - [SIL.Windows.Forms] Use the new Registered trademark logo (in About Box). Remove 132x148 logo.
+- [SIL.Windows.Forms] Use [Markdig](https://github.com/lunet-io/markdig) instead of
+    [MarkdownDeep.NET](https://www.toptensoftware.com/markdowndeep/)
 
 ### Fixed
 
