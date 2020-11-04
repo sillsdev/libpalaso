@@ -26,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj" />
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
     <ProjectReference Include="..\SIL.Linux.Logging\SIL.Linux.Logging.csproj" />
   </ItemGroup>

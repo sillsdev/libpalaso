@@ -34,7 +34,6 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj" />
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
     <ProjectReference Include="..\SIL.Windows.Forms.Keyboarding\SIL.Windows.Forms.Keyboarding.csproj" />
   </ItemGroup>

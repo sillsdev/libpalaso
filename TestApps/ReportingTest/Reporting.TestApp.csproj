@@ -28,7 +28,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\SIL.Core.Desktop\SIL.Core.Desktop.csproj" />
     <ProjectReference Include="..\..\SIL.Core\SIL.Core.csproj" />
-    <ProjectReference Include="..\..\SIL.Media\SIL.Media.csproj" />
     <ProjectReference Include="..\..\SIL.Windows.Forms.WritingSystems\SIL.Windows.Forms.WritingSystems.csproj" />
     <ProjectReference Include="..\..\SIL.Windows.Forms\SIL.Windows.Forms.csproj" />
     <ProjectReference Include="..\..\SIL.WritingSystems\SIL.WritingSystems.csproj" />

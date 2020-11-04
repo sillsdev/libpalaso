@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj" />
-    <ProjectReference Include="..\SIL.Core.Tests\SIL.Core.Tests.csproj" />
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
     <ProjectReference Include="..\SIL.Lift\SIL.Lift.csproj" />
     <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj" />
