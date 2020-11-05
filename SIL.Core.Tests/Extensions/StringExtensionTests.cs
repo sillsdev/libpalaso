@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using SIL.Extensions;
@@ -185,16 +186,15 @@ namespace SIL.Tests.Extensions
 		/// Tests that we get a valid filename when the filename contains invalid characters.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestCase('_', ExpectedResult = "My__File__Dude_____.'[];funny()___")]
-		[TestCase('w', ExpectedResult = "MywwFilewwDudewwwww.'[];funny()www")]
-		public string SanitizeFilename_ManyInvalidCharacters_InvalidCharactersReplacedWithSpecifiedCharacter(char errorChar)
+		[TestCase('_')]
+		[TestCase('w')]
+		public void SanitizeFilename_ManyInvalidCharacters_InvalidCharactersReplacedWithSpecifiedCharacter(char errorChar)
 		{
 			var invalidFilename = @"My?|File<>Dude\?*:/.'[];funny()" + "\u000a\t" +
 				GetInvalidFilenameCharacters().First();
 			var validFileName = invalidFilename.SanitizeFilename(errorChar);
 			Assert.IsFalse(validFileName.Any(c => GetInvalidFilenameCharacters().Contains(c)));
 			Assert.IsTrue(validFileName.Contains(errorChar));
-			return (@"My?|File<>Dude\?*:/.'[];funny()" + "\u000a\t" + '"').SanitizeFilename(errorChar);
 		}
 		
 		/// ------------------------------------------------------------------------------------
@@ -219,14 +219,16 @@ namespace SIL.Tests.Extensions
 		/// Tests that we get a valid filename when the filename contains invalid characters.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[TestCase(' ', ExpectedResult = "My  File Dude .'[];funny()")]
-		[TestCase('.', ExpectedResult = ".My..File.Dude..'[];funny()")]
+		[TestCase(' ', ExpectedResult = "My")]
+		[TestCase('.', ExpectedResult = ".M")]
 		public string SanitizeFilename_ReplacingInvalidCharactersWithSpaceOrDot_InvalidCharactersAtStartOrEndOfStringTrimmedIfInvalid(char errorChar)
 		{
 			var someInvalidCharacters = Join("", GetInvalidFilenameCharacters().Take(5));
 			var invalidFilename = someInvalidCharacters.First() + @"My?|File>Dude\.'[];funny()" +
 				someInvalidCharacters;
-			return invalidFilename.SanitizeFilename(errorChar);
+			var sanitized = invalidFilename.SanitizeFilename(errorChar);
+			Assert.That(sanitized.EndsWith(".'[];funny()"));
+			return sanitized.Substring(0, 2);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -393,19 +395,36 @@ namespace SIL.Tests.Extensions
 		/// ------------------------------------------------------------------------------------
 		[TestCase(@"blah\blah\.", ExpectedResult = @"blah\blah\")] // This would also be acceptable: blah\blah\.
 		[TestCase(@"blah\blah/.", ExpectedResult = @"blah\blah/")] // This would also be acceptable: blah\blah/.
-		[TestCase(@"c:\root\..", ExpectedResult = @"c:\root\..")]
 		[TestCase(@"My directory is awesome.", ExpectedResult = @"My directory is awesome")]
 		[TestCase(".", ExpectedResult = ".")]
 		[TestCase(@"..", ExpectedResult = @"..")]
 		[TestCase(@". .", ExpectedResult = @"_")]
 		[TestCase(@"\.", ExpectedResult = @"\")] // This would also be acceptable: \.
-		[TestCase(@".\..", ExpectedResult = @".\..")]
-		[TestCase(@"./..", ExpectedResult = @"./..")]
 		[TestCase(@".\...", ExpectedResult = @".\")] // REVIEW: maybe we want: .\_
 		[TestCase(@"....", ExpectedResult = @"_")]
-		public string SanitizePath_StringHasTrailingDots_TrailingDotsTrimmed(string orig)
+		public string SanitizePath_StringHasTrailingDots_InvalidTrailingDotsTrimmed(string orig)
 		{
 			return orig.SanitizePath('_');
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests that two trailing dots are not removed from the end of the path if they occur
+		/// following the primary directory separator char.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(@"c:\root")]
+		[TestCase(@"c:/root")]
+		[TestCase(".")]
+		public void SanitizePath_StringHasTwoTrailingDotsFollowingDirectorySeparator_NoChange(string prefix)
+		{
+			var directorySeparators = new HashSet<char>();
+			directorySeparators.Add(Path.DirectorySeparatorChar);
+			// On Linux, AltDirectorySeparatorChar is the same, so there will only be one.
+			directorySeparators.Add(Path.AltDirectorySeparatorChar);
+
+			foreach (var orig in directorySeparators.Select(separator => $"{prefix}{separator}.."))
+				Assert.AreEqual(orig, orig.SanitizePath('_'));
 		}
 	}
 }
