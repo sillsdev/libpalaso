@@ -46,12 +46,13 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			_helper.InitKeyboards(type => type != "xkb", RegisterKeyboards);
 		}
 
-		private void RegisterKeyboards(IDictionary<string, uint> keyboards, (string, string) firstKeyboard)
+		private void RegisterKeyboards(IDictionary<string, uint> keyboards, (string, string) _)
 		{
 			if (keyboards.Count <= 0)
 				return;
 
-			var curKeyboards = KeyboardController.Instance.Keyboards.OfType<IbusKeyboardDescription>().ToDictionary(kd => kd.Id);
+			var curKeyboards = KeyboardController.Instance.Keyboards
+				.OfType<IbusKeyboardDescription>().ToDictionary(kd => kd.Id);
 			var missingLayouts = new List<string>(keyboards.Keys);
 			foreach (var ibusKeyboard in GetAllIBusKeyboards())
 			{

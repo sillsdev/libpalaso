@@ -9,7 +9,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// </summary>
 	public class UnityXkbKeyboardSwitchingAdaptor : XkbKeyboardSwitchingAdaptor
 	{
-		public UnityXkbKeyboardSwitchingAdaptor(IXklEngine engine): base(engine)
+		public UnityXkbKeyboardSwitchingAdaptor(IXklEngine engine) : base(engine)
 		{
 		}
 
@@ -25,3 +25,4 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			switchingAdaptor.SelectKeyboard((uint) xkbKeyboard.GroupIndex);
 		}
 	}
+}

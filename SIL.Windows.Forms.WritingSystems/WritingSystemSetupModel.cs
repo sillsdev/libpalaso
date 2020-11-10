@@ -83,7 +83,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		/// <summary>
 		/// Use this to set the appropriate kinds of writing systems according to your
-		/// application.  For example, is the user of your app likely to want voice? ipa? dialects?
+		/// application.  For example, is the user of your app likely to want voice? IPA? dialects?
 		/// </summary>
 		public WritingSystemSuggestor WritingSystemSuggestor { get; private set; }
 
@@ -990,9 +990,9 @@ namespace SIL.Windows.Forms.WritingSystems
 				{
 					return SelectionsForSpecialCombo.Voice;
 				}
-				// Ipa writing systems really shouldn't have scripts. We want to clear the script if a user selects Ipa from the combobox
-				// If there is a non-default script present on a LanguageTag with Ipa load it up in the Script/Region/Variant instead.
-				// This will avoid silently clearing script codes from existing Ipa writing systems that didn't follow best practice on scripts.
+				// IPA writing systems really shouldn't have scripts. We want to clear the script if a user selects IPA from the combobox
+				// If there is a non-default script present on a LanguageTag with IPA load it up in the Script/Region/Variant instead.
+				// This will avoid silently clearing script codes from existing IPA writing systems that didn't follow best practice on scripts.
 				if (_currentWritingSystem.IpaStatus != IpaStatusChoices.NotIpa
 					&& (_currentWritingSystem.Script == null || IetfLanguageTag.IsScriptImplied(_currentWritingSystem.LanguageTag)))
 				{
@@ -1645,7 +1645,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			CurrentIsVoice = false;
 			CurrentScriptCode = string.Empty;
 
-			//if we're here, the user wants some kind of ipa
+			//if we're here, the user wants some kind of IPA
 			if (CurrentIpaStatus == IpaStatusChoices.NotIpa)
 			{
 				CurrentIpaStatus = IpaStatusChoices.Ipa;

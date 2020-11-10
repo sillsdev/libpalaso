@@ -2,7 +2,6 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Runtime.InteropServices;
-using X11;
 using Mono.Unix;
 
 namespace X11.XKlavier
@@ -60,12 +59,12 @@ namespace X11.XKlavier
 			{
 				if (m_GroupNames == null)
 				{
-					int count = NumGroups;
+					var count = NumGroups;
 					var names = xkl_engine_get_groups_names(Engine);
 					var namePtrs = new IntPtr[count];
 					Marshal.Copy(names, namePtrs, 0, count);
 					m_GroupNames = new string[count];
-					for (int i = 0; i < count; i++)
+					for (var i = 0; i < count; i++)
 					{
 						m_GroupNames[i] = Marshal.PtrToStringAuto(namePtrs[i]);
 					}
@@ -153,40 +152,40 @@ namespace X11.XKlavier
 
 		// from libXKlavier
 		[DllImport("libxklavier")]
-		private extern static IntPtr xkl_engine_get_instance(IntPtr display);
+		private static extern IntPtr xkl_engine_get_instance(IntPtr display);
 
 		[DllImport("libxklavier")]
-		private extern static IntPtr xkl_engine_get_backend_name(IntPtr engine);
+		private static extern IntPtr xkl_engine_get_backend_name(IntPtr engine);
 
 		[DllImport("libxklavier")]
-		private extern static int xkl_engine_get_num_groups(IntPtr engine);
+		private static extern int xkl_engine_get_num_groups(IntPtr engine);
 
 		[DllImport("libxklavier")]
-		private extern static IntPtr xkl_engine_get_groups_names(IntPtr engine);
+		private static extern IntPtr xkl_engine_get_groups_names(IntPtr engine);
 
 		[DllImport("libxklavier")]
-		private extern static int xkl_engine_get_next_group(IntPtr engine);
+		private static extern int xkl_engine_get_next_group(IntPtr engine);
 		[DllImport("libxklavier")]
-		private extern static int xkl_engine_get_prev_group(IntPtr engine);
+		private static extern int xkl_engine_get_prev_group(IntPtr engine);
 		[DllImport("libxklavier")]
-		private extern static int xkl_engine_get_current_window_group(IntPtr engine);
+		private static extern int xkl_engine_get_current_window_group(IntPtr engine);
 		[DllImport("libxklavier")]
-		private extern static void xkl_engine_lock_group(IntPtr engine, int grp);
+		private static extern void xkl_engine_lock_group(IntPtr engine, int grp);
 		[DllImport("libxklavier")]
-		private extern static int xkl_engine_get_default_group(IntPtr engine);
+		private static extern int xkl_engine_get_default_group(IntPtr engine);
 		[DllImport("libxklavier")]
-		private extern static void xkl_engine_set_default_group(IntPtr engine, int grp);
+		private static extern void xkl_engine_set_default_group(IntPtr engine, int grp);
 		[DllImport("libxklavier")]
-		private extern static void xkl_engine_set_group_per_toplevel_window(IntPtr engine, bool isGlobal);
+		private static extern void xkl_engine_set_group_per_toplevel_window(IntPtr engine, bool isGlobal);
 		[DllImport("libxklavier")]
-		private extern static bool xkl_engine_is_group_per_toplevel_window(IntPtr engine);
+		private static extern bool xkl_engine_is_group_per_toplevel_window(IntPtr engine);
 		[DllImport("libxklavier")]
-		private extern static IntPtr xkl_engine_get_current_state(IntPtr engine);
+		private static extern IntPtr xkl_engine_get_current_state(IntPtr engine);
 		[DllImport("libxklavier")]
-		private extern static IntPtr xkl_engine_get_current_window(IntPtr engine);
+		private static extern IntPtr xkl_engine_get_current_window(IntPtr engine);
 		[DllImport("libxklavier")]
-		private extern static bool xkl_engine_get_state(IntPtr engine, IntPtr win, out IntPtr state_out);
+		private static extern bool xkl_engine_get_state(IntPtr engine, IntPtr win, out IntPtr stateOut);
 		[DllImport("libxklavier")]
-		private extern static IntPtr xkl_get_last_error();
+		private static extern IntPtr xkl_get_last_error();
 	}
 }

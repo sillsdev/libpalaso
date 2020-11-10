@@ -109,7 +109,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				m_inputContext = null;
 				NotifyUserOfIBusConnectionDropped();
 			}
-			catch (System.NullReferenceException)
+			catch (NullReferenceException)
 			{
 			}
 		}
@@ -223,7 +223,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				m_inputContext = null;
 				NotifyUserOfIBusConnectionDropped();
 			}
-			catch (System.NullReferenceException e)
+			catch (NullReferenceException e)
 			{
 				Console.WriteLine("IbusCommunicator.ProcessKeyEvent({0},{1},{2}): caught NullReferenceException: {3}", keySym, scanCode, state, e);
 			}

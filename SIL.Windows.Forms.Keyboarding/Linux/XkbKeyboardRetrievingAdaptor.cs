@@ -4,12 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using X11.XKlavier;
 using SIL.Reporting;
 using SIL.Keyboarding;
-using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
@@ -71,8 +69,9 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				existingKeyboard.SetIsAvailable(false);
 		}
 
-		internal static void AddKeyboardForLayout(IDictionary<string, XkbKeyboardDescription> curKeyboards, XklConfigRegistry.LayoutDescription layout,
-			uint iGroup, IKeyboardSwitchingAdaptor engine)
+		internal static void AddKeyboardForLayout(
+			IDictionary<string, XkbKeyboardDescription> curKeyboards,
+			XklConfigRegistry.LayoutDescription layout, uint iGroup, IKeyboardSwitchingAdaptor engine)
 		{
 			var description = GetDescription(layout);
 			CultureInfo culture = null;
@@ -86,6 +85,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				// TODO: fix mono's list of supported locales. Doesn't support e.g. de-BE.
 				// See mono/tools/locale-builder.
 			}
+
 			var id = $"{layout.LocaleId}_{layout.LayoutId}";
 			var inputLanguage = new InputLanguageWrapper(culture, IntPtr.Zero, layout.Language);
 			if (curKeyboards.TryGetValue(id, out var existingKeyboard))
@@ -97,12 +97,13 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 					existingKeyboard.SetInputLanguage(inputLanguage);
 					existingKeyboard.GroupIndex = (int) iGroup;
 				}
+
 				curKeyboards.Remove(id);
 			}
 			else
 			{
-				var keyboard = new XkbKeyboardDescription(id, description, layout.LayoutId, layout.LocaleId, true,
-					inputLanguage, engine, (int) iGroup);
+				var keyboard = new XkbKeyboardDescription(id, description, layout.LayoutId,
+					layout.LocaleId, true, inputLanguage, engine, (int) iGroup);
 				if (!KeyboardController.Instance.Keyboards.Contains(keyboard.Id))
 					KeyboardController.Instance.Keyboards.Add(keyboard);
 			}

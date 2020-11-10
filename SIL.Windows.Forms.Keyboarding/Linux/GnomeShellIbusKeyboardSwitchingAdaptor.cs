@@ -3,8 +3,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Text.RegularExpressions;
 using SIL.Reporting;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
