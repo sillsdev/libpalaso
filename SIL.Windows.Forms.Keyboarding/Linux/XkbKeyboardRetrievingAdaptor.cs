@@ -203,7 +203,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		protected virtual string GetKeyboardSetupApplication(out string arguments)
 		{
 			return KeyboardRetrievingHelper.GetKeyboardSetupApplication(out arguments);
-			}
+		}
 
 		public Action GetSecondaryKeyboardSetupAction() => null;
 

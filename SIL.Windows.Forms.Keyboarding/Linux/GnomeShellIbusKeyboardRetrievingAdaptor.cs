@@ -36,6 +36,17 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 		}
 
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing && !IsDisposed)
+			{
+				// dispose managed and unmanaged objects
+				Unmanaged.LibGnomeDesktopCleanup();
+			}
+		}
+
 		public override bool IsApplicable => _helper.IsApplicable && Platform.IsGnomeShell;
 
 		public override KeyboardAdaptorType Type => KeyboardAdaptorType.System | KeyboardAdaptorType.OtherIm;
@@ -159,12 +170,9 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			var xkbKeyboards = gnomeXkbInfo.GetAllLayouts();
 			foreach (var xkbKeyboard in xkbKeyboards)
 			{
-				string displayName;
-				string shortName;
-				string xkbLayout;
-				string xkbVariant;
-				gnomeXkbInfo.GetLayoutInfo(xkbKeyboard, out displayName, out shortName,
-					out xkbLayout, out xkbVariant);
+				gnomeXkbInfo.GetLayoutInfo(xkbKeyboard, out var displayName, out var shortName,
+					out var xkbLayout, out var xkbVariant);
+
 				keyboards.Add(new XkbIbusEngineDesc {
 					LongName = $"xkb:{xkbKeyboard}",
 					Description = displayName,
