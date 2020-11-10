@@ -215,7 +215,7 @@ namespace SIL.Tests.PlatformUtilities
 		}
 
 		[Test]
-		[Platform(Include = "Windows", Reason = "Windows specific test")]
+		[Platform(Include = "Win", Reason = "Windows specific test")]
 		public void IsCinnamon_Windows()
 		{
 			Assert.That(Platform.IsCinnamon, Is.False);

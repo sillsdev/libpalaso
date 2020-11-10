@@ -24,14 +24,9 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		public override void Initialize()
 		{
-			SwitchingAdaptor = CreateSwitchingAdaptor();
+			SwitchingAdaptor = new UnityIbusKeyboardSwitchingAdaptor(IbusCommunicator);
 			KeyboardRetrievingHelper.AddIbusVersionAsErrorReportProperty();
 			InitKeyboards();
-		}
-
-		protected virtual IKeyboardSwitchingAdaptor CreateSwitchingAdaptor()
-		{
-			return new UnityIbusKeyboardSwitchingAdaptor(IbusCommunicator);
 		}
 
 		protected override string GetKeyboardSetupApplication(out string arguments)
