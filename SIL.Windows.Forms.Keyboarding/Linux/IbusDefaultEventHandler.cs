@@ -112,7 +112,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			}
 			else
 			{
-				// IPA Unicode 6.2 ibus keyboard doesn't call OnUpdatPreeditText,
+				// IPA Unicode 6.2 ibus keyboard doesn't call OnUpdatePreeditText,
 				// only OnCommitText, so we don't have a m_SelectionStart stored.
 				insertPos = m_TextBox.SelectionStart;
 				toRemove = m_TextBox.SelectionLength;

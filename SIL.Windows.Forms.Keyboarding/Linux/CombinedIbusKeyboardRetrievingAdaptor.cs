@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using IBusDotNet;
 using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
@@ -88,7 +87,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			if (string.IsNullOrEmpty(stdout))
 				return;
 
-			var lines = stdout.Split(new[]{ '\n' }, StringSplitOptions.RemoveEmptyEntries);
+			var lines = stdout.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 			foreach (var line in lines)
 			{
 				var parts = line.Split(new[] { ':' }, StringSplitOptions.None);

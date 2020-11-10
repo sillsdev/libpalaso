@@ -1,8 +1,6 @@
 // Copyright (c) 2013-2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
+
 using IBusDotNet;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
