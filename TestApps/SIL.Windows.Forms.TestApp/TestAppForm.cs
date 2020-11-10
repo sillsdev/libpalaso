@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2013-2014 SIL International
+// Copyright (c) 2013-2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -75,6 +75,8 @@ namespace SIL.Windows.Forms.TestApp
 			{
 				dialog.SetLanguageAlias("zh-Hans", "Simplified Chinese (简体中文)");
 				dialog.MatchingLanguageFilter = info => info.LanguageTag != "cmn";
+
+				dialog.IsScriptAndVariantLinkVisible = true;
 				dialog.ShowDialog();
 			}
 		}

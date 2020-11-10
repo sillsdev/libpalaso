@@ -1085,6 +1085,47 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Save_UpdatesGlobalStore_IdAndLangTagMismatchDoesNotCrash()
+		{
+			// If the global store has a writing system with the id that doesn't match
+			// the language tag we should not crash and we should match and update the
+			// global store
+			using (var environment = new TestEnvironment())
+			{
+				// Setup
+				// Create and save a new WS in the local store - this will copy the WS into the
+				// global store since it doesn't exist yet
+				var enLatnUsId = "en-Latn-US";
+				var enUsTag = "en-US";
+				var ws = new WritingSystemDefinition(enUsTag);
+				ws.Id = enLatnUsId;
+				var expectedDateTime = new DateTime(2018, 12, 01, 8, 7, 6, DateTimeKind.Utc);
+				ws.DateModified = expectedDateTime;
+				environment.LocalRepository.Set(ws);
+				ws.RightToLeftScript = true;
+				ws.DefaultCollation = new SystemCollationDefinition { LanguageTag = enUsTag };
+				ws.AcceptChanges();
+				Assert.That(ws.Id, Is.Not.EqualTo(ws.LanguageTag));
+				environment.LocalRepository.Save();
+				var lastModifiedInWs = environment.GlobalRepository.Get(enLatnUsId).DateModified;
+
+				// SUT
+				ws.RightToLeftScript = false;
+				environment.LocalRepository.Save();
+
+				// Verify
+				Assert.That(environment.GlobalRepository.Get(enLatnUsId).DateModified,
+					Is.GreaterThan(lastModifiedInWs), "WS in memory didn't get updated");
+				Assert.That(
+					environment.GlobalRepository.Get(enLatnUsId).DateModified
+						.ToISO8601TimeFormatWithUTCString(),
+					Is.EqualTo(environment.GetWsFromFileInGlobalWS(enLatnUsId).DateModified
+						.ToISO8601TimeFormatWithUTCString()),
+					"WS in memory and in global store are different");
+			}
+		}
+
+		[Test]
 		public void Save_UpdatesGlobalStore_ModificationsUpdateTimestamp()
 		{
 			using (var environment = new TestEnvironment())

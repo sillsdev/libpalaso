@@ -20,13 +20,18 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		#region Specific implementations of IKeyboardRetriever
 
-		public override bool IsApplicable => _helper.IsApplicable && !Platform.IsGnomeShell;
+		public override bool IsApplicable => _helper.IsApplicable && !Platform.IsGnomeShell && !Platform.IsCinnamon;
 
 		public override void Initialize()
 		{
-			SwitchingAdaptor = new UnityIbusKeyboardSwitchingAdaptor(IbusCommunicator);
+			SwitchingAdaptor = CreateSwitchingAdaptor();
 			KeyboardRetrievingHelper.AddIbusVersionAsErrorReportProperty();
 			InitKeyboards();
+		}
+
+		protected virtual IKeyboardSwitchingAdaptor CreateSwitchingAdaptor()
+		{
+			return new UnityIbusKeyboardSwitchingAdaptor(IbusCommunicator);
 		}
 
 		protected override string GetKeyboardSetupApplication(out string arguments)
@@ -62,6 +67,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 						keyboard.SetIsAvailable(true);
 						keyboard.IBusKeyboardEngine = ibusKeyboard;
 					}
+
 					curKeyboards.Remove(id);
 				}
 				else
@@ -69,6 +75,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 					keyboard = new IbusKeyboardDescription(id, ibusKeyboard, SwitchingAdaptor);
 					KeyboardController.Instance.Keyboards.Add(keyboard);
 				}
+
 				keyboard.SystemIndex = keyboards[ibusKeyboard.LongName];
 			}
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -9,6 +9,7 @@ using SIL.Reporting;
 using SIL.Windows.Forms.ClearShare;
 using SIL.Windows.Forms.ClearShare.WinFormsUI;
 using SIL.Windows.Forms.ImageToolbox.Cropping;
+using SIL.Windows.Forms.Miscellaneous;
 
 namespace SIL.Windows.Forms.ImageToolbox
 {
@@ -169,6 +170,20 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// </summary>
 		public string InitialSearchString { get; set; }
 
+		/// <summary>
+		/// Used to report problems loading images. See more detail on AcquireImageControl
+		/// </summary>
+		public Action<string, Exception, string> ImageLoadingExceptionReporter
+		{
+			get { return _imageLoadingExceptionReporter; }
+			set
+			{
+				_imageLoadingExceptionReporter = value;
+				if (_acquireImageControl != null)
+					_acquireImageControl.ImageLoadingExceptionReporter = value;
+			}
+		}
+
 		private void SetupMetaDataControls(Metadata metaData)
 		{
 			Guard.AgainstNull(_imageInfo, "_imageInfo");
@@ -234,6 +249,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		// Changed this to remember the selected index because something is causing the SelectedIndexChanged
 		// event to fire twice each time an icon is clicked.
 		int _previousSelectedIndex = -1;
+		private Action<string, Exception, string> _imageLoadingExceptionReporter;
 
 		private void listView1_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -367,6 +383,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 			AddControl("Get Picture".Localize("ImageToolbox.GetPicture"), ImageToolboxButtons.browse, "browse", (x) =>
 			{
 				_acquireImageControl = new AcquireImageControl();
+				_acquireImageControl.ImageLoadingExceptionReporter =
+					ImageLoadingExceptionReporter;
 				_acquireImageControl.SetIntialSearchString(InitialSearchString);
 				_acquireImageControl.SearchLanguage = _incomingSearchLanguage;
 				return _acquireImageControl;

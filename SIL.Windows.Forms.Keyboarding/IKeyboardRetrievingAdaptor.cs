@@ -86,6 +86,13 @@ namespace SIL.Windows.Forms.Keyboarding
 		Action GetKeyboardSetupAction();
 
 		/// <summary>
+		/// Gets an action that when executed will launch the secondary keyboard setup
+		/// application, or null if this adaptor doesn't support secondary keyboard setup
+		/// applications
+		/// </summary>
+		Action GetSecondaryKeyboardSetupAction();
+
+		/// <summary>
 		/// Returns <c>true</c> if this is the secondary keyboard application, e.g.
 		/// Keyman setup dialog on Windows.
 		/// </summary>

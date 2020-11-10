@@ -1,5 +1,3 @@
-using SIL.Windows.Forms.Widgets;
-
 namespace SIL.Windows.Forms.SettingProtection
 {
 	partial class SettingsPasswordDialog
@@ -35,11 +33,10 @@ namespace SIL.Windows.Forms.SettingProtection
 			this._okButton = new System.Windows.Forms.Button();
 			this._cancelButton = new System.Windows.Forms.Button();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
-			this._explanation = new BetterLabel();
+			this._explanation = new SIL.Windows.Forms.Widgets.BetterLabel();
 			this.l10NSharpExtender1 = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this.passwordBox = new SIL.Windows.Forms.Widgets.PasswordBox();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-			this.checkBox1 = new System.Windows.Forms.CheckBox();
-			this.textBox1 = new System.Windows.Forms.TextBox();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.l10NSharpExtender1)).BeginInit();
 			this.tableLayoutPanel1.SuspendLayout();
@@ -106,6 +103,8 @@ namespace SIL.Windows.Forms.SettingProtection
 			this._explanation.Dock = System.Windows.Forms.DockStyle.Fill;
 			this._explanation.Enabled = false;
 			this._explanation.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this._explanation.ForeColor = System.Drawing.SystemColors.ControlText;
+			this._explanation.IsTextSelectable = false;
 			this.l10NSharpExtender1.SetLocalizableToolTip(this._explanation, null);
 			this.l10NSharpExtender1.SetLocalizationComment(this._explanation, null);
 			this.l10NSharpExtender1.SetLocalizingId(this._explanation, "SettingsProtection.PasswordDialog.Password.Explanation");
@@ -113,7 +112,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			this._explanation.Multiline = true;
 			this._explanation.Name = "_explanation";
 			this._explanation.ReadOnly = true;
-			this._explanation.Size = new System.Drawing.Size(368, 48);
+			this._explanation.Size = new System.Drawing.Size(368, 30);
 			this._explanation.TabIndex = 6;
 			this._explanation.TabStop = false;
 			this._explanation.Text = "To prevent accidental changes which could cause this program to stop working for you" +
@@ -124,6 +123,18 @@ namespace SIL.Windows.Forms.SettingProtection
 			this.l10NSharpExtender1.LocalizationManagerId = "Palaso";
 			this.l10NSharpExtender1.PrefixForNewItems = "SettingsProtection";
 			//
+			// passwordBox
+			// 
+			this.l10NSharpExtender1.SetLocalizableToolTip(this.passwordBox, null);
+			this.l10NSharpExtender1.SetLocalizationComment(this.passwordBox, null);
+			this.l10NSharpExtender1.SetLocalizingId(this.passwordBox, "SettingsProtection.SettingsPasswordDialog.passwordBox");
+			this.passwordBox.Location = new System.Drawing.Point(154, 57);
+			this.passwordBox.Name = "passwordBox";
+			this.passwordBox.Size = new System.Drawing.Size(242, 20);
+			this.passwordBox.TabIndex = 0;
+			this.passwordBox.UseSystemPasswordChar = true;
+			this.passwordBox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+			// 
 			// tableLayoutPanel1
 			//
 			this.tableLayoutPanel1.ColumnCount = 3;
@@ -132,8 +143,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.Controls.Add(this.pictureBox1, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this._explanation, 1, 0);
-			this.tableLayoutPanel1.Controls.Add(this.checkBox1, 1, 2);
-			this.tableLayoutPanel1.Controls.Add(this.textBox1, 2, 1);
+			this.tableLayoutPanel1.Controls.Add(this.passwordBox, 2, 1);
 			this.tableLayoutPanel1.Controls.Add(this.label1, 1, 1);
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -143,32 +153,6 @@ namespace SIL.Windows.Forms.SettingProtection
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(428, 146);
 			this.tableLayoutPanel1.TabIndex = 8;
-			//
-			// checkBox1
-			//
-			this.checkBox1.AutoSize = true;
-			this.tableLayoutPanel1.SetColumnSpan(this.checkBox1, 2);
-			this.l10NSharpExtender1.SetLocalizableToolTip(this.checkBox1, null);
-			this.l10NSharpExtender1.SetLocalizationComment(this.checkBox1, null);
-			this.l10NSharpExtender1.SetLocalizingId(this.checkBox1, "SettingsProtection.PasswordDialog.ShowCharactersCheckbox");
-			this.checkBox1.Location = new System.Drawing.Point(57, 83);
-			this.checkBox1.Name = "checkBox1";
-			this.checkBox1.Size = new System.Drawing.Size(107, 17);
-			this.checkBox1.TabIndex = 3;
-			this.checkBox1.Text = "Show Characters";
-			this.checkBox1.UseVisualStyleBackColor = true;
-			this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
-			//
-			// textBox1
-			//
-			this.l10NSharpExtender1.SetLocalizableToolTip(this.textBox1, null);
-			this.l10NSharpExtender1.SetLocalizationComment(this.textBox1, null);
-			this.l10NSharpExtender1.SetLocalizingId(this.textBox1, "SettingsProtection.SettingsPasswordDialog.textBox1");
-			this.textBox1.Location = new System.Drawing.Point(154, 57);
-			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(242, 20);
-			this.textBox1.TabIndex = 0;
-			this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
 			//
 			// SettingsPasswordDialog
 			//
@@ -206,7 +190,6 @@ namespace SIL.Windows.Forms.SettingProtection
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private L10NSharp.UI.L10NSharpExtender l10NSharpExtender1;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-		private System.Windows.Forms.CheckBox checkBox1;
-		private System.Windows.Forms.TextBox textBox1;
+		private SIL.Windows.Forms.Widgets.PasswordBox passwordBox;
 	}
 }

@@ -11,13 +11,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 {
 	public static class GlibHelper
 	{
-		public static void InitGlib()
-		{
-			// g_type_init() is needed for Precise, but deprecated for Trusty.
-			// Remove this (and the DllImport above) when we stop supporting Precise.
-			Unmanaged.g_type_init();
-		}
-
 		/// <summary>
 		/// Returns <c>true</c> if the <paramref name="schema"/> is installed on the machine,
 		/// otherwise <c>false</c>.
@@ -45,7 +38,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			{
 				var child = Unmanaged.g_variant_get_child_value(value, i);
 				// handle must not be freed -- it points into the actual GVariant memory for child!
-				var handle = Unmanaged.g_variant_get_string(child, out var length);
+				int length;
+				var handle = Unmanaged.g_variant_get_string(child, out length);
 				var rawbytes = new byte[length];
 				Marshal.Copy(handle, rawbytes, 0, length);
 				list[i] = Encoding.UTF8.GetString(rawbytes);

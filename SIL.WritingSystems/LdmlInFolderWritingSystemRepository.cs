@@ -433,8 +433,14 @@ namespace SIL.WritingSystems
 			// and not be allowed in a foreach loop
 			foreach (T ws in AllWritingSystems.Where(CanSet).ToArray())
 			{
-				SaveDefinition(ws);
-				OnChangeNotifySharedStore(ws);
+				// Changes made while calling Set on a writing system during the save
+				// could affect the ability to call Set on another writing system in the list.
+				// So test again even though we've done a first pass filter in the foreach
+				if (CanSet(ws))
+				{
+					SaveDefinition(ws);
+					OnChangeNotifySharedStore(ws);
+				}
 			}
 
 			LoadChangedIdsFromExistingWritingSystems();

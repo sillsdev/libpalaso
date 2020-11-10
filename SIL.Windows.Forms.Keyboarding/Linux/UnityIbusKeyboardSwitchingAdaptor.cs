@@ -7,16 +7,16 @@ using SIL.Reporting;
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
 	/// <summary>
-	/// Class for dealing with ibus keyboards on Unity (as found in Trusty >= 13.10 < 18.04)
+	/// Class for dealing with ibus keyboards on Unity (as found in Trusty &gt;= 13.10 &lt; 18.04)
 	/// </summary>
-	public class UnityIbusKeyboardSwitchingAdaptor : IbusKeyboardSwitchingAdaptor
+	public class UnityIbusKeyboardSwitchingAdaptor : IbusKeyboardSwitchingAdaptor, IUnityKeyboardSwitchingAdaptor
 	{
 		public UnityIbusKeyboardSwitchingAdaptor(IIbusCommunicator ibusCommunicator) :
 			base(ibusCommunicator)
 		{
 		}
 
-		internal static void SelectKeyboard(uint index)
+		void IUnityKeyboardSwitchingAdaptor.SelectKeyboard(uint index)
 		{
 			const string schema = "org.gnome.desktop.input-sources";
 			bool okay = true;
@@ -47,7 +47,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			var ibusKeyboard = (IbusKeyboardDescription) keyboard;
 			var systemIndex = ibusKeyboard.SystemIndex;
-			SelectKeyboard(systemIndex);
+			((IUnityKeyboardSwitchingAdaptor)this).SelectKeyboard(systemIndex);
 		}
 
 	}

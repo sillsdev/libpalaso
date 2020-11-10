@@ -103,7 +103,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			{
 				var keyboard = new XkbKeyboardDescription(id, description, layout.LayoutId, layout.LocaleId, true,
 					inputLanguage, engine, (int) iGroup);
-				KeyboardController.Instance.Keyboards.Add(keyboard);
+				if (!KeyboardController.Instance.Keyboards.Contains(keyboard.Id))
+					KeyboardController.Instance.Keyboards.Add(keyboard);
 			}
 		}
 
@@ -201,7 +202,9 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		protected virtual string GetKeyboardSetupApplication(out string arguments)
 		{
 			return KeyboardRetrievingHelper.GetKeyboardSetupApplication(out arguments);
-		}
+			}
+
+		public Action GetSecondaryKeyboardSetupAction() => null;
 
 		public bool IsSecondaryKeyboardSetupApplication => false;
 

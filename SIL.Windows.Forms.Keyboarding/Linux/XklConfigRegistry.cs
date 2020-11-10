@@ -73,8 +73,8 @@ namespace X11.XKlavier
 			public override string ToString()
 			{
 				return $"[LayoutDescription: LayoutId={LayoutId}, Description={Description}, " +
-						$"LayoutVariant={LayoutVariant}, Locale={LocaleId}, LanguageCode={LanguageCode}, Language={Language}, " +
-						$"CountryCode={CountryCode}, Country={Country}]";
+					$"LayoutVariant={LayoutVariant}, Locale={LocaleId}, LanguageCode={LanguageCode}, Language={Language}, " +
+					$"CountryCode={CountryCode}, Country={Country}]";
 			}
 
 			public override bool Equals(object obj)
@@ -217,7 +217,7 @@ namespace X11.XKlavier
 			var variant = subitemIsNull ? string.Empty : subitem.Description;
 			var layouts = GetLayoutList(description);
 			if (layouts.Any(desc => desc.LayoutId == name && desc.Description == description && desc.LayoutVariant == variant))
-				return;
+					return;
 
 			var langCode = subitemIsNull ? item.Short_Description : subitem.Short_Description;
 			if (string.IsNullOrEmpty(langCode))
@@ -259,7 +259,7 @@ namespace X11.XKlavier
 			var variant = data != IntPtr.Zero ? description : string.Empty;
 			var layouts = GetLayoutList(description);
 			if (layouts.Any(desc => desc.LayoutId == item.Name && desc.Description == description && desc.LayoutVariant == variant))
-				return;
+					return;
 
 			var newLayout = new LayoutDescription {
 				LayoutId = item.Name,

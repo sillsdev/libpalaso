@@ -35,7 +35,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			if (Platform.IsWindows)
 				Clipboard.SetText(text);
 			else
-				GtkSetText(text);
+			GtkSetText(text);
 		}
 
 		public static void SetText(string text, TextDataFormat format)
@@ -43,7 +43,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			if (Platform.IsWindows)
 				Clipboard.SetText(text, format);
 			else
-				GtkSetText(text);
+			GtkSetText(text);
 		}
 
 		public static bool ContainsImage()
@@ -64,7 +64,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 			if (!Platform.IsWindows)
 			{
-				// Review: Someone who knows how needs to implement this!
+			// Review: Someone who knows how needs to implement this!
 				throw new NotImplementedException(
 					"SIL.Windows.Forms.Miscellaneous.PortableClipboard.CopyImageToClipboard() is not yet implemented for Linux");
 			}
@@ -91,28 +91,44 @@ namespace SIL.Windows.Forms.Miscellaneous
 			}
 		}
 
+		// Get an image from the clipboard, ignoring any errors that occur while we attempt to
+		// convert whatever is on the clipboard into an image.
 		public static PalasoImage GetImageFromClipboard()
 		{
+			try
+			{
+				return GetImageFromClipboardWithExceptions();
+			}
+			catch (Exception)
+			{}
+
+			return null;
+		}
+
+		// Try to get an image from the clipboard. If there simply isn't anything on the clipboard that
+		// can reasonably be interpreted as an image, return null. If there is something that makes sense
+		// as an image, but trying to load it causes an exception, let the exception propagate.
+		public static PalasoImage GetImageFromClipboardWithExceptions() {
 			// N.B.: PalasoImage does not handle .svg files
 			if (!Platform.IsWindows)
 			{
-				if (GtkContainsImage())
-					return PalasoImage.FromImage(GtkGetImage());
+			if (GtkContainsImage())
+				return PalasoImage.FromImage(GtkGetImage());
 
-				if (GtkContainsText())
-				{
-					//REVIEW: I can find no documentation on GtkClipboard. If ContainsText means we have a file
-					//	path, then it would be better to do PalasoImage.FromFileRobustly(); on the file path
-					return PalasoImage.FromImage(GtkGetImageFromText());
-				}
+			if (GtkContainsText())
+			{
+				//REVIEW: I can find no documentation on GtkClipboard. If ContainsText means we have a file
+				//	path, then it would be better to do PalasoImage.FromFileRobustly(); on the file path
+				return PalasoImage.FromImage(GtkGetImageFromText());
+			}
 
-				return null;
+			return null;
 			}
 
 			var dataObject = Clipboard.GetDataObject();
 			if (dataObject == null)
 				return null;
-
+			Exception ex = null;
 			var textData = String.Empty;
 			if (dataObject.GetDataPresent(DataFormats.UnicodeText))
 				textData = dataObject.GetData(DataFormats.UnicodeText) as String;
@@ -133,12 +149,14 @@ namespace SIL.Windows.Forms.Miscellaneous
 						return imageWithPathAndMaybeMetadata;
 					}
 
-					return plainImage;
-				}
+						return plainImage;
+					}
 				catch (Exception e)
 				{
 					Logger.WriteEvent("PortableClipboard.GetImageFromClipboard() failed with message " + e.Message);
+					if (plainImage != null)
 					return plainImage; // at worst, we should return null; if FromFile() failed, we return an image
+					throw;
 				}
 			}
 			// the ContainsImage() returns false when copying an PNG from MS Word
@@ -150,8 +168,12 @@ namespace SIL.Windows.Forms.Miscellaneous
 				{
 					return PalasoImage.FromImage(Image.FromStream(o));
 				}
-				catch (Exception)
-				{}
+				catch (Exception e)
+				{
+					// I'm not sure why, but previous versions of this code would continue trying other
+					// options at this point.
+					ex = e;
+				}
 			}
 
 			//People can do a "copy" from the WIndows Photo Viewer but what it puts on the clipboard is a path, not an image
@@ -163,25 +185,19 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 				foreach (var file in files.Where(f => RobustFile.Exists(f)))
 				{
-					try
-					{
 						return PalasoImage.FromFileRobustly(file);
 					}
-					catch (Exception)
-					{}
-				}
 
 				return null; //not an image
 			}
 
-			if (!Clipboard.ContainsText() || !RobustFile.Exists(Clipboard.GetText())) return null;
-
-			try
-			{
+			if (Clipboard.ContainsText() && RobustFile.Exists(Clipboard.GetText()))
 				return PalasoImage.FromImage( Image.FromStream(new FileStream(Clipboard.GetText(), FileMode.Open)));
+
+			if (ex != null)
+			{
+				throw ex;
 			}
-			catch (Exception)
-			{}
 
 			return null;
 		}

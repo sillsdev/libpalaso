@@ -124,7 +124,7 @@ namespace SIL.Windows.Forms.Keyboarding
 		{
 			Action program = null;
 			if (HasSecondaryKeyboardSetupApplication && Instance.Adaptors.ContainsKey(KeyboardAdaptorType.OtherIm))
-				program = Instance.Adaptors[KeyboardAdaptorType.OtherIm].GetKeyboardSetupAction();
+				program = Instance.Adaptors[KeyboardAdaptorType.OtherIm].GetSecondaryKeyboardSetupAction();
 
 			return program;
 		}
@@ -410,7 +410,7 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// </summary>
 		public void ActivateDefaultKeyboard()
 		{
-			DefaultKeyboard.Activate();
+			DefaultKeyboard?.Activate();
 		}
 
 		/// <summary>

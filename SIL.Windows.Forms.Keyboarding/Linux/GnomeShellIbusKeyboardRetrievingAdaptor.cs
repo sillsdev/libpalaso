@@ -3,11 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
 using IBusDotNet;
-using SIL.Extensions;
 using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
@@ -17,7 +14,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// The keyboard retrieving part is identical to previous versions but switching keyboards
 	/// changed with 18.04.
 	/// </summary>
-	public class GnomeShellIbusKeyboardRetrievingAdaptor: IbusKeyboardRetrievingAdaptor, IDisposable
+	public class GnomeShellIbusKeyboardRetrievingAdaptor: IbusKeyboardRetrievingAdaptor
 	{
 		private readonly GnomeKeyboardRetrievingHelper _helper = new GnomeKeyboardRetrievingHelper();
 
@@ -37,17 +34,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// <remarks>This overload is used in unit tests</remarks>
 		protected GnomeShellIbusKeyboardRetrievingAdaptor(IIbusCommunicator ibusCommunicator): base(ibusCommunicator)
 		{
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			base.Dispose(disposing);
-
-			if (disposing && !IsDisposed)
-			{
-				// dispose managed and unmanaged objects
-				Unmanaged.LibGnomeDesktopCleanup();
-			}
 		}
 
 		public override bool IsApplicable => _helper.IsApplicable && Platform.IsGnomeShell;
@@ -72,7 +58,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			_helper.InitKeyboards(type => true, RegisterKeyboards);
 		}
 
-		private void RegisterKeyboards(IDictionary<string, uint> installedKeyboards, (string type, string layout) firstKeyboard)
+		private void RegisterKeyboards(IDictionary<string, uint> installedKeyboards,
+			(string type, string layout) firstKeyboard)
 		{
 			if (installedKeyboards.Count <= 0)
 				return;
@@ -100,8 +87,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				{
 					type = typeof(IbusXkbKeyboardDescription);
 					layout = string.IsNullOrEmpty(ibusKeyboard.LayoutVariant)
-						? ibusKeyboard.Layout
-						: $"{ibusKeyboard.Layout}+{ibusKeyboard.LayoutVariant}";
+							? ibusKeyboard.Layout
+							: $"{ibusKeyboard.Layout}+{ibusKeyboard.LayoutVariant}";
 				}
 				else
 				{
@@ -172,8 +159,12 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			var xkbKeyboards = gnomeXkbInfo.GetAllLayouts();
 			foreach (var xkbKeyboard in xkbKeyboards)
 			{
-				gnomeXkbInfo.GetLayoutInfo(xkbKeyboard, out var displayName, out var shortName,
-					out var xkbLayout, out var xkbVariant);
+				string displayName;
+				string shortName;
+				string xkbLayout;
+				string xkbVariant;
+				gnomeXkbInfo.GetLayoutInfo(xkbKeyboard, out displayName, out shortName,
+					out xkbLayout, out xkbVariant);
 				keyboards.Add(new XkbIbusEngineDesc {
 					LongName = $"xkb:{xkbKeyboard}",
 					Description = displayName,
@@ -190,6 +181,5 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			return KeyboardRetrievingHelper.GetKeyboardSetupApplication(out arguments);
 		}
-
 	}
 }

@@ -17,6 +17,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 	/// </summary>
 	internal class WinKeyboardAdaptor : IKeyboardRetrievingAdaptor
 	{
+		private const string UnknownLanguage = "[Unknown Language]";
 		public bool IsApplicable => true;
 
 		public IKeyboardSwitchingAdaptor SwitchingAdaptor { get; private set; }
@@ -74,6 +75,24 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			return (ushort)((uint)hkl & 0xffff);
 		}
 
+		private static CultureInfo GetCultureInfoFromInputLanguage(InputLanguage inputLanguage, out string cultureName)
+		{
+			try
+			{
+				var culture = inputLanguage.Culture;
+				cultureName = culture.Name;
+				return CultureInfo.ReadOnly(culture);
+			}
+			catch (CultureNotFoundException)
+			{
+				// This can happen for old versions of Keyman that created a custom culture that is invalid to .Net.
+				// Also see http://stackoverflow.com/a/24820530/4953232
+				cultureName = UnknownLanguage;
+				// REVIEW: Can we return the invariant culture instead?
+				return CultureInfo.GetCultureInfo("en-US");
+			}
+		}
+
 		public void UpdateAvailableKeyboards()
 		{
 			var curKeyboards = KeyboardController.Instance.Keyboards.OfType<WinKeyboardDescription>().ToDictionary(kd => kd.Id);
@@ -88,25 +107,11 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				if (!processedLanguages.Add(langCode))
 					continue;
 
-				foreach (LayoutName keyboardLayoutName in GetAvailableKeyboardNames(inputLanguage))
+				foreach (var keyboardLayoutName in GetAvailableKeyboardNames(inputLanguage))
 				{
-					string keyboardId;
-					CultureInfo culture;
 					string cultureName;
-					try
-					{
-						culture = new CultureInfo(inputLanguage.Culture.Name);
-						cultureName = culture.DisplayName;
-						keyboardId = $"{culture.Name}_{inputLanguage.LayoutName}_{keyboardLayoutName.LocalizedName}";
-					}
-					catch (CultureNotFoundException)
-					{
-						// This can happen for old versions of Keyman that created a custom culture that is invalid to .Net.
-						// Also see http://stackoverflow.com/a/24820530/4953232
-						culture = new CultureInfo("en-US");
-						cultureName = "[Unknown Language]";
-						keyboardId = $"{cultureName}_{inputLanguage.LayoutName}_{keyboardLayoutName.LocalizedName}";
-					}
+					var culture = GetCultureInfoFromInputLanguage(inputLanguage, out cultureName);
+					var keyboardId = $"{cultureName}_{inputLanguage.LayoutName}_{keyboardLayoutName.LocalizedName}";
 
 					WinKeyboardDescription existingKeyboard;
 					if (curKeyboards.TryGetValue(keyboardId, out existingKeyboard))
@@ -140,7 +145,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				}
 			}
 
-			// Set each unhanandled keyboard to unavailable
+			// Set each unhandled keyboard to unavailable
 			foreach (var existingKeyboard in curKeyboards.Values)
 			{
 				existingKeyboard.SetIsAvailable(false);
@@ -164,13 +169,20 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		private IEnumerable<LayoutName> GetAvailableKeyboardNames(InputLanguage inputLanguage)
 		{
 			IEnumTfInputProcessorProfiles profilesEnumerator;
+			string cultureName;
+			var culture = GetCultureInfoFromInputLanguage(inputLanguage, out cultureName);
+			if (cultureName == UnknownLanguage)
+			{
+				Debug.WriteLine($"Error looking up keyboards with layout {inputLanguage.LayoutName} - invalid culture");
+				yield break;
+			}
 			try
 			{
-				profilesEnumerator = ProfileManager.EnumProfiles((short)inputLanguage.Culture.KeyboardLayoutId);
+				profilesEnumerator = ProfileManager.EnumProfiles((short)culture.KeyboardLayoutId);
 			}
 			catch
 			{
-				Debug.WriteLine($"Error looking up keyboards for language {inputLanguage.Culture.Name} - {(short)inputLanguage.Culture.KeyboardLayoutId}");
+				Debug.WriteLine($"Error looking up keyboards for language {culture.Name} - {(short)culture.KeyboardLayoutId}");
 				yield break;
 			}
 
@@ -191,10 +203,19 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				LayoutName layoutName;
 				if (profiles[0].Hkl == IntPtr.Zero)
 				{
+					try
+					{
+						layoutName = new LayoutName(inputLanguage.LayoutName,
+							ProcessorProfiles.GetLanguageProfileDescription(ref profiles[0].ClsId, profiles[0].LangId,
+								ref profiles[0].GuidProfile), profiles[0]);
+					}
+					catch
+					{
+						// this exception has happened in testing, doesn't seem to be anything we can do
+						// except just ignore this keyboard
+						continue;
+					}
 					returnedLanguage = true;
-					layoutName = new LayoutName(inputLanguage.LayoutName,
-						ProcessorProfiles.GetLanguageProfileDescription(ref profiles[0].ClsId, profiles[0].LangId,
-							ref profiles[0].GuidProfile), profiles[0]);
 					yield return layoutName;
 				}
 				else
@@ -209,7 +230,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				}
 			}
 			if (!returnedLanguage)
-				yield return new LayoutName(inputLanguage.LayoutName, inputLanguage.Culture.DisplayName);
+				yield return new LayoutName(inputLanguage.LayoutName, culture.DisplayName);
 		}
 
 		public ITfInputProcessorProfiles ProcessorProfiles { get; set; }
@@ -263,6 +284,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					"input.dll")) {}
 			};
 		}
+
+		public Action GetSecondaryKeyboardSetupAction() => null;
 
 		public bool IsSecondaryKeyboardSetupApplication => false;
 		#endregion

@@ -1,4 +1,4 @@
-// Copyright (c) 2015 SIL International
+// Copyright (c) 2015-2020 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Diagnostics;
@@ -15,6 +15,9 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// </summary>
 	public class IbusKeyboardRetrievingAdaptor : IKeyboardRetrievingAdaptor
 	{
+		private const string KeymanConfigApp = "/usr/bin/km-config";
+		private const string IbusSetupApp = "/usr/bin/ibus-setup";
+
 		private readonly IIbusCommunicator _ibusComm;
 
 		/// <summary>
@@ -28,7 +31,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// <summary>
 		/// Used in unit tests
 		/// </summary>
-		public IbusKeyboardRetrievingAdaptor(IIbusCommunicator ibusCommunicator)
+		protected IbusKeyboardRetrievingAdaptor(IIbusCommunicator ibusCommunicator)
 		{
 			_ibusComm = ibusCommunicator;
 		}
@@ -79,6 +82,14 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		protected IIbusCommunicator IbusCommunicator => _ibusComm;
 
+		protected virtual string GetKeyboardSetupApplication(out string arguments)
+		{
+			arguments = null;
+			return File.Exists(IbusSetupApp) ? IbusSetupApp : null;
+		}
+
+		private static bool HasKeyman => File.Exists(KeymanConfigApp);
+
 		#region IKeyboardRetrievingAdaptor implementation
 
 		/// <summary>
@@ -92,7 +103,9 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// able to find the available keyboards this property will return <c>true</c>,
 		/// otherwise <c>false</c>.
 		/// </summary>
-		public virtual bool IsApplicable => _ibusComm.Connected && GetIBusKeyboards().Length > 0;
+		public virtual bool IsApplicable => _ibusComm.Connected && HasKeyboards;
+
+		protected virtual bool HasKeyboards => GetIBusKeyboards()?.Length > 0;
 
 		/// <summary>
 		/// Gets the keyboard adaptor that deals with keyboards that this class retrieves.
@@ -124,6 +137,16 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		public bool CanHandleFormat(KeyboardFormat format)
 		{
+			if (!HasKeyman)
+				return false;
+
+			switch (format)
+			{
+				case KeyboardFormat.CompiledKeyman:
+				case KeyboardFormat.Keyman:
+				case KeyboardFormat.KeymanPackage:
+					return true;
+			}
 			return false;
 		}
 
@@ -140,13 +163,19 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			};
 		}
 
-		protected virtual string GetKeyboardSetupApplication(out string arguments)
+		public Action GetSecondaryKeyboardSetupAction()
 		{
-			arguments = null;
-			return File.Exists("/usr/bin/ibus-setup") ? "/usr/bin/ibus-setup" : null;
+			if (!HasKeyman)
+				return null;
+
+			return () =>
+			{
+				using (Process.Start(KeymanConfigApp)) { }
+			};
 		}
 
-		public bool IsSecondaryKeyboardSetupApplication => false;
+
+		public bool IsSecondaryKeyboardSetupApplication => HasKeyman;
 
 		#endregion
 
@@ -172,7 +201,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		/// <summary>
 		/// Finalizer, in case client doesn't dispose it.
-		/// Force Dispose(false) if not already called (i.e. m_isDisposed is true)
+		/// Force Dispose(false) if not already called (i.e. IsDisposed is true)
 		/// </summary>
 		/// <remarks>
 		/// In case some clients forget to dispose it directly.
@@ -191,7 +220,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			Dispose(true);
 			// This object will be cleaned up by the Dispose method.
-			// Therefore, you should call GC.SupressFinalize to
+			// Therefore, you should call GC.SuppressFinalize to
 			// take this object off the finalization queue
 			// and prevent finalization code for this object
 			// from executing a second time.

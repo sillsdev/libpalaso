@@ -24,7 +24,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		public CombinedIbusKeyboardRetrievingAdaptor()
 		{
-			GlibHelper.InitGlib();
 		}
 
 		/// <summary>
@@ -46,8 +45,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		//     $ gsettings list-keys org.freedesktop.ibus.general | grep preload-engines
 		//     preload-engines
 
-
-		protected string[] GetMyKeyboards(IntPtr settingsGeneral)
+		protected virtual string[] GetMyKeyboards(IntPtr settingsGeneral)
 		{
 			// This is the proper path for the combined keyboard handling on Cinnamon with IBus.
 			var sources = Unmanaged.g_settings_get_value(settingsGeneral, "preload-engines");
@@ -93,7 +91,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			var lines = stdout.Split(new[]{ '\n' }, StringSplitOptions.RemoveEmptyEntries);
 			foreach (var line in lines)
 			{
-				var parts = line.Split(new[]{ ':' }, StringSplitOptions.None);
+				var parts = line.Split(new[] { ':' }, StringSplitOptions.None);
 				switch (parts[0])
 				{
 					case "layout":
@@ -107,6 +105,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 						break;
 				}
 			}
+
 			//Console.WriteLine("DEBUG defaultLayout = \"{0}\"", CombinedIbusKeyboardSwitchingAdaptor.DefaultLayout);
 			//Console.WriteLine("DEBUG defaultVariant = \"{0}\"", CombinedIbusKeyboardSwitchingAdaptor.DefaultVariant);
 			//Console.WriteLine("DEBUG defaultOption = \"{0}\"", CombinedIbusKeyboardSwitchingAdaptor.DefaultOption);
@@ -144,6 +143,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 					_settingsGeneral = Unmanaged.g_settings_new(GSettingsSchema);
 					if (_settingsGeneral == IntPtr.Zero)
 						return false;
+					if (!base.IsApplicable)
+						return false;
 				}
 				catch (DllNotFoundException)
 				{
@@ -161,6 +162,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		}
 
 		public override KeyboardAdaptorType Type => KeyboardAdaptorType.System | KeyboardAdaptorType.OtherIm;
+
+		protected override bool HasKeyboards => GetMyKeyboards(_settingsGeneral)?.Length > 0;
 
 		public override void Initialize()
 		{

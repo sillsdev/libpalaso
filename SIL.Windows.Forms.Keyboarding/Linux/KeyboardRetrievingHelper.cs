@@ -17,9 +17,11 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				const string ibusSchema = "org.freedesktop.ibus.general";
 				if (!GlibHelper.SchemaIsInstalled(ibusSchema))
 					return;
+
 				settingsGeneral = Unmanaged.g_settings_new(ibusSchema);
 				if (settingsGeneral == IntPtr.Zero)
 					return;
+
 				var version = Unmanaged.g_settings_get_string(settingsGeneral, "version");
 				ErrorReport.AddProperty("IbusVersion", version);
 			}
@@ -34,7 +36,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			}
 		}
 
-		public static string GetKeyboardSetupApplication(out string arguments)
+		internal static string GetKeyboardSetupApplication(out string arguments)
 		{
 			// NOTE: if we get false results (e.g. because the user has installed multiple
 			// desktop environments) we could check for the currently running desktop
@@ -43,8 +45,10 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			// XFCE
 			if (File.Exists("/usr/bin/xfce4-keyboard-settings"))
 				return "/usr/bin/xfce4-keyboard-settings";
+
 			// Cinnamon
-			if (File.Exists("/usr/lib/cinnamon-settings/cinnamon-settings.py") && File.Exists("/usr/bin/python"))
+			if (File.Exists("/usr/lib/cinnamon-settings/cinnamon-settings.py") &&
+				File.Exists("/usr/bin/python"))
 			{
 				arguments = "/usr/lib/cinnamon-settings/cinnamon-settings.py " +
 							(Platform.DesktopEnvironment == "cinnamon"
@@ -52,24 +56,28 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 								: "keyboard");     // Wasta 14;
 				return "/usr/bin/python";
 			}
+
 			// Cinnamon in Wasta 20.04
 			if (File.Exists("/usr/bin/cinnamon-settings"))
 			{
 				arguments = "keyboard -t layouts";
 				return "/usr/bin/cinnamon-settings";
 			}
+
 			// GNOME
 			if (File.Exists("/usr/bin/gnome-control-center"))
 			{
 				arguments = "region layouts";
 				return "/usr/bin/gnome-control-center";
 			}
+
 			// KDE
 			if (File.Exists("/usr/bin/kcmshell4"))
 			{
 				arguments = "kcm_keyboard";
 				return "/usr/bin/kcmshell4";
 			}
+
 			// Unity
 			if (File.Exists("/usr/bin/unity-control-center"))
 			{

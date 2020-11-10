@@ -291,6 +291,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			}
 		}
 
+		public Action GetSecondaryKeyboardSetupAction() => GetKeyboardSetupAction();
+
 		public bool IsSecondaryKeyboardSetupApplication => true;
 
 		public bool CanHandleFormat(KeyboardFormat format)
