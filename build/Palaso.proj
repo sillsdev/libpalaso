@@ -73,7 +73,7 @@
 	<Target Name="Compile" DependsOnTargets="RestorePackages">
 		<MSBuild
 			Projects="$(SolutionPath)"
-			Targets="Build"
+			Targets="Restore;Build"
 			Properties="Configuration=$(Configuration);Platform=$(Platform);ContinuousIntegrationBuild=$(ContinuousIntegrationBuild);DeterministicSourcePaths=$(DeterministicSourcePaths)" />
 	</Target>
 
