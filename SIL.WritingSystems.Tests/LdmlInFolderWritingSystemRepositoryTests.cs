@@ -1075,7 +1075,7 @@ namespace SIL.WritingSystems.Tests
 				ws.DateModified = expectedDateTime;
 				environment.LocalRepository.Set(ws);
 				ws.RightToLeftScript = true;
-				ws.DefaultCollation = new SystemCollationDefinition { LanguageTag = enUsTag };
+				ws.DefaultCollation = new SystemCollationDefinition {LanguageTag = enUsTag};
 				ws.AcceptChanges();
 
 				// SUT
