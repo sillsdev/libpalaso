@@ -2071,32 +2071,18 @@ namespace SIL.Scripture.Tests
 		/// <summary>
 		/// Tests the Verse property's set method with numerals from various Unicode-supported scripts
 		/// </summary>
-		[Test]
-		public void SetVerse_InterpretUnicodeNumerals()
+		[TestCase("५", 5, TestName = "Devanagari numeral")]
+		[TestCase("૧૬", 16, TestName = "Gujarati numeral")]
+		[TestCase("5",5, TestName = "Latin numeral")]
+		[TestCase("᠔", 4, TestName = "Mongolian numeral")]
+		[TestCase("A", -1, TestName = "Latin non-numeral")]
+		[TestCase("ะ", -1, TestName = "Thai non-numeral")]
+		public void SetVerse_InterpretUnicodeNumerals(string verseStr, int parsedVerse)
 		{
-			VerseRef vref = new VerseRef("EXO 6:5");
-			Assert.AreEqual(5, vref.VerseNum);
+			VerseRef vref = new VerseRef("EXO 6:1");
 
-			vref.Verse = "५"; // Devanagari numeral
-			Assert.AreEqual(5, vref.VerseNum);
-
-			vref.Verse = "૧૬"; // Gujarati numeral
-			Assert.AreEqual(16, vref.VerseNum);
-
-			vref.Verse = "൬"; // Malayalam numeral
-			Assert.AreEqual(6, vref.VerseNum);
-
-			vref.Verse = "᠔"; // Mongolian numeral
-			Assert.AreEqual(4, vref.VerseNum);
-
-			vref.Verse = "๙"; // Thai numeral
-			Assert.AreEqual(9, vref.VerseNum);
-
-			vref.Verse = "A"; // Latin non-numeral
-			Assert.AreEqual(-1, vref.VerseNum);
-
-			vref.Verse = "ะ"; // Thai non-numeral
-			Assert.AreEqual(-1, vref.VerseNum);
+			vref.Verse = verseStr;
+			Assert.AreEqual(parsedVerse, vref.VerseNum);
 		}
 
 		#endregion
