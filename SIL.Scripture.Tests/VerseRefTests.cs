@@ -2067,6 +2067,38 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(new VerseRef("EXO 6:4"), new VerseRef("EXO 6:4-10").UnBridge());
 			Assert.AreEqual(new VerseRef("EXO 6:150monkeys"), new VerseRef("EXO 6:150monkeys").UnBridge());
 		}
+
+		/// <summary>
+		/// Tests the Verse property's set method with numerals from various Unicode-supported scripts
+		/// </summary>
+		[Test]
+		public void SetVerse_InterpretUnicodeNumerals()
+		{
+			VerseRef vref = new VerseRef("EXO 6:5");
+			Assert.AreEqual(5, vref.VerseNum);
+
+			vref.Verse = "५"; // Devanagari numeral
+			Assert.AreEqual(5, vref.VerseNum);
+
+			vref.Verse = "૧૬"; // Gujarati numeral
+			Assert.AreEqual(16, vref.VerseNum);
+
+			vref.Verse = "൬"; // Malayalam numeral
+			Assert.AreEqual(6, vref.VerseNum);
+
+			vref.Verse = "᠔"; // Mongolian numeral
+			Assert.AreEqual(4, vref.VerseNum);
+
+			vref.Verse = "๙"; // Thai numeral
+			Assert.AreEqual(9, vref.VerseNum);
+
+			vref.Verse = "A"; // Latin non-numeral
+			Assert.AreEqual(-1, vref.VerseNum);
+
+			vref.Verse = "ะ"; // Thai non-numeral
+			Assert.AreEqual(-1, vref.VerseNum);
+		}
+
 		#endregion
 
 		#region InRange

@@ -302,14 +302,14 @@ namespace SIL.Scripture
 			for (int i = 0; i < verseStr.Length; i++)
 			{
 				char ch = verseStr[i];
-				if (ch < '0' || ch > '9')
+				if (!char.IsDigit(ch))
 				{
 					if (i == 0)
 						vNum = -1;
 					return false;
 				}
 
-				vNum = (short)(vNum * 10 + ch - '0');
+				vNum = (short)(vNum * 10 + char.GetNumericValue(ch));
 				if (vNum > bcvMaxValue)
 				{
 					// whoops, we got too big!
