@@ -2071,18 +2071,18 @@ namespace SIL.Scripture.Tests
 		/// <summary>
 		/// Tests the Verse property's set method with numerals from various Unicode-supported scripts
 		/// </summary>
-		[TestCase("५", 5, TestName = "Devanagari numeral")]
-		[TestCase("૧૬", 16, TestName = "Gujarati numeral")]
-		[TestCase("5",5, TestName = "Latin numeral")]
-		[TestCase("᠔", 4, TestName = "Mongolian numeral")]
-		[TestCase("A", -1, TestName = "Latin non-numeral")]
-		[TestCase("ะ", -1, TestName = "Thai non-numeral")]
-		public void SetVerse_InterpretUnicodeNumerals(string verseStr, int parsedVerse)
+		[TestCase("५", ExpectedResult = 5, TestName = "Devanagari numeral")]
+		[TestCase("૧૬", ExpectedResult = 16, TestName = "Gujarati numeral")]
+		[TestCase("5", ExpectedResult = 5, TestName = "Latin numeral")]
+		[TestCase("᠔", ExpectedResult = 4, TestName = "Mongolian numeral")]
+		[TestCase("A", ExpectedResult = -1, TestName = "Latin non-numeral")]
+		[TestCase("ะ", ExpectedResult = -1, TestName = "Thai non-numeral")]
+		public int SetVerse_InterpretUnicodeNumerals(string verseStr)
 		{
 			VerseRef vref = new VerseRef("EXO 6:1");
 
 			vref.Verse = verseStr;
-			Assert.AreEqual(parsedVerse, vref.VerseNum);
+			return vref.VerseNum;
 		}
 
 		#endregion
