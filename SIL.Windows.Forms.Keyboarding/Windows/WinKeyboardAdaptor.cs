@@ -178,11 +178,11 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			}
 			try
 			{
-				profilesEnumerator = ProfileManager.EnumProfiles((short)culture.KeyboardLayoutId);
+				profilesEnumerator = ProfileManager.EnumProfiles((short)inputLanguage.Handle);
 			}
 			catch
 			{
-				Debug.WriteLine($"Error looking up keyboards for language {culture.Name} - {(short)culture.KeyboardLayoutId}");
+				Debug.WriteLine($"Error looking up keyboards for language {culture.Name} - {(short)inputLanguage.Handle}");
 				yield break;
 			}
 
