@@ -2077,11 +2077,11 @@ namespace SIL.Scripture.Tests
 		[TestCase("᠔", ExpectedResult = 4, TestName = "Mongolian numeral")]
 		[TestCase("A", ExpectedResult = -1, TestName = "Latin non-numeral")]
 		[TestCase("ะ", ExpectedResult = -1, TestName = "Thai non-numeral")]
-		public int SetVerse_InterpretUnicodeNumerals(string verseStr)
+		public int SetVerseUnicode_InterpretNumerals(string verseStr)
 		{
 			VerseRef vref = new VerseRef("EXO 6:1");
 
-			vref.Verse = verseStr;
+			vref.SetVerseUnicode(verseStr);
 			return vref.VerseNum;
 		}
 

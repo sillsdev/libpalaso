@@ -290,7 +290,7 @@ namespace SIL.Scripture
 		/// <returns><c>true</c> if the entire string could be parsed as a single,
 		/// simple verse number (1-999); <c>false</c> if the verse string represented
 		/// a verse bridge, contained segment letters, or was invalid</returns>
-		static bool TryGetVerseNum(string verseStr, out short vNum)
+		static bool TryGetVerseNum(string verseStr, out short vNum, bool romanOnly = true)
 		{
 			if (string.IsNullOrEmpty(verseStr))
 			{
@@ -302,14 +302,14 @@ namespace SIL.Scripture
 			for (int i = 0; i < verseStr.Length; i++)
 			{
 				char ch = verseStr[i];
-				if (!char.IsDigit(ch))
+				if (romanOnly ? (ch < '0' || ch > '9') : !char.IsDigit(ch))
 				{
 					if (i == 0)
 						vNum = -1;
 					return false;
 				}
 
-				vNum = (short)(vNum * 10 + char.GetNumericValue(ch));
+				vNum = (short)(vNum * 10 + (romanOnly ? ch - '0' : char.GetNumericValue(ch)));
 				if (vNum > bcvMaxValue)
 				{
 					// whoops, we got too big!
@@ -1336,6 +1336,27 @@ namespace SIL.Scripture
 			}
 
 			segment = vNum.Substring(j);
+		}
+
+		/// <summary>
+		/// Parses a verse string and gets the leading numeric portion as a number.
+		/// Functionally identical to Verse.Set for Roman numbers, made distinct to preserve USX standard.
+		/// </summary>
+		/// <returns><c>true</c> if the entire string could be parsed as a single,
+		/// simple verse number in any supported script; <c>false</c> if the verse string represented
+		/// a verse bridge, contained segment letters, or was invalid</returns>
+		public void SetVerseUnicode(string value)
+		{
+			{
+				short vNum;
+				verse = !TryGetVerseNum(value, out vNum, false) ? value.Replace(rtlMark, "") : null;
+				verseNum = vNum;
+				if (verseNum >= 0)
+					return;
+
+				Trace.TraceWarning("Just failed to parse a verse number: " + value);
+				TryGetVerseNum(verse, out verseNum, false);
+			}
 		}
 
 		/// <summary>
