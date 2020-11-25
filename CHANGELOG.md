@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle] `TextBundle<TM, TL>.GetFonts` (to replace deprecated `CopyFontFiles`)
 - [SIL.DblBundle] `TextBundle<TM, TL>.GetLdml` (to replace deprecated `CopyLdmlFile`)
 - [SIL.Scripture] `ScrVers.Save` overload to allow serialization to a `TextWriter`.
+- [SIL.Scripture] `VerseRef.TrySetVerseUnicode` to set 'verse' and 'verseRef' variables with non-Roman numerals.
 - [SIL.Core] `XmlSerializationHelper.Serialize<T>` to allow serialization to a `TextWriter`.
 - [SIL.Core] `XmlSerializationHelper.Deserialize<T>` to allow deserialization from a `TextReader`.
 - [SIL.Core] `Platform.IsGnomeShell` to detect if executing in a Gnome Shell

@@ -2069,7 +2069,7 @@ namespace SIL.Scripture.Tests
 		}
 
 		/// <summary>
-		/// Tests the Verse property's set method with numerals from various Unicode-supported scripts
+		/// Tests the TrySetVerseUnicode method with numerals from various Unicode-supported scripts
 		/// </summary>
 		[TestCase("५", ExpectedResult = 5, TestName = "Devanagari numeral")]
 		[TestCase("૧૬", ExpectedResult = 16, TestName = "Gujarati numeral")]
@@ -2077,11 +2077,32 @@ namespace SIL.Scripture.Tests
 		[TestCase("᠔", ExpectedResult = 4, TestName = "Mongolian numeral")]
 		[TestCase("A", ExpectedResult = -1, TestName = "Latin non-numeral")]
 		[TestCase("ะ", ExpectedResult = -1, TestName = "Thai non-numeral")]
-		public int SetVerseUnicode_InterpretNumerals(string verseStr)
+		[TestCase("二十", ExpectedResult = 20, TestName = "Japanese numeral", IgnoreReason = "Non-decimal numeral systems not yet implemented.")]
+		[TestCase("יא", ExpectedResult = 11, TestName = "Hebrew numeral", IgnoreReason = "Non-decimal numeral systems not yet implemented.")]
+		[TestCase("\U0001113A\U00011138", ExpectedResult = 42, TestName = "Chakma numeral", IgnoreReason = "Surrogate pair handling not yet implemented.")]
+		public int TrySetVerseUnicode_InterpretNumerals(string verseStr)
 		{
 			VerseRef vref = new VerseRef("EXO 6:1");
 
-			vref.SetVerseUnicode(verseStr);
+			bool success = vref.TrySetVerseUnicode(verseStr);
+			Assert.AreEqual(success, vref.VerseNum != -1);
+
+			return vref.VerseNum;
+		}
+
+		/// <summary>
+		/// Tests the Verse property's set method with various input strings
+		/// </summary>
+		[TestCase("5", ExpectedResult = 5, TestName = "Latin numeral")]
+		[TestCase("524", ExpectedResult = 524, TestName = "Large Latin numeral")]
+		[TestCase("A", ExpectedResult = -1, TestName = "Latin non-numeral")]
+		[TestCase("૧૬", ExpectedResult = -1, TestName = "Non-Latin numeral")]
+		public int SetVerse_InterpretNumerals(string verseStr)
+		{
+			VerseRef vref = new VerseRef("EXO 6:1");
+
+			vref.Verse = verseStr;
+
 			return vref.VerseNum;
 		}
 

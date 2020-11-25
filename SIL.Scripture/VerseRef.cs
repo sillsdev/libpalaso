@@ -245,8 +245,7 @@ namespace SIL.Scripture
 			get { return verse ?? (IsDefault || verseNum < 0 ? string.Empty : verseNum.ToString()); }
 			set
 			{
-				short vNum;
-				verse = !TryGetVerseNum(value, out vNum) ? value.Replace(rtlMark, "") : null;
+				verse = !TryGetVerseNum(value, out short vNum) ? value.Replace(rtlMark, "") : null;
 				verseNum = vNum;
 				if (verseNum >= 0)
 					return;
@@ -1345,17 +1344,17 @@ namespace SIL.Scripture
 		/// <returns><c>true</c> if the entire string could be parsed as a single,
 		/// simple verse number in any supported script; <c>false</c> if the verse string represented
 		/// a verse bridge, contained segment letters, or was invalid</returns>
-		public void SetVerseUnicode(string value)
+		public bool TrySetVerseUnicode(string value)
 		{
 			{
-				short vNum;
-				verse = !TryGetVerseNum(value, out vNum, false) ? value.Replace(rtlMark, "") : null;
+				verse = !TryGetVerseNum(value, out short vNum, false) ? value.Replace(rtlMark, "") : null;
 				verseNum = vNum;
 				if (verseNum >= 0)
-					return;
+					return true;
 
 				Trace.TraceWarning("Just failed to parse a verse number: " + value);
 				TryGetVerseNum(verse, out verseNum, false);
+				return false;
 			}
 		}
 
