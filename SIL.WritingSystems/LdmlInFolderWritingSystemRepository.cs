@@ -520,9 +520,9 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		public override IEnumerable<T> CheckForNewerGlobalWritingSystems()
+		public override IEnumerable<T> CheckForNewerGlobalWritingSystems(IEnumerable<string> languageTags = null)
 		{
-			foreach (T ws in base.CheckForNewerGlobalWritingSystems())
+			foreach (T ws in base.CheckForNewerGlobalWritingSystems(languageTags))
 			{
 				// load local settings using custom data mappers, so these settings won't be lost if these writing systems are used to
 				// replace the existing local writing systems
