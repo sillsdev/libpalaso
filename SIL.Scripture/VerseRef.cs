@@ -242,17 +242,8 @@ namespace SIL.Scripture
 		[XmlIgnore]
 		public string Verse
 		{
-			get { return verse ?? (IsDefault || verseNum < 0 ? string.Empty : verseNum.ToString()); }
-			set
-			{
-				verse = !TryGetVerseNum(value, out short vNum) ? value.Replace(rtlMark, "") : null;
-				verseNum = vNum;
-				if (verseNum >= 0)
-					return;
-
-				Trace.TraceWarning("Just failed to parse a verse number: " + value);
-				TryGetVerseNum(verse, out verseNum);
-			}
+			get => verse ?? (IsDefault || verseNum < 0 ? string.Empty : verseNum.ToString()); 
+			set => TrySetVerse(value);
 		}
 
 		/// <summary>
@@ -281,6 +272,22 @@ namespace SIL.Scripture
 					Console.WriteLine("Invalid deserialized reference: " + e.InvalidVerseRef);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Tries to set verse and verseNum by parsing the `value` string.
+		/// This is used by Verse.set and TrySetVerseUnicode
+		/// </summary>
+		/// <returns><c>true</c> if the verse was set successfully </returns>
+		bool TrySetVerse(string value, bool romanOnly = true)
+		{
+			verse = !TryGetVerseNum(value, out verseNum, romanOnly) ? value.Replace(rtlMark, "") : null;
+			if (verseNum >= 0)
+				return true;
+
+			Trace.TraceWarning("Just failed to parse a verse number: " + value);
+			TryGetVerseNum(verse, out verseNum, romanOnly);
+			return false;
 		}
 
 		/// <summary>
@@ -1346,16 +1353,7 @@ namespace SIL.Scripture
 		/// a verse bridge, contained segment letters, or was invalid</returns>
 		public bool TrySetVerseUnicode(string value)
 		{
-			{
-				verse = !TryGetVerseNum(value, out short vNum, false) ? value.Replace(rtlMark, "") : null;
-				verseNum = vNum;
-				if (verseNum >= 0)
-					return true;
-
-				Trace.TraceWarning("Just failed to parse a verse number: " + value);
-				TryGetVerseNum(verse, out verseNum, false);
-				return false;
-			}
+			return TrySetVerse(value, false);
 		}
 
 		/// <summary>
