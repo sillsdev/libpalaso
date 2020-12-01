@@ -243,7 +243,7 @@ namespace SIL.Scripture
 		public string Verse
 		{
 			get => verse ?? (IsDefault || verseNum < 0 ? string.Empty : verseNum.ToString()); 
-			set => TrySetVerse(value);
+			set => TrySetVerse(value, true); // The USX standard only expects support for Latin numerals {0-9}* in verse numbers.
 		}
 
 		/// <summary>
@@ -279,14 +279,14 @@ namespace SIL.Scripture
 		/// This is used by Verse.set and TrySetVerseUnicode
 		/// </summary>
 		/// <returns><c>true</c> if the verse was set successfully </returns>
-		bool TrySetVerse(string value, bool romanOnly = true)
+		bool TrySetVerse(string value, bool romanOnly)
 		{
-			verse = !TryGetVerseNum(value, out verseNum, romanOnly) ? value.Replace(rtlMark, "") : null;
+			verse = !TryGetVerseNum(value, romanOnly, out verseNum) ? value.Replace(rtlMark, "") : null;
 			if (verseNum >= 0)
 				return true;
 
 			Trace.TraceWarning("Just failed to parse a verse number: " + value);
-			TryGetVerseNum(verse, out verseNum, romanOnly);
+			TryGetVerseNum(verse, romanOnly, out verseNum);
 			return false;
 		}
 
@@ -296,7 +296,7 @@ namespace SIL.Scripture
 		/// <returns><c>true</c> if the entire string could be parsed as a single,
 		/// simple verse number (1-999); <c>false</c> if the verse string represented
 		/// a verse bridge, contained segment letters, or was invalid</returns>
-		static bool TryGetVerseNum(string verseStr, out short vNum, bool romanOnly = true)
+		static bool TryGetVerseNum(string verseStr, bool romanOnly , out short vNum)
 		{
 			if (string.IsNullOrEmpty(verseStr))
 			{
