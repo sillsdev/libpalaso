@@ -1085,6 +1085,84 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void CheckForNewerGlobalWritingSystems_NoLangTags_ReturnsAllNew()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				// Setup
+				// Create and save two WSs into the local store which will copy them to the global store.
+				var enUsTag = "en-US";
+				var ws = new WritingSystemDefinition(enUsTag);
+				var expectedDateTime = new DateTime(2018, 12, 01, 8, 7, 6, DateTimeKind.Utc);
+				ws.DateModified = expectedDateTime;
+				environment.LocalRepository.Set(ws);
+				var frTag = "fr";
+				var wsFr = new WritingSystemDefinition(frTag);
+				ws.DateModified = expectedDateTime;
+				environment.LocalRepository.Set(wsFr);
+				environment.LocalRepository.Save();
+
+				// SUT
+				CollectionAssert.IsEmpty(environment.LocalRepository.CheckForNewerGlobalWritingSystems(),
+					"Global and local should be the same.");
+
+				// Modify the two global ws.
+				ws = environment.GlobalRepository.Get(enUsTag);
+				ws.SpellCheckingId = "spelchequer";
+				environment.GlobalRepository.Set(ws);
+
+				wsFr = environment.GlobalRepository.Get(frTag);
+				wsFr.SpellCheckingId = "lespelchequer";
+				environment.GlobalRepository.Set(wsFr);
+				environment.GlobalRepository.Save();
+
+				var newerGlobalWss = environment.LocalRepository.CheckForNewerGlobalWritingSystems();
+				Assert.That(newerGlobalWss.Count(), Is.EqualTo(2));
+			}
+		}
+
+		[Test]
+		public void CheckForNewerGlobalWritingSystems_WithLangTag_ReturnsAllNew()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				// Setup
+				// Create and save two WSs into the local store which will copy them to the global store.
+				var enUsTag = "en-US";
+				var ws = new WritingSystemDefinition(enUsTag);
+				var expectedDateTime = new DateTime(2018, 12, 01, 8, 7, 6, DateTimeKind.Utc);
+				ws.DateModified = expectedDateTime;
+				environment.LocalRepository.Set(ws);
+				var frTag = "fr";
+				var wsFr = new WritingSystemDefinition(frTag);
+				ws.DateModified = expectedDateTime;
+				environment.LocalRepository.Set(wsFr);
+				environment.LocalRepository.Save();
+
+				// SUT
+				CollectionAssert.IsEmpty(environment.LocalRepository.CheckForNewerGlobalWritingSystems(),
+					"Global and local should be the same.");
+
+				// Modify the two global ws.
+				ws = environment.GlobalRepository.Get(enUsTag);
+				ws.SpellCheckingId = "spelchequer";
+				environment.GlobalRepository.Set(ws);
+
+				wsFr = environment.GlobalRepository.Get(frTag);
+				wsFr.SpellCheckingId = "lespelchequer";
+				environment.GlobalRepository.Set(wsFr);
+				environment.GlobalRepository.Save();
+
+				var newerGlobalWss = environment.LocalRepository.CheckForNewerGlobalWritingSystems(new [] {frTag}).ToArray();
+				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1));
+				Assert.That(newerGlobalWss[0].LanguageTag, Is.EqualTo(frTag));
+				newerGlobalWss = environment.LocalRepository.CheckForNewerGlobalWritingSystems(new[] { enUsTag }).ToArray();
+				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1));
+				Assert.That(newerGlobalWss[0].LanguageTag, Is.EqualTo(enUsTag));
+			}
+		}
+
+		[Test]
 		public void Save_UpdatesGlobalStore_IdAndLangTagMismatchDoesNotCrash()
 		{
 			// If the global store has a writing system with the id that doesn't match
