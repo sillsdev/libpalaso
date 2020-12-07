@@ -21,7 +21,10 @@ namespace SIL.Windows.Forms.WritingSystems
 				if (components != null)
 					components.Dispose();
 
-				KeyboardController.UnregisterControl(_testArea);
+				if (!DesignMode)
+				{
+					KeyboardController.UnregisterControl(_testArea);
+				}
 
 				if (_hookedToForm)
 				{
