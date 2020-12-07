@@ -578,7 +578,7 @@ namespace SIL.Media.Naudio
 				var cutFromEndMilliseconds = (long)Math.Min(totalMilliseconds - minimumDesiredDuration.TotalMilliseconds, cutFromEnd.TotalMilliseconds);
 				cutFromEndMilliseconds = (long)Math.Max(0, cutFromEndMilliseconds); // has to be 0 or positive
 
-				//from http://stackoverflow.com/a/6488629/723299
+				//from https://stackoverflow.com/a/6488629/723299
 				using (var writer = new WaveFileWriter(outPath, reader.WaveFormat))
 				{
 					var bytesPerMillisecond = reader.WaveFormat.AverageBytesPerSecond / 1000;
@@ -595,7 +595,7 @@ namespace SIL.Media.Naudio
 
 		private static void TrimWavFileInternal(WaveFileReader reader, WaveFileWriter writer, long startPos, long endPos)
 		{
-			//from http://stackoverflow.com/a/6488629/723299, added the break if we aren't getting any more data
+			//from https://stackoverflow.com/a/6488629/723299, added the break if we aren't getting any more data
 			reader.Position = startPos;
 			var buffer = new byte[1024];
 			while (reader.Position < endPos)
