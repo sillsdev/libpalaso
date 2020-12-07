@@ -1153,12 +1153,16 @@ namespace SIL.WritingSystems.Tests
 				environment.GlobalRepository.Set(wsFr);
 				environment.GlobalRepository.Save();
 
+				environment.LocalRepository.IsDebugOn = true;
+
 				var newerGlobalWss = environment.LocalRepository.CheckForNewerGlobalWritingSystems(new [] {frTag}).ToArray();
-				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1));
+				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1), "frtag count");
 				Assert.That(newerGlobalWss[0].LanguageTag, Is.EqualTo(frTag));
 				newerGlobalWss = environment.LocalRepository.CheckForNewerGlobalWritingSystems(new[] { enUsTag }).ToArray();
-				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1));
+				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1), "enUsTag count");
 				Assert.That(newerGlobalWss[0].LanguageTag, Is.EqualTo(enUsTag));
+
+				environment.LocalRepository.IsDebugOn = false;
 			}
 		}
 
