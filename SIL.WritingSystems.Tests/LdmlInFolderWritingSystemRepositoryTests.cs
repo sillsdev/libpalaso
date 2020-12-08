@@ -1163,6 +1163,13 @@ namespace SIL.WritingSystems.Tests
 				CollectionAssert.IsEmpty(environment.LocalRepository.CheckForNewerGlobalWritingSystems(),
 					"Global and local should be the same.");
 
+				// On some systems, it's possible for the local and one or both of the global to report happening in the same tick.
+				// This would make it so that the code would view them as technically not newer, since they were reported in the same tick.
+				// So we would like to wait at least 1 tick first before proceeding to the global part.
+				// Not sure if this is relevant or not, but in some scenarios the system clock may have a resolution of roughly 15 milliseconds,
+				// so probably safer to wait a good chunk more than 15ms.
+				Thread.Sleep(50);	// in milliseconds
+
 				// Modify the two global ws.
 				ws = environment.GlobalRepository.Get(enUsTag);
 				ws.SpellCheckingId = "spelchequer";
