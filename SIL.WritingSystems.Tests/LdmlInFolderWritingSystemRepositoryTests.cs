@@ -64,11 +64,16 @@ namespace SIL.WritingSystems.Tests
 			private readonly TemporaryFolder _globalRepoFolder;
 			private readonly TestWritingSystemCustomDataMapper _writingSystemCustomDataMapper;
 
-			public TestEnvironment()
+			/// <summary>
+			/// Constructs a TestEnvironment
+			/// </summary>
+			/// <param name="testName">A unique prefix for each test. Each test should have its prefix so that
+			/// each test's data is independent</param>
+			public TestEnvironment(string testPrefix)
 			{
-				_localRepoFolder = new TemporaryFolder("LdmlInFolderWritingSystemRepositoryTests");
-				_templateFolder = new TemporaryFolder("Templates");
-				_globalRepoFolder = new TemporaryFolder("GlobalWritingSystemRepository");
+				_localRepoFolder = new TemporaryFolder(Path.Combine(testPrefix, "LdmlInFolderWritingSystemRepositoryTests"));
+				_templateFolder = new TemporaryFolder(Path.Combine(testPrefix, "Templates"));
+				_globalRepoFolder = new TemporaryFolder(Path.Combine(testPrefix, "GlobalWritingSystemRepository"));
 				_writingSystem = new WritingSystemDefinition();
 				_writingSystemCustomDataMapper = new TestWritingSystemCustomDataMapper();
 				ResetRepositories();
@@ -142,7 +147,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void PathToCollection_SameAsGiven()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("PathToCollection_SameAsGiven"))
 			{
 				Assert.AreEqual(environment.LocalRepositoryPath, environment.LocalRepository.PathToWritingSystems);
 			}
@@ -151,7 +156,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void SaveDefinitionsThenLoad_CountEquals2()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("SaveDefinitionsThenLoad_CountEquals2"))
 			{
 				environment.WritingSystem.Language = "one";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
@@ -169,7 +174,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void SavesWhenNotPreexisting()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("SavesWhenNotPreexisting"))
 			{
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
 				environment.AssertWritingSystemFileExists(environment.WritingSystem.LanguageTag);
@@ -179,7 +184,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void SavesWhenPreexisting()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("SavesWhenPreexisting"))
 			{
 				environment.WritingSystem.Language = "en";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
@@ -194,7 +199,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void RegressionWhereUnchangedDefDeleted()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("RegressionWhereUnchangedDefDeleted"))
 			{
 				environment.WritingSystem.Language = "qaa";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
@@ -207,7 +212,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void SavesWhenDirectoryNotFound()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("SavesWhenDirectoryNotFound"))
 			{
 				string newRepoPath = Path.Combine(environment.LocalRepositoryPath, "newguy");
 				var newRepository = new LdmlInFolderWritingSystemRepository(newRepoPath);
@@ -219,7 +224,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Save_WritingSystemIdChanged_ChangeLogUpdated()
 		{
-			using (var e = new TestEnvironment())
+			using (var e = new TestEnvironment("Save_WritingSystemIdChanged_ChangeLogUpdated"))
 			{
 				LdmlInFolderWritingSystemRepository repo = LdmlInFolderWritingSystemRepository.Initialize(Path.Combine(e.LocalRepositoryPath, "idchangedtest1"));
 				var ws = new WritingSystemDefinition("en");
@@ -248,7 +253,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Save_WritingSystemIdConflated_ChangeLogUpdatedAndDoesNotContainDelete()
 		{
-			using (var e = new TestEnvironment())
+			using (var e = new TestEnvironment("Save_WritingSystemIdConflated_ChangeLogUpdatedAndDoesNotContainDelete"))
 			{
 				LdmlInFolderWritingSystemRepository repo = LdmlInFolderWritingSystemRepository.Initialize(Path.Combine(e.LocalRepositoryPath, "idchangedtest1"));
 				var ws = new WritingSystemDefinition("en");
@@ -272,7 +277,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void IdAfterSave_SameAsFileNameWithoutExtension()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("IdAfterSave_SameAsFileNameWithoutExtension"))
 			{
 				environment.WritingSystem.Language = "en";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
@@ -283,7 +288,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void IdAfterLoad_SameAsFileNameWithoutExtension()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("IdAfterLoad_SameAsFileNameWithoutExtension"))
 			{
 				environment.WritingSystem.Language = "en";
 				Assert.That(Directory.GetFiles(environment.LocalRepositoryPath,
@@ -300,7 +305,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void UpdatesFileNameWhenIsoChanges()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("UpdatesFileNameWhenIsoChanges"))
 			{
 				environment.WritingSystem.Language = "en";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
@@ -320,7 +325,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void MakesNewFileIfNeeded()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("MakesNewFileIfNeeded"))
 			{
 
 				environment.WritingSystem.Language = "en";
@@ -332,7 +337,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void CanAddVariantToLdmlUsingSameWS()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("CanAddVariantToLdmlUsingSameWS"))
 			{
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
 				environment.WritingSystem.Variants.Add("1901");
@@ -344,7 +349,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void CanAddVariantToExistingLdml()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("CanAddVariantToExistingLdml"))
 			{
 
 				environment.WritingSystem.Language = "en";
@@ -368,7 +373,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void CanReadVariant()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("CanReadVariant"))
 			{
 				environment.WritingSystem.Language = "en";
 				environment.WritingSystem.Variants.Add("piglatin");
@@ -383,7 +388,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void CanSaveAndReadKeyboardId()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("CanSaveAndReadKeyboardId"))
 			{
 				environment.WritingSystem.Language = "en";
 				var kbd1 = new DefaultKeyboardDefinition("Thai", "Thai");
@@ -400,7 +405,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void CanSaveAndReadRightToLeft()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("CanSaveAndReadRightToLeft"))
 			{
 				environment.WritingSystem.Language = "en";
 				Assert.IsFalse(environment.WritingSystem.RightToLeftScript);
@@ -417,7 +422,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void CanRemoveVariant()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("CanRemoveVariant"))
 			{
 				environment.WritingSystem.Language = "en";
 				environment.WritingSystem.Variants.Add("piglatin");
@@ -434,7 +439,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void CanDeleteFileThatIsNotInTrash()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("CanDeleteFileThatIsNotInTrash"))
 			{
 				environment.WritingSystem.Language = "en";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
@@ -457,7 +462,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void CanDeleteFileMatchingOneThatWasPreviouslyTrashed()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("CanDeleteFileMatchingOneThatWasPreviouslyTrashed"))
 			{
 				environment.WritingSystem.Language = "en";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
@@ -476,7 +481,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void MarkedNotModifiedWhenNew()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("MarkedNotModifiedWhenNew"))
 			{
 				//not worth saving until has some data
 				Assert.IsFalse(environment.WritingSystem.IsChanged);
@@ -486,7 +491,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void MarkedAsModifiedWhenIsoChanges()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("MarkedAsModifiedWhenIsoChanges"))
 			{
 				environment.WritingSystem.Language = "en";
 				Assert.IsTrue(environment.WritingSystem.IsChanged);
@@ -496,7 +501,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void MarkedAsNotModifiedWhenLoaded()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("MarkedAsNotModifiedWhenLoaded"))
 			{
 				environment.WritingSystem.Language = "en";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
@@ -509,7 +514,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void MarkedAsNotModifiedWhenSaved()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("MarkedAsNotModifiedWhenSaved"))
 			{
 				environment.WritingSystem.Language = "en";
 				Assert.IsTrue(environment.WritingSystem.IsChanged);
@@ -523,7 +528,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void SystemWritingSystemProvider_Set_WritingSystemsAreIncludedInStore()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("SystemWritingSystemProvider_Set_WritingSystemsAreIncludedInStore"))
 			{
 				environment.LocalRepository.SystemWritingSystemProvider = new DummyWritingSystemProvider();
 				var list = environment.LocalRepository.AllWritingSystems;
@@ -534,7 +539,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void DefaultLanguageNotAddedIfInTrash()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("DefaultLanguageNotAddedIfInTrash"))
 			{
 				environment.LocalRepository.SystemWritingSystemProvider = new DummyWritingSystemProvider();
 				var list = environment.LocalRepository.AllWritingSystems;
@@ -554,7 +559,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Constructor_LdmlFolderStoreContainsMultipleFilesThatOnLoadDescribeWritingSystemsWithIdenticalRFC5646Tags_Throws()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("Constructor_LdmlFolderStoreContainsMultipleFilesThatOnLoadDescribeWritingSystemsWithIdenticalRFC5646Tags_Throws"))
 			{
 				File.WriteAllText(Path.Combine(environment.LocalRepositoryPath, "de-Zxxx-x-audio.ldml"),
 								  LdmlContentForTests.CurrentVersion("de", WellKnownSubtags.UnwrittenScript, "", "x-audio"));
@@ -584,7 +589,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Conflate_ChangelogRecordsChange()
 		{
-			using(var e = new TestEnvironment())
+			using(var e = new TestEnvironment("Conflate_ChangelogRecordsChange"))
 			{
 				e.LocalRepository.Set(new WritingSystemDefinition("de"));
 				e.LocalRepository.Set(new WritingSystemDefinition("en"));
@@ -597,7 +602,7 @@ namespace SIL.WritingSystems.Tests
 		//This is not really a problem, but it would be nice if the file were made consistent. So make we will make them run it through the migrator, which they should be using anyway.
 		public void Constructor_LdmlFolderStoreContainsInconsistentlyNamedFile_HasExpectedProblem()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("Constructor_LdmlFolderStoreContainsInconsistentlyNamedFile_HasExpectedProblem"))
 			{
 				File.WriteAllText(Path.Combine(environment.LocalRepositoryPath, "tpi-Zxxx-x-audio.ldml"),
 								  LdmlContentForTests.CurrentVersion("de", "latn", "ch", "1901"));
@@ -618,7 +623,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Constructor_LdmlFolderStoreContainsInconsistentlyNamedFileDifferingInCaseOnly_HasNoProblem()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("Constructor_LdmlFolderStoreContainsInconsistentlyNamedFileDifferingInCaseOnly_HasNoProblem"))
 			{
 				File.WriteAllText(Path.Combine(environment.LocalRepositoryPath, "aa-cyrl.ldml"),
 								  LdmlContentForTests.CurrentVersion("aa", "Cyrl", "", ""));
@@ -633,7 +638,7 @@ namespace SIL.WritingSystems.Tests
 		//this used to throw
 		public void LoadAllDefinitions_FilenameDoesNotMatchRfc5646Tag_NoProblem()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("LoadAllDefinitions_FilenameDoesNotMatchRfc5646Tag_NoProblem"))
 			{
 				//Make the filepath inconsistent
 				environment.WritingSystem.Language = "en";
@@ -649,7 +654,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Get_WritingSystemContainedInFileWithFilenameThatDoesNotMatchRfc5646Tag_ReturnsWritingSystem()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("Get_WritingSystemContainedInFileWithFilenameThatDoesNotMatchRfc5646Tag_ReturnsWritingSystem"))
 			{
 				//Make the filepath inconsistent
 				environment.WritingSystem.Language = "en";
@@ -666,7 +671,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void LoadAllDefinitions_FilenameIsFlexConformPrivateUseAndDoesNotMatchRfc5646Tag_Migrates()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("LoadAllDefinitions_FilenameIsFlexConformPrivateUseAndDoesNotMatchRfc5646Tag_Migrates"))
 			{
 				var ldmlPath = Path.Combine(environment.LocalRepositoryPath, "x-kal-Zxxx.ldml");
 				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("x-kal", "Zxxx", "", ""));
@@ -680,7 +685,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Set_NewWritingSystem_StoreContainsWritingSystem()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("Set_NewWritingSystem_StoreContainsWritingSystem"))
 			{
 				var ws = new WritingSystemDefinition("en");
 				environment.LocalRepository.Set(ws);
@@ -691,7 +696,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void SaveDefinition_WritingSystemCameFromValidRfc5646WritingSystemStartingWithX_FileNameIsChanged()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("SaveDefinition_WritingSystemCameFromValidRfc5646WritingSystemStartingWithX_FileNameIsChanged"))
 			{
 				var pathToFlexprivateUseLdml = Path.Combine(environment.LocalRepositoryPath, "x-Zxxx-x-audio.ldml");
 				File.WriteAllText(pathToFlexprivateUseLdml, LdmlContentForTests.CurrentVersion("xh", "", "", ""));
@@ -703,7 +708,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void WritingSystemIdHasBeenChanged_IdNeverExisted_ReturnsFalse()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("WritingSystemIdHasBeenChanged_IdNeverExisted_ReturnsFalse"))
 			{
 				//Add a writing system to the repo
 				Assert.That(environment.LocalRepository.WritingSystemIdHasChanged("en"), Is.False);
@@ -713,7 +718,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void WritingSystemIdHasBeenChanged_IdChanged_ReturnsTrue()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("WritingSystemIdHasBeenChanged_IdChanged_ReturnsTrue"))
 			{
 				//Add a writing system to the repo
 				var ws = new WritingSystemDefinition("en");
@@ -729,7 +734,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void WritingSystemIdHasBeenChanged_IdChangedToMultipleDifferentNewIds_ReturnsTrue()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("WritingSystemIdHasBeenChanged_IdChangedToMultipleDifferentNewIds_ReturnsTrue"))
 			{
 				//Add a writing system to the repo
 				var wsEn = new WritingSystemDefinition("en");
@@ -752,7 +757,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void WritingSystemIdHasBeenChanged_IdExistsAndHasNeverChanged_ReturnsFalse()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("WritingSystemIdHasBeenChanged_IdExistsAndHasNeverChanged_ReturnsFalse"))
 			{
 				//Add a writing system to the repo
 				var ws = new WritingSystemDefinition("en");
@@ -765,7 +770,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void WritingSystemIdHasChangedTo_IdNeverExisted_ReturnsNull()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("WritingSystemIdHasChangedTo_IdNeverExisted_ReturnsNull"))
 			{
 				//Add a writing system to the repo
 				Assert.That(environment.LocalRepository.WritingSystemIdHasChangedTo("en"), Is.Null);
@@ -775,7 +780,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void WritingSystemIdHasChangedTo_IdChanged_ReturnsNewId()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("WritingSystemIdHasChangedTo_IdChanged_ReturnsNewId"))
 			{
 				//Add a writing system to the repo
 				var ws = new WritingSystemDefinition("en");
@@ -791,7 +796,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void WritingSystemIdHasChangedTo_IdChangedToMultipleDifferentNewIds_ReturnsNull()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("WritingSystemIdHasChangedTo_IdChangedToMultipleDifferentNewIds_ReturnsNull"))
 			{
 				//Add a writing system to the repo
 				var wsEn = new WritingSystemDefinition("en");
@@ -814,7 +819,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void WritingSystemIdHasChangedTo_IdExistsAndHasNeverChanged_ReturnsId()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("WritingSystemIdHasChangedTo_IdExistsAndHasNeverChanged_ReturnsId"))
 			{
 				//Add a writing system to the repo
 				var ws = new WritingSystemDefinition("en");
@@ -828,7 +833,7 @@ namespace SIL.WritingSystems.Tests
 		//This test checks that "old" ldml files are not overwritten on Save before they can be used to roundtrip unknown ldml (i.e. from flex)
 		public void Save_IdOfWsIsSameAsOldIdOfOtherWs_LdmlUnknownToRepoIsMaintained()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("Save_IdOfWsIsSameAsOldIdOfOtherWs_LdmlUnknownToRepoIsMaintained"))
 			{
 				string germanFromFlex =
 #region fileContent
@@ -882,7 +887,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Save_IdOfWsIsSameAsOldIdOfOtherWs_RepoHasCorrectNumberOfWritingSystemsOnLoad()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("Save_IdOfWsIsSameAsOldIdOfOtherWs_RepoHasCorrectNumberOfWritingSystemsOnLoad"))
 			{
 				var ws1 = new WritingSystemDefinition("en");
 				var ws2 = new WritingSystemDefinition("de");
@@ -903,7 +908,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void LoadAllDefinitions_LDMLV0_HasExpectedProblem()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("LoadAllDefinitions_LDMLV0_HasExpectedProblem"))
 			{
 				var ldmlPath = Path.Combine(environment.LocalRepositoryPath, "en.ldml");
 				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("en", "", "", ""));
@@ -923,7 +928,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void LoadDefinitions_ValidLanguageTagStartingWithXButV0_Throws()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("LoadDefinitions_ValidLanguageTagStartingWithXButV0_Throws"))
 			{
 				var pathToFlexPrivateUseLdml = Path.Combine(environment.LocalRepositoryPath, "xh.ldml");
 				File.WriteAllText(pathToFlexPrivateUseLdml, LdmlContentForTests.Version0("xh", "", "", ""));
@@ -942,7 +947,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void FactoryCreate_TemplateAvailableInLocalRepo_UsedTemplateFromLocalRepo()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("FactoryCreate_TemplateAvailableInLocalRepo_UsedTemplateFromLocalRepo"))
 			{
 				File.WriteAllText(environment.GetPathForLocalWSId("en"), @"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
@@ -980,7 +985,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void FactoryCreate_TemplateAvailableInSldr_UsedTemplateFromSldr()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("FactoryCreate_TemplateAvailableInSldr_UsedTemplateFromSldr"))
 			{
 				environment.LocalRepository.WritingSystemFactory.SldrLdmls["en"] = @"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
@@ -1017,7 +1022,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void FactoryCreate_TemplateNotAvailableInSldr_UsedTemplateFromTemplateFolder()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("FactoryCreate_TemplateNotAvailableInSldr_UsedTemplateFromTemplateFolder"))
 			{
 				File.WriteAllText(Path.Combine(environment.LocalRepository.WritingSystemFactory.TemplateFolder, "zh-CN.ldml"), @"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
@@ -1056,7 +1061,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Save_UpdatesGlobalStore_CopyToGlobalKeepsTimestamp()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("Save_UpdatesGlobalStore_CopyToGlobalKeepsTimestamp"))
 			{
 				// Setup
 				// Create and save a new WS in the local store - this will copy the WS into the
@@ -1087,7 +1092,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void CheckForNewerGlobalWritingSystems_NoLangTags_ReturnsAllNew()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("CheckForNewerGlobalWritingSystems_NoLangTags_ReturnsAllNew"))
 			{
 				// Setup
 				// Create and save two WSs into the local store which will copy them to the global store.
@@ -1124,7 +1129,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void CheckForNewerGlobalWritingSystems_WithLangTag_ReturnsAllNew()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("CheckForNewerGlobalWritingSystems_WithLangTag_ReturnsAllNew"))
 			{
 				// Setup
 				// Create and save two WSs into the local store which will copy them to the global store.
@@ -1154,10 +1159,12 @@ namespace SIL.WritingSystems.Tests
 				environment.GlobalRepository.Save();
 
 				var newerGlobalWss = environment.LocalRepository.CheckForNewerGlobalWritingSystems(new [] {frTag}).ToArray();
-				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1));
+
+				// Verify
+				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1), "frtag count");
 				Assert.That(newerGlobalWss[0].LanguageTag, Is.EqualTo(frTag));
 				newerGlobalWss = environment.LocalRepository.CheckForNewerGlobalWritingSystems(new[] { enUsTag }).ToArray();
-				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1));
+				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1), "enUsTag count");
 				Assert.That(newerGlobalWss[0].LanguageTag, Is.EqualTo(enUsTag));
 			}
 		}
@@ -1168,7 +1175,7 @@ namespace SIL.WritingSystems.Tests
 			// If the global store has a writing system with the id that doesn't match
 			// the language tag we should not crash and we should match and update the
 			// global store
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("Save_UpdatesGlobalStore_IdAndLangTagMismatchDoesNotCrash"))
 			{
 				// Setup
 				// Create and save a new WS in the local store - this will copy the WS into the
@@ -1206,7 +1213,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Save_UpdatesGlobalStore_ModificationsUpdateTimestamp()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("Save_UpdatesGlobalStore_ModificationsUpdateTimestamp"))
 			{
 				// Setup
 				// Create and save a new WS in the local store - this will copy the WS into the
@@ -1241,7 +1248,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Save_UpdatesGlobalStore_FromDifferentRepos()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("Save_UpdatesGlobalStore_FromDifferentRepos"))
 			using (var testFolder2 = new TemporaryFolder("LdmlInFolderWritingSystemRepositoryTests2"))
 			{
 				// Setup
@@ -1282,7 +1289,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Save_UpdatesGlobalStore_KeepsExtraContent()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("Save_UpdatesGlobalStore_KeepsExtraContent"))
 			using (var testFolder2 = new TemporaryFolder("LdmlInFolderWritingSystemRepositoryTests2"))
 			{
 				// Create and save a new WS in the local store - this will copy the WS into the
@@ -1359,7 +1366,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Save_UpdatesWritingSystemsToIgnore()
 		{
-			using (var environment = new TestEnvironment())
+			using (var environment = new TestEnvironment("Save_UpdatesWritingSystemsToIgnore"))
 			using (var testFolder2 = new TemporaryFolder("LdmlInFolderWritingSystemRepositoryTests2"))
 			{
 				var ws = new WritingSystemDefinition("en-US");
