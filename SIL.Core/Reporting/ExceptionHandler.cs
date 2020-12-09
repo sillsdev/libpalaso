@@ -160,8 +160,10 @@ namespace SIL.Reporting
 		/// Catches and displays otherwise unhandled exception, especially those that happen
 		/// during startup of the application before we show our main window.
 		/// </summary>
+		/// <remarks>Public so that a program with its own handler can also use this one, when
+		/// necessary.</remarks>
 		/// ------------------------------------------------------------------------------------
-		protected void HandleUnhandledException(object sender, UnhandledExceptionEventArgs e)
+		public void HandleUnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
 			var exception = e.ExceptionObject as Exception;
 			if (!GetShouldHandleException(sender, exception))
