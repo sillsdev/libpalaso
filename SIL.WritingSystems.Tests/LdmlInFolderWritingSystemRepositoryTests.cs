@@ -66,12 +66,32 @@ namespace SIL.WritingSystems.Tests
 
 			public TestEnvironment()
 			{
-				_localRepoFolder = new TemporaryFolder("LdmlInFolderWritingSystemRepositoryTests");
-				_templateFolder = new TemporaryFolder("Templates");
-				_globalRepoFolder = new TemporaryFolder("GlobalWritingSystemRepository");
+				string testDirName = GetTestDirectoryName();
+				
+				_localRepoFolder = new TemporaryFolder(Path.Combine(testDirName, "LdmlInFolderWritingSystemRepositoryTests"));
+				_templateFolder = new TemporaryFolder(Path.Combine(testDirName, "Templates"));
+				_globalRepoFolder = new TemporaryFolder(Path.Combine(testDirName, "GlobalWritingSystemRepository"));
 				_writingSystem = new WritingSystemDefinition();
 				_writingSystemCustomDataMapper = new TestWritingSystemCustomDataMapper();
 				ResetRepositories();
+			}
+
+			/// <summary>
+			/// Returns a probably unique directory name to be used to place temporary folder in for the test environment
+			/// </summary>
+			/// <returns>Returns a string representing just the directory name (the path to the directory is not included)
+			/// The format is the "[TestName]_[Random8LetterSuffix]"
+			/// Given that this function doesn't receive or return the path to the directory,
+			/// it is not guaranteed that nothing exists at the full path the caller eventually constructs
+			/// </returns>
+			private string GetTestDirectoryName()
+			{
+				string prefix = TestContext.CurrentContext?.Test?.Name ?? "";
+
+				string randomFileName = Path.GetRandomFileName();	// 8.3 file name format
+				string suffix = Path.GetFileNameWithoutExtension(randomFileName);	// Now without the 3-letter extension
+
+				return $"{prefix}_{suffix}";
 			}
 
 			public void ResetRepositories()
@@ -1154,10 +1174,12 @@ namespace SIL.WritingSystems.Tests
 				environment.GlobalRepository.Save();
 
 				var newerGlobalWss = environment.LocalRepository.CheckForNewerGlobalWritingSystems(new [] {frTag}).ToArray();
-				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1));
+
+				// Verify
+				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1), "frtag count");
 				Assert.That(newerGlobalWss[0].LanguageTag, Is.EqualTo(frTag));
 				newerGlobalWss = environment.LocalRepository.CheckForNewerGlobalWritingSystems(new[] { enUsTag }).ToArray();
-				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1));
+				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1), "enUsTag count");
 				Assert.That(newerGlobalWss[0].LanguageTag, Is.EqualTo(enUsTag));
 			}
 		}
