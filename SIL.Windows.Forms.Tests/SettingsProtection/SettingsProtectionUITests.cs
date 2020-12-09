@@ -6,7 +6,8 @@ namespace  SIL.Windows.Forms.Tests.SettingsProtection
 	public class SettingsProtectionUITests
 	{
 
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void LaunchDemoDialog()
 		{
 			using (var dlg = new DialogWithLinkToSettings())

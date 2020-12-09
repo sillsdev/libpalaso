@@ -15,7 +15,7 @@ namespace SIL.DblBundle.Tests.Usx
 		/// <summary>
 		/// Test fixture setup
 		/// </summary>
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetUp()
 		{
 			m_nodes = UsxDocumentTests.GetChaptersAndParasForMarkOneContaining2Verses();

@@ -5,7 +5,8 @@ namespace SIL.Windows.Forms.Tests
 {
 	class SimpleMessageDialogTests
 	{
-		[Test, Ignore("by hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		[STAThread]
 		public void ShowSimpleMessageDialog()
 		{
@@ -16,7 +17,8 @@ namespace SIL.Windows.Forms.Tests
 			}
 		}
 
-		[Test, Ignore("by hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		[STAThread]
 		public void ShowSimpleMessageDialog_LongMessageWraps()
 		{
@@ -28,7 +30,8 @@ namespace SIL.Windows.Forms.Tests
 			}
 		}
 
-		[Test, Ignore("by hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		[STAThread]
 		public void ShowSimpleMessageDialog_CaptionNotProvided_StillHasCaptionBar()
 		{
@@ -44,7 +47,8 @@ namespace SIL.Windows.Forms.Tests
 			}
 		}
 
-		[Test, Ignore("by hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		[STAThread]
 		public void ShowSimpleMessageDialog_CaptionBarCanBeHidden()
 		{

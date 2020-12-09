@@ -14,7 +14,7 @@ namespace SIL.Windows.Forms.Reporting
 {
 	/// <summary>
 	/// Display exception reporting dialog.
-	/// NOTE: It is recommended to call one of Palaso.Reporting.ErrorReport.Report(Non)Fatal*
+	/// NOTE: It is recommended to call one of SIL.Reporting.ErrorReport.Report(Non)Fatal*
 	/// methods instead of instantiating this class.
 	/// </summary>
 	public class ExceptionReportingDialog : Form
@@ -613,7 +613,7 @@ namespace SIL.Windows.Forms.Reporting
 			_emailAddress.Text = ErrorReport.EmailAddress;
 			SetupMethodCombo();
 
-			foreach (ReportingMethod  method in _methodCombo.Items)
+			foreach (ReportingMethod method in _methodCombo.Items)
 			{
 				if (ErrorReportSettings.Default.ReportingMethod == method.Id)
 				{

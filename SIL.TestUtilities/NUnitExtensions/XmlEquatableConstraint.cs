@@ -14,16 +14,15 @@ namespace SIL.TestUtilities.NUnitExtensions
 	/// </summary>
 	public class XmlEquatableConstraint: Constraint
 	{
-		private string _expectedXml;
+		private readonly string _expectedXml;
 
 		public XmlEquatableConstraint(string expectedXml)
 		{
 			_expectedXml = expectedXml;
 		}
 
-		public override bool Matches(object actualParam)
+		public bool Matches(object actualParam)
 		{
-			this.actual = actualParam;
 			var actualXml = actualParam as XNode;
 			if (actualXml == null)
 			{
@@ -51,10 +50,13 @@ namespace SIL.TestUtilities.NUnitExtensions
 			return equalityComparer.Equals(XElement.Parse(_expectedXml), actualXml);
 		}
 
-		public override void WriteDescriptionTo(MessageWriter writer)
+		public override ConstraintResult ApplyTo<TActual>(TActual actual)
 		{
-			writer.WriteExpectedValue(_expectedXml);
+			return new ConstraintResult(this, actual,
+				Matches(actual) ? ConstraintStatus.Success : ConstraintStatus.Failure);
 		}
+
+		public override string Description => _expectedXml;
 	}
 
 	public static class XmlEquatableConstraintExtensionMethods

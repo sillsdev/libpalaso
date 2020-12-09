@@ -174,11 +174,17 @@ namespace SIL.Scripture
 		/// <exception cref="IOException">if the fileName cannot be written</exception>
 		public void Save(string fileName)
 		{
-			StringBuilder builder = new StringBuilder();
-			using (StringWriter writer = new StringWriter(builder))
-				VersInfo.WriteToStream(writer);
+			using (var writer = new StreamWriter(fileName, false))
+				Save(writer);
+		}
 
-			File.WriteAllText(fileName, builder.ToString());
+		/// <summary>
+		/// Writes this versification to the specified fileName.
+		/// </summary>
+		/// <param name="writer">string writer to which the Versification contents should be written</param>
+		public void Save(TextWriter writer)
+		{
+			VersInfo.WriteToStream(writer);
 		}
 
 		/// <summary>

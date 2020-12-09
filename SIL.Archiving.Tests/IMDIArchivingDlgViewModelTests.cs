@@ -8,6 +8,7 @@ using SIL.TestUtilities;
 namespace SIL.Archiving.Tests
 {
 	[TestFixture]
+	[OfflineSldr]
 	[Category("Archiving")]
 	internal class IMDIArchivingDlgViewModelTests
 	{

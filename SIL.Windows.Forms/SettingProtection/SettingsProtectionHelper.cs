@@ -93,7 +93,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			UpdateDisplay();
 		}
 
-		  #region IExtenderProvider Members
+		#region IExtenderProvider Members
 
 
 
@@ -131,24 +131,19 @@ namespace SIL.Windows.Forms.SettingProtection
 		}
 		#endregion
 
+		#region IComponent Members
 
-
-		   #region IComponent Members
-
-		public event EventHandler Disposed = delegate
-												 { };
-		private ISite site;
-		public ISite Site
+		public override ISite Site
 		{
 			get
 			{
 				VerifyNotDisposed();
-				return site;
+				return base.Site;
 			}
 			set
 			{
 				VerifyNotDisposed();
-				site = value;
+				base.Site = value;
 			}
 		}
 

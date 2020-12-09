@@ -38,8 +38,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			{
 				var child = Unmanaged.g_variant_get_child_value(value, i);
 				// handle must not be freed -- it points into the actual GVariant memory for child!
-				int length;
-				var handle = Unmanaged.g_variant_get_string(child, out length);
+				var handle = Unmanaged.g_variant_get_string(child, out var length);
 				var rawbytes = new byte[length];
 				Marshal.Copy(handle, rawbytes, 0, length);
 				list[i] = Encoding.UTF8.GetString(rawbytes);

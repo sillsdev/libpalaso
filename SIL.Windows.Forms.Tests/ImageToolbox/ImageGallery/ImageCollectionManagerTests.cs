@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -19,7 +19,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox.ImageGallery
 		private string _sallyCollectionFolder;
 		private ImageCollectionManager _collectionManager;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void SetupFakeCollections()
 		{
 			_testFolder = new TemporaryFolder("ImageCollectionManagerTests");
@@ -53,7 +53,7 @@ RainbowWater.png\tSydney	bridge,opera,sydney,rainbow,harbor");
 				"Bob_Christmas Lights.png");
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void TearDownFixture()
 		{
 			_testFolder.Dispose();

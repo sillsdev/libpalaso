@@ -16,7 +16,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// </summary>
 	public class GnomeShellIbusKeyboardRetrievingAdaptor: IbusKeyboardRetrievingAdaptor
 	{
-		private readonly UnityKeyboardRetrievingHelper _helper = new UnityKeyboardRetrievingHelper();
+		private readonly GnomeKeyboardRetrievingHelper _helper = new GnomeKeyboardRetrievingHelper();
 
 		/// <summary>
 		/// Initializes a new instance of the
@@ -34,6 +34,17 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// <remarks>This overload is used in unit tests</remarks>
 		protected GnomeShellIbusKeyboardRetrievingAdaptor(IIbusCommunicator ibusCommunicator): base(ibusCommunicator)
 		{
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing && !IsDisposed)
+			{
+				// dispose managed and unmanaged objects
+				Unmanaged.LibGnomeDesktopCleanup();
+			}
 		}
 
 		public override bool IsApplicable => _helper.IsApplicable && Platform.IsGnomeShell;
@@ -59,7 +70,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		}
 
 		private void RegisterKeyboards(IDictionary<string, uint> installedKeyboards,
-			UnityKeyboardRetrievingHelper.IbusKeyboardEntry firstKeyboard)
+			(string type, string layout) firstKeyboard)
 		{
 			if (installedKeyboards.Count <= 0)
 				return;
@@ -107,8 +118,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				// we found this keyboard, so remove it from list
 				missingLayouts.Remove(layout);
 
-				IbusKeyboardDescription keyboard;
-				if (priorKeyboardsList.TryGetValue(id, out keyboard))
+				if (priorKeyboardsList.TryGetValue(id, out var keyboard))
 				{
 					if (!keyboard.IsAvailable)
 					{
@@ -130,7 +140,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 				keyboard.SystemIndex = installedKeyboards[layout];
 
-				if (firstKeyboard.Layout == layout)
+				if (firstKeyboard.layout == layout)
 					((GnomeShellIbusKeyboardSwitchingAdaptor) SwitchingAdaptor).SetDefaultKeyboard(
 						keyboard);
 			}
@@ -160,12 +170,9 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			var xkbKeyboards = gnomeXkbInfo.GetAllLayouts();
 			foreach (var xkbKeyboard in xkbKeyboards)
 			{
-				string displayName;
-				string shortName;
-				string xkbLayout;
-				string xkbVariant;
-				gnomeXkbInfo.GetLayoutInfo(xkbKeyboard, out displayName, out shortName,
-					out xkbLayout, out xkbVariant);
+				gnomeXkbInfo.GetLayoutInfo(xkbKeyboard, out var displayName, out var shortName,
+					out var xkbLayout, out var xkbVariant);
+
 				keyboards.Add(new XkbIbusEngineDesc {
 					LongName = $"xkb:{xkbKeyboard}",
 					Description = displayName,

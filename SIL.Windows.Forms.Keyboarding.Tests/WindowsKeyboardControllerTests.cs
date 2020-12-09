@@ -13,13 +13,13 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 	[Category("SkipOnTeamCity")] // TeamCity builds don't seem to be able to see any installed keyboards.
 	public class WindowsKeyboardControllerTests
 	{
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			KeyboardController.Initialize();
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void FixtureTearDown()
 		{
 			KeyboardController.Shutdown();

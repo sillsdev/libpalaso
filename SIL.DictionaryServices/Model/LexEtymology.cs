@@ -50,10 +50,9 @@ namespace SIL.DictionaryServices.Model
 			return clone;
 		}
 
-		public override bool Equals(Object obj)
+		public override bool Equals(object obj)
 		{
-			if (!(obj is LexEtymology)) return false;
-			return Equals((LexEtymology)obj);
+			return Equals(obj as LexEtymology);
 		}
 
 		public bool Equals(LexEtymology other)
@@ -68,6 +67,16 @@ namespace SIL.DictionaryServices.Model
 			if (!Type.Equals(other.Type)) return false;
 			if (!Source.Equals(other.Source)) return false;
 			return true;
+		}
+
+		public override int GetHashCode()
+		{
+			// For this class we want a hash code based on the the object's reference so that we
+			// can store and retrieve the object in the LiftLexEntryRepository. However, this is
+			// not ideal and Microsoft warns: "Do not use the hash code as the key to retrieve an
+			// object from a keyed collection."
+			// https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8#remarks
+			return base.GetHashCode();
 		}
 	}
 }

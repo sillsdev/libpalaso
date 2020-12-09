@@ -21,7 +21,6 @@ namespace SIL.Windows.Forms.Reporting
 	public static class MemoryManagement
 	{
 		// from http://stackoverflow.com/a/105109
-		[CLSCompliant(false)]
 		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
 		private class MemoryStatusEx
 		{

@@ -2067,6 +2067,51 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(new VerseRef("EXO 6:4"), new VerseRef("EXO 6:4-10").UnBridge());
 			Assert.AreEqual(new VerseRef("EXO 6:150monkeys"), new VerseRef("EXO 6:150monkeys").UnBridge());
 		}
+
+		/// <summary>
+		/// Tests the TrySetVerseUnicode method with numerals from various Unicode-supported scripts
+		/// </summary>
+		[TestCase("५", ExpectedResult = 5, TestName = "Devanagari numeral")]
+		[TestCase("૧૬", ExpectedResult = 16, TestName = "Gujarati numeral")]
+		[TestCase("5", ExpectedResult = 5, TestName = "Latin numeral")]
+		[TestCase("᠔", ExpectedResult = 4, TestName = "Mongolian numeral")]
+		[TestCase("A", ExpectedResult = -1, TestName = "Latin non-numeral")]
+		[TestCase("ะ", ExpectedResult = -1, TestName = "Thai non-numeral")]
+		[TestCase("᠔-᠔", ExpectedResult = 4, TestName = "Mongolian complex verse")]
+		[TestCase("᠔ᠠ", ExpectedResult = 4, TestName = "Mongolian complex verse - lettered")]
+		[TestCase("二十", ExpectedResult = 20, TestName = "Japanese numeral", IgnoreReason = "Non-decimal numeral systems not yet implemented. (See issue #1000.)")]
+		[TestCase("יא", ExpectedResult = 11, TestName = "Hebrew numeral", IgnoreReason = "Non-decimal numeral systems not yet implemented. (See issue #1000.)")]
+		[TestCase("\U0001113A\U00011138", ExpectedResult = 42, TestName = "Chakma numeral", IgnoreReason = "Surrogate pair handling not yet implemented. (See issue #1000.)")]
+		public int TrySetVerseUnicode_InterpretNumerals(string verseStr)
+		{
+			VerseRef vref = new VerseRef("EXO 6:1");
+
+			bool success = vref.TrySetVerseUnicode(verseStr);
+			Assert.AreEqual(success, vref.VerseNum != -1);
+
+			return vref.VerseNum;
+		}
+
+		/// <summary>
+		/// Tests the Verse property's set method with various input strings
+		/// </summary>
+		[TestCase("5", ExpectedResult = 5, TestName = "Latin numeral")]
+		[TestCase("524", ExpectedResult = 524, TestName = "Large Latin numeral")]
+		[TestCase("A", ExpectedResult = -1, TestName = "Latin non-numeral")]
+		[TestCase("૧૬", ExpectedResult = -1, TestName = "Non-Latin numeral")]
+		[TestCase("1-", ExpectedResult = 1, TestName = "Complex verse - incomplete")]
+		[TestCase("2.3", ExpectedResult = 2, TestName = "Complex verse - decimal")]
+		[TestCase("5-7", ExpectedResult = 5, TestName = "Complex verse - complete")]
+		[TestCase("7a", ExpectedResult = 7, TestName = "Complex verse - lettered")]
+		public int SetVerse_InterpretNumerals(string verseStr)
+		{
+			VerseRef vref = new VerseRef("EXO 6:1");
+
+			vref.Verse = verseStr;
+
+			return vref.VerseNum;
+		}
+
 		#endregion
 
 		#region InRange

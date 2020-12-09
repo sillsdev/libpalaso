@@ -1,5 +1,4 @@
-﻿#if !MONO
-using System;
+﻿using System;
 using System.Timers;
 using NAudio.Wave;
 
@@ -135,4 +134,3 @@ namespace SIL.Media.Naudio
 		}
 	}
 }
-#endif

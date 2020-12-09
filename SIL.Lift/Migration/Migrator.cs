@@ -71,7 +71,7 @@ namespace SIL.Lift.Migration
 		///</summary>
 		public static void ReverseMigrateFrom13ToFLEx12(string fromPath, string toPath)
 		{
-			DoOneMigrationStep("Palaso.Lift.Migration.ReverseLIFT-0.13-0.12.xsl", fromPath, toPath);
+			DoOneMigrationStep("SIL.Lift.Migration.ReverseLIFT-0.13-0.12.xsl", fromPath, toPath);
 
 			//now strip the actual text off our our semantic domains
 //            string pattern = @"(semantic_domain'\s*value\s*=\s*'(\d\.)*\d)(\w|\s|,)*(')";
@@ -129,7 +129,7 @@ namespace SIL.Lift.Migration
 			string xslName = null;
 			foreach (string name in resources)
 			{
-				if (name.EndsWith(".xsl") && name.StartsWith("Palaso.Lift.Migration.LIFT-" + sourceVersion + "-"))
+				if (name.EndsWith(".xsl") && name.StartsWith("SIL.Lift.Migration.LIFT-" + sourceVersion + "-"))
 				{
 					xslName = name;
 					break;

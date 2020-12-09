@@ -31,10 +31,10 @@ namespace SIL.Tests.IO
 			}
 			catch (ArgumentException ex)
 			{
-				Assert.That(ex.Message, Is.StringContaining(Path.Combine("LookHere", "ThisWillNotExist")));
-				Assert.That(ex.Message, Is.StringContaining(FileLocationUtilities.DirectoryOfApplicationOrSolution));
-				Assert.That(ex.Message, Is.StringContaining("DistFiles"));
-				Assert.That(ex.Message, Is.StringContaining("src"));
+				Assert.That(ex.Message, Does.Contain(Path.Combine("LookHere", "ThisWillNotExist")));
+				Assert.That(ex.Message, Does.Contain(FileLocationUtilities.DirectoryOfApplicationOrSolution));
+				Assert.That(ex.Message, Does.Contain("DistFiles"));
+				Assert.That(ex.Message, Does.Contain("src"));
 			}
 		}
 
@@ -162,7 +162,7 @@ namespace SIL.Tests.IO
 		public void LocateExecutable_DistFiles()
 		{
 			Assert.That(FileLocationUtilities.LocateExecutable("DirectoryForTests", "SampleExecutable.exe"),
-				Is.StringEnding(string.Format("DistFiles{0}DirectoryForTests{0}SampleExecutable.exe",
+				Does.EndWith(string.Format("DistFiles{0}DirectoryForTests{0}SampleExecutable.exe",
 					Path.DirectorySeparatorChar)));
 		}
 
@@ -171,7 +171,7 @@ namespace SIL.Tests.IO
 		public void LocateExecutable_PlatformSpecificInDistFiles_Windows()
 		{
 			Assert.That(FileLocationUtilities.LocateExecutable("DirectoryForTests", "dummy.exe"),
-				Is.StringEnding(string.Format("DistFiles{0}Windows{0}DirectoryForTests{0}dummy.exe",
+				Does.EndWith(string.Format("DistFiles{0}Windows{0}DirectoryForTests{0}dummy.exe",
 				Path.DirectorySeparatorChar)));
 		}
 
@@ -180,7 +180,7 @@ namespace SIL.Tests.IO
 		public void LocateExecutable_PlatformSpecificInDistFiles_LinuxWithoutExtension()
 		{
 			Assert.That(FileLocationUtilities.LocateExecutable("DirectoryForTests", "dummy.exe"),
-				Is.StringEnding(string.Format("DistFiles{0}Linux{0}DirectoryForTests{0}dummy",
+				Does.EndWith(string.Format("DistFiles{0}Linux{0}DirectoryForTests{0}dummy",
 				Path.DirectorySeparatorChar)));
 		}
 
@@ -189,7 +189,7 @@ namespace SIL.Tests.IO
 		public void LocateExecutable_PlatformSpecificInDistFiles_Linux()
 		{
 			Assert.That(FileLocationUtilities.LocateExecutable("DirectoryForTests", "dummy2.exe"),
-				Is.StringEnding(string.Format("DistFiles{0}Linux{0}DirectoryForTests{0}dummy2.exe",
+				Does.EndWith(string.Format("DistFiles{0}Linux{0}DirectoryForTests{0}dummy2.exe",
 				Path.DirectorySeparatorChar)));
 		}
 

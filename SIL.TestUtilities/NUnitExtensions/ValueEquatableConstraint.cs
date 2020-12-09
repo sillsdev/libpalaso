@@ -8,23 +8,20 @@ namespace SIL.TestUtilities.NUnitExtensions
 {
 	public class ValueEquatableConstraint<T>: Constraint where T: class
 	{
-		private IValueEquatable<T> _expected;
+		private readonly IValueEquatable<T> _expected;
 
 		public ValueEquatableConstraint(IValueEquatable<T> expected): base(expected)
 		{
 			_expected = expected;
 		}
 
-		public override bool Matches(object actual)
+		public override ConstraintResult ApplyTo<TActual>(TActual actual)
 		{
-			this.actual = actual;
-			return _expected.ValueEquals(actual as T);
+			return new ConstraintResult(this, actual,
+				_expected.ValueEquals(actual as T) ? ConstraintStatus.Success : ConstraintStatus.Failure);
 		}
 
-		public override void WriteDescriptionTo(MessageWriter writer)
-		{
-			writer.WriteExpectedValue(_expected);
-		}
+		public override string Description => _expected.ToString();
 	}
 
 	public static class ValueEquatableConstraintExtensionMethods
@@ -37,5 +34,4 @@ namespace SIL.TestUtilities.NUnitExtensions
 			return constraint;
 		}
 	}
-
 }

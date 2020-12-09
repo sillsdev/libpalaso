@@ -133,7 +133,7 @@ namespace SIL.Lift.Tests.Merging
 			}
 		}
 
-		[Test, NUnit.Framework.ExpectedException(typeof(ApplicationException))]
+		[Test]
 		public void GetChangeReport_AfterClear_Throws()
 		{
 			using (TempFile working = new TempFile("<lift version='0.12'/>"))
@@ -142,13 +142,13 @@ namespace SIL.Lift.Tests.Merging
 				{
 					LiftChangeDetector detector = new LiftChangeDetector(working.Path, cache.Path);
 					detector.ClearCache();
-					detector.GetChangeReport(new NullProgress());
+					Assert.Throws<ApplicationException>(() => detector.GetChangeReport(new NullProgress()));
 				}
 			}
 		}
 
 		[Test]
-		public void Constructor_CachFolderDoesntExist_DoesNothing()
+		public void Constructor_CacheFolderDoesNotExist_DoesNothing()
 		{
 			string cache = Path.Combine(Path.GetTempPath(), "CreateForTest");
 			if (Directory.Exists(cache))
@@ -163,13 +163,13 @@ namespace SIL.Lift.Tests.Merging
 			}
 		}
 
-		[Test, NUnit.Framework.ExpectedException(typeof(ApplicationException))]
-		public void Constructor_WorkingLiftFolderDoesntExist_Throws()
+		[Test]
+		public void Reset_WorkingLiftFolderDoesNotExist_Throws()
 		{
 			using (TempFolder cache = new TempFolder("LiftChangeDetectorTestsCache"))
 			{
 				LiftChangeDetector detector = new LiftChangeDetector("notgonnafindme", cache.Path);
-				detector.Reset();
+				Assert.Throws<ApplicationException>(() => detector.Reset());
 			}
 		}
 	}
@@ -178,7 +178,7 @@ namespace SIL.Lift.Tests.Merging
 	{
 		public string Status
 		{
-			get { return string.Empty;  }
+			get => string.Empty;
 			set { }
 		}
 	}

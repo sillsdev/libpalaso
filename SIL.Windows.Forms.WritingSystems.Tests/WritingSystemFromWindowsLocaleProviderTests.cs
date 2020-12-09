@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using NUnit.Framework;
+using SIL.TestUtilities;
 using SIL.WritingSystems;
 using SIL.WritingSystems.Tests;
 
 namespace SIL.Windows.Forms.WritingSystems.Tests
 {
 	[TestFixture]
+	[OfflineSldr]
 	public class WritingSystemFromWindowsLocaleProviderTests
 	{
 		private class WritingSystemFromWindowsLocaleProviderAccessor: WritingSystemFromWindowsLocaleProvider

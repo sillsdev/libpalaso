@@ -24,21 +24,7 @@ namespace SIL.Linux.Logging
 			AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
 		}
 
-		protected void HandleUnhandledException(object sender, UnhandledExceptionEventArgs e)
-		{
-			if (!GetShouldHandleException(sender, e.ExceptionObject as Exception))
-				return;
-
-			if (e.ExceptionObject is Exception)
-				DisplayError(e.ExceptionObject as Exception);
-			else
-				DisplayError(new ApplicationException("Got unknown exception"));
-		}
-
-		protected override bool ShowUI
-		{
-			get { return false; }
-		}
+		protected override bool ShowUI => false;
 
 		protected override bool DisplayError(Exception exception)
 		{
@@ -52,7 +38,7 @@ namespace SIL.Linux.Logging
 			/* Commented out: Adding platform properties is unnecessary since ErrorReport's OSVersion property will tell us more anyway
 			errors.Add("Platform properties for above exception:");
 			foreach (PropertyInfo property in typeof(Platform).GetProperties())
-			{ 
+			{
 				errors.Add(String.Format("{0}: {1}", property.Name, property.GetValue(typeof(Platform), null)));
 			}
 			*/

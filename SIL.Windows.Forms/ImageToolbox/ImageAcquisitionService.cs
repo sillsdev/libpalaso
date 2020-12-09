@@ -1,5 +1,4 @@
-﻿#if !MONO
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -125,4 +124,3 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 	}
 }
-#endif

@@ -1,6 +1,7 @@
-﻿// Copyright (c) 2017 SIL International
+// Copyright (c) 2020 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
+using System.IO;
 using NUnit.Framework;
 using SIL.Acknowledgements;
 
@@ -44,15 +45,27 @@ namespace SIL.Tests.Acknowledgements
 		[Test]
 		public void CreateAnAcknowledgement_NoCopyright_OverriddenByFile()
 		{
-			var ack = new AcknowledgementAttribute("testKey") { Name = "testName", Location = "./NDesk.DBus.dll"};
+			var ack = new AcknowledgementAttribute("testKey") { Name = "testName",
+				Location = GetDllWithPathInTestAssemblyFolder("NDesk.DBus.dll") } ;
 			Assert.That(ack.Copyright, Is.EqualTo("Copyright (C) Alp Toker"));
 		}
 
 		[Test]
 		public void CreateAnAcknowledgement_NoName_OverriddenByFile()
 		{
-			var ack = new AcknowledgementAttribute("testKey") { Copyright = "myCopyright", Location = "./nunit.framework.dll"};
-			Assert.That(ack.Name, Is.EqualTo("NUnit"));
+			var ack = new AcknowledgementAttribute("testKey") { Copyright = "myCopyright",
+				Location = GetDllWithPathInTestAssemblyFolder("nunit.framework.dll") };
+			Assert.That(ack.Name, Is.EqualTo("NUnit 3"));
+		}
+
+		private static string GetDllWithPathInTestAssemblyFolder(string dllName)
+		{
+			var testAssemblyFolder =
+				Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+			Assert.IsNotNull(testAssemblyFolder, "test setup problem");
+			var dllPath = Path.Combine(testAssemblyFolder, dllName);
+			Assert.True(File.Exists(dllPath), "test setup problem");
+			return dllPath;
 		}
 	}
 }

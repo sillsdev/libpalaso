@@ -222,7 +222,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			}
 		}
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			// We're using GTK functions, so we need to initialize when we run in
@@ -297,7 +297,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 
 		private IKeyboardDefinition CreateKeyboard(string layoutName, string layout, string locale)
 		{
-			return new KeyboardDescription(string.Format("{0}_{1}", layout, locale), layoutName,
+			return new KeyboardDescription($"{layout}_{locale}", layoutName,
 				layout, locale, true, null);
 		}
 

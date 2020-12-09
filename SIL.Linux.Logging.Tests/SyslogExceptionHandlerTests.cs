@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using NUnit.Framework;
@@ -23,7 +23,7 @@ namespace SIL.Linux.Logging.Tests
 			errorThread.Start();
 			IEnumerable<string> data = watcher.WaitForData();
 			Assert.That(data, Is.Not.Empty);
-			Assert.That(data.First(), Is.StringContaining("Division by zero"));
+			Assert.That(data.First(), Does.Contain("Division by zero").Or.Contain("divide by zero"));
 		}
 
 		private void DivideByZero()

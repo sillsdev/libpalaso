@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows.Forms;
@@ -18,13 +18,13 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 		// reason, Mono works differently than the Windows implementation of .Net, which *does* fire the ThreadException event.
 		// But since it doesn't hurt anything, rather than making this conditionally compiled, we'll leave it here for the Mono
 		// builds, too, just in case they ever make Mono work the same way.
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetup()
 		{
 			Application.ThreadException += ApplicationOnThreadException;
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void TestFixtureTearDown()
 		{
 			Application.ThreadException -= ApplicationOnThreadException;

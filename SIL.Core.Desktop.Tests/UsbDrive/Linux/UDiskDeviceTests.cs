@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -9,6 +9,7 @@ namespace SIL.Tests.UsbDrive.Linux
 	[Category("RequiresUSB")]
 	[Category("SkipOnTeamCity")]
 	[TestFixture]
+	[Platform(Include = "Linux", Reason = "Linux specific test")]
 	public class UDiskDeviceTests
 	{
 		private class EnvironmentForTest : IDisposable
@@ -21,6 +22,7 @@ namespace SIL.Tests.UsbDrive.Linux
 				{
 					return new UDiskDevice(device);
 				}
+				Assert.Ignore("No USB drive available. Insert a USB drive for this test");
 				throw new DriveNotFoundException("No USB drive available. Insert a USB drive for this test");
 			}
 
@@ -46,8 +48,8 @@ namespace SIL.Tests.UsbDrive.Linux
 			{
 				var uDiskDevice = e.GetUSBDevice();
 				string[] mountPaths = uDiskDevice.MountPaths;
-				Assert.That(mountPaths.Count(), Is.GreaterThan(0));
-				Assert.That(mountPaths[0], Is.StringContaining("/media/"));
+				Assert.That(mountPaths.Count, Is.GreaterThan(0));
+				Assert.That(mountPaths[0], Does.Contain("/media/"));
 			}
 		}
 

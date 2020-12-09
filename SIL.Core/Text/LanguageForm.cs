@@ -11,14 +11,6 @@ namespace SIL.Text
 	public class LanguageForm : Annotatable, IComparable<LanguageForm>
 	{
 		private string _writingSystemId;
-		private string _form;
-		private readonly List<FormatSpan> _spans = new List<FormatSpan>();
-
-		/// <summary>
-		/// See the comment on MultiText._parent for information on
-		/// this field.
-		/// </summary>
-		private MultiTextBase _parent;
 
 		/// <summary>
 		/// for netreflector
@@ -29,9 +21,9 @@ namespace SIL.Text
 
 		public LanguageForm(string writingSystemId, string form, MultiTextBase parent)
 		{
-			_parent = parent;
+			Parent = parent;
 			_writingSystemId = writingSystemId;
-			_form =  form;
+			Form =  form;
 		}
 
 		public LanguageForm(LanguageForm form, MultiTextBase parent)
@@ -54,27 +46,17 @@ namespace SIL.Text
 		}
 
 		[XmlText]
-		public string Form
-		{
-			get { return _form; }
-			set { _form = value; }
-		}
+		public string Form { get; set; }
 
 		[XmlIgnore]
-		public List<FormatSpan> Spans
-		{
-			get { return _spans; }
-		}
+		public List<FormatSpan> Spans { get; } = new List<FormatSpan>();
 
 		/// <summary>
 		/// See the comment on MultiText._parent for information on
 		/// this field.
 		/// </summary>
 		[XmlIgnore]
-		public MultiTextBase Parent
-		{
-			get { return _parent; }
-		}
+		public MultiTextBase Parent { get; }
 
 		public override bool Equals(object other)
 		{
@@ -91,15 +73,31 @@ namespace SIL.Text
 			if ((WritingSystemId != null && !WritingSystemId.Equals(other.WritingSystemId)) || (other.WritingSystemId != null && !other.WritingSystemId.Equals(WritingSystemId))) return false;
 			if ((Form != null && !Form.Equals(other.Form)) || (other.Form != null && !other.Form.Equals(Form))) return false;
 			if ((Annotation != null && !Annotation.Equals(other.Annotation)) || (other.Annotation != null && !other.Annotation.Equals(Annotation))) return false;
-			if (_spans != other.Spans)
+			if (Spans != other.Spans)
 			{
-				if (_spans == null || other.Spans == null || _spans.Count != other.Spans.Count) return false;
-				for (int i = 0; i < _spans.Count; ++i)
+				if (Spans == null || other.Spans == null || Spans.Count != other.Spans.Count) return false;
+				for (int i = 0; i < Spans.Count; ++i)
 				{
-					if (!_spans[i].Equals(other.Spans[i])) return false;
+					if (!Spans[i].Equals(other.Spans[i])) return false;
 				}
 			}
 			return true;
+		}
+
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 61;
+				hash *= 71 + IsStarred.GetHashCode();
+				hash *= 71 + WritingSystemId?.GetHashCode() ?? 0;
+				hash *= 71 + Form?.GetHashCode() ?? 0;
+				hash *= 71 + Annotation?.GetHashCode() ?? 0;
+				hash *= 71 + Spans?.GetHashCode() ?? 0;
+				hash *= 71 + base.GetHashCode();
+				return hash;
+			}
 		}
 
 		public int CompareTo(LanguageForm other)
@@ -121,10 +119,10 @@ namespace SIL.Text
 		{
 			var clone = new LanguageForm();
 			clone._writingSystemId = _writingSystemId;
-			clone._form = _form;
+			clone.Form = Form;
 			clone.Annotation = Annotation == null ? null : Annotation.Clone();
-			foreach (var span in _spans)
-				clone._spans.Add(new FormatSpan{Index=span.Index, Length=span.Length, Class=span.Class, Lang=span.Lang, LinkURL=span.LinkURL});
+			foreach (var span in Spans)
+				clone.Spans.Add(new FormatSpan{Index=span.Index, Length=span.Length, Class=span.Class, Lang=span.Lang, LinkURL=span.LinkURL});
 			return clone;
 		}
 
@@ -151,19 +149,24 @@ namespace SIL.Text
 
 			public override bool Equals(object other)
 			{
-				var that = other as FormatSpan;
-				if (that == null)
+				if (!(other is FormatSpan that))
 					return false;
 				if (this.Index != that.Index || this.Length!= that.Length)
 					return false;
 				return (this.Class == that.Class && this.Lang == that.Lang && this.LinkURL == that.LinkURL);
+			}
+
+			public override int GetHashCode()
+			{
+				return Index.GetHashCode() ^ Length.GetHashCode() ^ Class.GetHashCode() ^
+					Lang.GetHashCode() ^ LinkURL.GetHashCode();
 			}
 		}
 
 		public void AddSpan(int index, int length, string lang, string style, string url)
 		{
 			var span = new FormatSpan {Index=index, Length=length, Lang=lang, Class=style, LinkURL=url};
-			_spans.Add(span);
+			Spans.Add(span);
 		}
 
 		/// <summary>

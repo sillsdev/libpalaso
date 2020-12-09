@@ -15,7 +15,7 @@ namespace SIL.Program
 	/// </summary>
 	/// <remarks>
 	/// I suppose this could be fixed by a change to System.Diagnostics.Process.Start(), but I
-	/// would argue that the current behavior is probaby by design and a change would be rejected
+	/// would argue that the current behavior is probably by design and a change would be rejected
 	/// by the Mono project.
 	/// See https://silbloom.myjetbrains.com/youtrack/issue/BL-5993 for the bug report that
 	/// triggered this class and methods.

@@ -92,7 +92,7 @@
 			// 
 			// _L10NSharpExtender
 			// 
-			this._L10NSharpExtender.LocalizationManagerId = "Palaso.UI.WindowsForms.FileSystem";
+			this._L10NSharpExtender.LocalizationManagerId = "SIL.Windows.Forms.FileSystem";
 			this._L10NSharpExtender.PrefixForNewItems = "DialogBoxes";
 			// 
 			// flowLayoutPanel1

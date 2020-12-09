@@ -3,19 +3,24 @@
 
 using NUnit.Framework;
 using SIL.Email;
+using SIL.IO;
 
 namespace SIL.Tests.Email
 {
 	public class MAPIHelperTests
 	{
 		[Test]
-		[Ignore("by hand only")]
-		[Platform(Include = "Windows", Reason = "Windows specific test")]
+		[Explicit("by hand only")]
+		[Platform(Include = "Win", Reason = "Windows specific test")]
 		public void TestSendEmail()
 		{
-			MAPI x = new MAPI();
-			x.AddRecipientTo("pretend@8ksdfj83jls8.com");
-			x.SendMailDirect("test", "testbody");
+			using (var file = new TempFile("TestSendEmail test"))
+			{
+				var mapi = new MAPI();
+				mapi.AddRecipientTo("pretend@8ksdfj83jls8.com");
+				mapi.AddAttachment(file.Path);
+				Assert.That(() => mapi.SendMailDirect("test", "testbody"), Throws.Nothing);
+			}
 		}
 	}
 }

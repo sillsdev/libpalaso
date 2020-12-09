@@ -9,7 +9,7 @@ using SIL.TestUtilities;
 namespace SIL.Tests.IO
 {
 	[TestFixture]
-	public class FileUtilTests
+	public class FileHelperTests
 	{
 		private TemporaryFolder _parentFolder;
 
@@ -17,7 +17,7 @@ namespace SIL.Tests.IO
 		[SetUp]
 		public void Setup()
 		{
-			_parentFolder = new TemporaryFolder("FileUtilsTests");
+			_parentFolder = new TemporaryFolder("FileHelperTests");
 		}
 
 		/// ------------------------------------------------------------------------------------

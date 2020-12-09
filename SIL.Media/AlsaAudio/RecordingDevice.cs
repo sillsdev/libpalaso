@@ -4,15 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using NAudio.Wave;
 
-#if MONO
 namespace SIL.Media.AlsaAudio
 {
 	/// <summary>
 	/// This class implements the methods and properties used by Bloom.  It reimplements a class in
 	/// SIL.Media/NAudio, but for Linux.
 	/// </summary>
-	public class RecordingDevice
+	public class RecordingDevice: IRecordingDevice
 	{
 		private static RecordingDevice _default;
 		public static RecordingDevice DefaultDevice
@@ -33,9 +33,11 @@ namespace SIL.Media.AlsaAudio
 			private set { _default = value; }
 		}
 
+		public string Id { get; }
 		public int DeviceNumber { get; set; }
 		public string GenericName { get; set; }
 		public string ProductName { get; set; }
+		public WaveInCapabilities Capabilities { get; set; }
 
 		public RecordingDevice()
 		{
@@ -330,4 +332,3 @@ assigned as the default (preferred) input device.
 		}
 	}
 }
-#endif

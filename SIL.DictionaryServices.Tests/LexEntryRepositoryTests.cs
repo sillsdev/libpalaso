@@ -6,12 +6,14 @@ using SIL.DictionaryServices.Model;
 using SIL.IO;
 using SIL.Lift;
 using SIL.Lift.Options;
+using SIL.TestUtilities;
 using SIL.Text;
 using SIL.WritingSystems;
 
 namespace SIL.DictionaryServices.Tests
 {
 	[TestFixture]
+	[OfflineSldr]
 	public class LiftLexEntryRepositoryTests
 	{
 		private class TestEnvironment : IDisposable

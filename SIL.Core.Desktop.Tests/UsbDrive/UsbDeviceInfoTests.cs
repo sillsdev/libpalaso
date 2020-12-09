@@ -23,7 +23,7 @@ namespace SIL.Tests.UsbDrive
 		private DriveParamsForTests _drive0;
 		private DriveParamsForTests _drive1;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetup()
 		{
 			var usbDrives = UsbDriveInfo.GetDrives();
@@ -78,7 +78,7 @@ namespace SIL.Tests.UsbDrive
 			if (drives.Count < 1)
 				Assert.Ignore("Need at least 1 USB drive plugged in");
 			// Be sure it matches a valid linux or windows root path
-			Assert.That(drives[0].RootDirectory.FullName, Is.StringContaining("/media/").Or.StringMatching(@"^[A-Z]:\\$"));
+			Assert.That(drives[0].RootDirectory.FullName, Does.Contain("/media/").Or.Match(@"^[A-Z]:\\$"));
 		}
 
 		[Test]

@@ -1,13 +1,10 @@
-// Copyright (c) 2017 SIL International
+// Copyright (c) 2017-2019 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Threading;
+using NAudio.Wave;
 
-#if MONO
 namespace SIL.Media.AlsaAudio
 {
 	/// <summary>
@@ -15,22 +12,22 @@ namespace SIL.Media.AlsaAudio
 	/// figure out how to implement (or which aren't needed by AlsaAudio) have do-nothing stubs to allow
 	/// source code compatibility.  This implementation may or may not be useful outside of Bloom.
 	/// </summary>
-	public class AudioRecorder : SIL.Media.Naudio.IAudioRecorder, IDisposable
+	public class AudioRecorder : IAudioRecorder, IDisposable
 	{
 		// variables copied from SIL.Media.Naudio implementation.
 		protected readonly int _maxMinutes;
-		protected SIL.Media.Naudio.RecordingState _recordingState = SIL.Media.Naudio.RecordingState.NotYetStarted;
+		protected RecordingState _recordingState = RecordingState.NotYetStarted;
 		//private DateTime _recordingStartTime;
 		//private DateTime _recordingStopTime;
 		public TimeSpan RecordedTime { get; set; }
 #pragma warning disable CS0067
-		public event EventHandler<SIL.Media.Naudio.PeakLevelEventArgs> PeakLevelChanged;				// IGNORED, not used anyway
-		public event EventHandler<SIL.Media.Naudio.RecordingProgressEventArgs> RecordingProgress;	// IGNORED, not used anyway
+		public event EventHandler<PeakLevelEventArgs> PeakLevelChanged;				// IGNORED, not used anyway
+		public event EventHandler<RecordingProgressEventArgs> RecordingProgress;	// IGNORED, not used anyway
 		public event EventHandler RecordingStarted;									// IGNORED, not used anyway
 		public event EventHandler SelectedDeviceChanged;							// IGNORED, not used anyway
 #pragma warning restore CS0067
 		/// <summary>Fired when the transition from recording to monitoring is complete</summary>
-		public event Action<SIL.Media.Naudio.IAudioRecorder, ErrorEventArgs> Stopped;
+		public event Action<IAudioRecorder, ErrorEventArgs> Stopped;
 
 		// variables added for this Alsa implementation.
 		private AudioAlsaSession _session;
@@ -52,7 +49,7 @@ namespace SIL.Media.AlsaAudio
 					_session.StopRecordingAndSaveAsWav();
 				_session = null;
 			}
-			RecordingState = SIL.Media.Naudio.RecordingState.NotYetStarted;
+			RecordingState = RecordingState.NotYetStarted;
 		}
 
 		public void Dispose()
@@ -64,7 +61,7 @@ namespace SIL.Media.AlsaAudio
 			}
 		}
 
-		public virtual Naudio.RecordingState RecordingState
+		public virtual RecordingState RecordingState
 		{
 			get
 			{
@@ -83,27 +80,27 @@ namespace SIL.Media.AlsaAudio
 			}
 		}
 
-		public RecordingDevice SelectedDevice { get; set; }
+		public IRecordingDevice SelectedDevice { get; set; }
 
 		public void BeginMonitoring()
 		{
 			lock (lockObj)
 			{
 				// Alsa is too simple-minded to really need this, but let's play along.
-				RecordingState = SIL.Media.Naudio.RecordingState.Monitoring;
+				RecordingState = RecordingState.Monitoring;
 			}
 		}
 
 		public virtual void BeginRecording(string waveFileName)
 		{
-			if (_recordingState == SIL.Media.Naudio.RecordingState.NotYetStarted)
+			if (_recordingState == RecordingState.NotYetStarted)
 				BeginMonitoring();
-			if (_recordingState != SIL.Media.Naudio.RecordingState.Monitoring)
+			if (_recordingState != RecordingState.Monitoring)
 				throw new InvalidOperationException("Can't begin recording while we are in this state: " + _recordingState.ToString());
 
 			lock (lockObj)
 			{
-				RecordingState = SIL.Media.Naudio.RecordingState.Recording;
+				RecordingState = RecordingState.Recording;
 				_session = new AudioAlsaSession(waveFileName);
 				var device = "default";
 				if (SelectedDevice != null && !SelectedDevice.Equals(RecordingDevice.DefaultDevice))
@@ -117,13 +114,13 @@ namespace SIL.Media.AlsaAudio
 		{
 			lock (lockObj)
 			{
-				if (_recordingState == SIL.Media.Naudio.RecordingState.Recording)
+				if (_recordingState == RecordingState.Recording)
 				{
 					// _recordingStopTime = DateTime.Now;
-					RecordingState = SIL.Media.Naudio.RecordingState.RequestedStop;
+					RecordingState = RecordingState.RequestedStop;
 					Debug.WriteLine("Setting RequestedStop");
 					_session.StopRecordingAndSaveAsWav();
-					RecordingState = SIL.Media.Naudio.RecordingState.Monitoring;		// not really, but who cares?
+					RecordingState = RecordingState.Monitoring;		// not really, but who cares?
 					if (Stopped != null)
 						Stopped(this, null);
 				}
@@ -142,4 +139,3 @@ namespace SIL.Media.AlsaAudio
 		public virtual WaveFormat RecordingFormat { get; set; }
 	}
 }
-#endif

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>SIL.libpalaso.l10ns</id>
+        <version>$version$</version>
+        <description>These are the xlif localizations of the libpalaso library.
+		It includes the localizations of all the SIL packages built from https://github.com/sillsdev/libpalaso</description>
+        <authors>Jason Naylor</authors>
+		<license type="expression">MIT</license>
+		<projectUrl>https://github.com/sillsdev/libpalaso</projectUrl>
+		<copyright>Copyright © 2010-2020 SIL International</copyright>
+    </metadata>
+	<files>
+	  <file src="CommonLibsL10ns\**\Palaso.*.xlf" target="content" />
+    </files>
+</package>
