@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -8,6 +9,7 @@ using SIL.ObjectModel;
 using SIL.Scripture;
 using SIL.WritingSystems;
 using SIL.Xml;
+using static System.String;
 
 namespace SIL.DblBundle.Text
 {
@@ -166,9 +168,9 @@ namespace SIL.DblBundle.Text
 		{
 			get
 			{
-				if (string.IsNullOrEmpty(Name))
+				if (IsNullOrEmpty(Name))
 					return Iso == WellKnownSubtags.UnlistedLanguage ? Localizer.GetString("DblBundle.UnknownLanguageName", "Unknown") : Iso;
-				return string.IsNullOrEmpty(Iso) ? Name : $"{Name} ({Iso})";
+				return IsNullOrEmpty(Iso) ? Name : $"{Name} ({Iso})";
 			}
 		}
 
@@ -185,6 +187,42 @@ namespace SIL.DblBundle.Text
 		/// <summary>Copyright statement in text and XML format</summary>
 		[XmlElement("statement")]
 		public DblMetadataXhtmlContentNode Statement { get; set; }
+
+		/// <summary>
+		/// Required for XML Deserialization
+		/// </summary>
+		public DblMetadataCopyright()
+		{
+		}
+
+		/// <summary>
+		/// Constructor that takes a copyright string.
+		/// </summary>
+		/// <param name="copyright">If this is a simple string, the resulting object will have a
+		/// simple Statement XHTML content node with a single element. If the string can be parsed
+		/// as XHTML, then the Statement nodes will reflect the XHTML content supplied.</param>
+		public DblMetadataCopyright(string copyright)
+		{
+			Statement = new DblMetadataXhtmlContentNode {Xhtml = copyright};
+		}
+
+		public override string ToString()
+		{
+			return ToString(Environment.NewLine);
+		}
+
+		public string ToString(string nodeSeparator)
+		{
+			var copyrightInfo = Statement?.InternalNodes?.Select(n => n.InnerText).ToList();
+			if (copyrightInfo == null || !copyrightInfo.Any())
+				return Empty;
+			return Join(nodeSeparator, copyrightInfo);
+		}
+
+		public string ToString(bool asXHtml)
+		{
+			return asXHtml ? Statement?.Xhtml ?? Empty : ToString();
+		}
 	}
 
 	/// <summary>Introductory (promotional/background) information about the scripture text translation.</summary>
