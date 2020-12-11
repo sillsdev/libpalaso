@@ -4,12 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using X11.XKlavier;
 using SIL.Reporting;
 using SIL.Keyboarding;
-using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
@@ -18,7 +16,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// </summary>
 	public class XkbKeyboardRetrievingAdaptor : IKeyboardRetrievingAdaptor
 	{
-		private IXklEngine _engine;
 		private static HashSet<string> _knownCultures;
 
 		public XkbKeyboardRetrievingAdaptor(): this(new XklEngine())
@@ -31,21 +28,21 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// </summary>
 		public XkbKeyboardRetrievingAdaptor(IXklEngine engine)
 		{
-			_engine = engine;
+			XklEngine = engine;
 		}
 
 		private static string GetDescription(XklConfigRegistry.LayoutDescription layout)
 		{
-			return string.Format("{0} - {1} ({2})", layout.Description, layout.Language, layout.Country);
+			return $"{layout.Description} - {layout.Language} ({layout.Country})";
 		}
 
 		protected virtual void InitLocales()
 		{
-			var configRegistry = XklConfigRegistry.Create(_engine);
-			Dictionary<string, List<XklConfigRegistry.LayoutDescription>> layouts = configRegistry.Layouts;
+			var configRegistry = XklConfigRegistry.Create(XklEngine);
+			var layouts = configRegistry.Layouts;
 
-			Dictionary<string, XkbKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<XkbKeyboardDescription>().ToDictionary(kd => kd.Id);
-			for (uint iGroup = 0; iGroup < _engine.GroupNames.Length; iGroup++)
+			var curKeyboards = KeyboardController.Instance.Keyboards.OfType<XkbKeyboardDescription>().ToDictionary(kd => kd.Id);
+			for (uint iGroup = 0; iGroup < XklEngine.GroupNames.Length; iGroup++)
 			{
 				// a group in a xkb keyboard is a keyboard layout. This can be used with
 				// multiple languages - which language is ambiguous. Here we just add all
@@ -53,9 +50,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				// _engine.GroupNames are not localized, but the layouts are. Before we try
 				// to compare them we better localize the group name as well, or we won't find
 				// much (FWNX-1388)
-				var groupName = _engine.LocalizedGroupNames[iGroup];
-				List<XklConfigRegistry.LayoutDescription> layoutList;
-				if (!layouts.TryGetValue(groupName, out layoutList))
+				var groupName = XklEngine.LocalizedGroupNames[iGroup];
+				if (!layouts.TryGetValue(groupName, out var layoutList))
 				{
 					// No language in layouts uses the groupName keyboard layout.
 					Console.WriteLine("WARNING: Couldn't find layout for '{0}'.", groupName);
@@ -63,21 +59,21 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 					continue;
 				}
 
-				for (int iLayout = 0; iLayout < layoutList.Count; iLayout++)
+				foreach (var layout in layoutList)
 				{
-					XklConfigRegistry.LayoutDescription layout = layoutList[iLayout];
 					AddKeyboardForLayout(curKeyboards, layout, iGroup, SwitchingAdaptor);
 				}
 			}
 
-			foreach (XkbKeyboardDescription existingKeyboard in curKeyboards.Values)
+			foreach (var existingKeyboard in curKeyboards.Values)
 				existingKeyboard.SetIsAvailable(false);
 		}
 
-		internal static void AddKeyboardForLayout(IDictionary<string, XkbKeyboardDescription> curKeyboards, XklConfigRegistry.LayoutDescription layout,
-			uint iGroup, IKeyboardSwitchingAdaptor engine)
+		internal static void AddKeyboardForLayout(
+			IDictionary<string, XkbKeyboardDescription> curKeyboards,
+			XklConfigRegistry.LayoutDescription layout, uint iGroup, IKeyboardSwitchingAdaptor engine)
 		{
-			string description = GetDescription(layout);
+			var description = GetDescription(layout);
 			CultureInfo culture = null;
 			try
 			{
@@ -89,10 +85,10 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				// TODO: fix mono's list of supported locales. Doesn't support e.g. de-BE.
 				// See mono/tools/locale-builder.
 			}
-			string id = string.Format("{0}_{1}", layout.LocaleId, layout.LayoutId);
+
+			var id = $"{layout.LocaleId}_{layout.LayoutId}";
 			var inputLanguage = new InputLanguageWrapper(culture, IntPtr.Zero, layout.Language);
-			XkbKeyboardDescription existingKeyboard;
-			if (curKeyboards.TryGetValue(id, out existingKeyboard))
+			if (curKeyboards.TryGetValue(id, out var existingKeyboard))
 			{
 				if (!existingKeyboard.IsAvailable)
 				{
@@ -101,34 +97,26 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 					existingKeyboard.SetInputLanguage(inputLanguage);
 					existingKeyboard.GroupIndex = (int) iGroup;
 				}
+
 				curKeyboards.Remove(id);
 			}
 			else
 			{
-				var keyboard = new XkbKeyboardDescription(id, description, layout.LayoutId, layout.LocaleId, true,
-					inputLanguage, engine, (int) iGroup);
+				var keyboard = new XkbKeyboardDescription(id, description, layout.LayoutId,
+					layout.LocaleId, true, inputLanguage, engine, (int) iGroup);
 				if (!KeyboardController.Instance.Keyboards.Contains(keyboard.Id))
 					KeyboardController.Instance.Keyboards.Add(keyboard);
 			}
 		}
 
-		public IXklEngine XklEngine
-		{
-			get { return _engine; }
-		}
+		public IXklEngine XklEngine { get; private set; }
 
 		/// <summary>
 		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
 		/// </summary>
-		public KeyboardAdaptorType Type
-		{
-			get { return KeyboardAdaptorType.System; }
-		}
+		public KeyboardAdaptorType Type => KeyboardAdaptorType.System;
 
-		public virtual bool IsApplicable
-		{
-			get { return true; }
-		}
+		public virtual bool IsApplicable => true;
 
 		/// <summary>
 		/// Gets the keyboard adaptor that deals with keyboards that this class retrieves.
@@ -137,7 +125,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		public virtual void Initialize()
 		{
-			SwitchingAdaptor = new XkbKeyboardSwitchingAdaptor(_engine);
+			SwitchingAdaptor = new XkbKeyboardSwitchingAdaptor(XklEngine);
 			InitLocales();
 		}
 
@@ -158,10 +146,9 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		internal static XkbKeyboardDescription CreateKeyboardDefinition(string id, IKeyboardSwitchingAdaptor engine)
 		{
-			string layout, locale;
-			KeyboardController.GetLayoutAndLocaleFromLanguageId(id, out layout, out locale);
+			KeyboardController.GetLayoutAndLocaleFromLanguageId(id, out var layout, out var locale);
 
-			string realLocale = locale;
+			var realLocale = locale;
 			if (locale == "zh")
 			{
 				realLocale = "zh-CN";	// Mono doesn't support bare "zh" until version 3 sometime
@@ -175,10 +162,10 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			// this particular locale and layout refer to an ibus keyboard.)  Mark the keyboard description
 			// as missing, but create an English (US) keyboard underneath.
 			if (IsLocaleKnown(realLocale))
-				return new XkbKeyboardDescription(id, string.Format("{0} ({1})", locale, layout), layout, locale, false,
+				return new XkbKeyboardDescription(id, $"{locale} ({layout})", layout, locale, false,
 					new InputLanguageWrapper(realLocale, IntPtr.Zero, layout), engine, -1);
-			string missingKeyboardFmt = L10NSharp.LocalizationManager.GetString("XkbKeyboardAdaptor.MissingKeyboard", "[Missing] {0} ({1})");
-			return new XkbKeyboardDescription(id, String.Format(missingKeyboardFmt, locale, layout), layout, locale, false,
+			var missingKeyboardFmt = L10NSharp.LocalizationManager.GetString("XkbKeyboardAdaptor.MissingKeyboard", "[Missing] {0} ({1})");
+			return new XkbKeyboardDescription(id, string.Format(missingKeyboardFmt, locale, layout), layout, locale, false,
 				new InputLanguageWrapper("en", IntPtr.Zero, "US"), engine, -1);
 		}
 
@@ -203,8 +190,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		public Action GetKeyboardSetupAction()
 		{
-			string args;
-			var setupApp = GetKeyboardSetupApplication(out args);
+			var setupApp = GetKeyboardSetupApplication(out var args);
 			if (setupApp == null)
 			{
 				return null;
@@ -234,7 +220,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		public void CheckDisposed()
 		{
 			if (IsDisposed)
-				throw new ObjectDisposedException(String.Format("'{0}' in use after being disposed.", GetType().Name));
+				throw new ObjectDisposedException(
+					$"'{GetType().Name}' in use after being disposed.");
 		}
 
 		/// <summary>
@@ -263,7 +250,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			Dispose(true);
 			// This object will be cleaned up by the Dispose method.
-			// Therefore, you should call GC.SupressFinalize to
+			// Therefore, you should call GC.SuppressFinalize to
 			// take this object off the finalization queue
 			// and prevent finalization code for this object
 			// from executing a second time.
@@ -293,7 +280,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// </remarks>
 		protected virtual void Dispose(bool disposing)
 		{
-			Debug.WriteLineIf(!disposing, "****************** " + GetType().Name + " 'disposing' is false. ******************");
+			Debug.WriteLineIf(!disposing, $"****************** {GetType().Name} 'disposing' is false. ******************");
 			// Must not be run more than once.
 			if (IsDisposed)
 				return;
@@ -301,10 +288,10 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			if (disposing)
 			{
 				// Dispose managed resources here.
-				if (_engine != null)
+				if (XklEngine != null)
 				{
-					_engine.Close();
-					_engine = null;
+					XklEngine.Close();
+					XklEngine = null;
 				}
 			}
 

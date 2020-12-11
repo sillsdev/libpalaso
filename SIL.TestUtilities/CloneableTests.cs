@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -208,8 +208,8 @@ namespace SIL.TestUtilities
 				}
 				fieldInfo.SetValue(item, valueToSet.ValueToSet);
 				fieldInfo.SetValue(unequalItem, valueToSet.NotEqualValueToSet);
-				Assert.That(item, Is.Not.EqualTo(unequalItem).Using<T>(Compare), "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
-				Assert.That(unequalItem, Is.Not.EqualTo(item).Using<T>(Compare), "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
+				Assert.That(item, Is.Not.EqualTo(unequalItem).Using<T>(Compare), $"Field \"{fieldName}\" is not evaluated in Equals({typeof(T)} other). Please update Equals({typeof(T)} other) or add the field name to the ExceptionList or EqualsExceptionList property.");
+				Assert.That(unequalItem, Is.Not.EqualTo(item).Using<T>(Compare), $"Field \"{fieldName}\" is not evaluated in Equals({typeof(T)} other). Please update Equals({typeof(T)} other) or add the field name to the ExceptionList or EqualsExceptionList property.");
 			}
 		}
 
@@ -243,19 +243,18 @@ namespace SIL.TestUtilities
 				catch (InvalidOperationException)
 				{
 					Assert.Fail(
-						"Unhandled field type - please update the test to handle type \"{0}\". The field that uses this type is \"{1}\".",
-						fieldInfo.FieldType.Name, fieldName);
+						$"Unhandled field type - please update the test to handle type \"{fieldInfo.FieldType.Name}\". The field that uses this type is \"{fieldName}\".");
 				}
 				fieldInfo.SetValue(item, valueToSet.ValueToSet);
 				fieldInfo.SetValue(unequalItem, valueToSet.ValueToSet);
-				Assert.That(item, Is.EqualTo(unequalItem).Using<T>(Compare), "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
-				Assert.That(unequalItem, Is.EqualTo(item).Using<T>(Compare), "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
+				Assert.That(item, Is.EqualTo(unequalItem).Using<T>(Compare), $"Field \"{fieldName}\" is not evaluated in Equals({typeof(T)} other). Please update Equals({typeof(T)} other) or add the field name to the ExceptionList or EqualsExceptionList property.");
+				Assert.That(unequalItem, Is.EqualTo(item).Using<T>(Compare), $"Field \"{fieldName}\" is not evaluated in Equals({typeof(T)} other). Please update Equals({typeof(T)} other) or add the field name to the ExceptionList or EqualsExceptionList property.");
 			}
 		}
 
 		[Test]
 		//x.Equals(default) && y.Equals(default) (y/x are left on their default values)
-		//though x.Equals(null) is better form, many fields and properties are set to seomthing besides null on construction and can never be null (short of reflection as we do below). So By testing
+		//though x.Equals(null) is better form, many fields and properties are set to something besides null on construction and can never be null (short of reflection as we do below). So By testing
 		//against the original value rather than null, we save ourselves a lot of boilerplate in the Equals method.
 		public void Equal_SecondFieldIsNull_ReturnsFalse()
 		{
@@ -268,6 +267,7 @@ namespace SIL.TestUtilities
 				T itemWithDefaultField = CreateNewCloneable();
 				Assert.That(itemWithFieldToChange, Is.EqualTo(itemWithDefaultField).Using<T>(Compare), "The two items were not equal on creation. You may need to override Equals(object other).");
 				string fieldName = fieldInfo.Name;
+
 				if (fieldInfo.Name.Contains("<"))
 				{
 					var splitResult = fieldInfo.Name.Split(new[] { '<', '>' });
@@ -288,11 +288,11 @@ namespace SIL.TestUtilities
 						"Unhandled field type - please update the test to handle type \"{0}\". The field that uses this type is \"{1}\".",
 						fieldInfo.FieldType.Name, fieldName);
 				}
-				//This conditional is here in case the ValueToSet is identical to the fields default value.
-				//That way developers who inherit this test case don't have to worry about what the fields default value is.
+				//This conditional is here in case the ValueToSet is identical to the field's default value.
+				//That way developers who inherit this test case don't have to worry about what the field's default value is.
 				//It also works around an issue with bool values. If you have two fields that are initialized with different
 				//values (i.e. one is true and the other false) this will ensure that the value is chosen which is not equal
-				//to the default value and the test therefor has a chance of succeeding.
+				//to the default value and the test therefore has a chance of succeeding.
 				if (valueToSet.ValueToSet.Equals(fieldInfo.GetValue(itemWithDefaultField)))
 				{
 					fieldInfo.SetValue(itemWithFieldToChange, valueToSet.NotEqualValueToSet);
@@ -301,8 +301,16 @@ namespace SIL.TestUtilities
 				{
 					fieldInfo.SetValue(itemWithFieldToChange, valueToSet.ValueToSet);
 				}
-				Assert.AreNotEqual(itemWithFieldToChange, itemWithDefaultField, "Field \"{0}\" is not evaluated in Equals(T other) or the ValueToSet is equal to the fields default value. Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
-				Assert.AreNotEqual(itemWithDefaultField, itemWithFieldToChange, "Field \"{0}\" is not evaluated in Equals(T other) or the ValueToSet is equal to the fields default value. Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
+
+				// We cannot use Assert.AreNotEqual because it goes through a long list of different comparers, including EquatableComparer, which
+				// explicitly invokes a version of Equals based on the IEquatable interface that would not normally be invoked on the object, since
+				// a more specific version of Equals (that applies to both objects) can be found. This might be a bug or deficiency in NUnit.
+				Assert.IsFalse(itemWithFieldToChange.Equals(itemWithDefaultField),
+					$"Field \"{fieldName}\" is not evaluated in Equals({typeof(T)} other) or the ValueToSet is equal to the field's default value. " +
+					$"Please update Equals({typeof(T)} other) or add the field name to the ExceptionList or EqualsExceptionList property.");
+				Assert.IsFalse(itemWithFieldToChange.Equals(itemWithDefaultField),
+					$"Field \"{fieldName}\" is not evaluated in Equals({typeof(T)} other) or the ValueToSet is equal to the field's default value. " +
+					$"Please update Equals({typeof(T)} other) or add the field name to the ExceptionList or EqualsExceptionList property.");
 			}
 		}
 

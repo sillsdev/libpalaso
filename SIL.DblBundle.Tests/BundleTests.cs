@@ -20,7 +20,7 @@ namespace SIL.DblBundle.Tests
 		/// <summary>
 		/// Setup for test fixture.
 		/// </summary>
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetup()
 		{
 			using (var zippedBundle = CreateDummyVersion1_5ZippedTestBundle())

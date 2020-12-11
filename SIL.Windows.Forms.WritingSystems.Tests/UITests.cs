@@ -17,7 +17,8 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		//NB: in Mar 2011, I couldn't get these to run in vs 2010 with resharper, because
 		// of the need to be in single apartment thread mode. The app.config is there, requesting
 		// it, but it doesn't work. So I had to plug in this CrossThreadTestRunner thing
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void WritingSystemSetupDialog()
 		{
 			var runner = new CrossThreadTestRunner();
@@ -38,7 +39,8 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 				});
 		}
 
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void WritingSystemSetupViewWithComboAttached()
 		{
 			var runner = new CrossThreadTestRunner();

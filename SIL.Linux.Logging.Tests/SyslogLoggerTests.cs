@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
@@ -33,7 +33,7 @@ namespace SIL.Linux.Logging.Tests
 			logger.Error("This string should be in the results");
 			IEnumerable<string> data = watcher.WaitForData();
 			watcher.StopWatching();
-			Assert.That(data, Has.Some.StringContaining("This string should be in the results"));
+			Assert.That(data, Has.Some.Contains("This string should be in the results"));
 		}
 
 		[Test]
@@ -54,7 +54,7 @@ namespace SIL.Linux.Logging.Tests
 			string[] data = watcher.WaitForData(5).ToArray();
 			watcher.StopWatching();
 			for (int i = 0; i < messages.Length; i++)
-				Assert.That(data[i], Is.StringContaining(messages[i]));
+				Assert.That(data[i], Does.Contain(messages[i]));
 		}
 
 		[Test]
@@ -83,8 +83,8 @@ namespace SIL.Linux.Logging.Tests
 			{
 				// Expect messages perfectly interleaved, logger1 followed by logger2 all five times
 				string expectedAppName = FakeAppName + (i % 2 == 0 ? "1" : "2");
-				Assert.That(data[i], Is.StringContaining(expectedAppName));
-				Assert.That(data[i], Is.StringContaining(messages[i / 2]));
+				Assert.That(data[i], Does.Contain(expectedAppName));
+				Assert.That(data[i], Does.Contain(messages[i / 2]));
 			}
 		}
 
@@ -111,8 +111,8 @@ namespace SIL.Linux.Logging.Tests
 			{
 				// Expect messages in sequence, logger1's five lines followed by logger2's five lines
 				string expectedAppName = FakeAppName + (i / 5 == 0 ? "1" : "2");
-				Assert.That(data[i], Is.StringContaining(expectedAppName));
-				Assert.That(data[i], Is.StringContaining(messages[i % 5]));
+				Assert.That(data[i], Does.Contain(expectedAppName));
+				Assert.That(data[i], Does.Contain(messages[i % 5]));
 			}
 		}
 	}

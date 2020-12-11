@@ -112,6 +112,18 @@ namespace SIL.Xml
 
 		#endregion
 
+		#region StringWriterWithEncoding
+		private sealed class StringWriterWithEncoding: StringWriter
+		{
+			public StringWriterWithEncoding(Encoding encoding)
+			{
+				Encoding = encoding;
+			}
+
+			public override Encoding Encoding { get; }
+		}
+		#endregion
+
 		#region Methods for XML serializing and deserializing data
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -136,30 +148,62 @@ namespace SIL.Xml
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Serializes an object to an XML string.
+		/// Serializes an object to an XML string (having an encoding of UTF-16). The string
+		/// will include the XML header.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static string SerializeToString<T>(T data)
 		{
-			return SerializeToString(data, false);
+			return SerializeToString(data, false, null);
 		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Serializes an object to an XML string. (Of course, the string is a UTF-16 string.)
+		/// Serializes an object to an XML string. The encoding declaration in the XML will
+		/// reflect the requested encoding. This is useful when the string returned is to be
+		/// serialized by the caller as something other than UTF-16.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public static string SerializeToString<T>(T data, Encoding encoding)
+		{
+			return SerializeToString(data, false, encoding);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Serializes an object to an XML string (having an encoding of UTF-16).
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static string SerializeToString<T>(T data, bool omitXmlDeclaration)
 		{
+			return SerializeToString(data, omitXmlDeclaration, null);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Serializes an object to an XML string. (If a null encoding is passed, the default is
+		/// UTF-16. However, if an alternative encoding is specified, the encoding declaration
+		/// in the XML will reflect that.)
+		/// </summary>
+		/// <remarks>This implementation is private because it is nonsensical for a caller to
+		/// request a string in some encoding other than the default if the XML header is being
+		/// omitted.</remarks>
+		/// ------------------------------------------------------------------------------------
+		private static string SerializeToString<T>(T data, bool omitXmlDeclaration, Encoding encoding)
+		{
+			if (encoding == null)
+				encoding = Encoding.Unicode;
 			try
 			{
-				using (var strWriter = new StringWriter())
+				using (var strWriter = encoding.Equals(Encoding.Unicode) ? new StringWriter() : new StringWriterWithEncoding(encoding))
 				{
-					var settings = new XmlWriterSettings();
-					settings.Indent = true;
-					settings.IndentChars = "\t";
-					settings.CheckCharacters = true;
-					settings.OmitXmlDeclaration = omitXmlDeclaration;
+					var settings = new XmlWriterSettings
+					{
+						Indent = true,
+						IndentChars = "\t",
+						CheckCharacters = true,
+						OmitXmlDeclaration = omitXmlDeclaration
+					};
 
 					using (var xmlWriter = XmlWriter.Create(strWriter, settings))
 					{
@@ -184,7 +228,6 @@ namespace SIL.Xml
 
 			return null;
 		}
-
 		/// ------------------------------------------------------------------------------------
 		public static bool SerializeToFile<T>(string filename, T data)
 		{
@@ -216,34 +259,10 @@ namespace SIL.Xml
 		public static bool SerializeToFile<T>(string filename, T data, string rootElementName,
 			out Exception e)
 		{
-			e = null;
-
 			try
 			{
-				using (TextWriter writer = new StreamWriter(filename))
-				{
-					XmlSerializerNamespaces nameSpace = new XmlSerializerNamespaces();
-					nameSpace.Add(string.Empty, string.Empty);
-
-					XmlSerializer serializer;
-					if (string.IsNullOrEmpty(rootElementName))
-						serializer = new XmlSerializer(typeof(T));
-					else
-					{
-						var rootAttrib = new XmlRootAttribute();
-						rootAttrib.ElementName = rootElementName;
-						rootAttrib.IsNullable = true;
-						serializer = new XmlSerializer(typeof(T), rootAttrib);
-					}
-
-					serializer.Serialize(writer, data, nameSpace);
-					writer.Close();
-				}
-
-				//var xe = XElement.Load(filename);
-				//xe.SetAttributeValue("version", "2.0");
-				//xe.Save(filename);
-				return true;
+				TextWriter writer = new StreamWriter(filename);
+				return Serialize(writer, data, out e, rootElementName);
 			}
 			catch (Exception ex)
 			{
@@ -252,6 +271,49 @@ namespace SIL.Xml
 			}
 
 			return false;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Serializes an object to a TextWriter. Note: This method will take care of disposing
+		/// the textWriter if so requested.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public static bool Serialize<T>(TextWriter textWriter, T data,
+			out Exception error, string rootElementName = null, bool dispose = true)
+		{
+			error = null;
+			try
+			{
+				XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
+				namespaces.Add(string.Empty, string.Empty);
+				XmlSerializer serializer;
+				if (string.IsNullOrEmpty(rootElementName))
+					serializer = new XmlSerializer(typeof(T));
+				else
+				{
+					var rootAttrib = new XmlRootAttribute
+					{
+						ElementName = rootElementName,
+						IsNullable = true
+					};
+					serializer = new XmlSerializer(typeof(T), rootAttrib);
+				}
+
+				serializer.Serialize(textWriter, data, namespaces);
+				textWriter.Close();
+				return true;
+			}
+			catch (Exception ex)
+			{
+				error = ex;
+				return false;
+			}
+			finally
+			{
+				if (dispose)
+					textWriter?.Dispose();
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -497,6 +559,28 @@ namespace SIL.Xml
 			}
 
 			return data;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Note: This method will take care of disposing the textWriter, if so requested.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public static T Deserialize<T>(TextReader reader, bool dispose = true) where T : class
+		{
+			if (reader == null)
+				return default;
+			try
+			{
+				var xmlSerializer = new XmlSerializer(typeof(T));
+				xmlSerializer.UnknownAttribute += deserializer_UnknownAttribute;
+				return (T)xmlSerializer.Deserialize(reader);
+			}
+			finally
+			{
+				if (dispose)
+					reader.Dispose();
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------

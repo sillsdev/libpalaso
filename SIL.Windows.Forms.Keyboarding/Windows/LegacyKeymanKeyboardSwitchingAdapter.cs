@@ -1,9 +1,7 @@
 // Copyright (c) 2013-2018 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
-#if !MONO
 using Keyman7Interop;
-#endif
 using SIL.Reporting;
 
 namespace SIL.Windows.Forms.Keyboarding.Windows
@@ -15,7 +13,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 	{
 		public bool ActivateKeyboard(KeyboardDescription keyboard)
 		{
-#if !MONO
 			var keymanKbdDesc = (KeymanKeyboardDescription)keyboard;
 			if (keymanKbdDesc.IsKeyman6)
 			{
@@ -55,7 +52,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					return false;
 				}
 			}
-#endif
 
 			KeyboardController.Instance.ActiveKeyboard = keyboard;
 			return true;
@@ -63,7 +59,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 		public void DeactivateKeyboard(KeyboardDescription keyboard)
 		{
-#if !MONO
 			try
 			{
 				if (((KeymanKeyboardDescription)keyboard).IsKeyman6)
@@ -82,27 +77,18 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			{
 				// Keyman not installed?
 			}
-#endif
 		}
 
 		/// <summary>
 		/// Gets the default keyboard of the system.
 		/// </summary>
-		public KeyboardDescription DefaultKeyboard
-		{
-			get
-			{
-				throw new NotImplementedException(
-					"Keyman keyboards that are not associated with a language are never the system default.");
-			}
-		}
+		public KeyboardDescription DefaultKeyboard =>
+			throw new NotImplementedException(
+				"Keyman keyboards that are not associated with a language are never the system default.");
 
 		/// <summary>
 		/// Implementation is not required because this is not the primary (Type System) adapter.
 		/// </summary>
-		public KeyboardDescription ActiveKeyboard
-		{
-			get { throw new NotImplementedException(); }
-		}
+		public KeyboardDescription ActiveKeyboard => throw new NotImplementedException();
 	}
 }

@@ -30,7 +30,7 @@ namespace SIL.Archiving.IMDI
 			get
 			{
 				return LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IMDIArchiveType", "IMDI",
-					"This is the abbreviation for Isle Metadata Initiative (http://www.mpi.nl/imdi/). " +
+					"This is the abbreviation for Isle Metadata Initiative (https://www.mpi.nl/imdi/). " +
 						"Typically this probably does not need to be localized.");
 			}
 		}
@@ -257,7 +257,7 @@ namespace SIL.Archiving.IMDI
 
 				// SP-818: Crash in IMDI export when dialog tries to put string on clipboard
 				//   18 FEB 2014, Phil Hopper: I found this possible solution using retries on StackOverflow
-				//   http://stackoverflow.com/questions/5707990/requested-clipboard-operation-did-not-succeed
+				//   https://stackoverflow.com/questions/5707990/requested-clipboard-operation-did-not-succeed
 				//Clipboard.SetData(DataFormats.Text, _imdiData.MainExportFile);
 				Clipboard.SetDataObject(_imdiData.MainExportFile, true, 3, 500);
 

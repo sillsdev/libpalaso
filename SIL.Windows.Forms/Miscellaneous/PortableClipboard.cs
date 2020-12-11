@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using SIL.IO;
+using SIL.PlatformUtilities;
 using SIL.Reporting;
 using SIL.Windows.Forms.ImageToolbox;
 
@@ -16,65 +17,43 @@ namespace SIL.Windows.Forms.Miscellaneous
 	{
 		public static bool ContainsText()
 		{
-#if MONO
-			return GtkContainsText();
-#else
-			return Clipboard.ContainsText();
-#endif
+			return Platform.IsWindows ? Clipboard.ContainsText() : GtkContainsText();
 		}
 
 		public static string GetText()
 		{
-#if MONO
-			return GtkGetText();
-#else
-			return Clipboard.GetText();
-#endif
+			return Platform.IsWindows ? Clipboard.GetText() : GtkGetText();
 		}
 
 		public static string GetText(TextDataFormat format)
 		{
-#if MONO
-			return GtkGetText();
-#else
-			return Clipboard.GetText(format);
-#endif
+			return Platform.IsWindows ? Clipboard.GetText(format) : GtkGetText();
 		}
 
 		public static void SetText(string text)
 		{
-#if MONO
+			if (Platform.IsWindows)
+				Clipboard.SetText(text);
+			else
 			GtkSetText(text);
-#else
-			Clipboard.SetText(text);
-#endif
 		}
 
 		public static void SetText(string text, TextDataFormat format)
 		{
-#if MONO
+			if (Platform.IsWindows)
+				Clipboard.SetText(text, format);
+			else
 			GtkSetText(text);
-#else
-			Clipboard.SetText(text, format);
-#endif
 		}
 
 		public static bool ContainsImage()
 		{
-#if MONO
-			return GtkContainsImage();
-#else
-			return Clipboard.ContainsImage();
-#endif
+			return Platform.IsWindows ? Clipboard.ContainsImage() : GtkContainsImage();
 		}
 
-		public static System.Drawing.Image GetImage()
+		public static Image GetImage()
 		{
-#if MONO
-			return GtkGetImage();
-#else
-			return Clipboard.GetImage();
-#endif
+			return Platform.IsWindows ? Clipboard.GetImage() : GtkGetImage();
 		}
 
 		public static void CopyImageToClipboard(PalasoImage image)
@@ -82,20 +61,24 @@ namespace SIL.Windows.Forms.Miscellaneous
 			// N.B.: PalasoImage does not handle .svg files
 			if(image == null)
 				return;
-#if MONO
+
+			if (!Platform.IsWindows)
+			{
 			// Review: Someone who knows how needs to implement this!
-			throw new NotImplementedException("SIL.Windows.Forms.Miscellaneous.PortableClipboard.CopyImageToClipboard() is not yet implemented for Linux");
-#else
+				throw new NotImplementedException(
+					"SIL.Windows.Forms.Miscellaneous.PortableClipboard.CopyImageToClipboard() is not yet implemented for Linux");
+			}
+
 			if (image.Image == null)
 			{
-				if (String.IsNullOrEmpty(image.OriginalFilePath))
+				if (string.IsNullOrEmpty(image.OriginalFilePath))
 					return;
 				// no image, but a path
 				Clipboard.SetFileDropList(new StringCollection() {image.OriginalFilePath});
 			}
 			else
 			{
-				if (String.IsNullOrEmpty(image.OriginalFilePath))
+				if (string.IsNullOrEmpty(image.OriginalFilePath))
 					Clipboard.SetImage(image.Image);
 				else
 				{
@@ -106,7 +89,6 @@ namespace SIL.Windows.Forms.Miscellaneous
 					Clipboard.SetDataObject(clips,true);
 				}
 			}
-#endif
 		}
 
 		// Get an image from the clipboard, ignoring any errors that occur while we attempt to
@@ -127,8 +109,9 @@ namespace SIL.Windows.Forms.Miscellaneous
 		// can reasonably be interpreted as an image, return null. If there is something that makes sense
 		// as an image, but trying to load it causes an exception, let the exception propagate.
 		public static PalasoImage GetImageFromClipboardWithExceptions() {
-		// N.B.: PalasoImage does not handle .svg files
-#if MONO
+			// N.B.: PalasoImage does not handle .svg files
+			if (!Platform.IsWindows)
+			{
 			if (GtkContainsImage())
 				return PalasoImage.FromImage(GtkGetImage());
 
@@ -140,7 +123,8 @@ namespace SIL.Windows.Forms.Miscellaneous
 			}
 
 			return null;
-#else
+			}
+
 			var dataObject = Clipboard.GetDataObject();
 			if (dataObject == null)
 				return null;
@@ -164,16 +148,14 @@ namespace SIL.Windows.Forms.Miscellaneous
 						plainImage.Dispose();//important: don't do this until we've successfully created the imageWithPathAndMaybeMetadata
 						return imageWithPathAndMaybeMetadata;
 					}
-					else
-					{
+
 						return plainImage;
 					}
-				}
 				catch (Exception e)
 				{
 					Logger.WriteEvent("PortableClipboard.GetImageFromClipboard() failed with message " + e.Message);
 					if (plainImage != null)
-						return plainImage; // at worst, we should return null; if FromFile() failed, we return an image
+					return plainImage; // at worst, we should return null; if FromFile() failed, we return an image
 					throw;
 				}
 			}
@@ -203,8 +185,8 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 				foreach (var file in files.Where(f => RobustFile.Exists(f)))
 				{
-					return PalasoImage.FromFileRobustly(file);
-				}
+						return PalasoImage.FromFileRobustly(file);
+					}
 
 				return null; //not an image
 			}
@@ -218,10 +200,8 @@ namespace SIL.Windows.Forms.Miscellaneous
 			}
 
 			return null;
-#endif
 		}
 
-#if MONO
 		// The following methods are derived from GtkClipboard.cs from https://github.com/phillip-hopper/GtkUtils.
 
 		/// <summary>Set the clipboard text</summary>
@@ -261,18 +241,18 @@ namespace SIL.Windows.Forms.Miscellaneous
 		}
 
 		/// <summary>Get the image from clipboard</summary>
-		private static System.Drawing.Image GtkGetImage()
+		private static Image GtkGetImage()
 		{
 			using (var cb = Gtk.Clipboard.Get(Gdk.Atom.Intern("CLIPBOARD", false)))
 			{
 				Gdk.Pixbuf buff = cb.WaitForImage();
-				TypeConverter tc = TypeDescriptor.GetConverter(typeof(System.Drawing.Bitmap));
-				return (System.Drawing.Image)tc.ConvertFrom(buff.SaveToBuffer("png"));
+				TypeConverter tc = TypeDescriptor.GetConverter(typeof(Bitmap));
+				return (Image)tc.ConvertFrom(buff.SaveToBuffer("png"));
 			}
 		}
 
 		/// <summary>Get the image from a file name on the clipboard</summary>
-		private static System.Drawing.Image GtkGetImageFromText()
+		private static Image GtkGetImageFromText()
 		{
 			var stringSeparators = new string[] { Environment.NewLine };
 			var paths = GetText().Split(stringSeparators, StringSplitOptions.None);
@@ -285,8 +265,8 @@ namespace SIL.Windows.Forms.Miscellaneous
 					{
 						var bytes = File.ReadAllBytes(path);
 						var buff = new Gdk.Pixbuf(bytes);
-						TypeConverter tc = TypeDescriptor.GetConverter(typeof(System.Drawing.Bitmap));
-						return (System.Drawing.Image)tc.ConvertFrom(buff.SaveToBuffer("png"));
+						TypeConverter tc = TypeDescriptor.GetConverter(typeof(Bitmap));
+						return (Image)tc.ConvertFrom(buff.SaveToBuffer("png"));
 					}
 					catch (Exception e)
 					{
@@ -296,14 +276,13 @@ namespace SIL.Windows.Forms.Miscellaneous
 			}
 			return null;
 		}
-#endif
 
 		// -------------------------------------------------------------------------------------------------------------
 		// Clipboard operations (copy/cut/paste) in text boxes do not work properly on Linux in some situations,
 		// freezing or crashing the program. See https://issues.bloomlibrary.org/youtrack/issue/BL-5681 for one example.
 		// The following methods were added to allow dialogs to use the PortableClipboard in TextBox and RichTextBox
 		// controls.  It's possible that these methods might only be used on Linux, but they compile (and would work)
-		// fine for Windows.  I prefer not using #if MONO more than absolutely necessary.
+		// fine for Windows.
 		// These methods are used by FormUsingPortableClipboard.
 
 		/// <summary>
@@ -374,7 +353,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			var box = GetTextBoxFromHWnd(form, hwnd);
 			if (box == null)
 				return false;
-			if (SIL.Windows.Forms.Miscellaneous.PortableClipboard.ContainsText())
+			if (ContainsText())
 			{
 				var start = box.SelectionStart;
 				var length = box.SelectionLength;
@@ -386,7 +365,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 					else
 						text = text.Remove(start, length);
 				}
-				var clipText = SIL.Windows.Forms.Miscellaneous.PortableClipboard.GetText();
+				var clipText = GetText();
 				box.Text = text.Insert(start, clipText);
 				box.SelectionStart = start + clipText.Length;
 			}
@@ -411,7 +390,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 				if (length <= 0)
 					return true;
 				var text = box.Text.Substring(start, length);
-				SIL.Windows.Forms.Miscellaneous.PortableClipboard.SetText(text);
+				SetText(text);
 				if (cut)
 				{
 					box.Text = box.Text.Remove(start, length);

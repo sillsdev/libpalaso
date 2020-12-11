@@ -8,6 +8,8 @@ using IBusDotNet;
 using X11.XKlavier;
 using SIL.Windows.Forms.Keyboarding.Linux;
 
+#pragma warning disable 0067
+
 namespace SIL.Windows.Forms.Keyboarding.Tests
 {
 	[TestFixture]
@@ -28,6 +30,8 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 
 			public void FocusIn()
 			{
+				// if this fails when running a test in debugger you might want to downgrade
+				// Moq nuget package to 4.7.x
 				GlobalCachedInputContext.InputContext = new Mock<IInputContext>().Object;
 			}
 
@@ -55,28 +59,16 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			{
 			}
 
-			public bool IsDisposed
-			{
-				get { return false; }
-			}
+			public bool IsDisposed => false;
 
-			public bool Connected
-			{
-				get { return true; }
-			}
+			public bool Connected => true;
 
 			public void NotifySelectionLocationAndHeight(int x, int y, int height)
 			{
 				throw new NotImplementedException();
 			}
 
-			public IBusConnection Connection
-			{
-				get
-				{
-					throw new NotImplementedException();
-				}
-			}
+			public IBusConnection Connection => throw new NotImplementedException();
 
 			public void Dispose()
 			{
@@ -89,11 +81,9 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			{
 			}
 
-			public override bool IsApplicable
-			{
+			public override bool IsApplicable =>
 				// No matter what we want this to be active
-				get { return true; }
-			}
+				true;
 
 			protected override void InitLocales()
 			{
@@ -106,11 +96,9 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			{
 			}
 
-			public override bool IsApplicable
-			{
+			public override bool IsApplicable =>
 				// No matter what we want this to be active
-				get { return true; }
-			}
+				true;
 
 			protected override void InitKeyboards()
 			{
@@ -129,7 +117,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			engineDescMock.Setup(x => x.Name).Returns(name);
 			engineDescMock.Setup(x => x.Language).Returns(language);
 			engineDescMock.Setup(x => x.Layout).Returns(layout);
-			var keyboard = new IbusKeyboardDescription(string.Format("{0}_{1}", language, name), engineDescMock.Object, ibusKeyboardAdapter) {SystemIndex = 3};
+			var keyboard = new IbusKeyboardDescription($"{language}_{name}", engineDescMock.Object, ibusKeyboardAdapter) {SystemIndex = 3};
 			KeyboardController.Instance.Keyboards.Add(keyboard);
 			return keyboard;
 		}
@@ -137,7 +125,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		private static XkbKeyboardDescription CreateMockXkbKeyboard(string name, string layout, string locale,
 			string layoutName, int group, IKeyboardSwitchingAdaptor adapter)
 		{
-			var keyboard = new XkbKeyboardDescription(string.Format("{0}_{1}", layout, locale), name, layout, locale, true,
+			var keyboard = new XkbKeyboardDescription($"{layout}_{locale}", name, layout, locale, true,
 				new InputLanguageWrapper(locale, IntPtr.Zero, layoutName), adapter, group);
 			KeyboardController.Instance.Keyboards.Add(keyboard);
 			return keyboard;
@@ -179,8 +167,8 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 
 			// Verify
 			xklEngineMock.Verify(x => x.SetGroup(layout == "fr" ? FrKeyboardGroup : EnKeyboardGroup),
-				string.Format("Switching to the ibus keyboard should activate the {0} xkb keyboard.",
-					layout == "fr" ? "French" : "English"));
+				$"Switching to the ibus keyboard should activate the {(layout == "fr" ? "French" : "English")} xkb keyboard.");
 		}
 	}
 }
+#pragma warning restore 0067

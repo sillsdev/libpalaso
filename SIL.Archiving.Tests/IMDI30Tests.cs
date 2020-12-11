@@ -6,10 +6,12 @@ using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI;
 using SIL.Archiving.IMDI.Lists;
 using SIL.Archiving.IMDI.Schema;
+using SIL.TestUtilities;
 
 namespace SIL.Archiving.Tests
 {
 	[TestFixture]
+	[OfflineSldr]
 	[Category("Archiving")]
 	class IMDI30Tests
 	{

@@ -300,7 +300,7 @@ namespace SIL.WritingSystems.Tests
 				string filename;
 				var sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out filename);
 				if (sldrStatus == SldrStatus.UnableToConnectToSldr)
-					Assert.Ignore("Ignored becuase SLDR is offline.");
+					Assert.Ignore("Ignored because SLDR is offline.");
 				// Call a second time, this should use the Cache now
 				sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out filename);
 				Assert.That(sldrStatus, Is.EqualTo(SldrStatus.FromCache));
@@ -413,12 +413,13 @@ namespace SIL.WritingSystems.Tests
 		#endregion
 
 		/// <summary>
-		/// This test is only valid when run by its self. If other tests are running they can affect the file that
+		/// This test is only valid when run by itself. If other tests are running they can affect the file that
 		/// this is trying to verify.
 		/// </summary>
 		[Test]
 		[Category("SkipOnTeamCity")]
 		[Category("ByHand")]
+		[Explicit]
 		public void LanguageTags_OlderEmbeddedLangTags_DownloadsNewLangTags()
 		{
 			using (var testEnv = new TestEnvironment(false, new DateTime(2000, 1, 1, 12, 0, 0)))

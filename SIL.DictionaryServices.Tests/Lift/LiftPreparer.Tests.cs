@@ -54,17 +54,23 @@ namespace SIL.DictionaryServices.Tests.Lift
 			//  migration happens.  So here we're ensuring that the migration mechanism was
 			//  triggered, and that the process left us with a modified (but not renamed)
 			//  lift file.
-			//nb: 0.10 was the first version where we started provinding a migration path.
+			//nb: 0.10 was the first version where we started providing a migration path.
 			//FLEx support for Lift started with 0.12
-			CreateLiftFileForTesting("0.10");
-			LiftPreparer preparer = new LiftPreparer(_liftFilePath);
-			Assert.IsTrue(preparer.IsMigrationNeeded(), "IsMigrationNeeded Failed");
-			preparer.MigrateLiftFile(new ProgressState());
-			Assert.AreEqual(Validator.LiftVersion, Validator.GetLiftVersion(_liftFilePath));
-			// Get rid of the other file, as well.
-			var otherPathname = _liftFilePath.Replace(".", ".0.10.");
-			if (File.Exists(otherPathname))
-				File.Delete(otherPathname);
+			try
+			{
+				CreateLiftFileForTesting("0.10");
+				LiftPreparer preparer = new LiftPreparer(_liftFilePath);
+				Assert.That(preparer.IsMigrationNeeded(), Is.True, "IsMigrationNeeded Failed");
+				preparer.MigrateLiftFile(new ProgressState());
+				Assert.That(Validator.GetLiftVersion(_liftFilePath), Is.EqualTo(Validator.LiftVersion));
+			}
+			finally
+			{
+				// Get rid of the other file, as well.
+				var otherPathname = _liftFilePath.Replace(".", ".0.10.");
+				if (File.Exists(otherPathname))
+					File.Delete(otherPathname);
+			}
 		}
 
 		// TODO Move these tests to LiftDataMapperTests

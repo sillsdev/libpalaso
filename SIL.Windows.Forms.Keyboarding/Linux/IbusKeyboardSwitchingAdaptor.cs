@@ -4,7 +4,6 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
-using SIL.Keyboarding;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
@@ -56,16 +55,16 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		}
 
 		// Has to be internal because IbusKeyboardDescription is only internal
-		internal virtual bool IBusKeyboardAlreadySet(IbusKeyboardDescription keyboard)
+		internal bool IBusKeyboardAlreadySet(IbusKeyboardDescription keyboard)
 		{
-			if (keyboard == null || keyboard.IBusKeyboardEngine == null)
+			if (keyboard?.IBusKeyboardEngine == null)
 			{
 				UnsetKeyboard();
 				return true;
 			}
 
 			// check our cached value
-			return GlobalCachedInputContext.Keyboard == keyboard;
+			return GlobalCachedInputContext.Keyboard?.Equals(keyboard) ?? false;
 		}
 
 		protected static void UnsetKeyboard()
@@ -91,12 +90,11 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			var ibusKeyboard = (IbusKeyboardDescription) keyboard;
 			// Set the associated XKB keyboard
-			string parentLayout = ibusKeyboard.ParentLayout;
+			var parentLayout = ibusKeyboard.ParentLayout;
 			if (parentLayout == "en")
 				parentLayout = "us";
-			IKeyboardDefinition xkbKeyboard = KeyboardController.Instance.AvailableKeyboards.FirstOrDefault(kbd => kbd.Layout == parentLayout);
-			if (xkbKeyboard != null)
-				xkbKeyboard.Activate();
+			var xkbKeyboard = KeyboardController.Instance.AvailableKeyboards.FirstOrDefault(kbd => kbd.Layout == parentLayout);
+			xkbKeyboard?.Activate();
 			// Then set the IBus keyboard
 			var context = GlobalCachedInputContext.InputContext;
 			context.SetEngine(ibusKeyboard.IBusKeyboardEngine.LongName);
@@ -105,12 +103,12 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		private void SetImePreeditWindowLocationAndSize(Control control)
 		{
 			var eventHandler = GetEventHandlerForControl(control);
-			if (eventHandler != null)
-			{
-				var location = eventHandler.SelectionLocationAndHeight;
-				_ibusComm.NotifySelectionLocationAndHeight(location.Left, location.Top,
-					location.Height);
-			}
+			if (eventHandler == null)
+				return;
+
+			var location = eventHandler.SelectionLocationAndHeight;
+			_ibusComm.NotifySelectionLocationAndHeight(location.Left, location.Top,
+				location.Height);
 		}
 
 		/// <summary>
@@ -127,8 +125,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			Application.DoEvents();
 
 			var eventHandler = GetEventHandlerForControl(control);
-			if (eventHandler != null)
-				eventHandler.CommitOrReset();
+			eventHandler?.CommitOrReset();
 		}
 
 		private static IIbusEventHandler GetEventHandlerForControl(Control control)
@@ -136,8 +133,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			if (control == null)
 				return null;
 
-			object handler;
-			if (!KeyboardController.Instance.EventHandlers.TryGetValue(control, out handler))
+			if (!KeyboardController.Instance.EventHandlers.TryGetValue(control, out var handler))
 				return null;
 			return handler as IIbusEventHandler;
 		}
@@ -146,61 +142,60 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		private void OnControlRegistered(object sender, RegisterEventArgs e)
 		{
-			if (e.Control != null)
+			if (e.Control == null)
+				return;
+
+			var eventHandler = e.EventHandler as IIbusEventHandler;
+			if (eventHandler == null)
 			{
-				var eventHandler = e.EventHandler as IIbusEventHandler;
-				if (eventHandler == null)
-				{
-					Debug.Assert(e.Control is TextBox, "Currently only TextBox controls are compatible with the default IBus event handler.");
-					eventHandler = new IbusDefaultEventHandler((TextBox)e.Control);
-				}
-				KeyboardController.Instance.EventHandlers[e.Control] = eventHandler;
-
-				_ibusComm.CommitText += eventHandler.OnCommitText;
-				_ibusComm.UpdatePreeditText += eventHandler.OnUpdatePreeditText;
-				_ibusComm.HidePreeditText += eventHandler.OnHidePreeditText;
-				_ibusComm.KeyEvent += eventHandler.OnIbusKeyPress;
-				_ibusComm.DeleteSurroundingText += eventHandler.OnDeleteSurroundingText;
-
-				e.Control.GotFocus += HandleGotFocus;
-				e.Control.LostFocus += HandleLostFocus;
-				e.Control.MouseDown += HandleMouseDown;
-				e.Control.PreviewKeyDown += HandlePreviewKeyDown;
-				e.Control.KeyPress += HandleKeyPress;
-
-				var scrollableControl = e.Control as ScrollableControl;
-				if (scrollableControl != null)
-					scrollableControl.Scroll += HandleScroll;
+				Debug.Assert(e.Control is TextBox, "Currently only TextBox controls are compatible with the default IBus event handler.");
+				eventHandler = new IbusDefaultEventHandler((TextBox)e.Control);
 			}
+			KeyboardController.Instance.EventHandlers[e.Control] = eventHandler;
+
+			_ibusComm.CommitText += eventHandler.OnCommitText;
+			_ibusComm.UpdatePreeditText += eventHandler.OnUpdatePreeditText;
+			_ibusComm.HidePreeditText += eventHandler.OnHidePreeditText;
+			_ibusComm.KeyEvent += eventHandler.OnIbusKeyPress;
+			_ibusComm.DeleteSurroundingText += eventHandler.OnDeleteSurroundingText;
+
+			e.Control.GotFocus += HandleGotFocus;
+			e.Control.LostFocus += HandleLostFocus;
+			e.Control.MouseDown += HandleMouseDown;
+			e.Control.PreviewKeyDown += HandlePreviewKeyDown;
+			e.Control.KeyPress += HandleKeyPress;
+
+			var scrollableControl = e.Control as ScrollableControl;
+			if (scrollableControl != null)
+				scrollableControl.Scroll += HandleScroll;
 		}
 
 		private void OnControlRemoving(object sender, ControlEventArgs e)
 		{
-			if (e.Control != null)
-			{
-				e.Control.GotFocus -= HandleGotFocus;
-				e.Control.LostFocus -= HandleLostFocus;
-				e.Control.MouseDown -= HandleMouseDown;
-				e.Control.PreviewKeyDown -= HandlePreviewKeyDown;
-				e.Control.KeyPress -= HandleKeyPress;
-				e.Control.KeyDown -= HandleKeyDownAfterIbusHandledKey;
+			if (e.Control == null)
+				return;
 
-				var scrollableControl = e.Control as ScrollableControl;
-				if (scrollableControl != null)
-					scrollableControl.Scroll -= HandleScroll;
+			e.Control.GotFocus -= HandleGotFocus;
+			e.Control.LostFocus -= HandleLostFocus;
+			e.Control.MouseDown -= HandleMouseDown;
+			e.Control.PreviewKeyDown -= HandlePreviewKeyDown;
+			e.Control.KeyPress -= HandleKeyPress;
+			e.Control.KeyDown -= HandleKeyDownAfterIbusHandledKey;
 
-				var eventHandler = GetEventHandlerForControl(e.Control);
-				if (eventHandler != null)
-				{
-					_ibusComm.CommitText -= eventHandler.OnCommitText;
-					_ibusComm.UpdatePreeditText -= eventHandler.OnUpdatePreeditText;
-					_ibusComm.HidePreeditText -= eventHandler.OnHidePreeditText;
-					_ibusComm.KeyEvent -= eventHandler.OnIbusKeyPress;
-					_ibusComm.DeleteSurroundingText -= eventHandler.OnDeleteSurroundingText;
-					KeyboardController.Instance.EventHandlers.Remove(e.Control);
-				}
+			var scrollableControl = e.Control as ScrollableControl;
+			if (scrollableControl != null)
+				scrollableControl.Scroll -= HandleScroll;
 
-			}
+			var eventHandler = GetEventHandlerForControl(e.Control);
+			if (eventHandler == null)
+				return;
+
+			_ibusComm.CommitText -= eventHandler.OnCommitText;
+			_ibusComm.UpdatePreeditText -= eventHandler.OnUpdatePreeditText;
+			_ibusComm.HidePreeditText -= eventHandler.OnHidePreeditText;
+			_ibusComm.KeyEvent -= eventHandler.OnIbusKeyPress;
+			_ibusComm.DeleteSurroundingText -= eventHandler.OnDeleteSurroundingText;
+			KeyboardController.Instance.EventHandlers.Remove(e.Control);
 		}
 
 		#endregion
@@ -229,7 +224,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			if (!_ibusComm.Connected)
 				return false;
 
-			int scancode = X11KeyConverter.GetScanCode(keySym);
+			var scancode = X11KeyConverter.GetScanCode(keySym);
 			if (scancode > -1)
 			{
 				if (_ibusComm.ProcessKeyEvent(keySym, scancode, modifierKeys))
@@ -275,10 +270,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			_ibusComm.FocusOut();
 
 			var eventHandler = GetEventHandlerForControl(sender as Control);
-			if (eventHandler == null)
-				return;
 
-			eventHandler.CommitOrReset();
+			eventHandler?.CommitOrReset();
 		}
 
 		/// <summary>
@@ -437,18 +430,12 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// <summary>
 		/// Implementation is not required because this is not the primary (Type System) adapter.
 		/// </summary>
-		public virtual KeyboardDescription DefaultKeyboard
-		{
-			get { throw new NotImplementedException(); }
-		}
+		public virtual KeyboardDescription DefaultKeyboard => throw new NotImplementedException();
 
 		/// <summary>
 		/// Implementation is not required because this is not the primary (Type System) adapter.
 		/// </summary>
-		public virtual KeyboardDescription ActiveKeyboard
-		{
-			get { throw new NotImplementedException(); }
-		}
+		public virtual KeyboardDescription ActiveKeyboard => throw new NotImplementedException();
 
 		#endregion
 	}

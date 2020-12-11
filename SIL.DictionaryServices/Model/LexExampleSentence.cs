@@ -7,8 +7,6 @@ namespace SIL.DictionaryServices.Model
 {
 	public sealed class LexExampleSentence: PalasoDataObject, ICloneable<LexExampleSentence>, IEquatable<LexExampleSentence>
 	{
-		private string _translationType;
-
 		//!!What!! Is this done this way so that we don't end up storing
 		//  the data in the object database?
 		//Answer:
@@ -20,7 +18,7 @@ namespace SIL.DictionaryServices.Model
 			public static string Translation = "ExampleTranslation";
 			public static string Source = "source";
 
-			public static bool Contains(string fieldName)
+			public new static bool Contains(string fieldName)
 			{
 				List<string> list =
 					new List<string>(new string[] {ExampleSentence, Source, Translation});
@@ -43,34 +41,21 @@ namespace SIL.DictionaryServices.Model
 		/// </summary>
 		public LexExampleSentence(): this(null) {}
 
-		public MultiText Sentence
-		{
-			get { return GetOrCreateProperty<MultiText>(WellKnownProperties.ExampleSentence); }
-		}
+		public MultiText Sentence => GetOrCreateProperty<MultiText>(WellKnownProperties.ExampleSentence);
 
-		public MultiText Translation
-		{
-			get { return GetOrCreateProperty<MultiText>(WellKnownProperties.Translation); }
-		}
+		public MultiText Translation => GetOrCreateProperty<MultiText>(WellKnownProperties.Translation);
 
-		public override bool IsEmpty
-		{
-			get { return Sentence.Empty && Translation.Empty && !HasProperties; }
-		}
+		public override bool IsEmpty => Sentence.Empty && Translation.Empty && !HasProperties;
 
 		/// <summary>
 		/// Supports round-tripping, though we don't use it
 		/// </summary>
-		public string TranslationType
-		{
-			get { return _translationType; }
-			set { _translationType = value; }
-		}
+		public string TranslationType { get; set; }
 
 		public LexExampleSentence Clone()
 		{
 			var clone = new LexExampleSentence();
-			clone._translationType = _translationType;
+			clone.TranslationType = TranslationType;
 			//We clear the properties here because ExampleSentence comes with ExampleSentence and ExampleTranslation properties on construction
 			//and it's just easier to treat them like any other property on clone
 			clone.Properties.Clear();
@@ -83,8 +68,7 @@ namespace SIL.DictionaryServices.Model
 
 		public override bool Equals(Object obj)
 		{
-			if (!(obj is LexExampleSentence)) return false;
-			return Equals((LexExampleSentence)obj);
+			return Equals(obj as LexExampleSentence);
 		}
 
 		public bool Equals(LexExampleSentence other)
@@ -92,8 +76,18 @@ namespace SIL.DictionaryServices.Model
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
 			if (!base.Equals(other)) return false;
-			if ((_translationType != null && !_translationType.Equals(other._translationType)) || (other._translationType != null && !other._translationType.Equals(_translationType))) return false;
+			if ((TranslationType != null && !TranslationType.Equals(other.TranslationType)) || (other.TranslationType != null && !other.TranslationType.Equals(TranslationType))) return false;
 			return true;
+		}
+
+		public override int GetHashCode()
+		{
+			// For this class we want a hash code based on the the object's reference so that we
+			// can store and retrieve the object in the LiftLexEntryRepository. However, this is
+			// not ideal and Microsoft warns: "Do not use the hash code as the key to retrieve an
+			// object from a keyed collection."
+			// https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8#remarks
+			return base.GetHashCode();
 		}
 	}
 }

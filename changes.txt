@@ -1,7 +1,0 @@
-MediaInfo: Improve bitrate detection (fixes SP-200)
-Fixed Writing System control which wasn't storing changes to abbreviation.
-Changed IWritingSystemStore.Exists to Contains.  Marked Exists as obsolete
-Check for proxy url == destination, and proxy bypass in RobustNetworkOperation.
-Make RobustNetworkOperation report on its efforts and trap an unexplained situation WS-33921 with bogus proxy.
-beta: Added WritingSystemDefinition.ISO back in as obsolete for compatability.
-branch: beta

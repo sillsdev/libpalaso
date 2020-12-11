@@ -4,7 +4,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-#if MONO
 namespace SIL.Media.AlsaAudio
 {
 	/// <summary>
@@ -881,4 +880,3 @@ namespace SIL.Media.AlsaAudio
 		}
 	}
 }
-#endif

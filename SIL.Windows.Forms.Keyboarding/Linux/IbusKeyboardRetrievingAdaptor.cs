@@ -41,9 +41,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			Dictionary<string, IbusKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<IbusKeyboardDescription>().ToDictionary(kd => kd.Id);
 			foreach (IBusEngineDesc ibusKeyboard in GetIBusKeyboards())
 			{
-				string id = string.Format("{0}_{1}", ibusKeyboard.Language, ibusKeyboard.LongName);
-				IbusKeyboardDescription existingKeyboard;
-				if (curKeyboards.TryGetValue(id, out existingKeyboard))
+				string id = $"{ibusKeyboard.Language}_{ibusKeyboard.LongName}";
+				if (curKeyboards.TryGetValue(id, out var existingKeyboard))
 				{
 					if (!existingKeyboard.IsAvailable)
 					{
@@ -81,10 +80,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			return ibusWrapper.ListEngines();
 		}
 
-		protected IIbusCommunicator IbusCommunicator
-		{
-			get { return _ibusComm; }
-		}
+		protected IIbusCommunicator IbusCommunicator => _ibusComm;
 
 		protected virtual string GetKeyboardSetupApplication(out string arguments)
 		{
@@ -99,10 +95,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// <summary>
 		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
 		/// </summary>
-		public virtual KeyboardAdaptorType Type
-		{
-			get { return KeyboardAdaptorType.OtherIm; }
-		}
+		public virtual KeyboardAdaptorType Type => KeyboardAdaptorType.OtherIm;
 
 		/// <summary>
 		/// Checks whether this keyboard retriever can get keyboards. Different desktop
@@ -159,8 +152,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		public Action GetKeyboardSetupAction()
 		{
-			string args;
-			var setupApp = GetKeyboardSetupApplication(out args);
+			var setupApp = GetKeyboardSetupApplication(out var args);
 			if (setupApp == null)
 			{
 				return null;
@@ -198,7 +190,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		public void CheckDisposed()
 		{
 			if (IsDisposed)
-				throw new ObjectDisposedException(String.Format("'{0}' in use after being disposed.", GetType().Name));
+				throw new ObjectDisposedException(
+					$"'{GetType().Name}' in use after being disposed.");
 		}
 
 		/// <summary>

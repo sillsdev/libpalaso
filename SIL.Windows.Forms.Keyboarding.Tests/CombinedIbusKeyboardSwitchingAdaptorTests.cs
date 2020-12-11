@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using IBusDotNet;
 using Moq;
@@ -19,10 +19,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			}
 
 			// No matter what we want this to be active
-			public override bool IsApplicable
-			{
-				get { return true; }
-			}
+			public override bool IsApplicable => true;
 
 			protected override void InitKeyboards()
 			{
@@ -57,20 +54,20 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			engineDescMock.Setup(x => x.LongName).Returns(longname);
 			engineDescMock.Setup(x => x.Language).Returns(language);
 
-			return new IbusKeyboardDescription(string.Format("{0}_{1}", language, name), engineDescMock.Object, Adaptor) {SystemIndex = systemIndex};
+			return new IbusKeyboardDescription($"{language}_{name}", engineDescMock.Object, Adaptor) {SystemIndex = systemIndex};
 		}
 
-		[TestCase("us", "xkb:us::eng", Result="English - English (US)",
+		[TestCase("us", "xkb:us::eng", ExpectedResult="English - English (US)",
 			TestName="NoVariant")]
-		[TestCase("fr", "xkb:us::eng", Result="Danish - post (m17n)",
+		[TestCase("fr", "xkb:us::eng", ExpectedResult = "Danish - post (m17n)",
 			TestName="FallbackToFirstKbd")]
-		[TestCase("us", "us:bla", Result="English - English (US)",
+		[TestCase("us", "us:bla", ExpectedResult = "English - English (US)",
 			TestName="RegexLayoutAtBeginningOfKeyboardId")] // don't know if this can happen in real life
-		[TestCase("us", "foo:us:bla", Result="English - English (US)",
+		[TestCase("us", "foo:us:bla", ExpectedResult = "English - English (US)",
 			TestName="RegexLayoutInMiddleOfKeyboardId")] // don't know if this can happen in real life
-		[TestCase("us", "foo:us", Result="English - English (US)",
+		[TestCase("us", "foo:us", ExpectedResult = "English - English (US)",
 			TestName="RegexLayoutAtEndOfKeyboardId")] // don't know if this can happen in real life
-		[TestCase("us", "us", Result="English - English (US)",
+		[TestCase("us", "us", ExpectedResult = "English - English (US)",
 			TestName="UnusualKeyboardId")] // don't know if this can happen in real life
 		public string DefaultKeyboard(string defaultLayout, string keyboardId)
 		{

@@ -42,8 +42,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		public static string GetLanguageCode(string langCode3letter)
 		{
-			string alternateLangCode3letter;
-			return s_AlternateLanguageCodes.TryGetValue(langCode3letter, out alternateLangCode3letter)
+			return s_AlternateLanguageCodes.TryGetValue(langCode3letter, out var alternateLangCode3letter)
 				? alternateLangCode3letter : langCode3letter;
 		}
 	}

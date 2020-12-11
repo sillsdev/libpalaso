@@ -29,7 +29,7 @@ namespace SIL.DictionaryServices.Tests.Model
 			//_listEventHelpers: No good way to clone eventhandlers
 			//_parent: We are doing top down clones. Children shouldn't make clones of their parents, but parents of their children.
 			//EmptyObjectsRemoved: No good way to clone eventhandlers. The parent should be taking care of this rather than the clone() method.
-			get { return "|_guid|_id|_creationTime|_modificationTime|_isDirty|_isBeingDeleted|_modifiedTimeIsLocked|_listEventHelpers|_parent|PropertyChanged|EmptyObjectsRemoved|"; }
+			get { return "|_guid|_id|_creationTime|_modificationTime|IsDirty|IsBeingDeleted|ModifiedTimeIsLocked|_listEventHelpers|_parent|PropertyChanged|EmptyObjectsRemoved|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes

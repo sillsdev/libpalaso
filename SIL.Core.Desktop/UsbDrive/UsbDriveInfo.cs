@@ -11,7 +11,6 @@ using SIL.UsbDrive.Windows;
 namespace SIL.UsbDrive
 {
 
-	[CLSCompliant (false)]
 	public interface IUsbDriveInfo
 	{
 		bool IsReady { get; }
@@ -28,7 +27,6 @@ namespace SIL.UsbDrive
 	/// 3) full drives
 	/// 4) locked drives(not today, but maybe soon)
 	/// </summary>
-	[CLSCompliant (false)]
 	public class UsbDriveInfoForTests : IUsbDriveInfo
 	{
 		public UsbDriveInfoForTests(string path)
@@ -47,13 +45,11 @@ namespace SIL.UsbDrive
 		public ulong AvailableFreeSpace{get; set;}
 	}
 
-	[CLSCompliant(false)]
 	public interface IRetrieveUsbDriveInfo
 	{
 		List<IUsbDriveInfo> GetDrives();
 	}
 
-	[CLSCompliant(false)]
 	public class RetrieveUsbDriveInfo : IRetrieveUsbDriveInfo
 	{
 		public List<IUsbDriveInfo> GetDrives()
@@ -65,7 +61,6 @@ namespace SIL.UsbDrive
 	/// <summary>
 	/// This class allows tests to set up pretend usb drives
 	/// </summary>
-	[CLSCompliant(false)]
 	public class RetrieveUsbDriveInfoForTests : IRetrieveUsbDriveInfo
 	{
 		private readonly List<IUsbDriveInfo> _driveInfos;
@@ -81,7 +76,6 @@ namespace SIL.UsbDrive
 		}
 	}
 
-	[CLSCompliant (false)]
 	public abstract class UsbDriveInfo : IUsbDriveInfo
 	{
 		public abstract bool IsReady
@@ -111,7 +105,7 @@ namespace SIL.UsbDrive
 			if (Platform.IsWindows)
 				return UsbDriveInfoWindows.GetDrives();
 
-			// Using Palaso.UsbDrive on Linux/Mono results in NDesk spinning up a thread that
+			// Using SIL.UsbDrive on Linux/Mono results in NDesk spinning up a thread that
 			// continues until NDesk Bus is closed.  Failure to close the thread results in a
 			// program hang when closing.  Closing the system bus allows the thread to close,
 			// and thus the program to close.

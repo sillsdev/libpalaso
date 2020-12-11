@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using MarkdownDeep;
+using Markdig;
 using SIL.IO;
 
 namespace SIL.Windows.Forms.ReleaseNotes
@@ -16,6 +16,8 @@ namespace SIL.Windows.Forms.ReleaseNotes
 	/// </remarks>
 	public partial class ShowReleaseNotesDialog : Form
 	{
+		private static readonly MarkdownPipeline pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+
 		private readonly string _path;
 		private TempFile _temp;
 		private readonly Icon _icon;
@@ -37,8 +39,7 @@ namespace SIL.Windows.Forms.ReleaseNotes
 			_temp = TempFile.WithExtension("htm");
 			if (ApplyMarkdown)
 			{
-				var md = new Markdown();
-				File.WriteAllText(_temp.Path, GetBasicHtmlFromMarkdown(md.Transform(contents)));
+				File.WriteAllText(_temp.Path, GetBasicHtmlFromMarkdown(Markdown.ToHtml(contents, pipeline)));
 			}
 			else if (contents.Contains("<html>") && contents.Contains("<body"))
 			{

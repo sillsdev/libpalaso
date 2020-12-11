@@ -241,7 +241,7 @@ namespace SIL.Windows.Forms.Widgets
 		Description("padded pixels around the image and text"),
 		System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
 		]
-		public int Padding
+		public new int Padding
 		{
 			get{return _Padding;}
 			set{_Padding = value;}

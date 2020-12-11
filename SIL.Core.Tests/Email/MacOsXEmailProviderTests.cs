@@ -1,6 +1,7 @@
 // Copyright (c) 2018 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
+using System;
 using System.Diagnostics;
 using NUnit.Framework;
 using SIL.Email;
@@ -47,7 +48,7 @@ set content to ""This is a test email.""
 make new to recipient at end of to recipients with properties {address:""someone@example.com""}
 end tell
 end tell'
-"));
+".Replace("\r", "").Replace("\n", Environment.NewLine)));
 		}
 
 		[Test]
@@ -79,7 +80,7 @@ make new to recipient at end of to recipients with properties {address:""foo@exa
 make new to recipient at end of to recipients with properties {address:""whoever@example.com""}
 end tell
 end tell'
-"));
+".Replace("\r", "").Replace("\n", Environment.NewLine)));
 		}
 
 		[Test]
@@ -111,7 +112,7 @@ make new to recipient at end of cc recipients with properties {address:""foo@exa
 make new to recipient at end of bcc recipients with properties {address:""whoever@example.com""}
 end tell
 end tell'
-"));
+".Replace("\r", "").Replace("\n", Environment.NewLine)));
 		}
 
 		[Test]
@@ -143,7 +144,7 @@ make new to recipient at end of to recipients with properties {{address:""someon
 make new attachment with properties {{file name:""{tempFile.Path}""}} at after the last paragraph
 end tell
 end tell'
-"));
+".Replace("\r", "").Replace("\n", Environment.NewLine)));
 			}
 		}
 
@@ -179,7 +180,7 @@ make new attachment with properties {{file name:""{tempFile1.Path}""}} at after 
 make new attachment with properties {{file name:""{tempFile2.Path}""}} at after the last paragraph
 end tell
 end tell'
-"));
+".Replace("\r", "").Replace("\n", Environment.NewLine)));
 			}
 		}
 	}

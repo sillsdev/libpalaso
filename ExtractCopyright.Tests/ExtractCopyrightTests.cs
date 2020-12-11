@@ -159,7 +159,8 @@ License: MIT
 				copyrights.WriteDebianParagraphs(writer);
 			}
 
-			Assert.AreEqual(_writeTestData, Encoding.UTF8.GetString(mem.ToArray()));
+			Assert.AreEqual(_writeTestData.Replace("\r", "").Replace("\n", Environment.NewLine),
+				Encoding.UTF8.GetString(mem.ToArray()));
 		}
 
 		[Test]

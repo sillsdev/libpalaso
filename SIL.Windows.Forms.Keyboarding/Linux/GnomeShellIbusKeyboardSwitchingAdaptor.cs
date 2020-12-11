@@ -10,7 +10,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// <summary>
 	/// Class for dealing with ibus keyboards on Gnome Shell (as found in Ubuntu Bionic >= 18.04)
 	/// </summary>
-	public class GnomeShellIbusKeyboardSwitchingAdaptor: IbusKeyboardSwitchingAdaptor
+	public class GnomeShellIbusKeyboardSwitchingAdaptor : IbusKeyboardSwitchingAdaptor
 	{
 		private KeyboardDescription _defaultKeyboard;
 

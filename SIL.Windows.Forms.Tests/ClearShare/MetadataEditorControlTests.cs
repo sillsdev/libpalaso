@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms;
+using System.Windows.Forms;
 using NUnit.Framework;
 using SIL.Windows.Forms.ClearShare;
 using SIL.Windows.Forms.ClearShare.WinFormsUI;
@@ -100,11 +100,11 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			var ccLicense = new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
 			ccLicense.IntergovernmentalOriganizationQualifier = true;
 			m.License = ccLicense;
-			Assert.That(m.License.Url, Is.StringEnding("3.0/igo/"));
+			Assert.That(m.License.Url, Does.EndWith("3.0/igo/"));
 			// SUT
 			ccLicense.IntergovernmentalOriganizationQualifier = false;
 			m.License = ccLicense;
-			Assert.That(m.License.Url, Is.StringEnding(CreativeCommonsLicense.kDefaultVersion+"/"));
+			Assert.That(m.License.Url, Does.EndWith(CreativeCommonsLicense.kDefaultVersion+"/"));
 		}
 
 		[Test]
@@ -116,15 +116,15 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			var ccLicense = new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
 			ccLicense.Version = "3.0"; // set old version (but non-IGO)
 			m.License = ccLicense;
-			Assert.That(m.License.Url, Is.StringEnding("3.0/"));
+			Assert.That(m.License.Url, Does.EndWith("3.0/"));
 			ccLicense.IntergovernmentalOriganizationQualifier = true;
 			m.License = ccLicense;
-			Assert.That(m.License.Url, Is.StringEnding("3.0/igo/"));
+			Assert.That(m.License.Url, Does.EndWith("3.0/igo/"));
 			// SUT
 			ccLicense.IntergovernmentalOriganizationQualifier = false;
 			m.License = ccLicense;
 			// Considered an acceptable loss of information, since the user was messing with the IGO setting.
-			Assert.That(m.License.Url, Is.StringEnding(CreativeCommonsLicense.kDefaultVersion + "/"));
+			Assert.That(m.License.Url, Does.EndWith(CreativeCommonsLicense.kDefaultVersion + "/"));
 		}
 	}
 }

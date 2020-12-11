@@ -40,12 +40,12 @@ namespace SIL.Scripture.Tests
 		/// (default) encoding.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void GetBookAbbrev()
+		[TestCase(1, ExpectedResult = "Gen")]
+		[TestCase(40, ExpectedResult = "Mat")]
+		[TestCase(66, ExpectedResult = "Rev")]
+		public string GetBookAbbrev(int bookNum)
 		{
-			Assert.AreEqual("Gen", m_mlscrBook.GetBookAbbrev(1));
-			Assert.AreEqual("Mat", m_mlscrBook.GetBookAbbrev(40));
-			Assert.AreEqual("Rev", m_mlscrBook.GetBookAbbrev(66));
+			return m_mlscrBook.GetBookAbbrev(bookNum);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -54,16 +54,16 @@ namespace SIL.Scripture.Tests
 		/// non-existing encoding.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void GetBookAbbrevDifferentEncoding()
+		[TestCase(1, ExpectedResult = "GEN")]
+		[TestCase(40, ExpectedResult = "MAT")]
+		[TestCase(66, ExpectedResult = "REV")]
+		public string GetBookAbbrevDifferentEncoding(int bookNum)
 		{
 			List<string> array = new List<string>();
 			array.Add("99"); // some arbitrary should-never-exist value
 			m_mlscrBook.RequestedEncodings = array;
 
-			Assert.AreEqual("GEN", m_mlscrBook.GetBookAbbrev(1));
-			Assert.AreEqual("MAT", m_mlscrBook.GetBookAbbrev(40));
-			Assert.AreEqual("REV", m_mlscrBook.GetBookAbbrev(66));
+			return m_mlscrBook.GetBookAbbrev(bookNum);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -83,13 +83,18 @@ namespace SIL.Scripture.Tests
 		/// 
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[TestCase("jud", ExpectedResult = 65001001)]
+		[TestCase("ju", ExpectedResult = 7001001)]
+		[TestCase("JUD", ExpectedResult = 65001001)]
+		[TestCase("jU", ExpectedResult = 7001001)]
+		public int ParseRefString(string input)
+		{
+			return m_mlscrBook.ParseRefString(input).BBCCCVVV;
+		}
+
 		[Test]
 		public void ParseRefString()
 		{
-			Assert.AreEqual(65001001, m_mlscrBook.ParseRefString("jud").BBCCCVVV);
-			Assert.AreEqual(7001001, m_mlscrBook.ParseRefString("ju").BBCCCVVV);
-			Assert.AreEqual(65001001, m_mlscrBook.ParseRefString("JUD").BBCCCVVV);
-			Assert.AreEqual(7001001, m_mlscrBook.ParseRefString("jU").BBCCCVVV);
 			Assert.AreEqual(65001001, m_mlscrBook.ParseRefString("Ju", 34).BBCCCVVV);
 		}
 
@@ -179,13 +184,13 @@ namespace SIL.Scripture.Tests
 		/// Tests edge cases when parsing a reference string
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void ParseRefString_EdgeCases()
+		[TestCase("Luk 5,15", ExpectedResult = 42005015)]
+		[TestCase("luk 5.15", ExpectedResult = 42005015)]
+		[TestCase("LUK5:15", ExpectedResult = 42005015)]
+		[TestCase("4T1:5", ExpectedResult = 55001005)]
+		public int ParseRefString_EdgeCases(string input)
 		{
-			Assert.AreEqual(42005015, m_mlscrBook.ParseRefString("Luk 5,15"));
-			Assert.AreEqual(42005015, m_mlscrBook.ParseRefString("luk 5.15"));
-			Assert.AreEqual(42005015, m_mlscrBook.ParseRefString("LUK5:15"));
-			Assert.AreEqual(55001005, m_mlscrBook.ParseRefString("4T1:5"));
+			return m_mlscrBook.ParseRefString(input).BBCCCVVV;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -195,7 +200,7 @@ namespace SIL.Scripture.Tests
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void ParseRefString_Invalid()
+		public void ParseRefString_EmptyString_Invalid()
 		{
 			Assert.IsFalse(m_mlscrBook.ParseRefString(string.Empty).Valid);
 		}
@@ -206,10 +211,9 @@ namespace SIL.Scripture.Tests
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[ExpectedException(typeof(NullReferenceException))]
-		public void ParseRefString_NullArgument()
+		public void ParseRefString_NullArgument_ThrowsNullReferenceException()
 		{
-			m_mlscrBook.ParseRefString(null);
+			Assert.Throws<NullReferenceException>(() => m_mlscrBook.ParseRefString(null));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -218,7 +222,7 @@ namespace SIL.Scripture.Tests
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void ParseRefStringWithVerseBridge()
+		public void ParseRefString_VerseBridge_GetsStartRefOfBridge()
 		{
 			BCVRef scrRef = m_mlscrBook.ParseRefString("LUK 23:50-51");
 

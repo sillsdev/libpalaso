@@ -40,11 +40,11 @@ namespace SIL.Lift.Tests.Merging
 			return _baseLiftFileName + DateTime.UtcNow.ToString("yyyy'-'MM'-'dd'T'HH'-'mm'-'ss'-'FFFFFFF UTC ") + SynchronicMerger.ExtensionOfIncrementalFiles;
 		}
 
-		[Test, ExpectedException(typeof(ArgumentException))]
+		[Test]
 		public void GetPendingUpdateFiles_SimpleFileNameInsteadOfPath_Throws()
 		{
 			WriteFile(_baseLiftFileName, "", _directory);
-			SynchronicMerger.GetPendingUpdateFiles(_baseLiftFileName);
+			Assert.Throws<ArgumentException>(() => SynchronicMerger.GetPendingUpdateFiles(_baseLiftFileName));
 		}
 
 		[Test]
@@ -146,7 +146,7 @@ namespace SIL.Lift.Tests.Merging
 			XmlNode nodeDeleted = nodesDeleted[0];
 			//Make sure the contents of the node was changed to match the deleted entry from the .lift.update file
 			Assert.AreEqual("2012-05-08T06:40:44Z", nodeDeleted.Attributes["dateDeleted"].Value);
-			Assert.IsNullOrEmpty(nodeDeleted.InnerXml);
+			Assert.That(nodeDeleted.InnerXml, Is.Null.Or.Empty);
 		}
 
 		private static readonly string s_LiftUpdateDeleteEntry =
@@ -268,15 +268,11 @@ namespace SIL.Lift.Tests.Merging
 		}
 
 		[Test]
-		[ExpectedException("SIL.Lift.BadUpdateFileException")]
-		public void EdittedEntry_BothOldAndNewHaveEscapedIllegalCharacter_Crashes()
+		public void MergeAndGetResult_EditedEntryWhereBothOldAndNewHaveEscapedIllegalCharacter_ThrowsBadUpdateFileException()
 		{
 			WriteFile(_baseLiftFileName, "<entry id='one' guid='0ae89610-fc01-4bfd-a0d6-1125b7281dd1'>&#x1F;Foo</entry>", _directory);
 			WriteFile(GetNextUpdateFileName(), "<entry id='one' guid='0ae89610-fc01-4bfd-a0d6-1125b7281dd1'>&#x1F;Bar</entry>", _directory);
-			XmlDocument doc = MergeAndGetResult(true, _directory);
-			Assert.AreEqual(1, doc.SelectNodes("//entry").Count);
-			var entry= doc.SelectSingleNode("//entry[@id='one']");
-			Assert.AreEqual("&#x1F;Bar", entry.InnerXml);
+			Assert.Throws<BadUpdateFileException>(() => MergeAndGetResult(true, _directory));
 		}
 
 		[Test]
@@ -303,13 +299,12 @@ namespace SIL.Lift.Tests.Merging
 		}
 
 		[Test]
-		[ExpectedException(typeof(BadUpdateFileException))]
-		public void BaseHasEntryWithoutGuid_Throws()
+		public void MergeUpdatesIntoFile_BaseHasEntryWithoutGuid_ThrowsBadUpdateFileException()
 		{
 			WriteFile(_baseLiftFileName, "<entry id='one' greeting='hi'></entry><entry id='two' guid='0ae89610-fc01-4bfd-a0d6-1125b7281d22'></entry>", _directory);
 			WriteFile(GetNextUpdateFileName(), "<entry id='one' guid='0ae89610-fc01-4bfd-a0d6-1125b7281dd2' greeting='hello'></entry>", _directory);
 
-			Merge(_directory);
+			Assert.Throws<BadUpdateFileException>(() => Merge(_directory));
 		}
 
 
@@ -391,7 +386,7 @@ namespace SIL.Lift.Tests.Merging
 		}
 
 		[Test]
-		public void ReadOnlyUpdate_DoesNothing()
+		public void MergeUpdatesIntoFile_ReadOnlyUpdate_DoesNothing()
 		{
 			string updateFilePath = Path.Combine(this._directory, GetNextUpdateFileName());
 			try
@@ -411,8 +406,8 @@ namespace SIL.Lift.Tests.Merging
 			ExpectFileCount(2, _directory);
 		}
 
-		[Test, ExpectedException(typeof(IOException))]
-		public void LockedBaseFile_Throws()
+		[Test]
+		public void MergeUpdatesIntoFile_LockedBaseFile_ThrowsIOException()
 		{
 			Exception ex = null;
 			string baseFilePath = Path.Combine(this._directory, _baseLiftFileName);
@@ -433,15 +428,14 @@ namespace SIL.Lift.Tests.Merging
 			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='one' and @greeting='hi']").Count);
 			ExpectFileCount(2, _directory);
 
-			if (ex != null)
-				throw ex;
+			Assert.That(ex is IOException);
 		}
 
-		[Test, ExpectedException(typeof(IOException))]
-		public void LockedUpdate_Throws()
+		[Test]
+		public void MergeUpdatesIntoFile_LockedUpdate_ThrowsIOException()
 		{
 			Exception ex = null;
-			string updateFilePath = Path.Combine(this._directory, GetNextUpdateFileName());
+			string updateFilePath = Path.Combine(_directory, GetNextUpdateFileName());
 
 			WriteBaseAndUpdateFilesSoMergedWillHaveHelloInsteadOfHi(_directory, updateFilePath);
 			using (File.Open(updateFilePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
@@ -460,15 +454,13 @@ namespace SIL.Lift.Tests.Merging
 			Assert.AreEqual(1, doc.SelectNodes("//entry[@id='one' and @greeting='hi']").Count);
 			ExpectFileCount(2, _directory);
 
-			if (ex != null)
-				throw ex;
+			Assert.That(ex is IOException);
 		}
-
 
 		[Test]
 		public void ReadOnlyBackupFile_StillMakesBackup()
 		{
-			string backupFilePath = Path.Combine(this._directory, _baseLiftFileName + ".bak");
+			string backupFilePath = Path.Combine(_directory, _baseLiftFileName + ".bak");
 			File.CreateText(backupFilePath).Dispose();
 
 			WriteBaseAndUpdateFilesSoMergedWillHaveHelloInsteadOfHi(_directory, GetNextUpdateFileName());
@@ -484,7 +476,7 @@ namespace SIL.Lift.Tests.Merging
 		[Platform(Exclude = "Linux", Reason = "Locked files can still be moved on Linux")]
 		public void LockedBackupFile_StillMakesBackup()
 		{
-			string backupFilePath = Path.Combine(this._directory, _baseLiftFileName + ".bak");
+			string backupFilePath = Path.Combine(_directory, _baseLiftFileName + ".bak");
 			File.CreateText(backupFilePath).Dispose();
 
 			WriteBaseAndUpdateFilesSoMergedWillHaveHelloInsteadOfHi(_directory, GetNextUpdateFileName());
@@ -530,8 +522,7 @@ namespace SIL.Lift.Tests.Merging
 		}
 
 		[Test]
-		[ExpectedException("SIL.Lift.LiftFormatException")]
-		public void AddingToEmptyLift_HasIllegalUnicode_Crashes()
+		public void MergeUpdatesIntoFile_AddingEntryToEmptyLiftWithIllegalUnicode_ThrowsLiftFormatException()
 		{
 			using (StreamWriter writer = File.CreateText(Path.Combine(_directory, _baseLiftFileName)))
 			{
@@ -547,7 +538,7 @@ namespace SIL.Lift.Tests.Merging
 						 </form>
 					</lexical-unit>
 				</entry>", _directory);
-			XmlDocument doc = MergeAndGetResult(true, _directory);
+			Assert.Throws<LiftFormatException>(() => MergeAndGetResult(true, _directory));
 		}
 
 		[Test]
@@ -603,15 +594,15 @@ namespace SIL.Lift.Tests.Merging
 		}
 
 		private void Merge(string directory) {
-			this._merger.MergeUpdatesIntoFile(Path.Combine(directory, _baseLiftFileName));
+			_merger.MergeUpdatesIntoFile(Path.Combine(directory, _baseLiftFileName));
 		}
 
 		private void Merge(string directory, FileInfo[] files)
 		{
-			this._merger.MergeUpdatesIntoFile(Path.Combine(directory, _baseLiftFileName), files);
+			_merger.MergeUpdatesIntoFile(Path.Combine(directory, _baseLiftFileName), files);
 		}
 
-		static private void ExpectFileCount(int count, string directory)
+		private static void ExpectFileCount(int count, string directory)
 		{
 			string[] files = Directory.GetFiles(directory);
 
@@ -624,7 +615,7 @@ namespace SIL.Lift.Tests.Merging
 			Assert.AreEqual(count, files.Length, fileList.ToString());
 		}
 
-		static private string WriteFile(string fileName, string xmlForEntries, string directory)
+		private static string WriteFile(string fileName, string xmlForEntries, string directory)
 		{
 			StreamWriter writer = File.CreateText(Path.Combine(directory, fileName));
 			string content = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"

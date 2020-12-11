@@ -1,0 +1,11 @@
+{
+  "project_identifier": "sil-common-libraries",
+  "api_key_env": "CROWDIN_COMMONLIB_KEY",
+  "base_path": ".",
+  "files": [
+    {
+      "source": "Palaso.en.xlf",
+      "translation": "%local%/Palaso.%locale%.xlf",
+    }
+  ]
+}

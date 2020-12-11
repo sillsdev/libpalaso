@@ -110,7 +110,7 @@ namespace SIL.Media.Tests
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "Form1";
-			this.Text = "Palaso.Media Sample App";
+			this.Text = "SIL.Media Sample App";
 			this.ResumeLayout(false);
 
 		}
