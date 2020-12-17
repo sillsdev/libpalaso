@@ -1,8 +1,8 @@
 # WinForms designer
 
 Starting with .NET Core 3.1 it's now possible to use WinForms in sdk-style
-csproj files. However, support for opening files in Designer is still not
-fully implemented.
+csproj files. Support for opening files in Designer should now be
+implemented in Visual Studio 2019.
 
 JetBrains Rider is able to open files in design mode on Windows.
 Current versions of Visual Studio 2019 are also able to open files in
