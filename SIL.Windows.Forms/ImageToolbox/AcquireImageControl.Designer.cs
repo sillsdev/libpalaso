@@ -1,4 +1,4 @@
-﻿using SIL.Windows.Forms.ImageToolbox.ImageGallery;
+using SIL.Windows.Forms.ImageToolbox.ImageGallery;
 using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.ImageToolbox
@@ -20,7 +20,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			{
 				components.Dispose();
 			}
-			_galleryControl.Dispose();
+			_galleryControl?.Dispose();	// Can be null if error when initializing.
 			base.Dispose(disposing);
 		}
 
