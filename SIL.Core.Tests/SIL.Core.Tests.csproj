@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>net461</TargetFrameworks>
-    <AssemblyTitle>SIL.Core.Tests</AssemblyTitle>
     <RootNamespace>SIL.Tests</RootNamespace>
+    <AssemblyName>SIL.Core.Tests</AssemblyName>
     <Configurations>Debug;Release</Configurations>
     <Description>Unit tests for SIL.Core</Description>
     <Company>SIL International</Company>
@@ -14,6 +14,10 @@
     <SignAssembly>true</SignAssembly>
     <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
     <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/sillsdev/libpalaso</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageOutputPath>../output</PackageOutputPath>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
@@ -22,21 +26,19 @@
 See full changelog at https://github.com/sillsdev/libpalaso/master/nuget/CHANGELOG.md]]>
     </AppendToReleaseNotesProperty>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
-    <AddSyntheticProjectReferencesForSolutionDependencies>false</AddSyntheticProjectReferencesForSolutionDependencies>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GitVersionTask" Version="5.3.4" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4" PrivateAssets="All" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
     <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj" />
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.12.0" />
   </ItemGroup>
 
 </Project>
