@@ -29,9 +29,7 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/master/CHANGELO
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.3.4">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="GitVersionTask" Version="5.3.4" PrivateAssets="All" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="RhinoMocks" Version="3.6.1" />
