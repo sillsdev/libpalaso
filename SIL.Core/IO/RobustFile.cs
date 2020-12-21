@@ -168,6 +168,15 @@ namespace SIL.IO
 			RetryUtility.Retry(() => File.Move(sourceFileName, destFileName));
 		}
 
+		// TODO: Look at the myriad places where the above method is used that could be
+		// simplified by removing preceding code to check for and delete the destination file.
+		public static void Move(string sourceFileName, string destFileName, bool overWrite)
+		{
+			if (overWrite && Exists(destFileName))
+				Delete(destFileName);
+			Move(sourceFileName, destFileName);
+		}
+
 		public static FileStream OpenRead(string path)
 		{
 			return RetryUtility.Retry(() => File.OpenRead(path));
