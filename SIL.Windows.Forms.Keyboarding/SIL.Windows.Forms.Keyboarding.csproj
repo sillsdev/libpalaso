@@ -33,7 +33,7 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/master/CHANGELO
     </PackageReference>
     <PackageReference Include="ibusdotnet" Version="2.0.3" />
     <PackageReference Include="icu.net" Version="2.6.0" />
-    <PackageReference Include="L10NSharp" Version="4.1.0-beta0036" />
+    <PackageReference Include="L10NSharp" Version="4.1.0*-*" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Mono.Posix" Version="5.4.0.201" Condition="'$(OS)' == 'Windows_NT'" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4" PrivateAssets="All" />
