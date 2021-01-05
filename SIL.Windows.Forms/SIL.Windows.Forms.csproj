@@ -34,15 +34,15 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/master/CHANGELO
   <ItemGroup>
     <PackageReference Include="DialogAdapters.Gtk2" Version="0.1.9" />
     <PackageReference Include="Enchant.Net" Version="1.4.2" />
-    <PackageReference Include="L10NSharp" Version="4.1.0*-*" />
+    <PackageReference Include="L10NSharp" Version="4.1.0-*" />
     <PackageReference Include="Markdig.Signed" Version="0.22.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="TagLibSharp" Version="2.2.0" />
     <PackageReference Include="GitVersionTask" Version="5.3.4">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="SIL.BuildTasks" Version="2.3.4*-*" PrivateAssets="All" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4*-*" PrivateAssets="All" />
+    <PackageReference Include="SIL.BuildTasks" Version="2.3.4-*" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4-*" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
