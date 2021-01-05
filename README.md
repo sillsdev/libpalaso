@@ -99,6 +99,8 @@ To get the source code, you'll need Git. Then from a command line, give this com
   * `build /t:pack` will pack nuget packages and publish them to `LOCAL_NUGET_REPO`
     * Note: some packages published this way may not be published to nuget.org, including SIL.Core.Tests
 
+Further instructions at https://github.com/sillsdev/libpalaso/wiki/Developing-with-locally-modified-nuget-packages
+
 ### Contribute
 
 - Commit. Push:
