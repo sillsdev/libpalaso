@@ -31,7 +31,7 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/master/CHANGELO
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4*-*" PrivateAssets="All" />
     <PackageReference Include="icu.net" Version="2.6.0" />
     <PackageReference Include="Spart" Version="1.0.0" />
     <PackageReference Include="System.IO.FileSystem.AccessControl" Version="4.7.0" />
