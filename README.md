@@ -92,6 +92,14 @@ To get the source code, you'll need Git. Then from a command line, give this com
   build/TestBuild Debug Test
   ```
 
+- Test in client projects (as applicable):
+
+  * Set an enviroment variable `LOCAL_NUGET_REPO` with the path to a folder on your computer (or local network) to publish locally-built packages
+  * See [these instructions](https://docs.microsoft.com/en-us/nuget/hosting-packages/local-feeds) to enable local package sources
+  * `build /t:pack` will pack nuget packages and publish them to `LOCAL_NUGET_REPO`
+
+Further instructions at https://github.com/sillsdev/libpalaso/wiki/Developing-with-locally-modified-nuget-packages
+
 ### Contribute
 
 - Commit. Push:
