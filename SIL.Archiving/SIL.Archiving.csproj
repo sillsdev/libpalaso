@@ -34,9 +34,9 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/master/CHANGELO
     <PackageReference Include="GitVersionTask" Version="5.3.4">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="L10NSharp" Version="4.1.0-beta0036" />
+    <PackageReference Include="L10NSharp" Version="4.1.0-*" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4-*" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj" />
