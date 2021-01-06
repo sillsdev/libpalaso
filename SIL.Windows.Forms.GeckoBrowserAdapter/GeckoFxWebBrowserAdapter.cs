@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 SIL International
+// Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -506,7 +506,11 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 				{
 					var childrenProperty = geckoHtmlElementType.GetProperty("ChildNodes", geckoNodeListType);
 					var children = childrenProperty.GetValue(body, BindingFlags.Default, null, null, null);
-					var countLengthProp = geckoNodeListType.GetProperty("Length", typeof(int));
+					var countLengthProp = geckoNodeListType.GetProperty("Length", typeof(uint)); // GeckoFx 60+
+					if (countLengthProp == null)
+					{
+						countLengthProp = geckoNodeListType.GetProperty("Length", typeof(int)); // GeckoFx 45 used an int for this property
+					}
 					var countLength = (int)countLengthProp.GetValue(children, BindingFlags.Default, null, null, null);
 					if(countLength > 0)
 					{
