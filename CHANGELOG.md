@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] `XmlSerializationHelper.Deserialize<T>` to allow deserialization from a `TextReader`.
 - [SIL.Core] `Platform.IsGnomeShell` to detect if executing in a Gnome Shell
 - [SIL.Core] `XmlSerializationHelper.SerializeToString<T>` overload to allow caller to specify encoding.
+- [SIL.Core] Additional parameter to `ProcessExtensions.RunProcess` to allow redirecting stderr.
 
 ### Changed
 
