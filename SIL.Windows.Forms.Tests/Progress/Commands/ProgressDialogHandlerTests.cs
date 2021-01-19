@@ -117,7 +117,7 @@ namespace SIL.Windows.Forms.Tests.Progress.Commands
 				{
 					Assert.AreEqual(expectedState, _progressState.State);
 				}
-			  //  Thread.Sleep(10);
+				//  Thread.Sleep(10);
 				Application.DoEvents();
 			}
 		}
@@ -130,7 +130,7 @@ namespace SIL.Windows.Forms.Tests.Progress.Commands
 									   StatusCallback primaryStatusTextCallback,
 									   StatusCallback secondaryStatusTextCallback)
 		{
-		   int countForWork = 0;
+			int countForWork = 0;
 			while (countForWork < 100)
 			{
 				if (Canceling)
