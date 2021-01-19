@@ -26,6 +26,7 @@
 See full changelog at https://github.com/sillsdev/libpalaso/master/nuget/CHANGELOG.md]]>
     </AppendToReleaseNotesProperty>
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <LangVersion>8</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
