@@ -53,8 +53,8 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/master/CHANGELO
 
   <ItemGroup Condition="'$(OS)'=='Windows_NT'">
     <!--These references are required to compile on Windows -->
-    <PackageReference Include="GtkSharp-signed" Version="3.22.24.37" />
-    <PackageReference Include="Mono.Posix" Version="5.4.0.201" />
+    <PackageReference Include="GtkSharp-signed" Version="3.22.24.37" PrivateAssets="All" />
+    <PackageReference Include="Mono.Posix" Version="5.4.0.201" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(OS)'!='Windows_NT'">
