@@ -16,7 +16,7 @@ namespace SIL.Tests.IO.FileLock
 		// on Windows, we use 0, which is the system idle process.
 		// on Linux, we use 1, which is the init process.
 		// we know that these will always be active.
-		private static readonly int ActiveProcessId = Platform.IsLinux ? 1 : 0;
+		private static readonly int ActiveProcessId = Platform.IsUnix ? 1 : 0;
 
 		[SetUp]
 		public void SetUp()
@@ -162,7 +162,7 @@ namespace SIL.Tests.IO.FileLock
 		/// </summary>
 		private string GetSafeActiveProcessName()
 		{
-			return Platform.IsLinux && (ActiveProcessId == 1) ? "init" : Process.GetProcessById(ActiveProcessId).ProcessName;
+			return Platform.IsUnix && (ActiveProcessId == 1) ? "init" : Process.GetProcessById(ActiveProcessId).ProcessName;
 		}
 
 		[Test]

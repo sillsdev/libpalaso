@@ -88,7 +88,7 @@ namespace SIL.WritingSystems.Migration
 			}
 
 			// 3) Harvest LDML files from old Linux location in "/var/lib"
-			if (Platform.IsLinux)
+			if (Platform.IsUnix)
 			{
 				for (int version = 2; version >= 0; --version)
 				{
