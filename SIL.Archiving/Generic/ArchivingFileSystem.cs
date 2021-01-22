@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.IO;
 using SIL.PlatformUtilities;
@@ -15,9 +15,10 @@ namespace SIL.Archiving.Generic
 		{
 			get
 			{
-				// On Linux we have to use /var/lib (instead of CommonApplicationData which
+				// On Unix we have to use /var/lib (instead of CommonApplicationData which
 				// translates to /usr/share and isn't writable by default)
-				string folder = Platform.IsLinux ? "/var/lib" :
+				// On Mac the place to store data shared between users is /Users/Shared
+				var folder = Platform.IsMac ? "/Users/Shared" : Platform.IsUnix ? "/var/lib" :
 					Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
 				return CheckFolder(Path.Combine(folder, "SIL"));
 			}
@@ -46,18 +47,15 @@ namespace SIL.Archiving.Generic
 				}
 				catch (UnauthorizedAccessException)
 				{
-					if (Platform.IsLinux)
+					if (Platform.IsUnix && (folderName.StartsWith("/var/lib/SIL") || folderName.StartsWith("/Users/Shared")))
 					{
-						if (folderName.StartsWith("/var/lib/SIL"))
-						{
-							// by default /var/lib isn't writable on Linux, so we can't create a new
-							// directory. Create a folder in the user's home directory instead.
-							var endFolder = folderName.Substring("/var/lib/SIL".Length).TrimStart('/');
-							folderName = Path.Combine(
-								Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-								"SIL", endFolder);
-							return CheckFolder(folderName);
-						}
+						// If the default directory isn't writable on a Unix system (we couldn't create the SIL directory)
+						// fall back to creating a folder in the users home directory instead.
+						var endFolder = folderName.Substring("/var/lib/SIL".Length).TrimStart('/');
+						folderName = Path.Combine(
+							Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+							"SIL", endFolder);
+						return CheckFolder(folderName);
 					}
 					throw;
 				}

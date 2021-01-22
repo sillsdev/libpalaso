@@ -33,7 +33,7 @@ namespace SIL.WritingSystems.Tests.Migration
 
 			public void WriteVersion1LdmlFile(string language)
 			{
-				string folderPath = Path.Combine(Platform.IsLinux ? GlobalWritingSystemRepositoryMigrator.LdmlPathLinuxVersion2 : _baseFolder.Path, "1");
+				string folderPath = Path.Combine(Platform.IsUnix ? GlobalWritingSystemRepositoryMigrator.LdmlPathLinuxVersion2 : _baseFolder.Path, "1");
 				Directory.CreateDirectory(folderPath);
 				string filePath = Path.Combine(folderPath, String.Format("{0}.ldml", language));
 				string content = LdmlContentForTests.Version1(language, "", "", "");
@@ -42,7 +42,7 @@ namespace SIL.WritingSystems.Tests.Migration
 
 			public void WriteVersion2LdmlFile(string language)
 			{
-				string folderPath = Path.Combine(Platform.IsLinux ? GlobalWritingSystemRepositoryMigrator.LdmlPathLinuxVersion2 : _baseFolder.Path, "2");
+				string folderPath = Path.Combine(Platform.IsUnix ? GlobalWritingSystemRepositoryMigrator.LdmlPathLinuxVersion2 : _baseFolder.Path, "2");
 				Directory.CreateDirectory(folderPath);
 				string filePath = Path.Combine(folderPath, String.Format("{0}.ldml", language));
 				string content = LdmlContentForTests.Version2(language, "", "", "");
