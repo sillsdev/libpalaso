@@ -156,7 +156,7 @@ namespace SIL.WritingSystems
 				// This allows unit tests to set the _defaultBasePath (through reflection)
 				if (string.IsNullOrEmpty(_defaultBasePath))
 				{
-					string basePath = Platform.IsLinux
+					var basePath = Platform.IsMac ? "/Users/Shared" : Platform.IsLinux
 						? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
 						: Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
 					_defaultBasePath = Path.Combine(basePath, "SIL", "WritingSystemRepository");
@@ -178,7 +178,7 @@ namespace SIL.WritingSystems
 		public static void CreateGlobalWritingSystemRepositoryDirectory(string path)
 		{
 			DirectoryInfo di = Directory.CreateDirectory(path);
-			if (!Platform.IsLinux && !path.StartsWith(Path.GetTempPath()))
+			if (!Platform.IsUnix && !path.StartsWith(Path.GetTempPath()))
 			{
 				// NOTE: GetAccessControl/ModifyAccessRule/SetAccessControl is not implemented in Mono
 				DirectorySecurity ds = di.GetAccessControl();
