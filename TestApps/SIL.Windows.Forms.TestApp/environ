@@ -42,9 +42,9 @@ MONO_PATH="${GDK_SHARP}:${GECKOFX}"
 ################################################################################################
 
 # Add the build output to paths
-PATH="${BASE}/output/${BUILD}:${PATH}"
-LD_LIBRARY_PATH="${BASE}/output/${BUILD}:${LD_LIBRARY_PATH}"
-MONO_PATH="${BASE}/output/${BUILD}:${MONO_PATH}"
+PATH="${BASE}/output/${BUILD}/net461:${PATH}"
+LD_LIBRARY_PATH="${BASE}/output/${BUILD}/net461:${LD_LIBRARY_PATH}"
+MONO_PATH="${BASE}/output/${BUILD}/net461:${MONO_PATH}"
 
 ################################################################################################
 
