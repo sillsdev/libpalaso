@@ -59,13 +59,7 @@ namespace SIL.Acknowledgements
 					}
 					catch (BadImageFormatException bife)
 					{
-						Debug.WriteLine("BadImageFormatException on file: " + execFile + " " + bife.Message);
-						if (bife.Message.StartsWith("The module was expected to contain an assembly manifest.") ||
-							bife.Message.StartsWith("Could not load file or assembly"))
-						{
-							continue;
-						}
-						throw;
+						Debug.WriteLine($"BadImageFormatException on file '{execFile}': {bife.Message}");
 					}
 				}
 			}
@@ -90,7 +84,8 @@ namespace SIL.Acknowledgements
 					Debug.WriteLine("Duplicate Acknowledgement key skipped. Key="+ acknowledgement.Key + " Html=" + acknowledgement.Html);
 					Debug.WriteLine("  Kept first Acknowledgement Key=" + ackRetained.Key + " Html=" + ackRetained.Html);
 				}
-				else ackAttrDict.Add(acknowledgement.Key, acknowledgement);
+				else
+					ackAttrDict.Add(acknowledgement.Key, acknowledgement);
 			}
 		}
 

@@ -18,10 +18,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Geckofx45" Version="45.0.34" />
-    <PackageReference Include="Geckofx45.32.Linux" Version="45.0.37" />
-    <PackageReference Include="Geckofx45.64" Version="45.0.34" />
-    <PackageReference Include="Geckofx45.64.Linux" Version="45.0.37" />
+    <PackageReference Include="Geckofx45" Version="45.0.34" Condition="'$(OS)'!='Unix' And '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'!='X64'" GeneratePathProperty="true" />
+    <PackageReference Include="Geckofx45.64" Version="45.0.34" Condition="'$(OS)'!='Unix' And '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'=='X64'" GeneratePathProperty="true" />
+    <PackageReference Include="Geckofx45.32.Linux" Version="45.0.37" Condition="'$(OS)'=='Unix' And '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'!='X64'" GeneratePathProperty="true" />
+    <PackageReference Include="Geckofx45.64.Linux" Version="45.0.37" Condition="'$(OS)'=='Unix' And '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'=='X64'" GeneratePathProperty="true" />
     <PackageReference Include="GitVersionTask" Version="5.3.4">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -34,6 +34,7 @@
     <ProjectReference Include="..\..\SIL.Core\SIL.Core.csproj" />
     <ProjectReference Include="..\..\SIL.Lexicon\SIL.Lexicon.csproj" />
     <ProjectReference Include="..\..\SIL.Media\SIL.Media.csproj" />
+    <ProjectReference Include="..\..\SIL.Windows.Forms.GeckoBrowserAdapter\SIL.Windows.Forms.GeckoBrowserAdapter.csproj" />
     <ProjectReference Include="..\..\SIL.Windows.Forms.Keyboarding\SIL.Windows.Forms.Keyboarding.csproj" />
     <ProjectReference Include="..\..\SIL.Windows.Forms.WritingSystems\SIL.Windows.Forms.WritingSystems.csproj" />
     <ProjectReference Include="..\..\SIL.Windows.Forms\SIL.Windows.Forms.csproj" />
@@ -46,6 +47,26 @@
       <IcuFiles Include="$(OutputPath)/icu*56.dll" />
     </ItemGroup>
     <Delete Files="@(IcuFiles)" />
+  </Target>
+
+  <Target Name="CopyGeckoFxSupportFiles" AfterTargets="CopyFilesToOutputDirectory">
+    <!-- This copy is necessary because the Geckofx45.targets uses a deprecated method of copying files -->
+    <PropertyGroup>
+      <!-- NOTE: when building with mono 5 GeneratePathProperty doesn't work -->
+      <PkgGeckofx45_32_Linux Condition="'$(PkgGeckofx45_32_Linux)'==''">$(HOME)/.nuget/packages/geckofx45.32.linux/45.0.37</PkgGeckofx45_32_Linux>
+      <PkgGeckofx45_64_Linux Condition="'$(PkgGeckofx45_64_Linux)'==''">$(HOME)/.nuget/packages/geckofx45.64.linux/45.0.37</PkgGeckofx45_64_Linux>
+    </PropertyGroup>
+    <!-- NOTE: we can't use "$(Platform)!='x64'" because Platform is AnyCPU! -->
+    <ItemGroup Condition="'$(OS)'!='Unix'">
+      <Firefox Include="$(PkgGeckofx45)/content/Firefox/*.*" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'!='X64'" />
+      <Firefox Include="$(PkgGeckofx45_64)/content/Firefox/*.*" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'=='X64'" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(OS)'=='Unix'">
+      <Firefox Include="$(PkgGeckofx45_32_Linux)/content/Firefox*/*.*" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'!='X64'" />
+      <Firefox Include="$(PkgGeckofx45_64_Linux)/content/Firefox*/*.*" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'=='X64'" />
+    </ItemGroup>
+    <Message Text="Copying Gecko Files" />
+    <Copy SourceFiles="@(Firefox)" DestinationFolder="$(OutputPath)/Firefox" SkipUnchangedFiles="true" />
   </Target>
 
 </Project>
