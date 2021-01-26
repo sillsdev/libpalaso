@@ -251,8 +251,8 @@ namespace SIL.IO
 					return null;
 			}
 
-			value = key.GetValue(string.Empty) as string;
-			key.Close();
+			value = key?.GetValue(string.Empty) as string;
+			key?.Close();
 
 			if (value == null)
 				return null;
