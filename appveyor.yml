@@ -1,0 +1,36 @@
+version: '{build}'
+branches:
+  only:
+  - feature/nuget
+image: Visual Studio 2019
+init:
+- cmd: set GITVERSION_BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
+nuget:
+  disable_publish_on_pr: true
+  disable_publish_octopus: true
+before_build:
+- ps: git log --graph --format="%h %cr %d" --decorate --date=relative --all --remotes=* -n 100
+build:
+  project: build/Palaso.proj
+  publish_nuget: true
+  publish_nuget_symbols: true
+  use_snupkg_format: true
+  verbosity: minimal
+test:
+  assemblies:
+    except:
+    - SIL.TestUtilities.dll
+  categories:
+    except:
+    - SkipOnTeamCity
+artifacts:
+- path: output/*nupkg
+  name: nuget
+deploy:
+- provider: Environment
+  name: sil-lsdev nuget
+notifications:
+- provider: GitHubPullRequest
+  on_build_success: false
+  on_build_failure: false
+  on_build_status_changed: false
