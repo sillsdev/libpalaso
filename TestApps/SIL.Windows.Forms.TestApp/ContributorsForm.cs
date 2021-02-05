@@ -161,13 +161,15 @@ namespace SIL.Windows.Forms.TestApp
 		/// ------------------------------------------------------------------------------------
 		private void UpdateNames(object sender, EventArgs e)
 		{
+			// The following illustrates how to avoid an InvalidOperationException when the
+			// grid is not in a state where it passes validation.
+			if (!_contributorsControl.Validate())
+				return;
+
 			var contribs = _model.Contributions;
-			for (var i = 0; i < _contributorNames.RowCount; i++)
+			for (var i = 0; i < _contributorNames.RowCount && i < contribs.Count; i++)
 			{
-				if (i < contribs.Count)
-				{
-					contribs[i].ContributorName = (string)_contributorNames.Rows[i].Cells[0].Value;
-				}
+				contribs[i].ContributorName = (string)_contributorNames.Rows[i].Cells[0].Value;
 			}
 
 			_model.SetContributionList(contribs);
