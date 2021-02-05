@@ -336,5 +336,11 @@ and displays it as HTML.
 				MessageBox.Show("play started");
 			}
 		}
+
+		private void btnTestContributorsList_Click(object sender, EventArgs e)
+		{
+			using (var dlg = new ContributorsForm())
+				dlg.ShowDialog();
+		}
 	}
 }
