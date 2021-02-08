@@ -6,14 +6,14 @@
 		<SolutionPath>$(RootDir)/$(Solution)</SolutionPath>
 		<Configuration Condition="'$(Configuration)'==''">Release</Configuration>
 		<ExtraExcludeCategories Condition="'$(OS)'!='Windows_NT'">KnownMonoIssue,</ExtraExcludeCategories>
-		<ExtraExcludeCategories Condition="'$(teamcity_version)' != '' Or '$(JENKINS_URL)' != ''">SkipOnTeamCity,$(ExtraExcludeCategories)</ExtraExcludeCategories>
+		<ExtraExcludeCategories Condition="'$(teamcity_version)' != '' Or '$(JENKINS_URL)' != '' Or '$(CI)' != ''">SkipOnTeamCity,$(ExtraExcludeCategories)</ExtraExcludeCategories>
 		<useNUnit-x86 Condition="'$(OS)'=='Windows_NT'">true</useNUnit-x86>
 		<useNUnit-x86 Condition="'$(OS)'!='Windows_NT'">false</useNUnit-x86>
 		<Platform Condition="'$(Platform)'==''">Any CPU</Platform>
 		<RestartBuild Condition="!Exists('$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll') Or !Exists('$(RootDir)/packages/NUnit.ConsoleRunner/tools/nunit3-console.exe')">true</RestartBuild>
 		<RestartBuild Condition="Exists('$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll') And Exists('$(RootDir)/packages/NUnit.ConsoleRunner/tools/nunit3-console.exe')">false</RestartBuild>
-		<ContinuousIntegrationBuild Condition="'$(teamcity_version)' != '' Or '$(JENKINS_URL)' != '' Or '$(CI)' != '' ">true</ContinuousIntegrationBuild>
-		<ContinuousIntegrationBuild Condition="'$(teamcity_version)' == '' And '$(JENKINS_URL)' == '' And '$(CI)' == '' ">false</ContinuousIntegrationBuild>
+		<ContinuousIntegrationBuild Condition="'$(teamcity_version)' != '' Or '$(JENKINS_URL)' != '' Or '$(CI)' != ''">true</ContinuousIntegrationBuild>
+		<ContinuousIntegrationBuild Condition="'$(teamcity_version)' == '' And '$(JENKINS_URL)' == '' And '$(CI)' == ''">false</ContinuousIntegrationBuild>
 		<TeamCity Condition="'$(teamcity_version)' != ''">true</TeamCity>
 		<TeamCity Condition="'$(teamcity_version)' == ''">false</TeamCity>
 		<TestOutputXmlFile Condition="'$(teamcity_version)' == ''">$(RootDir)/output/$(Configuration)/TestResults.xml</TestOutputXmlFile>
