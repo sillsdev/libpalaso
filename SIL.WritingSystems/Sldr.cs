@@ -98,7 +98,7 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				string basePath = Platform.IsLinux ? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+				string basePath = Platform.IsMac ? "/Users/Shared" : Platform.IsLinux ? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
 					: Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
 				return Path.Combine(basePath, "SIL", "SldrCache");
 			}
@@ -677,7 +677,7 @@ namespace SIL.WritingSystems
 				return;
 
 			DirectoryInfo di = Directory.CreateDirectory(SldrCachePath);
-			if (!Platform.IsLinux && !SldrCachePath.StartsWith(Path.GetTempPath()))
+			if (!Platform.IsUnix && !SldrCachePath.StartsWith(Path.GetTempPath()))
 			{
 				// NOTE: GetAccessControl/ModifyAccessRule/SetAccessControl is not implemented in Mono
 				DirectorySecurity ds = di.GetAccessControl();
