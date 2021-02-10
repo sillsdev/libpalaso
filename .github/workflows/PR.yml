@@ -48,3 +48,4 @@ jobs:
       with:
         path: output/**/TestResults.xml
         access-token: ${{ secrets.GITHUB_TOKEN }}
+        reportTitle: "Test Results (${{ matrix.os }})"
