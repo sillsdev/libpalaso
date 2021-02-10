@@ -96,7 +96,7 @@
 			WorkingDirectory="$(RootDir)/output/$(Configuration)"
 			Force32Bit="$(useNUnit-x86)"
 			Verbose="true"
-			UseNUnit3Xml="false"
+			UseNUnit3Xml="true"
 			OutputXmlFile="$(TestOutputXmlFile)"
 			TeamCity="$(TeamCity)"/>
 	</Target>
