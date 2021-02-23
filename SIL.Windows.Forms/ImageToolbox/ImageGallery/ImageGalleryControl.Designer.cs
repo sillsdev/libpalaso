@@ -1,4 +1,4 @@
-﻿namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
+namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 {
 	partial class ImageGalleryControl
 	{
@@ -132,7 +132,7 @@
 			this._downloadInstallerLink.TabStop = false;
 			this._downloadInstallerLink.Text = "Download Art Of Reading Installer";
 			this._downloadInstallerLink.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this._downloadInstallerLink.URL = "http://bloomlibrary.org/#/artofreading";
+			this._downloadInstallerLink.URL = "https://bloomlibrary.org/artofreading";
 			this._downloadInstallerLink.Visible = false;
 			// 
 			// _messageLabel
