@@ -3,12 +3,13 @@ using System.Text;
 
 //For UML diagram, see ProgressSystem.uml (done in StarUML)
 
-//NOTE: this "ProgressState" system is deprecated. Newer clients use the extensive Palaso.Progress.IProgress classes, often along with the logbox.
+//NOTE: this "ProgressState" system is deprecated. Newer clients use the extensive SIL.Progress.IProgress classes, often along with the logbox.
 namespace SIL.Progress
 {
 	/// <summary>
 	/// Long-running tasks can be written to take one of these as an argument, and use it to notify others of their progress
 	/// </summary>
+	// Should be deprecated - [Obsolete("Use the extensive SIL.Progress.IProgress classes instead, possibly along with `SIL.Windows.Forms.Progress.LogBox`.")]
 	public class ProgressState : IDisposable
 	{
 		private object _arguments;

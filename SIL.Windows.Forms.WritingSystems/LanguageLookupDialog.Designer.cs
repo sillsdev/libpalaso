@@ -1,4 +1,4 @@
-﻿namespace SIL.Windows.Forms.WritingSystems
+namespace SIL.Windows.Forms.WritingSystems
 {
 	partial class LanguageLookupDialog
 	{
@@ -104,7 +104,7 @@
 			this.Name = "LanguageLookupDialog";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
-			this.Text = "Lookup Language Code...";
+			this.Text = "Look up Language Code";
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).EndInit();
 			this.ResumeLayout(false);
 

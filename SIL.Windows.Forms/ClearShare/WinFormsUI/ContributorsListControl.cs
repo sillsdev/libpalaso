@@ -29,6 +29,16 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		public ContributorsListControl()
 		{
 			InitializeComponent();
+			_grid.DataError += _grid_DataError;
+		}
+
+		private void _grid_DataError(object sender, DataGridViewDataErrorEventArgs e)
+		{
+		    if (e.Exception != null &&
+				e.Context == DataGridViewDataErrorContexts.Commit)
+			{
+				MessageBox.Show(e.Exception.Message);
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------

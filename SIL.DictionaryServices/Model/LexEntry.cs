@@ -42,11 +42,6 @@ namespace SIL.DictionaryServices.Model
 
 		private DateTime _creationTime;
 		private DateTime _modificationTime;
-		private bool _isBeingDeleted;
-		private bool _isDirty;
-
-		[NonSerialized]
-		private bool _modifiedTimeIsLocked;
 
 		//!!What!! Is this done this way so that we don't end up storing
 		//  the data in the object database?
@@ -60,7 +55,7 @@ namespace SIL.DictionaryServices.Model
 			public static string FlagSkipBaseform = "flag-skip-BaseForm";
 			public static string LiteralMeaning = "literal-meaning";
 
-			public static bool Contains(string fieldName)
+			public new static bool Contains(string fieldName)
 			{
 				List<string> list =
 					new List<string>(new string[] { LexicalUnit, Citation, BaseForm, CrossReference, Sense, LiteralMeaning });
@@ -73,7 +68,7 @@ namespace SIL.DictionaryServices.Model
 		public LexEntry(string id, Guid guid): base(null)
 		{
 			DateTime now = PreciseDateTime.UtcNow;
-			_isDirty = true;
+			IsDirty = true;
 			Init(id, guid, now, now);
 		}
 
@@ -145,8 +140,7 @@ namespace SIL.DictionaryServices.Model
 
 		public override bool Equals(object other)
 		{
-			if (!(other is LexEntry)) return false;
-			return Equals((LexEntry) other);
+			return Equals(other as LexEntry);
 		}
 
 		public bool Equals(LexEntry other)
@@ -164,17 +158,20 @@ namespace SIL.DictionaryServices.Model
 			return true;
 		}
 
+		public override int GetHashCode()
+		{
+			// For this class we want a hash code based on the the object's reference so that we
+			// can store and retrieve the object in the LiftLexEntryRepository. However, this is
+			// not ideal and Microsoft warns: "Do not use the hash code as the key to retrieve an
+			// object from a keyed collection."
+			// https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8#remarks
+			return base.GetHashCode();
+		}
+
 		public override string ToString()
 		{
 			//hack
-			if (_lexicalForm != null)
-			{
-				return _lexicalForm.GetFirstAlternative();
-			}
-			else
-			{
-				return "";
-			}
+			return _lexicalForm != null ? _lexicalForm.GetFirstAlternative() : string.Empty;
 		}
 
 		protected override void WireUpEvents()
@@ -187,30 +184,25 @@ namespace SIL.DictionaryServices.Model
 			WireUpList(_variants, "variants");
 		}
 
-		public IEnumerable<string> PropertiesInUse
-		{
-			get {
-				return base.PropertiesInUse.Concat(Senses.SelectMany(sense => sense.PropertiesInUse));
-			}
-		}
+		public new IEnumerable<string> PropertiesInUse => base.PropertiesInUse.Concat(Senses.SelectMany(sense => sense.PropertiesInUse));
 
 		public override void SomethingWasModified(string propertyModified)
 		{
 			base.SomethingWasModified(propertyModified);
 			ModificationTime = PreciseDateTime.UtcNow;
-			_isDirty = true;
+			IsDirty = true;
 			//too soon to make id: this method is called after first keystroke
 			//  GetOrCreateId(false);
 		}
 
 		public void Clean()
 		{
-			_isDirty = false;
+			IsDirty = false;
 		}
 
 		public override void NotifyPropertyChanged(string propertyName)
 		{
-			if(!_isBeingDeleted)
+			if(!IsBeingDeleted)
 				base.NotifyPropertyChanged(propertyName);
 		}
 
@@ -245,14 +237,11 @@ namespace SIL.DictionaryServices.Model
 		/// </summary>
 		/// <remarks>The signature here is MultiText rather than LexicalFormMultiText because we want
 		/// to hide this (hopefully temporary) performance implementation detail. </remarks>
-		public MultiText LexicalForm
-		{
-			get { return _lexicalForm; }
-		}
+		public MultiText LexicalForm => _lexicalForm;
 
 		public DateTime CreationTime
 		{
-			get { return GetSafeDateTime(_creationTime); }
+			get => GetSafeDateTime(_creationTime);
 			set
 			{
 				Debug.Assert(value.Kind == DateTimeKind.Utc);
@@ -280,7 +269,7 @@ namespace SIL.DictionaryServices.Model
 
 		public DateTime ModificationTime
 		{
-			get { return GetSafeDateTime(_modificationTime); }
+			get => GetSafeDateTime(_modificationTime);
 			set
 			{
 				if (!ModifiedTimeIsLocked)
@@ -295,67 +284,50 @@ namespace SIL.DictionaryServices.Model
 													 value.Minute,
 													 value.Second,
 													 value.Kind);
-					_isDirty = true;
+					IsDirty = true;
 				}
 			}
 		}
 
-		public IList<LexSense> Senses
-		{
-			get { return _senses; }
-		}
+		public IList<LexSense> Senses => _senses;
 
 		/// <summary>
 		/// NOTE: in oct 2010, wesay does not yet use this field, but SOLID does
 		/// </summary>
-		public IList<LexVariant> Variants
-		{
-			get { return _variants; }
-		}
+		public IList<LexVariant> Variants => _variants;
+
 		/// <summary>
 		/// NOTE: in oct 2010, wesay does not yet use this field, as it only handles a single, typeless note and uses the well-known-properties approach
 		/// </summary>
-		public IList<LexNote> Notes
-		{
-			get { return _notes; }
-		}
+		public IList<LexNote> Notes => _notes;
 
 		/// <summary>
 		/// NOTE: in oct 2010, wesay does not yet use this field, but SOLID does
 		/// </summary>
-		public IList<LexPhonetic> Pronunciations
-		{
-			get { return _pronunciations; }
-		}
+		public IList<LexPhonetic> Pronunciations => _pronunciations;
 
 		/// <summary>
 		/// NOTE: in oct 2010, wesay does not yet use this field, but SOLID does
 		/// </summary>
-		public IList<LexEtymology> Etymologies
-		{
-			get { return _etymologies; }
-		}
+		public IList<LexEtymology> Etymologies => _etymologies;
 
 		/// <summary>
 		/// Used to track this entry across programs, for the purpose of merging and such.
 		/// </summary>
 		public Guid Guid
 		{
-			get { return _guid; }
+			get => _guid;
 			set
 			{
-				if (_guid != value)
-				{
-					_guid = value;
-					NotifyPropertyChanged("GUID");
-				}
+				if (_guid == value)
+					return;
+
+				_guid = value;
+				NotifyPropertyChanged("GUID");
 			}
 		}
 
-		public override bool IsEmpty
-		{
-			get { return Senses.Count == 0 && LexicalForm.Empty && !HasProperties; }
-		}
+		public override bool IsEmpty => Senses.Count == 0 && LexicalForm.Empty && !HasProperties;
 
 		/// <summary>
 		/// This use for keeping track of the item when importing an then exporting again,
@@ -365,7 +337,7 @@ namespace SIL.DictionaryServices.Model
 		/// </summary>
 		public string Id
 		{
-			get { return GetOrCreateId(false); }
+			get => GetOrCreateId(false);
 			set
 			{
 				string id = value;
@@ -500,25 +472,15 @@ namespace SIL.DictionaryServices.Model
 		/// this is used to prevent things like cleanup of an object that is being deleted, which
 		/// can lead to update notifications that get the dispossed entry back in the db, or in some cache
 		/// </summary>
-		public bool IsBeingDeleted
-		{
-			get { return _isBeingDeleted; }
-			set { _isBeingDeleted = value; }
-		}
+		public bool IsBeingDeleted { get; set; }
 
 		/// <summary>
 		/// used during import so we don't accidentally change the modified time while building up the entry
 		/// </summary>
-		public bool ModifiedTimeIsLocked
-		{
-			get { return _modifiedTimeIsLocked; }
-			set { _modifiedTimeIsLocked = value; }
-		}
+		[field: NonSerialized]
+		public bool ModifiedTimeIsLocked { get; set; }
 
-		public MultiText CitationForm
-		{
-			get { return GetOrCreateProperty<MultiText>(WellKnownProperties.Citation); }
-		}
+		public MultiText CitationForm => GetOrCreateProperty<MultiText>(WellKnownProperties.Citation);
 
 		/// <summary>
 		/// The name here is to remind us that our homograph number
@@ -526,7 +488,7 @@ namespace SIL.DictionaryServices.Model
 		/// </summary>
 		public int OrderForRoundTripping
 		{
-			get { return _orderForRoundTripping; }
+			get => _orderForRoundTripping;
 			set
 			{
 				_orderForRoundTripping = value;
@@ -536,10 +498,7 @@ namespace SIL.DictionaryServices.Model
 
 		public int OrderInFile
 		{
-			get
-			{
-				return this._orderInFile;
-			}
+			get => this._orderInFile;
 			set
 			{
 				this._orderInFile = value;
@@ -560,10 +519,10 @@ namespace SIL.DictionaryServices.Model
 
 		public bool IsDirty
 		{
-			get { return _isDirty; }
+			get;
 			//ideally, this wouldn't be needed, but in making the homograph merger, I (jh) found that adding a property (a citation form)
-			// left _isDirty still false. I dont have the stomach to spend a day figure out why, so I'm making this setable.
-			set { _isDirty = value; }
+			// left _isDirty still false. I dont have the stomach to spend a day figure out why, so I'm making this settable.
+			set;
 		}
 
 		public LanguageForm GetHeadWord(string writingSystemId)

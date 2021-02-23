@@ -14,13 +14,13 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 	{
 		private Form _window;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			KeyboardController.Initialize();
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void FixtureTearDown()
 		{
 			KeyboardController.Shutdown();
@@ -149,7 +149,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		[Category("No IM Running")]
 		public void Deactivate_NoIMRunning_DoesNotThrow()
 		{
-			Keyboard.Controller.ActivateDefaultKeyboard();
+			Assert.That(() => Keyboard.Controller.ActivateDefaultKeyboard(), Throws.Nothing);
 		}
 
 #if WANT_PORT
@@ -181,9 +181,11 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			// needed for focus
 			RequiresWindowForFocus();
 
-			Keyboard.Controller.GetKeyboard("m17n:am:sera").Activate();
+			var amharicKeyboard =
+				Keyboard.Controller.AvailableKeyboards.First(kbd => kbd.Layout == "m17n:am:sera");
+			Keyboard.Controller.GetKeyboard(amharicKeyboard.Id).Activate();
 			Keyboard.Controller.ActivateDefaultKeyboard();
-			Assert.AreEqual("m17n:am:sera", Keyboard.Controller.ActiveKeyboard);
+			Assert.That(Keyboard.Controller.ActiveKeyboard, Is.Not.EqualTo(amharicKeyboard));
 		}
 
 		[Test]
@@ -196,22 +198,20 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			// needed for focus
 			RequiresWindowForFocus();
 
+			var amharicKeyboard =
+				Keyboard.Controller.AvailableKeyboards.First(kbd => kbd.Layout == "m17n:am:sera");
 			Keyboard.Controller.ActivateDefaultKeyboard();
-			Keyboard.Controller.GetKeyboard("m17n:am:sera").Activate();
-			Assert.AreEqual("m17n:am:sera", Keyboard.Controller.ActiveKeyboard);
+			Keyboard.Controller.GetKeyboard(amharicKeyboard.Id).Activate();
+			Assert.That(Keyboard.Controller.ActiveKeyboard, Is.EqualTo(amharicKeyboard));
 			Keyboard.Controller.ActivateDefaultKeyboard();
 		}
 
 		[Test]
 		public void CreateKeyboardDefinition_NewKeyboard_ReturnsNewObject()
 		{
-			// This test fails on Ubuntu 18.04. This might be related to keyboard switching
-			// working differently in 18.04 (#887).
-
-			// REVIEW: adjust this test
 			var keyboard = Keyboard.Controller.CreateKeyboard("en-US_foo", KeyboardFormat.Unknown, Enumerable.Empty<string>());
 			Assert.That(keyboard, Is.Not.Null);
-			Assert.That(keyboard, Is.TypeOf<XkbKeyboardDescription>());
+			Assert.That(keyboard, Is.TypeOf<UnsupportedKeyboardDefinition>());
 		}
 
 	}

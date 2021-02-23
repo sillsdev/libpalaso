@@ -6,7 +6,8 @@ namespace SIL.Windows.Forms.Tests.SpellChecking
 	[TestFixture]
 	public class TextBoxSpellChecker
 	{
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void TryInUI()
 		{
 			var form = new Form();

@@ -1,11 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using SIL.Keyboarding;
 using SIL.Windows.Forms.Keyboarding;
 using SIL.Windows.Forms.Keyboarding.Windows;
 using SIL.Windows.Forms.WritingSystems;
 
+// ReSharper disable LocalizableElement
 namespace TestAppKeyboard
 {
 	public partial class KeyboardForm : Form
@@ -22,15 +22,23 @@ namespace TestAppKeyboard
 			KeyboardController.RegisterControl(testAreaB, eventHandler);
 			KeyboardController.RegisterControl(testAreaC, eventHandler);
 
+			Console.WriteLine();
+			Console.WriteLine("Adding keyboards for Test Area A");
 			LoadKeyboards(keyboardsA);
+			Console.WriteLine();
+			Console.WriteLine("Adding keyboards for Test Area B");
 			LoadKeyboards(keyboardsB);
+			Console.WriteLine();
+			Console.WriteLine("Adding keyboards for Test Area C");
 			LoadKeyboards(keyboardsC);
+			Console.WriteLine();
+			Console.WriteLine("Adding keyboards for Current Keyboard dropdown");
 			LoadKeyboards(currentKeyboard);
 		}
 
 		private static void LoadKeyboards(ComboBox comboBox)
 		{
-			IEnumerable<IKeyboardDefinition> keyboards = Keyboard.Controller.AvailableKeyboards;
+			var keyboards = Keyboard.Controller.AvailableKeyboards;
 			foreach (var keyboard in keyboards)
 			{
 				comboBox.Items.Add(new WSKeyboardControl.KeyboardDefinitionAdapter(keyboard));
@@ -51,7 +59,7 @@ namespace TestAppKeyboard
 			if (cbOnEnter.Checked)
 			{
 				var wantKeyboard = ((WSKeyboardControl.KeyboardDefinitionAdapter)keyboardsA.SelectedItem).KeyboardDefinition;
-				Console.WriteLine("Enter A: Set to {0}", wantKeyboard);
+				Console.WriteLine($"Enter A: Set to {wantKeyboard}");
 				wantKeyboard.Activate();
 			} else {
 				Console.WriteLine("Enter A");
@@ -63,7 +71,7 @@ namespace TestAppKeyboard
 			if (cbOnEnter.Checked)
 			{
 				var wantKeyboard = ((WSKeyboardControl.KeyboardDefinitionAdapter) keyboardsB.SelectedItem).KeyboardDefinition;
-				Console.WriteLine("Enter B: Set to {0}", wantKeyboard);
+				Console.WriteLine($"Enter B: Set to {wantKeyboard}");
 				wantKeyboard.Activate();
 			} else {
 				Console.WriteLine("Enter B");
@@ -75,7 +83,7 @@ namespace TestAppKeyboard
 			if (cbOnEnter.Checked)
 			{
 				var wantKeyboard = ((WSKeyboardControl.KeyboardDefinitionAdapter)keyboardsC.SelectedItem).KeyboardDefinition;
-				Console.WriteLine("Enter C: Set to {0}", wantKeyboard);
+				Console.WriteLine($"Enter C: Set to {wantKeyboard}");
 				wantKeyboard.Activate();
 			} else {
 				Console.WriteLine("Enter C");

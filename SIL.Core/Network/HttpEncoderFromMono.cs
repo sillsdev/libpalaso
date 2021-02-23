@@ -37,28 +37,15 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 
-#if NET_4_0
-Actually when we go to net 4, I (hatton) think we can get rid of this. .net 4 client profile contains the "WebUtility" class
-using System.Web.Configuration;
-#endif
+// Actually when we go to net 4, I (hatton) think we can get rid of this. .net 4 client profile contains the "WebUtility" class
 
 namespace SIL.Network
 {
-#if NET_4_0
-	public
-#endif
-	class HttpEncoderFromMono
+	internal class HttpEncoderFromMono
 	{
 		static char[] hexChars = "0123456789abcdef".ToCharArray();
 		static object entitiesLock = new object();
 		static SortedDictionary<string, char> entities;
-#if NET_4_0
-		static Lazy <HttpEncoder> defaultEncoder;
-		static Lazy <HttpEncoder> currentEncoderLazy;
-#else
-		static HttpEncoderFromMono defaultEncoder;
-#endif
-		static HttpEncoderFromMono currentEncoder;
 
 		static IDictionary<string, char> Entities
 		{
@@ -74,57 +61,21 @@ namespace SIL.Network
 			}
 		}
 
-		public static HttpEncoderFromMono Current
-		{
-			get
-			{
-#if NET_4_0
-				if (currentEncoder == null)
-					currentEncoder = currentEncoderLazy.Value;
-#endif
-				return currentEncoder;
-			}
-#if NET_4_0
-			set {
-				if (value == null)
-					throw new ArgumentNullException ("value");
-				currentEncoder = value;
-			}
-#endif
-		}
+		public static HttpEncoderFromMono Current { get; }
 
-		public static HttpEncoderFromMono Default
-		{
-			get
-			{
-#if NET_4_0
-				return defaultEncoder.Value;
-#else
-				return defaultEncoder;
-#endif
-			}
-		}
+		public static HttpEncoderFromMono Default { get; }
 
 		static HttpEncoderFromMono()
 		{
-#if NET_4_0
-			defaultEncoder = new Lazy <HttpEncoderFromMono> (() => new HttpEncoderFromMono ());
-			currentEncoderLazy = new Lazy <HttpEncoderFromMono> (new Func <HttpEncoderFromMono> (GetCustomEncoderFromConfig));
-#else
-			defaultEncoder = new HttpEncoderFromMono();
-			currentEncoder = defaultEncoder;
-#endif
+			Default = new HttpEncoderFromMono();
+			Current = Default;
 		}
 
-		public HttpEncoderFromMono()
+		internal HttpEncoderFromMono()
 		{
 		}
-#if NET_4_0
-		protected internal virtual
-#else
-		internal static
-#endif
- void HeaderNameValueEncode(string headerName, string headerValue, out string encodedHeaderName, out string encodedHeaderValue)
+
+		internal static  void HeaderNameValueEncode(string headerName, string headerValue, out string encodedHeaderName, out string encodedHeaderValue)
 		{
 			if (String.IsNullOrEmpty(headerName))
 				encodedHeaderName = headerName;
@@ -163,66 +114,8 @@ namespace SIL.Network
 
 			return input;
 		}
-#if NET_4_0
-		protected internal virtual void HtmlAttributeEncode (string value, TextWriter output)
-		{
 
-			if (output == null)
-				throw new ArgumentNullException ("output");
-
-			if (String.IsNullOrEmpty (value))
-				return;
-
-			output.Write (HtmlAttributeEncode (value));
-		}
-
-		protected internal virtual void HtmlDecode (string value, TextWriter output)
-		{
-			if (output == null)
-				throw new ArgumentNullException ("output");
-
-			output.Write (HtmlDecode (value));
-		}
-
-		protected internal virtual void HtmlEncode (string value, TextWriter output)
-		{
-			if (output == null)
-				throw new ArgumentNullException ("output");
-
-			output.Write (HtmlEncode (value));
-		}
-
-		protected internal virtual byte[] UrlEncode (byte[] bytes, int offset, int count)
-		{
-			return UrlEncodeToBytes (bytes, offset, count);
-		}
-
-		static HttpEncoder GetCustomEncoderFromConfig ()
-		{
-			var cfg = HttpRuntime.Section;
-			string typeName = cfg.EncoderType;
-
-			if (String.Compare (typeName, "System.Web.Util.HttpEncoder", StringComparison.OrdinalIgnoreCase) == 0)
-				return Default;
-
-			Type t = Type.GetType (typeName, false);
-			if (t == null)
-				throw new ConfigurationErrorsException (String.Format ("Could not load type '{0}'.", typeName));
-
-			if (!typeof (HttpEncoder).IsAssignableFrom (t))
-				throw new ConfigurationErrorsException (
-					String.Format ("'{0}' is not allowed here because it does not extend class 'System.Web.Util.HttpEncoder'.", typeName)
-				);
-
-			return Activator.CreateInstance (t, false) as HttpEncoder;
-		}
-#endif
-#if NET_4_0
-		protected internal virtual
-#else
-		internal static
-#endif
- string UrlPathEncode(string value)
+		internal static string UrlPathEncode(string value)
 		{
 			if (String.IsNullOrEmpty(value))
 				return value;
@@ -270,11 +163,7 @@ namespace SIL.Network
 			for (int i = 0; i < s.Length; i++)
 			{
 				char c = s[i];
-				if (c == '&' || c == '"' || c == '<' || c == '>' || c > 159
-#if NET_4_0
-					|| c == '\''
-#endif
-)
+				if (c == '&' || c == '"' || c == '<' || c == '>' || c > 159)
 				{
 					needEncode = true;
 					break;
@@ -304,11 +193,6 @@ namespace SIL.Network
 					case '"':
 						output.Append("&quot;");
 						break;
-#if NET_4_0
-					case '\'':
-						output.Append ("&#39;");
-						break;
-#endif
 					case '\uff1c':
 						output.Append("&#65308;");
 						break;
@@ -336,25 +220,17 @@ namespace SIL.Network
 
 		internal static string HtmlAttributeEncode(string s)
 		{
-#if NET_4_0
-			if (String.IsNullOrEmpty (s))
-				return String.Empty;
-#else
 			if (s == null)
 				return null;
 
 			if (s.Length == 0)
 				return String.Empty;
-#endif
+
 			bool needEncode = false;
 			for (int i = 0; i < s.Length; i++)
 			{
 				char c = s[i];
-				if (c == '&' || c == '"' || c == '<'
-#if NET_4_0
-					|| c == '\''
-#endif
-)
+				if (c == '&' || c == '"' || c == '<')
 				{
 					needEncode = true;
 					break;
@@ -378,11 +254,6 @@ namespace SIL.Network
 					case '<':
 						output.Append("&lt;");
 						break;
-#if NET_4_0
-				case '\'':
-					output.Append ("&#39;");
-					break;
-#endif
 					default:
 						output.Append(s[i]);
 						break;
@@ -401,9 +272,6 @@ namespace SIL.Network
 
 			if (s.IndexOf('&') == -1)
 				return s;
-#if NET_4_0
-			StringBuilder rawEntity = new StringBuilder ();
-#endif
 			StringBuilder entity = new StringBuilder();
 			StringBuilder output = new StringBuilder();
 			int len = s.Length;
@@ -424,9 +292,6 @@ namespace SIL.Network
 					if (c == '&')
 					{
 						entity.Append(c);
-#if NET_4_0
-						rawEntity.Append (c);
-#endif
 						state = 1;
 					}
 					else
@@ -473,9 +338,6 @@ namespace SIL.Network
 							state = 3;
 						}
 						entity.Append(c);
-#if NET_4_0
-						rawEntity.Append (c);
-#endif
 					}
 				}
 				else if (state == 2)
@@ -490,20 +352,12 @@ namespace SIL.Network
 						output.Append(key);
 						state = 0;
 						entity.Length = 0;
-#if NET_4_0
-						rawEntity.Length = 0;
-#endif
 					}
 				}
 				else if (state == 3)
 				{
 					if (c == ';')
 					{
-#if NET_4_0
-						if (number == 0)
-							output.Append (rawEntity.ToString () + ";");
-						else
-#endif
 						if (number > 65535)
 						{
 							output.Append("&#");
@@ -516,33 +370,21 @@ namespace SIL.Network
 						}
 						state = 0;
 						entity.Length = 0;
-#if NET_4_0
-						rawEntity.Length = 0;
-#endif
 						have_trailing_digits = false;
 					}
 					else if (is_hex_value && Uri.IsHexDigit(c))
 					{
 						number = number * 16 + Uri.FromHex(c);
 						have_trailing_digits = true;
-#if NET_4_0
-						rawEntity.Append (c);
-#endif
 					}
 					else if (Char.IsDigit(c))
 					{
 						number = number * 10 + ((int)c - '0');
 						have_trailing_digits = true;
-#if NET_4_0
-						rawEntity.Append (c);
-#endif
 					}
 					else if (number == 0 && (c == 'x' || c == 'X'))
 					{
 						is_hex_value = true;
-#if NET_4_0
-						rawEntity.Append (c);
-#endif
 					}
 					else
 					{
@@ -570,11 +412,7 @@ namespace SIL.Network
 
 		internal static bool NotEncoded(char c)
 		{
-			return (c == '!' || c == '(' || c == ')' || c == '*' || c == '-' || c == '.' || c == '_'
-#if !NET_4_0
- || c == '\''
-#endif
-);
+			return (c == '!' || c == '(' || c == ')' || c == '*' || c == '-' || c == '.' || c == '_');
 		}
 
 		internal static void UrlEncodeChar(char c, Stream result, bool isUnicode)

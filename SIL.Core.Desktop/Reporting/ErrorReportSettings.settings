@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Palaso.Reporting" GeneratedClassName="ErrorReportSettings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SIL.Reporting" GeneratedClassName="ErrorReportSettings">
   <Profiles />
   <Settings>
 	<Setting Name="ReportingMethod" Type="System.String" Scope="User">

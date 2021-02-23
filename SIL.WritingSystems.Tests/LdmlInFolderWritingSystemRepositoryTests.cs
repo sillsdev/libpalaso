@@ -66,12 +66,32 @@ namespace SIL.WritingSystems.Tests
 
 			public TestEnvironment()
 			{
-				_localRepoFolder = new TemporaryFolder("LdmlInFolderWritingSystemRepositoryTests");
-				_templateFolder = new TemporaryFolder("Templates");
-				_globalRepoFolder = new TemporaryFolder("GlobalWritingSystemRepository");
+				string testDirName = GetTestDirectoryName();
+				
+				_localRepoFolder = new TemporaryFolder(Path.Combine(testDirName, "LdmlInFolderWritingSystemRepositoryTests"));
+				_templateFolder = new TemporaryFolder(Path.Combine(testDirName, "Templates"));
+				_globalRepoFolder = new TemporaryFolder(Path.Combine(testDirName, "GlobalWritingSystemRepository"));
 				_writingSystem = new WritingSystemDefinition();
 				_writingSystemCustomDataMapper = new TestWritingSystemCustomDataMapper();
 				ResetRepositories();
+			}
+
+			/// <summary>
+			/// Returns a probably unique directory name to be used to place temporary folder in for the test environment
+			/// </summary>
+			/// <returns>Returns a string representing just the directory name (the path to the directory is not included)
+			/// The format is the "[TestName]_[Random8LetterSuffix]"
+			/// Given that this function doesn't receive or return the path to the directory,
+			/// it is not guaranteed that nothing exists at the full path the caller eventually constructs
+			/// </returns>
+			private string GetTestDirectoryName()
+			{
+				string prefix = TestContext.CurrentContext?.Test?.Name ?? "";
+
+				string randomFileName = Path.GetRandomFileName();	// 8.3 file name format
+				string suffix = Path.GetFileNameWithoutExtension(randomFileName);	// Now without the 3-letter extension
+
+				return $"{prefix}_{suffix}";
 			}
 
 			public void ResetRepositories()
@@ -568,15 +588,14 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(
 					problems[0].Exception,
 					Is.TypeOf<ApplicationException>().With.Property("Message").
-					ContainsSubstring(String.Format(
-						@"The writing system file {0} seems to be named inconsistently. It contains the IETF language tag: 'de-Zxxx-x-audio'. The name should have been made consistent with its content upon migration of the writing systems.",
-						Path.Combine(environment.LocalRepositoryPath, "inconsistent-filename.ldml")
-					))
+					Contains(
+						$"The writing system file {Path.Combine(environment.LocalRepositoryPath, "inconsistent-filename.ldml")} seems to be named inconsistently. " +
+						"It contains the IETF language tag: 'de-Zxxx-x-audio'. The name should have been made consistent with its content upon migration of the writing systems.")
 				);
 				Assert.That(
 					problems[1].Exception,
 					Is.TypeOf<ArgumentException>().With.Property("Message").
-					ContainsSubstring("Unable to set writing system 'de-Zxxx-x-audio' because this id already exists. Please change this writing system id before setting it.")
+					Contains("Unable to set writing system 'de-Zxxx-x-audio' because this id already exists. Please change this writing system id before setting it.")
 				);
 
 			}
@@ -609,10 +628,9 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(
 					problems[0].Exception,
 					Is.TypeOf<ApplicationException>().With.Property("Message").
-					ContainsSubstring(String.Format(
-						@"The writing system file {0} seems to be named inconsistently. It contains the IETF language tag: 'de-CH-1901'. The name should have been made consistent with its content upon migration of the writing systems.",
-						Path.Combine(environment.LocalRepositoryPath, "tpi-Zxxx-x-audio.ldml")
-					))
+					Contains(
+						$"The writing system file {Path.Combine(environment.LocalRepositoryPath, "tpi-Zxxx-x-audio.ldml")} seems to be named inconsistently. " +
+						"It contains the IETF language tag: 'de-CH-1901'. The name should have been made consistent with its content upon migration of the writing systems.")
 				);
 			}
 		}
@@ -637,7 +655,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			using (var environment = new TestEnvironment())
 			{
-				//Make the filepath inconsistant
+				//Make the filepath inconsistent
 				environment.WritingSystem.Language = "en";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
 				File.Move(Path.Combine(environment.LocalRepositoryPath, "en.ldml"), Path.Combine(environment.LocalRepositoryPath, "de.ldml"));
@@ -649,11 +667,11 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Get_WritingSystemContainedInFileWithfilenameThatDoesNotMatchRfc5646Tag_ReturnsWritingSystem()
+		public void Get_WritingSystemContainedInFileWithFilenameThatDoesNotMatchRfc5646Tag_ReturnsWritingSystem()
 		{
 			using (var environment = new TestEnvironment())
 			{
-				//Make the filepath inconsistant
+				//Make the filepath inconsistent
 				environment.WritingSystem.Language = "en";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
 				File.Move(Path.Combine(environment.LocalRepositoryPath, "en.ldml"), Path.Combine(environment.LocalRepositoryPath, "de.ldml"));
@@ -917,10 +935,7 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(
 					problems[0].Exception,
 					Is.TypeOf<ApplicationException>().With.Property("Message").
-					ContainsSubstring(String.Format(
-						"The LDML tag 'en' is version 0.  Version {0} was expected.",
-						LdmlDataMapper.CurrentLdmlLibraryVersion
-					))
+					Contains($"The LDML tag 'en' is version 0.  Version {LdmlDataMapper.CurrentLdmlLibraryVersion} was expected.")
 				);
 			}
 		}
@@ -930,8 +945,8 @@ namespace SIL.WritingSystems.Tests
 		{
 			using (var environment = new TestEnvironment())
 			{
-				var pathToFlexprivateUseLdml = Path.Combine(environment.LocalRepositoryPath, "xh.ldml");
-				File.WriteAllText(pathToFlexprivateUseLdml, LdmlContentForTests.Version0("xh", "", "", ""));
+				var pathToFlexPrivateUseLdml = Path.Combine(environment.LocalRepositoryPath, "xh.ldml");
+				File.WriteAllText(pathToFlexPrivateUseLdml, LdmlContentForTests.Version0("xh", "", "", ""));
 				var repository = new LdmlInFolderWritingSystemRepository(environment.LocalRepositoryPath);
 				var problems = repository.LoadProblems;
 
@@ -939,10 +954,7 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(
 					problems[0].Exception,
 					Is.TypeOf<ApplicationException>().With.Property("Message").
-					ContainsSubstring(String.Format(
-						"The LDML tag 'xh' is version 0.  Version {0} was expected.",
-						LdmlDataMapper.CurrentLdmlLibraryVersion
-					))
+					Contains($"The LDML tag 'xh' is version 0.  Version {LdmlDataMapper.CurrentLdmlLibraryVersion} was expected.")
 				);
 			}
 		}
@@ -1151,6 +1163,13 @@ namespace SIL.WritingSystems.Tests
 				CollectionAssert.IsEmpty(environment.LocalRepository.CheckForNewerGlobalWritingSystems(),
 					"Global and local should be the same.");
 
+				// On some systems, it's possible for the local and one or both of the global to report happening in the same tick.
+				// This would make it so that the code would view them as technically not newer, since they were reported in the same tick.
+				// So we would like to wait at least 1 tick first before proceeding to the global part.
+				// Not sure if this is relevant or not, but in some scenarios the system clock may have a resolution of roughly 15 milliseconds,
+				// so probably safer to wait a good chunk more than 15ms.
+				Thread.Sleep(50);	// in milliseconds
+
 				// Modify the two global ws.
 				ws = environment.GlobalRepository.Get(enUsTag);
 				ws.SpellCheckingId = "spelchequer";
@@ -1162,10 +1181,12 @@ namespace SIL.WritingSystems.Tests
 				environment.GlobalRepository.Save();
 
 				var newerGlobalWss = environment.LocalRepository.CheckForNewerGlobalWritingSystems(new [] {frTag}).ToArray();
-				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1));
+
+				// Verify
+				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1), "frtag count");
 				Assert.That(newerGlobalWss[0].LanguageTag, Is.EqualTo(frTag));
 				newerGlobalWss = environment.LocalRepository.CheckForNewerGlobalWritingSystems(new[] { enUsTag }).ToArray();
-				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1));
+				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1), "enUsTag count");
 				Assert.That(newerGlobalWss[0].LanguageTag, Is.EqualTo(enUsTag));
 			}
 		}

@@ -2,22 +2,43 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
-    <Configurations>Debug;Release;DebugStrongName;ReleaseStrongName</Configurations>
-    <Description>SIL.WritingSystems provides classes for generating BCP 47 language tags and reading/writing LDML.</Description>
-  </PropertyGroup>
-
-  <Import Project="..\GlobalAssemblyInfo.props" />
-
-  <PropertyGroup Condition="$(Configuration.Contains('StrongName'))">
+    <Configurations>Debug;Release</Configurations>
+    <Description>SIL.WritingSystems contains classes for managing and persisting writing systems using the Locale Data Markup Language (LDML) format. This library also contains classes for processing IETF (BCP-47) language tags and accessing the SIL Locale Data Repository (SLDR).</Description>
+    <Company>SIL International</Company>
+    <Authors>SIL International</Authors>
+    <Product>libpalaso</Product>
+    <Copyright>Copyright © 2010-2020 SIL International</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/sillsdev/libpalaso</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <OutputPath>../output/$(Configuration)</OutputPath>
+    <PackageOutputPath>../output</PackageOutputPath>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
-    <DefineConstants>$(DefineConstants);STRONG_NAME</DefineConstants>
+    <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
+    <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <AppendToReleaseNotesProperty><![CDATA[
+See full changelog at https://github.com/sillsdev/libpalaso/blob/master/CHANGELOG.md]]>
+    </AppendToReleaseNotesProperty>
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="GitVersionTask" Version="5.3.4">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4-*" PrivateAssets="All" />
     <PackageReference Include="icu.net" Version="2.7.0-beta.10" />
     <PackageReference Include="Spart" Version="1.0.0" />
-    <PackageReference Include="System.IO.FileSystem.AccessControl" Version="4.4.0" />
+    <PackageReference Include="System.IO.FileSystem.AccessControl" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Web" Condition="'$(TargetFramework)' == 'net461'" />
   </ItemGroup>
 
   <ItemGroup>

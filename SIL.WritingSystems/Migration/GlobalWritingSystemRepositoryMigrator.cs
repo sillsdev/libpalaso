@@ -87,8 +87,8 @@ namespace SIL.WritingSystems.Migration
 				}
 			}
 
-			// 3) Harvest LDML files from old Linux location in "/var/lib"
-			if (Platform.IsLinux)
+			// 3) Harvest LDML files from old Unix location in "/var/lib"
+			if (Platform.IsUnix)
 			{
 				for (int version = 2; version >= 0; --version)
 				{
@@ -118,11 +118,11 @@ namespace SIL.WritingSystems.Migration
 			}
 		}
 
-		private void CopyLdmlFromFolder(string sourcePath)
+		private void CopyLdmlFromFolder(string oldSourcePath)
 		{
 			if (!Directory.Exists(SourcePath))
 				GlobalWritingSystemRepository.CreateGlobalWritingSystemRepositoryDirectory(SourcePath);
-			DirectoryHelper.Copy(sourcePath, SourcePath);
+			DirectoryHelper.Copy(oldSourcePath, SourcePath);
 		}
 	}
 }

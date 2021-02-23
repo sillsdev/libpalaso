@@ -45,12 +45,9 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					{
 						using (RegistryKey keyVersion = engineKey.OpenSubKey(version, false))
 						{
-							if (keyVersion != null)
-							{
-								object value = keyVersion.GetValue("switch language with keyboard");
-								if (value != null && (int)value == 0)
-									return false; // Setting was found to be off in at least one of the installed versions
-							}
+							object value = keyVersion?.GetValue("switch language with keyboard");
+							if (value != null && (int)value == 0)
+								return false; // Setting was found to be off in at least one of the installed versions
 						}
 					}
 				}
@@ -75,7 +72,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		/// Indicates whether we should pass NFC or NFD data to the keyboard. This implementation
 		/// always returns <c>false</c>.
 		/// </summary>
-		public override bool UseNfcContext { get { return false; } }
+		public override bool UseNfcContext => false;
 
 		/// <summary>
 		/// If the new keyboard is the default windows keyboard then we need to deactivate the Keyman

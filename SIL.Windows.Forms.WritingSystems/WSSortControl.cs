@@ -209,7 +209,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 			Font customFont = new Font(fontName, fontSize);
 			_sortRulesTextBox.Font = customFont;
-			// We are not setting the RightToLeft propert for the sort rules because the ICU syntax is inherently left to right.
+			// We are not setting the RightToLeft property for the sort rules because the ICU syntax is inherently left-to-right.
 			_testSortText.Font = customFont;
 			_testSortText.RightToLeft = _model.CurrentRightToLeftScript ? RightToLeft.Yes : RightToLeft.No;
 			_testSortResult.Font = customFont;

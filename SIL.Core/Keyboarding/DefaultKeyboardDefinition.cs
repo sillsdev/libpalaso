@@ -12,10 +12,7 @@ namespace SIL.Keyboarding
 	/// Review: possibly that method and this class should be made abstract?</remarks>
 	public class DefaultKeyboardDefinition : IKeyboardDefinition
 	{
-		private readonly string _locale;
-		private readonly string _layout;
-		private readonly string _id;
-		private readonly List<string> _urls = new List<string>(); 
+		private readonly List<string> _urls = new List<string>();
 
 		public DefaultKeyboardDefinition(string id, string name)
 			: this(id, name, string.Empty, string.Empty, false)
@@ -27,9 +24,9 @@ namespace SIL.Keyboarding
 		/// </summary>
 		public DefaultKeyboardDefinition(string id, string name, string layout, string locale, bool isAvailable)
 		{
-			_layout = layout;
-			_locale = locale;
-			_id = id;
+			Layout = layout;
+			Locale = locale;
+			Id = id;
 			Name = name;
 			IsAvailable = isAvailable;
 		}
@@ -37,23 +34,18 @@ namespace SIL.Keyboarding
 		/// <summary>
 		/// Gets an identifier of the language/keyboard layout
 		/// </summary>
-		public string Id
-		{
-			get { return _id; }
-		}
+		public string Id { get; }
 
 		/// <summary>
 		/// Gets a human-readable name of the input language.
 		/// </summary>
+		// ReSharper disable once MemberCanBePrivate.Global
 		public string Name { get; protected set; }
 
 		/// <summary>
 		/// Gets a localized human-readable name of the input language.
 		/// </summary>
-		public virtual string LocalizedName
-		{
-			get { return Name; }
-		}
+		public virtual string LocalizedName => Name;
 
 		/// <summary>
 		/// The Locale of the keyboard in the format languagecode2-country/regioncode2.
@@ -62,24 +54,18 @@ namespace SIL.Keyboarding
 		/// This is mainly significant on Windows, which distinguishes (for example)
 		/// a German keyboard used in Germany, Switzerland, and Holland.
 		/// </summary>
-		public string Locale
-		{
-			get { return _locale; }
-		}
+		public string Locale { get; }
 
 		/// <summary>
 		/// The name identifying the particular keyboard.
 		/// </summary>
-		public string Layout
-		{
-			get { return _layout; }
-		}
+		public string Layout { get; }
 
 		/// <summary>
 		/// Indicates whether we should pass NFC or NFD data to the keyboard. This implementation
 		/// always returns <c>true</c>.
 		/// </summary>
-		public virtual bool UseNfcContext { get { return true; } }
+		public virtual bool UseNfcContext => true;
 
 		/// <summary>
 		/// Answer true if the keyboard is available to use on this system (that is, it can be activated).
@@ -103,7 +89,7 @@ namespace SIL.Keyboarding
 		/// <summary>
 		/// Gets the keyboard source URLs.
 		/// </summary>
-		public IList<string> Urls { get { return _urls; } }
+		public IList<string> Urls => _urls;
 
 		/// <summary>
 		/// Returns a <see cref="T:System.String"/> that represents the current
@@ -112,6 +98,34 @@ namespace SIL.Keyboarding
 		public override string ToString()
 		{
 			return Name;
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (!(obj is DefaultKeyboardDefinition other))
+				return false;
+
+			return Id == other.Id &&  Name == other.Name && Locale == other.Locale &&
+				Layout == other.Layout && UseNfcContext == other.UseNfcContext &&
+				IsAvailable == other.IsAvailable && Format == other.Format;
+		}
+
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 31;
+				hash *= 71 + Id?.GetHashCode() ?? 0;
+				hash *= 71 + Name?.GetHashCode() ?? 0;
+				hash *= 71 + LocalizedName?.GetHashCode() ?? 0;
+				hash *= 71 + Locale?.GetHashCode() ?? 0;
+				hash *= 71 + Layout?.GetHashCode() ?? 0;
+				hash *= 71 + UseNfcContext.GetHashCode();
+				hash *= 71 + IsAvailable.GetHashCode();
+				hash *= 71 + Urls?.GetHashCode() ?? 0;
+				return hash;
+			}
 		}
 	}
 }

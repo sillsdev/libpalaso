@@ -48,10 +48,7 @@ namespace X11.XKlavier
 			/// <remarks>The ICU documentation says that the components should be separated by
 			/// an underscore, but that contradicts the way Windows does it. And ICU seems
 			/// to understand the '-' as well.</remarks>
-			public string LocaleId
-			{
-				get { return String.IsNullOrEmpty(CountryCode) ? LanguageCode : LanguageCode + "-" + CountryCode; }
-			}
+			public string LocaleId => string.IsNullOrEmpty(CountryCode) ? LanguageCode : LanguageCode + "-" + CountryCode;
 
 			/// <summary>
 			/// Gets or sets the 2-letter language abbreviation (mostly ISO 639-1).
@@ -61,13 +58,7 @@ namespace X11.XKlavier
 			/// <summary>
 			/// Gets the language name in the culture of the current thread
 			/// </summary>
-			public string Language
-			{
-				get
-				{
-					return new Locale(LocaleId).DisplayLanguage;
-				}
-			}
+			public string Language => new Locale(LocaleId).DisplayLanguage;
 
 			/// <summary>
 			/// Gets or sets the country code (mostly 2-letter codes).
@@ -77,20 +68,13 @@ namespace X11.XKlavier
 			/// <summary>
 			/// Gets the country name in the culture of the current thread
 			/// </summary>
-			public string Country
-			{
-				get
-				{
-					return new Locale(LocaleId).DisplayCountry;
-				}
-			}
+			public string Country => new Locale(LocaleId).DisplayCountry;
 
 			public override string ToString()
 			{
-				return string.Format("[LayoutDescription: LayoutId={0}, Description={1}, " +
-					"LayoutVariant={2}, Locale={3}, LanguageCode={4}, Language={5}, " +
-					"CountryCode={6}, Country={7}]", LayoutId, Description, LayoutVariant,
-					LocaleId, LanguageCode, Language, CountryCode, Country);
+				return $"[LayoutDescription: LayoutId={LayoutId}, Description={Description}, " +
+					$"LayoutVariant={LayoutVariant}, Locale={LocaleId}, LanguageCode={LanguageCode}, Language={Language}, " +
+					$"CountryCode={CountryCode}, Country={Country}]";
 			}
 
 			public override bool Equals(object obj)
@@ -105,8 +89,8 @@ namespace X11.XKlavier
 			public bool Equals(LayoutDescription other)
 			{
 				return LayoutId == other.LayoutId && Description == other.Description &&
-						LayoutVariant == other.LayoutVariant &&
-						LanguageCode == other.LanguageCode && CountryCode == other.CountryCode;
+					LayoutVariant == other.LayoutVariant &&
+					LanguageCode == other.LanguageCode && CountryCode == other.CountryCode;
 			}
 
 			public override int GetHashCode()
@@ -230,13 +214,13 @@ namespace X11.XKlavier
 			var country = (XklConfigItem)Marshal.PtrToStructure(data, typeof(XklConfigItem));
 			var description = subitemIsNull ? item.Description : subitem.Description;
 			var name = subitemIsNull ? item.Name : subitem.Name;
-			var variant = subitemIsNull ? String.Empty : subitem.Description;
+			var variant = subitemIsNull ? string.Empty : subitem.Description;
 			var layouts = GetLayoutList(description);
 			if (layouts.Any(desc => desc.LayoutId == name && desc.Description == description && desc.LayoutVariant == variant))
-					return;
+				return;
 
 			var langCode = subitemIsNull ? item.Short_Description : subitem.Short_Description;
-			if (String.IsNullOrEmpty(langCode))
+			if (string.IsNullOrEmpty(langCode))
 				langCode = subitemIsNull ? item.Name : subitem.Name;
 			var newLayout = new LayoutDescription {
 				LayoutId = name,
@@ -272,10 +256,10 @@ namespace X11.XKlavier
 		private void StoreLayoutInfo(XklConfigItem item, IntPtr data)
 		{
 			var description = item.Description;
-			var variant = data != IntPtr.Zero ? description : String.Empty;
+			var variant = data != IntPtr.Zero ? description : string.Empty;
 			var layouts = GetLayoutList(description);
 			if (layouts.Any(desc => desc.LayoutId == item.Name && desc.Description == description && desc.LayoutVariant == variant))
-					return;
+				return;
 
 			var newLayout = new LayoutDescription {
 				LayoutId = item.Name,
@@ -285,16 +269,16 @@ namespace X11.XKlavier
 			if (data != IntPtr.Zero)
 			{
 				var parent = (XklConfigItem)Marshal.PtrToStructure(data, typeof(XklConfigItem));
-				var langCode = String.IsNullOrEmpty(item.Short_Description) ? parent.Short_Description : item.Short_Description;
-				if (String.IsNullOrEmpty(langCode))
-					langCode = String.IsNullOrEmpty(item.Name) ? parent.Name : item.Name;
+				var langCode = string.IsNullOrEmpty(item.Short_Description) ? parent.Short_Description : item.Short_Description;
+				if (string.IsNullOrEmpty(langCode))
+					langCode = string.IsNullOrEmpty(item.Name) ? parent.Name : item.Name;
 				newLayout.LanguageCode = Get2LetterLanguageCode(langCode);
 				if (parent.Name.Length == 2 || item.Name != item.Short_Description)
 					newLayout.CountryCode = parent.Name.ToUpper();
 			}
 			else
 			{
-				newLayout.LanguageCode = Get2LetterLanguageCode(String.IsNullOrEmpty(item.Short_Description) ? item.Name : item.Short_Description);
+				newLayout.LanguageCode = Get2LetterLanguageCode(string.IsNullOrEmpty(item.Short_Description) ? item.Name : item.Short_Description);
 				if (item.Name.Length == 2 || item.Name != item.Short_Description)
 					newLayout.CountryCode = item.Name.ToUpper();
 			}

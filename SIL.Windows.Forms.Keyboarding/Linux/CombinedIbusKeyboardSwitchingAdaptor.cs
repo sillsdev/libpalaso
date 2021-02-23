@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using SIL.Extensions;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
@@ -46,9 +47,9 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			startInfo.FileName = "/usr/bin/setxkbmap";
 			var bldr = new StringBuilder();
 			bldr.AppendFormat ("-layout {0}", layout);
-			if (!String.IsNullOrEmpty(variant))
+			if (!string.IsNullOrEmpty(variant))
 				bldr.AppendFormat (" -variant {0}", variant);
-			if (!String.IsNullOrEmpty(option))
+			if (!string.IsNullOrEmpty(option))
 				bldr.AppendFormat (" -option {0}", option);
 			//Console.WriteLine("DEBUG SetXkbLayout({0},{1},{2}): about to call \"{3} {4}\"", layout, variant, option, startInfo.FileName, bldr.ToString());
 			startInfo.Arguments = bldr.ToString();
@@ -75,10 +76,10 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// </remarks>
 		private static void SetXModMap()
 		{
-			string homedir = Environment.GetEnvironmentVariable("HOME");
-			foreach (string file in knownXModMapFiles)
+			var homedir = Environment.GetEnvironmentVariable("HOME");
+			foreach (var file in knownXModMapFiles)
 			{
-				string filepath = System.IO.Path.Combine(homedir, file);
+				var filepath = System.IO.Path.Combine(homedir, file);
 				if (!System.IO.File.Exists(filepath))
 					continue;
 				var startInfo = new ProcessStartInfo();
@@ -112,57 +113,56 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			var option = ibusKeyboard.IBusKeyboardEngine.LayoutOption;
 			Debug.Assert(parentLayout != null);
 
-			bool need_us_layout = false;
-			foreach (string latinLayout in LatinLayouts)
+			var need_us_layout = false;
+			foreach (var latinLayout in LatinLayouts)
 			{
 				if (parentLayout == latinLayout && variant != "eng")
 				{
 					need_us_layout = true;
 					break;
 				}
-				if (!String.IsNullOrEmpty(variant) && String.Format("{0}({1})", parentLayout, variant) == latinLayout)
+				if (!string.IsNullOrEmpty(variant) && $"{parentLayout}({variant})" == latinLayout)
 				{
 					need_us_layout = true;
 					break;
 				}
 			}
 
-			if (String.IsNullOrEmpty(parentLayout) || parentLayout == "default")
+			if (string.IsNullOrEmpty(parentLayout) || parentLayout == "default")
 			{
 				parentLayout = DefaultLayout;
 				variant = DefaultVariant;
 			}
-			if (String.IsNullOrEmpty(variant) || variant == "default")
+			if (string.IsNullOrEmpty(variant) || variant == "default")
 				variant = null;
-			if (String.IsNullOrEmpty(option) || option == "default")
+			if (string.IsNullOrEmpty(option) || option == "default")
 			{
 				option = DefaultOption;
 			}
 			else if (!string.IsNullOrEmpty(DefaultOption))
 			{
-				if (DefaultOption.Split(',').Contains(option, StringComparison.InvariantCulture))
-					option = DefaultOption;
-				else
-					option = String.Format("{0},{1}", DefaultOption, option);
+				option = DefaultOption.Split(',').Contains(option, StringComparison.InvariantCulture)
+					? DefaultOption
+					: $"{DefaultOption},{option}";
 			}
 
 			if (need_us_layout)
 			{
-				parentLayout = parentLayout + ",us";
+				parentLayout += ",us";
 				// If we have a variant, we need to indicate an empty variant to
 				// match the "us" layout.
-				if (!String.IsNullOrEmpty(variant))
-					variant = variant + ",";
+				if (!string.IsNullOrEmpty(variant))
+					variant += ",";
 			}
 
 			SetXkbLayout(parentLayout, variant, option);
 
-			if (!ibusKeyboard.Name.StartsWith("xkb:", StringComparison.InvariantCulture))
-			{
-				// Set the IBus keyboard
-				var context = GlobalCachedInputContext.InputContext;
-				context.SetEngine(ibusKeyboard.IBusKeyboardEngine.LongName);
-			}
+			if (ibusKeyboard.Name.StartsWith("xkb:", StringComparison.InvariantCulture))
+				return;
+
+			// Set the IBus keyboard
+			var context = GlobalCachedInputContext.InputContext;
+			context.SetEngine(ibusKeyboard.IBusKeyboardEngine.LongName);
 		}
 
 		/// <summary>
@@ -177,14 +177,14 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			{
 				if (_defaultKeyboard == null)
 				{
-					var desired = String.Format("xkb:{0}:", DefaultLayout);
-					if (!String.IsNullOrEmpty (DefaultVariant))
-						desired = String.Format ("xkb:{0}:{1}:", DefaultLayout, DefaultVariant);
-					var pattern = String.Format("[^A-Za-z]{0}[^A-Za-z]|^{0}[^A-Za-z]|.*[^A-Za-z]{0}$",
+					var desired = $"xkb:{DefaultLayout}:";
+					if (!string.IsNullOrEmpty (DefaultVariant))
+						desired = $"xkb:{DefaultLayout}:{DefaultVariant}:";
+					var pattern = string.Format("[^A-Za-z]{0}[^A-Za-z]|^{0}[^A-Za-z]|.*[^A-Za-z]{0}$",
 						DefaultLayout);
-					var regex = new System.Text.RegularExpressions.Regex(pattern);
+					var regex = new Regex(pattern);
 					KeyboardDescription first = null;
-					foreach (KeyboardDescription kbd in KeyboardController.Instance.AvailableKeyboards.OfType<KeyboardDescription>())
+					foreach (var kbd in KeyboardController.Instance.AvailableKeyboards.OfType<KeyboardDescription>())
 					{
 						if (first == null)
 							first = kbd;	// last-ditch value if all else fails
@@ -214,9 +214,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// Implementation is not required because the default implementation of KeyboardController
 		/// is sufficient.
 		/// </summary>
-		public override KeyboardDescription ActiveKeyboard
-		{
-			get { return null; }
-		}
+		public override KeyboardDescription ActiveKeyboard => null;
 	}
 }

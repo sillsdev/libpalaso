@@ -235,11 +235,6 @@ namespace SIL.Tests.Data
 				get { throw new NotImplementedException(); }
 			}
 
-			public void Startup(ProgressState state)
-			{
-				throw new NotImplementedException();
-			}
-
 			public PalasoTestItem CreateItem()
 			{
 				throw new NotImplementedException();

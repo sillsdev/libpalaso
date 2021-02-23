@@ -124,8 +124,8 @@ namespace SIL.Text
 		[XmlArrayItem(typeof (LanguageForm), ElementName = "tobedetermined")]
 		public string this[string writingSystemId]
 		{
-			get { return GetExactAlternative(writingSystemId); }
-			set { SetAlternative(writingSystemId, value); }
+			get => GetExactAlternative(writingSystemId);
+			set => SetAlternative(writingSystemId, value);
 		}
 
 		public LanguageForm Find(string writingSystemId)
@@ -276,15 +276,9 @@ namespace SIL.Text
 			return null;
 		}
 
-		public bool Empty
-		{
-			get { return Count == 0; }
-		}
+		public bool Empty => Count == 0;
 
-		public int Count
-		{
-			get { return Forms.Length; }
-		}
+		public int Count => Forms.Length;
 
 		/// <summary>
 		/// just for deserialization
@@ -300,7 +294,7 @@ namespace SIL.Text
 				}
 				return _forms;
 			}
-			set { _forms = value; }
+			set => _forms = value;
 		}
 
 
@@ -505,6 +499,18 @@ namespace SIL.Text
 			if (other.Count != Count) return false;
 			if (!_forms.SequenceEqual(other.Forms)) return false;
 			return true;
+		}
+
+		public override int GetHashCode()
+		{
+			// https://stackoverflow.com/a/263416/487503
+			unchecked // Overflow is fine, just wrap
+			{
+				var hash = 23;
+				hash *= 29 + Count.GetHashCode();
+				hash *= 29 + Forms?.GetHashCode() ?? 0;
+				return hash;
+			}
 		}
 
 		public bool HasFormWithSameContent(MultiTextBase other)

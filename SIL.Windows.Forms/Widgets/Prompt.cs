@@ -95,32 +95,33 @@ namespace SIL.Windows.Forms.Widgets
 
 		#region IComponent Members
 
-		public event EventHandler Disposed = delegate
-												 { };
-		private ISite site;
-		public ISite Site
+		public override ISite Site
 		{
 			get
 			{
 				VerifyNotDisposed();
-				return site;
+				return base.Site;
 			}
 			set
 			{
 				VerifyNotDisposed();
-				site = value;
+				base.Site = value;
 			}
 		}
 
 		private bool _isDisposed = false;
-		public void Dispose()
+		protected override void Dispose(bool disposing)
 		{
-			if (!_isDisposed)
+			if (_isDisposed)
+				return;
+
+			if (disposing)
 			{
-				_isDisposed = true;
 				_extendees.Clear();
-				Disposed(this, new EventArgs());
+				_isDisposed = true;
 			}
+
+			base.Dispose(disposing);
 		}
 
 		private void VerifyNotDisposed()

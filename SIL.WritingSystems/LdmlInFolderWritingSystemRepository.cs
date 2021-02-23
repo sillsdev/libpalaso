@@ -20,7 +20,7 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Returns an instance of an ldml in folder writing system reposistory.
+		/// Returns an instance of an ldml in folder writing system repository.
 		/// </summary>
 		/// <param name="basePath">base location of the global writing system repository</param>
 		/// <param name="customDataMappers">The custom data mappers.</param>

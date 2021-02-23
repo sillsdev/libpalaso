@@ -1,6 +1,7 @@
 using System;
 using System.Windows.Forms;
 using SIL.Reporting;
+using SIL.Windows.Forms.Reporting;
 using TestApp.Properties;
 
 namespace TestApp
@@ -37,7 +38,7 @@ namespace TestApp
 			Logger.Init();
 			ErrorReport.EmailAddress = "nowhere@palaso.org";
 			ErrorReport.AddStandardProperties();
-			ExceptionHandler.Init();
+			ExceptionHandler.Init(new WinFormsExceptionHandler());
 			UsageReporter.Init(Properties.Settings.Default.ReportingSettings, "nowhere.palaso.org", "bogusAccountCode", true);
 			Settings.Default.Save();
 		}

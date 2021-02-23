@@ -11,6 +11,7 @@ using SIL.WritingSystems.Tests;
 namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 {
 	[TestFixture]
+	[OfflineSldr]
 	public class WritingSystemTreeModelTests
 	{
 		private class TestEnvironment : IDisposable

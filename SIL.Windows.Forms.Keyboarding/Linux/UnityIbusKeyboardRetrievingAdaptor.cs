@@ -16,7 +16,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// </summary>
 	public class UnityIbusKeyboardRetrievingAdaptor : IbusKeyboardRetrievingAdaptor
 	{
-		internal readonly UnityKeyboardRetrievingHelper _helper = new UnityKeyboardRetrievingHelper();
+		private readonly GnomeKeyboardRetrievingHelper _helper = new GnomeKeyboardRetrievingHelper();
 
 		#region Specific implementations of IKeyboardRetriever
 
@@ -24,19 +24,14 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		public override void Initialize()
 		{
-			SwitchingAdaptor = CreateSwitchingAdaptor();
+			SwitchingAdaptor = new UnityIbusKeyboardSwitchingAdaptor(IbusCommunicator);
 			KeyboardRetrievingHelper.AddIbusVersionAsErrorReportProperty();
 			InitKeyboards();
 		}
 
-		protected virtual IKeyboardSwitchingAdaptor CreateSwitchingAdaptor()
-		{
-			return new UnityIbusKeyboardSwitchingAdaptor(IbusCommunicator);
-		}
-
 		protected override string GetKeyboardSetupApplication(out string arguments)
 		{
-			var program = UnityKeyboardRetrievingHelper.GetKeyboardSetupApplication(out arguments);
+			var program = GnomeKeyboardRetrievingHelper.GetKeyboardSetupApplication(out arguments);
 			return string.IsNullOrEmpty(program) ? base.GetKeyboardSetupApplication(out arguments) : program;
 		}
 		#endregion
@@ -46,43 +41,45 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			_helper.InitKeyboards(type => type != "xkb", RegisterKeyboards);
 		}
 
-		private void RegisterKeyboards(IDictionary<string, uint> keyboards, UnityKeyboardRetrievingHelper.IbusKeyboardEntry _)
+		private void RegisterKeyboards(IDictionary<string, uint> keyboards, (string, string) _)
 		{
 			if (keyboards.Count <= 0)
 				return;
 
-			Dictionary<string, IbusKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<IbusKeyboardDescription>().ToDictionary(kd => kd.Id);
+			var curKeyboards = KeyboardController.Instance.Keyboards
+				.OfType<IbusKeyboardDescription>().ToDictionary(kd => kd.Id);
 			var missingLayouts = new List<string>(keyboards.Keys);
 			foreach (var ibusKeyboard in GetAllIBusKeyboards())
 			{
-				if (keyboards.ContainsKey(ibusKeyboard.LongName))
+				if (!keyboards.ContainsKey(ibusKeyboard.LongName))
+					continue;
+
+				missingLayouts.Remove(ibusKeyboard.LongName);
+				var id = $"{ibusKeyboard.Language}_{ibusKeyboard.LongName}";
+				if (curKeyboards.TryGetValue(id, out var keyboard))
 				{
-					missingLayouts.Remove(ibusKeyboard.LongName);
-					string id = string.Format("{0}_{1}", ibusKeyboard.Language, ibusKeyboard.LongName);
-					IbusKeyboardDescription keyboard;
-					if (curKeyboards.TryGetValue(id, out keyboard))
+					if (!keyboard.IsAvailable)
 					{
-						if (!keyboard.IsAvailable)
-						{
-							keyboard.SetIsAvailable(true);
-							keyboard.IBusKeyboardEngine = ibusKeyboard;
-						}
-						curKeyboards.Remove(id);
+						keyboard.SetIsAvailable(true);
+						keyboard.IBusKeyboardEngine = ibusKeyboard;
 					}
-					else
-					{
-						keyboard = new IbusKeyboardDescription(id, ibusKeyboard, SwitchingAdaptor);
-						KeyboardController.Instance.Keyboards.Add(keyboard);
-					}
-					keyboard.SystemIndex = keyboards[ibusKeyboard.LongName];
+
+					curKeyboards.Remove(id);
 				}
+				else
+				{
+					keyboard = new IbusKeyboardDescription(id, ibusKeyboard, SwitchingAdaptor);
+					KeyboardController.Instance.Keyboards.Add(keyboard);
+				}
+
+				keyboard.SystemIndex = keyboards[ibusKeyboard.LongName];
 			}
 
-			foreach (IbusKeyboardDescription existingKeyboard in curKeyboards.Values)
+			foreach (var existingKeyboard in curKeyboards.Values)
 				existingKeyboard.SetIsAvailable(false);
 
 			foreach (var layout in missingLayouts)
-				Console.WriteLine("{0}: Didn't find {1}", GetType().Name, layout);
+				Console.WriteLine($"{GetType().Name}: Didn't find {layout}");
 		}
 	}
 }

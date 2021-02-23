@@ -2,11 +2,39 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
-    <Configurations>Debug;Release;DebugStrongName;ReleaseStrongName</Configurations>
+    <RootNamespace>SIL.Scripture</RootNamespace>
+    <AssemblyTitle>SIL.Scripture</AssemblyTitle>
+    <Configurations>Debug;Release</Configurations>
     <Description>SIL.Scripture provides classes for working with Scripture data such as references and versifications.</Description>
+    <Company>SIL International</Company>
+    <Authors>SIL International</Authors>
+    <Product>libpalaso</Product>
+    <Copyright>Copyright © 2010-2020 SIL International</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/sillsdev/libpalaso</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <OutputPath>../output/$(Configuration)</OutputPath>
+    <PackageOutputPath>../output</PackageOutputPath>
+    <SignAssembly>true</SignAssembly>
+    <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
+    <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <AppendToReleaseNotesProperty><![CDATA[
+See full changelog at https://github.com/sillsdev/libpalaso/blob/master/CHANGELOG.md]]>
+    </AppendToReleaseNotesProperty>
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
   </PropertyGroup>
 
-  <Import Project="..\GlobalAssemblyInfo.props" />
+  <ItemGroup>
+    <PackageReference Include="GitVersionTask" Version="5.3.4">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4-*" PrivateAssets="All" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
