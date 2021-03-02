@@ -1282,6 +1282,30 @@ namespace SIL.WritingSystems.Tests.Migration
 		}
 
 		[Test]
+		public void Migrate_CustomSimpleSort_MigrationDoesNotAddSystemCollationToLexiconSettings()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var projectSettingsfile = Path.Combine(environment.LdmlPath, "test.ulsx");
+
+				var dataMappers = new ICustomDataMapper<WritingSystemDefinition>[]
+				{
+					new ProjectLexiconSettingsWritingSystemDataMapper<WritingSystemDefinition>(new FileSettingsStore(projectSettingsfile))
+				};
+
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0WithCollationInfo(WritingSystemDefinitionV0.SortRulesType.CustomSimple));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+
+				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath, dataMappers);
+				migrator.ResetRemovedProperties(repo);
+				repo.Save();
+
+				AssertThatXmlIn.File(Path.Combine(environment.LdmlPath, projectSettingsfile)).HasNoMatchForXpath("/ProjectLexiconSettings/WritingSystems/WritingSystem/SystemCollation");
+			}
+		}
+
+		[Test]
 		public void Migrate_LanguageNameIsNotSet_LanguageNameIsSetToWhatIanaSubtagRegistrySays()
 		{
 			using (var environment = new TestEnvironment())
