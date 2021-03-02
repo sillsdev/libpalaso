@@ -43,6 +43,8 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public const int CurrentLdmlLibraryVersion = 3;
 
+		internal const string NeedsCompiling = "needsCompiling";
+
 		private static readonly XNamespace Palaso = "urn://palaso.org/ldmlExtensions/v1";
 		private static readonly XNamespace Sil = "urn://www.sil.org/ldml/0.1";
 
@@ -833,7 +835,7 @@ namespace SIL.WritingSystems
 		private static SimpleRulesCollationDefinition ReadCollationRulesForCustomSimple(XElement collationElem, XElement specialElem, string collationType)
 		{
 			XElement simpleElem = specialElem.Element(Sil + "simple");
-			bool needsCompiling = (bool?) specialElem.Attribute(Sil + "needscompiling") ?? false;
+			bool needsCompiling = (bool?) specialElem.Attribute(Sil + NeedsCompiling) ?? false;
 			var scd = new SimpleRulesCollationDefinition(collationType) {SimpleRules = ((string) simpleElem).Replace("\n", "\r\n")};
 			if (!needsCompiling)
 			{
@@ -1415,7 +1417,7 @@ namespace SIL.WritingSystems
 
 			XElement specialElem = GetOrCreateSpecialElement(collationElem);
 			// SLDR generally doesn't include needsCompiling if false
-			specialElem.SetAttributeValue(Sil + "needsCompiling", scd.IsValid ? null : "true");
+			specialElem.SetAttributeValue(Sil + NeedsCompiling, scd.IsValid ? null : "true");
 			specialElem.Add(new XElement(Sil + "simple", new XCData(scd.SimpleRules)));
 		}
 		

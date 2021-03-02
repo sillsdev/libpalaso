@@ -855,7 +855,7 @@ namespace SIL.WritingSystems.Tests
 				XElement simpleElem = specialElem.Element(Sil + "simple");
 				Assert.That((string)defaultCollationElem, Is.EqualTo("standard"));
 				Assert.That((string)collationElem.Attribute("type"), Is.EqualTo("standard"));
-				Assert.That((string)specialElem.Attribute(Sil + "needsCompiling"), Is.EqualTo("true"));
+				Assert.That((string)specialElem.Attribute(Sil + LdmlDataMapper.NeedsCompiling), Is.EqualTo("true"));
 				Assert.That((string)simpleElem, Is.EqualTo(simpleRules.Replace("\r\n", "\n")));
 
 				var validatedCd = new SimpleRulesCollationDefinition("standard")
