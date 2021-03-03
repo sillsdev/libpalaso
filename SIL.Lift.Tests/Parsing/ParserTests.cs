@@ -5,9 +5,12 @@ using System.Text;
 using System.Xml;
 using NMock2;
 using NUnit.Framework;
+using SIL.IO;
 using SIL.Lift.Merging;
 using SIL.Lift.Parsing;
+using SIL.Lift.Tests.Properties;
 using SIL.Lift.Validation;
+using SIL.TestUtilities;
 using Has = NMock2.Has;
 using Is = NMock2.Is;
 
@@ -67,12 +70,12 @@ namespace SIL.Lift.Tests.Parsing
 			_mocks.VerifyAllExpectationsHaveBeenMet();
 		}
 
-		[Test, ExpectedException(typeof(LiftFormatException))]
-		public void ReadLiftFile_OldVersion_Throws()
+		[Test]
+		public void ReadLiftFile_OldVersion_ThrowsLiftFormatException()
 		{
 			using (TempFile f = new TempFile(string.Format("<lift version='{0}'></lift>", /*Validator.LiftVersion*/ "0.0")))
 			{
-				_parser.ReadLiftFile(f.Path);
+				Assert.Throws<LiftFormatException>(() =>_parser.ReadLiftFile(f.Path));
 			}
 		}
 		[Test]
@@ -1309,8 +1312,6 @@ namespace SIL.Lift.Tests.Parsing
 		[Test]
 		public void ReadExternalLiftFile()
 		{
-			// For this test to work, the files test20080407.lift and test20080407.lift-ranges MUST
-			// be copied to the current working directory.
 			const string NewLine = "\n";
 
 			using (_mocks.Ordered)	// Ordered may be too strong if parse details change.
@@ -1401,8 +1402,22 @@ namespace SIL.Lift.Tests.Parsing
 					.With(Is.Anything, Is.EqualTo(new Trait("entry-type", "Main Entry")));
 				ExpectFinishEntry();
 			}
-			_parser.ReadLiftFile("test20080407.lift");
-			_mocks.VerifyAllExpectationsHaveBeenMet();
+
+			var cwd = Environment.CurrentDirectory;
+			var liftFilePath = Path.Combine(cwd, "test20080407.lift");
+			var liftRangesFilePath = Path.Combine(cwd, "test20080407.lift-ranges");
+			try
+			{
+				File.WriteAllBytes(liftFilePath, Resources.test20080407_lift);
+				File.WriteAllBytes(liftRangesFilePath, Resources.test20080407_lift_ranges);
+				_parser.ReadLiftFile("test20080407.lift");
+				_mocks.VerifyAllExpectationsHaveBeenMet();
+			}
+			finally
+			{
+				RobustFile.Delete(liftFilePath);
+				RobustFile.Delete(liftRangesFilePath);
+			}
 		}
 
 		[Test]

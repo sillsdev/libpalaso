@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using NUnit.Framework;
 using SIL.UsbDrive.Linux;
@@ -7,6 +7,7 @@ namespace SIL.Tests.UsbDrive.Linux
 {
 	[TestFixture]
 	[Category("SkipOnTeamCity")]
+	[Platform(Include = "Linux", Reason = "Linux specific test")]
 	public class UDisksTests
 	{
 		[Test, Ignore("not all systems have adapters")]

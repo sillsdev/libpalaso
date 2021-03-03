@@ -14,7 +14,6 @@ namespace SIL.DictionaryServices.Model
 		private readonly BindingList<LexExampleSentence> _exampleSentences;
 		private readonly BindingList<LexNote> _notes;
 		private readonly BindingList<LexReversal> _reversals;
-		private string _id;
 
 		public new class WellKnownProperties: PalasoDataObject.WellKnownProperties
 		{
@@ -65,13 +64,13 @@ namespace SIL.DictionaryServices.Model
 
 		public string GetOrCreateId()
 		{
-			if (String.IsNullOrEmpty(_id))
+			if (String.IsNullOrEmpty(Id))
 			{
-				_id = Guid.NewGuid().ToString();
+				Id = Guid.NewGuid().ToString();
 				NotifyPropertyChanged("id");
 			}
 
-			return _id;
+			return Id;
 		}
 
 
@@ -81,37 +80,20 @@ namespace SIL.DictionaryServices.Model
 				GetOrCreateProperty<LexRelationCollection>(relationName);
 			relations.Relations.Add(new LexRelation(relationName, targetId, this));
 		}
-		public MultiText Gloss
-		{
-			get { return GetOrCreateProperty<MultiText>(WellKnownProperties.Gloss); }
-		}
+		public MultiText Gloss => GetOrCreateProperty<MultiText>(WellKnownProperties.Gloss);
 
-		public MultiText Definition
-		{
-			get { return GetOrCreateProperty<MultiText>(WellKnownProperties.Definition); }
-		}
+		public MultiText Definition => GetOrCreateProperty<MultiText>(WellKnownProperties.Definition);
 
-		public IList<LexExampleSentence> ExampleSentences
-		{
-			get { return _exampleSentences; }
-		}
+		public IList<LexExampleSentence> ExampleSentences => _exampleSentences;
 
 		/// <summary>
 		/// NOTE: in oct 2010, wesay does not yet use this field, as it only handles a single, typeless note and uses the well-known-properties approach
 		/// </summary>
-		public IList<LexNote> Notes
-		{
-			get { return _notes; }
-		}
-		public IList<LexReversal> Reversals
-		{
-			get { return _reversals; }
-		}
+		public IList<LexNote> Notes => _notes;
 
-		public override bool IsEmpty
-		{
-			get { return Gloss.Empty && ExampleSentences.Count == 0 && !HasProperties; }
-		}
+		public IList<LexReversal> Reversals => _reversals;
+
+		public override bool IsEmpty => Gloss.Empty && ExampleSentences.Count == 0 && !HasProperties;
 
 		public bool IsEmptyForPurposesOfDeletion
 		{
@@ -125,13 +107,9 @@ namespace SIL.DictionaryServices.Model
 			}
 		}
 
-		public string Id
-		{
-			get { return _id; }
-			set { _id = value; }
-		}
+		public string Id { get; set; }
 
-		public IEnumerable<string> PropertiesInUse
+		public new IEnumerable<string> PropertiesInUse
 		{
 			get { return base.PropertiesInUse.Concat(ExampleSentences.SelectMany(ex=>ex.PropertiesInUse)); }
 		}
@@ -194,10 +172,9 @@ namespace SIL.DictionaryServices.Model
 			return clone;
 		}
 
-		public override bool Equals(Object obj)
+		public override bool Equals(object obj)
 		{
-			if (!(obj is LexSense)) return false;
-			return Equals((LexSense)obj);
+			return Equals(obj as LexSense);
 		}
 
 		public bool Equals(LexSense other)
@@ -210,6 +187,16 @@ namespace SIL.DictionaryServices.Model
 			if (!Reversals.OrderBy(x=>x).SequenceEqual(other.Reversals.OrderBy(x=>x))) return false;
 			if (!base.Equals(other)) return false;
 			return true;
+		}
+
+		public override int GetHashCode()
+		{
+			// For this class we want a hash code based on the the object's reference so that we
+			// can store and retrieve the object in the LiftLexEntryRepository. However, this is
+			// not ideal and Microsoft warns: "Do not use the hash code as the key to retrieve an
+			// object from a keyed collection."
+			// https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode?view=netframework-4.8#remarks
+			return base.GetHashCode();
 		}
 	}
 }

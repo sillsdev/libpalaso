@@ -31,8 +31,8 @@ namespace SIL.Tests.Acknowledgements
 			_ackDict.Add(ack1.Key, ack1);
 			_ackDict.Add(ack2.Key, ack2);
 			var html = AcknowledgementsProvider.SortByNameAndConcatenateHtml(_ackDict);
-			Assert.That(html, Is.StringStarting("<li>Bob\'s project"));
-			Assert.That(html, Is.StringContaining("my Name"));
+			Assert.That(html, Does.StartWith("<li>Bob\'s project"));
+			Assert.That(html, Does.Contain("my Name"));
 		}
 
 		[Test]

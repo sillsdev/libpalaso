@@ -17,12 +17,10 @@ namespace SIL.Lift.Tests
 			return new MultiText();
 		}
 
-		public override string ExceptionList
-		{
+		public override string ExceptionList =>
 			//PropertyChanged: No good way to clone eventhandlers
 			//_parent: We are doing top down clones. Children shouldn't make clones of their parents, but parents of their children.
-			get { return "|_parent|PropertyChanged|"; }
-		}
+			"|Parent|PropertyChanged|";
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
 		{

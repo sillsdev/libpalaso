@@ -39,42 +39,26 @@ namespace SIL.Tests.PlatformUtilities
 			Assert.That(Platform.IsDotNet, Is.True);
 		}
 
-#if SYSTEM_MAC
 		[Test]
-		public void IsLinux_Mac()
+		[Platform(Include="MacOsX,Win")]
+		public void IsLinux_MacWindows()
 		{
 			Assert.That(Platform.IsLinux, Is.False);
 		}
-#else
+
 		[Test]
 		[Platform(Include="Linux")]
 		public void IsLinux_Linux()
 		{
 			Assert.That(Platform.IsLinux, Is.True);
 		}
-#endif
 
 		[Test]
-		[Platform(Include="Win")]
-		public void IsLinux_Windows()
-		{
-			Assert.That(Platform.IsLinux, Is.False);
-		}
-
-#if SYSTEM_MAC
-		[Test]
-		public void IsWindows_Mac()
+		[Platform(Include="MacOsX,Linux")]
+		public void IsWindows_MacLinux()
 		{
 			Assert.That(Platform.IsWindows, Is.False);
 		}
-#else
-		[Test]
-		[Platform(Include="Linux")]
-		public void IsWindows_Linux()
-		{
-			Assert.That(Platform.IsWindows, Is.False);
-		}
-#endif
 
 		[Test]
 		[Platform(Include="Win")]
@@ -83,42 +67,26 @@ namespace SIL.Tests.PlatformUtilities
 			Assert.That(Platform.IsWindows, Is.True);
 		}
 
-#if SYSTEM_MAC
 		[Test]
+		[Platform(Include="MacOsX")]
 		public void IsMac_Mac()
 		{
 			Assert.That(Platform.IsMac, Is.True);
 		}
-#else
-		[Test]
-		[Platform(Include="Linux")]
-		public void IsMac_Linux()
-		{
-			Assert.That(Platform.IsMac, Is.False);
-		}
-#endif
 
 		[Test]
-		[Platform(Include="Win")]
-		public void IsMac_Windows()
+		[Platform(Include="Linux, Win")]
+		public void IsMac_LinuxWin()
 		{
 			Assert.That(Platform.IsMac, Is.False);
 		}
 
-#if SYSTEM_MAC
 		[Test]
-		public void IsUnix_Mac()
+		[Platform(Include="MacOsX, Linux")]
+		public void IsUnix_MacLinux()
 		{
 			Assert.That(Platform.IsUnix, Is.True);
 		}
-#else
-		[Test]
-		[Platform(Include="Linux")]
-		public void IsUnix_Linux()
-		{
-			Assert.That(Platform.IsUnix, Is.True);
-		}
-#endif
 
 		[Test]
 		[Platform(Include="Win")]
@@ -136,23 +104,23 @@ namespace SIL.Tests.PlatformUtilities
 		}
 
 		[Platform(Include = "Linux", Reason = "Linux specific test")]
-		[TestCase("Unity", null, "ubuntu", Result = "unity", TestName = "Unity")]
+		[TestCase("Unity", null, "ubuntu", ExpectedResult = "unity", TestName = "Unity")]
 		[TestCase("Unity", "/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/",
-			"ubuntu", Result = "unity", TestName = "Unity with dataDir")]
-		[TestCase("GNOME", null, "gnome-shell", Result = "gnome",
+			"ubuntu", ExpectedResult = "unity", TestName = "Unity with dataDir")]
+		[TestCase("GNOME", null, "gnome-shell", ExpectedResult = "gnome",
 			TestName = "Gnome shell")]
-		[TestCase("GNOME", null, "cinnamon", Result = "cinnamon",
+		[TestCase("GNOME", null, "cinnamon", ExpectedResult = "cinnamon",
 			TestName = "Wasta 12")]
-		[TestCase("x-cinnamon", null, "cinnamon", Result = "x-cinnamon",
+		[TestCase("x-cinnamon", null, "cinnamon", ExpectedResult = "x-cinnamon",
 			TestName = "Wasta 14")]
 		[TestCase(null, "/usr/share/ubuntu:/usr/share/kde:/usr/local/share/:/usr/share/",
-			"kde-plasma", Result = "kde", TestName = "KDE on Ubuntu 12_04")]
-		[TestCase("XFCE", null, "xubuntu", Result = "xfce", TestName = "XFCE")]
-		[TestCase("foo", null, null, Result = "foo", TestName = "Only XDG_CURRENT_DESKTOP set")]
+			"kde-plasma", ExpectedResult = "kde", TestName = "KDE on Ubuntu 12_04")]
+		[TestCase("XFCE", null, "xubuntu", ExpectedResult = "xfce", TestName = "XFCE")]
+		[TestCase("foo", null, null, ExpectedResult = "foo", TestName = "Only XDG_CURRENT_DESKTOP set")]
 		[TestCase(null, "/usr/share/ubuntu:/usr/share/kde:/usr/local/share/:/usr/share/", null,
-			Result = "kde", TestName = "Only XDG_DATA_DIRS set")]
-		[TestCase(null, null, "something", Result = "something", TestName = "Only GDMSESSION set")]
-		[TestCase(null, null, null, Result = "", TestName = "Nothing set")]
+			ExpectedResult = "kde", TestName = "Only XDG_DATA_DIRS set")]
+		[TestCase(null, null, "something", ExpectedResult = "something", TestName = "Only GDMSESSION set")]
+		[TestCase(null, null, null, ExpectedResult = "", TestName = "Nothing set")]
 		[TestCase("ubuntu:GNOME", null, "ubuntu", ExpectedResult = "gnome", TestName = "Ubuntu 20.04 (Gnome)")]
 		[TestCase("ubuntu:GNOME", null, "ubuntu-wayland", ExpectedResult = "gnome", TestName = "Ubuntu 20.04 (Gnome + Wayland)")]
 		[TestCase("X-Cinnamon", null, "cinnamon", ExpectedResult = "x-cinnamon", TestName = "Wasta 20 (Cinnamon)")]
@@ -180,20 +148,20 @@ namespace SIL.Tests.PlatformUtilities
 		}
 
 		[Platform(Include = "Linux", Reason = "Linux specific test")]
-		[TestCase("Unity", null, "ubuntu", null, Result = "unity (ubuntu)", TestName = "Unity")]
+		[TestCase("Unity", null, "ubuntu", null, ExpectedResult = "unity (ubuntu)", TestName = "Unity")]
 		[TestCase("Unity", "/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/",
-			"ubuntu", null, Result = "unity (ubuntu)", TestName = "Unity with dataDir")]
+			"ubuntu", null, ExpectedResult = "unity (ubuntu)", TestName = "Unity with dataDir")]
 		[TestCase("Unity", null, "ubuntu", "session-1",
-			Result = "unity (ubuntu [display server: Mir])", TestName = "Unity with Mir")]
-		[TestCase("GNOME", null, "gnome-shell", null, Result = "gnome (gnome-shell)",
+			ExpectedResult = "unity (ubuntu [display server: Mir])", TestName = "Unity with Mir")]
+		[TestCase("GNOME", null, "gnome-shell", null, ExpectedResult = "gnome (gnome-shell)",
 			TestName = "Gnome shell")]
-		[TestCase("GNOME", null, "cinnamon", null, Result = "cinnamon (cinnamon)",
+		[TestCase("GNOME", null, "cinnamon", null, ExpectedResult = "cinnamon (cinnamon)",
 			TestName = "Wasta 12")]
-		[TestCase("x-cinnamon", null, "cinnamon", null, Result = "x-cinnamon (cinnamon)",
+		[TestCase("x-cinnamon", null, "cinnamon", null, ExpectedResult = "x-cinnamon (cinnamon)",
 			TestName = "Wasta 14")]
 		[TestCase(null, "/usr/share/ubuntu:/usr/share/kde:/usr/local/share/:/usr/share/",
-			"kde-plasma", null, Result = "kde (kde-plasma)", TestName = "KDE on Ubuntu 12_04")]
-		[TestCase(null, null, null, null, Result = " (not set)", TestName = "Nothing set")]
+			"kde-plasma", null, ExpectedResult = "kde (kde-plasma)", TestName = "KDE on Ubuntu 12_04")]
+		[TestCase(null, null, null, null, ExpectedResult = " (not set)", TestName = "Nothing set")]
 		[TestCase("ubuntu:GNOME", null, "ubuntu", "", ExpectedResult = "gnome (ubuntu)", TestName = "Ubuntu 20.04 (Gnome)")]
 		[TestCase("ubuntu:GNOME", null, "ubuntu-wayland", "",
 			ExpectedResult = "gnome (ubuntu [display server: Wayland])", TestName = "Ubuntu 20.04 (Gnome + Wayland)")]
@@ -247,7 +215,7 @@ namespace SIL.Tests.PlatformUtilities
 		}
 
 		[Test]
-		[Platform(Include = "Windows", Reason = "Windows specific test")]
+		[Platform(Include = "Win", Reason = "Windows specific test")]
 		public void IsCinnamon_Windows()
 		{
 			Assert.That(Platform.IsCinnamon, Is.False);

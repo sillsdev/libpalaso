@@ -1,339 +1,48 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0" DefaultTargets="Build">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0580ED5F-6274-4928-83EE-175F01AD052D}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SIL.Windows.Forms.Keyboarding</RootNamespace>
-    <AssemblyName>SIL.Windows.Forms.Keyboarding</AssemblyName>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <LangVersion>6</LangVersion>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(Configuration.Contains('StrongName'))">
-    <!-- We can't strongname this dll because of unsigned dependencies!
+    <TargetFrameworks>net461</TargetFrameworks>
+    <Configurations>Debug;Release</Configurations>
+    <Description>The SIL.Windows.Forms.Keyboarding library provides cross-platform functionality for keyboard selection and switching in Windows Forms applications. Currently, this library supports system and Keyman keyboards on Windows, and X keyboard extension (XKB) and Intelligent Input Bus (IBus) keyboards on Linux.</Description>
+    <Company>SIL International</Company>
+    <Authors>SIL International</Authors>
+    <Product>libpalaso</Product>
+    <Copyright>Copyright © 2010-2020 SIL International</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/sillsdev/libpalaso</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <OutputPath>../output/$(Configuration)</OutputPath>
+    <PackageOutputPath>../output</PackageOutputPath>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
-    -->
+    <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
+    <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <DebugType>portable</DebugType>
+    <AppendToReleaseNotesProperty><![CDATA[
+See full changelog at https://github.com/sillsdev/libpalaso/blob/master/CHANGELOG.md]]>
+    </AppendToReleaseNotesProperty>
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\output\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>..\output\Debug\SIL.Windows.Forms.Keyboarding.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\output\Release</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\DebugStrongName</OutputPath>
-    <DefineConstants>DEBUG;TRACE;STRONG_NAME</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>..\output\DebugStrongName\SIL.Windows.Forms.Keyboarding.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\DebugMono</OutputPath>
-    <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>..\output\DebugMono\SIL.Windows.Forms.Keyboarding.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\DebugMonoStrongName</OutputPath>
-    <DefineConstants>TRACE;DEBUG;MONO;STRONG_NAME</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>..\output\DebugMonoStrongName\SIL.Windows.Forms.Keyboarding.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU'">
-    <OutputPath>..\output\ReleaseMono</OutputPath>
-    <DefineConstants>TRACE;MONO</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|AnyCPU'">
-    <OutputPath>..\output\ReleaseMonoStrongName</OutputPath>
-    <DefineConstants>TRACE;MONO;STRONG_NAME</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|AnyCPU'">
-    <OutputPath>..\output\ReleaseStrongName</OutputPath>
-    <DefineConstants>TRACE;STRONG_NAME</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\Debug</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>..\output\Debug\SIL.Windows.Forms.Keyboarding.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>..\output\Release</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\DebugStrongName</OutputPath>
-    <DefineConstants>DEBUG;TRACE;STRONG_NAME</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>..\output\DebugStrongName\SIL.Windows.Forms.Keyboarding.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMono|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\DebugMono</OutputPath>
-    <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>..\output\DebugMono\SIL.Windows.Forms.Keyboarding.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\DebugMonoStrongName</OutputPath>
-    <DefineConstants>TRACE;DEBUG;MONO;STRONG_NAME</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>..\output\DebugMonoStrongName\SIL.Windows.Forms.Keyboarding.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|x86'">
-    <OutputPath>..\output\ReleaseMono</OutputPath>
-    <DefineConstants>TRACE;MONO</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|x86'">
-    <OutputPath>..\output\ReleaseMonoStrongName</OutputPath>
-    <DefineConstants>TRACE;MONO;STRONG_NAME</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|x86'">
-    <OutputPath>..\output\ReleaseStrongName</OutputPath>
-    <DefineConstants>TRACE;STRONG_NAME</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <DocumentationFile>..\output\Debug\SIL.Windows.Forms.Keyboarding.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>..\output\Release</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\DebugStrongName</OutputPath>
-    <DefineConstants>DEBUG;TRACE;STRONG_NAME</DefineConstants>
-    <DocumentationFile>..\output\DebugStrongName\SIL.Windows.Forms.Keyboarding.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMono|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\DebugMono</OutputPath>
-    <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
-    <DocumentationFile>..\output\DebugMono\SIL.Windows.Forms.Keyboarding.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\DebugMonoStrongName</OutputPath>
-    <DefineConstants>TRACE;DEBUG;MONO;STRONG_NAME</DefineConstants>
-    <DocumentationFile>..\output\DebugMonoStrongName\SIL.Windows.Forms.Keyboarding.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|x64'">
-    <OutputPath>..\output\ReleaseMono</OutputPath>
-    <DefineConstants>TRACE;MONO</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|x64'">
-    <OutputPath>..\output\ReleaseMonoStrongName</OutputPath>
-    <DefineConstants>TRACE;MONO;STRONG_NAME</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|x64'">
-    <OutputPath>..\output\ReleaseStrongName</OutputPath>
-    <DefineConstants>TRACE;STRONG_NAME</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName'">
-    <Reference Include="L10NSharp.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\DebugMono\L10NSharp.dll</HintPath>
-    </Reference>
+
+  <ItemGroup>
+    <PackageReference Include="GitVersionTask" Version="5.3.4">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="ibusdotnet" Version="2.0.3" />
+    <PackageReference Include="icu.net" Version="2.7.0-beta.10" />
+    <PackageReference Include="L10NSharp" Version="4.1.0-*" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Mono.Posix" Version="5.4.0.201" Condition="'$(OS)' == 'Windows_NT'" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4-*" PrivateAssets="All" />
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
-    <Reference Include="L10NSharp.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\ReleaseMono\L10NSharp.dll</HintPath>
-    </Reference>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName'">
-    <Reference Include="Keyman7Interop.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Debug\Keyman7Interop.dll</HintPath>
-    </Reference>
-    <Reference Include="Keyman10Interop">
-      <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-      <HintPath>..\lib\common\Keyman10Interop.dll</HintPath>
-    </Reference>
-    <Reference Include="KeymanLink.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Debug\KeymanLink.dll</HintPath>
-    </Reference>
-    <Reference Include="L10NSharp.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Debug\L10NSharp.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
-    <Reference Include="Keyman7Interop.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Release\Keyman7Interop.dll</HintPath>
-    </Reference>
-    <Reference Include="Keyman10Interop">
-      <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-      <HintPath>..\lib\common\Keyman10Interop.dll</HintPath>
-    </Reference>
-    <Reference Include="KeymanLink.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Release\KeymanLink.dll</HintPath>
-    </Reference>
-    <Reference Include="L10NSharp.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Release\L10NSharp.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+
   <ItemGroup>
     <Reference Include="ibusdotnet, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c9ab93f7b23223fb">
       <HintPath>..\packages\ibusdotnet.2.0.3\lib\net461\ibusdotnet.dll</HintPath>
@@ -348,105 +57,34 @@
     <Reference Include="Microsoft.Extensions.DependencyModel, Version=2.0.4.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.DependencyModel.2.0.4\lib\net451\Microsoft.Extensions.DependencyModel.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Keyman10Interop">
+      <HintPath>..\lib\Keyman10Interop.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    <Reference Include="Keyman7Interop">
+      <HintPath>..\lib\Keyman7Interop.dll</HintPath>
     </Reference>
+    <Reference Include="KeymanLink">
+      <HintPath>..\lib\KeymanLink.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Mono.Posix" Condition="'$(OS)' != 'Windows_NT'" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="NDesk.DBus">
-      <HintPath>..\packages\NDesk.DBus.0.15.0\lib\NDesk.DBus.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup Condition="$(Configuration.Contains('Mono'))">
-    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="IKeyboardRetrievingAdaptor.cs" />
-    <Compile Include="IKeyboardSwitchingAdaptor.cs" />
-    <Compile Include="InputLanguageWrapper.cs" />
-    <Compile Include="KeyboardController.cs" />
-    <Compile Include="KeyboardDescription.cs" />
-    <Compile Include="Linux\AlternateLanguageCodes.cs" />
-    <Compile Include="Linux\CombinedIbusKeyboardRetrievingAdaptor.cs" />
-    <Compile Include="Linux\CombinedIbusKeyboardSwitchingAdaptor.cs" />
-    <Compile Include="Linux\GlibHelper.cs" />
-    <Compile Include="Linux\GList.cs" />
-    <Compile Include="Linux\GnomeShellIbusKeyboardRetrievingAdaptor.cs" />
-    <Compile Include="Linux\GnomeShellIbusKeyboardSwitchingAdaptor.cs" />
-    <Compile Include="Linux\GnomeXkbInfo.cs" />
-    <Compile Include="Linux\IbusKeyboardSwitchingAdaptor.cs" />
-    <Compile Include="Linux\IbusXkbKeyboardDescription.cs" />
-    <Compile Include="Linux\IUnityKeyboardSwitchingAdaptor.cs" />
-    <Compile Include="Linux\KeyboardRetrievingHelper.cs" />
-    <Compile Include="Linux\UnityIbusKeyboardRetrievingAdaptor.cs" />
-    <Compile Include="Linux\UnityIbusKeyboardSwitchingAdaptor.cs" />
-    <Compile Include="Linux\UnityKeyboardRetrievingHelper.cs" />
-    <Compile Include="Linux\UnityXkbKeyboardRetrievingAdaptor.cs" />
-    <Compile Include="Linux\UnityXkbKeyboardSwitchingAdaptor.cs" />
-    <Compile Include="Linux\Unmanaged.cs" />
-    <Compile Include="Linux\XkbIbusEngineDesc.cs" />
-    <Compile Include="Linux\XkbKeyboardSwitchingAdaptor.cs" />
-    <Compile Include="NullKeyboardDescription.cs" />
-    <Compile Include="Linux\GlobalCachedInputContext.cs" />
-    <Compile Include="Linux\IbusCommunicator.cs" />
-    <Compile Include="Linux\IbusDefaultEventHandler.cs" />
-    <Compile Include="Linux\IbusKeyboardRetrievingAdaptor.cs" />
-    <Compile Include="Linux\IbusKeyboardDescription.cs" />
-    <Compile Include="Linux\IIbusCommunicator.cs" />
-    <Compile Include="Linux\IIbusEventHandler.cs" />
-    <Compile Include="Linux\IXklEngine.cs" />
-    <Compile Include="Linux\X11.cs" />
-    <Compile Include="Linux\X11KeyConverter.cs" />
-    <Compile Include="Linux\XkbKeyboardRetrievingAdaptor.cs" />
-    <Compile Include="Linux\XkbKeyboardDescription.cs" />
-    <Compile Include="Linux\XklConfigRegistry.cs" />
-    <Compile Include="Linux\XklEngine.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RegisterEventArgs.cs" />
-    <Compile Include="Windows\WindowsKeyboardSwitchingAdapter.cs" />
-    <Compile Include="Windows\IWindowsLanguageProfileSink.cs" />
-    <Compile Include="Windows\KeymanKeyboardAdaptor.cs" />
-    <Compile Include="Windows\KeymanKeyboardDescription.cs" />
-    <Compile Include="Windows\KeymanKeyboardSwitchingAdapter.cs" />
-    <Compile Include="Windows\LayoutName.cs" />
-    <Compile Include="Windows\LegacyKeymanKeyboardSwitchingAdapter.cs" />
-    <Compile Include="Windows\MsTsfInterfaces.cs" />
-    <Compile Include="Windows\Win32.cs" />
-    <Compile Include="Windows\WinKeyboardAdaptor.cs" />
-    <Compile Include="Windows\WinKeyboardDescription.cs" />
-    <Compile Include="Windows\WinKeyboardUtils.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config">
-      <SubType>Designer</SubType>
+    <None Include="../lib/Keyman*.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
     </None>
-    <None Include="packages.config" />
+    <Content Include="SIL.Windows.Forms.Keyboarding.targets">
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
+    </Content>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj">
-      <Project>{c48de000-2086-4ceb-a5a1-3171c272725e}</Project>
-      <Name>SIL.Core.Desktop</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
-      <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
-      <Name>SIL.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\NDesk.DBus.0.15.0\build\NDesk.DBus.targets" Condition="Exists('..\packages\NDesk.DBus.0.15.0\build\NDesk.DBus.targets') And ($(Configuration.Contains('Mono')))" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
+  <PropertyGroup>
+    <!-- See https://github.com/dotnet/sdk/issues/987#issuecomment-286307697 why that is needed -->
+    <AssemblySearchPaths>$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
+  </PropertyGroup>
+
 </Project>

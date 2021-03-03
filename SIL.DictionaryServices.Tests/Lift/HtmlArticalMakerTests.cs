@@ -1,4 +1,4 @@
-﻿#if NO
+#if NO
 This is here as a refugee from the purge of services from WeSay, but hasn't been
 checked for use in Palaso.  We will revive it someday when there is call for it.
 
@@ -16,13 +16,13 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		/// <summary>
 		/// time consuming to setup, so we reuse it.
 		/// </summary>
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void SetupFixture()
 		{
 			_projectDirectory = new ProjectDirectorySetupForTesting("does not matter");
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void FixtureTearDown()
 		{
 			_projectDirectory.Dispose();

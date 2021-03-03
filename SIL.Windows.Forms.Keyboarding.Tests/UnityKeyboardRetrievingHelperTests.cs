@@ -19,7 +19,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 				"xkb;;us",
 				"ibus;;km:/home/user/.local/share/keyman/khmer_angkor/khmer_angkor.kmx"
 			};
-			var sut = new UnityKeyboardRetrievingHelper(() => installedKeyboards);
+			var sut = new GnomeKeyboardRetrievingHelper(() => installedKeyboards);
 			Assert.That(() => sut.InitKeyboards(s => true,
 				(keyboards, _) => registeredKeyboards = keyboards),
 				Throws.Nothing);
@@ -38,7 +38,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 				"ibus;;km:/home/user/.local/share/keyman/khmer_angkor/khmer_angkor.kmx",
 				"xkb;;us"
 			};
-			var sut = new UnityKeyboardRetrievingHelper(() => installedKeyboards);
+			var sut = new GnomeKeyboardRetrievingHelper(() => installedKeyboards);
 			Assert.That(() => sut.InitKeyboards(s => true,
 					(keyboards, _) => registeredKeyboards = keyboards),
 				Throws.Nothing); // LT-20410

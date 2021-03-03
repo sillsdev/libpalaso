@@ -4,14 +4,13 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
-#if MONO
 namespace SIL.Media.AlsaAudio
 {
 	/// <summary>
 	/// Implementation of ISimpleAudioSession that uses the standard ALSA sound
 	/// library on Linux.
 	/// </summary>
-	public class AudioAlsaSession : ISimpleAudioSession
+	internal class AudioAlsaSession : ISimpleAudioSession
 	{
 		DateTime _startRecordingTime = DateTime.MinValue;
 		DateTime _stopRecordingTime = DateTime.MinValue;
@@ -191,4 +190,3 @@ namespace SIL.Media.AlsaAudio
 		}
 	}
 }
-#endif

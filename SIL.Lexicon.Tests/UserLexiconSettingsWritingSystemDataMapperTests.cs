@@ -3,11 +3,13 @@ using System.Xml.Linq;
 using NUnit.Framework;
 using Is = SIL.TestUtilities.NUnitExtensions.Is;
 using SIL.Keyboarding;
+using SIL.TestUtilities;
 using SIL.WritingSystems;
 
 namespace SIL.Lexicon.Tests
 {
 	[TestFixture]
+	[OfflineSldr]
 	public class UserLexiconSettingsWritingSystemDataMapperTests
 	{
 		[Test]

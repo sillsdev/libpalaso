@@ -14,27 +14,21 @@ namespace SIL.Tests.Text
 			return new LanguageForm();
 		}
 
-		public override string ExceptionList
-		{
+		public override string ExceptionList =>
 			//_parent: We are doing top down clones. Children shouldn't make clones of their parents, but parents of their children.
-			get {  return "|_parent|"; }
-		}
+			"|Parent|";
 
-		public override string EqualsExceptionList
-		{
+		public override string EqualsExceptionList =>
 			//_spans: is a List<T> which doesn't compare well with Equals (two separate empty lists are deemed different for example)
-			get {  return "|_spans|"; }
-		}
+			"|Spans|";
 
-		protected override List<ValuesToSet> DefaultValuesForTypes
-		{
-			get { return new List<ValuesToSet>
-							 {
-								 new ValuesToSet("string", "not string"),
-								 new ValuesToSet(new Annotation{IsOn = false}, new Annotation{IsOn = true}),
-								 new ValuesToSet(new List<LanguageForm.FormatSpan>(), new List<LanguageForm.FormatSpan>{new LanguageForm.FormatSpan()})
-							 }; }
-		}
+		protected override List<ValuesToSet> DefaultValuesForTypes =>
+			new List<ValuesToSet>
+			{
+				new ValuesToSet("string", "not string"),
+				new ValuesToSet(new Annotation{IsOn = false}, new Annotation{IsOn = true}),
+				new ValuesToSet(new List<LanguageForm.FormatSpan>(), new List<LanguageForm.FormatSpan>{new LanguageForm.FormatSpan()})
+			};
 	}
 
 	[TestFixture]
@@ -68,7 +62,7 @@ namespace SIL.Tests.Text
 		}
 
 		[Test]
-		public void CompareTo_AlpahbeticallyLaterWritingSystemIdWithIdenticalForm_ReturnsGreater()
+		public void CompareTo_AlphabeticallyLaterWritingSystemIdWithIdenticalForm_ReturnsGreater()
 		{
 			_languageForm.WritingSystemId = "en";
 			_languageForm.Form = "Word1";

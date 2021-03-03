@@ -17,21 +17,23 @@ namespace SIL.Windows.Forms.Tests.ErrorReporting
 		private bool Is64BitProcess;
 		private bool HasLargePhysicalMemory;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetUp()
 		{
 			Is64BitProcess = IntPtr.Size == 8;
 			HasLargePhysicalMemory = MemoryManagement.GetMemoryInformation().TotalPhysicalMemory >= 8192000000L;
 		}
 
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void NotifyUserOfProblem_Message()
 		{
 			string message = "Oh no! This is quite a long message to see if it will wrap so I will have to keep typing to see if this will work now. And then some more.";
 			ErrorReport.NotifyUserOfProblem(message);
 		}
 
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void NotifyUserOfProblem_OncePerSession()
 		{
 			ShowOncePerSessionBasedOnExactMessagePolicy.Reset();
@@ -41,7 +43,8 @@ namespace SIL.Windows.Forms.Tests.ErrorReporting
 			ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), message);
 		}
 
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void NotifyUserOfProblem_WithAlternateButton()
 		{
 			ShowOncePerSessionBasedOnExactMessagePolicy.Reset();
@@ -52,14 +55,16 @@ namespace SIL.Windows.Forms.Tests.ErrorReporting
 											message);
 		}
 
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void NotifyUserOfProblem_SmallMessage()
 		{
 			string message = "Oh no!";
 			ErrorReport.NotifyUserOfProblem(message);
 		}
 
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void NotifyUserOfProblem_SmallWithAlternateButton()
 		{
 			ShowOncePerSessionBasedOnExactMessagePolicy.Reset();
@@ -70,7 +75,8 @@ namespace SIL.Windows.Forms.Tests.ErrorReporting
 											message);
 		}
 
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void NotifyUserOfProblem_ReallyLong()
 		{
 			string message = "Oh no! This is quite a long message to see if it will wrap so I will have to keep typing to see if this will work now. And then some more." +
@@ -102,7 +108,8 @@ namespace SIL.Windows.Forms.Tests.ErrorReporting
 				"CheckMemory didn't detect danger");
 		}
 
-		[Test, Ignore("By hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		public void CheckMemory_1GUsed_DisplaysDialogOnlyOnce()
 		{
 			// We'll grab some big chunks but not demand we can get it all. Keep them small enough to stay out of Large Object Heap
@@ -121,7 +128,7 @@ namespace SIL.Windows.Forms.Tests.ErrorReporting
 			var dummy = Logger.LogText; // counter-intuitive, but the only way I can find to clear out minor events, in case anything else used logger
 			MemoryManagement.CheckMemory(true, "this is a test", false); // since not doing GC we really can't predict the return value
 			var result = Logger.MinorEventsLog;
-			Assert.That(result, Is.StringContaining("this is a test"));
+			Assert.That(result, Does.Contain("this is a test"));
 			var re = new Regex(@"\d+,\d+K");
 			var matches = re.Matches(result).Cast<Match>().ToArray();
 			// This is a pretty weak test; just proves we're outputting at least 3 numbers over 1000K. (Heap memory is sometimes <1M; virtual is unknown on Linux)
@@ -130,7 +137,7 @@ namespace SIL.Windows.Forms.Tests.ErrorReporting
 			Logger.Init();
 			MemoryManagement.CheckMemory(false, "this is a test", false); // since not doing GC we really can't predict the return value
 			result = Logger.LogText;
-			Assert.That(result, Is.StringContaining("this is a test"));
+			Assert.That(result, Does.Contain("this is a test"));
 			matches = re.Matches(result).Cast<Match>().ToArray();
 			// Using WriteEvent means out data is in the eventual output twice.
 			Assert.That(matches, Has.Length.AtLeast(6));

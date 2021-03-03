@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using SIL.IO;
 using SIL.Reflection;
 
 namespace SIL.Scripture.Tests
@@ -135,14 +136,6 @@ namespace SIL.Scripture.Tests
 		{
 			Versification internalVers = (Versification)ReflectionHelper.GetProperty(scrVers, "VersInfo");
 			((Dictionary<int, string[]>)ReflectionHelper.GetField(internalVers, "verseSegments")).Clear();
-		}
-
-		/// <summary>
-		/// Provides access to the WriteToStream method
-		/// </summary>
-		public static void WriteToStream(this ScrVers scrVers, StringWriter stream)
-		{
-			ReflectionHelper.CallMethodWithThrow(scrVers.VersInfo, "WriteToStream", stream);
 		}
 		#endregion
 		
@@ -811,12 +804,12 @@ namespace SIL.Scripture.Tests
 		}
 		#endregion
 
-		#region WriteToStream test
+		#region Save tests
 		/// <summary>
-		/// Tests the WriteVersification method
+		/// Tests the Save(TextWriter) method
 		/// </summary>
 		[Test]
-		public void WriteVersification()
+		public void Save_ToTextWriter_ContentsSavedCorrectly()
 		{
 			versification.ParseChapterVerseLine("GEN 1:20 2:70 3:3 4:5");
 			versification.ParseChapterVerseLine("LEV 1:2 2:4 3:2");
@@ -834,7 +827,7 @@ namespace SIL.Scripture.Tests
 
 			StringBuilder builder = new StringBuilder();
 			using (StringWriter stream = new StringWriter(builder))
-				versification.WriteToStream(stream);
+				versification.Save(stream);
 
 			Assert.AreEqual("# List of books, chapters, verses" + Environment.NewLine +
 				"# One line per book." + Environment.NewLine +
@@ -859,6 +852,59 @@ namespace SIL.Scripture.Tests
 				"#! *GEN 1:19,-,a,b,c,d" + Environment.NewLine +
 				"#! *DEU 2:12,a,b,c,d,e,f" + Environment.NewLine
 				, builder.ToString());
+		}
+
+		/// <summary>
+		/// Tests the Save (to file) method
+		/// </summary>
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Save_ToTextWriter_ContentsSavedCorrectly(bool preExisting)
+		{
+			versification.ParseChapterVerseLine("GEN 1:20 2:70 3:3 4:5");
+			versification.ParseChapterVerseLine("LEV 1:2 2:4 3:2");
+			versification.ParseChapterVerseLine("DEU 1:16 2:22 3:1 4:18 5:22");
+
+			versification.ParseMappingLine("GEN 1:5 = GEN 1:4");
+			versification.ParseMappingLine("GEN 2:69-70 = GEN 4:1-2");
+			versification.ParseMappingLine("GEN 3:1 = GEN 4:3");
+			versification.ParseMappingLine("LEV 1:1-2 = LEV 1:3-4");
+
+			versification.ParseExcludedVerseLine("-GEN 1:15");
+
+			versification.ParseVerseSegmentsLine("*GEN 1:19,-,a,b,c,d");
+			versification.ParseVerseSegmentsLine("*DEU 2:12,a,b,c,d,e,f");
+
+			string savedContents = null;
+			using (var tempFile = preExisting ? new TempFile("existing contents") : new TempFile())
+			{
+				versification.Save(tempFile.Path);
+				savedContents = File.ReadAllText(tempFile.Path);
+			}
+
+			Assert.AreEqual("# List of books, chapters, verses" + Environment.NewLine +
+				"# One line per book." + Environment.NewLine +
+				"# One entry for each chapter." + Environment.NewLine +
+				"# Verse number is the maximum verse number for that chapter." + Environment.NewLine +
+				"GEN 1:20 2:70 3:3 4:5" + Environment.NewLine +
+				"EXO 1:1" + Environment.NewLine + // EXO gets created automatically
+				"LEV 1:2 2:4 3:2" + Environment.NewLine +
+				"NUM 1:1" + Environment.NewLine + // NUM gets created automatically
+				"DEU 1:16 2:22 3:1 4:18 5:22" + Environment.NewLine +
+				"#" + Environment.NewLine +
+				"# Mappings from this versification to standard versification" + Environment.NewLine +
+				"GEN 1:5 = GEN 1:4" + Environment.NewLine +
+				"GEN 2:69-70 = GEN 4:1-2" + Environment.NewLine +
+				"GEN 3:1 = GEN 4:3" + Environment.NewLine +
+				"LEV 1:1-2 = LEV 1:3-4" + Environment.NewLine +
+				"#" + Environment.NewLine +
+				"# Excluded verses" + Environment.NewLine +
+				"#! -GEN 1:15" + Environment.NewLine +
+				"#" + Environment.NewLine +
+				"# Verse segment information" + Environment.NewLine +
+				"#! *GEN 1:19,-,a,b,c,d" + Environment.NewLine +
+				"#! *DEU 2:12,a,b,c,d,e,f" + Environment.NewLine
+				, savedContents);
 		}
 		#endregion
 

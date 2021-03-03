@@ -5,13 +5,8 @@
 
 # the sourcing script should cd/pushd to the directory containing this script
 BASE="$(pwd)"
-[ -z "$BUILD" ] && BUILD=DebugMono
-[ -z "$MONO_PREFIX" ] && MONO_PREFIX=/opt/mono-sil
-
-# Dependency locations
-# Search for xulrunner and geckofx, select the best, and add its location to LD_LIBRARY_PATH.
-# Also determine the location of the geckofx assemblies and shared object libraries.
-# Also define LD_PRELOAD to get geckofix.so to work properly
+[ -z "$BUILD" ] && BUILD=Debug
+[ -z "$MONO_PREFIX" ] && MONO_PREFIX=/opt/mono5-sil
 
 # MonoDevelop seems to set PKG_CONFIG_LIBDIR to the empty string, which is bad
 # for us because that eliminates most packages, including geckofx29.
@@ -22,11 +17,16 @@ if [ "${PKG_CONFIG_LIBDIR+set}" = set ]; then
 	unset PKG_CONFIG_LIBDIR
 fi
 
-XULRUNNER=/usr/lib/xulrunner-geckofx-29
-if [ ! -d ${XULRUNNER} ]; then XULRUNNER=/usr/lib/xulrunner-29; fi
+# Simplified setup - assuming the nuget packages got installed in ~/.nuget/packages
+if [ "$(uname -m)" == "x86_64" ]; then
+	ARCH=64
+else
+	ARCH=32
+fi
+XULRUNNER=$HOME/.nuget/packages/geckofx45.$ARCH.linux/45.0.37/content/Firefox-Linux${ARCH}
+
 LD_LIBRARY_PATH="${XULRUNNER}:${LD_LIBRARY_PATH}"
-GECKOFX="$(pkg-config --variable assemblies_dir Geckofx-Core-29)"
-export LD_PRELOAD=${GECKOFX}/geckofix.so
+export LD_PRELOAD=${XULRUNNER}/libgeckofix.so
 export XULRUNNER
 
 if [ "${OLD_PKG_CONFIG_LIBDIR+set}" = set ]; then
@@ -42,9 +42,9 @@ MONO_PATH="${GDK_SHARP}:${GECKOFX}"
 ################################################################################################
 
 # Add the build output to paths
-PATH="${BASE}/output/${BUILD}:${PATH}"
-LD_LIBRARY_PATH="${BASE}/output/${BUILD}:${LD_LIBRARY_PATH}"
-MONO_PATH="${BASE}/output/${BUILD}:${MONO_PATH}"
+PATH="${BASE}/output/${BUILD}/net461:${PATH}"
+LD_LIBRARY_PATH="${BASE}/output/${BUILD}/net461:${LD_LIBRARY_PATH}"
+MONO_PATH="${BASE}/output/${BUILD}/net461:${MONO_PATH}"
 
 ################################################################################################
 

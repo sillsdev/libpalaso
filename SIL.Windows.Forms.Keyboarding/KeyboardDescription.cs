@@ -30,18 +30,14 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// <summary>
 		/// Gets the keyboard adaptor that handles this keyboard.
 		/// </summary>
-		public IKeyboardSwitchingAdaptor Engine
-		{
-			get { return _engine; }
-		}
+		public IKeyboardSwitchingAdaptor Engine => _engine;
 
 		/// <summary>
 		/// Deactivate this keyboard.
 		/// </summary>
 		public void Deactivate()
 		{
-			if (Engine != null)
-				Engine.DeactivateKeyboard(this);
+			Engine?.DeactivateKeyboard(this);
 		}
 
 		public IInputLanguage InputLanguage { get; protected internal set; }

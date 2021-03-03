@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-using System;
+
 using System.Collections.Generic;
 using System.Linq;
 using SIL.PlatformUtilities;
@@ -17,7 +17,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// </summary>
 	public class UnityXkbKeyboardRetrievingAdaptor : XkbKeyboardRetrievingAdaptor
 	{
-		private readonly UnityKeyboardRetrievingHelper _helper = new UnityKeyboardRetrievingHelper();
+		private readonly GnomeKeyboardRetrievingHelper _helper = new GnomeKeyboardRetrievingHelper();
 
 		#region Specific implementations of IKeyboardRetriever
 
@@ -31,7 +31,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		protected override string GetKeyboardSetupApplication(out string arguments)
 		{
-			var program = UnityKeyboardRetrievingHelper.GetKeyboardSetupApplication(out arguments);
+			var program = GnomeKeyboardRetrievingHelper.GetKeyboardSetupApplication(out arguments);
 			return string.IsNullOrEmpty(program) ? base.GetKeyboardSetupApplication(out arguments) : program;
 		}
 		#endregion
@@ -41,35 +41,29 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			_helper.InitKeyboards(type => type == "xkb", RegisterKeyboards);
 		}
 
-		private void RegisterKeyboards(IDictionary<string, uint> keyboards,
-			UnityKeyboardRetrievingHelper.IbusKeyboardEntry _)
+		private void RegisterKeyboards(IDictionary<string, uint> keyboards, (string, string) _)
 		{
 			if (keyboards.Count <= 0)
 				return;
 
 			var configRegistry = XklConfigRegistry.Create(XklEngine);
 			var layouts = configRegistry.Layouts;
-			Dictionary<string, XkbKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<XkbKeyboardDescription>().ToDictionary(kd => kd.Id);
+			var curKeyboards = KeyboardController.Instance.Keyboards.OfType<XkbKeyboardDescription>().ToDictionary(kd => kd.Id);
 			foreach (var kvp in layouts)
 			{
 				foreach (var layout in kvp.Value)
 				{
-					uint index;
 					// Custom keyboards may omit defining a country code.  Try to survive such cases.
-					string codeToMatch;
-					if (layout.CountryCode == null)
-						codeToMatch = layout.LanguageCode.ToLowerInvariant();
-					else
-						codeToMatch = layout.CountryCode.ToLowerInvariant();
-					if ((keyboards.TryGetValue(layout.LayoutId, out index) && (layout.LayoutId == codeToMatch)) ||
-						keyboards.TryGetValue(string.Format("{0}+{1}", codeToMatch, layout.LayoutId), out index))
+					var codeToMatch = layout.CountryCode == null ? layout.LanguageCode.ToLowerInvariant() : layout.CountryCode.ToLowerInvariant();
+					if ((keyboards.TryGetValue(layout.LayoutId, out var index) && (layout.LayoutId == codeToMatch)) ||
+						keyboards.TryGetValue($"{codeToMatch}+{layout.LayoutId}", out index))
 					{
 						AddKeyboardForLayout(curKeyboards, layout, index, SwitchingAdaptor);
 					}
 				}
 			}
 
-			foreach (XkbKeyboardDescription existingKeyboard in curKeyboards.Values)
+			foreach (var existingKeyboard in curKeyboards.Values)
 				existingKeyboard.SetIsAvailable(false);
 		}
 	}

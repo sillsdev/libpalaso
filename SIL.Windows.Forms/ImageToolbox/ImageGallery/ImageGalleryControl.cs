@@ -51,12 +51,6 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 			_messageLabel.SizeChanged += MessageLabelSizeChanged;
 		}
 
-		public void Dispose()
-		{
-			_thumbnailViewer.Closing(); //this guy was working away in the background
-			_messageLabel.SizeChanged -= MessageLabelSizeChanged;
-		}
-
 		/// <summary>
 		/// use if the calling app already has some notion of what the user might be looking for (e.g. the definition in a dictionary program)
 		/// </summary>

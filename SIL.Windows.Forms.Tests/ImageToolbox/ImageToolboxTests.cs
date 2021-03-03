@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
@@ -13,7 +13,8 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 {
 	class ImageToolboxTests
 	{
-		[Test, Ignore("by hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		[STAThread]
 		public void ShowToolbox()
 		{
@@ -33,7 +34,8 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 			}
 		}
 
-		[Test, Ignore("by hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		[STAThread]
 		public void ShowGeckoToolbox()
 		{
@@ -52,7 +54,8 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 			}
 		}
 
-		[Test, Ignore("by hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		[STAThread]
 		public void ShowToolboxWith_PreExisting_Image_WithMetadata()
 		{
@@ -72,7 +75,8 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 			}
 		}
 
-		[Test, Ignore("by hand only")]
+		[Test]
+		[Explicit("By hand only")]
 		[STAThread]
 		public void ShowToolboxWith_PreExisting_EnsureRawFormatUnchanged()
 		{
@@ -87,7 +91,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 		}
 
 		[Test]
-		[Platform(Exclude="Windows", Reason="applies only to Mono")]
+		[Platform(Exclude="Win", Reason="applies only to Mono")]
 		public void CheckMonoForSelectLargeIconView()
 		{
 			using (var dlg = new OpenFileDialog ())

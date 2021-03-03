@@ -12,18 +12,18 @@ namespace SIL.Lift.Tests.Migration
 		[Test]
 		public void IsMigrationNeeded_Latest_ReturnsFalse()
 		{
-			using (TempFile f = new TempFile(string.Format("<lift version='{0}'></lift>", Validator.LiftVersion)))
+			using (TempFile f = new TempFile($"<lift version='{Validator.LiftVersion}'></lift>"))
 			{
 				Assert.IsFalse(Migrator.IsMigrationNeeded(f.Path));
 			}
 		}
 
-		[Test, ExpectedException(typeof(ArgumentException))]
-		public void MigrateToLatestVersion_HasCurrentVersion_Throws()
+		[Test]
+		public void MigrateToLatestVersion_HasCurrentVersion_ThrowsArgumentException()
 		{
-			using (TempFile f = new TempFile(string.Format("<lift version='{0}'></lift>", Validator.LiftVersion)))
+			using (TempFile f = new TempFile($"<lift version='{Validator.LiftVersion}'></lift>"))
 			{
-				Migrator.MigrateToLatestVersion(f.Path);
+				Assert.Throws<ArgumentException>(() => Migrator.MigrateToLatestVersion(f.Path));
 			}
 		}
 
@@ -46,7 +46,7 @@ namespace SIL.Lift.Tests.Migration
 
 		/// <summary>
 		/// this is important because if we change the behavior to use, say, temp,
-		/// that could be a different volumne, which can make some File operations
+		/// that could be a different volume, which can make some File operations
 		/// fail (like rename).
 		/// </summary>
 		[Test]
@@ -66,15 +66,13 @@ namespace SIL.Lift.Tests.Migration
 			}
 		}
 
-		[Test, ExpectedException(typeof(LiftFormatException))]
-		public void MigrateToLatestVersion_VersionWithoutMigrationXsl_Throws()
+		[Test]
+		public void MigrateToLatestVersion_VersionWithoutMigrationXsl_ThrowsLiftFormatException()
 		{
 			using (TempFile f = new TempFile("<lift version='0.5'></lift>"))
 			{
-				Migrator.MigrateToLatestVersion(f.Path);
+				Assert.Throws<LiftFormatException>(() => Migrator.MigrateToLatestVersion(f.Path));
 			}
 		}
-
-
 	}
 }

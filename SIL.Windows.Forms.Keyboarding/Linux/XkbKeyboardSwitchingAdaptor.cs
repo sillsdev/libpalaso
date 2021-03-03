@@ -23,10 +23,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			_engine = engine;
 		}
 
-		internal IXklEngine XklEngine
-		{
-			get { return _engine; }
-		}
+		internal IXklEngine XklEngine => _engine;
 
 		protected virtual void SelectKeyboard(KeyboardDescription keyboard)
 		{
@@ -71,9 +68,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// Implementation is not required because the default implementation of KeyboardController
 		/// is sufficient.
 		/// </summary>
-		public KeyboardDescription ActiveKeyboard
-		{
-			get { return null; }
-		}
+		public KeyboardDescription ActiveKeyboard => null;
 	}
 }

@@ -22,7 +22,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			_writingSystemFactory = writingSystemFactory;
 		}
 
-		//        public static Palaso.WritingSystems.WritingSystemDefinition Get(string rfc4646)
+		//        public static SIL.WritingSystems.WritingSystemDefinition Get(string rfc4646)
 		//        {
 		//            foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
 		//            {

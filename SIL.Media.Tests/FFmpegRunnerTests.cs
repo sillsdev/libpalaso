@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.Media.Tests.Properties;
@@ -17,7 +17,7 @@ namespace SIL.Media.Tests
 	[TestFixture]
 	public class FFmpegRunnerTests
 	{
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void CheckRequirements()
 		{
 			if (!MediaInfo.HaveNecessaryComponents)
@@ -81,9 +81,7 @@ namespace SIL.Media.Tests
 				var outputPath = originalAudioPath.Replace("mp3", "low.mp3");
 				FFmpegRunner.MakeLowQualityCompressedAudio(originalAudioPath, outputPath, new ConsoleProgress());
 				Assert.IsTrue(File.Exists(outputPath));
-#if !MONO
 				System.Diagnostics.Process.Start(outputPath);
-#endif
 			}
 		}
 
@@ -97,9 +95,7 @@ namespace SIL.Media.Tests
 				var outputPath = file.Path.Replace("wmv", "low.wmv");
 				FFmpegRunner.MakeLowQualitySmallVideo(file.Path, outputPath, 0, new ConsoleProgress());
 				Assert.IsTrue(File.Exists(outputPath));
-#if !MONO
 				System.Diagnostics.Process.Start(outputPath);
-#endif
 			}
 		}
 	}

@@ -73,14 +73,14 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			}
 		}
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			if (!Sldr.IsInitialized)
 				Sldr.Initialize();
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void FixtureTearDown()
 		{
 		}

@@ -115,14 +115,14 @@ namespace SIL.Windows.Forms.SettingProtection
 			this._explanation.Size = new System.Drawing.Size(368, 30);
 			this._explanation.TabIndex = 6;
 			this._explanation.TabStop = false;
-			this._explanation.Text = "To prevent accidental changes which could cause this tool to stop working for you" +
-    ", these settings have been locked.";
-			// 
+			this._explanation.Text = "To prevent accidental changes which could cause this program to stop working for you" +
+	", these settings have been locked.";
+			//
 			// l10NSharpExtender1
-			// 
+			//
 			this.l10NSharpExtender1.LocalizationManagerId = "Palaso";
 			this.l10NSharpExtender1.PrefixForNewItems = "SettingsProtection";
-			// 
+			//
 			// passwordBox
 			// 
 			this.l10NSharpExtender1.SetLocalizableToolTip(this.passwordBox, null);
@@ -136,7 +136,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			this.passwordBox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
 			// 
 			// tableLayoutPanel1
-			// 
+			//
 			this.tableLayoutPanel1.ColumnCount = 3;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -153,9 +153,9 @@ namespace SIL.Windows.Forms.SettingProtection
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(428, 146);
 			this.tableLayoutPanel1.TabIndex = 8;
-			// 
+			//
 			// SettingsPasswordDialog
-			// 
+			//
 			this.AcceptButton = this._okButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

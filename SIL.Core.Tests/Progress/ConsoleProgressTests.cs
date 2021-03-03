@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Text;
 using System.Threading;
 using NUnit.Framework;
@@ -12,39 +13,38 @@ namespace SIL.Tests.Progress
 	public class ConsoleProgressTests
 	{
 		private static int _countForWork;
-		private StringBuilder _logBuilder;
+		private StringWriter _logBuilder;
 
 		[SetUp]
 		public void Setup()
 		{
-			_logBuilder = new StringBuilder();
+			_logBuilder = new StringWriter();
 			_countForWork = 0;
 		}
 
-		[TearDown]
-		public void TearDown()
-		{
-		}
-
-		[Test, Category("ByHand")]
+		[Test]
+		[Category("ByHand")]
+		[Explicit]
 		public void LongRunningMethodUsingConsoleHandler_ProducesLog()
 		{
-			Assert.IsFalse((_logBuilder.ToString().Contains("99")));
-			var progress = new ConsoleProgressState();
-			progress.Log += new EventHandler<ProgressState.LogEvent>(OnProgressStateLog);
-			BackgroundWorker cacheBuildingWork = new BackgroundWorker();
-			cacheBuildingWork.DoWork += new DoWorkEventHandler(OnDoBackgroundWorkerWork);
-			cacheBuildingWork.RunWorkerAsync(progress);
+			var progress = new ConsoleProgress { ProgressIndicator = new NullProgressIndicator() };
+			Console.SetOut(_logBuilder);
+			Console.SetError(_logBuilder);
+			using (var cacheBuildingWork = new BackgroundWorker())
+			{
+				cacheBuildingWork.DoWork += OnDoBackgroundWorkerWork;
+				cacheBuildingWork.RunWorkerAsync(progress);
 
-			WaitForFinish(progress, ProgressState.StateValue.Finished);
-			// Fails about 2% of the time on TC Windows agents, likely due to the Asynchronous aspects of this test
-			Assert.IsTrue(_logBuilder.ToString().Contains("99"));
+				WaitForFinish(progress);
+				// Fails about 2% of the time on TC Windows agents, likely due to the Asynchronous aspects of this test
+				Assert.That(_logBuilder.ToString(), Does.Contain("99"));
+			}
 		}
 
-		private void WaitForFinish(ConsoleProgressState progress, ProgressState.StateValue expectedResult)
+		private static void WaitForFinish(IProgress progress)
 		{
-			DateTime giveUpTime = DateTime.Now.AddSeconds(5);
-			while (progress.State != expectedResult)
+			var giveUpTime = DateTime.Now.AddSeconds(5);
+			while (progress.ProgressIndicator.PercentCompleted < 100)
 			{
 				if (DateTime.Now > giveUpTime)
 				{
@@ -54,32 +54,24 @@ namespace SIL.Tests.Progress
 			}
 		}
 
-		private void OnDoBackgroundWorkerWork(object sender, DoWorkEventArgs e)
+		private static void OnDoBackgroundWorkerWork(object sender, DoWorkEventArgs e)
 		{
-			ProgressState state = (ProgressState) e.Argument;
-			state.StatusLabel = "working hard...";
+			var progress = (IProgress) e.Argument;
+			progress.WriteStatus("working hard...");
 			while (_countForWork < 100)
 			{
 				DoPretendWork();
-				state.WriteToLog(_countForWork.ToString());
+				progress.WriteMessage(_countForWork.ToString());
 				_countForWork++;
-				state.NumberOfStepsCompleted = _countForWork;
+				progress.ProgressIndicator.PercentCompleted = _countForWork;
 			}
-			e.Result = ((ProgressState) e.Argument).State = ProgressState.StateValue.Finished;
+			e.Result = true;
 		}
 
-		private void DoPretendWork()
+		private static void DoPretendWork()
 		{
-			DateTime end = DateTime.Now.AddMilliseconds(2);
-			while (DateTime.Now < end)
-			{
-				Thread.Sleep(1);
-			}
+			Thread.Sleep(2);
 		}
 
-		private void OnProgressStateLog(object sender, ProgressState.LogEvent e)
-		{
-			_logBuilder.AppendLine(e.message);
-		}
 	}
 }

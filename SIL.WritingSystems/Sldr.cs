@@ -9,10 +9,8 @@ using System.Globalization;
 using System.Net;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Web;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SIL.Extensions;
-using SIL.Network;
 using SIL.ObjectModel;
 using SIL.PlatformUtilities;
 using SIL.Threading;
@@ -100,7 +98,7 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				string basePath = Platform.IsLinux ? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+				string basePath = Platform.IsMac ? "/Users/Shared" : Platform.IsLinux ? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
 					: Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
 				return Path.Combine(basePath, "SIL", "SldrCache");
 			}
@@ -261,7 +259,7 @@ namespace SIL.WritingSystems
 							else if (webResponse.StatusCode == HttpStatusCode.MovedPermanently)
 							{
 								// Extract ietfLanguageTag from the response header
-								var parsedresponse = HttpUtilityFromMono.ParseQueryString(webResponse.Headers["Location"]);
+								var parsedresponse = HttpUtility.ParseQueryString(webResponse.Headers["Location"]);
 								sldrLanguageTag = parsedresponse.Get("ws_id").Split('?')[0];
 								redirected = true;
 							}
@@ -679,7 +677,7 @@ namespace SIL.WritingSystems
 				return;
 
 			DirectoryInfo di = Directory.CreateDirectory(SldrCachePath);
-			if (!Platform.IsLinux && !SldrCachePath.StartsWith(Path.GetTempPath()))
+			if (!Platform.IsUnix && !SldrCachePath.StartsWith(Path.GetTempPath()))
 			{
 				// NOTE: GetAccessControl/ModifyAccessRule/SetAccessControl is not implemented in Mono
 				DirectorySecurity ds = di.GetAccessControl();

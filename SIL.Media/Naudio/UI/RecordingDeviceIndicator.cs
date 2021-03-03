@@ -1,5 +1,4 @@
-#if !MONO
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
@@ -98,7 +97,7 @@ namespace SIL.Media.Naudio.UI
 			}
 		}
 
-		private void SetKnownRecordingDevices(IEnumerable<RecordingDevice> devices)
+		private void SetKnownRecordingDevices(IEnumerable<IRecordingDevice> devices)
 		{
 			_knownRecordingDevices = new HashSet<string>(devices.Select(d => d.ProductName));
 		}
@@ -269,4 +268,3 @@ namespace SIL.Media.Naudio.UI
 		}
 	}
 }
-#endif

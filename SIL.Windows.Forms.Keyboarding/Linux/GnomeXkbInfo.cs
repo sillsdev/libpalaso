@@ -28,13 +28,9 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		public bool GetLayoutInfo(string id, out string displayName, out string shortName,
 			out string xkbLayout, out string xkbVariant)
 		{
-			IntPtr displayNamePtr;
-			IntPtr shortNamePtr;
-			IntPtr xkbLayoutPtr;
-			IntPtr xkbVariantPtr;
 			var exists = Unmanaged.gnome_xkb_info_get_layout_info(_gnomeXkbInfo,
-				Marshal.StringToHGlobalAuto(id), out displayNamePtr, out shortNamePtr,
-				out xkbLayoutPtr, out xkbVariantPtr);
+				Marshal.StringToHGlobalAuto(id), out var displayNamePtr, out var shortNamePtr,
+				out var xkbLayoutPtr, out var xkbVariantPtr);
 
 			if (!exists)
 			{

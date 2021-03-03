@@ -94,6 +94,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 			return;
 			// REVIEW: Is this code intentionally disabled?
 			// REVIEW (Hasso) 2020.04: looks like hatton started work on this in 2010-12 and gave up in 2012-04
+			/*
 			Grip hStart, vStart, hEnd, vEnd;
 
 			Point mouse = PointToClient(MousePosition);
@@ -123,6 +124,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 			vStart.Value = _startOfDrag.Y - MarginAroundPicture;
 			hEnd.Value = mouse.X - MarginAroundPicture;
 			vEnd.Value = mouse.Y - MarginAroundPicture;
+			*/
 		}
 
 		protected int MiddleOfVerticalGrips()
@@ -149,12 +151,12 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				// save the original in a temp file instead of an Image object to free up memory
 				_savedOriginalImage = TempFile.CreateAndGetPathButDontMakeTheFile();
 				value.Image.Save(_savedOriginalImage.Path, ImageFormat.Png);
-				
+
 				// make a reasonable sized copy to crop
 				if ((value.Image.Width > 1000) || (value.Image.Width > 1000))
 				{
 					_croppingImage = CreateCroppingImage(value.Image.Height, value.Image.Width);
-					
+
 					var srcRect = new Rectangle(0, 0, value.Image.Width, value.Image.Height);
 					var destRect = new Rectangle(0, 0, _croppingImage.Width, _croppingImage.Height);
 
@@ -183,7 +185,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 		}
 
 		/// <summary>
-		/// To conserve memory we will shrink large images before cropping 
+		/// To conserve memory we will shrink large images before cropping
 		/// </summary>
 		/// <param name="oldHeight"></param>
 		/// <param name="oldWidth"></param>

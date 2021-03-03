@@ -12,15 +12,10 @@ using SIL.TestUtilities;
 
 namespace SIL.Media.Tests
 {
-	/// <summary>
-	/// All these tests are skipped on TeamCity (even if you remove this category) because SIL.Media.Tests compiles to an exe,
-	/// and the project that builds libpalaso on TeamCity (build/Palaso.proj, task Test) invokes RunNUnitTC which
-	/// selects the test assemblies using Include="$(RootDir)/output/$(Configuration)/*.Tests.dll" which excludes exes.
-	/// I have not tried to verify that all of these tests would actually have problems on TeamCity, but it seemed
-	/// helpful to document in the usual way that they are not, in fact, run there.
-	/// </summary>
-	[NUnit.Framework.Category("SkipOnTeamCity")]
+	// Some of these tests require a speaker. Others require a microphone.
+	// None of them will work if neither a speaker nor a microphone is available.
 	[TestFixture]
+	[NUnit.Framework.Category("SkipOnTeamCity")]
 	[NUnit.Framework.Category("AudioTests")]
 	public class AudioRecorderTests
 	{
@@ -101,7 +96,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		public void CanStop_NonExistantFile_False()
+		public void CanStop_NonExistentFile_False()
 		{
 			using (var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName()))
 			{
@@ -404,7 +399,7 @@ namespace SIL.Media.Tests
 				{
 					x.Play();
 					Thread.Sleep(100);
-				   x.StopPlaying();
+					x.StopPlaying();
 				}
 			}
 		}
@@ -471,7 +466,7 @@ namespace SIL.Media.Tests
 
 		[Test]
 		[NUnit.Framework.Category("ByHand")]
-		[Ignore("this test is to be run manually to test long recordings. Recite John 3:16")]
+		[Explicit] // This test is to be run manually to test long recordings. After the first beep, recite John 3:16"
 		public void Record_LongRecording()
 		{
 			using (var folder = new TemporaryFolder("Record_LongRecording"))
