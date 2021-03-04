@@ -1,15 +1,13 @@
 version: '{build}'
 branches:
   only:
-  - feature/nuget
+  - master
 image: Visual Studio 2019
 init:
 - cmd: set GITVERSION_BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
 nuget:
   disable_publish_on_pr: true
   disable_publish_octopus: true
-before_build:
-- ps: git log --graph --format="%h %cr %d" --decorate --date=relative --all --remotes=* -n 100
 build:
   project: build/Palaso.proj
   publish_nuget: true
