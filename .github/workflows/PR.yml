@@ -1,0 +1,67 @@
+
+name: Libpalaso CI workflow
+
+on:
+  pull_request:
+    branches: [ libpalaso-6.0 ]
+
+jobs:
+
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        include:
+            - os: windows-latest
+              script_name: buildupdate.win.sh
+            - os: ubuntu-latest
+              script_name: buildupdate.mono.sh
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f
+      with:
+        fetch-depth: 0
+
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@51f68377c181a79065c61bd492bd49be4575c439
+      with:
+        dotnet-version: 5.0.x
+
+    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+    - name: Setup MSBuild.exe (Windows OS)
+      uses: microsoft/setup-msbuild@c26a08ba26249b81327e26f6ef381897b6a8754d
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true # So the PATH can be set by this step
+      if: ${{ matrix.os == 'windows-latest' }}
+
+    # Run the unit tests
+    - name: Restore
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true # So gitversion can set environment vars during the build
+      run: msbuild build/Palaso.proj /t:RestorePackages /p:Configuration=Debug /p:Platform="Any CPU"
+      
+    - name: Update Dependencies (build update)
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true # So gitversion can set environment vars during the build
+      run: build/buildupdate.${{ script_name }}.sh
+      shell: bash
+      
+    - name: Build
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true # So gitversion can set environment vars during the build
+      run: msbuild build/Palaso.proj /t:Build /p:Configuration=Debug /p:Platform="Any CPU"
+
+    - name: Test
+      run: msbuild build/Palaso.proj /t:TestOnly /p:Configuration=Debug /p:Platform="Any CPU"
+        
+    - name: Test Report
+      uses: jasonleenaylor/nunit-reporter@d68a0593898b538f63f3d9446f32cc33e2a71f16
+      if: always()
+      with:
+        path: output/**/TestResults.xml
+        access-token: ${{ secrets.GITHUB_TOKEN }}
+        reportTitle: "Test Results (${{ matrix.os }})"
