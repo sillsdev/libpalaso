@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [8.0.0] - 2021-03-04
+
 ### Added
 
 - [SIL.DblBundle] `DblMetadata.Load` overload to allow deserialization from a `TextReader`.
