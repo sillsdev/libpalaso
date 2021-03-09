@@ -1,5 +1,7 @@
-Palaso Library
+Palaso Library (6.0)
 ==============
+
+## This branch is a maintenance branch for projects that are not able to consume the Nuget packages that are shipped from master. 
 
 Documentation
 -------------
