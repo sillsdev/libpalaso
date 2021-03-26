@@ -95,7 +95,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		#endregion
 
 		/// <summary>
-		/// Wrap an ibus with protection incase DBus connection is dropped.
+		/// Wrap an ibus call with protection in case DBus connection is dropped.
 		/// </summary>
 		protected void ProtectedIBusInvoke(Action action)
 		{
@@ -107,8 +107,11 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			{
 				m_ibus = null;
 				m_inputContext = null;
+				m_connection?.Dispose();
+				m_connection = null;
 				NotifyUserOfIBusConnectionDropped();
 			}
+			// REVIEW: Is there a valid reason to catch NullReference here?
 			catch (NullReferenceException)
 			{
 			}
@@ -321,7 +324,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// focused.</exception>
 		public string GetFocusedInputContext()
 		{
-			return m_ibus.CurrentInputContext();
+			return m_ibus?.CurrentInputContext();
 		}
 
 		/// <summary></summary>
