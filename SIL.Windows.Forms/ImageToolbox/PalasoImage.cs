@@ -93,7 +93,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 			}
 			set
 			{
-				if(_image!=null)
+				// Note: If being re-assigned to same value as before, you don't want to dispose it, otherwise {value} will basically be gone
+				if(_image!=null && _image!=value)
 				{
 					_image.Tag = "**** Disposed by palasoImage";
 					_image.Dispose();
