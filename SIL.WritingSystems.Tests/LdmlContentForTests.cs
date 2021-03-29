@@ -573,7 +573,7 @@ namespace SIL.WritingSystems.Tests
 	<collations>
 		<defaultCollation>standard</defaultCollation>
 		<collation type='standard'>
-			<special xmlns:sil='urn://www.sil.org/ldml/0.1' sil:needscompiling='true'>
+			<special xmlns:sil='urn://www.sil.org/ldml/0.1' sil:" + LdmlDataMapper.NeedsCompiling + @"='true'>
 				<sil:simple><![CDATA[
 					a/A
 					b/B
