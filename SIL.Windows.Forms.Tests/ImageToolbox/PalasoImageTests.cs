@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -93,6 +93,21 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 				() => PalasoImage.FromImage(null));
 		}
 
+		[Test]
+		public void ImageSetter_SameValue_NotDisposed()
+		{
+			using (var pi = PalasoImage.FromImage(new Bitmap(1, 1)))
+			{
+				// System under test
+				pi.Image = pi.Image;
+
+				// If disposed of, calling the Width getter should throw an exception
+				// Note: Don't check against pi.Disposed. That belongs to the PalasoImage class.
+				// This test checks for if the PalasoImage's Image member has been disposed of,
+				// not whether or not the PalasoImage is disposed of.
+				Assert.DoesNotThrow(() => { int w = pi.Image.Width; });
+			}
+		}
 
 		[Test]
 		public void LoadAndSave_DeleteAfter_NothingLocked()
