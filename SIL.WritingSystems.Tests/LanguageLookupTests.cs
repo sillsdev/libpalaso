@@ -209,7 +209,7 @@ namespace SIL.WritingSystems.Tests
 			var languages = lookup.SuggestLanguages("United States");
 			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("en")));
 			Assert.True(languages.Take(50).All(l => l.PrimaryCountry == "United States"));
-			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("es")));
+			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("es-US")));
 
 			languages = lookup.SuggestLanguages("Fran"); // prefix of 'France'
 			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("fr")));
