@@ -511,10 +511,10 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 					{
 						countLengthProp = geckoNodeListType.GetProperty("Length", typeof(int)); // GeckoFx 45 used an int for this property
 					}
-					var countLength = (int)countLengthProp.GetValue(children, BindingFlags.Default, null, null, null);
+					var countLength = Convert.ToInt32(countLengthProp.GetValue(children, BindingFlags.Default, null, null, null));
 					if(countLength > 0)
 					{
-						var lastChildProp = geckoNodeListType.GetProperty("Item"); //Magic
+						var lastChildProp = geckoNodeListType.GetProperty("Item"); // Magic
 						var lastchild = lastChildProp.GetValue(children, new object[] { countLength - 1 });
 						var scrollIntoView = geckoHtmlElementType.GetMethod("ScrollIntoView");
 						scrollIntoView.Invoke(lastchild, BindingFlags.Default, null, null, null);
