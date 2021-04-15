@@ -580,8 +580,7 @@ namespace SIL.Windows.Forms.ClearShare
 			AddOrModify(xmp, kNsCollections, "CollectionURI", CollectionUri);
 			AddOrModify(xmp, kNsCollections, "CollectionName", CollectionName);
 			AddOrModify(xmp, kNsCc, "attributionURL", AttributionUrl);
-			if (License != null && !string.IsNullOrWhiteSpace(License.Url))
-				AddOrModify(xmp, kNsCc, "license", License.Url);
+			AddOrModify(xmp, kNsCc, "license", License == null ? null : License.Url);
 			SetRights(xmp, License == null ? null : License.RightsStatement);
 		}
 
