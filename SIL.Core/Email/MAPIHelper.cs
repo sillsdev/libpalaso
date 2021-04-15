@@ -1,13 +1,16 @@
-//from http://www.codeproject.com/cs/internet/SendFileToNET.asp
+// from https://www.codeproject.com/Articles/17561/Programmatically-adding-attachments-to-emails-in-C
 using System;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Collections.Generic;
+using SIL.PlatformUtilities;
 
 namespace SIL.Email
 {
 	internal class MAPI
 	{
+		private bool _useUnicode = Environment.OSVersion.Version >= new Version(6, 2);
+
 		public bool AddRecipientTo(string email)
 		{
 			return AddRecipient(email, HowTo.MAPI_TO);
@@ -39,8 +42,11 @@ namespace SIL.Email
 		}
 
 
-		[DllImport("MAPI32.DLL")]
+		[DllImport("MAPI32.DLL", CharSet = CharSet.Ansi)]
 		private static extern int MAPISendMail(IntPtr sess, IntPtr hwnd, MapiMessage message, int flg, int rsv);
+
+		[DllImport("MAPI32.DLL", CharSet = CharSet.Unicode)]
+		private static extern int MAPISendMailW(IntPtr sess, IntPtr hwnd, MapiMessageW message, int flg, int rsv);
 
 		/// <summary>
 		///
@@ -51,14 +57,17 @@ namespace SIL.Email
 		/// <returns>true if successful</returns>
 		private bool SendMail(string strSubject, string strBody, int how)
 		{
-			MapiMessage msg = new MapiMessage();
-			msg.subject = strSubject;
-			msg.noteText = strBody;
+			var msg = new MapiMessage {
+				subject = strSubject,
+				noteText = strBody
+			};
 
 			msg.recips = GetRecipients(out msg.recipCount);
 			msg.files = GetAttachments(out msg.fileCount);
 
-			m_lastError = MAPISendMail(new IntPtr(0), new IntPtr(0), msg, how, 0);
+			m_lastError = _useUnicode
+				? MAPISendMailW(new IntPtr(0), new IntPtr(0), new MapiMessageW(msg), how, 0)
+				: MAPISendMail(new IntPtr(0), new IntPtr(0), msg, how, 0);
 			//            if (m_lastError > 1)
 			//                MessageBox.Show("MAPISendMail failed! " + GetLastError(), "MAPISendMail");
 			//todo if(m_lastError==25)
@@ -71,10 +80,11 @@ namespace SIL.Email
 
 		private bool AddRecipient(string email, HowTo howTo)
 		{
-			MapiRecipDesc recipient = new MapiRecipDesc();
+			var recipient = new MapiRecipDesc {
+				recipClass = (int) howTo,
+				name = email
+			};
 
-			recipient.recipClass = (int)howTo;
-			recipient.name = email;
 			// Note: For Outlook Express it would be better to also set recipient.address so that it
 			// shows the email address in the confirmation dialog, but this messes up things in
 			// Outlook and Windows Mail.
@@ -89,13 +99,17 @@ namespace SIL.Email
 			if (m_recipients.Count == 0)
 				return IntPtr.Zero;
 
-			int size = Marshal.SizeOf(typeof(MapiRecipDesc));
-			IntPtr intPtr = Marshal.AllocHGlobal(m_recipients.Count * size);
+			var size = Marshal.SizeOf(_useUnicode ? typeof(MapiRecipDescW) : typeof
+			(MapiRecipDesc));
+			var intPtr = Marshal.AllocHGlobal(m_recipients.Count * size);
 
 			var ptr = intPtr;
 			foreach (var mapiDesc in m_recipients)
 			{
-				Marshal.StructureToPtr(mapiDesc, ptr, false);
+				if (_useUnicode)
+					Marshal.StructureToPtr(new MapiRecipDescW(mapiDesc), ptr, false);
+				else
+					Marshal.StructureToPtr(mapiDesc, ptr, false);
 				IntPtr.Add(ptr, size);
 			}
 
@@ -112,18 +126,20 @@ namespace SIL.Email
 			if ((m_attachments.Count <= 0) || (m_attachments.Count > maxAttachments))
 				return IntPtr.Zero;
 
-			int size = Marshal.SizeOf(typeof(MapiFileDesc));
-			IntPtr intPtr = Marshal.AllocHGlobal(m_attachments.Count * size);
+			var size = Marshal.SizeOf(_useUnicode ? typeof(MapiFileDescW) : typeof(MapiFileDesc));
+			var intPtr = Marshal.AllocHGlobal(m_attachments.Count * size);
 
-			var mapiFileDesc = new MapiFileDesc();
-			mapiFileDesc.position = -1;
+			var mapiFileDesc = new MapiFileDesc { position = -1 };
 			var ptr = intPtr;
 
 			foreach (var strAttachment in m_attachments)
 			{
 				mapiFileDesc.name = Path.GetFileName(strAttachment);
 				mapiFileDesc.path = strAttachment;
-				Marshal.StructureToPtr(mapiFileDesc, ptr, false);
+				if (_useUnicode)
+					Marshal.StructureToPtr(new MapiFileDescW(mapiFileDesc), ptr, false);
+				else
+					Marshal.StructureToPtr(mapiFileDesc, ptr, false);
 				IntPtr.Add(ptr, size);
 			}
 
@@ -133,36 +149,30 @@ namespace SIL.Email
 
 		private void Cleanup(ref MapiMessage msg)
 		{
-			int size = Marshal.SizeOf(typeof(MapiRecipDesc));
-			IntPtr ptr;
-
-			if (msg.recips != IntPtr.Zero)
-			{
-				ptr = msg.recips;
-				for (int i = 0; i < msg.recipCount; i++)
-				{
-					Marshal.DestroyStructure(ptr, typeof(MapiRecipDesc));
-					IntPtr.Add(ptr, size);
-				}
-				Marshal.FreeHGlobal(msg.recips);
-			}
-
-			if (msg.files != IntPtr.Zero)
-			{
-				size = Marshal.SizeOf(typeof(MapiFileDesc));
-
-				ptr = msg.files;
-				for (int i = 0; i < msg.fileCount; i++)
-				{
-					Marshal.DestroyStructure(ptr, typeof(MapiFileDesc));
-					IntPtr.Add(ptr, size);
-				}
-				Marshal.FreeHGlobal(msg.files);
-			}
+			FreeStruct(_useUnicode ? typeof(MapiRecipDescW) : typeof(MapiRecipDesc),
+				msg.recips, msg.recipCount);
+			FreeStruct(_useUnicode ? typeof(MapiFileDescW) : typeof(MapiFileDesc),
+				msg.files, msg.fileCount);
 
 			m_recipients.Clear();
 			m_attachments.Clear();
 			m_lastError = 0;
+
+			void FreeStruct(Type type, IntPtr structPtr, int count)
+			{
+				var size = Marshal.SizeOf(type);
+
+				if (structPtr == IntPtr.Zero)
+					return;
+
+				var ptr = structPtr;
+				for (var i = 0; i < count; i++)
+				{
+					Marshal.DestroyStructure(ptr, type);
+					IntPtr.Add(ptr, size);
+				}
+				Marshal.FreeHGlobal(structPtr);
+			}
 		}
 
 		public string GetLastError()
@@ -217,6 +227,39 @@ namespace SIL.Email
 		public IntPtr files;
 	}
 
+	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+	internal class MapiMessageW
+	{
+		public int    reserved;
+		public string subject;
+		public string noteText;
+		public string messageType;
+		public string dateReceived;
+		public string conversationID;
+		public int    flags;
+		public IntPtr originator;
+		public int    recipCount;
+		public IntPtr recips;
+		public int    fileCount;
+		public IntPtr files;
+
+		public MapiMessageW(MapiMessage message)
+		{
+			reserved = message.reserved;
+			subject = message.subject;
+			noteText = message.noteText;
+			messageType = message.messageType;
+			dateReceived = message.dateReceived;
+			conversationID = message.conversationID;
+			flags = message.flags;
+			originator = message.originator;
+			recipCount = message.recipCount;
+			recips = message.recips;
+			fileCount = message.fileCount;
+			files = message.files;
+		}
+	}
+
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
 	public class MapiFileDesc
 	{
@@ -228,6 +271,27 @@ namespace SIL.Email
 		public IntPtr type;
 	}
 
+	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+	internal class MapiFileDescW
+	{
+		public int    reserved;
+		public int    flags;
+		public int    position;
+		public string path;
+		public string name;
+		public IntPtr type;
+
+		public MapiFileDescW(MapiFileDesc fileDesc)
+		{
+			reserved = fileDesc.reserved;
+			flags = fileDesc.flags;
+			position = fileDesc.position;
+			path = fileDesc.path;
+			name = fileDesc.name;
+			type = fileDesc.type;
+		}
+	}
+
 	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
 	public class MapiRecipDesc
 	{
@@ -237,5 +301,26 @@ namespace SIL.Email
 		public string address;
 		public int eIDSize;
 		public IntPtr entryID;
+	}
+
+	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+	internal class MapiRecipDescW
+	{
+		public int    reserved;
+		public int    recipClass;
+		public string name;
+		public string address;
+		public int    eIDSize;
+		public IntPtr entryID;
+
+		public MapiRecipDescW(MapiRecipDesc recipDesc)
+		{
+			reserved = recipDesc.reserved;
+			recipClass = recipDesc.recipClass;
+			name = recipDesc.name;
+			address = recipDesc.address;
+			eIDSize = recipDesc.eIDSize;
+			entryID = recipDesc.entryID;
+		}
 	}
 }
