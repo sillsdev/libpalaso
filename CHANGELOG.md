@@ -16,6 +16,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- [SIL.WritingSystems] Update langtags.json to the latest
+
+### Fixed
+
+- [SIL.Windows.Forms] Fix bug where PalasoImage disposes of its Image prematurely
+- [SIL.Windows.Forms.Keyboarding] Avoid crashes in cases where Ibus connection dropped
+- [SIL.WritingSystems] Fix case mismatch with needsCompiling attribute
+
 ## [8.0.0] - 2021-03-04
 
 ### Added
@@ -101,3 +111,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   `Platform.IsRunning64Bit`
 - [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
   projects
+
+[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v8.0.0...master
+
+[8.0.0]: https://github.com/sillsdev/libpalaso/compare/v7.0.0...v8.0.0
+[7.0.0]: https://github.com/sillsdev/libpalaso/compare/v5.0...v7.0.0
