@@ -11,6 +11,9 @@ init:
 nuget:
   disable_publish_on_pr: true
   disable_publish_octopus: true
+before_build:
+  - cmd: >-
+      if defined APPVEYOR_PULL_REQUEST_NUMBER git checkout -b PR-%APPVEYOR_PULL_REQUEST_NUMBER%
 build:
   project: build/Palaso.proj
   publish_nuget: true
