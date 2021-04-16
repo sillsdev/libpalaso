@@ -1,33 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
-    <RootNamespace>SIL</RootNamespace>
     <AssemblyTitle>SIL.Core.Desktop</AssemblyTitle>
-    <Configurations>Debug;Release</Configurations>
     <Description>SIL.Core.Desktop provides general UI related utilities for language software.</Description>
     <!--we use company 'SIL' here instead of 'SIL International' that we use elsewhere because changing this would mess up settings on user's machine and cause failing tests -->
     <Company>SIL</Company>
-    <Authors>SIL International</Authors>
-    <Product>libpalaso</Product>
-    <Copyright>Copyright © 2010-2020 SIL International</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/sillsdev/libpalaso</PackageProjectUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <OutputPath>../output/$(Configuration)</OutputPath>
-    <PackageOutputPath>../output</PackageOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <SignAssembly>true</SignAssembly>
-    <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
-    <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <AppendToReleaseNotesProperty><![CDATA[
-See full changelog at https://github.com/sillsdev/libpalaso/blob/master/CHANGELOG.md]]>
-    </AppendToReleaseNotesProperty>
-    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.6.8" PrivateAssets="all" />

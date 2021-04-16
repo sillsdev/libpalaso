@@ -2,21 +2,10 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>net461</TargetFrameworks>
     <RootNamespace>ExtractCopyright</RootNamespace>
     <AssemblyName>ExtractCopyright</AssemblyName>
-    <Configurations>Debug;Release</Configurations>
     <Description>ExtractCopyright tool</Description>
-    <Company>SIL International</Company>
-    <Authors>SIL International</Authors>
-    <Product>libpalaso</Product>
-    <Copyright>Copyright © 2010-2020 SIL International</Copyright>
-    <OutputPath>../output/$(Configuration)</OutputPath>
-    <SignAssembly>true</SignAssembly>
-    <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
-    <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
     <IsPackable>false</IsPackable>
-    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
   </PropertyGroup>
 
   <ItemGroup>

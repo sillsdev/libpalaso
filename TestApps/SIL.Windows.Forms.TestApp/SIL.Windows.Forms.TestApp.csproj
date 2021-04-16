@@ -2,18 +2,12 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>net461</TargetFrameworks>
     <RootNamespace>SIL.Windows.Forms.TestApp</RootNamespace>
     <AssemblyName>SIL.Windows.Forms.TestApp</AssemblyName>
-    <Configurations>Debug;Release</Configurations>
     <Description>SIL.Windows.Forms.TestApp test app</Description>
-    <Company>SIL International</Company>
-    <Authors>SIL International</Authors>
-    <Product>libpalaso</Product>
-    <Copyright>Copyright © 2010-2020 SIL International</Copyright>
     <OutputPath>../../output/$(Configuration)</OutputPath>
+    <SignAssembly>false</SignAssembly>
     <IsPackable>false</IsPackable>
-    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
