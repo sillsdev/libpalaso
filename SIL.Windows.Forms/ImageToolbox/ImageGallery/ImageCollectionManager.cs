@@ -137,15 +137,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 		{
 			foundExactMatches = false;
 
-			// On a dev machine, the index loading feels instantaneous with AOR,
-			// but if the user were on a super slow computer, and entered a query quickly, he would
-			// get a spinning cursor until they are done.
-			const int kMaxSecondsToWaitForIndexLoading = 20;
-			var whenToGiveUp = DateTime.Now.AddSeconds(kMaxSecondsToWaitForIndexLoading);
-			while(!_indicesLoaded && DateTime.Now < whenToGiveUp)
-			{
-				Thread.Sleep(10);
-			}
+			WaitForLoadingToFinish();
 			// If still not done, give up and return no results.
 			if(!_indicesLoaded)
 			{
@@ -182,12 +174,28 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 			return finalResult;
 		}
 
+		private void WaitForLoadingToFinish()
+		{
+			// On a dev machine, the index loading feels instantaneous with AOR,
+			// but if the user were on a super slow computer, and entered a query quickly, he would
+			// get a spinning cursor until they are done.
+			const int kMaxSecondsToWaitForIndexLoading = 20;
+			var whenToGiveUp = DateTime.Now.AddSeconds(kMaxSecondsToWaitForIndexLoading);
+			while (!_indicesLoaded && DateTime.Now < whenToGiveUp)
+			{
+				Thread.Sleep(10);
+			}
+		}
+
 
 		/// <summary>
 		/// Load the index again, this time for the a different language id
 		/// </summary>
 		public void ChangeSearchLanguageAndReloadIndex(string searchLanguageId)
 		{
+			// Usually not needed, but reduce the possibility of a crash from trying to set the
+			// same index twice.  See https://issues.bloomlibrary.org/youtrack/issue/BL-9825.
+			WaitForLoadingToFinish();
 			_searchLanguage = searchLanguageId;
 			foreach (var c in Collections)
 			{
