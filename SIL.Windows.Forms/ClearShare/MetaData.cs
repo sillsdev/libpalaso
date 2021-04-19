@@ -141,7 +141,10 @@ namespace SIL.Windows.Forms.ClearShare
 		/// combinedTag that just has an XmpTag inside it (or indeed any way to create any combinedTag except as part of
 		/// reading a real image file).
 		/// </summary>
-		private static void LoadProperties(ImageTag tagMain, Metadata destinationMetadata)
+		/// <remarks>
+		/// internal to allow unit testing
+		/// </remarks>
+		internal static void LoadProperties(ImageTag tagMain, Metadata destinationMetadata)
 		{
 			destinationMetadata.CopyrightNotice = tagMain.Copyright;
 			destinationMetadata.Creator = tagMain.Creator;
@@ -559,7 +562,10 @@ namespace SIL.Windows.Forms.ClearShare
 		/// combinedTag that just has an XmpTag inside it (or indeed any way to create any combinedTag except as part of
 		/// reading a real file).
 		/// </summary>
-		void SaveInImageTag(ImageTag tagMain)
+		/// <remarks>
+		/// internal to allow unit testing of the method
+		/// </remarks>
+		internal void SaveInImageTag(ImageTag tagMain)
 		{
 			// Taglib doesn't care what namespace prefix is used for these namespaces (which it doesn't already know about).
 			// It will happily assign them to be ns1 and ns2 and successfully read back the data.
@@ -580,8 +586,7 @@ namespace SIL.Windows.Forms.ClearShare
 			AddOrModify(xmp, kNsCollections, "CollectionURI", CollectionUri);
 			AddOrModify(xmp, kNsCollections, "CollectionName", CollectionName);
 			AddOrModify(xmp, kNsCc, "attributionURL", AttributionUrl);
-			if (License != null && !string.IsNullOrWhiteSpace(License.Url))
-				AddOrModify(xmp, kNsCc, "license", License.Url);
+			AddOrModify(xmp, kNsCc, "license", License == null ? null : License.Url);
 			SetRights(xmp, License == null ? null : License.RightsStatement);
 		}
 
