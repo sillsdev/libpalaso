@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Fix bug where changing ImageCollection search language too soon could crash.
 - [SIL.Windows.Forms] Fix bug where image license could not be changed from Creative Commons.
 - [SIL.Windows.Forms] Fix bug where PalasoImage disposes of its Image prematurely
+- [SIL.Windows.Forms] Save non-CC licenses properly in images
 - [SIL.Windows.Forms.Keyboarding] Avoid crashes in cases where Ibus connection dropped
 - [SIL.WritingSystems] Fix case mismatch with needsCompiling attribute
 
