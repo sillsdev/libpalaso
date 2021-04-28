@@ -200,7 +200,7 @@ namespace SIL.WritingSystems
 				bool redirected;
 				do
 				{
-					string uid = "", tempString;
+					var uid = string.Empty;
 					if (destinationPath == SldrCachePath)
 					{
 						filename = $"{sldrLanguageTag}.{LdmlExtension}";
@@ -209,7 +209,7 @@ namespace SIL.WritingSystems
 					{
 						filename = $"{languageTag}.{LdmlExtension}";
 						// Check if LDML file already exists in destination and read revid and uid
-						if (!ReadSilIdentity(Path.Combine(destinationPath, filename), out tempString, out uid))
+						if (!ReadSilIdentity(Path.Combine(destinationPath, filename), out _, out uid))
 							uid = DefaultUserId;
 					}
 
@@ -220,7 +220,7 @@ namespace SIL.WritingSystems
 					sldrCacheFilePath = Path.Combine(SldrCachePath, !string.IsNullOrEmpty(uid) && uid != DefaultUserId ? $"{sldrLanguageTag}-{uid}.{LdmlExtension}"
 						: $"{sldrLanguageTag}.{LdmlExtension}");
 					// Read revid from cache file
-					ReadSilIdentity(sldrCacheFilePath, out var revid, out tempString);
+					ReadSilIdentity(sldrCacheFilePath, out var revid, out _);
 
 					// Concatenate parameters for url string
 					var requestedElements = string.Empty;

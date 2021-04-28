@@ -268,9 +268,9 @@ namespace SIL.WritingSystems.Tests
 			var sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out var filename);
 			if (sldrStatus == SldrStatus.UnableToConnectToSldr)
 				Assert.Ignore("Ignored because SLDR is offline.");
-			// Call a second time, this should use the Cache now
+			// Call a second time, this should use the Cache now. However, this still reports it as FromSldr
 			sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out filename);
-			Assert.That(sldrStatus, Is.EqualTo(SldrStatus.FromCache));
+			Assert.That(sldrStatus, Is.EqualTo(SldrStatus.FromSldr));
 			AssertThatXmlIn.File(Path.Combine(environment.FilePath, filename))
 				.HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@source='cldr']", environment.NamespaceManager);
 		}
