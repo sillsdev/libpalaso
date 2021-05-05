@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using L10NSharp;
 using SIL.Archiving.Generic;
+using SIL.Code;
 using SIL.IO;
 
 namespace SIL.Archiving
@@ -254,8 +255,9 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public virtual void AddFileGroup(string groupId, IEnumerable<string> files, string progressMessage)
 		{
+			Guard.AgainstNull(groupId, nameof(groupId));
 			if (_fileLists.ContainsKey(groupId))
-				throw new ArgumentException("Duplicate file group ID.", "groupId");
+				throw new ArgumentException("Duplicate file group ID: " + groupId, nameof(groupId));
 			_fileLists[groupId] = Tuple.Create(files, progressMessage);
 		}
 
