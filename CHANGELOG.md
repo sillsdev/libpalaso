@@ -32,6 +32,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- [SIL.Windows.Forms] `CssLinkHref` property to `ShowReleaseNotesDialog` to allow linking to CSS file for
+    displaying Markdown output.
 - [SIL.DblBundle] `DblMetadata.Load` overload to allow deserialization from a `TextReader`.
 - [SIL.Scripture] `Versification.Table.Load` overload to allow deserialization from a `TextReader`.
 - [SIL.DblBundle] `TextBundle<TM, TL>.GetVersification` (to replace deprecated `CopyVersificationFile`)
