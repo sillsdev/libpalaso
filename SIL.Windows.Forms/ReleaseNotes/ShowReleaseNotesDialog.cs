@@ -24,6 +24,14 @@ namespace SIL.Windows.Forms.ReleaseNotes
 
 		public bool ApplyMarkdown { get; set;}
 
+		/// <summary>
+		/// If set, a stylesheet link is added to the generated HTML file using the supplied URL.
+		/// This can be useful for formatting the markdown output in various ways such as limiting
+		/// the maximum width of images to the width of the dialog display area.
+		/// If not set, no stylesheet link is generated.
+		/// </summary>
+		public string CssLinkHref { get; set; }
+
 		public ShowReleaseNotesDialog(Icon icon, string path, bool applyMarkdown = true)
 		{
 			_path = path;
@@ -64,7 +72,8 @@ namespace SIL.Windows.Forms.ReleaseNotes
 
 		private string GetBasicHtmlFromMarkdown(string markdownHtml)
 		{
-			return string.Format("<html><head><meta charset=\"utf-8\"/></head><body>{0}</body></html>", markdownHtml);
+			var linkCss = string.IsNullOrEmpty(CssLinkHref) ? "" : $"<link rel=\"stylesheet\" href=\"{CssLinkHref}\" type=\"text/css\"></link>";
+			return string.Format("<html><head><meta charset=\"utf-8\"/>{0}</head><body>{1}</body></html>", linkCss, markdownHtml);
 		}
 	}
 }
