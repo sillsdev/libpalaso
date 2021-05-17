@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- [SIL.Windows.Forms] `CssLinkHref` property to `ShowReleaseNotesDialog` to allow linking to CSS file for
+    displaying Markdown output.
+
 ### Changed
 
 - [SIL.WritingSystems] Update langtags.json to the latest
