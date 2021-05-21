@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -8,6 +7,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using SIL.Linq;
 
 namespace SIL.Xml
 {
@@ -1136,6 +1136,33 @@ namespace SIL.Xml
 				(codePoint >= 0xE000 && codePoint <= 0xFFFD) ||
 				(codePoint >= 0x10000/* && character <= 0x10FFFF*/) //it's impossible to get a code point bigger than 0x10FFFF because Char.ConvertToUtf32 would have thrown an exception
 			);
+		}
+
+		/// <summary>
+		/// Removes namespaces from the Xml document (makes querying easier)
+		/// </summary>
+		public static XDocument RemoveNamespaces(this XDocument document)
+		{
+			document.Root?.RemoveNamespaces();
+			return document;
+		}
+
+		/// <summary>
+		/// Removes namespaces from the Xml element and its children (makes querying easier)
+		/// </summary>
+		public static XElement RemoveNamespaces(this XElement element)
+		{
+			RemoveNamespaces(element.DescendantsAndSelf());
+			return element;
+		}
+
+		private static void RemoveNamespaces(IEnumerable<XElement> elements)
+		{
+			foreach (var element in elements)
+			{
+				element.Attributes().Where(attribute => attribute.IsNamespaceDeclaration).ForEach(attribute => attribute.Remove());
+				element.Name = element.Name.LocalName;
+			}
 		}
 
 		/// <summary>
