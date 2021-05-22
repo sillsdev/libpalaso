@@ -400,10 +400,21 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 					int width = Math.Max(1, _rightGrip.Value - _leftGrip.Value);
 					int height = Math.Max(1, _bottomGrip.Value - _topGrip.Value);
-					var selection = new Rectangle((int)Math.Round(z * _leftGrip.Value),
-												  (int)Math.Round(z * _topGrip.Value),
-												  (int)Math.Round(z * width),
-												  (int)Math.Round(z * height));
+					var left = (int)Math.Round(z * _leftGrip.Value);
+					var top = (int)Math.Round(z * _topGrip.Value);
+					// Rounding may yield e.g. left + width > originalImage.Width, which will cause
+					// Clone (unhelpfully!!!) to throw OutOfMemory. So if the total we came up with
+					// is too big, make it just slightly smaller. This typically comes up when
+					// dragging the top and left sliders, so going all the way to the opposite edge
+					// is likely to be right.
+					var selectionWidth = Math.Min((int)Math.Round(z * width), originalImage.Width - left);
+					var selectionHeight = Math.Min((int)Math.Round(z * height), originalImage.Height - top);
+					// If the bottom and top grips haven't moved, make sure we don't trim anything off those sides.
+					if (_rightGrip.Value == _sourceImageArea.Width)
+						selectionWidth = originalImage.Width - left;
+					if (_bottomGrip.Value == _sourceImageArea.Height)
+						selectionHeight = originalImage.Height - top;
+					var selection = new Rectangle(left, top, selectionWidth, selectionHeight);
 
 					var cropped = originalImage.Clone(selection, originalImage.PixelFormat); //do the actual cropping
 
