@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- [SIL.Core.Desktop] Serializable class `UpdateSettings` (settings for getting updates)
 - [SIL.Windows.Forms] `CssLinkHref` property to `ShowReleaseNotesDialog` to allow linking to CSS file for
     displaying Markdown output.
 
