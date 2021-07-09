@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Xml;
@@ -11,6 +13,7 @@ using SIL.Xml;
 namespace SIL.Tests.Xml
 {
 	[TestFixture]
+	[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
 	public class XmlUtilsTests
 	{
 		[Test]
@@ -90,6 +93,35 @@ namespace SIL.Tests.Xml
 			surrogate[1] = (char)((utf32 % 0x400) + '\udc00');
 			s += new string(surrogate);
 			Assert.AreEqual("ABC", XmlUtils.SanitizeString(s));
+		}
+
+		[Test]
+		public void RemoveNamespaces_FromElements()
+		{
+			var element = XElement.Parse("<Element xmlns='http://sil.org/xml' att='tribute'><Inner should='be preserved' me='2'></Inner></Element>");
+			element.RemoveNamespaces();
+			foreach (var elt in element.DescendantsAndSelf())
+			{
+				Assert.That(elt.Name.NamespaceName, Is.Null.Or.Empty);
+			}
+			Assert.That(element.Attributes().Count(), Is.EqualTo(1));
+			Assert.That(element.Attribute("att").Value, Is.EqualTo("tribute"));
+			var inner = element.Element("Inner");
+			Assert.That(inner.Attributes().Count(), Is.EqualTo(2));
+			Assert.That(inner.Attribute("should").Value, Is.EqualTo("be preserved"));
+			Assert.That(inner.Attribute("me").Value, Is.EqualTo("2"));
+		}
+
+		[Test]
+		public void RemoveNamespaces_FromSubElements()
+		{
+			var element = XElement.Parse("<Element><Sub xmlns='http://marines.mil/sub-marines'></Sub></Element>");
+			element.RemoveNamespaces();
+			foreach (var elt in element.DescendantsAndSelf())
+			{
+				Assert.That(elt.Name.NamespaceName, Is.Null.Or.Empty);
+				Assert.That(elt.Attributes(), Is.Empty);
+			}
 		}
 
 		/// <summary>
