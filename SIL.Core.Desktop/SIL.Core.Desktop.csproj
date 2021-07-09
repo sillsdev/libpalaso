@@ -336,6 +336,7 @@
     </Compile>
     <Compile Include="Reporting\UsageReporter.cs" />
     <Compile Include="Settings\CrossPlatformSettingsProvider.cs" />
+    <Compile Include="Settings\UpdateSettings.cs" />
     <Compile Include="UiBindings\IBindableControl.cs" />
     <Compile Include="UiBindings\ICountGiver.cs" />
     <Compile Include="UiBindings\IDisplayStringAdaptor.cs" />
