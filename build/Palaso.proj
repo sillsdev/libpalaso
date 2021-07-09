@@ -23,7 +23,7 @@
 		<Configuration Condition="'$(OS)'!='Windows_NT' And '$(Configuration)'==''">ReleaseMonoStrongName</Configuration>
 		<Configuration Condition="'$(OS)'=='Windows_NT' And '$(Configuration)'==''">ReleaseStrongName</Configuration>
 		<ExtraExcludeCategories Condition="'$(OS)'!='Windows_NT'">KnownMonoIssue,</ExtraExcludeCategories>
-		<ExtraExcludeCategories Condition="'$(teamcity_version)' != ''">SkipOnTeamCity,$(ExtraExcludeCategories)</ExtraExcludeCategories>
+		<ExtraExcludeCategories Condition="'$(teamcity_version)' != '' Or '$(JENKINS_URL)' != '' Or '$(CI)' != ''">SkipOnTeamCity,$(ExtraExcludeCategories)</ExtraExcludeCategories>
 		<useNUnit-x86 Condition="'$(OS)'=='Windows_NT'">true</useNUnit-x86>
 		<useNUnit-x86 Condition="'$(OS)'!='Windows_NT'">false</useNUnit-x86>
 		<Platform Condition="'$(OS)'!='Windows_NT' And '$(Platform)'==''">Any CPU</Platform>

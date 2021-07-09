@@ -1,0 +1,69 @@
+
+name: Libpalaso CI workflow
+
+on:
+  pull_request:
+    branches: [ libpalaso-6.0 ]
+
+jobs:
+
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: windows-latest
+            script_name: buildupdate.win.sh
+            configuration: Debug
+          - os: ubuntu-latest
+            script_name: buildupdate.mono.sh
+            configuration: DebugMono
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f
+      with:
+        fetch-depth: 0
+
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@51f68377c181a79065c61bd492bd49be4575c439
+      with:
+        dotnet-version: 5.0.x
+
+    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+    - name: Setup MSBuild.exe (Windows OS)
+      uses: microsoft/setup-msbuild@c26a08ba26249b81327e26f6ef381897b6a8754d
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true # So the PATH can be set by this step
+      if: ${{ matrix.os == 'windows-latest' }}
+      
+    - name: Install linux package dependencies
+      run: |
+        (wget -O- https://packages.sil.org/keys/pso-keyring-2016.gpg | sudo tee /etc/apt/trusted.gpg.d/pso-keyring-2016.gpg)&>/dev/null
+        (. /etc/os-release && sudo tee /etc/apt/sources.list.d/packages-sil-org.list>/dev/null <<< "deb http://packages.sil.org/$ID $VERSION_CODENAME main")
+        sudo apt update
+        sudo apt-get -y install libgdiplus5-sil gtk-sharp5-sil
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+
+    # Run the unit tests
+    - name: Restore
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true # So gitversion can set environment vars during the build
+      run: msbuild build/Palaso.proj /t:RestorePackages /p:Configuration=Debug /p:Platform="Any CPU"
+      
+    - name: Update Dependencies (build update)
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true # So gitversion can set environment vars during the build
+      run: build/${{ matrix.script_name }}
+      shell: bash
+      
+    - name: Build
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true # So gitversion can set environment vars during the build
+      run: msbuild build/Palaso.proj /t:Build /p:Configuration=${{ matrix.configuration }} /p:Platform="Any CPU"
+
+    - name: Test
+      run: msbuild build/Palaso.proj /t:TestOnly /p:Configuration=${{ matrix.configuration }} /p:Platform="Any CPU"
