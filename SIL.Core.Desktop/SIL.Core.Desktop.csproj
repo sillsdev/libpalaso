@@ -49,7 +49,6 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/master/CHANGELO
       <AutoGen>True</AutoGen>
       <DependentUpon>ErrorReportSettings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Settings\UpdateSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Reporting\ErrorReportSettings.settings">
