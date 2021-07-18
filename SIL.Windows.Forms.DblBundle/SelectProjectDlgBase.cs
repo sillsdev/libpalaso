@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Windows.Forms;
 using L10NSharp;
@@ -8,7 +8,7 @@ namespace SIL.Windows.Forms.DblBundle
 {
 	public abstract class SelectProjectDlgBase : IDisposable
 	{
-		private readonly OpenFileDialog m_fileDialog;
+		private OpenFileDialog m_fileDialog;
 
 		protected abstract string DefaultBundleDirectory { get; set; }
 		protected abstract string ProjectFileExtension { get; }
@@ -18,6 +18,11 @@ namespace SIL.Windows.Forms.DblBundle
 		protected SelectProjectDlgBase(bool allowProjectFiles = true, string defaultFile = null)
 		{
 			FileName = File.Exists(defaultFile) ? Path.GetFileName(defaultFile) : null;
+			
+		}
+
+		protected virtual OpenFileDialog CreateFileDialog()
+		{
 			var defaultDir = (defaultFile != null ? Path.GetDirectoryName(defaultFile) : DefaultBundleDirectory);
 			if (string.IsNullOrEmpty(defaultDir) || !Directory.Exists(defaultDir))
 			{
@@ -41,10 +46,13 @@ namespace SIL.Windows.Forms.DblBundle
 					"*.*"),
 				DefaultExt = DblBundleFileUtils.kDblBundleExtension
 			};
+
+			return m_fileDialog;
 		}
 
 		public DialogResult ShowDialog()
 		{
+			m_fileDialog = CreateFileDialog();
 			var result = m_fileDialog.ShowDialog();
 			if (result == DialogResult.OK)
 			{
@@ -60,7 +68,17 @@ namespace SIL.Windows.Forms.DblBundle
 
 		public void Dispose()
 		{
-			m_fileDialog.Dispose();
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				m_fileDialog.Dispose();
+				m_fileDialog = null; 
+			}
 		}
 	}
 }
