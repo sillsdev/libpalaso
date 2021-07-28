@@ -28,7 +28,7 @@ namespace SIL.Windows.Forms.Scripture
 		string searchText = "";
 		bool allowVerseSegments = true; //Allow LXX style lettered verse segments
 		bool showEmptyBooks = true;
-		VerseRef curRef;
+		IScrVerseRef curRef;
 		float abbreviationWidth = -1.0f; //starting width of book abbreviation, <0 signifies to recalculate
 		readonly BookListItem[] allBooks;
 		Font emptyBooksFont = SystemFonts.DefaultFont;
@@ -44,8 +44,6 @@ namespace SIL.Windows.Forms.Scripture
 		public event PropertyChangedEventHandler VerseRefChanged;
 		/// <summary>Fired when the books listed in the control change</summary>
 		public event PropertyChangedEventHandler BooksPresentChanged;
-		/// <summary>Fired when the versification is changed</summary>
-		public event PropertyChangedEventHandler VersificationChanged;
 		/// <summary>Fired when an invalid book is entered</summary>
 		public event EventHandler InvalidBookEntered;
 		/// <summary>Fired when any part of the reference is invalid</summary>
@@ -147,10 +145,7 @@ namespace SIL.Windows.Forms.Scripture
 			}
 		}
 
-		bool VerseSegmentsAvailable
-		{
-			get { return curRef.Versification != null && curRef.Versification.HasVerseSegments; }
-		}
+		private bool VerseSegmentsAvailable => curRef.VersificationHasVerseSegments;
 
 		/// <summary>
 		/// Gets or sets the current verse reference
@@ -167,7 +162,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// 3. Phase 2: allow prev/next verse to be segment aware. Support in LXX edit window.
 		/// </summary>
 		[Browsable(false), ReadOnly(true)]
-		public VerseRef VerseRef
+		public IScrVerseRef VerseRef
 		{
 			get
 			{
@@ -186,50 +181,30 @@ namespace SIL.Windows.Forms.Scripture
 				}
 				// old way, before segmented references allowed
 				// return new VerseRef(curRef).Simplify(); 
-				return new VerseRef(curRef).UnBridge();
+				return curRef.UnBridge();
 			}
 			set
 			{
-				// We really can't use Valid here because it checks for maximum book number
-				// and that is depenedent on the versification and when the versification of
-				// the control and the text are different we can end up ignoring values
-				// that are in fact ok. So we just check for empty references and bail out
-				// if we get one.
-				if (value.BookNum < 1 || value.ChapterNum < 1 || value.VerseNum < 0)
+				if (value == null || value.BookNum < 1 || value.ChapterNum < 1 || value.VerseNum < 0)
 				{
 					Trace.TraceWarning("Invalid VerseRef passed to VerseControl: " + value);
 					// Ignore it for now (see PT-1310)
 					return;
 				}
 
-				curRef.CopyFrom(value);
+				curRef = value.Clone();
 				if (!allowVerseSegments)
 					curRef.Simplify();
 
 				if (advanceToEnd)
-					AdvanceToLastSegment(curRef);
+					curRef.AdvanceToLastSegment();
 
 				UpdateControls();
 			}
 		}
 
 		[Browsable(false)]
-		private string BookAbbreviation
-		{
-			get { return curRef.Book; }
-		}
-
-		[Browsable(false), ReadOnly(true)]
-		public ScrVers Versification
-		{
-			set
-			{
-				if (curRef.Versification == value)
-					return;
-				curRef.Versification = value;
-				OnVersificationChanged(new PropertyChangedEventArgs("Versification"));
-			}
-		}
+		private string BookAbbreviation => curRef.Book;
 
 		[Browsable(false), ReadOnly(true)]
 		public BookSet BooksPresentSet
@@ -243,7 +218,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		public Font EmptyBooksFont
 		{
-			get { return emptyBooksFont; }
+			get => emptyBooksFont;
 			set
 			{
 				if (Equals(value, emptyBooksFont))
@@ -271,8 +246,8 @@ namespace SIL.Windows.Forms.Scripture
 		}
 
 		/// <summary>
-		/// When using a verse control to indicate the end of a range, chosing
-		/// a new books should go to the last verse of the last chapter. Chosing
+		/// When using a verse control to indicate the end of a range, choosing
+		/// a new book should go to the last verse of the last chapter. Choosing
 		/// a new chapter should go to the last verse of that chapter.
 		/// </summary>
 		public bool AdvanceToEnd
@@ -332,21 +307,21 @@ namespace SIL.Windows.Forms.Scripture
 		/// <returns>true if the move was possible</returns>
 		public void PrevBook()
 		{
-			bool result = (showEmptyBooks) ? curRef.PreviousBook() : curRef.PreviousBook(booksPresentSet);
+			bool result = showEmptyBooks ? curRef.PreviousBook() : curRef.PreviousBook(booksPresentSet);
 			if (result)
 				UpdateReference();
 		}
 
 		public void NextBook()
 		{
-			bool result = (showEmptyBooks) ? curRef.NextBook() : curRef.NextBook(booksPresentSet);
+			bool result = showEmptyBooks ? curRef.NextBook() : curRef.NextBook(booksPresentSet);
 			if (result)
 				UpdateReference();
 		}
 
 		public void PrevChapter()
 		{
-			bool result = (showEmptyBooks) ? curRef.PreviousChapter() : curRef.PreviousChapter(booksPresentSet);
+			bool result = showEmptyBooks ? curRef.PreviousChapter() : curRef.PreviousChapter(booksPresentSet);
 			if (result)
 				UpdateReference();
 		}
@@ -390,12 +365,6 @@ namespace SIL.Windows.Forms.Scripture
 			InitializeBooks();
 			if (BooksPresentChanged != null)
 				BooksPresentChanged(this, e);
-		}
-
-		private void OnVersificationChanged(PropertyChangedEventArgs e)
-		{
-			if (VersificationChanged != null)
-				VersificationChanged(this, e);
 		}
 
 		private void OnInvalidBook(EventArgs e)
@@ -590,7 +559,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// </summary>
 		public void AcceptData()
 		{
-			curRef = new VerseRef(uiBook.Text + " " + uiChapter.Text + ":" + uiVerse.Text, curRef.Versification);
+			curRef = curRef.Create(uiBook.Text, uiChapter.Text, uiVerse.Text);
 
 			// Prevent going past last chapter/verse
 			if (curRef.ChapterNum > curRef.LastChapter)
@@ -656,11 +625,8 @@ namespace SIL.Windows.Forms.Scripture
 			{
 				return;
 			}
-			ScrVers versif = ScrVers.English;
-			if (!curRef.IsDefault)
-				versif = curRef.Versification;
 
-			VerseRef = new VerseRef(((BookListItem)uiBook.SelectedItem).Abbreviation + " 1:1", versif);
+			VerseRef = curRef.Create(((BookListItem)uiBook.SelectedItem).Abbreviation, "1", "1");
 
 			if (advanceToEnd)
 				AdvanceToLastChapterLastVerse();
@@ -765,31 +731,22 @@ namespace SIL.Windows.Forms.Scripture
 
 		void AdvanceToLastChapterLastVerse()
 		{
-			VerseRef vref = new VerseRef(uiBook.Text + " 1:1");
-			vref.Versification = curRef.Versification;
+			IScrVerseRef vref = curRef.Create(uiBook.Text, "1", "1");
 			vref.ChapterNum = vref.LastChapter;
 			vref.VerseNum = vref.LastVerse;
-			AdvanceToLastSegment(vref);
+			vref.AdvanceToLastSegment();
 			uiChapter.Text = vref.Chapter;
 			uiVerse.Text = vref.Verse;
-			curRef.CopyFrom(vref);
-		}
-
-		private static void AdvanceToLastSegment(VerseRef vref)
-		{
-			string[] segments = vref.GetSegments(null);
-			if (segments != null && segments.Length > 0)
-				vref.Verse += segments[segments.Length - 1];
+			curRef = vref;
 		}
 
 		void AdvanceToLastVerse()
 		{
-			VerseRef vref = new VerseRef(uiBook.Text + " " + uiChapter.Text + ":1");
-			vref.Versification = curRef.Versification;
+			IScrVerseRef vref = curRef.Create(uiBook.Text, uiChapter.Text, "1");
 			vref.VerseNum = vref.LastVerse;
-			AdvanceToLastSegment(vref);
+			vref.AdvanceToLastSegment();
 			uiVerse.Text = vref.Verse;
-			curRef.CopyFrom(vref);
+			curRef = vref;
 		}
 
 		void Revert()

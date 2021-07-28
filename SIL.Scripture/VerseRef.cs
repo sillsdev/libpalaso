@@ -10,7 +10,7 @@ namespace SIL.Scripture
 	/// <summary>
 	/// Stores a reference to a specific verse in Scripture.
 	/// </summary>
-	public struct VerseRef : IComparable<VerseRef>, IComparable
+	public struct VerseRef : IComparable<VerseRef>, IComparable, IScrVerseRef
 	{
 		#region Constants
 #if DEBUG
@@ -56,7 +56,6 @@ namespace SIL.Scripture
 		#endregion
 
 		#region Constructors
-
 
 		/// <summary>
 		/// Creates an empty reference with the specified versification
@@ -378,6 +377,13 @@ namespace SIL.Scripture
 			return segsForThisVerse ?? defaultSegments;
 		}
 
+		public void AdvanceToLastSegment()
+		{
+			string[] segments = GetSegments(null);
+			if (segments != null && segments.Length > 0)
+				Verse += segments[segments.Length - 1];
+		}
+
 		/// <summary>
 		/// Get the segment from the verse.
 		/// </summary>
@@ -478,7 +484,7 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Gets or sets the versification of the reference.
 		/// Setting this value does not attempt to convert between
-		/// versifications. To do so, use the ChangeVersification function
+		/// versifications. To do so, use one of the ChangeVersification methods
 		/// </summary>
 		[XmlIgnore]
 		public ScrVers Versification
@@ -728,7 +734,6 @@ namespace SIL.Scripture
 			}
 		}
 
-
 		// ---------- BOOK NEXT AND PREVIOUS ----------
 
 		// NOTES ABOUT ALL NAVIGATION FUNCTIONS:
@@ -782,7 +787,7 @@ namespace SIL.Scripture
 
 		// ---------- CHAPTER NEXT AND PREVIOUS ----------
 
-		public bool NextChapter(BookSet present, bool skipExcluded = false)
+		public bool NextChapter(BookSet present, bool skipExcluded)
 		{
 			// If current book doesn't exist, try jump to next.
 			if (!present.IsSelected(bookNum))
@@ -806,6 +811,11 @@ namespace SIL.Scripture
 			}
 
 			return true;
+		}
+
+		public bool NextChapter(BookSet present)
+		{
+			return NextChapter(present);
 		}
 
 		public bool NextChapter()
@@ -1520,8 +1530,6 @@ namespace SIL.Scripture
 			}
 		}
 
-		#endregion
-
 		/// <summary>
 		/// Validates a verse number using the supplied separators rather than the defaults.
 		/// </summary>
@@ -1545,8 +1553,22 @@ namespace SIL.Scripture
 				prevVerse = bbbcccvvv;
 			}
 			return ValidStatusType.Valid; // TODO: make Valid tests Valid Status tests
-
 		}
+
+		#endregion
+
+		#region IScrVerseRef-specific implementation
+		public IScrVerseRef Create(string book, string chapter, string verse)
+		{
+			return new VerseRef(book, chapter, verse, Versification);
+		}
+
+		IScrVerseRef IScrVerseRef.Clone() => Clone();
+
+		IScrVerseRef IScrVerseRef.UnBridge() => UnBridge();
+
+		public bool VersificationHasVerseSegments => Versification.HasVerseSegments;
+		#endregion
 	}
 
 	#region VerseRefException class
