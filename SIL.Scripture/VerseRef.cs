@@ -380,7 +380,7 @@ namespace SIL.Scripture
 		public void AdvanceToLastSegment()
 		{
 			string[] segments = GetSegments(null);
-			if (segments != null && segments.Length > 0)
+			if (segments?.Length > 0)
 				Verse += segments[segments.Length - 1];
 		}
 
@@ -815,7 +815,7 @@ namespace SIL.Scripture
 
 		public bool NextChapter(BookSet present)
 		{
-			return NextChapter(present);
+			return NextChapter(present, false);
 		}
 
 		public bool NextChapter()

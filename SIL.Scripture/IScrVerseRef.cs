@@ -44,7 +44,7 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Returns verse ref with no bridging, but maintaining segments like "1a".
 		/// </summary>
-		public IScrVerseRef UnBridge();
+		IScrVerseRef UnBridge();
 
 		/// <summary>
 		/// Simplifies this verse ref so that it has no bridging of verses or 
@@ -92,6 +92,7 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Tries to move to the next chapter.
 		/// </summary>
+		/// <param name="present">Set of books present or selected.</param>
 		/// <returns>true if successful</returns>
 		bool NextChapter(BookSet present);
 
@@ -104,6 +105,7 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Tries to move to the previous chapter.
 		/// </summary>
+		/// <param name="present">Set of books present or selected.</param>
 		/// <returns>true if successful</returns>
 		bool PreviousChapter(BookSet present);
 
@@ -116,6 +118,7 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Tries to move to the next verse (or verse segment, if available in the current versification).
 		/// </summary>
+		/// <param name="present">Set of books present or selected.</param>
 		/// <returns>true if successful, false if at end of scripture</returns>
 		bool NextVerse(BookSet present);
 
@@ -128,6 +131,7 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Tries to move to the previous verse (or verse segment, if available in the current versification).
 		/// </summary>
+		/// <param name="present">Set of books present or selected.</param>
 		/// <returns>true if successful, false if at beginning of scripture</returns>
 		bool PreviousVerse(BookSet present);
 
