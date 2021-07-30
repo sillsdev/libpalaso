@@ -9,6 +9,7 @@ namespace SIL.Windows.Forms.DblBundle
 	public abstract class SelectProjectDlgBase : IDisposable
 	{
 		private OpenFileDialog m_fileDialog;
+		private var defaultDir;
 
 		protected abstract string DefaultBundleDirectory { get; set; }
 		protected abstract string ProjectFileExtension { get; }
@@ -18,12 +19,12 @@ namespace SIL.Windows.Forms.DblBundle
 		protected SelectProjectDlgBase(bool allowProjectFiles = true, string defaultFile = null)
 		{
 			FileName = File.Exists(defaultFile) ? Path.GetFileName(defaultFile) : null;
-			
+			defaultDir = (defaultFile != null ? Path.GetDirectoryName(defaultFile) : DefaultBundleDirectory);
+
 		}
 
 		protected virtual OpenFileDialog CreateFileDialog()
 		{
-			var defaultDir = (defaultFile != null ? Path.GetDirectoryName(defaultFile) : DefaultBundleDirectory);
 			if (string.IsNullOrEmpty(defaultDir) || !Directory.Exists(defaultDir))
 			{
 				defaultDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
