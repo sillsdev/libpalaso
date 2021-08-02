@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Xml.Serialization;
 using NUnit.Framework;
 using SIL.Xml;
 
@@ -924,7 +921,7 @@ namespace SIL.Scripture.Tests
 
 			// Have no idea what LAO is, but it's not in the English vrs file,
 			// so Paratext considers it to have 1 chapter, and since it's the
-			// last book in the Deutoerocanon, we can't advance.
+			// last book in the Deuterocanon, we can't advance.
 			vref = new VerseRef("LAO 1:0", ScrVers.English);
 			Assert.IsFalse(vref.NextChapter());
 			Assert.AreEqual("LAO", vref.Book);
@@ -933,7 +930,7 @@ namespace SIL.Scripture.Tests
 		}
 
 		/// <summary>
-		/// Tests the NextChapter method with a set of books (contrained to the odd-numbered
+		/// Tests the NextChapter method with a set of books (constrained to the odd-numbered
 		/// books in the Torah)
 		/// </summary>
 		[Test]

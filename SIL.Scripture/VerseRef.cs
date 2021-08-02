@@ -4,23 +4,29 @@ using System.Xml.Serialization;
 using System.Linq;
 using System.Diagnostics;
 using System.Text;
+using JetBrains.Annotations;
 
 namespace SIL.Scripture
 {
 	/// <summary>
 	/// Stores a reference to a specific verse in Scripture.
 	/// </summary>
-	public struct VerseRef : IComparable<VerseRef>, IComparable
+	public struct VerseRef : IComparable<VerseRef>, IComparable, IScrVerseRef
 	{
 		#region Constants
+		[PublicAPI]
 #if DEBUG
 		public static readonly ScrVers defaultVersification = null;
 #else
 		public static readonly ScrVers defaultVersification = ScrVers.English;
 #endif
+		[PublicAPI]
 		public const char verseRangeSeparator = '-';
+		[PublicAPI]
 		public const char verseSequenceIndicator = ',';
+		[PublicAPI]
 		public static readonly string[] verseRangeSeparators = new[] { verseRangeSeparator.ToString() };
+		[PublicAPI]
 		public static readonly string[] verseSequenceIndicators = new[] { verseSequenceIndicator.ToString() };
 
 		private const int chapterDigitShifter = 1000;
@@ -56,7 +62,6 @@ namespace SIL.Scripture
 		#endregion
 
 		#region Constructors
-
 
 		/// <summary>
 		/// Creates an empty reference with the specified versification
@@ -159,6 +164,7 @@ namespace SIL.Scripture
 		/// TODO bro Do we need to make this 0 for intro material?
 		/// </summary>
 		[XmlIgnore]
+		[PublicAPI]
 		public int FirstChapter
 		{
 			get { return 1; }
@@ -181,6 +187,7 @@ namespace SIL.Scripture
 		/// </summary>
 		/// <remarks>Does not handle verse ranges</remarks>
 		[XmlIgnore]
+		[PublicAPI]
 		public bool IsExcluded
 		{
 			get { return versification.IsExcluded(BBBCCCVVV); }
@@ -191,6 +198,7 @@ namespace SIL.Scripture
 		/// </summary>
 		/// <remarks>Does not handle verse ranges</remarks>
 		[XmlIgnore]
+		[PublicAPI]
 		public bool HasSegmentsDefined
 		{
 			get { return versification != null && versification.VerseSegments(BBBCCCVVV) != null; }
@@ -369,6 +377,7 @@ namespace SIL.Scripture
 		/// </summary>
 		/// <param name="defaultSegments">verse segments defined for the current language</param>
 		/// <returns></returns>
+		[PublicAPI]
 		public string[] GetSegments(string[] defaultSegments)
 		{
 			if (versification == null)
@@ -378,12 +387,20 @@ namespace SIL.Scripture
 			return segsForThisVerse ?? defaultSegments;
 		}
 
+		public void AdvanceToLastSegment()
+		{
+			string[] segments = GetSegments(null);
+			if (segments?.Length > 0)
+				Verse += segments[segments.Length - 1];
+		}
+
 		/// <summary>
 		/// Get the segment from the verse.
 		/// </summary>
 		/// <param name="validSegments">valid segments defined for the language or null if not defined or available</param>
 		/// <returns>validated segment (according to default segments or versification, if available for verse);
 		/// empty string if no segment or if segment did not validate</returns>
+		[PublicAPI]
 		public string Segment(string[] validSegments)
 		{
 			string seg = Segment();
@@ -420,6 +437,7 @@ namespace SIL.Scripture
 		/// Get segment from verse string.
 		/// </summary>
 		/// <returns>non-validated segment, or empty string if no segment found</returns>
+		[PublicAPI]
 		public string Segment()
 		{
 			if (string.IsNullOrEmpty(verse) || !char.IsDigit(verse[0]))
@@ -459,6 +477,7 @@ namespace SIL.Scripture
 		/// Returns verse ref with no bridging, but maintaining segments like "1a".
 		/// </summary>
 		/// <returns></returns>
+		[PublicAPI]
 		public VerseRef UnBridge()
 		{
 			return AllVerses().FirstOrDefault();
@@ -478,7 +497,7 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Gets or sets the versification of the reference.
 		/// Setting this value does not attempt to convert between
-		/// versifications. To do so, use the ChangeVersification function
+		/// versifications. To do so, use one of the ChangeVersification methods
 		/// </summary>
 		[XmlIgnore]
 		public ScrVers Versification
@@ -498,6 +517,7 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Get the valid status for this reference.
 		/// </summary>
+		[PublicAPI]
 		public ValidStatusType ValidStatus
 		{
 			get { return ValidateVerse(verseRangeSeparators, verseSequenceIndicators); }
@@ -537,6 +557,7 @@ namespace SIL.Scripture
 		/// Attempts to change the versification to the specified versification
 		/// </summary>
 		/// <param name="newVersification">new versification to use</param>
+		[PublicAPI]
 		public void ChangeVersification(ScrVers newVersification)
 		{
 			if (!HasMultiple)
@@ -553,6 +574,7 @@ namespace SIL.Scripture
 		/// Change the versification of an entry with Verse like 1-3 or 1,3a.
 		/// Can't really work in the most general case because the verse parts could become separate chapters.
 		/// </summary>
+		[PublicAPI]
 		public bool ChangeVersificationWithRanges(ScrVers newVersification)
 		{
 			VerseRef temp;
@@ -609,6 +631,7 @@ namespace SIL.Scripture
 		/// </summary>
 		/// <param name="verseStr">string to parse e.g. "MAT 3:11"</param>
 		/// <exception cref="VerseRefException"></exception>
+		[PublicAPI]
 		public void Parse(string verseStr)
 		{
 			verseStr = verseStr.Replace(rtlMark, "");
@@ -683,7 +706,7 @@ namespace SIL.Scripture
 		/// so lets leave this public.
 		/// </summary>
 		/// <exception cref="VerseRefException">If BookNum is set to an invalid value</exception>
-		[XmlIgnore()]
+		[XmlIgnore]
 		public int BookNum
 		{
 			get { return bookNum; }
@@ -699,7 +722,7 @@ namespace SIL.Scripture
 		/// Gets chapter number. -1 if not valid
 		/// </summary>
 		/// <exception cref="VerseRefException">If ChapterNum is negative</exception>
-		[XmlIgnore()]
+		[XmlIgnore]
 		public int ChapterNum
 		{
 			get { return chapterNum; }
@@ -715,7 +738,7 @@ namespace SIL.Scripture
 		/// Gets verse start number. -1 if not valid
 		/// </summary>
 		/// <exception cref="VerseRefException">If VerseNum is negative</exception>
-		[XmlIgnore()]
+		[XmlIgnore]
 		public int VerseNum
 		{
 			get { return verseNum; }
@@ -727,7 +750,6 @@ namespace SIL.Scripture
 				verse = null;
 			}
 		}
-
 
 		// ---------- BOOK NEXT AND PREVIOUS ----------
 
@@ -781,8 +803,8 @@ namespace SIL.Scripture
 		}
 
 		// ---------- CHAPTER NEXT AND PREVIOUS ----------
-
-		public bool NextChapter(BookSet present, bool skipExcluded = false)
+		[PublicAPI]
+		public bool NextChapter(BookSet present, bool skipExcluded)
 		{
 			// If current book doesn't exist, try jump to next.
 			if (!present.IsSelected(bookNum))
@@ -806,6 +828,11 @@ namespace SIL.Scripture
 			}
 
 			return true;
+		}
+
+		public bool NextChapter(BookSet present)
+		{
+			return NextChapter(present, false);
 		}
 
 		public bool NextChapter()
@@ -854,6 +881,7 @@ namespace SIL.Scripture
 		/// Moves to the next verse (or verse segment, if available in the current versification).
 		/// </summary>
 		/// <returns>true if successful, false if at end of scripture</returns>
+		[PublicAPI]
 		public bool NextVerse(BookSet present, bool skipExcluded)
 		{
 			// avoid incrementing through a blank book
@@ -1051,6 +1079,7 @@ namespace SIL.Scripture
 		/// <param name="other">the other VerseRef to compare to this one</param>
 		/// <param name="compareAllVerses">if <c>true</c>, compare both the starting and, if it exists, 
 		/// the ending verse in a verse bridge; if <c>false</c> compare only the first verse number in a bridge</param>
+		[PublicAPI]
 		public int CompareTo(VerseRef other, bool compareAllVerses)
 		{
 			return CompareTo(other, null, compareAllVerses, true);
@@ -1067,6 +1096,7 @@ namespace SIL.Scripture
 		/// <param name="compareSegments">if set to <c>true</c> compare segments; <c>false</c> to ignore 
 		/// segment differences.</param>
 		/// <returns></returns>
+		[PublicAPI]
 		public int CompareTo(VerseRef other, string[] segmentOrder, bool compareAllVerses, bool compareSegments)
 		{
 			if (other.Versification != Versification)
@@ -1144,7 +1174,7 @@ namespace SIL.Scripture
 		/// <summary>
 		/// GetVerses gets a list of verses from the verses specified in this VerseRef.
 		/// </summary>
-		internal List<int> GetVerses()
+		private List<int> GetVerses()
 		{
 			// Get verses from the verse strings
 			List<int> verseList = new List<int>();
@@ -1494,6 +1524,7 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Determines if the verse string is in a valid format (does not consider versification).
 		/// </summary>
+		[PublicAPI]
 		public static bool IsVerseParseable(string verse)
 		{
 			return verse.Length != 0 && char.IsDigit(verse[0]) && verse[verse.Length - 1] != verseRangeSeparator &&
@@ -1506,6 +1537,7 @@ namespace SIL.Scripture
 		/// <param name="str">The string to attempt to parse</param>
 		/// <param name="vref">The result of the parse if successful, or null if it failed</param>
 		/// <returns>True if the specified string was successfully parsed, false otherwise</returns>
+		[PublicAPI]
 		public static bool TryParse(string str, out VerseRef vref)
 		{
 			try
@@ -1520,11 +1552,10 @@ namespace SIL.Scripture
 			}
 		}
 
-		#endregion
-
 		/// <summary>
 		/// Validates a verse number using the supplied separators rather than the defaults.
 		/// </summary>
+		[PublicAPI]
 		public ValidStatusType ValidateVerse(string[] verseRangeSeparators, string[] verseSequenceSeparators)
 		{
 			if (string.IsNullOrEmpty(verse))
@@ -1545,8 +1576,22 @@ namespace SIL.Scripture
 				prevVerse = bbbcccvvv;
 			}
 			return ValidStatusType.Valid; // TODO: make Valid tests Valid Status tests
-
 		}
+
+		#endregion
+
+		#region IScrVerseRef-specific implementation
+		public IScrVerseRef Create(string book, string chapter, string verse)
+		{
+			return new VerseRef(book, chapter, verse, Versification);
+		}
+
+		IScrVerseRef IScrVerseRef.Clone() => Clone();
+
+		IScrVerseRef IScrVerseRef.UnBridge() => UnBridge();
+
+		public bool VersificationHasVerseSegments => Versification.HasVerseSegments;
+		#endregion
 	}
 
 	#region VerseRefException class

@@ -18,18 +18,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- [SIL.Core] Utility methods to remove XML namespaces
+- [SIL.Core.Desktop] Serializable class `UpdateSettings` (settings for getting updates)
 - [SIL.Windows.Forms] `CssLinkHref` property to `ShowReleaseNotesDialog` to allow linking to CSS file for
     displaying Markdown output.
+- [SIL.Scripture] IScrVerseRef interface (largely extracted from VerseRef)
 
 ### Changed
 
 - [SIL.WritingSystems] Update langtags.json to the latest
+- [SIL.Scripture] Made VerseRef class implement new IScrVerseRef interface
+- [SIL.Forms.Scripture] Changed VerseControl to use IScrVerseRef and not depend directly on ScrVers
 
 ### Fixed
 
 - [SIL.Windows.Forms] Fix bug where changing ImageCollection search language too soon could crash.
 - [SIL.Windows.Forms] Fix bug where image license could not be changed from Creative Commons.
 - [SIL.Windows.Forms] Fix bug where PalasoImage disposes of its Image prematurely
+- [SIL.Windows.Forms] Save non-CC licenses properly in images
 - [SIL.Windows.Forms.Keyboarding] Avoid crashes in cases where Ibus connection dropped
 - [SIL.WritingSystems] Fix case mismatch with needsCompiling attribute
 
