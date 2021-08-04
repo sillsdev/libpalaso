@@ -9,7 +9,7 @@ namespace SIL.Windows.Forms.DblBundle
 	public abstract class SelectProjectDlgBase : IDisposable
 	{
 		private OpenFileDialog m_fileDialog;
-		private var defaultDir;
+		private string m_defaultDir;
 
 		protected abstract string DefaultBundleDirectory { get; set; }
 		protected abstract string ProjectFileExtension { get; }
@@ -19,15 +19,15 @@ namespace SIL.Windows.Forms.DblBundle
 		protected SelectProjectDlgBase(bool allowProjectFiles = true, string defaultFile = null)
 		{
 			FileName = File.Exists(defaultFile) ? Path.GetFileName(defaultFile) : null;
-			defaultDir = (defaultFile != null ? Path.GetDirectoryName(defaultFile) : DefaultBundleDirectory);
+			m_defaultDir = (defaultFile != null ? Path.GetDirectoryName(defaultFile) : DefaultBundleDirectory);
 
 		}
 
 		protected virtual OpenFileDialog CreateFileDialog()
 		{
-			if (string.IsNullOrEmpty(defaultDir) || !Directory.Exists(defaultDir))
+			if (string.IsNullOrEmpty(m_defaultDir) || !Directory.Exists(m_defaultDir))
 			{
-				defaultDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+				m_defaultDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 			}
 			string projectFiles = "";
 			if (allowProjectFiles)
@@ -37,7 +37,7 @@ namespace SIL.Windows.Forms.DblBundle
 			m_fileDialog = new OpenFileDialog
 			{
 				Title = Title,
-				InitialDirectory = defaultDir,
+				InitialDirectory = m_defaultDir,
 				FileName = FileName,
 				Filter = string.Format("{0} ({1})|{1}|{2}{3} ({4})|{4}",
 					LocalizationManager.GetString("DialogBoxes.SelectProjectDlg.ResourceBundleFileTypeLabel", "Text Resource Bundle files"),
