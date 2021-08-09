@@ -400,7 +400,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizingId(this._publicDomainCC0, "MetadataEditor.PublicDomain");
 			this._publicDomainCC0.Location = new System.Drawing.Point(53, 413);
 			this._publicDomainCC0.Name = "_publicDomainCC0";
-			this._publicDomainCC0.Size = new System.Drawing.Size(226, 33);
+			this._publicDomainCC0.Size = new System.Drawing.Size(226, 35);
 			this._publicDomainCC0.TabIndex = 30;
 			this._publicDomainCC0.TabStop = true;
 			this._publicDomainCC0.Text = "The copyright holder waives all rights";
@@ -503,10 +503,10 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizableToolTip(this._linkToPublicDomainCC0, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._linkToPublicDomainCC0, "{0} is replaced by an untranslatable abbreviation functioning as an adjective");
 			this._L10NSharpExtender.SetLocalizingId(this._linkToPublicDomainCC0, "MetadataEditor.linkToPublicDomainCC0");
-			this._linkToPublicDomainCC0.Location = new System.Drawing.Point(283, 413);
+			this._linkToPublicDomainCC0.Location = new System.Drawing.Point(285, 416);
 			this._linkToPublicDomainCC0.Multiline = true;
 			this._linkToPublicDomainCC0.Name = "_linkToPublicDomainCC0";
-			this._linkToPublicDomainCC0.Size = new System.Drawing.Size(180, 13);
+			this._linkToPublicDomainCC0.Size = new System.Drawing.Size(175, 33);
 			this._linkToPublicDomainCC0.TabIndex = 31;
 			this._linkToPublicDomainCC0.TabStop = false;
 			this._linkToPublicDomainCC0.Text = "about {0} Public Domain";
