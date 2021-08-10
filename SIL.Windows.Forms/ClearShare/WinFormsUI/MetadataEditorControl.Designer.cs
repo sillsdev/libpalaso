@@ -104,19 +104,18 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this.panel1.Controls.Add(this._derivatives);
 			this.panel1.Location = new System.Drawing.Point(70, 266);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(413, 67);
+			this.panel1.Size = new System.Drawing.Size(413, 83);
 			this.panel1.TabIndex = 3;
 			// 
 			// _shareAlike
 			// 
-			this._shareAlike.AutoSize = true;
 			this._shareAlike.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._L10NSharpExtender.SetLocalizableToolTip(this._shareAlike, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._shareAlike, null);
 			this._L10NSharpExtender.SetLocalizingId(this._shareAlike, "MetadataEditor.YesShareAlike");
 			this._shareAlike.Location = new System.Drawing.Point(3, 25);
 			this._shareAlike.Name = "_shareAlike";
-			this._shareAlike.Size = new System.Drawing.Size(194, 19);
+			this._shareAlike.Size = new System.Drawing.Size(390, 35);
 			this._shareAlike.TabIndex = 1;
 			this._shareAlike.TabStop = true;
 			this._shareAlike.Text = "Yes, as long as others share alike";
@@ -130,7 +129,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizableToolTip(this._noDerivates, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._noDerivates, null);
 			this._L10NSharpExtender.SetLocalizingId(this._noDerivates, "Common.No");
-			this._noDerivates.Location = new System.Drawing.Point(3, 47);
+			this._noDerivates.Location = new System.Drawing.Point(3, 63);
 			this._noDerivates.Name = "_noDerivates";
 			this._noDerivates.Size = new System.Drawing.Size(41, 19);
 			this._noDerivates.TabIndex = 2;
@@ -226,7 +225,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizationComment(this._licenseImage, null);
 			this._L10NSharpExtender.SetLocalizationPriority(this._licenseImage, L10NSharp.LocalizationPriority.NotLocalizable);
 			this._L10NSharpExtender.SetLocalizingId(this._licenseImage, "MetadataEditor.MetadataEditorControl._licenseImage");
-			this._licenseImage.Location = new System.Drawing.Point(67, 363);
+			this._licenseImage.Location = new System.Drawing.Point(67, 379);
 			this._licenseImage.Name = "_licenseImage";
 			this._licenseImage.Size = new System.Drawing.Size(124, 40);
 			this._licenseImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -257,7 +256,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizableToolTip(this._unknownLicense, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._unknownLicense, null);
 			this._L10NSharpExtender.SetLocalizingId(this._unknownLicense, "MetadataEditor.UnknownLicense");
-			this._unknownLicense.Location = new System.Drawing.Point(53, 448);
+			this._unknownLicense.Location = new System.Drawing.Point(53, 464);
 			this._unknownLicense.Name = "_unknownLicense";
 			this._unknownLicense.Size = new System.Drawing.Size(407, 35);
 			this._unknownLicense.TabIndex = 3;
@@ -274,7 +273,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizableToolTip(this._customLicense, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._customLicense, null);
 			this._L10NSharpExtender.SetLocalizingId(this._customLicense, "MetadataEditor.CustomLicense");
-			this._customLicense.Location = new System.Drawing.Point(53, 483);
+			this._customLicense.Location = new System.Drawing.Point(53, 499);
 			this._customLicense.Name = "_customLicense";
 			this._customLicense.Size = new System.Drawing.Size(67, 19);
 			this._customLicense.TabIndex = 4;
@@ -292,7 +291,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizationComment(this._customRightsStatement, null);
 			this._L10NSharpExtender.SetLocalizationPriority(this._customRightsStatement, L10NSharp.LocalizationPriority.NotLocalizable);
 			this._L10NSharpExtender.SetLocalizingId(this._customRightsStatement, "MetadataEditor.MetadataEditorControl._customRightsStatement");
-			this._customRightsStatement.Location = new System.Drawing.Point(74, 530);
+			this._customRightsStatement.Location = new System.Drawing.Point(74, 546);
 			this._customRightsStatement.Multiline = true;
 			this._customRightsStatement.Name = "_customRightsStatement";
 			this._customRightsStatement.Size = new System.Drawing.Size(389, 54);
@@ -382,7 +381,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizableToolTip(this._useIGOLicenseVersion, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._useIGOLicenseVersion, null);
 			this._L10NSharpExtender.SetLocalizingId(this._useIGOLicenseVersion, "MetadataEditor.CreativeCommons.Intergovernmental");
-			this._useIGOLicenseVersion.Location = new System.Drawing.Point(74, 338);
+			this._useIGOLicenseVersion.Location = new System.Drawing.Point(74, 354);
 			this._useIGOLicenseVersion.Name = "_useIGOLicenseVersion";
 			this._useIGOLicenseVersion.Size = new System.Drawing.Size(149, 17);
 			this._useIGOLicenseVersion.TabIndex = 2;
@@ -398,7 +397,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizableToolTip(this._publicDomainCC0, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._publicDomainCC0, null);
 			this._L10NSharpExtender.SetLocalizingId(this._publicDomainCC0, "MetadataEditor.PublicDomain");
-			this._publicDomainCC0.Location = new System.Drawing.Point(53, 413);
+			this._publicDomainCC0.Location = new System.Drawing.Point(53, 429);
 			this._publicDomainCC0.Name = "_publicDomainCC0";
 			this._publicDomainCC0.Size = new System.Drawing.Size(226, 35);
 			this._publicDomainCC0.TabIndex = 30;
@@ -419,11 +418,11 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizationComment(this._additionalRequestsLabel, "When you choose a Creative Commons License, this label shows over the text box at" +
         " the bottom.");
 			this._L10NSharpExtender.SetLocalizingId(this._additionalRequestsLabel, "MetadataEditor.additionalRequestsLabel");
-			this._additionalRequestsLabel.Location = new System.Drawing.Point(53, 512);
+			this._additionalRequestsLabel.Location = new System.Drawing.Point(53, 528);
 			this._additionalRequestsLabel.Multiline = true;
 			this._additionalRequestsLabel.Name = "_additionalRequestsLabel";
 			this._additionalRequestsLabel.ReadOnly = true;
-			this._additionalRequestsLabel.Size = new System.Drawing.Size(286, 13);
+			this._additionalRequestsLabel.Size = new System.Drawing.Size(202, 13);
 			this._additionalRequestsLabel.TabIndex = 5;
 			this._additionalRequestsLabel.TabStop = false;
 			this._additionalRequestsLabel.Text = "Additional Requests";
@@ -439,10 +438,10 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizableToolTip(this._linkToRefinedCreativeCommonsWarning, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._linkToRefinedCreativeCommonsWarning, resources.GetString("_linkToRefinedCreativeCommonsWarning.LocalizationComment"));
 			this._L10NSharpExtender.SetLocalizingId(this._linkToRefinedCreativeCommonsWarning, "MetadataEditor.linkToWarningAboutRefiningCreativeCommons");
-			this._linkToRefinedCreativeCommonsWarning.Location = new System.Drawing.Point(226, 508);
+			this._linkToRefinedCreativeCommonsWarning.Location = new System.Drawing.Point(258, 528);
 			this._linkToRefinedCreativeCommonsWarning.Multiline = true;
 			this._linkToRefinedCreativeCommonsWarning.Name = "_linkToRefinedCreativeCommonsWarning";
-			this._linkToRefinedCreativeCommonsWarning.Size = new System.Drawing.Size(237, 13);
+			this._linkToRefinedCreativeCommonsWarning.Size = new System.Drawing.Size(205, 13);
 			this._linkToRefinedCreativeCommonsWarning.TabIndex = 29;
 			this._linkToRefinedCreativeCommonsWarning.TabStop = false;
 			this._linkToRefinedCreativeCommonsWarning.Text = "Not Enforceable";
@@ -503,7 +502,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizableToolTip(this._linkToPublicDomainCC0, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._linkToPublicDomainCC0, "{0} is replaced by an untranslatable abbreviation functioning as an adjective");
 			this._L10NSharpExtender.SetLocalizingId(this._linkToPublicDomainCC0, "MetadataEditor.linkToPublicDomainCC0");
-			this._linkToPublicDomainCC0.Location = new System.Drawing.Point(285, 416);
+			this._linkToPublicDomainCC0.Location = new System.Drawing.Point(285, 432);
 			this._linkToPublicDomainCC0.Multiline = true;
 			this._linkToPublicDomainCC0.Name = "_linkToPublicDomainCC0";
 			this._linkToPublicDomainCC0.Size = new System.Drawing.Size(175, 33);
