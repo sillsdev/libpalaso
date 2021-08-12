@@ -10,6 +10,7 @@ namespace SIL.Windows.Forms.DblBundle
 	{
 		private OpenFileDialog m_fileDialog;
 		private string m_defaultDir;
+		private bool m_allowProjectFiles;
 
 		protected abstract string DefaultBundleDirectory { get; set; }
 		protected abstract string ProjectFileExtension { get; }
@@ -30,7 +31,7 @@ namespace SIL.Windows.Forms.DblBundle
 				m_defaultDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 			}
 			string projectFiles = "";
-			if (allowProjectFiles)
+			if (m_allowProjectFiles)
 				projectFiles = string.Format("{0} ({1})|{1}|",
 					string.Format(LocalizationManager.GetString("DialogBoxes.SelectProjectDlg.ProjectFilesLabel", "{0} Project Files", "{0} is the product name"), ProductName),
 					"*" + ProjectFileExtension);
