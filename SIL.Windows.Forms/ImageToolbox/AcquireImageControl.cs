@@ -410,7 +410,9 @@ namespace SIL.Windows.Forms.ImageToolbox
 			{
 				SetMode(Modes.SingleImage);
 			}
-
+			// This control can get loaded when the overall dialog is being disposed.
+			// See https://issues.bloomlibrary.org/youtrack/issue/BL-10314 if you don't believe me.
+			Load -= new EventHandler(AcquireImageControl_Load);
 		}
 
 		/// <summary>
