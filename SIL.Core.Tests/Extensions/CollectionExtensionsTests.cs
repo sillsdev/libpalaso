@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using SIL.Extensions;
 
@@ -21,7 +22,7 @@ namespace SIL.Tests.Extensions
 		}
 
 		[Test]
-		public void Sort_UsingIComparer()
+		public void Sort_UsingOrdinalIComparer()
 		{
 			IList<string> list = GetUnsortedList();
 			list.Sort(new MyStringComparer());
@@ -30,6 +31,18 @@ namespace SIL.Tests.Extensions
 			Assert.AreEqual("B", list[1]);
 			Assert.AreEqual("C", list[2]);
 			Assert.AreEqual("D", list[3]);
+		}
+
+		[Test]
+		public void Sort_UsingPointOfArticulationIComparer()
+		{
+			IList<string> list = GetUnsortedList();
+			list.Sort(new EnglishPlaceOfArticulationComparer());
+			Assert.AreEqual(4, list.Count);
+			Assert.AreEqual("B", list[0]);
+			Assert.AreEqual("D", list[1]);
+			Assert.AreEqual("C", list[2]);
+			Assert.AreEqual("A", list[3]);
 		}
 
 		private IList<string> GetUnsortedList()
@@ -126,6 +139,35 @@ namespace SIL.Tests.Extensions
 
 			Assert.IsFalse(new Dictionary<TstCmp, TstCmp> { { new TstCmp(1, 2), new TstCmp(3, 5) }, { new TstCmp(8, 9), new TstCmp(6, 7) } }
 				.KeyedSetsEqual(new Dictionary<TstCmp, TstCmp> { { new TstCmp(7, 0), new TstCmp(6, 7) }, { new TstCmp(1, 2), new TstCmp(3, 5) } }));
+		}
+
+		[TestCase(0)]
+		[TestCase(63)]
+		public void FirstOrDefault_ItemFound_SameAsLinqFirstOrDefault(int defVal)
+		{
+			var enumeration = new[] {1, 2, 3};
+			Func<int, bool> predicate = i => i % 2 == 0;
+
+			Assert.AreEqual(enumeration.FirstOrDefault(predicate), enumeration.FirstOrDefault(predicate, defVal));
+		}
+
+		[Test]
+		public void FirstOrDefault_ItemNotFoundDefaultDefVal_SameAsLinqFirstOrDefault()
+		{
+			var enumeration = new[] {1, 2, 3};
+			Func<int, bool> predicate = i => i > 100;
+
+			Assert.AreEqual(enumeration.FirstOrDefault(predicate), enumeration.FirstOrDefault(predicate, 0));
+		}
+
+		[TestCase(-1)]
+		[TestCase(100)]
+		public void FirstOrDefault_ItemNotFound_ReturnsDefaultVal(int defVal)
+		{
+			var enumeration = new[] {1, 2, 3};
+			Func<int, bool> predicate = i => i > 100;
+
+			Assert.AreEqual(defVal, enumeration.FirstOrDefault(predicate, defVal));
 		}
 
 		#region TstCmp class

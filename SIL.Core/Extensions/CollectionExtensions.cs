@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -145,6 +145,18 @@ namespace SIL.Extensions
 					yield return element;
 			}
 		}
+
+		/// <summary>
+		/// This was copied (and slightly modified) from:
+		/// https://stackoverflow.com/questions/50338199/indexof-with-custom-stringcomparer
+		/// and is used to implement <see cref="StringExtensions.IndexOf"/>
+		/// </summary>
+		/// <typeparam name="T">The type of the elements in the enumeration</typeparam>
+		/// <param name="src">The source enumeration</param>
+		/// <param name="predicate">The predicate which must be satisfied</param>
+		/// <param name="defval">The default value to be used if no element of the enumeration satisfies the predicate</param>
+		/// <returns></returns>
+		public static T FirstOrDefault<T>(this IEnumerable<T> src, Func<T, bool> predicate, T defval) => src.Where(predicate).DefaultIfEmpty(defval).First();
 
 		public static int GetSequenceHashCode<T>(this IEnumerable<T> source)
 		{

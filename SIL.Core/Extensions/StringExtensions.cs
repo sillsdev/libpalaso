@@ -8,14 +8,17 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using SIL.PlatformUtilities;
+using JetBrains.Annotations;
 using static System.Char;
 
 namespace SIL.Extensions
 {
 	public static class StringExtensions
 	{
+		[PublicAPI]
 		public const char kObjReplacementChar = '\uFFFC';
 
+		[PublicAPI]
 		public static List<string> SplitTrimmed(this string s, char separator)
 		{
 			if (s.Trim() == string.Empty)
@@ -41,6 +44,7 @@ namespace SIL.Extensions
 		/// Gets an int array from a comma-delimited string of numbers.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static int[] ToIntArray(this string str)
 		{
 			List<int> array = new List<int>();
@@ -50,8 +54,7 @@ namespace SIL.Extensions
 				string[] pieces = str.Split(',');
 				foreach (string piece in pieces)
 				{
-					int i;
-					if (int.TryParse(piece, out i))
+					if (int.TryParse(piece, out var i))
 						array.Add(i);
 				}
 			}
@@ -79,11 +82,12 @@ namespace SIL.Extensions
 				{
 					argList = argList + arg + ",";
 				}
-				argList = argList.Trim(new char[] {','});
+				argList = argList.Trim(',');
 				return "FormatWithErrorStringInsteadOfException(" + format + "," + argList + ") Exception: " + e.Message;
 			}
 		}
 
+		[PublicAPI]
 		public static string EscapeAnyUnicodeCharactersIllegalInXml(this string text)
 		{
 			//we actually want to preserve html markup, just escape the disallowed unicode characters
@@ -138,6 +142,7 @@ namespace SIL.Extensions
 		/// Similar to Path.Combine, but it combines as may parts as you have into a single, platform-appropriate path.
 		/// </summary>
 		/// <example> string path = "my".Combine("stuff", "toys", "ball.txt")</example>
+		[PublicAPI]
 		public static string CombineForPath(this string rootPath, params string[] partsOfThePath)
 		{
 			string result = rootPath;
@@ -171,6 +176,7 @@ namespace SIL.Extensions
 		/// <param name="input">the string to clean</param>
 		/// <param name="errorChar">the character which replaces bad characters</param>
 		/// <remarks>This is platform-specific.</remarks>
+		[PublicAPI]
 		public static string SanitizeFilename(this string input, char errorChar) =>
 			SanitizeFilename(input, errorChar, false);
 
@@ -179,6 +185,7 @@ namespace SIL.Extensions
 		/// </summary>
 		/// <param name="input">the string to clean</param>
 		/// <param name="errorChar">the character which replaces bad characters</param>
+		[PublicAPI]
 		public static string SanitizePath(this string input, char errorChar)
 		{
 			var invalidPathChars = Path.GetInvalidPathChars();
@@ -306,6 +313,7 @@ namespace SIL.Extensions
 		/// Removes the ampersand accelerator prefix from the specified text.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static string RemoveAcceleratorPrefix(this string text)
 		{
 			text = text.Replace("&&", kObjReplacementChar.ToString(CultureInfo.InvariantCulture));
@@ -319,6 +327,7 @@ namespace SIL.Extensions
 		/// <param name="value"></param>
 		/// <param name="trimChars"></param>
 		/// <returns></returns>
+		[PublicAPI]
 		public static string NullTrim(this string value, char[] trimChars)
 		{
 			if (string.IsNullOrEmpty(value))
@@ -333,6 +342,7 @@ namespace SIL.Extensions
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
+		[PublicAPI]
 		public static string NullTrim(this string value)
 		{
 			return value.NullTrim(null);
@@ -341,6 +351,7 @@ namespace SIL.Extensions
 		/// <summary>
 		/// Determines whether the string contains the specified string using the specified comparison.
 		/// </summary>
+		[PublicAPI]
 		public static bool Contains(this String stringToSearch, String stringToFind, StringComparison comparison)
 		{
 			int ind = stringToSearch.IndexOf(stringToFind, comparison); //This comparer should be extended to be "-"/"_" insensitive as well.
@@ -350,6 +361,7 @@ namespace SIL.Extensions
 		/// <summary>
 		/// Determines whether the list of string contains the specified string using the specified comparison.
 		/// </summary>
+		[PublicAPI]
 		public static bool Contains(this IEnumerable<string> listToSearch, string itemToFind, StringComparison comparison)
 		{
 			foreach (string s in listToSearch)
@@ -363,8 +375,30 @@ namespace SIL.Extensions
 		}
 
 		/// <summary>
+		/// Overload of IndexOf that takes a custom IComparer<String> and considers all
+		/// substrings of source to find a match
+		/// https://stackoverflow.com/questions/50338199/indexof-with-custom-stringcomparer
+		/// </summary>
+		/// <param name="source">The source string to search</param>
+		/// <param name="match">The string to look for within the target string</param>
+		/// <param name="sc">the comparer to use to determine equality</param>
+		/// <returns>The index of the first match or -1 if no matching substring is found</returns>
+		[PublicAPI]
+		public static int IndexOf(this string source, string match, IComparer<String> sc) {
+			return Enumerable.Range(0, source.Length) // for each position in the string
+				.FirstOrDefault(i => // find the first position where either
+						// match is Equal at this position for length of match (or to end of string) or
+						sc.Compare(source.Substring(i, Math.Min(match.Length, source.Length-i)), match) == 0 ||
+						// match is Equal to one of the substrings beginning at this position
+						Enumerable.Range(1, source.Length-i).Any(ml => sc.Compare(source.Substring(i, ml), match) == 0),
+					-1 // else return -1 if no position matches
+				);
+		}
+
+		/// <summary>
 		/// Removes diacritics from the specified string
 		/// </summary>
+		[PublicAPI]
 		public static string RemoveDiacritics(this string stIn)
 		{
 			string stFormD = stIn.Normalize(NormalizationForm.FormD);

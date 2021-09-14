@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using SIL.Extensions;
 using static System.String;
 
@@ -162,6 +163,38 @@ namespace SIL.Tests.Extensions
 		{
 			var result = "1.3, 2.5, 3.6,".ToIntArray();
 			Assert.AreEqual(0, result.Length);
+		}
+
+		[TestCase("This is a fine string.", "s")]
+		[TestCase("This is a fine string.", "s is")]
+		[TestCase("This is his thistle.", "his")]
+		[TestCase("THIS IS HIS THISTLE.", "his")]
+		[TestCase("This is not gonna have that.", "Not gonna find this!")]
+		[TestCase("This is not gonna have that.", "gonna_have")]
+		[TestCase("long", "longer")]
+		public void IndexOf_DefaultStringComparer_SameIndexAsNormalIndexOf(string s,
+			string search)
+		{
+			Assert.AreEqual(s.IndexOf(search, StringComparison.InvariantCulture),
+				s.IndexOf(search, StringComparer.InvariantCulture));
+			Assert.AreEqual(s.IndexOf(search, StringComparison.OrdinalIgnoreCase),
+				s.IndexOf(search, StringComparer.OrdinalIgnoreCase));
+			Assert.AreEqual(s.IndexOf(search, StringComparison.Ordinal),
+				s.IndexOf(search, StringComparer.Ordinal));
+		}
+
+		[TestCase("This is a fine string.", "s", ExpectedResult = 3)]
+		[TestCase("This is a fine string.", "is iz", ExpectedResult = 2)]
+		[TestCase("This is his thistle.", "his", ExpectedResult = 8)]
+		[TestCase("THIS IS HIS THISTLE.", "his", ExpectedResult = 8)]
+		[TestCase("Plug your mouth with a quick bubble.",
+			"Bsuc your pou\u03B8 wi\u03B8 a kwikk mumble.", ExpectedResult = 0)]
+		[TestCase("Plug your mouth", "mou\u03B8", ExpectedResult = 10)]
+		[TestCase("Plug your mouth", "mouse", ExpectedResult = -1)]
+		[TestCase("Short", "Shorter", ExpectedResult = -1)]
+		public int IndexOf_CustomStringComparer_FindsExpectedIndex(string s, string search)
+		{
+			return s.IndexOf(search, new EnglishPlaceOfArticulationComparer());
 		}
 
 		[TestCase("hello\u0300 world", "hello world")]
@@ -425,6 +458,94 @@ namespace SIL.Tests.Extensions
 
 			foreach (var orig in directorySeparators.Select(separator => $"{prefix}{separator}.."))
 				Assert.AreEqual(orig, orig.SanitizePath('_'));
+		}
+	}
+
+	/// ------------------------------------------------------------------------------------
+	/// <summary>
+	/// Note: this is just for fun for testing purposes. Obviously, different letters
+	/// make different sounds in different English words, so this will not produce
+	/// correct results for all English words.
+	/// </summary>
+	/// ------------------------------------------------------------------------------------
+	public class EnglishPlaceOfArticulationComparer : IComparer<String>
+	{
+		enum PlaceOfArticulation
+		{
+			Bilabial,
+			Alveolar,
+			Velar,
+			Labiodental,
+			Dental,
+			Postalveolar,
+			Retroflex,
+			Palatal,
+			LabialVelar,
+			Glottal,
+			VowelA,
+			VowelE,
+			VowelI,
+			VowelO,
+			VowelU,
+		}
+
+		private static readonly Dictionary<char, PlaceOfArticulation> s_dict =
+			new Dictionary<char, PlaceOfArticulation>(28);
+
+		static EnglishPlaceOfArticulationComparer()
+		{
+			s_dict['a'] = PlaceOfArticulation.VowelA;
+			s_dict['b'] = PlaceOfArticulation.Bilabial;
+			s_dict['c'] = PlaceOfArticulation.Velar;
+			s_dict['d'] = PlaceOfArticulation.Alveolar;
+			s_dict['e'] = PlaceOfArticulation.VowelE;
+			s_dict['f'] = PlaceOfArticulation.Labiodental;
+			s_dict['g'] = PlaceOfArticulation.Velar;
+			s_dict['h'] = PlaceOfArticulation.Glottal;
+			s_dict['i'] = PlaceOfArticulation.VowelI;
+			s_dict['j'] = PlaceOfArticulation.Postalveolar;
+			s_dict['k'] = PlaceOfArticulation.Velar;
+			s_dict['l'] = PlaceOfArticulation.Alveolar;
+			s_dict['m'] = PlaceOfArticulation.Bilabial;
+			s_dict['n'] = PlaceOfArticulation.Alveolar;
+			s_dict['\u0148'] = PlaceOfArticulation.Velar;
+			s_dict['o'] = PlaceOfArticulation.VowelO;
+			s_dict['p'] = PlaceOfArticulation.Bilabial;
+			s_dict['q'] = PlaceOfArticulation.Velar;
+			s_dict['r'] = PlaceOfArticulation.Retroflex;
+			s_dict['s'] = PlaceOfArticulation.Alveolar;
+			s_dict['t'] = PlaceOfArticulation.Alveolar;
+			s_dict['\u03B8'] = PlaceOfArticulation.Dental;
+			s_dict['u'] = PlaceOfArticulation.VowelU;
+			s_dict['v'] = PlaceOfArticulation.Labiodental;
+			s_dict['w'] = PlaceOfArticulation.LabialVelar;
+			s_dict['y'] = PlaceOfArticulation.Palatal;
+			s_dict['z'] = PlaceOfArticulation.Alveolar;
+			s_dict['\u0283'] = PlaceOfArticulation.Postalveolar;
+		}
+
+		public int Compare(string x, string y)
+		{
+			x = x.ToLowerInvariant().Replace("ng", "\u0148").Replace("th", "\u03B8")
+				.Replace("sh", "\u0283").Replace("ch", "\u0283").Replace("x", "ks")
+				.Replace("qu", "kw");
+			y = y.ToLowerInvariant().Replace("ng", "\u0148").Replace("th", "\u03B8")
+				.Replace("sh", "\u0283").Replace("ch", "\u0283").Replace("x", "ks")
+				.Replace("qu", "kw");
+			int iX = 0, iY = 0;
+			while (iX < x.Length && iY < y.Length)
+			{
+				var chX = x[iX++];
+				var chY = y[iY++];
+
+				var comparison = char.IsLetter(chX) && char.IsLetter(chY)
+					? s_dict[chX].CompareTo(s_dict[chY]) : chX.CompareTo(chY);
+
+				if (comparison != 0)
+					return comparison;
+			}
+
+			return x.Length.CompareTo(y.Length);
 		}
 	}
 }
