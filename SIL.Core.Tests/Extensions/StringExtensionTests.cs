@@ -60,7 +60,7 @@ namespace SIL.Tests.Extensions
 		[Test]
 		public void EscapeAnyUnicodeCharactersIllegalInXml_HasMixOfXmlAndIllegalChars_GivesXmlWithEscapedChars()
 		{
-			var s  ="This <span href=\"reference\">is well \u001F formed</span> XML!";
+			var s = "This <span href=\"reference\">is well \u001F formed</span> XML!";
 			Assert.AreEqual("This <span href=\"reference\">is well &#x1F; formed</span> XML!",
 				s.EscapeAnyUnicodeCharactersIllegalInXml());
 		}
@@ -78,7 +78,7 @@ namespace SIL.Tests.Extensions
 //			writer.WriteElementString("x", x.InnerText);
 //
 //			writer.WriteNode(z);
-		 }
+		}
 
 		[Test]
 		public void Format_NormalSafeString_GivesSameAsStringFormat()
@@ -92,6 +92,7 @@ namespace SIL.Tests.Extensions
 		{
 			Assert.That("{node}".FormatWithErrorStringInsteadOfException().Equals("{node}"));
 		}
+
 		[Test]
 		public void Format_UnSafeString_GivesErrorString()
 		{
@@ -101,23 +102,27 @@ namespace SIL.Tests.Extensions
 		[Test]
 		public void ToUpperFirstLetter_Empty_EmptyString()
 		{
-			Assert.AreEqual("","".ToUpperFirstLetter());
+			Assert.AreEqual("", "".ToUpperFirstLetter());
 		}
+
 		[Test]
 		public void ToUpperFirstLetter_OneCharacter_UpperCase()
 		{
 			Assert.AreEqual("X", "x".ToUpperFirstLetter());
 		}
+
 		[Test]
 		public void ToUpperFirstLetter_Digit_ReturnsSame()
 		{
 			Assert.AreEqual("1abc", "1abc".ToUpperFirstLetter());
 		}
+
 		[Test]
 		public void ToUpperFirstLetter_AlreadyUpper_ReturnsSame()
 		{
 			Assert.AreEqual("Abc", "Abc".ToUpperFirstLetter());
 		}
+
 		[Test]
 		public void ToUpperFirstLetter_typical_MakesUppercase()
 		{
@@ -180,7 +185,7 @@ namespace SIL.Tests.Extensions
 
 		private static IEnumerable<char> GetInvalidFilenameCharacters() =>
 			System.IO.Path.GetInvalidFileNameChars();
-		
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Tests that we get a valid filename when the filename contains invalid characters.
