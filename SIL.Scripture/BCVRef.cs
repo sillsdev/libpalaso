@@ -630,8 +630,13 @@ namespace SIL.Scripture
 		public static string MakeReferenceString(BCVRef startRef, BCVRef endRef,
 			string chapterVerseSeparator, string verseBridge, bool supressChapterForIntroMatter)
 		{
-			return MakeReferenceString(NumberToBookCode(startRef.Book), startRef, endRef,
-				chapterVerseSeparator, verseBridge, supressChapterForIntroMatter);
+			if (endRef == null || endRef.Book == -1 || startRef.Book == endRef.Book)
+			{
+				return MakeReferenceString(NumberToBookCode(startRef.Book), startRef, endRef,
+					chapterVerseSeparator, verseBridge, supressChapterForIntroMatter);
+			}
+
+			return startRef + verseBridge + endRef;
 		}
 
 		/// ------------------------------------------------------------------------------------
