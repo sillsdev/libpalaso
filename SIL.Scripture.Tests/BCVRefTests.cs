@@ -545,11 +545,12 @@ namespace SIL.Scripture.Tests
 				null, ";", "-", true));
 		}
 
-		[Test]
-		public void MakeReferenceString_DifferentBooks()
+		[TestCase(":", "-", ExpectedResult = "MRK 10:6-JHN 3:16")]
+		[TestCase(".", "~", ExpectedResult = "MRK 10.6~JHN 3.16")]
+		public string MakeReferenceString_DifferentBooks(string cvSeparator, string bridge)
 		{
-			Assert.AreEqual("MRK 10:6-JHN 3:16", BCVRef.MakeReferenceString(new BCVRef(41, 10, 6),
-				new BCVRef(43, 3, 16), ":", "-", true));
+			return BCVRef.MakeReferenceString(new BCVRef(41, 10, 6),
+				new BCVRef(43, 3, 16), cvSeparator, bridge, true);
 		}
 
 		/// ------------------------------------------------------------------------------------

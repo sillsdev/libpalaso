@@ -1,19 +1,20 @@
 // ---------------------------------------------------------------------------------------------
-#region // Copyright (c) 2014, SIL International.
-// <copyright from='2005' to='2014' company='SIL International'>
-//		Copyright (c) 2014, SIL International.   
+#region // Copyright (c) 2021, SIL International.
+// <copyright from='2005' to='2021' company='SIL International'>
+//		Copyright (c) 2021, SIL International.   
 //	
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
 // </copyright> 
 #endregion
 // 
 // This class originated in FieldWorks (under the GNU Lesser General Public License), but we
-// have decided to make it avaialble in SIL.Scripture as part of Palaso so it will be more
+// have decided to make it available in SIL.Scripture as part of Palaso so it will be more
 // readily available to other projects.
 // ---------------------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using JetBrains.Annotations;
 
 namespace SIL.Scripture
 {
@@ -33,7 +34,7 @@ namespace SIL.Scripture
 		{
 			get
 			{
-				return new string[] {
+				return new [] {
 					"GEN", "EXO", "LEV", "NUM", "DEU", "JOS", "JDG", "RUT", "1SA", "2SA",
 					"1KI", "2KI", "1CH", "2CH", "EZR", "NEH", "EST", "JOB", "PSA", "PRO",
 					"ECC", "SNG", "ISA", "JER", "LAM", "EZK", "DAN", "HOS", "JOL", "AMO",
@@ -53,7 +54,7 @@ namespace SIL.Scripture
 		{
 			get
 			{
-				return new string[] {"GE","EX","LV","NU","DU","JO","JD",
+				return new [] {"GE","EX","LV","NU","DU","JO","JD",
 					"RU","1S","2S","1K","2K","3K","4K","EZ","NE","ES","JB","PA","PR",
 					"EC","SO","IS","JR","LA","EK","DA","HO","JL","AM","OB","JH","MI",
 					"NA","HA","ZP","HG","ZC","MA",
@@ -76,7 +77,7 @@ namespace SIL.Scripture
 			new List<string>(SilBooks.Codes_3Letter);
 
 		protected static readonly List<string> s_DeuterocanonicalBookCodes =
-			new List<string>(new string[]
+			new List<string>(new []
 		{
 			"TOB", "JDT", "ESG", "WIS", "SIR", "BAR", "LJE", "S3Y", "SUS", "BEL",
 			"1MA", "2MA", "3MA", "4MA", "1ES", "2ES", "MAN", "PS2", "ODA", "PSS",
@@ -172,10 +173,8 @@ namespace SIL.Scripture
 		/// Gets an instance representing an "empty" reference.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static BCVRef Empty
-		{
-			get { return new BCVRef(); }
-		}
+		[PublicAPI]
+		public static BCVRef Empty => new BCVRef();
 
 		#region Operators
 		/// ------------------------------------------------------------------------------------
@@ -194,7 +193,7 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Implicit conversion of an integer to a <see cref="BCVRef"/>.
 		/// </summary>
-		/// <param name="nBCV">The integer representing a Scripture Reference as a BBCCVVV value
+		/// <param name="nBCV">The integer representing a Scripture Reference as a BBCCCVVV value
 		/// </param>
 		/// <returns>A <see cref="BCVRef"/></returns>
 		/// ------------------------------------------------------------------------------------
@@ -260,9 +259,9 @@ namespace SIL.Scripture
 		/// ------------------------------------------------------------------------------------
 		protected static bool AreEqual(BCVRef left, BCVRef right)
 		{
-			if ((object)left == null && (object)right == null)
+			if (left == null && right == null)
 				return true;
-			else if ((object)left == null || (object)right == null)
+			if (left == null || right == null)
 				return false;
 			return left.CompareTo(right) == 0;
 		}
@@ -544,7 +543,9 @@ namespace SIL.Scripture
 		/// Returns the verse reference as a string
 		/// </summary>
 		/// <param name="format">The format.</param>
+		/// number</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public string ToString(RefStringFormat format)
 		{
 			return ToString(BBCCCVVV, format);
@@ -554,8 +555,23 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Returns the verse reference as a string
 		/// </summary>
+		/// <param name="format">The format.</param>
+		/// <param name="chapterVerseSeparator">Character(s) used to delimit the chapter and verse
+		/// number</param>
+		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
+		public string ToString(RefStringFormat format, string chapterVerseSeparator)
+		{
+			return ToString(BBCCCVVV, format, chapterVerseSeparator);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Returns the verse reference as a string
+		/// </summary>
 		/// <param name="bcv">The book-chapter-verse representation of a reference</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static string ToString(int bcv)
 		{
 			return ToString(bcv, RefStringFormat.General);
@@ -570,7 +586,23 @@ namespace SIL.Scripture
 		/// of using a format to facilitate exchange (e.g., XML).</param>
 		/// <returns></returns>
 		/// ------------------------------------------------------------------------------------
-		public static string ToString(int bcv, RefStringFormat format)
+		[PublicAPI]
+		public static string ToString(int bcv, RefStringFormat format) =>
+			ToString(bcv, format, ":");
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Returns the verse reference as a string
+		/// </summary>
+		/// <param name="bcv">The book-chapter-verse representation of a reference</param>
+		/// <param name="format">Indicates whether to format the reference for general purposes
+		/// of using a format to facilitate exchange (e.g., XML).</param>
+		/// <param name="chapterVerseSeparator">Character(s) used to delimit the chapter and verse
+		/// number</param>
+		/// <returns></returns>
+		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
+		public static string ToString(int bcv, RefStringFormat format, string chapterVerseSeparator)
 		{
 			string book = NumberToBookCode(GetBookFromBcv(bcv));
 			int chapter = GetChapterFromBcv(bcv);
@@ -585,7 +617,7 @@ namespace SIL.Scripture
 					goto default;
 
 				default:
-					return string.Format("{0} {1}:{2}", book, chapter, verse);
+					return string.Format($"{book} {chapter}{chapterVerseSeparator}{verse}");
 			}
 		}
 		#endregion
@@ -604,6 +636,7 @@ namespace SIL.Scripture
 		/// range</param>
 		/// <returns>The reference range as a formatted string.</returns>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static string MakeReferenceString(BCVRef startRef, BCVRef endRef,
 			string chapterVerseSeparator, string verseBridge)
 		{
@@ -627,6 +660,7 @@ namespace SIL.Scripture
 		/// chapter and verse is 1:0</param>
 		/// <returns>The reference range as a formatted string.</returns>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static string MakeReferenceString(BCVRef startRef, BCVRef endRef,
 			string chapterVerseSeparator, string verseBridge, bool supressChapterForIntroMatter)
 		{
@@ -636,7 +670,9 @@ namespace SIL.Scripture
 					chapterVerseSeparator, verseBridge, supressChapterForIntroMatter);
 			}
 
-			return startRef + verseBridge + endRef;
+			return startRef.ToString(RefStringFormat.General, chapterVerseSeparator) +
+				verseBridge +
+				endRef.ToString(RefStringFormat.General, chapterVerseSeparator);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -653,6 +689,7 @@ namespace SIL.Scripture
 		/// range</param>
 		/// <returns>The reference range as a formatted string.</returns>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static string MakeReferenceString(string bookName, BCVRef startRef,
 			BCVRef endRef, string chapterVerseSeparator, string verseBridge)
 		{
@@ -677,6 +714,7 @@ namespace SIL.Scripture
 		/// chapter and verse is 1:0</param>
 		/// <returns>The reference range as a formatted string.</returns>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static string MakeReferenceString(string bookName, BCVRef startRef,
 			BCVRef endRef, string chapterVerseSeparator, string verseBridge,
 			bool supressChapterForIntroMatter)
@@ -706,6 +744,7 @@ namespace SIL.Scripture
 		/// <c>null</c> to treat this as a chapter-only reference</param>
 		/// <returns>The reference range as a formatted string.</returns>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static string MakeReferenceString(BCVRef startRef, BCVRef endRef,
 			string chapterVerseSeparator, string verseBridge,
 			string literalTitleText, string literalIntroText)
@@ -736,6 +775,7 @@ namespace SIL.Scripture
 		/// <c>null</c> to treat this as a chapter-only reference</param>
 		/// <returns>The reference range as a formatted string.</returns>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static string MakeReferenceString(string bookName, BCVRef startRef,
 			BCVRef endRef, string chapterVerseSeparator, string verseBridge,
 			string literalTitleText, string literalIntroText)
@@ -802,7 +842,7 @@ namespace SIL.Scripture
 			if (literal == String.Empty)
 				return String.Empty;
 		
-			return " " + (literal != null ? literal : chapter.ToString());
+			return " " + (literal ?? chapter.ToString());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -816,6 +856,7 @@ namespace SIL.Scripture
 		/// <returns>0 if the left item is closest (or if they are equally close), 1 if the
 		/// right item is closest</returns>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public int ClosestTo(int left, int right)
 		{
 			int bbcccvvv = BBCCCVVV;
@@ -832,20 +873,21 @@ namespace SIL.Scripture
 		/// <remarks>This method is pretty similar to MultilingScrBooks.ParseRefString, but
 		/// it deals only with SIL codes.</remarks>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void Parse(string sTextToBeParsed)
 		{
 			// Get first token
-			string sTrimedText = sTextToBeParsed.TrimStart(null); // Trim all std white space
+			string sTrimmedText = sTextToBeParsed.TrimStart(null); // Trim all std white space
 
-			if (sTrimedText.Length < 3)
+			if (sTrimmedText.Length < 3)
 			{
 				// can't be a valid reference - set book to 0 and return
 				Book = 0;
 				return;
 			}
 
-			string sToken = sTrimedText.Substring(0, 3); // 3 letter SIL code
-			string sAfterToken = sTrimedText.Substring(3);
+			string sToken = sTrimmedText.Substring(0, 3); // 3 letter SIL code
+			string sAfterToken = sTrimmedText.Substring(3);
 
 			// Determine book number
 			m_book = BookToNumber(sToken);
