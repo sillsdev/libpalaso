@@ -594,7 +594,8 @@ namespace SIL.Scripture.Tests
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[TestCase(-1, 2, 3)]
-		[TestCase(1, 3, 2)]
+		[TestCase(1, 3, 0)]
+		[TestCase(1, 1, -1)]
 		[TestCase(1, -3, 2)]
 		public void EqualityOperator_LeftReferenceInvalid(int book, int chapter, int verse)
 		{
@@ -607,7 +608,8 @@ namespace SIL.Scripture.Tests
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[TestCase(-1, 2, 3)]
-		[TestCase(1, 3, 2)]
+		[TestCase(1, 3, 0)]
+		[TestCase(1, 1, -1)]
 		[TestCase(1, -3, 2)]
 		public void EqualityOperator_RightReferenceInvalid(int book, int chapter, int verse)
 		{
