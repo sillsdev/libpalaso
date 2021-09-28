@@ -17,7 +17,7 @@ before_build:
   - cmd: |
       set GitVersion_NoNormalizeEnabled=true
       set IGNORE_NORMALISATION_GIT_HEAD_MOVE=1
-      if defined APPVEYOR_PULL_REQUEST_NUMBER (git checkout -b PR-%APPVEYOR_PULL_REQUEST_NUMBER%) else (git checkout -b %APPVEYOR_REPO_BRANCH%)
+      if defined APPVEYOR_PULL_REQUEST_NUMBER (git checkout -B PR-%APPVEYOR_PULL_REQUEST_NUMBER%) else (git checkout -B %APPVEYOR_REPO_BRANCH%)
       gitversion /l console /output buildserver /nonormalize
 build:
   project: build/Palaso.proj
