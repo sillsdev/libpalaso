@@ -555,6 +555,120 @@ namespace SIL.Scripture.Tests
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
+		/// Tests the EqualityOperator when both references are null
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void EqualityOperator_BothNull()
+		{
+			// ReSharper disable once EqualExpressionComparison
+			// ReSharper disable once RedundantCast
+			Assert.IsTrue((BCVRef)null == (BCVRef)null);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the EqualityOperator when the first reference is null
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void EqualityOperator_LeftReferenceNull()
+		{
+			Assert.IsFalse(null == new BCVRef(3, 4, 5));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the EqualityOperator when the second reference is null
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void EqualityOperator_RightReferenceNull()
+		{
+			Assert.IsFalse(new BCVRef(5, 2, 1) == null);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the EqualityOperator when the first reference is invalid
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(-1, 2, 3)]
+		[TestCase(1, 3, 0)]
+		[TestCase(1, 1, -1)]
+		[TestCase(1, -3, 2)]
+		public void EqualityOperator_LeftReferenceInvalid(int book, int chapter, int verse)
+		{
+			Assert.IsFalse(new BCVRef(book, chapter, verse) == new BCVRef(3, 4, 5));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the EqualityOperator when the second reference is invalid
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(-1, 2, 3)]
+		[TestCase(1, 3, 0)]
+		[TestCase(1, 1, -1)]
+		[TestCase(1, -3, 2)]
+		public void EqualityOperator_RightReferenceInvalid(int book, int chapter, int verse)
+		{
+			Assert.IsFalse(new BCVRef(5, 2, 1) == new BCVRef(book, chapter, verse));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the EqualityOperator when the both references are invalid but equivalent
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(-1, 2, 3)]
+		[TestCase(1, 3, 0)]
+		[TestCase(1, 1, -1)]
+		[TestCase(1, -3, 2)]
+		public void EqualityOperator_InvalidEquivalentReferences(int book, int chapter, int verse)
+		{
+			Assert.IsTrue(new BCVRef(book, chapter, verse) == new BCVRef(book, chapter, verse));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the EqualityOperator when the objects are for the same book, chapter and verse
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void EqualityOperator_EquivalentReferencesButDifferentObjects()
+		{
+			Assert.IsTrue(new BCVRef(3, 4, 5) == new BCVRef(003004005));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the EqualityOperator when an object is compared to itself
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void EqualityOperator_SameObject()
+		{
+			var a = new BCVRef(4, 6, 8);
+			var b = a;
+			Assert.IsTrue(a == b);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the EqualityOperator when the objects are for the same book, chapter and verse
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(003004005, 003004006)]
+		[TestCase(003004005, 003005005)]
+		[TestCase(003004005, 002004005)]
+		public void EqualityOperator_NotEquivalentReferences(int a, int b)
+		{
+			Assert.IsFalse(new BCVRef(a) == new BCVRef(b));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
 		/// Tests the LastBook property if we don't support deuterocanonical books
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
