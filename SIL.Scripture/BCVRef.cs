@@ -87,8 +87,8 @@ namespace SIL.Scripture
 		/// <summary>Whether or not deuterocanonical books are supported</summary>
 		protected static bool s_fSupportDeuterocanon = false;
 
-		private static string ksTitleRef = " Title";
-		private static string ksIntroRef = " Intro";
+		private static readonly string ksTitleRef = " Title";
+		private static readonly string ksIntroRef = " Intro";
 
 		protected int m_book;
 		protected int m_chapter;
@@ -259,9 +259,9 @@ namespace SIL.Scripture
 		/// ------------------------------------------------------------------------------------
 		protected static bool AreEqual(BCVRef left, BCVRef right)
 		{
-			if (left == null && right == null)
+			if (Equals(left, null) && Equals(right, null))
 				return true;
-			if (left == null || right == null)
+			if (Equals(left, null) || Equals(right, null))
 				return false;
 			return left.CompareTo(right) == 0;
 		}
@@ -543,7 +543,6 @@ namespace SIL.Scripture
 		/// Returns the verse reference as a string
 		/// </summary>
 		/// <param name="format">The format.</param>
-		/// number</param>
 		/// ------------------------------------------------------------------------------------
 		[PublicAPI]
 		public string ToString(RefStringFormat format)
