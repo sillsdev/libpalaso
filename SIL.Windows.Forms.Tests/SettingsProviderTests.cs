@@ -18,6 +18,12 @@ namespace SIL.Windows.Forms.Tests
 	public class SettingsProviderTests
 	{
 		[Test]
+		public void TestClassSettingsUseCrossPlatformSettingsProvider()
+		{
+			TestUtilities.TestUtilities.ValidateProperties(Properties.Settings.Default);
+		}
+
+		[Test]
 		public void SettingsFolderWithNoConfig_SortsAfterOneWithConfig()
 		{
 			// We do two iterations like this to vary whether the (originally) first or last directory lacks

@@ -1,8 +1,8 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
+<?xml version='1.0' encoding='utf-8'?>
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SIL.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="AudioFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+    <Setting Name="AudioFileExtensions" Provider="SIL.Settings.CrossPlatformSettingsProvider" Type="System.Collections.Specialized.StringCollection" Scope="Application">
       <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.mp3&lt;/string&gt;
@@ -13,7 +13,7 @@
   &lt;string&gt;.flac&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
-    <Setting Name="VideoFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+    <Setting Name="VideoFileExtensions" Provider="SIL.Settings.CrossPlatformSettingsProvider" Type="System.Collections.Specialized.StringCollection" Scope="Application">
       <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.wmv&lt;/string&gt;
@@ -29,7 +29,7 @@
   &lt;string&gt;.m2v&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
-    <Setting Name="TextFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+    <Setting Name="TextFileExtensions" Provider="SIL.Settings.CrossPlatformSettingsProvider" Type="System.Collections.Specialized.StringCollection" Scope="Application">
       <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.txt&lt;/string&gt;
@@ -43,7 +43,7 @@
   &lt;string&gt;.fwdata&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
-    <Setting Name="ImageFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+    <Setting Name="ImageFileExtensions" Provider="SIL.Settings.CrossPlatformSettingsProvider" Type="System.Collections.Specialized.StringCollection" Scope="Application">
       <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.jpg&lt;/string&gt;
@@ -55,7 +55,7 @@
   &lt;string&gt;.dib&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
-    <Setting Name="MusicalNotationFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+    <Setting Name="MusicalNotationFileExtensions" Provider="SIL.Settings.CrossPlatformSettingsProvider" Type="System.Collections.Specialized.StringCollection" Scope="Application">
       <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.tab&lt;/string&gt;
@@ -75,7 +75,7 @@
   &lt;string&gt;.xmf&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
-    <Setting Name="DatasetFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+    <Setting Name="DatasetFileExtensions" Provider="SIL.Settings.CrossPlatformSettingsProvider" Type="System.Collections.Specialized.StringCollection" Scope="Application">
       <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.fwdata&lt;/string&gt;
@@ -96,7 +96,7 @@
   &lt;string&gt;.uml&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
-    <Setting Name="SoftwareAndFontFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+    <Setting Name="SoftwareAndFontFileExtensions" Provider="SIL.Settings.CrossPlatformSettingsProvider" Type="System.Collections.Specialized.StringCollection" Scope="Application">
       <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.ttf&lt;/string&gt;
@@ -130,7 +130,7 @@
   &lt;string&gt;.xaml&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
-    <Setting Name="PresentationFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+    <Setting Name="PresentationFileExtensions" Provider="SIL.Settings.CrossPlatformSettingsProvider" Type="System.Collections.Specialized.StringCollection" Scope="Application">
       <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.ppt&lt;/string&gt;
@@ -145,7 +145,7 @@
   &lt;string&gt;.ppsm&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
     </Setting>
-    <Setting Name="ZipFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+    <Setting Name="ZipFileExtensions" Provider="SIL.Settings.CrossPlatformSettingsProvider" Type="System.Collections.Specialized.StringCollection" Scope="Application">
       <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.zip&lt;/string&gt;

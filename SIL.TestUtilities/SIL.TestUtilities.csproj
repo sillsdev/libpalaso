@@ -16,9 +16,11 @@
 
   <ItemGroup>
     <Reference Include="Mono.Posix" Condition="'$(OS)' != 'Windows_NT'" />
+    <Reference Include="System.Configuration" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj" />
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj" />
   </ItemGroup>

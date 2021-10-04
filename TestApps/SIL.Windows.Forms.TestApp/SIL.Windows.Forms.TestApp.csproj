@@ -35,6 +35,10 @@
     <ProjectReference Include="..\..\SIL.WritingSystems\SIL.WritingSystems.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+
   <Target Name="DeleteIcuDllsFromOutput" AfterTargets="_CopyFilesMarkedCopyLocal">
     <!--we don't want icu*.dlls directly in the output directory, we need them in lib/*/ -->
     <ItemGroup>

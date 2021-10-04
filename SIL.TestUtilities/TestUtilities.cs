@@ -1,6 +1,9 @@
 using System;
+using System.Configuration;
 using System.IO;
 using System.Threading;
+using NUnit.Framework;
+using SIL.Settings;
 
 namespace SIL.TestUtilities
 {
@@ -40,6 +43,18 @@ namespace SIL.TestUtilities
 					{
 					}
 				}
+			}
+		}
+
+		/// <summary>
+		/// Verifies that each property has its provider set to <see cref="CrossPlatformSettingsProvider"/> or a subclass
+		/// </summary>
+		public static void ValidateProperties(ApplicationSettingsBase settings)
+		{
+			foreach (SettingsProperty property in settings.Properties)
+			{
+				Assert.That(property.Provider, Is.AssignableTo<CrossPlatformSettingsProvider>(),
+					$"Property '{property.Name}' needs the Provider string set to {typeof(CrossPlatformSettingsProvider)}");
 			}
 		}
 	}

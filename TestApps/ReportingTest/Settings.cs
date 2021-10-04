@@ -20,12 +20,13 @@ namespace TestApp.Properties {
 				Debug.Assert(property.Provider is CrossPlatformSettingsProvider,
 					$"Property '{property.Name}' needs the Provider string set to {typeof(CrossPlatformSettingsProvider)}");
 			}
-		 // // To add event handlers for saving and changing settings, uncomment the lines below:
-		 //
-		 // this.SettingChanging += this.SettingChangingEventHandler;
-		 //
-		 // this.SettingsSaving += this.SettingsSavingEventHandler;
-		 //
+
+			// // To add event handlers for saving and changing settings, uncomment the lines below:
+			//
+			// this.SettingChanging += this.SettingChangingEventHandler;
+			//
+			// this.SettingsSaving += this.SettingsSavingEventHandler;
+			//
 	  }
 
 		private void SettingChangingEventHandler(object sender, System.Configuration.SettingChangingEventArgs e) {
