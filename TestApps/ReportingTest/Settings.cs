@@ -1,3 +1,5 @@
+using System.Configuration;
+using System.Diagnostics;
 using SIL.Settings;
 
 namespace TestApp.Properties {
@@ -12,8 +14,12 @@ namespace TestApp.Properties {
 
 		public Settings()
 		{
-			//The following line of code is what is required to get a class to use CrossPlatformSettingsProvider for all settings.
-			CrossPlatformSettingsProvider.ValidateProperties(Properties);
+			//The following loop what is required to get a class to implement a custom settings provider and use it for all settings.
+			foreach(SettingsProperty property in Properties)
+			{
+				Debug.Assert(property.Provider is CrossPlatformSettingsProvider,
+					$"Property '{property.Name}' needs the Provider string set to {typeof(CrossPlatformSettingsProvider)}");
+			}
 		 // // To add event handlers for saving and changing settings, uncomment the lines below:
 		 //
 		 // this.SettingChanging += this.SettingChangingEventHandler;
