@@ -716,13 +716,13 @@ namespace SIL.Windows.Forms.Reporting
 		}
 
 		// Workaround for Xamarin bug #4959
-		[DllImport("libgdk-x11-2.0")]
+		[DllImport("libgdk-3.so.0")]
 		private static extern IntPtr gdk_atom_intern(string atomName, bool onlyIfExists);
-		[DllImport("libgtk-x11-2.0")]
+		[DllImport("libgtk-3.so.0")]
 		private static extern IntPtr gtk_clipboard_get(IntPtr atom);
-		[DllImport("libgtk-x11-2.0")]
+		[DllImport("libgtk-3.so.0")]
 		private static extern void gtk_clipboard_store(IntPtr clipboard);
-		[DllImport("libgtk-x11-2.0")]
+		[DllImport("libgtk-3.so.0")]
 		private static extern void gtk_clipboard_set_text(IntPtr clipboard, [MarshalAs(UnmanagedType.LPStr)] string text, int len);
 
 		private bool SendViaEmail()

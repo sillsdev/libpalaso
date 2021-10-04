@@ -259,6 +259,7 @@ Build-Depends: debhelper (>= 9.0.0), cli-common-dev (>= 0.8),
  mono4-sil, libgdiplus4-sil,
  libenchant-dev, libxklavier-dev, libdconf-dev,
  libicu-dev,
+libgtk3.0-cil, libgtk-3-dev,
  libgtk2.0-cil (>= 2.12.10), libgtk2.0-dev (>= 2.14), libasound2-dev,
  icu-devtools | libicu-dev (<< 52)
 
@@ -266,7 +267,8 @@ Package: bloom-desktop-alpha
 Architecture: any
 Depends: ${shlibs:Depends}, ${cli:Depends}, ${misc:Depends},
  mono4-sil, libgdiplus4-sil, gtklp,
- chmsee, libtidy5,
+libgtk-3-0, libgtk3.0-cil, libgtk2.0-0, libgtk2.0-cil,
+ chmsee | xchm | kchmviewer, libtidy-sil,
  fonts-sil-andika-new-basic | fonts-sil-andikanewbasic,
  optipng, libsndfile1,
  wmctrl, lame
