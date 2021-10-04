@@ -35,7 +35,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			if (Platform.IsWindows)
 				Clipboard.SetText(text);
 			else
-			GtkSetText(text);
+				GtkSetText(text);
 		}
 
 		public static void SetText(string text, TextDataFormat format)
@@ -43,7 +43,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			if (Platform.IsWindows)
 				Clipboard.SetText(text, format);
 			else
-			GtkSetText(text);
+				GtkSetText(text);
 		}
 
 		public static bool ContainsImage()
@@ -64,7 +64,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 			if (!Platform.IsWindows)
 			{
-			// Review: Someone who knows how needs to implement this!
+				// Review: Someone who knows how needs to implement this!
 				throw new NotImplementedException(
 					"SIL.Windows.Forms.Miscellaneous.PortableClipboard.CopyImageToClipboard() is not yet implemented for Linux");
 			}
@@ -112,33 +112,33 @@ namespace SIL.Windows.Forms.Miscellaneous
 			// N.B.: PalasoImage does not handle .svg files
 			if (!Platform.IsWindows)
 			{
-			if (GtkContainsImage())
-				return PalasoImage.FromImage(GtkGetImage());
+				if (GtkContainsImage())
+					return PalasoImage.FromImage(GtkGetImage());
 
-			if (GtkContainsText())
-			{
-				//REVIEW: I can find no documentation on GtkClipboard. If ContainsText means we have a file
-				//	path, then it would be better to do PalasoImage.FromFileRobustly(); on the file path
-				return PalasoImage.FromImage(GtkGetImageFromText());
-			}
+				if (GtkContainsText())
+				{
+					//REVIEW: I can find no documentation on GtkClipboard. If ContainsText means we have a file
+					//	path, then it would be better to do PalasoImage.FromFileRobustly(); on the file path
+					return PalasoImage.FromImage(GtkGetImageFromText());
+				}
 
-			return null;
+				return null;
 			}
 
 			var dataObject = Clipboard.GetDataObject();
 			if (dataObject == null)
 				return null;
 			Exception ex = null;
-			var textData = String.Empty;
+			var textData = string.Empty;
 			if (dataObject.GetDataPresent(DataFormats.UnicodeText))
-				textData = dataObject.GetData(DataFormats.UnicodeText) as String;
+				textData = dataObject.GetData(DataFormats.UnicodeText) as string;
 			if (Clipboard.ContainsImage())
 			{
 				PalasoImage plainImage = null;
 				try
 				{
 					plainImage = PalasoImage.FromImage(Clipboard.GetImage()); // this method won't copy any metadata
-					var haveFileUrl = !String.IsNullOrEmpty(textData) && RobustFile.Exists(textData);
+					var haveFileUrl = !string.IsNullOrEmpty(textData) && RobustFile.Exists(textData);
 
 					// If we have an image on the clipboard, and we also have text that is a valid url to an image file,
 					// use the url to create a PalasoImage (which will pull in any metadata associated with the image too)
@@ -149,13 +149,13 @@ namespace SIL.Windows.Forms.Miscellaneous
 						return imageWithPathAndMaybeMetadata;
 					}
 
-						return plainImage;
-					}
+					return plainImage;
+				}
 				catch (Exception e)
 				{
 					Logger.WriteEvent("PortableClipboard.GetImageFromClipboard() failed with message " + e.Message);
 					if (plainImage != null)
-					return plainImage; // at worst, we should return null; if FromFile() failed, we return an image
+						return plainImage; // at worst, we should return null; if FromFile() failed, we return an image
 					throw;
 				}
 			}
@@ -176,7 +176,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 				}
 			}
 
-			//People can do a "copy" from the WIndows Photo Viewer but what it puts on the clipboard is a path, not an image
+			//People can do a "copy" from the Windows Photo Viewer but what it puts on the clipboard is a path, not an image
 			if (dataObject.GetDataPresent(DataFormats.FileDrop))
 			{
 				//This line gets all the file paths that were selected in explorer
@@ -186,7 +186,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 				foreach (var file in files.Where(f => RobustFile.Exists(f)))
 				{
 						return PalasoImage.FromFileRobustly(file);
-					}
+				}
 
 				return null; //not an image
 			}
