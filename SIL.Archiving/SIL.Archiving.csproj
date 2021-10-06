@@ -35,6 +35,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <Content Include="IMDI\Schema\IMDI_3_0_Fix.py" />
+    <None Include="app.config" Pack="true" PackagePath="contentFiles\any\any\$(AssemblyTitle).dll.config" />
   </ItemGroup>
 
 </Project>

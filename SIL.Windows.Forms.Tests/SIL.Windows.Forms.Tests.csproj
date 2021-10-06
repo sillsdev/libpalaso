@@ -29,6 +29,7 @@
     <None Include="ImageToolbox\ImageGallery\ArtOfReadingIndexV3_en.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="App.config" Pack="true" PackagePath="contentFiles\any\any\$(AssemblyTitle).dll.config" />
   </ItemGroup>
 
 </Project>
