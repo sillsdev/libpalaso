@@ -30,7 +30,7 @@ namespace SIL.Windows.Forms
 	{
 		#region OS-specific stuff
 
-		[DllImport("User32.dll", EntryPoint = "GetWindowDC")]
+		[DllImport("user32.dll", EntryPoint = "GetWindowDC")]
 		private static extern IntPtr GetWindowDCWindows(IntPtr hwnd);
 
 		private static IntPtr GetWindowDCLinux(IntPtr hwnd)
@@ -44,7 +44,7 @@ namespace SIL.Windows.Forms
 			return Platform.IsWindows ? GetWindowDCWindows(hwnd) : GetWindowDCLinux(hwnd);
 		}
 
-		[DllImport("User32.dll", EntryPoint = "ReleaseDC")]
+		[DllImport("user32.dll", EntryPoint = "ReleaseDC")]
 		private static extern int ReleaseDCWindows(IntPtr hwnd, IntPtr hdc);
 
 		private static int ReleaseDCLinux(IntPtr hwnd, IntPtr hdc)

@@ -27,7 +27,7 @@ namespace SIL.Windows.Forms.Extensions
 				SendMessageLinux(hWnd, msg, wParam, lParam);
 		}
 
-		[DllImport("user32", EntryPoint = "UpdateWindow")]
+		[DllImport("user32.dll", EntryPoint = "UpdateWindow")]
 		private static extern int UpdateWindowWindows(IntPtr hwnd);
 
 		private static int UpdateWindowLinux(IntPtr hwnd)
