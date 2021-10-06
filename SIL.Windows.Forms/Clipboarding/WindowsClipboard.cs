@@ -15,40 +15,13 @@ namespace SIL.Windows.Forms.Clipboarding
 {
 	internal class WindowsClipboard: IClipboard
 	{
-		public bool ContainsText()
-		{
-			return Clipboard.ContainsText();
-		}
-
-		public string GetText()
-		{
-			return Clipboard.GetText();
-		}
-
-		public string GetText(TextDataFormat format)
-		{
-			return Clipboard.GetText(format);
-		}
-
-		public void SetText(string text)
-		{
-			Clipboard.SetText(text);
-		}
-
-		public void SetText(string text, TextDataFormat format)
-		{
-			Clipboard.SetText(text, format);
-		}
-
-		public bool ContainsImage()
-		{
-			return Clipboard.ContainsImage();
-		}
-
-		public Image GetImage()
-		{
-			return Clipboard.GetImage();
-		}
+		public bool ContainsText() => Clipboard.ContainsText();
+		public string GetText() => Clipboard.GetText();
+		public string GetText(TextDataFormat format) => Clipboard.GetText(format);
+		public void SetText(string text) => Clipboard.SetText(text);
+		public void SetText(string text, TextDataFormat format) => Clipboard.SetText(text, format);
+		public bool ContainsImage() => Clipboard.ContainsImage();
+		public Image GetImage() => Clipboard.GetImage();
 
 		public void CopyImageToClipboard(PalasoImage image)
 		{
@@ -81,7 +54,8 @@ namespace SIL.Windows.Forms.Clipboarding
 		// Try to get an image from the System.Windows.Forms.Clipboard. If there simply isn't anything on the System.Windows.Forms.Clipboard that
 		// can reasonably be interpreted as an image, return null. If there is something that makes sense
 		// as an image, but trying to load it causes an exception, let the exception propagate.
-		public PalasoImage GetImageFromClipboard() {
+		public PalasoImage GetImageFromClipboard()
+		{
 			// N.B.: PalasoImage does not handle .svg files
 			var dataObject = Clipboard.GetDataObject();
 			if (dataObject == null)
@@ -103,7 +77,7 @@ namespace SIL.Windows.Forms.Clipboarding
 					if (haveFileUrl)
 					{
 						var imageWithPathAndMaybeMetadata = PalasoImage.FromFileRobustly(textData);
-						plainImage.Dispose();//important: don't do this until we've successfully created the imageWithPathAndMaybeMetadata
+						plainImage.Dispose(); // important: don't do this until we've successfully created the imageWithPathAndMaybeMetadata
 						return imageWithPathAndMaybeMetadata;
 					}
 
@@ -134,23 +108,24 @@ namespace SIL.Windows.Forms.Clipboarding
 				}
 			}
 
-			//People can do a "copy" from the Windows Photo Viewer but what it puts on the System.Windows.Forms.Clipboard is a path, not an image
+			// People can do a "copy" from the Windows Photo Viewer but what it puts on the System.Windows.Forms.Clipboard is a path, not an image
 			if (dataObject.GetDataPresent(DataFormats.FileDrop))
 			{
-				//This line gets all the file paths that were selected in explorer
+				// This line gets all the file paths that were selected in explorer
 				string[] files = dataObject.GetData(DataFormats.FileDrop) as string[];
-				if (files == null) return null;
+				if (files == null)
+					return null;
 
 				foreach (var file in files.Where(f => RobustFile.Exists(f)))
 				{
-						return PalasoImage.FromFileRobustly(file);
+					return PalasoImage.FromFileRobustly(file);
 				}
 
-				return null; //not an image
+				return null; // not an image
 			}
 
 			if (Clipboard.ContainsText() && RobustFile.Exists(Clipboard.GetText()))
-				return PalasoImage.FromImage( Image.FromStream(new FileStream(Clipboard.GetText(), FileMode.Open)));
+				return PalasoImage.FromImage(Image.FromStream(new FileStream(Clipboard.GetText(), FileMode.Open)));
 
 			if (ex != null)
 			{
