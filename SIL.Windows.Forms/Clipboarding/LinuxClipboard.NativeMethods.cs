@@ -287,6 +287,9 @@ namespace SIL.Windows.Forms.Clipboarding
 
 		private byte[] SaveToBuffer(IntPtr pixBuf, string type)
 		{
+			if (pixBuf == IntPtr.Zero)
+				return null;
+
 			var utf8Ptr = StringToUtf8Ptr(type, type.Length);
 			var success = gdk_pixbuf_save_to_bufferv(pixBuf, out var buffer, out var bufferSize,
 				utf8Ptr, null, null, out var error);
