@@ -342,5 +342,11 @@ and displays it as HTML.
 			using (var dlg = new ContributorsForm())
 				dlg.ShowDialog();
 		}
+
+		private void btnShowFormWithModalChild_Click(object sender, EventArgs e)
+		{
+			var parent = new ParentOfModalChild();
+			parent.Show();
+		}
 	}
 }

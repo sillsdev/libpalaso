@@ -84,6 +84,12 @@ namespace SIL.Windows.Forms
 				childForm.BringToFront();
 				childForm.Activate();
 			};
+			childForm.Shown += (sender, args) =>
+			{
+				if (childForm.ActiveControl == null)
+					childForm.SelectNextControl(childForm, true, true, true, false);
+			};
+
 			childForm.Show(this);
 			OnModalFormShown?.Invoke();
 		}
