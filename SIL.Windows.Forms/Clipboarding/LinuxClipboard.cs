@@ -41,6 +41,9 @@ namespace SIL.Windows.Forms.Clipboarding
 		public Image GetImage()
 		{
 			var pixBuf = gtk_clipboard_wait_for_image(Clipboard);
+			if (pixBuf == IntPtr.Zero)
+				return null;
+
 			var typeConverter = TypeDescriptor.GetConverter(typeof(Bitmap));
 			return (Image)typeConverter.ConvertFrom(SaveToBuffer(pixBuf, "png"));
 		}

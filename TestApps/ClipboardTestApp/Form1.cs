@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SIL.PlatformUtilities;
 using SIL.Windows.Forms.ImageToolbox;
 using SIL.Windows.Forms.Miscellaneous;
 
@@ -29,16 +30,26 @@ namespace ClipboardTestApp
 		{
 			textBox1.Text = PortableClipboard.GetText();
 		}
+
 		private void OnCopyImage(object sender, EventArgs e)
 		{
-			using var openFileDialog =
-				new OpenFileDialogWithViews(OpenFileDialogWithViews.DialogViewTypes.Details);
-			if (openFileDialog.ShowDialog(this) != DialogResult.OK)
-				return;
+			try
+			{
+				using var openFileDialog =
+					new OpenFileDialogWithViews(OpenFileDialogWithViews.DialogViewTypes.Details);
+				if (openFileDialog.ShowDialog(this) != DialogResult.OK)
+					return;
 
-			using var image = PalasoImage.FromFile(openFileDialog.FileName);
-			PortableClipboard.CopyImageToClipboard(image);
-			UpdateLabels();
+				using var image = PalasoImage.FromFile(openFileDialog.FileName);
+				PortableClipboard.CopyImageToClipboard(image);
+				UpdateLabels();
+			}
+			catch (NotImplementedException)
+			{
+				if (Platform.IsWindows)
+					throw;
+				// ignore on Linux - currently not yet implemented
+			}
 		}
 
 		private void OnPasteImage(object sender, EventArgs e)
