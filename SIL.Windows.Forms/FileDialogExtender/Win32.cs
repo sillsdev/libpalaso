@@ -1,5 +1,5 @@
 //  Copyright (c) 2006, Gustavo Franco
-//  Copyright © Decebal Mihailescu 2007-2010
+//  Copyright Â© Decebal Mihailescu 2007-2010
 
 //  Email:  gustavo_franco@hotmail.com
 //  All rights reserved.
@@ -47,16 +47,16 @@ namespace SIL.Windows.Forms.FileDialogExtender
 		internal static extern IntPtr GetDlgItem(IntPtr hDlg, int nIDDlgItem);
 		[DllImport("user32.dll")]
 		internal static extern bool SetDlgItemText(IntPtr hDlg, int nIDDlgItem, string lpString);
-		[DllImport("User32.Dll")]
+		[DllImport("user32.dll")]
 		public static extern int GetDlgCtrlID(IntPtr hWndCtl);
 		[DllImport("user32.dll", SetLastError = true)][return: MarshalAs(UnmanagedType.Bool)]
 		internal static extern bool GetWindowInfo(HandleRef hwnd, out WINDOWINFO pwi);
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool SetWindowText(HandleRef hWnd, string lpString);
-		[DllImport("User32.Dll")]
+		[DllImport("user32.dll")]
 		public static extern void GetClassName(HandleRef hWnd, StringBuilder param, int length);
-		[DllImport("user32.Dll")][return: MarshalAs(UnmanagedType.Bool)]
+		[DllImport("user32.dll")][return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool EnumChildWindows(HandleRef hWndParent, EnumWindowsCallBack lpEnumFunc, int lParam);
 		[DllImport("user32.dll")]
 		internal static extern IntPtr SetParent(HandleRef hWndChild,HandleRef hWndNewParent);
