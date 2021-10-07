@@ -26,13 +26,35 @@ namespace SIL.Windows.Forms
 		private Form ModalChild { get; set; }
 
 		[PublicAPI]
-		protected bool IsShowingModalForm => ModalChild != null;
+		protected bool IsShowingModalForm => ModalChild != null && ModalChild.Visible;
 
 		protected delegate void ModalChildEventHandler();
 
+		/// <summary>
+		/// Occurs after any modal child form is shown in response to a call to
+		/// <see cref="ShowModalChild{T}"/>.
+		/// </summary>
+		/// <remarks>Handle this event to disable any controls or timer-based events on the
+		/// parent form that might still be active even though the parent form cannot be
+		/// made the active form.</remarks>
 		protected event ModalChildEventHandler OnModalFormShown;
 
+		/// <summary>
+		/// Occurs when a modal child form is closed (before the onClosed handler passed into
+		/// <see cref="ShowModalChild{T}"/> is called).
+		/// </summary>
+		/// <remarks>Handle this event if needed to re-enable any controls or timer-based events on
+		/// the parent form that were disabled in response to <see cref="OnModalFormShown"/> that
+		/// should be enabled before the onClosed handler is called.</remarks>
 		protected event ModalChildEventHandler OnModalFormClosed;
+
+		/// <summary>
+		/// Occurs when a modal child form is disposed.
+		/// </summary>
+		/// <remarks>Handle this event if needed to re-enable any controls or timer-based events on
+		/// the parent form that were disabled in response to <see cref="OnModalFormShown"/> that
+		/// should be enabled after the onClosed handler is called.</remarks>
+		protected event ModalChildEventHandler OnModalFormDisposed;
 
 		protected override void OnActivated(EventArgs e)
 		{
@@ -46,16 +68,34 @@ namespace SIL.Windows.Forms
 			}
 		}
 
+		/// <summary>
+		/// Shows the given form as a dialog box which is modal with respect to
+		/// the this form (not application modal).
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="childForm">The dialog box to show.  </param>
+		/// <param name="onClosed">Occurs when the modal form is closed. Note that this event will
+		/// be called after the <see cref="OnModalFormClosed"/> event is fired and before the
+		/// <see cref="OnModalFormDisposed"/> event is fired.</param>
+		/// <remarks>Any buttons that have their <see cref="Button.DialogResult"/> property set to
+		/// any value other than <see cref="DialogResult.None"/> at the time this method is called
+		/// will cause the dialog box to close and have its <see cref="Form.DialogResult"/> set to
+		/// the then-current value of the button's <see cref="Button.DialogResult"/> property. Note
+		/// that this means that if a button's <see cref="Button.DialogResult"/> property is
+		/// initially <see cref="DialogResult.None"/> and is set to some other value after the
+		/// dialog box is opened, clicking it will not automatically cause the the dialog box to
+		/// close. This is subtly different from the behavior when a form is shown using
+		/// <see cref="Form.ShowDialog()"/>.
+		/// </remarks>
 		protected void ShowModalChild<T>(T childForm, Action<T> onClosed = null) where T : Form
 		{
 			ModalChild = childForm;
 			foreach (var ctrl in childForm.Controls)
 			{
-				// This is not 100% guaranteed to be right, since it is possible that a button could
-				// have no DialogResult set at the outset, but during the course of the user's interaction with
-				// the dialog box, a DialogResult could be assigned dynamically. But this is unlikely (does not
-				// currently happen in Transcelerator) so by checking the DialogResult up-front, we avoid having
-				// to hook up this click handler for other buttons.
+				// As described in the remarks above, this is not 100% guaranteed to reproduce the
+				// same behavior as ShowDialog. But this is unlikely (and documented). By checking
+				// the DialogResult up-front, we avoid having to hook up this click handler for
+				// other buttons.
 				if (ctrl is Button btn && btn.DialogResult != DialogResult.None)
 					btn.Click += (sender, args) =>
 					{
@@ -72,11 +112,12 @@ namespace SIL.Windows.Forms
 			}
 			childForm.Closed += (dialog, args) =>
 			{
+				OnModalFormClosed?.Invoke();
 				ModalChild = null;
 				T dlg = (T)dialog;
 				onClosed?.Invoke(dlg);
 				dlg.Dispose();
-				OnModalFormClosed?.Invoke();
+				OnModalFormDisposed?.Invoke();
 			};
 			childForm.HandleCreated += (sender, args) =>
 			{
