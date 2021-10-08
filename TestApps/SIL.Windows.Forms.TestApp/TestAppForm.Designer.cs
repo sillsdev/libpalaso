@@ -55,8 +55,8 @@ namespace SIL.Windows.Forms.TestApp
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper superToolTipInfoWrapper2 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper();
-			SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo superToolTipInfo2 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo();
+			SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper superToolTipInfoWrapper1 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper();
+			SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo superToolTipInfo1 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo();
 			this.btnFolderBrowserControl = new System.Windows.Forms.Button();
 			this.btnLookupISOCodeDialog = new System.Windows.Forms.Button();
 			this.btnWritingSystemSetupDialog = new System.Windows.Forms.Button();
@@ -72,6 +72,7 @@ namespace SIL.Windows.Forms.TestApp
 			this.btnFlexibleMessageBox = new System.Windows.Forms.Button();
 			this.recordPlayButton = new System.Windows.Forms.Button();
 			this.btnTestContributorsList = new System.Windows.Forms.Button();
+			this.btnShowFormWithModalChild = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// btnFolderBrowserControl
@@ -142,23 +143,23 @@ namespace SIL.Windows.Forms.TestApp
 			// 
 			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(12, 398);
+			this.label1.Location = new System.Drawing.Point(12, 425);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(149, 13);
-			superToolTipInfo2.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-			superToolTipInfo2.BackgroundGradientEnd = System.Drawing.Color.Blue;
-			superToolTipInfo2.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
-			superToolTipInfo2.BodyText = "This is the body text";
-			superToolTipInfo2.FooterForeColor = System.Drawing.Color.Lime;
-			superToolTipInfo2.FooterText = "And this is the footer";
-			superToolTipInfo2.HeaderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-			superToolTipInfo2.HeaderText = "The header can serve as a title";
-			superToolTipInfo2.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
-			superToolTipInfo2.ShowFooter = true;
-			superToolTipInfo2.ShowFooterSeparator = true;
-			superToolTipInfoWrapper2.SuperToolTipInfo = superToolTipInfo2;
-			superToolTipInfoWrapper2.UseSuperToolTip = true;
-			this.superToolTip1.SetSuperStuff(this.label1, superToolTipInfoWrapper2);
+			superToolTipInfo1.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+			superToolTipInfo1.BackgroundGradientEnd = System.Drawing.Color.Blue;
+			superToolTipInfo1.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
+			superToolTipInfo1.BodyText = "This is the body text";
+			superToolTipInfo1.FooterForeColor = System.Drawing.Color.Lime;
+			superToolTipInfo1.FooterText = "And this is the footer";
+			superToolTipInfo1.HeaderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+			superToolTipInfo1.HeaderText = "The header can serve as a title";
+			superToolTipInfo1.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
+			superToolTipInfo1.ShowFooter = true;
+			superToolTipInfo1.ShowFooterSeparator = true;
+			superToolTipInfoWrapper1.SuperToolTipInfo = superToolTipInfo1;
+			superToolTipInfoWrapper1.UseSuperToolTip = true;
+			this.superToolTip1.SetSuperStuff(this.label1, superToolTipInfoWrapper1);
 			this.label1.TabIndex = 1;
 			this.label1.Text = "Hover over me to see a tooltip";
 			// 
@@ -233,11 +234,22 @@ namespace SIL.Windows.Forms.TestApp
 			this.btnTestContributorsList.UseVisualStyleBackColor = true;
 			this.btnTestContributorsList.Click += new System.EventHandler(this.btnTestContributorsList_Click);
 			// 
+			// btnShowFormWithModalChild
+			// 
+			this.btnShowFormWithModalChild.Location = new System.Drawing.Point(12, 389);
+			this.btnShowFormWithModalChild.Name = "btnShowFormWithModalChild";
+			this.btnShowFormWithModalChild.Size = new System.Drawing.Size(157, 23);
+			this.btnShowFormWithModalChild.TabIndex = 7;
+			this.btnShowFormWithModalChild.Text = "Form w/ Modal Child...";
+			this.btnShowFormWithModalChild.UseVisualStyleBackColor = true;
+			this.btnShowFormWithModalChild.Click += new System.EventHandler(this.btnShowFormWithModalChild_Click);
+			// 
 			// TestAppForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(187, 426);
+			this.ClientSize = new System.Drawing.Size(187, 453);
+			this.Controls.Add(this.btnShowFormWithModalChild);
 			this.Controls.Add(this.btnTestContributorsList);
 			this.Controls.Add(this.recordPlayButton);
 			this.Controls.Add(this.btnFlexibleMessageBox);
@@ -276,5 +288,6 @@ namespace SIL.Windows.Forms.TestApp
 		private System.Windows.Forms.Button btnFlexibleMessageBox;
 		private System.Windows.Forms.Button recordPlayButton;
 		private System.Windows.Forms.Button btnTestContributorsList;
+		private System.Windows.Forms.Button btnShowFormWithModalChild;
 	}
 }
