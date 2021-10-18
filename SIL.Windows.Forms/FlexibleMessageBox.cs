@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -59,7 +59,7 @@ namespace SIL.Windows.Forms
 	 * History:
 	 *	Adapted for use in libpalaso
 	 *  - Added override to default handling of LinkClicked event
-	 *  - Made localizatin extenisible without altering code
+	 *  - Made localization extensible without altering code
 	 *	Version 1.3 - 19.Dezember 2014
 	 *  - Added refactoring function GetButtonText()
 	 *  - Used CurrentUICulture instead of InstalledUICulture
@@ -82,6 +82,17 @@ namespace SIL.Windows.Forms
 	 *	Version 1.0 - 15.April 2013
 	 *   - Initial Version
 	 */
+
+	/// <summary>
+	/// Options that can be selected for a single Showing
+	/// </summary>
+	[Flags]
+	public enum FlexibleMessageBoxOptions
+	{
+		None = 0,
+		AlwaysOnTop
+	}
+
 	public class FlexibleMessageBox
 	{
 		#region Public statics
@@ -105,7 +116,7 @@ namespace SIL.Windows.Forms
 		/// Defines the maximum height for all FlexibleMessageBox instances in percent of the working area.
 		///
 		/// Allowed values are 0.2 - 1.0 where:
-		/// 0.2 means:  The FlexibleMessageBox can be at most half as high as the working area.
+		/// 0.2 means:  The FlexibleMessageBox can be at most 20% of the height of the working area.
 		/// 1.0 means:  The FlexibleMessageBox can be as high as the working area.
 		///
 		/// Default is: 0.9 (90% of the working area height)
@@ -122,6 +133,11 @@ namespace SIL.Windows.Forms
 		/// Default is: SystemFonts.MessageBoxFont
 		/// </summary>
 		public static Font Font = SystemFonts.MessageBoxFont;
+
+		/// <summary>
+		/// Whether FlexibleMessageBoxes will be have its own entry in the taskbar
+		/// </summary>
+		public static bool ShowInTaskbar { get; set; }
 
 		/// <summary>
 		/// Callers that use a localization strategy other than L10NSharp can use this property to obtain a full
@@ -166,11 +182,6 @@ namespace SIL.Windows.Forms
 				Cursor.Current = Cursors.WaitCursor;
 				Process.Start(e.LinkText);
 			}
-			catch (Exception)
-			{
-				//Let the caller of FlexibleMessageBoxForm decide what to do with this exception...
-				throw;
-			}
 			finally
 			{
 				Cursor.Current = Cursors.Default;
@@ -185,10 +196,10 @@ namespace SIL.Windows.Forms
 		/// <param name="linkClickedAction">optional handler if user clicks a hyperlink (as determined by RichTextBox). Set to
 		/// <seealso cref="BasicLinkClickedEventHandler"/> to get basic handling. If <c>null</c>, URLs will not be detected or
 		/// highlighted in the message.</param>
-		/// <returns>The dialog result.</returns>
-		public static DialogResult Show(string text, LinkClickedEventHandler linkClickedAction = null)
+		/// <param name="options">Optional options for displaying the message box (different from System.Windows.Forms.MessageBoxOptions)</param>
+		public static DialogResult Show(string text, LinkClickedEventHandler linkClickedAction = null, FlexibleMessageBoxOptions options = 0)
 		{
-			return FlexibleMessageBoxForm.Show(null, text, string.Empty, MessageBoxButtons.OK, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction);
+			return FlexibleMessageBoxForm.Show(null, text, string.Empty, MessageBoxButtons.OK, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction, options);
 		}
 		/// <summary>
 		/// Shows the specified message box.
@@ -198,11 +209,10 @@ namespace SIL.Windows.Forms
 		/// <param name="linkClickedAction">optional handler if user clicks a hyperlink (as determined by RichTextBox). Set to
 		/// <seealso cref="BasicLinkClickedEventHandler"/> to get basic handling. If <c>null</c>, URLs will not be detected or
 		/// highlighted in the message.</param>
-		/// <returns>The dialog result.</returns>
-		/// <returns>The dialog result.</returns>
-		public static DialogResult Show(IWin32Window owner, string text, LinkClickedEventHandler linkClickedAction = null)
+		/// <param name="options">Optional options for displaying the message box (different from System.Windows.Forms.MessageBoxOptions)</param>
+		public static DialogResult Show(IWin32Window owner, string text, LinkClickedEventHandler linkClickedAction = null, FlexibleMessageBoxOptions options = 0)
 		{
-			return FlexibleMessageBoxForm.Show(owner, text, string.Empty, MessageBoxButtons.OK, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction);
+			return FlexibleMessageBoxForm.Show(owner, text, string.Empty, MessageBoxButtons.OK, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction, options);
 		}
 		/// <summary>
 		/// Shows the specified message box.
@@ -212,11 +222,10 @@ namespace SIL.Windows.Forms
 		/// <param name="linkClickedAction">optional handler if user clicks a hyperlink (as determined by RichTextBox). Set to
 		/// <seealso cref="BasicLinkClickedEventHandler"/> to get basic handling. If <c>null</c>, URLs will not be detected or
 		/// highlighted in the message.</param>
-		/// <returns>The dialog result.</returns>
-		/// <returns>The dialog result.</returns>
-		public static DialogResult Show(string text, string caption, LinkClickedEventHandler linkClickedAction = null)
+		/// <param name="options">Optional options for displaying the message box (different from System.Windows.Forms.MessageBoxOptions)</param>
+		public static DialogResult Show(string text, string caption, LinkClickedEventHandler linkClickedAction = null, FlexibleMessageBoxOptions options = 0)
 		{
-			return FlexibleMessageBoxForm.Show(null, text, caption, MessageBoxButtons.OK, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction);
+			return FlexibleMessageBoxForm.Show(null, text, caption, MessageBoxButtons.OK, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction, options);
 		}
 		/// <summary>
 		/// Shows the specified message box.
@@ -227,11 +236,10 @@ namespace SIL.Windows.Forms
 		/// <param name="linkClickedAction">optional handler if user clicks a hyperlink (as determined by RichTextBox). Set to
 		/// <seealso cref="BasicLinkClickedEventHandler"/> to get basic handling. If <c>null</c>, URLs will not be detected or
 		/// highlighted in the message.</param>
-		/// <returns>The dialog result.</returns>
-		/// <returns>The dialog result.</returns>
-		public static DialogResult Show(IWin32Window owner, string text, string caption, LinkClickedEventHandler linkClickedAction = null)
+		/// <param name="options">Optional options for displaying the message box (different from System.Windows.Forms.MessageBoxOptions)</param>
+		public static DialogResult Show(IWin32Window owner, string text, string caption, LinkClickedEventHandler linkClickedAction = null, FlexibleMessageBoxOptions options = 0)
 		{
-			return FlexibleMessageBoxForm.Show(owner, text, caption, MessageBoxButtons.OK, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction);
+			return FlexibleMessageBoxForm.Show(owner, text, caption, MessageBoxButtons.OK, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction, options);
 		}
 		/// <summary>
 		/// Shows the specified message box.
@@ -242,11 +250,10 @@ namespace SIL.Windows.Forms
 		/// <param name="linkClickedAction">optional handler if user clicks a hyperlink (as determined by RichTextBox). Set to
 		/// <seealso cref="BasicLinkClickedEventHandler"/> to get basic handling. If <c>null</c>, URLs will not be detected or
 		/// highlighted in the message.</param>
-		/// <returns>The dialog result.</returns>
-		/// <returns>The dialog result.</returns>
-		public static DialogResult Show(string text, string caption, MessageBoxButtons buttons, LinkClickedEventHandler linkClickedAction = null)
+		/// <param name="options">Optional options for displaying the message box (different from System.Windows.Forms.MessageBoxOptions)</param>
+		public static DialogResult Show(string text, string caption, MessageBoxButtons buttons, LinkClickedEventHandler linkClickedAction = null, FlexibleMessageBoxOptions options = 0)
 		{
-			return FlexibleMessageBoxForm.Show(null, text, caption, buttons, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction);
+			return FlexibleMessageBoxForm.Show(null, text, caption, buttons, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction, options);
 		}
 		/// <summary>
 		/// Shows the specified message box.
@@ -258,11 +265,10 @@ namespace SIL.Windows.Forms
 		/// <param name="linkClickedAction">optional handler if user clicks a hyperlink (as determined by RichTextBox). Set to
 		/// <seealso cref="BasicLinkClickedEventHandler"/> to get basic handling. If <c>null</c>, URLs will not be detected or
 		/// highlighted in the message.</param>
-		/// <returns>The dialog result.</returns>
-		/// <returns>The dialog result.</returns>
-		public static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons buttons, LinkClickedEventHandler linkClickedAction = null)
+		/// <param name="options">Optional options for displaying the message box (different from System.Windows.Forms.MessageBoxOptions)</param>
+		public static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons buttons, LinkClickedEventHandler linkClickedAction = null, FlexibleMessageBoxOptions options = 0)
 		{
-			return FlexibleMessageBoxForm.Show(owner, text, caption, buttons, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction);
+			return FlexibleMessageBoxForm.Show(owner, text, caption, buttons, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction, options);
 		}
 		/// <summary>
 		/// Shows the specified message box.
@@ -274,11 +280,11 @@ namespace SIL.Windows.Forms
 		/// <param name="linkClickedAction">optional handler if user clicks a hyperlink (as determined by RichTextBox). Set to
 		/// <seealso cref="BasicLinkClickedEventHandler"/> to get basic handling. If <c>null</c>, URLs will not be detected or
 		/// highlighted in the message.</param>
-		/// <returns>The dialog result.</returns>
+		/// <param name="options">Optional options for displaying the message box (different from System.Windows.Forms.MessageBoxOptions)</param>
 		/// <returns></returns>
-		public static DialogResult Show(string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, LinkClickedEventHandler linkClickedAction = null)
+		public static DialogResult Show(string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, LinkClickedEventHandler linkClickedAction = null, FlexibleMessageBoxOptions options = 0)
 		{
-			return FlexibleMessageBoxForm.Show(null, text, caption, buttons, icon, MessageBoxDefaultButton.Button1, linkClickedAction);
+			return FlexibleMessageBoxForm.Show(null, text, caption, buttons, icon, MessageBoxDefaultButton.Button1, linkClickedAction, options);
 		}
 		/// <summary>
 		/// Shows the specified message box.
@@ -291,12 +297,11 @@ namespace SIL.Windows.Forms
 		/// <param name="linkClickedAction">optional handler if user clicks a hyperlink (as determined by RichTextBox). Set to
 		/// <seealso cref="BasicLinkClickedEventHandler"/> to get basic handling. If <c>null</c>, URLs will not be detected or
 		/// highlighted in the message.</param>
-		/// <returns>The dialog result.</returns>
-		/// <returns>The dialog result.</returns>
+		/// <param name="options">Optional options for displaying the message box (different from System.Windows.Forms.MessageBoxOptions)</param>
 		public static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons buttons,
-			MessageBoxIcon icon, LinkClickedEventHandler linkClickedAction = null)
+			MessageBoxIcon icon, LinkClickedEventHandler linkClickedAction = null, FlexibleMessageBoxOptions options = 0)
 		{
-			return FlexibleMessageBoxForm.Show(owner, text, caption, buttons, icon, MessageBoxDefaultButton.Button1, linkClickedAction);
+			return FlexibleMessageBoxForm.Show(owner, text, caption, buttons, icon, MessageBoxDefaultButton.Button1, linkClickedAction, options);
 		}
 		/// <summary>
 		/// Shows the specified message box.
@@ -309,13 +314,13 @@ namespace SIL.Windows.Forms
 		/// <param name="linkClickedAction">optional handler if user clicks a hyperlink (as determined by RichTextBox). Set to
 		/// <seealso cref="BasicLinkClickedEventHandler"/> to get basic handling. If <c>null</c>, URLs will not be detected or
 		/// highlighted in the message.</param>
-		/// <returns>The dialog result.</returns>
-		/// <returns>The dialog result.</returns>
+		/// <param name="options">Optional options for displaying the message box (different from System.Windows.Forms.MessageBoxOptions)</param>
 		public static DialogResult Show(string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon,
-			MessageBoxDefaultButton defaultButton, LinkClickedEventHandler linkClickedAction = null)
+			MessageBoxDefaultButton defaultButton, LinkClickedEventHandler linkClickedAction = null, FlexibleMessageBoxOptions options = 0)
 		{
-			return FlexibleMessageBoxForm.Show(null, text, caption, buttons, icon, defaultButton, linkClickedAction);
+			return FlexibleMessageBoxForm.Show(null, text, caption, buttons, icon, defaultButton, linkClickedAction, options);
 		}
+
 		/// <summary>
 		/// Shows the specified message box.
 		/// </summary>
@@ -328,12 +333,11 @@ namespace SIL.Windows.Forms
 		/// <param name="linkClickedAction">optional handler if user clicks a hyperlink (as determined by RichTextBox). Set to
 		/// <seealso cref="BasicLinkClickedEventHandler"/> to get basic handling. If <c>null</c>, URLs will not be detected or
 		/// highlighted in the message.</param>
-		/// <returns>The dialog result.</returns>
-		/// <returns>The dialog result.</returns>
+		/// <param name="options">Optional options for displaying the message box (different from System.Windows.Forms.MessageBoxOptions)</param>
 		public static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons buttons,
-			MessageBoxIcon icon, MessageBoxDefaultButton defaultButton, LinkClickedEventHandler linkClickedAction = null)
+			MessageBoxIcon icon, MessageBoxDefaultButton defaultButton, LinkClickedEventHandler linkClickedAction = null, FlexibleMessageBoxOptions options = 0)
 		{
-			return FlexibleMessageBoxForm.Show(owner, text, caption, buttons, icon, defaultButton, linkClickedAction);
+			return FlexibleMessageBoxForm.Show(owner, text, caption, buttons, icon, defaultButton, linkClickedAction, options);
 		}
 		#endregion
 		#region Internal form class
@@ -514,13 +518,14 @@ namespace SIL.Windows.Forms
 			/// Initializes a new instance of the <see cref="FlexibleMessageBoxForm"/> class.
 			/// </summary>
 			private FlexibleMessageBoxForm(IWin32Window owner, string text, string caption, MessageBoxButtons buttons,
-				MessageBoxIcon icon, MessageBoxDefaultButton defaultButton, LinkClickedEventHandler linkClickedAction)
+				MessageBoxIcon icon, MessageBoxDefaultButton defaultButton, LinkClickedEventHandler linkClickedAction,
+				FlexibleMessageBoxOptions options)
 			{
 				InitializeComponent();
 				KeyPreview = true;
 				KeyUp += FlexibleMessageBoxForm_KeyUp;
 
-				ShowInTaskbar = false;
+				ShowInTaskbar = FlexibleMessageBox.ShowInTaskbar;
 				// Bind the caption and the message text
 				CaptionText = caption;
 				MessageText = text;
@@ -546,6 +551,7 @@ namespace SIL.Windows.Forms
 				if (owner == null)
 					CenterDialogOnScreen(screen);
 
+				HandleOptions(options);
 			}
 			#endregion
 
@@ -751,7 +757,23 @@ namespace SIL.Windows.Forms
 						break;
 				}
 			}
-			#endregion
+
+			/// <summary>
+			/// Configures the dialog as specified by the options
+			/// </summary>
+			private void HandleOptions(FlexibleMessageBoxOptions options)
+			{
+				if (options == 0)
+				{
+					return;
+				}
+
+				if ((options & FlexibleMessageBoxOptions.AlwaysOnTop) == FlexibleMessageBoxOptions.AlwaysOnTop)
+				{
+					TopMost = true;
+				}
+			}
+			#endregion Private helper functions
 
 			#region Private event handlers
 			/// <summary>
@@ -824,6 +846,7 @@ namespace SIL.Windows.Forms
 			#endregion
 
 			#region Show function
+
 			/// <summary>
 			/// Shows the specified message box.
 			/// </summary>
@@ -836,16 +859,14 @@ namespace SIL.Windows.Forms
 			/// <param name="linkClickedAction">optional handler if user clicks a hyperlink (as determined by RichTextBox). Set to
 			/// <seealso cref="BasicLinkClickedEventHandler"/> to get basic handling. If <c>null</c>, URLs will not be detected or
 			/// highlighted in the message.</param>
-			/// <returns>The dialog result.</returns>
-			/// <returns>The dialog result.</returns>
+			/// <param name="options">Optional options for displaying the message box (different from System.Windows.Forms.MessageBoxOptions)</param>
 			/// <exception cref="Exception">Exceptions might be thrown by the <paramref name="linkClickedAction"/></exception>
 			internal static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons buttons,
-				MessageBoxIcon icon, MessageBoxDefaultButton defaultButton, LinkClickedEventHandler linkClickedAction = null)
+				MessageBoxIcon icon, MessageBoxDefaultButton defaultButton, LinkClickedEventHandler linkClickedAction = null, FlexibleMessageBoxOptions options = 0)
 			{
 				// Create a new instance of the FlexibleMessageBox form
-				using (var flexibleMessageBoxForm = new FlexibleMessageBoxForm(owner, text, caption, buttons,
-					icon, defaultButton, linkClickedAction))
-					return flexibleMessageBoxForm.ShowDialog(owner);				
+				using var flexibleMessageBoxForm = new FlexibleMessageBoxForm(owner, text, caption, buttons, icon, defaultButton, linkClickedAction, options);
+				return flexibleMessageBoxForm.ShowDialog(owner);
 			}
 			#endregion
 		} //class FlexibleMessageBoxForm
