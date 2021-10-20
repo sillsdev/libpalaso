@@ -39,5 +39,6 @@
       <Pack>true</Pack>
       <PackagePath>build</PackagePath>
     </Content>
+    <None Include="app.config" Pack="true" PackagePath="contentFiles\any\any\$(AssemblyTitle).dll.config" />
   </ItemGroup>
 </Project>
