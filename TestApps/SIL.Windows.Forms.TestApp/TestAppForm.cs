@@ -216,7 +216,7 @@ and displays it as HTML.
 			string msg;
 			try
 			{
-				string clipboardText = Clipboard.GetText();
+				string clipboardText = PortableClipboard.GetText();
 				if (clipboardText == String.Empty)
 					throw new ApplicationException("This is fine. It will display the default caption and message");
 				var data = clipboardText.Split(new [] {'\n'}, 2);
@@ -341,6 +341,12 @@ and displays it as HTML.
 		{
 			using (var dlg = new ContributorsForm())
 				dlg.ShowDialog();
+		}
+
+		private void btnShowFormWithModalChild_Click(object sender, EventArgs e)
+		{
+			var parent = new ParentOfModalChild();
+			parent.Show();
 		}
 	}
 }

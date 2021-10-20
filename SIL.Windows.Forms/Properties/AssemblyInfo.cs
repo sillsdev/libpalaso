@@ -25,5 +25,3 @@ using SIL.Acknowledgements;
 [assembly: Acknowledgement("taglib-sharp", Name = "TagLib#", Url = "https://github.com/mono/taglib-sharp",
 	Copyright = "Copyright (C) 2005, 2007 Brian Nickel, Copyright (C) 2006 Novell, Inc., Copyright (C) 2002,2003 Scott Wheeler (Original Implementation)",
 	Location = "./taglib-sharp.dll", LicenseUrl = "https://opensource.org/licenses/LGPL-2.1")]
-[assembly: Acknowledgement("gtk-sharp", Name = "gtk-sharp", Url = "http://www.mono-project.com/docs/gui/gtksharp/",
-	Location = "./gtk-sharp.dll", LicenseUrl = "https://opensource.org/licenses/MIT")]
