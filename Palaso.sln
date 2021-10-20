@@ -116,6 +116,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.TestUtilities.Tests", "SIL.TestUtilities.Tests\SIL.TestUtilities.Tests.csproj", "{CCB5E6CC-8CC1-4248-924E-D4F36CBEF37D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClipboardTestApp", "TestApps\ClipboardTestApp\ClipboardTestApp.csproj", "{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -290,6 +292,10 @@ Global
 		{CCB5E6CC-8CC1-4248-924E-D4F36CBEF37D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCB5E6CC-8CC1-4248-924E-D4F36CBEF37D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCB5E6CC-8CC1-4248-924E-D4F36CBEF37D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -300,6 +306,7 @@ Global
 		{2A206833-C713-4ACB-ACD3-EB971415119E} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
 		{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
 		{CA8F3657-3D85-4C97-81A6-5C212627B2F6} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
+		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0915B762-D4AE-4892-BF4F-AC428A687B02}
