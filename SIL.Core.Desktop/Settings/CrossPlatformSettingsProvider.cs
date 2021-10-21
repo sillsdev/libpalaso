@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -128,7 +127,7 @@ namespace SIL.Settings
 				productName = ProductName;
 			else
 			{
-				var productAttributes =
+			var productAttributes =
 					(AssemblyProductAttribute[])assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), true);
 				if(productAttributes.Length > 0)
 				{
@@ -383,18 +382,6 @@ namespace SIL.Settings
 
 			// Reversing the arguments like this means that second comes before first if it has a LARGER mod time.
 			return new FileInfo(secondConfigPath).LastWriteTimeUtc.CompareTo(new FileInfo(firstConfigPath).LastWriteTimeUtc);
-		}
-
-		/// <summary>
-		/// Verifies that each property has its provider set to <see cref="CrossPlatformSettingsProvider"/>
-		/// </summary>
-		public static void ValidateProperties(SettingsPropertyCollection properties)
-		{
-			foreach (SettingsProperty property in properties)
-			{
-				Debug.Assert(property.Provider is CrossPlatformSettingsProvider,
-					$"Property '{property.Name}' needs the Provider string set to {typeof(CrossPlatformSettingsProvider)}");
-			}
 		}
 
 		public void Reset(SettingsContext context)
