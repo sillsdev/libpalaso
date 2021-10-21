@@ -22,4 +22,7 @@
     <ProjectReference Include="..\SIL.Windows.Forms\SIL.Windows.Forms.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="app.config" Pack="true" PackagePath="contentFiles\any\any\$(AssemblyTitle).dll.config" />
+  </ItemGroup>
 </Project>
