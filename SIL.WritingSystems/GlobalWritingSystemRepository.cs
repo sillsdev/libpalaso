@@ -158,7 +158,7 @@ namespace SIL.WritingSystems
 				// This allows unit tests to set the _defaultBasePath (through reflection)
 				if (string.IsNullOrEmpty(_defaultBasePath))
 				{
-					string basePath = Environment.GetEnvironmentVariable("WSR_ROOT_PATH") ??
+					string basePath = Environment.GetEnvironmentVariable("USER_DATA_HOME") ??
 						(Platform.IsLinux ? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) :
 						Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData));
 					_defaultBasePath = Path.Combine(basePath, "SIL", "WritingSystemRepository");
