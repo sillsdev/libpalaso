@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] `GraphicsManager` class that allows to select desired GTK version.
   Default: GTK2
 - [SIL.Windows.Forms] Options for `FlexibleMessageBox` to show in the taskbar and to show on top of other windows
+- [SIL.Windows.Forms.DblBundle] virtual method `SelectProjectDlgBase.CreateFileDialog()` to allow
+  customization in derived class (#797)
 
 ### Changed
 
