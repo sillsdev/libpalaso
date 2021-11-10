@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] `CssLinkHref` property to `ShowReleaseNotesDialog` to allow linking to CSS file for
     displaying Markdown output.
 - [SIL.Scripture] IScrVerseRef interface (largely extracted from VerseRef)
+- [SIL.Windows.Forms.DblBundle] virtual method `SelectProjectDlgBase.CreateFileDialog()` to allow
+  customization in derived class (#797)
 
 ### Changed
 
