@@ -20,4 +20,8 @@
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="App.config" Pack="true" PackagePath="contentFiles\any\any\$(AssemblyTitle).dll.config" />
+  </ItemGroup>
+
 </Project>
