@@ -10,6 +10,7 @@
 // File: ParentFormBase.cs
 // ---------------------------------------------------------------------------------------------
 using System;
+using System.Drawing;
 using System.Media;
 using System.Windows.Forms;
 using JetBrains.Annotations;
@@ -131,6 +132,12 @@ namespace SIL.Windows.Forms
 					childForm.SelectNextControl(childForm, true, true, true, false);
 			};
 
+			if (childForm.StartPosition == FormStartPosition.CenterParent)
+			{
+				childForm.StartPosition = FormStartPosition.Manual;
+				childForm.Location = new Point(Math.Max(0, Location.X + (Width - childForm.Width) / 2),
+					Math.Max(0, Location.Y + (Height - childForm.Height) / 2));
+			}
 			childForm.Show(this);
 			OnModalFormShown?.Invoke();
 		}
