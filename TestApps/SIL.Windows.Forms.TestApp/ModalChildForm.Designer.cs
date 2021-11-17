@@ -83,6 +83,7 @@ namespace SIL.Windows.Forms.TestApp
 			this.Controls.Add(this.textBox1);
 			this.Controls.Add(this.label1);
 			this.Name = "ModalChildForm";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "ModalChildForm";
 			this.ResumeLayout(false);
 			this.PerformLayout();
