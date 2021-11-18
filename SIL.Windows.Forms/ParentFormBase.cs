@@ -135,8 +135,8 @@ namespace SIL.Windows.Forms
 			if (childForm.StartPosition == FormStartPosition.CenterParent)
 			{
 				childForm.StartPosition = FormStartPosition.Manual;
-				childForm.Location = new Point(Math.Max(0, Location.X + (Width - childForm.Width) / 2),
-					Math.Max(0, Location.Y + (Height - childForm.Height) / 2));
+				childForm.Location = new Point(Math.Max(Location.X, Location.X + (Width - childForm.Width) / 2),
+					Math.Max(Location.Y, Location.Y + (Height - childForm.Height) / 2));
 			}
 			childForm.Show(this);
 			OnModalFormShown?.Invoke();
