@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -159,13 +159,28 @@ namespace SIL.Windows.Forms.SettingProtection
 		/// <summary>
 		/// Allows you to dynamically add a control or ToolStripItem, rather than having to use the winforms designer
 		/// </summary>
+		/// <remarks>
+		/// Equivalent to calling SetSettingsProtection with isProtected true, except that this version allows
+		/// for a component that is not a control.
+		/// </remarks>
 		public void ManageComponent(Component controlOrToolStripItem)
 		{
 			if (_controlIsUnderSettingsProtection.ContainsKey(controlOrToolStripItem))
-			{
 				_controlIsUnderSettingsProtection.Remove(controlOrToolStripItem);
-			}
 			_controlIsUnderSettingsProtection.Add(controlOrToolStripItem, true);
+		}
+
+		/// <summary>
+		/// Allows you to dynamically remove a ToolStripItem (or a control) from settings protection management.
+		/// </summary>
+		/// <remarks>
+		/// Equivalent to calling SetSettingsProtection with isProtected false, except that this version allows
+		/// for a component that is not a control.
+		/// </remarks>
+		public void RemoveManagedComponent(Component controlOrToolStripItem)
+		{
+			if (_controlIsUnderSettingsProtection.ContainsKey(controlOrToolStripItem))
+				_controlIsUnderSettingsProtection.Remove(controlOrToolStripItem);
 		}
 	}
 }

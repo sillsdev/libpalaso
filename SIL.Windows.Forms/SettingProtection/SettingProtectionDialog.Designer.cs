@@ -150,7 +150,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			this._normallyHiddenCheckbox.TabIndex = 2;
 			this._normallyHiddenCheckbox.Text = "Hide the button that opens settings.";
 			this._normallyHiddenCheckbox.UseVisualStyleBackColor = true;
-			this._normallyHiddenCheckbox.CheckedChanged += new System.EventHandler(this.OnNormallHidden_CheckedChanged);
+			this._normallyHiddenCheckbox.CheckedChanged += new System.EventHandler(this.OnNormallyHidden_CheckedChanged);
 			//
 			// betterLabel2
 			//

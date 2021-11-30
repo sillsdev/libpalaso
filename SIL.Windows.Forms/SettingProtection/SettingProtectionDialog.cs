@@ -7,6 +7,32 @@ namespace SIL.Windows.Forms.SettingProtection
 	public partial class SettingProtectionDialog : Form
 	{
 		private bool _didHavePasswordSet;
+		private bool _protectionIsViaMenuItem;
+
+		public bool SettingsProtectionIsViaMenuItem
+		{
+			get => _protectionIsViaMenuItem;
+			set
+			{
+				if (_protectionIsViaMenuItem == value)
+					return;
+				_protectionIsViaMenuItem = value;
+				if (_protectionIsViaMenuItem)
+				{
+					_normallyHiddenCheckbox.Text = LocalizationManager.GetString(
+						"SettingsProtection.NormallyHiddenCheckbox.MenuItem",
+						"Hide the menu item that opens settings.");
+					betterLabel2.Text = LocalizationManager.GetString(
+						"SettingsProtection.CtrlShiftHint.MenuItem",
+						"The menu item will show up when you hold down the Ctrl and Shift keys together.");
+				}
+				else
+				{
+					_normallyHiddenCheckbox.Text = (string)_normallyHiddenCheckbox.Tag;
+					betterLabel2.Text = (string)betterLabel2.Tag;
+				}
+			}
+		}
 
 		public SettingProtectionDialog()
 		{
@@ -30,9 +56,12 @@ namespace SIL.Windows.Forms.SettingProtection
 					"Param 1: product name; Param 2: URL of support page"),
 					SettingsProtectionSingleton.FactoryPassword, SettingsProtectionSingleton.CoreProductName, SettingsProtectionSingleton.ProductSupportUrl);
 			}
+
+			_normallyHiddenCheckbox.Tag = _normallyHiddenCheckbox.Text;
+			betterLabel2.Tag = betterLabel2.Text;
 		}
 
-		private void OnNormallHidden_CheckedChanged(object sender, EventArgs e)
+		private void OnNormallyHidden_CheckedChanged(object sender, EventArgs e)
 		{
 			SettingsProtectionSingleton.Settings.NormallyHidden = _normallyHiddenCheckbox.Checked;
 			_image.Image = SettingsProtectionSingleton.GetImage(48);

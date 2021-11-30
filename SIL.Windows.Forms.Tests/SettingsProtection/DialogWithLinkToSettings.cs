@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 
 namespace SIL.Windows.Forms.Tests.SettingsProtection
@@ -22,12 +22,12 @@ namespace SIL.Windows.Forms.Tests.SettingsProtection
 		private void _customSettingsButton_Click(object sender, EventArgs e)
 		{
 			_settingsProtectionHelper.LaunchSettingsIfAppropriate(() =>
-																	{
-																		using (var dlg = new DialogWithSomeSettings())
-																		{
-																			return dlg.ShowDialog();
-																		}
-																	});
+				{
+					using (var dlg = new DialogWithSomeSettings())
+					{
+						return dlg.ShowDialog();
+					}
+				});
 		}
 	}
 }
