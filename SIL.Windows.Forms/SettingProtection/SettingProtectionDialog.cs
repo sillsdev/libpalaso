@@ -57,6 +57,8 @@ namespace SIL.Windows.Forms.SettingProtection
 					SettingsProtectionSingleton.FactoryPassword, SettingsProtectionSingleton.CoreProductName, SettingsProtectionSingleton.ProductSupportUrl);
 			}
 
+			// Save the original text for possible restoration if SettingsProtectionIsViaMenuItem
+			// is set back to false.
 			_normallyHiddenCheckbox.Tag = _normallyHiddenCheckbox.Text;
 			betterLabel2.Tag = betterLabel2.Text;
 		}
