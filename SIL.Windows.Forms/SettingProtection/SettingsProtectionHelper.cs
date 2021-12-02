@@ -74,14 +74,19 @@ namespace SIL.Windows.Forms.SettingProtection
 			{
 				bool visible = !SettingsProtectionSingleton.Settings.NormallyHidden || ((Control.ModifierKeys & keys) == keys);
 
-				if (component is Control control)
-					control.Visible = visible;
-				else if (component is ToolStripItem item)
-					item.Visible = visible;
-				else
-					throw new InvalidCastException(
-						"Only components which are Controls or ToolStripItems can be under settings protection.");
+				ShowOrHideComponent(component, visible);
 			}
+		}
+
+		private static void ShowOrHideComponent(Component component, bool visible)
+		{
+			if (component is Control control)
+				control.Visible = visible;
+			else if (component is ToolStripItem item)
+				item.Visible = visible;
+			else
+				throw new InvalidCastException(
+					"Only components which are Controls or ToolStripItems can be under settings protection.");
 		}
 
 		private void _checkForCtrlKeyTimer_Tick(object sender, EventArgs e)
@@ -109,7 +114,10 @@ namespace SIL.Windows.Forms.SettingProtection
 			if (isProtected)
 				_componentsUnderSettingsProtection.Add(c);
 			else
+			{
 				_componentsUnderSettingsProtection.Remove(c);
+				ShowOrHideComponent(c, true);
+			}
 		}
 		#endregion
 
@@ -178,7 +186,10 @@ namespace SIL.Windows.Forms.SettingProtection
 			if (isProtected)
 				_componentsUnderSettingsProtection.Add(c);
 			else
+			{
 				_componentsUnderSettingsProtection.Remove(c);
+				ShowOrHideComponent(c, true);
+			}
 		}
 	}
 }
