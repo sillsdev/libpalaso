@@ -80,6 +80,9 @@ namespace SIL.Windows.Forms.SettingProtection
 					control.Visible = visible;
 				else if (pair.Key is ToolStripItem item)
 					item.Visible = visible;
+				else
+					throw new InvalidCastException(
+						"Only components which are Controls or ToolStripItems can be under settings protection.");
 			}
 		}
 
@@ -94,13 +97,7 @@ namespace SIL.Windows.Forms.SettingProtection
 		public bool GetSettingsProtection(Control c)
 		{
 			if (c == null)
-			{
 				throw new ArgumentNullException();
-			}
-//			if (!CanExtend(c))
-//			{
-//				throw new ArgumentException("Control must be derived from TextBoxBase");
-//			}
 
 			return _controlIsUnderSettingsProtection.TryGetValue(c, out var isProtected) && isProtected;
 		}
@@ -146,21 +143,33 @@ namespace SIL.Windows.Forms.SettingProtection
 		/// <remarks>
 		/// Equivalent to calling SetSettingsProtection with isProtected true.
 		/// </remarks>
+		/// <exception cref="ArgumentNullException">controlOrToolStripItem was null</exception>
+		/// <exception cref="ArgumentException">Although this method's signature seems to imply
+		/// that it can take any component, it actually only supports Controls and ToolStripItems.
+		/// For another type of component to be supported, it would have to have a Visible property
+		/// (or some other property or method that could be used to hide or show it) and explicit
+		/// code would need to be added to allow for it.</exception>
 		[PublicAPI]
 		public void ManageComponent(Component controlOrToolStripItem)
 		{
-			if (controlOrToolStripItem == null)
-				throw new ArgumentNullException();
-
-			_controlIsUnderSettingsProtection[controlOrToolStripItem] = true;
+			if (controlOrToolStripItem is Control ctrl)
+				SetSettingsProtection(ctrl, true);
+			else if (controlOrToolStripItem is ToolStripItem item)
+				SetSettingsProtection(item, true);
+			else if (controlOrToolStripItem == null)
+				throw new ArgumentNullException(nameof(controlOrToolStripItem));
+			else
+				throw new ArgumentException("Only components which are Controls or ToolStripItems can be managed.",
+					nameof(controlOrToolStripItem));
 		}
 
 		/// <summary>
 		/// Allows you to dynamically make a ToolStripItem protected (i.e., managed) or not,
 		/// rather than having to use the winforms Designer
 		/// </summary>
+		/// <exception cref="ArgumentNullException">controlOrToolStripItem was null</exception>
 		[PublicAPI]
-		public void SetSettingsProtection(Component c, bool isProtected)
+		public void SetSettingsProtection(ToolStripItem c, bool isProtected)
 		{
 			if (c == null)
 				throw new ArgumentNullException();

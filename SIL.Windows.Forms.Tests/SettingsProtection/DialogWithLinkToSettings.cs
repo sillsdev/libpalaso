@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 
 namespace SIL.Windows.Forms.Tests.SettingsProtection
@@ -17,17 +18,38 @@ namespace SIL.Windows.Forms.Tests.SettingsProtection
 			_settingsProtectionHelper.ManageComponent(_customSettingsButton);
 
 			_settingsProtectionHelper.ManageComponent(_toolStripButtonToHide);
+
+			settingsLauncherButton1.LaunchSettingsCallback = () =>
+			{
+				using var dlg = new DialogWithSomeSettings(false);
+					return dlg.ShowDialog();
+			};
+
+			var toolTip = new Forms.SuperToolTip.SuperToolTip(new Container());
+			try
+			{
+				_settingsProtectionHelper.ManageComponent(toolTip);
+				MessageBox.Show(
+					"Passing a tooltip to SettingsProtectionHelper.ManageComponent should have thrown an exception.",
+					"Unexpected success");
+			}
+			catch (ArgumentException e)
+			{
+				Console.WriteLine("This exception was expected.");
+			}
 		}
 
 		private void _customSettingsButton_Click(object sender, EventArgs e)
 		{
 			_settingsProtectionHelper.LaunchSettingsIfAppropriate(() =>
+			{
+				using var dlg = new DialogWithSomeSettings(true);
 				{
-					using (var dlg = new DialogWithSomeSettings())
-					{
-						return dlg.ShowDialog();
-					}
-				});
+					var result = dlg.ShowDialog();
+					_settingsProtectionHelper.SetSettingsProtection(_toolStripButtonMaybe, dlg.ManageTheMaybeButton);
+					return result;
+				}
+			});
 		}
 	}
 }
