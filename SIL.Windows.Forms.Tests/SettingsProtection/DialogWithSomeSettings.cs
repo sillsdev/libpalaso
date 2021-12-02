@@ -1,12 +1,15 @@
-﻿using System.Windows.Forms;
+using System.Windows.Forms;
 
 namespace SIL.Windows.Forms.Tests.SettingsProtection
 {
 	public partial class DialogWithSomeSettings : Form
 	{
-		public DialogWithSomeSettings()
+		public DialogWithSomeSettings(bool enableMaybeCheckBox)
 		{
 			InitializeComponent();
+			_chkManageMaybeButton.Enabled = enableMaybeCheckBox;
 		}
+
+		public bool ManageTheMaybeButton => _chkManageMaybeButton.Checked;
 	}
 }
