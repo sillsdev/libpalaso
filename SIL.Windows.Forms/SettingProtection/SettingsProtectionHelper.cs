@@ -21,7 +21,7 @@ namespace SIL.Windows.Forms.SettingProtection
 	[ProvideProperty("SettingsProtection", typeof(Control))]
 	public partial class SettingsProtectionHelper : Component, IExtenderProvider
 	{
-		private readonly Dictionary<Component, bool> _controlIsUnderSettingsProtection;
+		private readonly HashSet<Component> _componentsUnderSettingsProtection;
 		private bool _isDisposed;
 
 		public bool CanExtend(object extendee)
@@ -34,7 +34,7 @@ namespace SIL.Windows.Forms.SettingProtection
 		{
 			InitializeComponent();
 
-			_controlIsUnderSettingsProtection = new Dictionary<Component, bool>();
+			_componentsUnderSettingsProtection = new HashSet<Component>();
 
 			if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
 			{
@@ -65,20 +65,18 @@ namespace SIL.Windows.Forms.SettingProtection
 
 		private void UpdateDisplay()
 		{
-			if (_controlIsUnderSettingsProtection == null)//sometimes get a tick before this has been set
+			if (_componentsUnderSettingsProtection == null)//sometimes get a tick before this has been set
 				return;
 
-			var keys = (Keys.Control | Keys.Shift);
+			var keys = Keys.Control | Keys.Shift;
 
-			foreach (var pair in _controlIsUnderSettingsProtection)
+			foreach (var component in _componentsUnderSettingsProtection)
 			{
-				bool controlIsNotSensitiveToProtectionMode = !pair.Value;
+				bool visible = !SettingsProtectionSingleton.Settings.NormallyHidden || ((Control.ModifierKeys & keys) == keys);
 
-				bool visible = controlIsNotSensitiveToProtectionMode || !SettingsProtectionSingleton.Settings.NormallyHidden || ((Control.ModifierKeys & keys) == keys);
-
-				if (pair.Key is Control control)
+				if (component is Control control)
 					control.Visible = visible;
-				else if (pair.Key is ToolStripItem item)
+				else if (component is ToolStripItem item)
 					item.Visible = visible;
 				else
 					throw new InvalidCastException(
@@ -99,7 +97,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			if (c == null)
 				throw new ArgumentNullException();
 
-			return _controlIsUnderSettingsProtection.TryGetValue(c, out var isProtected) && isProtected;
+			return _componentsUnderSettingsProtection.Contains(c);
 		}
 
 		[PublicAPI]
@@ -108,7 +106,10 @@ namespace SIL.Windows.Forms.SettingProtection
 			if (c == null)
 				throw new ArgumentNullException();
 
-			_controlIsUnderSettingsProtection[c] = isProtected;
+			if (isProtected)
+				_componentsUnderSettingsProtection.Add(c);
+			else
+				_componentsUnderSettingsProtection.Remove(c);
 		}
 		#endregion
 
@@ -174,7 +175,10 @@ namespace SIL.Windows.Forms.SettingProtection
 			if (c == null)
 				throw new ArgumentNullException();
 
-			_controlIsUnderSettingsProtection[c] = isProtected;
+			if (isProtected)
+				_componentsUnderSettingsProtection.Add(c);
+			else
+				_componentsUnderSettingsProtection.Remove(c);
 		}
 	}
 }
