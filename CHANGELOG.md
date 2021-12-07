@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Options for `FlexibleMessageBox` to show in the taskbar and to show on top of other windows
 - [SIL.Windows.Forms.DblBundle] virtual method `SelectProjectDlgBase.CreateFileDialog()` to allow
   customization in derived class (#797)
+- [SIL.Windows.Forms.SettingProtection] overload of SetSettingsProtection method that takes a ToolStripItem
 
 ### Changed
 
@@ -41,6 +42,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   get loaded dynamically at runtime
 - [SIL.Windows.Forms] `PortableClipboard` uses unmanaged libgtk/libgdk methods instead of using
   gtk-sharp
+- [SIL.Windows.Forms.SettingProtection] Deprecated ManageComponent method
 
 ### Fixed
 

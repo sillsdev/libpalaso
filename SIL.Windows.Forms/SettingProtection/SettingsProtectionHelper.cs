@@ -89,6 +89,28 @@ namespace SIL.Windows.Forms.SettingProtection
 					"Only components which are Controls or ToolStripItems can be under settings protection.");
 		}
 
+		private void SetSettingsProtectionInternal(Component controlOrToolStripItem, bool isProtected)
+		{
+			if (controlOrToolStripItem == null)
+				throw new ArgumentNullException();
+
+			if (!(controlOrToolStripItem is ToolStripItem) && !(controlOrToolStripItem is Control))
+				throw new ArgumentException("Only components which are Controls or ToolStripItems can be managed.",
+					nameof(controlOrToolStripItem));
+
+			if (isProtected)
+			{
+				_componentsUnderSettingsProtection.Add(controlOrToolStripItem);
+				// No need to call ShowOrHideComponent explicitly. It will get called when the
+				// timer fires.
+			}
+			else
+			{
+				_componentsUnderSettingsProtection.Remove(controlOrToolStripItem);
+				ShowOrHideComponent(controlOrToolStripItem, true);
+			}
+		}
+
 		private void _checkForCtrlKeyTimer_Tick(object sender, EventArgs e)
 		{
 			UpdateDisplay();
@@ -106,19 +128,8 @@ namespace SIL.Windows.Forms.SettingProtection
 		}
 
 		[PublicAPI]
-		public void SetSettingsProtection(Control c, bool isProtected)
-		{
-			if (c == null)
-				throw new ArgumentNullException();
-
-			if (isProtected)
-				_componentsUnderSettingsProtection.Add(c);
-			else
-			{
-				_componentsUnderSettingsProtection.Remove(c);
-				ShowOrHideComponent(c, true);
-			}
-		}
+		public void SetSettingsProtection(Control c, bool isProtected) =>
+			SetSettingsProtectionInternal(c, isProtected);
 		#endregion
 
 		#region IComponent Members
@@ -147,7 +158,8 @@ namespace SIL.Windows.Forms.SettingProtection
 		#endregion
 
 		/// <summary>
-		/// Allows you to dynamically add a control or ToolStripItem, rather than having to use the winforms Designer
+		/// Deprecated: Allows you to dynamically add a control or ToolStripItem, rather than
+		/// having to use the winforms Designer
 		/// </summary>
 		/// <remarks>
 		/// Equivalent to calling SetSettingsProtection with isProtected true.
@@ -158,38 +170,17 @@ namespace SIL.Windows.Forms.SettingProtection
 		/// For another type of component to be supported, it would have to have a Visible property
 		/// (or some other property or method that could be used to hide or show it) and explicit
 		/// code would need to be added to allow for it.</exception>
-		[PublicAPI]
-		public void ManageComponent(Component controlOrToolStripItem)
-		{
-			if (controlOrToolStripItem is Control ctrl)
-				SetSettingsProtection(ctrl, true);
-			else if (controlOrToolStripItem is ToolStripItem item)
-				SetSettingsProtection(item, true);
-			else if (controlOrToolStripItem == null)
-				throw new ArgumentNullException(nameof(controlOrToolStripItem));
-			else
-				throw new ArgumentException("Only components which are Controls or ToolStripItems can be managed.",
-					nameof(controlOrToolStripItem));
-		}
+		[PublicAPI, Obsolete("Use SetSettingsProtection instead")]
+		public void ManageComponent(Component controlOrToolStripItem) =>
+			SetSettingsProtectionInternal(controlOrToolStripItem, true);
 
 		/// <summary>
 		/// Allows you to dynamically make a ToolStripItem protected (i.e., managed) or not,
 		/// rather than having to use the winforms Designer
 		/// </summary>
-		/// <exception cref="ArgumentNullException">controlOrToolStripItem was null</exception>
+		/// <exception cref="ArgumentNullException">toolStripItem was null</exception>
 		[PublicAPI]
-		public void SetSettingsProtection(ToolStripItem c, bool isProtected)
-		{
-			if (c == null)
-				throw new ArgumentNullException();
-
-			if (isProtected)
-				_componentsUnderSettingsProtection.Add(c);
-			else
-			{
-				_componentsUnderSettingsProtection.Remove(c);
-				ShowOrHideComponent(c, true);
-			}
-		}
+		public void SetSettingsProtection(ToolStripItem toolStripItem, bool isProtected) =>
+			SetSettingsProtectionInternal(toolStripItem, isProtected);
 	}
 }
