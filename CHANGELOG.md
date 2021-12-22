@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.WritingSystems] Allow specifying an alias to another Writing System for changing between upper- and lowercase
 - [SIL.Core] Extension method to get longest useful substring
 - [SIL.Core] Extension method IsLikelyWordForming to include letters, format characters, PUA and marks (diacritics, etc.)
+- [SIL.Windows.Forms] Caller can override the default save image metadata action from the image toolbox
 
 ### Changed
 
@@ -109,7 +110,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle.Tests] Create nuget package
 - [SIL.Windows.Forms] Use the new Registered trademark logo (in About Box). Remove 132x148 logo.
 - [SIL.Windows.Forms] Use [Markdig](https://github.com/lunet-io/markdig) instead of
-    [MarkdownDeep.NET](https://www.toptensoftware.com/markdowndeep/)
+  [MarkdownDeep.NET](https://www.toptensoftware.com/markdowndeep/)
 
 ### Fixed
 
@@ -141,7 +142,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   on both Windows and Linux (although the limitations what works and what doesn't work remain the
   same)
 - [SIL.Media] cleanup of `AudioSession` API: rename `AudioIrrKlangSession` to `WindowsAudioSession`.
-  `AudioAlsaSession` and `WindowsAudioSession` are now  internal (they were never intended to
+  `AudioAlsaSession` and `WindowsAudioSession` are now internal (they were never intended to
   be used directly)
 - [SIL.Media] move some interfaces around so that they live in `SIL.Media` instead of
   `SIL.Media.Naudio`: `IAudioRecorder`, `RecordingState`, `IAudioPlayer`
