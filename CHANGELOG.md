@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.WritingSystems] Update langtags.json to the latest
 - [SIL.Scripture] Made VerseRef class implement new IScrVerseRef interface
 - [SIL.Forms.Scripture] Changed VerseControl to use IScrVerseRef and not depend directly on ScrVers
+- [SIL.Scripture] VerseRef.TrySetVerseUnicode: Improve handling of non-decimal numerals and surrogate pair numerals (#1000)
 
 ### Fixed
 

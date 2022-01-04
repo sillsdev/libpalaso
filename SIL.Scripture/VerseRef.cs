@@ -5,6 +5,7 @@ using System.Linq;
 using System.Diagnostics;
 using System.Text;
 using JetBrains.Annotations;
+using System.Globalization;
 
 namespace SIL.Scripture
 {
@@ -316,19 +317,59 @@ namespace SIL.Scripture
 			for (int i = 0; i < verseStr.Length; i++)
 			{
 				char ch = verseStr[i];
-				if (romanOnly ? (ch < '0' || ch > '9') : !char.IsDigit(ch))
+				if (!char.IsSurrogate(ch))
 				{
-					if (i == 0)
-						vNum = -1;
-					return false;
-				}
+					switch (char.GetUnicodeCategory(ch))
+					{
+						case UnicodeCategory.DecimalDigitNumber:
+							if (romanOnly ? (ch < '0' || ch > '9') : !char.IsDigit(ch))
+							{
+								if (i == 0)
+									vNum = -1;
+								return false;
+							}
 
-				vNum = (short)(vNum * 10 + (romanOnly ? ch - '0' : char.GetNumericValue(ch)));
-				if (vNum > bcvMaxValue)
+							vNum = (short)(vNum * 10 + (romanOnly ? ch - '0' : char.GetNumericValue(ch)));
+							if (vNum > bcvMaxValue)
+							{
+								// whoops, we got too big!
+								vNum = -1;
+								return false;
+							}
+
+							break;
+						case UnicodeCategory.Surrogate:
+							vNum = (short)(vNum * 10 + (char.GetNumericValue(verseStr, i)));
+
+							if (vNum > bcvMaxValue)
+							{
+								// whoops, we got too big!
+								vNum = -1;
+								return false;
+							}
+							break;
+						case UnicodeCategory.LetterNumber:
+						case UnicodeCategory.OtherNumber:
+							vNum += (short)char.GetNumericValue(verseStr, i);
+							break;
+						default:
+							if (i == 0)
+								vNum = -1;
+							return false;
+					}
+
+				}
+				else if (i + 1 < verseStr.Length && char.IsSurrogatePair(verseStr[i], verseStr[i + 1]))
 				{
-					// whoops, we got too big!
-					vNum = -1;
-					return false;
+					vNum = (short)(vNum * 10 + (char.GetNumericValue(verseStr, i)));
+
+					if (vNum > bcvMaxValue)
+					{
+						// whoops, we got too big!
+						vNum = -1;
+						return false;
+					}
+
 				}
 			}
 			return true;

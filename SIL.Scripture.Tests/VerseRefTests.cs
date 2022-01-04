@@ -2076,9 +2076,11 @@ namespace SIL.Scripture.Tests
 		[TestCase("ะ", ExpectedResult = -1, TestName = "Thai non-numeral")]
 		[TestCase("᠔-᠔", ExpectedResult = 4, TestName = "Mongolian complex verse")]
 		[TestCase("᠔ᠠ", ExpectedResult = 4, TestName = "Mongolian complex verse - lettered")]
-		[TestCase("二十", ExpectedResult = 20, TestName = "Japanese numeral", IgnoreReason = "Non-decimal numeral systems not yet implemented. (See issue #1000.)")]
-		[TestCase("יא", ExpectedResult = 11, TestName = "Hebrew numeral", IgnoreReason = "Non-decimal numeral systems not yet implemented. (See issue #1000.)")]
-		[TestCase("\U0001113A\U00011138", ExpectedResult = 42, TestName = "Chakma numeral", IgnoreReason = "Surrogate pair handling not yet implemented. (See issue #1000.)")]
+		[TestCase("二十", ExpectedResult = 20, TestName = "Japanese numeral", IgnoreReason = "Non-decimal numeral systems not yet implemented. See issue #1000")]
+		[TestCase("יא", ExpectedResult = 11, TestName = "Hebrew numeral", IgnoreReason = "Non-decimal numeral systems not yet implemented. See issue #1000")]
+		[TestCase("\U0001113A\U00011138", ExpectedResult = 42, TestName = "Chakma numeral")]
+		[TestCase("Ⅻ", ExpectedResult = 12, TestName = "Roman numeral LetterNumber")]
+		[TestCase("፹", ExpectedResult = 80, TestName = "Ethiopic numeral OtherNumber")]
 		public int TrySetVerseUnicode_InterpretNumerals(string verseStr)
 		{
 			VerseRef vref = new VerseRef("EXO 6:1");
