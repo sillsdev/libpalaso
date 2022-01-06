@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Fix bug where `PalasoImage` disposes of its `Image` prematurely
 - [SIL.Windows.Forms] Save non-CC licenses properly in images
 - [SIL.Windows.Forms.Keyboarding] Avoid crashes in cases where Ibus connection dropped
+- [SIL.Windows.Forms.Keyboarding] Copy `SIL.Windows.Forms.Keyboarding.dll.config` to output directory
 - [SIL.WritingSystems] Fix case mismatch with `needsCompiling` attribute
 
 ## [8.0.0] - 2021-03-04
