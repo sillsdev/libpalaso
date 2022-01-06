@@ -52,4 +52,13 @@
     <AssemblySearchPaths>$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
   </PropertyGroup>
 
+  <Target Name="CollectRuntimeOutputs" BeforeTargets="_GetPackageFiles">
+    <ItemGroup>
+      <None Include="$(PackageId).props" Pack="true" PackagePath="build" />
+      <None Include="$(PackageId).props" Pack="true" PackagePath="buildMultiTargeting" />
+      <None Include="$(PackageId).targets" Pack="true" PackagePath="build" />
+      <None Include="$(PackageId).targets" Pack="true" PackagePath="buildMultiTargeting" />
+    </ItemGroup>
+  </Target>
+
 </Project>
