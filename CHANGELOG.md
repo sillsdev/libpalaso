@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.DblBundle] virtual method `SelectProjectDlgBase.CreateFileDialog()` to allow
   customization in derived class (#797)
 - [SIL.Windows.Forms.SettingProtection] overload of SetSettingsProtection method that takes a ToolStripItem
+- [SIL.Core] Extension method to get longest useful substring
 
 ### Changed
 

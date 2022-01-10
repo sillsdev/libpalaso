@@ -431,5 +431,211 @@ namespace SIL.Tests.Extensions
 			foreach (var orig in directorySeparators.Select(separator => $"{prefix}{separator}.."))
 				Assert.AreEqual(orig, orig.SanitizePath('_'));
 		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Test the LongestUsefulCommonSubstring method
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase("Hello", "Hello", ExpectedResult = "Hello")] // two equal strings
+		[TestCase("Hello over there", "Hello over here",
+			ExpectedResult = "Hello over")] // LCS at the start
+		[TestCase("I want to be over there", "You want to be over here",
+			ExpectedResult = "want to be over")] // LCS in the middle
+		[TestCase("Will you come to visit my relatives?", "Do I ever visit my relatives?",
+			ExpectedResult = "visit my relatives?")] // LCS at the end
+		[TestCase("This sentence has common words", "This paragraph has common words",
+			ExpectedResult = "has common words")] // two common strings, find the longest
+		[TestCase("frog frog snake frog frog frog frog", "frog frog frog snake frog frog",
+			ExpectedResult = "frog frog snake frog frog")] // repeated words
+		public string LongestUsefulCommonSubstring_Basic(string s1, string s2)
+		{
+			// two equal strings
+			var result = s1.GetLongestUsefulCommonSubstring(s2, out bool fWholeWord, .15);
+			Assert.IsTrue(fWholeWord);
+			return result;
+		}
+
+		/// <summary>
+		/// Strings have nothing at all in common
+		/// </summary>
+		[TestCase("We have nothing in common", "absolutely nill items")]
+		// pathological cases
+		[TestCase("", "")]
+		[TestCase(null, "")]
+		[TestCase("", "Hello there")]
+		public void NoCommonString(string s1, string s2)
+		{
+			Assert.AreEqual(string.Empty, s1.GetLongestUsefulCommonSubstring(s2, out bool _, 0.15));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Test the LongestUsefulCommonSubstring method. This test ensures that if a useful
+		/// substring contains one or more whole words that parts of adjacent words will not be
+		/// included.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void LongestUsefulCommonSubstring_AvoidPartialWordsInIsolatingLanguages()
+		{
+			bool fWholeWord;
+
+			Assert.AreEqual("over here", "Jello over here".GetLongestUsefulCommonSubstring(
+				"Hello over here", out fWholeWord, .15));
+			Assert.IsTrue(fWholeWord);
+
+			Assert.AreEqual("over here", "Come over heretic over here.".GetLongestUsefulCommonSubstring(
+				"cover here over here", out fWholeWord, .15));
+			Assert.IsTrue(fWholeWord);
+
+			Assert.AreEqual("thumb", "Come over heretic thumb mover here.".GetLongestUsefulCommonSubstring("cover here over here thumb", out fWholeWord, .15));
+			Assert.IsTrue(fWholeWord);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Test the LongestUsefulCommonSubstring method when a minimum percentage is not
+		/// supplied. This test ensures that if the longest substring contains only part of one
+		/// word, the match will not be returned.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void LongestUsefulCommonSubstring_OnlyConsiderWholeWords()
+		{
+			bool fWholeWord;
+
+			// No whole-word match
+			Assert.AreEqual(string.Empty, "Mimamamedijoquenofueraafuera".GetLongestUsefulCommonSubstring(
+				"Mipamamedijoquenofueraalaiglesia", out fWholeWord));
+
+			// Use shorter whole-word match instead of longer partial-word match.
+			Assert.AreEqual("over", "Come over heretic big thumbsucker mover here.".GetLongestUsefulCommonSubstring("cover here over here big thumbelina", out fWholeWord));
+			Assert.IsTrue(fWholeWord);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Test the LongestUsefulCommonSubstring method. This test ensures that if a useful substring
+		/// contains only part of one word, the match will be returned as long as there are no
+		/// whole-word matches.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void LongestUsefulCommonSubstring_AllowPartialWordInAgglutinativeLanguages()
+		{
+			bool fWholeWord;
+
+			Assert.AreEqual("amamedijoquenofueraa", StringExtensions.GetLongestUsefulCommonSubstring(
+				"Mimamamedijoquenofueraafuera", "Mipamamedijoquenofueraalaiglesia", out fWholeWord, .15));
+			Assert.IsFalse(fWholeWord);
+
+			// Use shorter whole-word match instead of longer partial-word match.
+			Assert.AreEqual("over", "Come over heretic big thumbsucker mover here.".GetLongestUsefulCommonSubstring("cover here over here big thumbelina", out fWholeWord, .15));
+			Assert.IsTrue(fWholeWord);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Test the LongestUsefulCommonSubstring method. This test ensures that adjacent
+		/// punctuation or whitespace is not included in whole-word matches.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase("\"best friends!\"", "best friends.", ExpectedResult = "best friends")]
+		[TestCase("We are best friends.", "I am the best; friends are worthless.", ExpectedResult = "friends")]
+		[TestCase("\"best friends!\"", "\"We are best friends!\"", ExpectedResult = "best friends!\"")]
+		[TestCase("\"You were best friends!\"", "We are best friends!", ExpectedResult = "best friends!")]
+		[TestCase("best friends forever.", "I am the best; friends are nice.", ExpectedResult = "friends")]
+		public string LongestUsefulCommonSubstring_Punctuation(string s1, string s2)
+		{
+			// two equal strings
+			var result = s1.GetLongestUsefulCommonSubstring(s2, out bool fWholeWord, .15);
+			Assert.IsTrue(fWholeWord);
+			return result;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Test the LongestUsefulCommonSubstring method. This test ensures that ORCs don't match.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void LongestUsefulCommonSubstring_PreventOrcMatching_WholeWordMatch()
+		{
+			bool fWholeWord;
+
+			Assert.AreEqual("friends", StringExtensions.GetLongestUsefulCommonSubstring(
+				"best " + StringExtensions.kObjReplacementChar + " friends",
+				"best " + StringExtensions.kObjReplacementChar + " friends", out fWholeWord, .15));
+			Assert.IsTrue(fWholeWord);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Test the LongestUsefulCommonSubstring method. This test tests that leading punctuation is
+		/// included in the match.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void LongestUsefulCommonSubstring_LeadingPunctuationWithOrc()
+		{
+			bool fWholeWord;
+
+			Assert.AreEqual("\u00BFEntonces que\u0301", StringExtensions.GetLongestUsefulCommonSubstring(
+				"\u00BFEntonces que\u0301 " + StringExtensions.kObjReplacementChar + "?",
+				"\u00BFEntonces que\u0301 " + StringExtensions.kObjReplacementChar + "?", out fWholeWord, .15));
+			Assert.IsTrue(fWholeWord);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Test the LongestUsefulCommonSubstring method. This test ensures that ORCs don't match
+		/// when matching partial words.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void LongestUsefulCommonSubstring_PreventOrcMatching_PartialWordMatch()
+		{
+			bool fWholeWord;
+
+			Assert.AreEqual(" f", StringExtensions.GetLongestUsefulCommonSubstring(
+				"floppy " + StringExtensions.kObjReplacementChar + " friends",
+				"best " + StringExtensions.kObjReplacementChar + " forks", out fWholeWord, .15));
+			Assert.IsFalse(fWholeWord);
+        }
+
+        /// ------------------------------------------------------------------------------------
+        /// <summary>
+        /// Test the LongestUsefulCommonSubstring method. This test ensures that ORCs don't match
+        /// when matching partial words.
+        /// </summary>
+        /// ------------------------------------------------------------------------------------
+        [Test]
+        public void LongestUsefulCommonSubstring_PreventOrcMatching_OnlyOrcsAndWhitespaceMatch()
+        {
+            bool fWholeWord;
+
+            Assert.AreEqual(string.Empty, StringExtensions.GetLongestUsefulCommonSubstring(
+                StringExtensions.kObjReplacementChar + " " + StringExtensions.kObjReplacementChar + "ab?",
+                StringExtensions.kObjReplacementChar + " " + StringExtensions.kObjReplacementChar + "?", out fWholeWord, .15));
+            Assert.IsFalse(fWholeWord);
+        }
+
+        /// ------------------------------------------------------------------------------------
+        /// <summary>
+        /// Test the LongestUsefulCommonSubstring method. This test ensures that ORCs don't match
+        /// when matching partial words.
+        /// </summary>
+        /// ------------------------------------------------------------------------------------
+        [Test]
+        public void LongestUsefulCommonSubstring_PreventOrcMatching_OneStringIsAllOrcsAndSpaces()
+        {
+            bool fWholeWord;
+
+            Assert.AreEqual(string.Empty, StringExtensions.GetLongestUsefulCommonSubstring(
+                StringExtensions.kObjReplacementChar + " " + StringExtensions.kObjReplacementChar + " " + StringExtensions.kObjReplacementChar + " " + StringExtensions.kObjReplacementChar + " ",
+                StringExtensions.kObjReplacementChar + " " + StringExtensions.kObjReplacementChar + " " + StringExtensions.kObjReplacementChar + "a " + StringExtensions.kObjReplacementChar + " ", out fWholeWord, .15));
+            Assert.IsFalse(fWholeWord);
+        }
 	}
 }

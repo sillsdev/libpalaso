@@ -379,5 +379,150 @@ namespace SIL.Extensions
 
 			return sb.ToString().Normalize(NormalizationForm.FormC);
 		}
+
+		/// <summary>
+		/// Gets the longest substring that two strings have in common. The substring returned
+		/// will either be one or more contiguous whole words or a substring that is part of a
+		/// single word (if so requested by the caller). In the latter case, the returned
+		/// substring must be at least <paramref name="minPctForPartialWordMatch"/> of the
+		/// total string length to be considered useful.
+		/// </summary>
+		/// <param name="s1">The first string.</param>
+		/// <param name="s2">The other string.</param>
+		/// <param name="foundWholeWords">Indicates whether the substring being returned is one
+		/// or more whole words (undefined if no useful substring is found)</param>
+		/// <param name="minPctForPartialWordMatch">If set to <c>1.0</c> only whole-word
+		/// substrings will be considered useful. Otherwise, this indicates the minimum
+		/// percentage of the shorter string that must be in common between the two in order
+		/// for it to be considered useful.</param>
+		/// <returns>The longest whole-word (or otherwise "useful") substring that two strings
+		/// have in common.</returns>
+		public static string GetLongestUsefulCommonSubstring(this string s1, string s2,
+			out bool foundWholeWords, double minPctForPartialWordMatch = 1.0)
+		{
+			const string kszObject = "\uFFFC";
+			foundWholeWords = true;
+
+			if (string.IsNullOrEmpty(s1) || string.IsNullOrEmpty(s2))
+				return string.Empty;
+
+			string bestMatch = string.Empty;
+			for (int ich = 0; ich + bestMatch.Length < s1.Length; ich++)
+			{
+				if (s1[ich] == kObjReplacementChar || IsWhiteSpace(s1[ich]))
+					continue;
+
+				int cchMatch = bestMatch.Trim().Length;
+				string bestCandidate = string.Empty;
+
+				do
+				{
+					cchMatch++;
+				}
+				while (ich + cchMatch < s1.Length && IsLetter(s1[ich + cchMatch])); // Need CPE?
+
+				//if (cchMatch > maxLength)
+				//{
+				//    ich += cchMatch;
+				//    continue;
+				//}
+				string candidate = s1.Substring(ich, cchMatch);
+				int ichOrc = candidate.IndexOf(kszObject, StringComparison.Ordinal);
+				if (ichOrc >= 0)
+				{
+					ich += ichOrc;
+					continue;
+				}
+				int ichMatch = 0;
+				do
+				{
+					ichMatch = s2.IndexOf(candidate, ichMatch, StringComparison.Ordinal);
+					if (ichMatch < 0)
+						break;
+					bestCandidate = candidate;
+					if (ich + cchMatch == s1.Length || s1[ich + cchMatch] == kObjReplacementChar)
+						break;
+					if (!IsLetter(s1[ich + cchMatch]))
+					{
+						if (!IsWhiteSpace(s1[ich + cchMatch]))
+							candidate = s1.Substring(ich, cchMatch + 1); // include punctuation
+						cchMatch++;
+						//if (cchMatch > maxLength)
+						//    break;
+					}
+					else
+					{
+						do
+						{
+							cchMatch++;
+						}
+						while (ich + cchMatch < s1.Length && IsLetter(s1[ich + cchMatch])); // Need CPE?
+						//if (cchMatch > maxLength)
+						//    break;
+						candidate = s1.Substring(ich, cchMatch);
+					}
+				} while (true);
+				if (bestCandidate.Trim().Length > bestMatch.Trim().Length)
+					bestMatch = bestCandidate;
+				if (IsLetter(s1[ich]))
+				{
+					ich = s1.IndexOf(" ", ich, StringComparison.Ordinal);
+					if (ich < 0)
+						break;
+				}
+			}
+
+			if (bestMatch.Length > 0 || minPctForPartialWordMatch.Equals(1.0))
+				return bestMatch;
+
+			foundWholeWords = false;
+
+			string longestStr, shortestStr;
+			if (s1.Length > s2.Length)
+			{
+				longestStr = s1;
+				shortestStr = s2;
+			}
+			else
+			{
+				longestStr = s2;
+				shortestStr = s1;
+			}
+			int cchMinUsefulMatch = (int)(minPctForPartialWordMatch * shortestStr.Length);
+			int shortestLen = shortestStr.Length;
+			int cchBestMatch = 0;
+			for (int ich = 0; ich < shortestLen - cchMinUsefulMatch; ich++)
+			{
+				int cchMatch = cchMinUsefulMatch;
+				string bestCandidate = string.Empty;
+				string candidate = shortestStr.Substring(ich, cchMatch);
+				int ichOrc = candidate.IndexOf(kszObject, StringComparison.Ordinal);
+				if (ichOrc >= 0)
+				{
+					ich += ichOrc;
+					continue;
+				}
+				int ichMatch = 0;
+				do
+				{
+					ichMatch = longestStr.IndexOf(candidate, ichMatch, StringComparison.Ordinal);
+					if (ichMatch < 0 || ichMatch < shortestLen && shortestStr[ichMatch] == kObjReplacementChar)
+						break;
+					bestCandidate = candidate;
+					if (ich + cchMatch == shortestLen)
+						break;
+                    if (shortestStr[ich + cchMatch] == kObjReplacementChar)
+                        break;
+					candidate = shortestStr.Substring(ich, ++cchMatch);
+				} while (true);
+				if (cchMatch > cchBestMatch && bestCandidate.Any(c => !IsWhiteSpace(c)))
+				{
+					cchMinUsefulMatch = cchBestMatch = cchMatch;
+					bestMatch = bestCandidate;
+				}
+			}
+
+			return bestMatch;
+		}
 	}
 }
