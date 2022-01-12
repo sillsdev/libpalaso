@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace SIL.Windows.Forms.SettingProtection
 {
@@ -24,7 +24,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			if(!_isDisposed)
 			{
 				_isDisposed = true;
-				_controlIsUnderSettingsProtection.Clear();
+				_componentsUnderSettingsProtection.Clear();
 			}
 		}
 

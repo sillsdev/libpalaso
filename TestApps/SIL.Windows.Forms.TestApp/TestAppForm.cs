@@ -216,7 +216,7 @@ and displays it as HTML.
 			string msg;
 			try
 			{
-				string clipboardText = Clipboard.GetText();
+				string clipboardText = PortableClipboard.GetText();
 				if (clipboardText == String.Empty)
 					throw new ApplicationException("This is fine. It will display the default caption and message");
 				var data = clipboardText.Split(new [] {'\n'}, 2);
@@ -251,8 +251,9 @@ and displays it as HTML.
 			switch (option)
 			{
 				case 0:
-					FlexibleMessageBox.Show(this, msg, handler);
-					break;
+					msg += "\nThis message box is always on top!";
+					FlexibleMessageBox.Show(this, msg, handler, FlexibleMessageBoxOptions.AlwaysOnTop);
+					return true;
 				case 1:
 					FlexibleMessageBox.Show(this, msg, caption, handler);
 					break;
@@ -276,7 +277,8 @@ and displays it as HTML.
 					msg += "\nClick Retry to display another version of the message box.";
 					return FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.RetryCancel, handler) == DialogResult.Retry;
 				case 8:
-					FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.OK, MessageBoxIcon.Stop, handler);
+					msg += "\nThis message box is always on top!";
+					FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.OK, MessageBoxIcon.Stop, handler, FlexibleMessageBoxOptions.AlwaysOnTop);
 					break;
 				default:
 					msg += "\nWould you like to display another version of the message box?";
@@ -341,6 +343,12 @@ and displays it as HTML.
 		{
 			using (var dlg = new ContributorsForm())
 				dlg.ShowDialog();
+		}
+
+		private void btnShowFormWithModalChild_Click(object sender, EventArgs e)
+		{
+			var parent = new ParentOfModalChild();
+			parent.Show();
 		}
 	}
 }

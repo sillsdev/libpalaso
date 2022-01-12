@@ -482,57 +482,46 @@ namespace SIL.Scripture.Tests
 		/// Test the MakeReferenceString() method.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void MakeReferenceString()
+		[TestCase(ExpectedResult = "GEN 1:1")]
+		public string MakeReferenceString_EndRefIsDefault()
 		{
-			// The first test passes chap./vrs. separator and bridge characters that we know
-			// would never be hardcoded in order to make sure those characters are not hardcoded.
-			Assert.AreEqual("MAT 5#7", BCVRef.MakeReferenceString(new BCVRef(40, 5, 7), 
-				new BCVRef(40, 5, 7), "#", "!"));
-			
-			Assert.AreEqual("MAT 5:7-9", BCVRef.MakeReferenceString(
-				new BCVRef(40, 5, 7), new BCVRef(40, 5, 9), ":", "-"));
-			
-			Assert.AreEqual("GEN 1:1", BCVRef.MakeReferenceString(
-				new BCVRef(1, 1, 1), new BCVRef(), ":", "-"));
+			return BCVRef.MakeReferenceString(new BCVRef(1, 1, 1), new BCVRef(), ":", "-");
+		}
 
-			Assert.AreEqual("GEN 5:5", BCVRef.MakeReferenceString(
-				new BCVRef(1, 5, 5), new BCVRef(1, 5, 5), ":", "-"));
+		// The first two cases pass chap./vrs. separator and bridge characters that we know
+		// would never be hardcoded in order to make sure those characters are not hardcoded.
+		[TestCase(40, 5, 7, 40, 5, 7, "#", "!", ExpectedResult = "MAT 5#7")]
+		[TestCase(40, 5, 7, 40, 5, 9, "#", "!", ExpectedResult = "MAT 5#7!9")]
+		[TestCase(1, 5, 5, 1, 5, 5, ":", "-", ExpectedResult = "GEN 5:5")]
+		[TestCase(66, 22, 58, 66, 22, 58, ":", "-", ExpectedResult = "REV 22:58")]
+		[TestCase(41, 12, 34, 41, 14, 56, ":", "-", ExpectedResult = "MRK 12:34-14:56")]
+		// Chapter-only references
+		[TestCase(41, 1, 0, 41, 2, 0, ":", "-", ExpectedResult = "MRK 1-2")]
+		[TestCase(41, 5, 0, 41, 10, 0, ":", "-", ExpectedResult = "MRK 5-10")]
+		// Bridges where one verse is 0 (ill-formed)
+		[TestCase(41, 1, 2, 41, 2, 0, ":", "-", ExpectedResult = "MRK 1:2-2:0")]
+		[TestCase(41, 10, 0, 41, 12, 34, ":", "-", ExpectedResult = "MRK 10:0-12:34")]
+		public string MakeReferenceString(int startBook, int startChapter, int startVerse,
+			int endBook, int endChapter, int endVerse, string cvSeparator, string bridge)
+		{
+			return BCVRef.MakeReferenceString(new BCVRef(startBook, startChapter, startVerse),
+				new BCVRef(endBook, endChapter, endVerse), cvSeparator, bridge);
+		}
 
-			Assert.AreEqual("REV 22:58", BCVRef.MakeReferenceString(
-				new BCVRef(66, 22, 58), new BCVRef(66, 22, 58), ":", "-"));
-			
-			Assert.AreEqual("MRK 12:34-14:56", BCVRef.MakeReferenceString(
-				new BCVRef(41, 12, 34), new BCVRef(41, 14, 56), ":", "-"));
-
-			// Chapter-only references
-			Assert.AreEqual("MRK 10", BCVRef.MakeReferenceString(
-				new BCVRef(41, 10, 0), new BCVRef(), ":", "-", true));
-
-			Assert.AreEqual("MRK 10", BCVRef.MakeReferenceString(
-				new BCVRef(41, 10, 0), null, ":", "-", true));
-
-			Assert.AreEqual("MRK 1-2", BCVRef.MakeReferenceString(
-				new BCVRef(41, 1, 0), new BCVRef(41, 2, 0), ":", "-"));
-
-			Assert.AreEqual("MRK 5-10", BCVRef.MakeReferenceString(
-				new BCVRef(41, 5, 0), new BCVRef(41, 10, 0), ":", "-"));
-
-			// Bridges where once verse is 0 (ill-formed)
-			Assert.AreEqual("MRK 1:2-2:0", BCVRef.MakeReferenceString(
-				new BCVRef(41, 1, 2), new BCVRef(41, 2, 0), ":", "-"));
-
-			Assert.AreEqual("MRK 10:0-12:34", BCVRef.MakeReferenceString(
-				new BCVRef(41, 10, 0), new BCVRef(41, 12, 34), ":", "-"));
-
-			// Title references
+		[Test]
+		public void MakeReferenceString_TitleReferences()
+		{
 			Assert.AreEqual("MRK Title", BCVRef.MakeReferenceString(
 				new BCVRef(41, 0, 0), null, ":", "-", "Title", "Intro"));
 
 			Assert.AreEqual("MRK 0", BCVRef.MakeReferenceString(
 				new BCVRef(41, 0, 0), null, ":", "-", null, null));
 
-			// Intro references
+		}
+
+		[Test]
+		public void MakeReferenceString_IntroReferences()
+		{
 			Assert.AreEqual("MRK", BCVRef.MakeReferenceString(
 				new BCVRef(41, 1, 0), new BCVRef(41, 1, 0), ":", "-", true));
 
@@ -547,6 +536,135 @@ namespace SIL.Scripture.Tests
 
 			Assert.AreEqual("MRK 1", BCVRef.MakeReferenceString(
 				new BCVRef(41, 1, 0), new BCVRef(41, 1, 0), ":", "-", null, null));
+		}
+
+		[Test]
+		public void MakeReferenceString_NullEndRef_NotIntro_SuppressChapterForIntro()
+		{
+			Assert.AreEqual("MRK 10", BCVRef.MakeReferenceString(new BCVRef(41, 10, 0),
+				null, ";", "-", true));
+		}
+
+		[TestCase(":", "-", ExpectedResult = "MRK 10:6-JHN 3:16")]
+		[TestCase(".", "~", ExpectedResult = "MRK 10.6~JHN 3.16")]
+		public string MakeReferenceString_DifferentBooks(string cvSeparator, string bridge)
+		{
+			return BCVRef.MakeReferenceString(new BCVRef(41, 10, 6),
+				new BCVRef(43, 3, 16), cvSeparator, bridge, true);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the EqualityOperator when both references are null
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void EqualityOperator_BothNull()
+		{
+			// ReSharper disable once EqualExpressionComparison
+			// ReSharper disable once RedundantCast
+			Assert.IsTrue((BCVRef)null == (BCVRef)null);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the EqualityOperator when the first reference is null
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void EqualityOperator_LeftReferenceNull()
+		{
+			Assert.IsFalse(null == new BCVRef(3, 4, 5));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the EqualityOperator when the second reference is null
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void EqualityOperator_RightReferenceNull()
+		{
+			Assert.IsFalse(new BCVRef(5, 2, 1) == null);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the EqualityOperator when the first reference is invalid
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(-1, 2, 3)]
+		[TestCase(1, 3, 0)]
+		[TestCase(1, 1, -1)]
+		[TestCase(1, -3, 2)]
+		public void EqualityOperator_LeftReferenceInvalid(int book, int chapter, int verse)
+		{
+			Assert.IsFalse(new BCVRef(book, chapter, verse) == new BCVRef(3, 4, 5));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the EqualityOperator when the second reference is invalid
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(-1, 2, 3)]
+		[TestCase(1, 3, 0)]
+		[TestCase(1, 1, -1)]
+		[TestCase(1, -3, 2)]
+		public void EqualityOperator_RightReferenceInvalid(int book, int chapter, int verse)
+		{
+			Assert.IsFalse(new BCVRef(5, 2, 1) == new BCVRef(book, chapter, verse));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the EqualityOperator when the both references are invalid but equivalent
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(-1, 2, 3)]
+		[TestCase(1, 3, 0)]
+		[TestCase(1, 1, -1)]
+		[TestCase(1, -3, 2)]
+		public void EqualityOperator_InvalidEquivalentReferences(int book, int chapter, int verse)
+		{
+			Assert.IsTrue(new BCVRef(book, chapter, verse) == new BCVRef(book, chapter, verse));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the EqualityOperator when the objects are for the same book, chapter and verse
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void EqualityOperator_EquivalentReferencesButDifferentObjects()
+		{
+			Assert.IsTrue(new BCVRef(3, 4, 5) == new BCVRef(003004005));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the EqualityOperator when an object is compared to itself
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void EqualityOperator_SameObject()
+		{
+			var a = new BCVRef(4, 6, 8);
+			var b = a;
+			Assert.IsTrue(a == b);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests the EqualityOperator when the objects are for the same book, chapter and verse
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(003004005, 003004006)]
+		[TestCase(003004005, 003005005)]
+		[TestCase(003004005, 002004005)]
+		public void EqualityOperator_NotEquivalentReferences(int a, int b)
+		{
+			Assert.IsFalse(new BCVRef(a) == new BCVRef(b));
 		}
 
 		/// ------------------------------------------------------------------------------------

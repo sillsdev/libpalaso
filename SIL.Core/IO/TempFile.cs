@@ -202,11 +202,18 @@ namespace SIL.IO
 		/// <param name="inputPath">path to an (existing) file</param>
 		public static TempFile InFolderOf(string inputPath)
 		{
-			var folder = System.IO.Path.GetDirectoryName(inputPath);
-			if (String.IsNullOrEmpty(folder))
-				folder = ".";
-			var path = System.IO.Path.Combine(folder, System.IO.Path.GetRandomFileName());
-			return TrackExisting(path);
+			try
+			{
+				var folder = System.IO.Path.GetDirectoryName(inputPath);
+				if (String.IsNullOrEmpty(folder))
+					folder = ".";
+				var path = System.IO.Path.Combine(folder, System.IO.Path.GetRandomFileName());
+				return TrackExisting(path);
+			}
+			catch (Exception e)
+			{
+				throw new Exception($"TempFile.InFolderOf(\"{inputPath}\") failed", e);
+			}
 		}
 	}
 }

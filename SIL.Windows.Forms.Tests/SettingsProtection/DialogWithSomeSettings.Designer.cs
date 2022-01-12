@@ -30,20 +30,21 @@ namespace SIL.Windows.Forms.Tests.SettingsProtection
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this._settingsProtectionLauncherButton = new SettingsProtectionLauncherButton();
+			this._settingsProtectionLauncherButton = new SIL.Windows.Forms.SettingProtection.SettingsProtectionLauncherButton();
 			this.checkBox3 = new System.Windows.Forms.CheckBox();
+			this._chkManageMaybeButton = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
-			//
+			// 
 			// _settingsProtectionLauncherButton
-			//
+			// 
 			this._settingsProtectionLauncherButton.Location = new System.Drawing.Point(9, 216);
 			this._settingsProtectionLauncherButton.Margin = new System.Windows.Forms.Padding(0);
 			this._settingsProtectionLauncherButton.Name = "_settingsProtectionLauncherButton";
 			this._settingsProtectionLauncherButton.Size = new System.Drawing.Size(257, 37);
 			this._settingsProtectionLauncherButton.TabIndex = 0;
-			//
+			// 
 			// checkBox3
-			//
+			// 
 			this.checkBox3.AutoSize = true;
 			this.checkBox3.Location = new System.Drawing.Point(21, 38);
 			this.checkBox3.Name = "checkBox3";
@@ -51,12 +52,23 @@ namespace SIL.Windows.Forms.Tests.SettingsProtection
 			this.checkBox3.TabIndex = 3;
 			this.checkBox3.Text = "Some pretend setting";
 			this.checkBox3.UseVisualStyleBackColor = true;
-			//
+			// 
+			// _chkManageMaybeButton
+			// 
+			this._chkManageMaybeButton.AutoSize = true;
+			this._chkManageMaybeButton.Location = new System.Drawing.Point(21, 61);
+			this._chkManageMaybeButton.Name = "_chkManageMaybeButton";
+			this._chkManageMaybeButton.Size = new System.Drawing.Size(161, 17);
+			this._chkManageMaybeButton.TabIndex = 4;
+			this._chkManageMaybeButton.Text = "Manage the \"Maybe\" button";
+			this._chkManageMaybeButton.UseVisualStyleBackColor = true;
+			// 
 			// DialogWithSomeSettings
-			//
+			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(284, 262);
+			this.Controls.Add(this._chkManageMaybeButton);
 			this.Controls.Add(this.checkBox3);
 			this.Controls.Add(this._settingsProtectionLauncherButton);
 			this.Name = "DialogWithSomeSettings";
@@ -70,5 +82,6 @@ namespace SIL.Windows.Forms.Tests.SettingsProtection
 
 		private SettingsProtectionLauncherButton _settingsProtectionLauncherButton;
 		private System.Windows.Forms.CheckBox checkBox3;
+		private System.Windows.Forms.CheckBox _chkManageMaybeButton;
 	}
 }

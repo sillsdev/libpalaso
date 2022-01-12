@@ -21,6 +21,8 @@ namespace SIL.Windows.Forms.DblBundle
 		{
 			FileName = File.Exists(defaultFile) ? Path.GetFileName(defaultFile) : null;
 			m_defaultDir = (defaultFile != null ? Path.GetDirectoryName(defaultFile) : DefaultBundleDirectory);
+
+			//avoid default value (false)
 			m_allowProjectFiles = allowProjectFiles;
 		}
 

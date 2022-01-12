@@ -117,4 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="label1.Text" xml:space="preserve">
+    <value>If you click the button below, it will display a child window that will be modal with respect to this window, but not with respect to the main test app window. While it is showing, you won't be able to type in this text box.</value>
+  </data>
 </root>

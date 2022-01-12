@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 
 namespace SIL.Windows.Forms.SettingProtection
 {
@@ -20,7 +21,7 @@ namespace SIL.Windows.Forms.SettingProtection
 	[ProvideProperty("SettingsProtection", typeof(Control))]
 	public partial class SettingsProtectionHelper : Component, IExtenderProvider
 	{
-		private readonly Dictionary<Component, bool> _controlIsUnderSettingsProtection;
+		private readonly HashSet<Component> _componentsUnderSettingsProtection;
 		private bool _isDisposed;
 
 		public bool CanExtend(object extendee)
@@ -33,16 +34,14 @@ namespace SIL.Windows.Forms.SettingProtection
 		{
 			InitializeComponent();
 
-			_controlIsUnderSettingsProtection = new Dictionary<Component, bool>();
+			_componentsUnderSettingsProtection = new HashSet<Component>();
 
 			if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
 			{
-				if(container!=null)
-					container.Add(this);
+				container?.Add(this);
 				_checkForCtrlKeyTimer.Enabled = true;
 			}
 		}
-
 
 		/// <summary>
 		/// The control should call this when the user clicks on it. It will challenge if necessary, and carry out the supplied code if everything is rosy.
@@ -66,25 +65,49 @@ namespace SIL.Windows.Forms.SettingProtection
 
 		private void UpdateDisplay()
 		{
-			if (_controlIsUnderSettingsProtection == null)//sometimes get a tick before this has been set
+			if (_componentsUnderSettingsProtection == null)//sometimes get a tick before this has been set
 				return;
 
-			var keys = (Keys.Control | Keys.Shift);
+			var keys = Keys.Control | Keys.Shift;
 
-			foreach (var pair in _controlIsUnderSettingsProtection)
+			foreach (var component in _componentsUnderSettingsProtection)
 			{
-				bool controlIsNotSensitiveToProtectionMode = !pair.Value;
+				bool visible = !SettingsProtectionSingleton.Settings.NormallyHidden || ((Control.ModifierKeys & keys) == keys);
 
-				bool visible = controlIsNotSensitiveToProtectionMode || !SettingsProtectionSingleton.Settings.NormallyHidden || ((Control.ModifierKeys & keys) == keys);
+				ShowOrHideComponent(component, visible);
+			}
+		}
 
-				if (pair.Key is Control)
-				{
-					((Control)pair.Key).Visible = visible;
-				}
-				else if (pair.Key is ToolStripItem)
-				{
-					((ToolStripItem)pair.Key).Visible = visible;
-				}
+		private static void ShowOrHideComponent(Component component, bool visible)
+		{
+			if (component is Control control)
+				control.Visible = visible;
+			else if (component is ToolStripItem item)
+				item.Visible = visible;
+			else
+				throw new InvalidCastException(
+					"Only components which are Controls or ToolStripItems can be under settings protection.");
+		}
+
+		private void SetSettingsProtectionInternal(Component controlOrToolStripItem, bool isProtected)
+		{
+			if (controlOrToolStripItem == null)
+				throw new ArgumentNullException();
+
+			if (!(controlOrToolStripItem is ToolStripItem) && !(controlOrToolStripItem is Control))
+				throw new ArgumentException("Only components which are Controls or ToolStripItems can be managed.",
+					nameof(controlOrToolStripItem));
+
+			if (isProtected)
+			{
+				_componentsUnderSettingsProtection.Add(controlOrToolStripItem);
+				// No need to call ShowOrHideComponent explicitly. It will get called when the
+				// timer fires.
+			}
+			else
+			{
+				_componentsUnderSettingsProtection.Remove(controlOrToolStripItem);
+				ShowOrHideComponent(controlOrToolStripItem, true);
 			}
 		}
 
@@ -94,41 +117,19 @@ namespace SIL.Windows.Forms.SettingProtection
 		}
 
 		#region IExtenderProvider Members
-
-
-
+		[PublicAPI]
 		[DefaultValue(false)]
 		public bool GetSettingsProtection(Control c)
 		{
 			if (c == null)
-			{
 				throw new ArgumentNullException();
-			}
-//			if (!CanExtend(c))
-//			{
-//				throw new ArgumentException("Control must be derived from TextBoxBase");
-//			}
 
-			bool isProtected;
-			if (_controlIsUnderSettingsProtection.TryGetValue(c, out isProtected))
-			{
-				return isProtected;
-			}
-			return false;
+			return _componentsUnderSettingsProtection.Contains(c);
 		}
 
-		public void SetSettingsProtection(Control c, bool isProtected)
-		{
-			if (c == null)
-			{
-				throw new ArgumentNullException();
-			}
-			if (_controlIsUnderSettingsProtection.ContainsKey(c))
-			{
-				_controlIsUnderSettingsProtection.Remove(c);
-			}
-			_controlIsUnderSettingsProtection.Add(c, isProtected);
-		}
+		[PublicAPI]
+		public void SetSettingsProtection(Control c, bool isProtected) =>
+			SetSettingsProtectionInternal(c, isProtected);
 		#endregion
 
 		#region IComponent Members
@@ -157,15 +158,29 @@ namespace SIL.Windows.Forms.SettingProtection
 		#endregion
 
 		/// <summary>
-		/// Allows you to dynamically add a control or ToolStripItem, rather than having to use the winforms designer
+		/// Deprecated: Allows you to dynamically add a control or ToolStripItem, rather than
+		/// having to use the winforms Designer
 		/// </summary>
-		public void ManageComponent(Component controlOrToolStripItem)
-		{
-			if (_controlIsUnderSettingsProtection.ContainsKey(controlOrToolStripItem))
-			{
-				_controlIsUnderSettingsProtection.Remove(controlOrToolStripItem);
-			}
-			_controlIsUnderSettingsProtection.Add(controlOrToolStripItem, true);
-		}
+		/// <remarks>
+		/// Equivalent to calling SetSettingsProtection with isProtected true.
+		/// </remarks>
+		/// <exception cref="ArgumentNullException">controlOrToolStripItem was null</exception>
+		/// <exception cref="ArgumentException">Although this method's signature seems to imply
+		/// that it can take any component, it actually only supports Controls and ToolStripItems.
+		/// For another type of component to be supported, it would have to have a Visible property
+		/// (or some other property or method that could be used to hide or show it) and explicit
+		/// code would need to be added to allow for it.</exception>
+		[PublicAPI, Obsolete("Use SetSettingsProtection instead")]
+		public void ManageComponent(Component controlOrToolStripItem) =>
+			SetSettingsProtectionInternal(controlOrToolStripItem, true);
+
+		/// <summary>
+		/// Allows you to dynamically make a ToolStripItem protected (i.e., managed) or not,
+		/// rather than having to use the winforms Designer
+		/// </summary>
+		/// <exception cref="ArgumentNullException">toolStripItem was null</exception>
+		[PublicAPI]
+		public void SetSettingsProtection(ToolStripItem toolStripItem, bool isProtected) =>
+			SetSettingsProtectionInternal(toolStripItem, isProtected);
 	}
 }

@@ -20,25 +20,40 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [SIL.Core] Utility methods to remove XML namespaces
 - [SIL.Core.Desktop] Serializable class `UpdateSettings` (settings for getting updates)
-- [SIL.Windows.Forms] `CssLinkHref` property to `ShowReleaseNotesDialog` to allow linking to CSS file for
-    displaying Markdown output.
-- [SIL.Scripture] IScrVerseRef interface (largely extracted from VerseRef)
+- [SIL.Windows.Forms] `CssLinkHref` property to `ShowReleaseNotesDialog` to allow linking to CSS
+  file for displaying Markdown output.
+- [SIL.Scripture] `IScrVerseRef` interface (largely extracted from `VerseRef`)
+- [SIL.Windows.Forms] `ParentFormBase` to allow showing a child form that is modal with respect to
+  the parent but not application modal
+- [SIL.Windows.Forms] `GraphicsManager` class that allows to select desired GTK version.
+  Default: GTK2
+- [SIL.Windows.Forms] Options for `FlexibleMessageBox` to show in the taskbar and to show on top of other windows
+- [SIL.Windows.Forms.DblBundle] virtual method `SelectProjectDlgBase.CreateFileDialog()` to allow
+  customization in derived class (#797)
+- [SIL.Windows.Forms.SettingProtection] overload of SetSettingsProtection method that takes a ToolStripItem
+- [SIL.Core] Extension method to get longest useful substring
 
 ### Changed
 
-- [SIL.WritingSystems] Update langtags.json to the latest
-- [SIL.Scripture] Made VerseRef class implement new IScrVerseRef interface
-- [SIL.Forms.Scripture] Changed VerseControl to use IScrVerseRef and not depend directly on ScrVers
+- [SIL.WritingSystems] Update `langtags.json` to the latest
+- [SIL.Scripture] Made `VerseRef` class implement new `IScrVerseRef` interface
+- [SIL.Forms.Scripture] Changed VerseControl to use `IScrVerseRef` and not depend directly on
+  `ScrVerse`
+- [SIL.Windows.Forms] Removed dependency on gtk-sharp/gdk-sharp; unmanaged libgtk/libgdk libraries
+  get loaded dynamically at runtime
+- [SIL.Windows.Forms] `PortableClipboard` uses unmanaged libgtk/libgdk methods instead of using
+  gtk-sharp
+- [SIL.Windows.Forms.SettingProtection] Deprecated ManageComponent method
 - [SIL.Scripture] VerseRef.TrySetVerseUnicode: Improve handling of non-decimal numerals and surrogate pair numerals (#1000)
 
 ### Fixed
 
-- [SIL.Windows.Forms] Fix bug where changing ImageCollection search language too soon could crash.
+- [SIL.Windows.Forms] Fix bug where changing `ImageCollection` search language too soon could crash.
 - [SIL.Windows.Forms] Fix bug where image license could not be changed from Creative Commons.
-- [SIL.Windows.Forms] Fix bug where PalasoImage disposes of its Image prematurely
+- [SIL.Windows.Forms] Fix bug where `PalasoImage` disposes of its `Image` prematurely
 - [SIL.Windows.Forms] Save non-CC licenses properly in images
 - [SIL.Windows.Forms.Keyboarding] Avoid crashes in cases where Ibus connection dropped
-- [SIL.WritingSystems] Fix case mismatch with needsCompiling attribute
+- [SIL.WritingSystems] Fix case mismatch with `needsCompiling` attribute
 
 ## [8.0.0] - 2021-03-04
 
