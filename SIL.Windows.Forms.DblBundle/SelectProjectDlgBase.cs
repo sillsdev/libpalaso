@@ -17,7 +17,7 @@ namespace SIL.Windows.Forms.DblBundle
 		protected abstract string Title { get; }
 		protected abstract string ProductName { get; }
 
-		protected SelectProjectDlgBase(bool allowProjectFiles, string defaultFile = null)
+		protected SelectProjectDlgBase(bool allowProjectFiles = true, string defaultFile = null)
 		{
 			FileName = File.Exists(defaultFile) ? Path.GetFileName(defaultFile) : null;
 			m_defaultDir = (defaultFile != null ? Path.GetDirectoryName(defaultFile) : DefaultBundleDirectory);
