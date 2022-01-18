@@ -1837,6 +1837,15 @@ namespace SIL.Archiving
 					dir = Path.Combine(dir, "share");
 			}
 
+			if (!Platform.IsWindows)
+			{
+				//Ramp 3.0 Package doesn't have languages.yaml
+				if (!Directory.Exists(Path.Combine(dir, "data")))
+				{
+					return string.Empty;
+				}
+			}
+
 			// get the data directory
 			dir = Path.Combine(dir, "data");
 			if (!Directory.Exists(dir))
