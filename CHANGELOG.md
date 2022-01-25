@@ -45,6 +45,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   gtk-sharp
 - [SIL.Windows.Forms.SettingProtection] Deprecated ManageComponent method
 - [SIL.Scripture] VerseRef.TrySetVerseUnicode: Improve handling of non-decimal numerals and surrogate pair numerals (#1000)
+- [SIL.WritingSystems] Ignore deprecated region subtags (#763)
 
 ### Fixed
 
