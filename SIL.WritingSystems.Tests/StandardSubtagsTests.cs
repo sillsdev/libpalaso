@@ -130,13 +130,6 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void RegisteredRegions_DoesNotHaveDeprecatedRegion()
-		{
-			Assert.That(StandardSubtags.RegisteredRegions.Contains("DD"), Is.False);
-		}
-
-
-		[Test]
 		public void RegisteredVariants_HasFonipa_True()
 		{
 			Assert.That(StandardSubtags.RegisteredVariants.Contains("fonipa"), Is.True);
