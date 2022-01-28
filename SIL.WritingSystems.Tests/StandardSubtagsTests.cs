@@ -130,9 +130,9 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void FilteredRegions_DoesNotHaveDeprecatedRegion()
+		public void RegisteredRegions_DoesNotHaveDeprecatedRegion()
 		{
-			Assert.That(StandardSubtags.FilteredRegions.Contains("DD"), Is.False);
+			Assert.That(StandardSubtags.RegisteredRegions.Contains("DD"), Is.False);
 		}
 
 

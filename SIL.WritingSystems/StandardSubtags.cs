@@ -149,7 +149,7 @@ namespace SIL.WritingSystems
 			RegisteredLanguages = new KeyedList<string, LanguageSubtag>(sortedLanguages, l => l.Code, StringComparer.InvariantCultureIgnoreCase);
 			RegisteredScripts = new KeyedList<string, ScriptSubtag>(scripts.OrderBy(s => s.Name), s => s.Code, StringComparer.InvariantCultureIgnoreCase);
 			RegisteredRegions = new ReadOnlyKeyedCollection<string, RegionSubtag>(new KeyedList<string, RegionSubtag>(regions.OrderBy(r => r.Name), r => r.Code, StringComparer.InvariantCultureIgnoreCase));
-			FilteredRegions = new ReadOnlyKeyedCollection<string, RegionSubtag>(new KeyedList<string, RegionSubtag>(regions.FindAll(f => !f.IsDeprecated).OrderBy(f => f.Name), f => f.Code, StringComparer.InvariantCultureIgnoreCase));
+			//FilteredRegions = new ReadOnlyKeyedCollection<string, RegionSubtag>(new KeyedList<string, RegionSubtag>(regions.FindAll(f => !f.IsDeprecated).OrderBy(f => f.Name), f => f.Code, StringComparer.InvariantCultureIgnoreCase));
 			RegisteredVariants = new ReadOnlyKeyedCollection<string, VariantSubtag>(new KeyedList<string, VariantSubtag>(variants.OrderBy(v => v.Name), v => v.Code, StringComparer.InvariantCultureIgnoreCase));
 			CommonPrivateUseVariants = new ReadOnlyKeyedCollection<string, VariantSubtag>(new KeyedList<string, VariantSubtag>(new[]
 			{
@@ -167,7 +167,7 @@ namespace SIL.WritingSystems
 
 		public static IReadOnlyKeyedCollection<string, RegionSubtag> RegisteredRegions { get; private set; }
 
-		public static IReadOnlyKeyedCollection<string, RegionSubtag> FilteredRegions { get; private set; }
+		//public static IReadOnlyKeyedCollection<string, RegionSubtag> FilteredRegions { get; private set; }
 
 		public static IReadOnlyKeyedCollection<string, VariantSubtag> RegisteredVariants { get; private set; }
 
