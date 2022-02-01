@@ -166,8 +166,6 @@ namespace SIL.WritingSystems
 
 		public static IReadOnlyKeyedCollection<string, RegionSubtag> RegisteredRegions { get; private set; }
 
-		//public static IReadOnlyKeyedCollection<string, RegionSubtag> FilteredRegions { get; private set; }
-
 		public static IReadOnlyKeyedCollection<string, VariantSubtag> RegisteredVariants { get; private set; }
 
 		public static IReadOnlyKeyedCollection<string, VariantSubtag> CommonPrivateUseVariants { get; private set; }
