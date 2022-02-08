@@ -1,9 +1,11 @@
 ﻿// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.IO;
 using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
@@ -71,7 +73,14 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		private static void LoadDefaultXkbSettings()
 		{
 			var startInfo = new ProcessStartInfo();
-			startInfo.FileName = "/usr/bin/setxkbmap";
+			// Use command from flatpak /app prefix if present.
+			string prefix = "/app";
+			string restOfCommandPath = "bin/setxkbmap";
+			if (!File.Exists(Path.Combine(prefix, restOfCommandPath)))
+			{
+				prefix = "/usr";
+			}
+			startInfo.FileName = Path.Combine(prefix, restOfCommandPath);
 			startInfo.Arguments = "-query";
 			startInfo.RedirectStandardOutput = true;
 			startInfo.UseShellExecute = false;
