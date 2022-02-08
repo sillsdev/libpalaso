@@ -100,6 +100,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 					existingKeyboard.SetName(description);
 					existingKeyboard.SetInputLanguage(inputLanguage);
 					existingKeyboard.GroupIndex = (int) iGroup;
+					Logger.WriteEvent($"{System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name}: Set keyboard as available: {existingKeyboard}");
 				}
 				curKeyboards.Remove(id);
 			}
@@ -108,7 +109,10 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				var keyboard = new XkbKeyboardDescription(id, description, layout.LayoutId, layout.LocaleId, true,
 					inputLanguage, engine, (int) iGroup);
 				if (!KeyboardController.Instance.Keyboards.Contains(keyboard.Id))
+				{
 					KeyboardController.Instance.Keyboards.Add(keyboard);
+					Logger.WriteEvent($"{System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name}: Registered keyboard {keyboard}");
+				}
 			}
 		}
 
