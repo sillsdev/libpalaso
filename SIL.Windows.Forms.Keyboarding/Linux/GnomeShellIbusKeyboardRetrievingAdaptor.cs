@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using IBusDotNet;
+using SIL.Reporting;
 using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
@@ -114,6 +115,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 					{
 						keyboard.SetIsAvailable(true);
 						keyboard.IBusKeyboardEngine = ibusKeyboard;
+						Logger.WriteEvent($"{System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name}: Set keyboard as available: {keyboard}");
 					}
 
 					// Remove this keyboard from list so that we don't set it inactive
@@ -126,6 +128,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 						SwitchingAdaptor) as IbusKeyboardDescription;
 					KeyboardController.Instance.Keyboards.Add(keyboard);
 					addedKeyboards.Add(layout);
+					Logger.WriteEvent($"{System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name}: Registered keyboard: {keyboard}");
 				}
 
 				keyboard.SystemIndex = installedKeyboards[layout];
