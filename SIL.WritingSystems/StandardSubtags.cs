@@ -57,9 +57,9 @@ namespace SIL.WritingSystems
 						continue;
 					if (component.Split(':').Length < 2) // the description for ia (Interlingua) is spread over 2 lines
 					{
-						if (descriptions.Count() > 0)
+						if (descriptions.Any())
 						{
-							description = description + component.Substring(1);
+							description += component.Substring(1);
 							descriptions.Clear();
 							descriptions.Add(description);
 						}

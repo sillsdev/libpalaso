@@ -76,6 +76,7 @@ namespace SIL.WritingSystems
 		private string _defaultRegion;
 		private string _windowsLcid;
 		private string _spellCheckingId;
+		private string _caseAlias;
 		private string _defaultCollationType;
 		private CollationDefinition _defaultCollation;
 		private QuotationParagraphContinueType _quotationParagraphContinueType;
@@ -173,6 +174,7 @@ namespace SIL.WritingSystems
 			_quotationMarks = new BulkObservableList<QuotationMark>(ws._quotationMarks);
 			_quotationParagraphContinueType = ws._quotationParagraphContinueType;
 			_languageTag = ws._languageTag;
+			_caseAlias = ws._caseAlias;
 			_defaultCollationType = ws._defaultCollationType;
 			_collations = new KeyedBulkObservableList<string, CollationDefinition>(ws._collations.CloneItems(), cd => cd.Type);
 			if (ws._defaultCollation != null)
@@ -734,7 +736,7 @@ namespace SIL.WritingSystems
 		/// It is not useful to modify this or set it in new LDML files; however, we need a public setter
 		/// because FieldWorks overrides the code that normally reads this from the LDML file.
 		/// </summary>
-		public virtual string WindowsLcid
+		public virtual string WindowsLcid // TODO (hasso) 2022.02.08: look here tomorrow
 		{
 			get { return _windowsLcid ?? string.Empty; }
 			set { Set(() => WindowsLcid, ref _windowsLcid, value); }
@@ -747,6 +749,15 @@ namespace SIL.WritingSystems
 		{
 			get { return _rightToLeftScript; }
 			set { Set(() => RightToLeftScript, ref _rightToLeftScript, value); }
+		}
+
+		/// <summary>
+		/// Allows this <see cref="WritingSystemDefinition"/> to use the same ICU.ToUpper, etc., as the Writing System specified by this property.
+		/// </summary>
+		public virtual string CaseAlias
+		{
+			get => _caseAlias ?? LanguageTag;
+			set { Set(() => CaseAlias, ref _caseAlias, value); }
 		}
 
 		public virtual string DefaultCollationType
@@ -1164,7 +1175,10 @@ namespace SIL.WritingSystems
 				return false;
 			if (SpellCheckingId != other.SpellCheckingId)
 				return false;
+			// ReSharper disable once CompareOfFloatsByEqualityOperator
 			if (_defaultFontSize != other._defaultFontSize)
+				return false;
+			if (CaseAlias != other.CaseAlias)
 				return false;
 			if (DefaultCollationType != other.DefaultCollationType)
 				return false;
