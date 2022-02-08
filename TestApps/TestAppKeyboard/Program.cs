@@ -1,5 +1,6 @@
 ﻿﻿using System;
 using System.Windows.Forms;
+using SIL.Reporting;
 
 namespace TestAppKeyboard
 {
@@ -11,6 +12,7 @@ namespace TestAppKeyboard
 		[STAThread]
 		static void Main()
 		{
+			Logger.Init();
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			Application.Run(new KeyboardForm());
