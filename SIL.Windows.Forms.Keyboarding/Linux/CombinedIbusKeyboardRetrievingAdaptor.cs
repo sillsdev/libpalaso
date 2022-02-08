@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
+using SIL.Reporting;
 using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
@@ -224,6 +225,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 					{
 						keyboard.SetIsAvailable(true);
 						keyboard.IBusKeyboardEngine = ibusKeyboard;
+						Logger.WriteEvent($"{System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name}: Set keyboard as available: {keyboard}");
 					}
 					curKeyboards.Remove(id);
 				}
@@ -231,6 +233,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				{
 					keyboard = new IbusKeyboardDescription(id, ibusKeyboard, SwitchingAdaptor);
 					KeyboardController.Instance.Keyboards.Add(keyboard);
+					Logger.WriteEvent($"{System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name}: Registered keyboard: {keyboard}");
 				}
 				keyboard.SystemIndex = keyboards[ibusKeyboard.LongName];
 			}
