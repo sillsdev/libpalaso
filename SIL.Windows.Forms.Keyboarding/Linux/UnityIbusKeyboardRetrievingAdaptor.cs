@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SIL.Reporting;
 using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
@@ -66,6 +67,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 						{
 							keyboard.SetIsAvailable(true);
 							keyboard.IBusKeyboardEngine = ibusKeyboard;
+							Logger.WriteEvent($"{System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name}: Set keyboard as available: {keyboard}");
 						}
 						curKeyboards.Remove(id);
 					}
@@ -73,6 +75,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 					{
 						keyboard = new IbusKeyboardDescription(id, ibusKeyboard, SwitchingAdaptor);
 						KeyboardController.Instance.Keyboards.Add(keyboard);
+						Logger.WriteEvent($"{System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name}: Registered keyboard: {keyboard}");
 					}
 					keyboard.SystemIndex = keyboards[ibusKeyboard.LongName];
 				}
