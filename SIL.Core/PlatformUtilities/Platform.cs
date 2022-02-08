@@ -123,6 +123,14 @@ namespace SIL.PlatformUtilities
 					currentDesktop = Environment.GetEnvironmentVariable("GDMSESSION");
 				else if (currentDesktop.ToLowerInvariant() == "ubuntu:gnome")
 					currentDesktop = "gnome";
+				else if (currentDesktop.ToLowerInvariant() == "gnome-classic:gnome")
+				{
+					currentDesktop = "gnome";
+				}
+				else if (currentDesktop.ToLowerInvariant() == "gnome-flashback:gnome")
+				{
+					currentDesktop = "gnome";
+				}
 				return currentDesktop?.ToLowerInvariant();
 			}
 		}
@@ -333,16 +341,45 @@ namespace SIL.PlatformUtilities
 			return output.Trim();
 		}
 
-
+		/// <summary>
+		/// Is the software running in the GNOME Shell desktop environment?
+		/// </summary>
 		public static bool IsGnomeShell
 		{
 			get
 			{
 				if (!IsLinux)
 					return false;
+				if (Platform.DesktopEnvironment == "gnome" && !IsGnomeClassic && !IsGnomeFlashback)
+				{
+					return true;
+				}
+				return false;
+			}
+		}
 
-				var pids = RunTerminalCommand("pidof", "gnome-shell");
-				return !string.IsNullOrEmpty(pids);
+		/// <summary>
+		/// Is the software running in the GNOME Classic desktop environment?
+		/// </summary>
+		public static bool IsGnomeClassic
+		{
+			get
+			{
+				return Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP") == "GNOME-Classic:GNOME";
+			}
+		}
+
+
+		/// <summary>
+		/// Is the software running in the GNOME Flashback desktop environment?
+		/// </summary>
+		public static bool IsGnomeFlashback
+		{
+			get
+			{
+				return Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP") == "GNOME-Flashback:GNOME";
+			}
+		}
 
 		/// <summary>
 		/// Is the software running in a flatpak container?

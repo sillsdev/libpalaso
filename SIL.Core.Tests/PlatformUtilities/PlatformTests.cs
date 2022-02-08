@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 SIL International
+// Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -153,10 +153,24 @@ namespace SIL.Tests.PlatformUtilities
 			Result = "kde", TestName = "Only XDG_DATA_DIRS set")]
 		[TestCase(null, null, "something", Result = "something", TestName = "Only GDMSESSION set")]
 		[TestCase(null, null, null, Result = "", TestName = "Nothing set")]
-		[TestCase("ubuntu:GNOME", null, "ubuntu", ExpectedResult = "gnome", TestName = "Ubuntu 20.04 (Gnome)")]
-		[TestCase("ubuntu:GNOME", null, "ubuntu-wayland", ExpectedResult = "gnome", TestName = "Ubuntu 20.04 (Gnome + Wayland)")]
-		[TestCase("X-Cinnamon", null, "cinnamon", ExpectedResult = "x-cinnamon", TestName = "Wasta 20 (Cinnamon)")]
-		[TestCase("ubuntu:GNOME", null, "ubuntu", ExpectedResult = "gnome", TestName = "Wasta 20 (Gnome)")]
+		[TestCase("X-Cinnamon",
+			"/usr/share/gnome:/usr/share/cinnamon:/home/user/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share",
+			"cinnamon", Result = "x-cinnamon",
+			TestName = "Wasta 18.04")]
+		[TestCase("ubuntu:GNOME",
+			"/usr/share/ubuntu:/home/vagrant/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop",
+			"ubuntu", ExpectedResult = "gnome", TestName = "Ubuntu 20.04 (Gnome Shell)")]
+		[TestCase("GNOME-Classic:GNOME",
+			"/usr/share/gnome-classic:/home/vagrant/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop",
+			"gnome-classic", ExpectedResult = "gnome", TestName = "Ubuntu 20.04 (Gnome Classic)")]
+		[TestCase("GNOME-Flashback:GNOME",
+			"/usr/share/gnome-flashback-metacity:/home/vagrant/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop",
+			"gnome-flashback-metacity", ExpectedResult = "gnome", TestName = "Ubuntu 20.04 (Gnome Flashback)")]
+		[TestCase("ubuntu:GNOME", null, "ubuntu-wayland", ExpectedResult = "gnome",
+			TestName = "Ubuntu 20.04 (Gnome + Wayland)")]
+		[TestCase("X-Cinnamon", null, "cinnamon", ExpectedResult = "x-cinnamon",
+			TestName = "Wasta 20 (Cinnamon)")]
+		[TestCase("ubuntu:GNOME", null, "ubuntu", ExpectedResult = "gnome", TestName = "Wasta 20 (Gnome Shell)")]
 		public string DesktopEnvironment_SimulateDesktops(string currDesktop,
 			string dataDirs, string gdmSession)
 		{
@@ -199,7 +213,10 @@ namespace SIL.Tests.PlatformUtilities
 			ExpectedResult = "gnome (ubuntu [display server: Wayland])", TestName = "Ubuntu 20.04 (Gnome + Wayland)")]
 		[TestCase("X-Cinnamon", null, "cinnamon", "", ExpectedResult = "x-cinnamon (cinnamon)", TestName = "Wasta 20 (Cinnamon)")]
 		[TestCase("ubuntu:GNOME", null, "ubuntu", "", ExpectedResult = "gnome (ubuntu)", TestName = "Wasta 20 (Gnome)")]
-		[TestCase("ubuntu:GNOME", "/app/share:/usr/share:/usr/share/runtime/share:/run/host/user-share:/run/host/share", "ubuntu", null, "org.example.MyApp", ExpectedResult = "gnome (ubuntu [container: flatpak])", TestName = "Ubuntu 20.04 (Gnome) in Flatpak")]
+		[TestCase("ubuntu:GNOME",
+			"/app/share:/usr/share:/usr/share/runtime/share:/run/host/user-share:/run/host/share",
+			"ubuntu", null, "org.example.MyApp", ExpectedResult = "gnome (ubuntu [container: flatpak])",
+			TestName = "Ubuntu 20.04 (Gnome) in Flatpak")]
 		public string DesktopEnvironmentInfoString_SimulateDesktopEnvironments(string currDesktop,
 			string dataDirs, string gdmSession, string mirServerName, string flatpakId = null)
 		{
@@ -267,6 +284,49 @@ namespace SIL.Tests.PlatformUtilities
 
 			// SUT
 			return Platform.IsFlatpak;
+		}
+
+
+		[Platform(Include = "Linux", Reason = "Linux specific test")]
+		// Ubuntu 20.04 Gnome Shell
+		[TestCase("ubuntu:GNOME", ExpectedResult = true)]
+		// Ubuntu 20.04 Gnome Classic
+		[TestCase("GNOME-Classic:GNOME", ExpectedResult = false)]
+		// Ubuntu 20.04 Gnome Flashback
+		[TestCase("GNOME-Flashback:GNOME", ExpectedResult = false)]
+		public bool IsGnomeShell(string xdgCurrentDesktop)
+		{
+			Environment.SetEnvironmentVariable("XDG_CURRENT_DESKTOP", xdgCurrentDesktop);
+			// SUT
+			return Platform.IsGnomeShell;
+		}
+
+		[Platform(Include = "Linux", Reason = "Linux specific test")]
+		// Ubuntu 20.04 Gnome Shell
+		[TestCase("ubuntu:GNOME", ExpectedResult = false)]
+		// Ubuntu 20.04 Gnome Classic
+		[TestCase("GNOME-Classic:GNOME", ExpectedResult = true)]
+		// Ubuntu 20.04 Gnome Flashback
+		[TestCase("GNOME-Flashback:GNOME", ExpectedResult = false)]
+		public bool IsGnomeClassic(string xdgCurrentDesktop)
+		{
+			Environment.SetEnvironmentVariable("XDG_CURRENT_DESKTOP", xdgCurrentDesktop);
+			// SUT
+			return Platform.IsGnomeClassic;
+		}
+
+		[Platform(Include = "Linux", Reason = "Linux specific test")]
+		// Ubuntu 20.04 Gnome Shell
+		[TestCase("ubuntu:GNOME", ExpectedResult = false)]
+		// Ubuntu 20.04 Gnome Classic
+		[TestCase("GNOME-Classic:GNOME", ExpectedResult = false)]
+		// Ubuntu 20.04 Gnome Flashback
+		[TestCase("GNOME-Flashback:GNOME", ExpectedResult = true)]
+		public bool IsGnomeFlashback(string xdgCurrentDesktop)
+		{
+			Environment.SetEnvironmentVariable("XDG_CURRENT_DESKTOP", xdgCurrentDesktop);
+			// SUT
+			return Platform.IsGnomeFlashback;
 		}
 
 	}
