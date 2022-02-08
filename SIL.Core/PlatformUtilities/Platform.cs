@@ -333,7 +333,9 @@ namespace SIL.PlatformUtilities
 			return output.Trim();
 		}
 
-
+		/// <summary>
+		/// Is the software running in the GNOME desktop environment?
+		/// </summary>
 		public static bool IsGnomeShell
 		{
 			get
@@ -342,7 +344,16 @@ namespace SIL.PlatformUtilities
 					return false;
 
 				var pids = RunTerminalCommand("pidof", "gnome-shell");
-				return !string.IsNullOrEmpty(pids);
+				if (!string.IsNullOrEmpty(pids)) {
+					return true;
+				}
+				// We won't see the gnome-shell process if running in flatpak, so rely on other detection.
+				if (Platform.DesktopEnvironment == "gnome") {
+					return true;
+				}
+				return false;
+			}
+		}
 
 		/// <summary>
 		/// Is the software running in a flatpak container?
