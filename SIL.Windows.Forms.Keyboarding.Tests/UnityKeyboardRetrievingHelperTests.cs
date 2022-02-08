@@ -48,5 +48,20 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			}));
 		}
 
+		[Test]
+		[TestCase("(<<[('xkb', 'us'), ('xkb', 'ru'), ('ibus', 'und-Latn:/home/USER/.local/share/keyman/sil_ipa/sil_ipa.kmx'), ('ibus', 'libpinyin')]>>,)\n", new string[] {"xkb;;us", "xkb;;ru", "ibus;;und-Latn:/home/USER/.local/share/keyman/sil_ipa/sil_ipa.kmx", "ibus;;libpinyin"}, TestName = "Parses mixed list of xkb, keyman, and ibus keyboards")]
+		[TestCase("(<<[('xkb', 'us')]>>,)\n", new string[] {"xkb;;us"}, TestName = "Parses list of one item")]
+		// Gnome doesn't let you delete the last remaining keyboard in the list. But gracefully fail in case we
+		// get an unexpected list with nothing.
+		[TestCase("(<<[]>>,)\n", new string[] {}, TestName = "Handles unexpected input 1")]
+		[TestCase("(<<>>,)\n", new string[] {}, TestName = "Handles unexpected input 2")]
+		[TestCase("(,)\n", new string[] {}, TestName = "Handles unexpected input 3")]
+		[TestCase("()\n", new string[] {}, TestName = "Handles unexpected input 4")]
+		[TestCase("\n", new string[] {}, TestName = "Handles unexpected input 5")]
+		[TestCase("", new string[] {}, TestName = "Handles unexpected input 6")]
+		public void ParseGDBusKeyboardList(string keyboardList, string[] expected)
+		{
+			Assert.That(UnityKeyboardRetrievingHelper.ParseGDBusKeyboardList(keyboardList), Is.EqualTo(new List<string>(expected)));
+		}
 	}
 }
