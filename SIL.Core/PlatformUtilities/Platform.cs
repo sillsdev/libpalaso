@@ -149,6 +149,11 @@ namespace SIL.PlatformUtilities
 				if (gdmSession.ToLowerInvariant().EndsWith("-wayland"))
 					return $"{currentDesktop} ({gdmSession.Split('-')[0]} [display server: Wayland])";
 
+				if (Platform.IsFlatpak)
+				{
+					additionalInfo += " [container: flatpak]";
+				}
+
 				return $"{currentDesktop} ({gdmSession}{additionalInfo})";
 			}
 		}
@@ -338,6 +343,15 @@ namespace SIL.PlatformUtilities
 
 				var pids = RunTerminalCommand("pidof", "gnome-shell");
 				return !string.IsNullOrEmpty(pids);
+
+		/// <summary>
+		/// Is the software running in a flatpak container?
+		/// </summary>
+		public static bool IsFlatpak
+		{
+			get
+			{
+				return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("FLATPAK_ID"));
 			}
 		}
 	}
