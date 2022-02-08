@@ -123,6 +123,14 @@ namespace SIL.PlatformUtilities
 					currentDesktop = Environment.GetEnvironmentVariable("GDMSESSION");
 				else if (currentDesktop.ToLowerInvariant() == "ubuntu:gnome")
 					currentDesktop = "gnome";
+				else if (currentDesktop.ToLowerInvariant() == "gnome-classic:gnome")
+				{
+					currentDesktop = "gnome";
+				}
+				else if (currentDesktop.ToLowerInvariant() == "gnome-flashback:gnome")
+				{
+					currentDesktop = "gnome";
+				}
 				return currentDesktop?.ToLowerInvariant();
 			}
 		}
@@ -333,16 +341,57 @@ namespace SIL.PlatformUtilities
 			return output.Trim();
 		}
 
-
+		/// <summary>
+		/// Is the software running in the GNOME Shell desktop environment?
+		/// This property will also be true if the software is running in the
+		/// GNOME Classic desktop environment.
+		/// </summary>
+		/// <remarks>
+		/// Although GNOME Classic distinguishes itself from GNOME Shell, such as
+		/// with different environment variables, both appear to use the gnome-shell
+		/// binary, and both work with the Gnome Shell parts of
+		/// SIL.Windows.Forms.Keyboarding. GNOME Classic may primarily be a different
+		/// set of extensions being used in GNOME Shell to provide a different
+		/// desktop UI and certain behaviour (like application switching).
+		/// </remarks>
 		public static bool IsGnomeShell
 		{
 			get
 			{
 				if (!IsLinux)
 					return false;
+				if (Platform.DesktopEnvironment == "gnome" && !IsGnomeFlashback)
+				{
+					return true;
+				}
+				return false;
+			}
+		}
 
-				var pids = RunTerminalCommand("pidof", "gnome-shell");
-				return !string.IsNullOrEmpty(pids);
+		/// <summary>
+		/// Is the software running in the GNOME Classic desktop environment?
+		/// (Not meaning it's not running "in GNOME Shell", but is there evidence
+		/// that specifically GNOME Classic is being used?)
+		/// </summary>
+		public static bool IsGnomeClassic
+		{
+			get
+			{
+				return Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP") == "GNOME-Classic:GNOME";
+			}
+		}
+
+
+		/// <summary>
+		/// Is the software running in the GNOME Flashback desktop environment?
+		/// </summary>
+		public static bool IsGnomeFlashback
+		{
+			get
+			{
+				return Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP") == "GNOME-Flashback:GNOME";
+			}
+		}
 
 		/// <summary>
 		/// Is the software running in a flatpak container?
