@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.IO;
 using System.Text;
 using SIL.Extensions;
 
@@ -35,6 +36,24 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		}
 
 		/// <summary>
+		/// Absolute path to setxkbmap command.
+		/// </summary>
+		internal static string SetxkbmapPath
+		{
+			get
+			{
+				// Use command from flatpak /app prefix if present.
+				string prefix = "/app";
+				string restOfCommandPath = "bin/setxkbmap";
+				if (!File.Exists(Path.Combine(prefix, restOfCommandPath)))
+				{
+					prefix = "/usr";
+				}
+				return Path.Combine(prefix, restOfCommandPath);
+			}
+		}
+
+		/// <summary>
 		/// Set the XKB layout to use henceforward using the setxkbmap program.
 		/// </summary>
 		/// <remarks>
@@ -43,7 +62,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		private static void SetXkbLayout(string layout, string variant, string option)
 		{
 			var startInfo = new ProcessStartInfo();
-			startInfo.FileName = "/usr/bin/setxkbmap";
+			startInfo.FileName = SetxkbmapPath;
 			var bldr = new StringBuilder();
 			bldr.AppendFormat ("-layout {0}", layout);
 			if (!String.IsNullOrEmpty(variant))

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using SIL.PlatformUtilities;
+using SIL.Progress;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
@@ -82,6 +83,12 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// </summary>
 		private static string[] GetMyKeyboards()
 		{
+			if (Platform.IsFlatpak)
+			{
+				// Querying gsettings from within flatpak needs to go thru a flatpak portal.
+				return GnomeInputSourcesViaFlatpakPortal();
+			}
+
 			// This is the proper path for the combined keyboard handling, not the path
 			// given in the IBus reference documentation.
 			const string schema = "org.gnome.desktop.input-sources";
@@ -92,16 +99,61 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			if (settings == IntPtr.Zero)
 				return null;
 
+			// Commandline equivalent: gsettings get org.gnome.desktop.input-sources sources
 			var sources = Unmanaged.g_settings_get_value(settings, "sources");
 			if (sources == IntPtr.Zero)
 				return null;
-			var list = KeyboardRetrievingHelper.GetStringArrayFromGVariantListArray(sources);
+			string[] list = KeyboardRetrievingHelper.GetStringArrayFromGVariantListArray(sources);
+
 			Unmanaged.g_variant_unref(sources);
 			Unmanaged.g_object_unref(settings);
-
 			return list;
 		}
 
+		/// <summary>
+		/// Return list of GNOME input sources, as queried of gsettings by way of a dbus Flatpak portal.
+		/// https://flatpak.github.io/xdg-desktop-portal/#gdbus-org.freedesktop.portal.Settings
+		/// </summary>
+		internal static string[] GnomeInputSourcesViaFlatpakPortal(){
+			string dest = "org.freedesktop.portal.Desktop";
+			string objectPath = "/org/freedesktop/portal/desktop";
+			string method = "org.freedesktop.portal.Settings.Read";
+			string gsettingsNamespaceAndKey = "org.gnome.desktop.input-sources sources";
+			var result = SIL.CommandLineProcessing.CommandLineRunner.Run(
+				"gdbus",
+				$"call --session --dest {dest} --object-path {objectPath} --method {method} {gsettingsNamespaceAndKey}",
+				"/", 10, new StringBuilderProgress());
+			return (ParseGDBusKeyboardList(result.StandardOutput)).ToArray<string>();
+		}
+
+		/// <summary>
+		/// Parses a keyboard list from gdbus into a list of keyboards.
+		/// For example, parses "(<<[('xkb', 'us'), ('ibus', 'table:thai')]>>,)\n" to
+		/// the list { "xkb;;us", "ibus;;table:thai" }.
+		/// </summary>
+		internal static List<string> ParseGDBusKeyboardList(string keyboardList)
+		{
+			string[] keyboards = keyboardList.Split(new string[] {"), "},
+				StringSplitOptions.RemoveEmptyEntries);
+			if (keyboards.Length < 1)
+			{
+				return new List<string>();
+			}
+			List<string> output = new List<string>();
+			foreach(var keyboard in keyboards) {
+				string[] keyboardDesignationTuple = keyboard
+					.Trim("(<[']>),\n".ToCharArray())
+					.Split(new string[] {"', '"}, StringSplitOptions.RemoveEmptyEntries);
+				if (keyboardDesignationTuple.Length != 2)
+				{
+					continue;
+				}
+				var inputFramework = keyboardDesignationTuple[0];
+				var engine = keyboardDesignationTuple[1];
+				output.Add($"{inputFramework};;{engine}");
+			}
+			return output;
+		}
 		private static void AddMatchingKeyboard(string source, ref uint kbdIndex,
 			IDictionary<string, uint> keyboards, Func<string, bool> keyboardTypeMatches)
 		{
