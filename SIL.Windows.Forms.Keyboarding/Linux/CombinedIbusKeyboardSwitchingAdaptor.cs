@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.IO;
 using System.Text;
 using SIL.Extensions;
 
@@ -43,7 +44,13 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		private static void SetXkbLayout(string layout, string variant, string option)
 		{
 			var startInfo = new ProcessStartInfo();
-			startInfo.FileName = "/usr/bin/setxkbmap";
+			if (File.Exists("/app/bin/setxkbmap"))
+			{
+				// Use command from flatpak /app prefix if present.
+				startInfo.FileName = "/app/bin/setxkbmap";
+			} else {
+				startInfo.FileName = "/usr/bin/setxkbmap";
+			}
 			var bldr = new StringBuilder();
 			bldr.AppendFormat ("-layout {0}", layout);
 			if (!String.IsNullOrEmpty(variant))
