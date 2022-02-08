@@ -199,8 +199,9 @@ namespace SIL.Tests.PlatformUtilities
 			ExpectedResult = "gnome (ubuntu [display server: Wayland])", TestName = "Ubuntu 20.04 (Gnome + Wayland)")]
 		[TestCase("X-Cinnamon", null, "cinnamon", "", ExpectedResult = "x-cinnamon (cinnamon)", TestName = "Wasta 20 (Cinnamon)")]
 		[TestCase("ubuntu:GNOME", null, "ubuntu", "", ExpectedResult = "gnome (ubuntu)", TestName = "Wasta 20 (Gnome)")]
+		[TestCase("ubuntu:GNOME", "/app/share:/usr/share:/usr/share/runtime/share:/run/host/user-share:/run/host/share", "ubuntu", null, "org.example.MyApp", ExpectedResult = "gnome (ubuntu [container: flatpak])", TestName = "Ubuntu 20.04 (Gnome) in Flatpak")]
 		public string DesktopEnvironmentInfoString_SimulateDesktopEnvironments(string currDesktop,
-			string dataDirs, string gdmSession, string mirServerName)
+			string dataDirs, string gdmSession, string mirServerName, string flatpakId = null)
 		{
 			// See http://askubuntu.com/a/227669 for actual values on different systems
 
@@ -209,6 +210,7 @@ namespace SIL.Tests.PlatformUtilities
 			Environment.SetEnvironmentVariable("XDG_DATA_DIRS", dataDirs);
 			Environment.SetEnvironmentVariable("GDMSESSION", gdmSession);
 			Environment.SetEnvironmentVariable("MIR_SERVER_NAME", mirServerName);
+			Environment.SetEnvironmentVariable("FLATPAK_ID", flatpakId);
 
 			// SUT
 			return Platform.DesktopEnvironmentInfoString;
@@ -252,6 +254,21 @@ namespace SIL.Tests.PlatformUtilities
 		{
 			Assert.That(Platform.IsCinnamon, Is.False);
 		}
+
+		[Platform(Include = "Linux", Reason = "Linux specific test")]
+		// In flatpak
+		[TestCase("org.example.MyApp", ExpectedResult = true)]
+		// Not in flatpak
+		[TestCase(null, ExpectedResult = false)]
+		public bool IsFlatpak(string flatpakId)
+		{
+			// Setup
+			Environment.SetEnvironmentVariable("FLATPAK_ID", flatpakId);
+
+			// SUT
+			return Platform.IsFlatpak;
+		}
+
 	}
 }
 
