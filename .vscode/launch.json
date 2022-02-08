@@ -16,11 +16,24 @@
 			"console": "integratedTerminal"
 		},
 		{
+			// Attaches to a program listening for a debugger, such as from running:
+			// mono --debug --debugger-agent="address=localhost:55555,transport=dt_socket,server=y,suspend=n" foo/App.exe
 			"name": "Attach",
 			"type": "mono",
 			"request": "attach",
 			"address": "localhost",
 			"port": 55555
-		}
+		},
+		{
+			"name": "Launch TestAppKeyboard.exe",
+			"env": {
+			  // Use this mono.
+			  // "PATH": "/opt/mono5-sil/bin:${env:PATH}",
+			},
+			"type": "mono",
+			"request": "launch",
+			"program": "${workspaceRoot}/output/DebugMonoStrongName/TestAppKeyboard.exe",
+			"cwd": "${workspaceRoot}",
+		  },
 	]
 }
