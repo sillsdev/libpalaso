@@ -345,6 +345,9 @@
       <Project>{f7df58e2-5b67-498a-9f64-b5f1584a5ab9}</Project>
       <Name>SIL.Windows.Forms.WritingSystems</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SIL.Core.Desktop\SIL.Core.Desktop.csproj">
+      <Name>SIL.Core.Desktop</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
