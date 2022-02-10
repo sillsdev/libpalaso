@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 SIL International
+// Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -267,6 +267,17 @@ namespace SIL.Tests.PlatformUtilities
 			return Platform.IsFlatpak;
 		}
 
+		[Platform(Include = "Linux", Reason = "Linux specific test")]
+		[TestCase("org.example.MyApp", ExpectedResult = true, TestName = "In flatpak")]
+		[TestCase(null, ExpectedResult = false, TestName = "Not in flatpak")]
+		public bool UnixOrMacVersion_ReportsIfFlatpak(string flatpakIdEnv)
+		{
+			Environment.SetEnvironmentVariable("FLATPAK_ID", flatpakIdEnv);
+			// SUT
+			string result = Platform.UnixOrMacVersion();
+
+			return result.Contains("Flatpak");
+		}
 	}
 }
 
