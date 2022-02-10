@@ -286,7 +286,6 @@ namespace SIL.Tests.PlatformUtilities
 			return Platform.IsFlatpak;
 		}
 
-
 		[Platform(Include = "Linux", Reason = "Linux specific test")]
 		// Ubuntu 20.04 Gnome Shell
 		[TestCase("ubuntu:GNOME", ExpectedResult = true)]
@@ -329,6 +328,17 @@ namespace SIL.Tests.PlatformUtilities
 			return Platform.IsGnomeFlashback;
 		}
 
+		[Platform(Include = "Linux", Reason = "Linux specific test")]
+		[TestCase("org.example.MyApp", ExpectedResult = true, TestName = "In flatpak")]
+		[TestCase(null, ExpectedResult = false, TestName = "Not in flatpak")]
+		public bool UnixOrMacVersion_ReportsIfFlatpak(string flatpakIdEnv)
+		{
+			Environment.SetEnvironmentVariable("FLATPAK_ID", flatpakIdEnv);
+			// SUT
+			string result = Platform.UnixOrMacVersion();
+
+			return result.Contains("Flatpak");
+		}
 	}
 }
 
