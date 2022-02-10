@@ -305,7 +305,7 @@ namespace SIL.PlatformUtilities
 		/// Determines the OS version if on a UNIX based system
 		/// </summary>
 		/// <returns></returns>
-		private static string UnixOrMacVersion()
+		internal static string UnixOrMacVersion()
 		{
 			if (RunTerminalCommand("uname") == "Darwin")
 			{
@@ -314,7 +314,16 @@ namespace SIL.PlatformUtilities
 				return osName + " (" + osVersion + ")";
 			}
 
-			var distro = RunTerminalCommand("bash", "-c '[ $(which lsb_release) ] && [ -f /etc/wasta-release ] && echo \"$(lsb_release -d -s) ($(cat /etc/wasta-release | grep DESCRIPTION | cut -d\\\" -f 2))\" || lsb_release -d -s'");
+			string unameCommand = "uname --kernel-name --kernel-release --kernel-version --machine";
+			var distro = RunTerminalCommand("bash", $"-c 'which lsb_release >/dev/null && [ -f /etc/wasta-release ] && echo \"$(lsb_release -d -s) ($(cat /etc/wasta-release | grep DESCRIPTION | cut -d\\\" -f 2))\" || lsb_release -d -s 2>/dev/null || {unameCommand}'");
+			if (IsFlatpak)
+			{
+				// Flatpak may not have lsb_release and can fall back to uname. But try to report the host distro.
+				string extra = Environment.GetEnvironmentVariable("XDG_SESSION_DESKTOP")
+					?? Environment.GetEnvironmentVariable("DESKTOP_SESSION")
+					?? Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP");
+				return $"Flatpak ({extra} {distro})";
+			}
 			return string.IsNullOrEmpty(distro) ? "UNIX" : distro;
 		}
 
