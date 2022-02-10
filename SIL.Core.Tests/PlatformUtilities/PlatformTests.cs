@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 SIL International
+// Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -251,6 +251,22 @@ namespace SIL.Tests.PlatformUtilities
 		public void IsCinnamon_Windows()
 		{
 			Assert.That(Platform.IsCinnamon, Is.False);
+		}
+		[Platform(Include = "Linux", Reason = "Linux specific test")]
+		[Test]
+		public void UnixOrMacVersion_ReportsIfFlatpak()
+		{
+			Environment.SetEnvironmentVariable("FLATPAK_ID", "org.example.MyApp");
+			// SUT 1
+			string actual1 = Platform.UnixOrMacVersion();
+
+			Assert.That(actual1, Is.StringContaining("Flatpak"));
+
+			Environment.SetEnvironmentVariable("FLATPAK_ID", null);
+			// SUT 2
+			string actual2 = Platform.UnixOrMacVersion();
+
+			Assert.That(actual2, Is.Not.StringContaining("Flatpak"));
 		}
 	}
 }
