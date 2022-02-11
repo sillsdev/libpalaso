@@ -736,7 +736,7 @@ namespace SIL.WritingSystems
 		/// It is not useful to modify this or set it in new LDML files; however, we need a public setter
 		/// because FieldWorks overrides the code that normally reads this from the LDML file.
 		/// </summary>
-		public virtual string WindowsLcid // TODO (hasso) 2022.02.08: look here tomorrow
+		public virtual string WindowsLcid
 		{
 			get { return _windowsLcid ?? string.Empty; }
 			set { Set(() => WindowsLcid, ref _windowsLcid, value); }
