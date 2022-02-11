@@ -1020,8 +1020,7 @@ namespace SIL.WritingSystems
 			// Can have multiple specials. Find the ones with the SIL namespace (we try to keep only one, but hand-editors can do whatever).
 			var specialElems = element.NonAltElements("special").Where(e => !string.IsNullOrEmpty((string) e.Attribute(XNamespace.Xmlns+"sil"))).ToArray();
 			// Handle the case where we create special because this Writing System has entries to write
-			if (!specialElems.Any() &&
-				(ws.Fonts.Count > 0 || ws.KnownKeyboards.Count > 0 || ws.SpellCheckDictionaries.Count > 0 || !ws.LanguageTag.Equals(ws.CaseAlias)))
+			if (!specialElems.Any() && (ws.Fonts.Count > 0 || ws.KnownKeyboards.Count > 0 || ws.SpellCheckDictionaries.Count > 0 || ws.CaseAlias != null))
 			{
 				// Create special element
 				specialElems = new[] {GetOrCreateSpecialElement(element)};
@@ -1441,7 +1440,7 @@ namespace SIL.WritingSystems
 
 			specialElem = specialElems.FirstOrDefault(e => e.NonAltElement(Sil + "case") != null) ?? specialElem;
 			var caseElem = specialElem.GetOrCreateElement(Sil + "case");
-			if (ws.LanguageTag.Equals(ws.CaseAlias))
+			if (ws.CaseAlias == null)
 			{
 				caseElem.Remove();
 			}

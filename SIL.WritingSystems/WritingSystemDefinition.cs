@@ -756,7 +756,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public virtual string CaseAlias
 		{
-			get => _caseAlias ?? LanguageTag;
+			get => _caseAlias;
 			set { Set(() => CaseAlias, ref _caseAlias, value); }
 		}
 

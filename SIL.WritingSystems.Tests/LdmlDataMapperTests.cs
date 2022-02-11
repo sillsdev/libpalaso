@@ -1233,11 +1233,10 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Write_SilCaseAlias_MatchesLangTag_NotWritten([Values(true, false)] bool isNull)
+		public void Write_SilCaseAlias_NotSpecified_NotWritten()
 		{
 			using var env = new TestEnvironment();
-			var wsToLdml = new WritingSystemDefinition("tkr", "Latn", string.Empty, string.Empty);
-			wsToLdml.CaseAlias = isNull ? null : wsToLdml.LanguageTag;
+			var wsToLdml = new WritingSystemDefinition("tkr", "Latn", string.Empty, string.Empty) {CaseAlias = null};
 			var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			ldmlAdaptor.Write(env.FilePath("test.ldml"), wsToLdml, null);
 			// Should not write /ldml/special/sil:case, but also should not write any /ldml/special
