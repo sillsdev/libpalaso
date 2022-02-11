@@ -151,20 +151,6 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void ExistingLdml_SilCaseAlias_Write_PreservesData()
-		{
-			const string ldmlWithCaseAlias = @"<ldml><special xmlns:sil=""" + XmlNamespaceUrn + @"""><sil:case alias=""tur""/></special></ldml>";
-			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
-			var sw = new StringWriter();
-			var ws = new WritingSystemDefinition("en");
-			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
-			adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlWithCaseAlias)));
-			writer.Close();
-			using var env = new TestEnvironment();
-			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:case[@alias='tur']", 1, env.NamespaceManager);
-		}
-
-		[Test]
 		public void ExistingLdml_UnknownCollation_Write_PreservesData()
 		{
 			const string ldmlwithcollation =
