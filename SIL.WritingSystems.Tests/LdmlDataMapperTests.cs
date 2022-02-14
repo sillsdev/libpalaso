@@ -14,13 +14,17 @@ using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 using SIL.Xml;
 using Is = SIL.TestUtilities.NUnitExtensions.Is;
+// ReSharper disable AccessToStaticMemberViaDerivedType - always using our own Is is easier
+// ReSharper disable AssignNullToNotNullAttribute - System.IO.Path is hypocritical
+// ReSharper disable PossibleNullReferenceException - XDocument is hypocritical
 
 namespace SIL.WritingSystems.Tests
 {
 	[TestFixture]
 	public class LdmlDataMapperTests
 	{
-		private static readonly XNamespace Sil = "urn://www.sil.org/ldml/0.1";
+		private const string XmlNamespaceUrn = "urn://www.sil.org/ldml/0.1";
+		private static readonly XNamespace Sil = XmlNamespaceUrn;
 
 		private class TestEnvironment : IDisposable
 		{
@@ -28,12 +32,12 @@ namespace SIL.WritingSystems.Tests
 			{
 				FolderContainingLdml = new TemporaryFolder("LdmlDataMapperTests");
 				NamespaceManager = new XmlNamespaceManager(new NameTable());
-				NamespaceManager.AddNamespace("sil", "urn://www.sil.org/ldml/0.1");
+				NamespaceManager.AddNamespace("sil", XmlNamespaceUrn);
 			}
 
-			public XmlNamespaceManager NamespaceManager { get; private set; }
+			public XmlNamespaceManager NamespaceManager { get; }
 
-			private TemporaryFolder FolderContainingLdml { get; set; }
+			private TemporaryFolder FolderContainingLdml { get; }
 
 			public void Dispose()
 			{
@@ -73,6 +77,7 @@ namespace SIL.WritingSystems.Tests
 		public void ReadFromXmlReader_NullXmlReader_Throws()
 		{
 			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+			// ReSharper disable once RedundantCast (ensures the correct overload is called)
 			Assert.Throws<ArgumentNullException>(
 				() => adaptor.Read((XmlReader)null, CreateWritingSystem())
 			);
@@ -148,7 +153,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void ExistingLdml_UnknownCollation_Write_PreservesData()
 		{
-			var ldmlwithcollation =
+			const string ldmlwithcollation =
 				@"<ldml><collations><collation><unknown>" +
 				@"<![CDATA[[caseLevel on]& c < k]]>" +
 				@"</unknown></collation></collations></ldml>";
@@ -158,15 +163,15 @@ namespace SIL.WritingSystems.Tests
 			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
 			adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlwithcollation)));
 			writer.Close();
-			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation", 1);
+			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation/unknown", 1);
 		}
 
 		[Test]
 		public void ExistingLdml_SilReorderCollation_Write_PreservesData()
 		{
-			var ldmlwithcollation =
+			const string ldmlwithcollation =
 				@"<ldml><!--Comment--><dates/><special>hey</special><collations><collation type=""nonsense"">" +
-				@"<special xmlns:sil=""urn://www.sil.org/ldml/0.1""><sil:reordered>junk</sil:reordered></special>" +
+				@"<special xmlns:sil=""" + XmlNamespaceUrn + @"""><sil:reordered>junk</sil:reordered></special>" +
 			@"</collation></collations></ldml>";
 			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			var sw = new StringWriter();
@@ -174,13 +179,15 @@ namespace SIL.WritingSystems.Tests
 			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
 			adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlwithcollation)));
 			writer.Close();
-			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation", 1);
+			using var env = new TestEnvironment();
+			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath(
+				"/ldml/collations/collation/special/sil:reordered[text()='junk']", 1, env.NamespaceManager);
 		}
 
 		[Test]
 		public void ExistingLdml_NonSILSpecialCollation_Write_PreservesData()
 		{
-			var ldmlwithcollation =
+			const string ldmlwithcollation =
 				@"<ldml><!--Comment--><dates/><special>hey</special><collations><collation type=""nonsense"">" +
 				@"<special xmlns:notsil=""urn://www.notsil.org/ldml/42""><notsil:notsospecial>Hedburg</notsil:notsospecial></special>" +
 				@"</collation></collations></ldml>";
@@ -190,15 +197,18 @@ namespace SIL.WritingSystems.Tests
 			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
 			adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlwithcollation)));
 			writer.Close();
-			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation", 1);
+			using var env = new TestEnvironment();
+			env.NamespaceManager.AddNamespace("notsil", "urn://www.notsil.org/ldml/42");
+			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath(
+				"/ldml/collations/collation[@type='nonsense']/special/notsil:notsospecial[text()='Hedburg']", 1, env.NamespaceManager);
 		}
 
 		[Test]
 		public void ExistingLdml_CustomSimple_Write_RemovesData()
 		{
-			var ldmlwithcollation =
+			const string ldmlwithcollation =
 				@"<ldml><!--Comment--><dates/><special>hey</special><collations><collation type=""standard"">" +
-				@"<special xmlns:sil=""urn://www.sil.org/ldml/0.1""><sil:simple><![CDATA[]]></sil:simple></special>" +
+				@"<special xmlns:sil=""" + XmlNamespaceUrn + @"""><sil:simple><![CDATA[]]></sil:simple></special>" +
 				@"</collation></collations></ldml>";
 			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			var sw = new StringWriter();
@@ -717,6 +727,28 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		[Test]
+		public void Roundtrip_CaseAlias_AddedAndRemoved()
+		{
+			using var env = new TestEnvironment();
+			var wsToLdml = new WritingSystemDefinition("aa", "Latn", "", "") {CaseAlias = "EL"};
+			var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+			ldmlAdaptor.Write(env.FilePath("test.ldml"), wsToLdml, null);
+			AssertThatXmlIn.File(env.FilePath("test.ldml"))
+				.HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:case[@alias='EL']", 1, env.NamespaceManager);
+
+			var wsFromLdml = new WritingSystemDefinition();
+			ldmlAdaptor.Read(env.FilePath("test.ldml"), wsFromLdml);
+			Assert.That(wsFromLdml.CaseAlias, Is.EqualTo("EL"));
+
+			wsFromLdml.CaseAlias = null;
+			using (var fileStream = new FileStream(env.FilePath("test.ldml"), FileMode.Open))
+			{
+				ldmlAdaptor.Write(env.FilePath("sans.ldml"), wsFromLdml, fileStream);
+			}
+			AssertThatXmlIn.File(env.FilePath("sans.ldml")).HasNoMatchForXpath("/ldml/special");
+		}
+
 		//WS-33992 : Test removed since empty collations are removed
 
 		// For the collation tests below, we use XElement load to verify the LDML write
@@ -1093,7 +1125,7 @@ namespace SIL.WritingSystems.Tests
 		#endregion
 
 		[Test]
-		public void Read_LdmlContainsOnlyPrivateUse_IsoAndprivateUseSetCorrectly()
+		public void Read_LdmlContainsOnlyPrivateUse_IsoAndPrivateUseSetCorrectly()
 		{
 			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			var wsFromLdml = new WritingSystemDefinition();
@@ -1150,31 +1182,116 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Write_UnknownKeyboard_NoEmptyNodes()
+		{
+			using var env = new TestEnvironment();
+			var ws = new WritingSystemDefinition();
+			ws.KnownKeyboards.Add(new DefaultKeyboardDefinition("MyFavoriteKeyboard", string.Empty));
+
+			new LdmlDataMapper(new TestWritingSystemFactory()).Write("noKeys.ldml", ws, null);
+			AssertThatXmlIn.File("noKeys.ldml").HasNoMatchForXpath("/ldml/special");
+		}
+
+		[Test]
 		public void Write_KeyboardInfoIsOnlyWrittenOnce()
 		{
-			using (var environment = new TestEnvironment())
+			using var environment = new TestEnvironment();
+			var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
+			var keyboard1 = new DefaultKeyboardDefinition("en-US_MyFavoriteKeyboard", "MyFavoriteKeyboard", "MyFavoriteKeyboard", "en-US", true);
+			keyboard1.Format = KeyboardFormat.Msklc;
+			ws.KnownKeyboards.Add(keyboard1);
+			var keyboard2 = new DefaultKeyboardDefinition("en-GB_SusannasFavoriteKeyboard", "SusannasFavoriteKeyboard", "SusannasFavoriteKeyboard", "en-GB", true);
+			keyboard2.Format = KeyboardFormat.Msklc;
+			ws.KnownKeyboards.Add(keyboard2);
+
+			var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+
+			ldmlAdaptor.Write(environment.FilePath("test.ldml"), ws, null);
+
+			//read the file and write it out unchanged
+			var ws2 = new WritingSystemDefinition();
+			ldmlAdaptor.Read(environment.FilePath("test.ldml"), ws2);
+			ldmlAdaptor.Write(environment.FilePath("test.ldml"), ws2, new MemoryStream(File.ReadAllBytes(environment.FilePath("test.ldml"))));
+
+			AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:kbd[@id='en-US_MyFavoriteKeyboard' and @type='msklc']", 1, environment.NamespaceManager);
+			AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:kbd[@id='en-GB_SusannasFavoriteKeyboard' and @type='msklc']", 1, environment.NamespaceManager);
+			// Should not have any other custom SIL elements
+			AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasNoMatchForXpath("/ldml/special/sil:case", environment.NamespaceManager);
+		}
+
+		[Test]
+		public void Write_SilCaseAlias_Written()
+		{
+			using var env = new TestEnvironment();
+			var ws = new WritingSystemDefinition("tkr", "Latn", string.Empty, string.Empty) {CaseAlias = "tur"};
+
+			new LdmlDataMapper(new TestWritingSystemFactory()).Write(env.FilePath("test.ldml"), ws, null);
+
+			AssertThatXmlIn.File(env.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:case[@alias='tur']", 1, env.NamespaceManager);
+			// Should not have any other custom SIL elements
+			AssertThatXmlIn.File(env.FilePath("test.ldml")).HasNoMatchForXpath("/ldml/special/sil:external-resources", env.NamespaceManager);
+		}
+
+		[Test]
+		public void Write_SilCaseAlias_NotSpecified_NotWritten()
+		{
+			using var env = new TestEnvironment();
+			var wsToLdml = new WritingSystemDefinition("tkr", "Latn", string.Empty, string.Empty) {CaseAlias = null};
+			var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+			ldmlAdaptor.Write(env.FilePath("test.ldml"), wsToLdml, null);
+			// Should not write /ldml/special/sil:case, but also should not write any /ldml/special
+			AssertThatXmlIn.File(env.FilePath("test.ldml")).HasNoMatchForXpath("/ldml/special", env.NamespaceManager);
+		}
+
+		[Test]
+		public void Write_AllTopLevelSpecials()
+		{
+			using var env = new TestEnvironment();
+			var ws = new WritingSystemDefinition("en-Zxxx-x-audio") {CaseAlias = "fr-fonipa"};
+			var keyboard = new DefaultKeyboardDefinition("en-US_MyFavoriteKeyboard", "MyFavoriteKeyboard", "MyFavoriteKeyboard", "en-US", true)
 			{
-				var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
-				var keyboard1 = new DefaultKeyboardDefinition("en-US_MyFavoriteKeyboard", "MyFavoriteKeyboard", "MyFavoriteKeyboard", "en-US", true);
-				keyboard1.Format = KeyboardFormat.Msklc;
-				ws.KnownKeyboards.Add(keyboard1);
-				var keyboard2 = new DefaultKeyboardDefinition("en-GB_SusannasFavoriteKeyboard", "SusannasFavoriteKeyboard", "SusannasFavoriteKeyboard", "en-GB", true);
-				keyboard2.Format = KeyboardFormat.Msklc;
-				ws.KnownKeyboards.Add(keyboard2);
+				Format = KeyboardFormat.Msklc
+			};
+			ws.KnownKeyboards.Add(keyboard);
 
-				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+			new LdmlDataMapper(new TestWritingSystemFactory()).Write(env.FilePath("test.ldml"), ws, null);
 
+			AssertThatXmlIn.File(env.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath(
+				"/ldml/special/sil:external-resources/sil:kbd[@id='en-US_MyFavoriteKeyboard' and @type='msklc']", 1, env.NamespaceManager);
+			AssertThatXmlIn.File(env.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath(
+				"/ldml/special/sil:case[@alias='fr-fonipa']", 1, env.NamespaceManager);
+		}
 
-				ldmlAdaptor.Write(environment.FilePath("test.ldml"), ws, null);
+		[Test]
+		public void Write_AlwaysGroupsSilSpecials()
+		{
+			// Create an LDML file w/ multiple top-level special elements; ours comes after someone else's
+			const string ldmlString =
+				@"<ldml>" +
+				@"<special xmlns:notsil=""urn://www.notsil.org/ldml/42""><notsil:constructor>Zamenhof</notsil:constructor></special>" +
+				@"<special xmlns:sil=""" + XmlNamespaceUrn + @"""><sil:case alias=""ndl""/></special>" +
+				@"</ldml>";
+			using var env = new TestEnvironment();
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+			var ws1 = new WritingSystemDefinition("eo") {CaseAlias = "ndl"};
+			var writer = XmlWriter.Create(env.FilePath("test.ldml"), CanonicalXmlSettings.CreateXmlWriterSettings());
+			adaptor.Write(writer, ws1, XmlReader.Create(new StringReader(ldmlString)));
+			writer.Close();
 
-				//read the file and write it out unchanged
-				var ws2 = new WritingSystemDefinition();
-				ldmlAdaptor.Read(environment.FilePath("test.ldml"), ws2);
-				ldmlAdaptor.Write(environment.FilePath("test.ldml"), ws2, new MemoryStream(File.ReadAllBytes(environment.FilePath("test.ldml"))));
+			// Open the file and add a different item that goes in our top-level element
+			var ws2 = new WritingSystemDefinition();
+			adaptor.Read(env.FilePath("test.ldml"), ws2);
+			var keyboard = new DefaultKeyboardDefinition("en-US_MyFavoriteKeyboard", "MyFavoriteKeyboard", "MyFavoriteKeyboard", "en-US", true)
+			{
+				Format = KeyboardFormat.Msklc
+			};
+			ws2.KnownKeyboards.Add(keyboard);
+			adaptor.Write(env.FilePath("test.ldml"), ws2, new MemoryStream(File.ReadAllBytes(env.FilePath("test.ldml"))));
 
-				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:kbd[@id='en-US_MyFavoriteKeyboard' and @type='msklc']", 1, environment.NamespaceManager);
-				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:kbd[@id='en-GB_SusannasFavoriteKeyboard' and @type='msklc']", 1, environment.NamespaceManager);
-			}
+			AssertThatXmlIn.File(env.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath(
+				"/ldml/special/sil:external-resources/sil:kbd[@id='en-US_MyFavoriteKeyboard' and @type='msklc']", 1, env.NamespaceManager);
+			AssertThatXmlIn.File(env.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath(
+				"/ldml/special/sil:case[@alias='ndl']", 1, env.NamespaceManager);
 		}
 
 		[Test]
@@ -1273,7 +1390,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		#endregion
+		#endregion Write_Ldml
 
 		[Test]
 		public void WriteRoundTrip_LdmlIsValidLanguageStartingWithX_LdmlIsUnchanged()
@@ -1292,7 +1409,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Read_NonDescriptLdml_WritingSystemIdIsSameAsIetfLanguageTag()
+		public void Read_NondescriptLdml_WritingSystemIdIsSameAsIetfLanguageTag()
 		{
 			using (var file = new TempFile())
 			{
@@ -1360,44 +1477,53 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Read_LdmlWithCaseAlias()
+		{
+			using var file = new TempFile();
+			WriteCurrentVersionLdml("tkr", "", "", "", file);
+			var doc = XDocument.Load(file.Path);
+			doc.Root.Add(XElement.Parse("<special xmlns:sil='" + XmlNamespaceUrn + "'><sil:case alias='az'/></special>"));
+			doc.Save(file.Path);
+			var ws = new WritingSystemDefinition();
+			var dataMapper = new LdmlDataMapper(new TestWritingSystemFactory());
+			Assert.DoesNotThrow(() => dataMapper.Read(file.Path, ws));
+			Assert.That(ws.CaseAlias, NUnit.Framework.Is.EqualTo("az"));
+		}
+
+		[Test]
 		public void RoundTrippingLdmlDoesNotDuplicateSections()
 		{
-			using (var roundTripOut2 = new TempFile())
-			using (var roundTripOut = new TempFile())
-			using (var tempFile = new TempFile())
+			using var env = new TestEnvironment();
+			const string tempFile0 = "temp.ldml", roundTripOut1 = "rt1.ldml", roundTripOut2 = "rt2.ldml";
+			using (var writer = new StreamWriter(tempFile0, false, Encoding.UTF8))
 			{
-
-				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
-				{
-					writer.Write(LdmlContentForTests.CurrentVersion("qaa", "", "", "x-lel"));
-				}
-				var ws = new WritingSystemDefinition();
-				var dataMapper = new LdmlDataMapper(new TestWritingSystemFactory());
-
-				dataMapper.Read(tempFile.Path, ws);
-				var keyboard1 = new DefaultKeyboardDefinition("MyFavoriteKeyboard", string.Empty);
-				ws.KnownKeyboards.Add(keyboard1);
-				using (var fileStream = new FileStream(tempFile.Path, FileMode.Open))
-				{
-					dataMapper.Write(roundTripOut.Path, ws, fileStream);
-				}
-				AssertThatXmlIn.File(roundTripOut.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/*[local-name()='external-resources']", 1);
-				var secondTripMapper = new LdmlDataMapper(new TestWritingSystemFactory());
-				var secondTripWs = new WritingSystemDefinition();
-				secondTripMapper.Read(roundTripOut.Path, secondTripWs);
-				secondTripWs.KnownKeyboards.Add(new DefaultKeyboardDefinition("x-tel", string.Empty));
-				using (var fileStream = new FileStream(roundTripOut.Path, FileMode.Open))
-				{
-					secondTripMapper.Write(roundTripOut2.Path, secondTripWs, fileStream);
-				}
-				AssertThatXmlIn.File(roundTripOut2.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/*[local-name()='external-resources']", 1);
+				writer.Write(LdmlContentForTests.CurrentVersion("qaa", "", "", "x-lel"));
 			}
+			var ws = new WritingSystemDefinition();
+			var dataMapper = new LdmlDataMapper(new TestWritingSystemFactory());
+
+			dataMapper.Read(tempFile0, ws);
+			ws.KnownKeyboards.Add(new DefaultKeyboardDefinition("MyFavoriteKeyboard", string.Empty) {Format = KeyboardFormat.Msklc});
+			using (var fileStream = new FileStream(tempFile0, FileMode.Open))
+			{
+				dataMapper.Write(roundTripOut1, ws, fileStream);
+			}
+			AssertThatXmlIn.File(roundTripOut1).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources", 1, env.NamespaceManager);
+			var secondTripMapper = new LdmlDataMapper(new TestWritingSystemFactory());
+			var secondTripWs = new WritingSystemDefinition();
+			secondTripMapper.Read(roundTripOut1, secondTripWs);
+			secondTripWs.KnownKeyboards.Add(new DefaultKeyboardDefinition("x-tel", string.Empty) {Format = KeyboardFormat.Keylayout});
+			using (var fileStream = new FileStream(roundTripOut1, FileMode.Open))
+			{
+				secondTripMapper.Write(roundTripOut2, secondTripWs, fileStream);
+			}
+			AssertThatXmlIn.File(roundTripOut2).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources", 1, env.NamespaceManager);
+			AssertThatXmlIn.File(roundTripOut2).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:kbd", 2, env.NamespaceManager);
 		}
 
 		[Test]
 		public void DuplicatedFontInLdml_ReportsBadData()
 		{
-			using (var roundTripOut = new TempFile())
 			using (var tempFile = new TempFile())
 			{
 
