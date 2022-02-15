@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Xml;
 using System.Xml.Linq;
 using NUnit.Framework;
@@ -7,8 +7,9 @@ using SIL.Xml;
 
 namespace SIL.TestUtilities
 {
-	//NB: if c# ever allows us to add static exension methods,
-	//then all this could be an extension on nunit's Assert class.
+	//NB: if c# ever allows us to add static extension methods,
+	//then all this could be an extension on NUnit's Assert class.
+	// Hasso (2022.02): I think we could convert these to IResolveConstraints or similar, but is it worth the effort?
 
 	public class AssertThatXmlIn
 	{

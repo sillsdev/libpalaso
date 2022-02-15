@@ -420,12 +420,18 @@ namespace SIL.WritingSystems
 
 		private static void ReadTopLevelSpecialElement(XElement specialElem, WritingSystemDefinition ws)
 		{
-			XElement externalResourcesElem = specialElem.Element(Sil + "external-resources");
+			var externalResourcesElem = specialElem.Element(Sil + "external-resources");
 			if (externalResourcesElem != null)
 			{
 				ReadFontElement(externalResourcesElem, ws);
 				ReadSpellcheckElement(externalResourcesElem, ws);
 				ReadKeyboardElement(externalResourcesElem, ws);
+			}
+
+			var caseElem = specialElem.Element(Sil + "case");
+			if (caseElem != null)
+			{
+				ws.CaseAlias = caseElem.Attribute("alias")?.Value;
 			}
 		}
 
@@ -1011,19 +1017,21 @@ namespace SIL.WritingSystems
 			WriteCollationsElement(collationsElem, ws);
 			RemoveIfEmpty(ref collationsElem);
 
-			// Can have multiple specials.  Find the one with SIL namespace and external-resources.
-			// Also handle case where we create special because writingsystem has entries to write
-			XElement specialElem = element.NonAltElements("special").FirstOrDefault(
-				e => !string.IsNullOrEmpty((string) e.Attribute(XNamespace.Xmlns+"sil")) && e.NonAltElement(Sil + "external-resources") != null);
-			if (specialElem == null && (ws.Fonts.Count > 0 || ws.KnownKeyboards.Count > 0 || ws.SpellCheckDictionaries.Count > 0))
+			// Can have multiple specials. Find the ones with the SIL namespace (we try to keep only one, but hand-editors can do whatever).
+			var specialElems = element.NonAltElements("special").Where(e => !string.IsNullOrEmpty((string) e.Attribute(XNamespace.Xmlns+"sil"))).ToArray();
+			// Handle the case where we create special because this Writing System has entries to write
+			if (!specialElems.Any() && (ws.Fonts.Count > 0 || ws.KnownKeyboards.Count > 0 || ws.SpellCheckDictionaries.Count > 0 || ws.CaseAlias != null))
 			{
 				// Create special element
-				specialElem = GetOrCreateSpecialElement(element);
+				specialElems = new[] {GetOrCreateSpecialElement(element)};
 			}
-			if (specialElem != null)
+			if (specialElems.Any())
 			{
-				WriteTopLevelSpecialElements(specialElem, ws);
-				RemoveIfEmpty(ref specialElem);
+				WriteTopLevelSpecialElements(specialElems, ws);
+				for(var i = 0; i < specialElems.Length; i++)
+				{
+					RemoveIfEmpty(ref specialElems[i]);
+				}
 			}
 
 			element.WriteTo(writer);
@@ -1421,12 +1429,25 @@ namespace SIL.WritingSystems
 			specialElem.Add(new XElement(Sil + "simple", new XCData(scd.SimpleRules)));
 		}
 		
-		private void WriteTopLevelSpecialElements(XElement specialElem, WritingSystemDefinition ws)
+		private void WriteTopLevelSpecialElements(XElement[] specialElems, WritingSystemDefinition ws)
 		{
-			XElement externalResourcesElem = specialElem.GetOrCreateElement(Sil + "external-resources");
+			var specialElem = specialElems.FirstOrDefault(e => e.NonAltElement(Sil + "external-resources") != null) ?? specialElems[0];
+			var externalResourcesElem = specialElem.GetOrCreateElement(Sil + "external-resources");
 			WriteFontElement(externalResourcesElem, ws);
 			WriteSpellcheckElement(externalResourcesElem, ws);
 			WriteKeyboardElement(externalResourcesElem, ws);
+			RemoveIfEmpty(ref externalResourcesElem);
+
+			specialElem = specialElems.FirstOrDefault(e => e.NonAltElement(Sil + "case") != null) ?? specialElem;
+			var caseElem = specialElem.GetOrCreateElement(Sil + "case");
+			if (ws.CaseAlias == null)
+			{
+				caseElem.Remove();
+			}
+			else
+			{
+				caseElem.SetAttributeValue("alias", ws.CaseAlias);
+			}
 		}
 
 		private void WriteFontElement(XElement externalResourcesElem, WritingSystemDefinition ws)
