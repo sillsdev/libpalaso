@@ -47,6 +47,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.SettingProtection] Deprecated ManageComponent method
 - [SIL.Scripture] VerseRef.TrySetVerseUnicode: Improve handling of non-decimal numerals and surrogate pair numerals (#1000)
 - [SIL.Windows.Forms.WritingSystems] Ignore deprecated region subtags in `ScriptRegionVariantView`(#763)
+- [SIL.Windows.Forms.DblBundle] Upgraded to version 5.0 (beta) of `L10NSharp.dll`
+- [SIL.Windows.Forms.Keyboarding] Upgraded to version 5.0 (beta) of `L10NSharp.dll`
+- [SIL.Windows.Forms.WritingSystems] Upgraded to version 5.0 (beta) of `L10NSharp.dll`
+- [SIL.Windows.Forms] Upgraded to version 5.0 (beta) of `L10NSharp.dll`
+
 
 ### Fixed
 
