@@ -37,7 +37,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 		}
 
-		public override bool IsApplicable => _helper.IsApplicable && Platform.IsGnomeShell;
+		public override bool IsApplicable => _helper.IsApplicable
+			&& (Platform.IsGnomeShell || Platform.IsGnomeClassic);
 
 		public override KeyboardAdaptorType Type => KeyboardAdaptorType.System | KeyboardAdaptorType.OtherIm;
 

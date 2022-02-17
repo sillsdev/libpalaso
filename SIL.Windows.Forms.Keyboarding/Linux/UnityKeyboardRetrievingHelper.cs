@@ -64,7 +64,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		public static string GetKeyboardSetupApplication(out string arguments)
 		{
 			arguments = "region layouts";
-			var programs = Platform.IsGnomeShell
+			var programs = (Platform.IsGnomeShell || Platform.IsGnomeClassic)
 				? new[] {
 					"/usr/bin/gnome-control-center",
 					"/usr/bin/unity-control-center"
