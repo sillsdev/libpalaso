@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using SIL.ObjectModel;
+// ReSharper disable LocalizableElement
 
 namespace SIL.TestUtilities
 {
@@ -30,6 +32,11 @@ namespace SIL.TestUtilities
 			return Equals(x, y) ? 0 : 1;
 		}
 
+		/// <summary>
+		/// If set, this is used to determine whether fields of the T are equal to their expected values.
+		/// </summary>
+		protected IComparer FieldComparer { get; set; }
+
 		protected class ValuesToSet
 		{
 			public ValuesToSet(object valueToSet, object notEqualValueToSet)
@@ -47,18 +54,15 @@ namespace SIL.TestUtilities
 					// test that the members actually get copied. Otherwise we don't know if the
 					// member got copied or if the test passed because we just happened to get the
 					// default value.
-					throw new ArgumentException("Value to set should not be the default value", "valueToSet");
+					throw new ArgumentException("Value to set should not be the default value", nameof(valueToSet));
 				}
 			}
 
-			public virtual Type TypeOfValueToSet { get { return ValueToSet.GetType(); } }
-			public object ValueToSet { get; private set; }
-			public object NotEqualValueToSet { get; private set; }
+			public virtual Type TypeOfValueToSet => ValueToSet.GetType();
+			public object ValueToSet { get; }
+			public object NotEqualValueToSet { get; }
 
-			private object DefaultValueForValueToSet
-			{
-				get { return TypeOfValueToSet.IsValueType ? Activator.CreateInstance(TypeOfValueToSet) : null; }
-			}
+			private object DefaultValueForValueToSet => TypeOfValueToSet.IsValueType ? Activator.CreateInstance(TypeOfValueToSet) : null;
 		}
 
 		/// <summary>
@@ -73,13 +77,7 @@ namespace SIL.TestUtilities
 			{
 			}
 
-			public override Type TypeOfValueToSet
-			{
-				get
-				{
-					return typeof(TT);
-				}
-			}
+			public override Type TypeOfValueToSet => typeof(TT);
 		}
 
 		/// <summary>
@@ -96,7 +94,7 @@ namespace SIL.TestUtilities
 		/// check that these fields are considered in the Equals() method. This list is in
 		/// addition to the ExceptionList.
 		/// </summary>
-		public virtual string EqualsExceptionList { get { return string.Empty; } }
+		public virtual string EqualsExceptionList => string.Empty;
 
 		/// <summary>
 		/// List of unequal values for each type used by the fields of the object under test
@@ -155,13 +153,17 @@ namespace SIL.TestUtilities
 					Assert.AreNotSame(fieldInfo.GetValue(clonable), fieldInfo.GetValue(theClone),
 									  "The field \"{0}\" refers to the same object, it was not copied.", fieldName);
 				}
-				Assert.AreEqual(defaultValue, fieldInfo.GetValue(theClone), "Field \"{0}\" not copied on Clone()", fieldName);
+
+				var fieldEqualConstraint = Is.EqualTo(defaultValue);
+				if (FieldComparer != null)
+					fieldEqualConstraint = fieldEqualConstraint.Using(FieldComparer);
+				Assert.That(fieldInfo.GetValue(theClone), fieldEqualConstraint, "Field \"{0}\" not copied on Clone()", fieldName);
 			}
 		}
 
-		private static IEnumerable<FieldInfo> GetAllFields(T clonable)
+		private static IEnumerable<FieldInfo> GetAllFields(T cloneable)
 		{
-			Type type = clonable.GetType();
+			Type type = cloneable.GetType();
 			IEnumerable<FieldInfo> fieldInfos = new List<FieldInfo>();
 			//here we are traversing up the inheritance tree to get all of the fields on our base types
 			while (type != null)
@@ -184,7 +186,7 @@ namespace SIL.TestUtilities
 			{
 				T item = CreateNewCloneable();
 				T unequalItem = CreateNewCloneable();
-				Assert.That(item, Is.EqualTo(unequalItem).Using<T>((x, y) => Equals(x, y) ? 0 : 1), "The two items were not equal on creation. You may need to override Equals(object other).");
+				Assert.That(item, Is.EqualTo(unequalItem).Using<T>(Compare), "The two items were not equal on creation. You may need to override Equals(object other).");
 				var fieldName = fieldInfo.Name;
 				if (fieldInfo.Name.Contains("<"))
 				{
@@ -319,6 +321,7 @@ namespace SIL.TestUtilities
 		{
 			T iEquatableUnderTest = CreateNewCloneable();
 			IEquatable<T> nullObject = null;
+			// ReSharper disable once ExpressionIsAlwaysNull - that's the point of this test
 			Assert.That(iEquatableUnderTest.Equals((T) nullObject), Is.False);
 		}
 
