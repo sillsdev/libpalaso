@@ -6,6 +6,7 @@ namespace SIL.TestUtilities
 {
 	/// <summary>
 	/// Comparer for two objects that might implement the IValueEquatable&lt;T&gt; interface.
+	/// KNOWN LIMITATION: This blocks NUnit's handling of equal values of different type, e.g. 1 and 1.0d
 	/// </summary>
 	public class ValueEquatableComparer : IComparer
 	{
@@ -19,7 +20,7 @@ namespace SIL.TestUtilities
 		{
 			if (x == null && y == null)
 				return 0;
-			if (x == null || y == null || x.GetType() != y.GetType())
+			if (x?.GetType() != y?.GetType())
 				return 1;
 
 			// search reflectively for ValueEquals
