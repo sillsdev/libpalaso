@@ -8,6 +8,7 @@ namespace SIL.TestUtilities.Tests
 	{
 		[TestCase(1, 1, TestName = "integers equal")]
 		[TestCase(1.0, 1.0)]
+		[TestCase(1, 1.0, TestName = "same value, different types")]
 		[TestCase("test", "test")]
 		[TestCase(null, null)]
 		[TestCase(new [] { 1, 2, 3 }, new[] { 1, 2, 3 })]
@@ -15,7 +16,6 @@ namespace SIL.TestUtilities.Tests
 
 		[TestCase(1, 2)]
 		[TestCase(1, 1.1)]
-		[TestCase(1, 1.0, TestName = "same value, different types")] // ENHANCE (Hasso) 2022.02: handle this case
 		[TestCase(null, true)]
 		[TestCase("to", null)]
 		public void Compare_Unequal(object x, object y) => Assert.That(x, Is.Not.EqualTo(y).Using(ValueEquatableComparer.Instance));

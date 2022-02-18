@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using NUnit.Framework;
 
 namespace SIL.TestUtilities
 {
 	/// <summary>
 	/// Comparer for two objects that might implement the IValueEquatable&lt;T&gt; interface.
-	/// KNOWN LIMITATION: This blocks NUnit's handling of equal values of different type, e.g. 1 and 1.0d
 	/// </summary>
 	public class ValueEquatableComparer : IComparer
 	{
@@ -18,12 +18,13 @@ namespace SIL.TestUtilities
 		/// </summary>
 		public int Compare(object x, object y)
 		{
-			if (x == null && y == null)
+			if (Is.EqualTo(y).ApplyTo(x).IsSuccess)
 				return 0;
 			if (x?.GetType() != y?.GetType())
 				return 1;
 
 			// search reflectively for ValueEquals
+			// ReSharper disable once PossibleNullReferenceException - Is.EqualTo handles if both are null; checking types handles if one is null.
 			var type = x.GetType();
 			MethodInfo valueEquals = null;
 			while (valueEquals == null && type != null)
