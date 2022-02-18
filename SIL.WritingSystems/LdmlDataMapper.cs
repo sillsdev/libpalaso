@@ -426,12 +426,7 @@ namespace SIL.WritingSystems
 				ReadFontElement(externalResourcesElem, ws);
 				ReadSpellcheckElement(externalResourcesElem, ws);
 				ReadKeyboardElement(externalResourcesElem, ws);
-			}
-
-			var caseElem = specialElem.Element(Sil + "case");
-			if (caseElem != null)
-			{
-				ws.CaseAlias = caseElem.Attribute("alias")?.Value;
+				ReadCaseTailoringElement(externalResourcesElem, ws);
 			}
 		}
 
@@ -536,6 +531,15 @@ namespace SIL.WritingSystems
 						ws.KnownKeyboards.Add(keyboard);
 					}
 				}
+			}
+		}
+
+		private static void ReadCaseTailoringElement(XElement externalResourcesElem, WritingSystemDefinition ws)
+		{
+			var caseTailoringElem = externalResourcesElem.Element(Sil + "case-tailoring");
+			if (caseTailoringElem != null)
+			{
+				ws.CaseAlias = caseTailoringElem.Attribute("alias")?.Value;
 			}
 		}
 
@@ -1018,20 +1022,18 @@ namespace SIL.WritingSystems
 			RemoveIfEmpty(ref collationsElem);
 
 			// Can have multiple specials. Find the ones with the SIL namespace (we try to keep only one, but hand-editors can do whatever).
-			var specialElems = element.NonAltElements("special").Where(e => !string.IsNullOrEmpty((string) e.Attribute(XNamespace.Xmlns+"sil"))).ToArray();
+			XElement specialElem = element.NonAltElements("special").FirstOrDefault(
+				e => !string.IsNullOrEmpty((string)e.Attribute(XNamespace.Xmlns + "sil")) && e.NonAltElement(Sil + "external-resources") != null);
 			// Handle the case where we create special because this Writing System has entries to write
-			if (!specialElems.Any() && (ws.Fonts.Count > 0 || ws.KnownKeyboards.Count > 0 || ws.SpellCheckDictionaries.Count > 0 || ws.CaseAlias != null))
+			if (specialElem == null && (ws.Fonts.Count > 0 || ws.KnownKeyboards.Count > 0 || ws.SpellCheckDictionaries.Count > 0 || ws.CaseAlias != null))
 			{
 				// Create special element
-				specialElems = new[] {GetOrCreateSpecialElement(element)};
+				specialElem = GetOrCreateSpecialElement(element);
 			}
-			if (specialElems.Any())
+			if (specialElem != null)
 			{
-				WriteTopLevelSpecialElements(specialElems, ws);
-				for(var i = 0; i < specialElems.Length; i++)
-				{
-					RemoveIfEmpty(ref specialElems[i]);
-				}
+				WriteTopLevelSpecialElements(specialElem, ws);
+				RemoveIfEmpty(ref specialElem);
 			}
 
 			element.WriteTo(writer);
@@ -1429,25 +1431,14 @@ namespace SIL.WritingSystems
 			specialElem.Add(new XElement(Sil + "simple", new XCData(scd.SimpleRules)));
 		}
 		
-		private void WriteTopLevelSpecialElements(XElement[] specialElems, WritingSystemDefinition ws)
+		private void WriteTopLevelSpecialElements(XElement specialElem, WritingSystemDefinition ws)
 		{
-			var specialElem = specialElems.FirstOrDefault(e => e.NonAltElement(Sil + "external-resources") != null) ?? specialElems[0];
 			var externalResourcesElem = specialElem.GetOrCreateElement(Sil + "external-resources");
 			WriteFontElement(externalResourcesElem, ws);
 			WriteSpellcheckElement(externalResourcesElem, ws);
 			WriteKeyboardElement(externalResourcesElem, ws);
+			WriteCaseTailoringElement(externalResourcesElem, ws);
 			RemoveIfEmpty(ref externalResourcesElem);
-
-			specialElem = specialElems.FirstOrDefault(e => e.NonAltElement(Sil + "case") != null) ?? specialElem;
-			var caseElem = specialElem.GetOrCreateElement(Sil + "case");
-			if (ws.CaseAlias == null)
-			{
-				caseElem.Remove();
-			}
-			else
-			{
-				caseElem.SetAttributeValue("alias", ws.CaseAlias);
-			}
 		}
 
 		private void WriteFontElement(XElement externalResourcesElem, WritingSystemDefinition ws)
@@ -1553,6 +1544,21 @@ namespace SIL.WritingSystems
 					}
 				}
 				externalResourcesElem.Add(kbdElem);
+			}
+		}
+
+		private void WriteCaseTailoringElement(XElement externalResourcesElem, WritingSystemDefinition ws)
+		{
+			var caseElem = externalResourcesElem.GetOrCreateElement(Sil + "case-tailoring");
+			// We are specifically not reading <sil:transform/> or <sil:case-tailoring transform=""/>, but they should round-trip.
+			// See https://github.com/silnrsi/sldr/blob/master/doc/sil_namespace.md#case-tailoring
+			if (ws.CaseAlias == null && caseElem.Attributes().All(att => att.Name == "alias"))
+			{
+				caseElem.Remove();
+			}
+			else
+			{
+				caseElem.SetAttributeValue("alias", ws.CaseAlias);
 			}
 		}
 

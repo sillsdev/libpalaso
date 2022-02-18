@@ -151,6 +151,26 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void ExistingLdml_SilCaseTailoringTransform_Write_PreservesData()
+		{
+			const string ldmlWithCaseAlias = @"<ldml><special xmlns:sil=""" + XmlNamespaceUrn + @"""><sil:external-resources>" +
+				@"<sil:case-tailoring transform='qbx'/>" +
+				@"<sil:transform from='qbx' to='qbx-Lower'/>" +
+				@"</sil:external-resources></special></ldml>";
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+			var sw = new StringWriter();
+			var ws = new WritingSystemDefinition("en");
+			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
+			adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlWithCaseAlias)));
+			writer.Close();
+			using var env = new TestEnvironment();
+			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath(
+				"/ldml/special/sil:external-resources/sil:case-tailoring[@transform='qbx']", 1, env.NamespaceManager);
+			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath(
+				"/ldml/special/sil:external-resources/sil:transform[@from='qbx' and @to='qbx-Lower']", 1, env.NamespaceManager);
+		}
+
+		[Test]
 		public void ExistingLdml_UnknownCollation_Write_PreservesData()
 		{
 			const string ldmlwithcollation =
@@ -735,7 +755,7 @@ namespace SIL.WritingSystems.Tests
 			var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			ldmlAdaptor.Write(env.FilePath("test.ldml"), wsToLdml, null);
 			AssertThatXmlIn.File(env.FilePath("test.ldml"))
-				.HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:case[@alias='EL']", 1, env.NamespaceManager);
+				.HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:case-tailoring[@alias='EL']", 1, env.NamespaceManager);
 
 			var wsFromLdml = new WritingSystemDefinition();
 			ldmlAdaptor.Read(env.FilePath("test.ldml"), wsFromLdml);
@@ -1216,7 +1236,7 @@ namespace SIL.WritingSystems.Tests
 			AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:kbd[@id='en-US_MyFavoriteKeyboard' and @type='msklc']", 1, environment.NamespaceManager);
 			AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:kbd[@id='en-GB_SusannasFavoriteKeyboard' and @type='msklc']", 1, environment.NamespaceManager);
 			// Should not have any other custom SIL elements
-			AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasNoMatchForXpath("/ldml/special/sil:case", environment.NamespaceManager);
+			AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasNoMatchForXpath("/ldml/special/sil:external-resources/*[name() != 'sil:kbd']", environment.NamespaceManager);
 		}
 
 		[Test]
@@ -1227,9 +1247,9 @@ namespace SIL.WritingSystems.Tests
 
 			new LdmlDataMapper(new TestWritingSystemFactory()).Write(env.FilePath("test.ldml"), ws, null);
 
-			AssertThatXmlIn.File(env.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:case[@alias='tur']", 1, env.NamespaceManager);
+			AssertThatXmlIn.File(env.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:case-tailoring[@alias='tur']", 1, env.NamespaceManager);
 			// Should not have any other custom SIL elements
-			AssertThatXmlIn.File(env.FilePath("test.ldml")).HasNoMatchForXpath("/ldml/special/sil:external-resources", env.NamespaceManager);
+			AssertThatXmlIn.File(env.FilePath("test.ldml")).HasNoMatchForXpath("/ldml/special/sil:external-resources/*[name() != 'sil:case-tailoring']", env.NamespaceManager);
 		}
 
 		[Test]
@@ -1239,7 +1259,7 @@ namespace SIL.WritingSystems.Tests
 			var wsToLdml = new WritingSystemDefinition("tkr", "Latn", string.Empty, string.Empty) {CaseAlias = null};
 			var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			ldmlAdaptor.Write(env.FilePath("test.ldml"), wsToLdml, null);
-			// Should not write /ldml/special/sil:case, but also should not write any /ldml/special
+			// Should not write /ldml/special/sil:external-resources/sil:case-tailoring, but also should not write any /ldml/special
 			AssertThatXmlIn.File(env.FilePath("test.ldml")).HasNoMatchForXpath("/ldml/special", env.NamespaceManager);
 		}
 
@@ -1259,7 +1279,7 @@ namespace SIL.WritingSystems.Tests
 			AssertThatXmlIn.File(env.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath(
 				"/ldml/special/sil:external-resources/sil:kbd[@id='en-US_MyFavoriteKeyboard' and @type='msklc']", 1, env.NamespaceManager);
 			AssertThatXmlIn.File(env.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath(
-				"/ldml/special/sil:case[@alias='fr-fonipa']", 1, env.NamespaceManager);
+				"/ldml/special/sil:external-resources/sil:case-tailoring[@alias='fr-fonipa']", 1, env.NamespaceManager);
 		}
 
 		[Test]
@@ -1269,7 +1289,7 @@ namespace SIL.WritingSystems.Tests
 			const string ldmlString =
 				@"<ldml>" +
 				@"<special xmlns:notsil=""urn://www.notsil.org/ldml/42""><notsil:constructor>Zamenhof</notsil:constructor></special>" +
-				@"<special xmlns:sil=""" + XmlNamespaceUrn + @"""><sil:case alias=""ndl""/></special>" +
+				@"<special xmlns:sil=""" + XmlNamespaceUrn + @"""><sil:external-resources><sil:case-tailoring alias=""ndl""/></sil:external-resources></special>" +
 				@"</ldml>";
 			using var env = new TestEnvironment();
 			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
@@ -1291,7 +1311,7 @@ namespace SIL.WritingSystems.Tests
 			AssertThatXmlIn.File(env.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath(
 				"/ldml/special/sil:external-resources/sil:kbd[@id='en-US_MyFavoriteKeyboard' and @type='msklc']", 1, env.NamespaceManager);
 			AssertThatXmlIn.File(env.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath(
-				"/ldml/special/sil:case[@alias='ndl']", 1, env.NamespaceManager);
+				"/ldml/special/sil:external-resources/sil:case-tailoring[@alias='ndl']", 1, env.NamespaceManager);
 		}
 
 		[Test]
@@ -1482,7 +1502,7 @@ namespace SIL.WritingSystems.Tests
 			using var file = new TempFile();
 			WriteCurrentVersionLdml("tkr", "", "", "", file);
 			var doc = XDocument.Load(file.Path);
-			doc.Root.Add(XElement.Parse("<special xmlns:sil='" + XmlNamespaceUrn + "'><sil:case alias='az'/></special>"));
+			doc.Root.Add(XElement.Parse("<special xmlns:sil='" + XmlNamespaceUrn + "'><sil:external-resources><sil:case-tailoring alias='az'/></sil:external-resources></special>"));
 			doc.Save(file.Path);
 			var ws = new WritingSystemDefinition();
 			var dataMapper = new LdmlDataMapper(new TestWritingSystemFactory());
