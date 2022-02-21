@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using NUnit.Framework;
 using SIL.Extensions;
 using static System.String;
@@ -630,6 +631,24 @@ namespace SIL.Tests.Extensions
 				kObjReplacementChar + " " + kObjReplacementChar + " " + kObjReplacementChar +
 				"a " + kObjReplacementChar + " ", out var fWholeWord, .15));
 			Assert.IsFalse(fWholeWord);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Test the LongestUsefulCommonSubstring method. This test ensures that if words have
+		/// letters with diacritics or other combining marks, those are not treated as word-
+		/// breaking characters, but rather whole words are kept together.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void LongestUsefulCommonSubstring_LettersWithCombiningMarks_MarksTreatedAsWorkFormingCharacters()
+		{
+			Assert.AreEqual("me aborrece, porque yo testifico de",
+				StringExtensions.GetLongestUsefulCommonSubstring(
+					"mas a mi me aborrece, porque yo testifico de él, que sus obras son malas.".Normalize(NormalizationForm.FormD),
+					"mas a mí me aborrece, porque yo testifico de el, que sus obras son malas.".Normalize(NormalizationForm.FormD),
+				out var fWholeWord, .15));
+			Assert.IsTrue(fWholeWord);
 		}
 	}
 }

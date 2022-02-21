@@ -9,6 +9,8 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using SIL.PlatformUtilities;
 using static System.Char;
+using JetBrains.Annotations;
+using SIL.Core.Extensions;
 
 namespace SIL.Extensions
 {
@@ -16,6 +18,7 @@ namespace SIL.Extensions
 	{
 		public const char kObjReplacementChar = '\uFFFC';
 
+		[PublicAPI]
 		public static List<string> SplitTrimmed(this string s, char separator)
 		{
 			if (s.Trim() == string.Empty)
@@ -41,6 +44,7 @@ namespace SIL.Extensions
 		/// Gets an int array from a comma-delimited string of numbers.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static int[] ToIntArray(this string str)
 		{
 			List<int> array = new List<int>();
@@ -84,6 +88,7 @@ namespace SIL.Extensions
 			}
 		}
 
+		[PublicAPI]
 		public static string EscapeAnyUnicodeCharactersIllegalInXml(this string text)
 		{
 			//we actually want to preserve html markup, just escape the disallowed unicode characters
@@ -138,6 +143,7 @@ namespace SIL.Extensions
 		/// Similar to Path.Combine, but it combines as may parts as you have into a single, platform-appropriate path.
 		/// </summary>
 		/// <example> string path = "my".Combine("stuff", "toys", "ball.txt")</example>
+		[PublicAPI]
 		public static string CombineForPath(this string rootPath, params string[] partsOfThePath)
 		{
 			string result = rootPath;
@@ -171,6 +177,7 @@ namespace SIL.Extensions
 		/// <param name="input">the string to clean</param>
 		/// <param name="errorChar">the character which replaces bad characters</param>
 		/// <remarks>This is platform-specific.</remarks>
+		[PublicAPI]
 		public static string SanitizeFilename(this string input, char errorChar) =>
 			SanitizeFilename(input, errorChar, false);
 
@@ -179,6 +186,7 @@ namespace SIL.Extensions
 		/// </summary>
 		/// <param name="input">the string to clean</param>
 		/// <param name="errorChar">the character which replaces bad characters</param>
+		[PublicAPI]
 		public static string SanitizePath(this string input, char errorChar)
 		{
 			var invalidPathChars = Path.GetInvalidPathChars();
@@ -306,6 +314,7 @@ namespace SIL.Extensions
 		/// Removes the ampersand accelerator prefix from the specified text.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static string RemoveAcceleratorPrefix(this string text)
 		{
 			text = text.Replace("&&", kObjReplacementChar.ToString(CultureInfo.InvariantCulture));
@@ -333,6 +342,7 @@ namespace SIL.Extensions
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
+		[PublicAPI]
 		public static string NullTrim(this string value)
 		{
 			return value.NullTrim(null);
@@ -365,6 +375,7 @@ namespace SIL.Extensions
 		/// <summary>
 		/// Removes diacritics from the specified string
 		/// </summary>
+		[PublicAPI]
 		public static string RemoveDiacritics(this string stIn)
 		{
 			string stFormD = stIn.Normalize(NormalizationForm.FormD);
@@ -397,6 +408,11 @@ namespace SIL.Extensions
 		/// for it to be considered useful.</param>
 		/// <returns>The longest whole-word (or otherwise "useful") substring that two strings
 		/// have in common.</returns>
+		/// <remarks>The algorithm for computing differences works with strings that are normalized
+		/// either as composed or decomposed. For efficiency it expects them to both be composed or
+		/// both be decomposed and does not check this or convert them to ensure this condition is
+		/// met.</remarks>
+		[PublicAPI]
 		public static string GetLongestUsefulCommonSubstring(this string s1, string s2,
 			out bool foundWholeWords, double minPctForPartialWordMatch = 1.0)
 		{
@@ -419,7 +435,7 @@ namespace SIL.Extensions
 				{
 					cchMatch++;
 				}
-				while (ich + cchMatch < s1.Length && IsLetter(s1[ich + cchMatch])); // Need CPE?
+				while (ich + cchMatch < s1.Length && s1[ich + cchMatch].IsLikelyWordForming()); // Need CPE?
 
 				//if (cchMatch > maxLength)
 				//{
@@ -442,7 +458,7 @@ namespace SIL.Extensions
 					bestCandidate = candidate;
 					if (ich + cchMatch == s1.Length || s1[ich + cchMatch] == kObjReplacementChar)
 						break;
-					if (!IsLetter(s1[ich + cchMatch]))
+					if (!s1[ich + cchMatch].IsLikelyWordForming())
 					{
 						if (!IsWhiteSpace(s1[ich + cchMatch]))
 							candidate = s1.Substring(ich, cchMatch + 1); // include punctuation
@@ -456,7 +472,7 @@ namespace SIL.Extensions
 						{
 							cchMatch++;
 						}
-						while (ich + cchMatch < s1.Length && IsLetter(s1[ich + cchMatch])); // Need CPE?
+						while (ich + cchMatch < s1.Length && s1[ich + cchMatch].IsLikelyWordForming()); // Need CPE?
 						//if (cchMatch > maxLength)
 						//    break;
 						candidate = s1.Substring(ich, cchMatch);
@@ -464,7 +480,7 @@ namespace SIL.Extensions
 				} while (true);
 				if (bestCandidate.Trim().Length > bestMatch.Trim().Length)
 					bestMatch = bestCandidate;
-				if (IsLetter(s1[ich]))
+				if (s1[ich].IsLikelyWordForming())
 				{
 					ich = s1.IndexOf(" ", ich, StringComparison.Ordinal);
 					if (ich < 0)
