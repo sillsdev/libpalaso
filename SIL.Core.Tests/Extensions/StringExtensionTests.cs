@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using NUnit.Framework;
 using SIL.Extensions;
 using static System.String;
@@ -494,7 +495,7 @@ namespace SIL.Tests.Extensions
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void LongestUsefulCommonSubstring_OnlyConsiderWholeWords()
+		public void GetLongestUsefulCommonSubstring_OnlyConsiderWholeWords()
 		{
 			// No whole-word match
 			Assert.AreEqual(Empty, "Mimamamedijoquenofueraafuera".GetLongestUsefulCommonSubstring(
@@ -515,10 +516,11 @@ namespace SIL.Tests.Extensions
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void LongestUsefulCommonSubstring_AgglutinativeLanguage_AllowPartialWordIn()
+		public void GetLongestUsefulCommonSubstring_AgglutinativeLanguage_AllowPartialWordIn()
 		{
-			Assert.AreEqual("amamedijoquenofueraa", StringExtensions.GetLongestUsefulCommonSubstring(
-				"Mimamamedijoquenofueraafuera", "Mipamamedijoquenofueraalaiglesia", out var fWholeWord, .15));
+			Assert.AreEqual("amamedijoquenofueraa",
+				StringExtensions.GetLongestUsefulCommonSubstring("Mimamamedijoquenofueraafuera",
+					"Mipamamedijoquenofueraalaiglesia", out var fWholeWord, .15));
 			Assert.IsFalse(fWholeWord);
 		}
 
@@ -530,7 +532,7 @@ namespace SIL.Tests.Extensions
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void LongestUsefulCommonSubstring_IsolatingLanguage_PreferWholeWordMatchOverPartial()
+		public void GetLongestUsefulCommonSubstring_IsolatingLanguage_PreferWholeWordMatchOverPartial()
 		{
 			Assert.AreEqual("over", "Come over heretic big thumbsucker mover here."
 				.GetLongestUsefulCommonSubstring("cover here over here big thumbelina",
@@ -562,7 +564,7 @@ namespace SIL.Tests.Extensions
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void LongestUsefulCommonSubstring_PreventOrcMatching_WholeWordMatch()
+		public void GetLongestUsefulCommonSubstring_PreventOrcMatching_WholeWordMatch()
 		{
 			Assert.AreEqual("friends", ("best " + kObjReplacementChar + " friends")
 				.GetLongestUsefulCommonSubstring("best " + kObjReplacementChar + " friends",
@@ -577,9 +579,10 @@ namespace SIL.Tests.Extensions
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void LongestUsefulCommonSubstring_LeadingPunctuationWithOrc()
+		public void GetLongestUsefulCommonSubstring_LeadingPunctuationWithOrc()
 		{
-			Assert.AreEqual("\u00BFEntonces que\u0301", StringExtensions.GetLongestUsefulCommonSubstring(
+			Assert.AreEqual("\u00BFEntonces que\u0301",
+				StringExtensions.GetLongestUsefulCommonSubstring(
 				"\u00BFEntonces que\u0301 " + kObjReplacementChar + "?",
 				"\u00BFEntonces que\u0301 " + kObjReplacementChar + "?", out var fWholeWord, .15));
 			Assert.IsTrue(fWholeWord);
@@ -592,7 +595,7 @@ namespace SIL.Tests.Extensions
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void LongestUsefulCommonSubstring_PreventOrcMatching_PartialWordMatch()
+		public void GetLongestUsefulCommonSubstring_PreventOrcMatching_PartialWordMatch()
 		{
 			Assert.AreEqual(" f", ("floppy " + kObjReplacementChar + " friends")
 				.GetLongestUsefulCommonSubstring("best " + kObjReplacementChar + " forks",
@@ -607,7 +610,7 @@ namespace SIL.Tests.Extensions
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void LongestUsefulCommonSubstring_PreventOrcMatching_OnlyOrcsAndWhitespaceMatch()
+		public void GetLongestUsefulCommonSubstring_PreventOrcMatching_OnlyOrcsAndWhitespaceMatch()
 		{
 			Assert.AreEqual(Empty, StringExtensions.GetLongestUsefulCommonSubstring(
 				kObjReplacementChar + " " + kObjReplacementChar + "ab?",
@@ -622,7 +625,7 @@ namespace SIL.Tests.Extensions
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void LongestUsefulCommonSubstring_PreventOrcMatching_OneStringIsAllOrcsAndSpaces()
+		public void GetLongestUsefulCommonSubstring_PreventOrcMatching_OneStringIsAllOrcsAndSpaces()
 		{
 			Assert.AreEqual(Empty, StringExtensions.GetLongestUsefulCommonSubstring(
 				kObjReplacementChar + " " + kObjReplacementChar + " " + kObjReplacementChar +
@@ -631,5 +634,74 @@ namespace SIL.Tests.Extensions
 				"a " + kObjReplacementChar + " ", out var fWholeWord, .15));
 			Assert.IsFalse(fWholeWord);
 		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Test the LongestUsefulCommonSubstring method. This test ensures that if words have
+		/// letters with diacritics or other combining marks, those are not treated as word-
+		/// breaking characters, but rather whole words are kept together.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(NormalizationForm.FormD)]
+		[TestCase(NormalizationForm.FormC)]
+		public void GetLongestUsefulCommonSubstring_LettersWithCombiningMarks_MarksTreatedAsWordFormingCharacters(
+			NormalizationForm normalization)
+		{
+			Assert.AreEqual("me aborrece, porque yo testifico de",
+				StringExtensions.GetLongestUsefulCommonSubstring(
+					"mas a mi me aborrece, porque yo testifico de él, que sus obras son malas.".Normalize(normalization),
+					"mas a mí me aborrece, porque yo testifico de el, que sus obras son malas.".Normalize(normalization),
+				out var fWholeWord, .15));
+			Assert.IsTrue(fWholeWord);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Test the LongestUsefulCommonSubstring method. This test ensures that if words have
+		/// letters with diacritics or other combining marks, those are not treated as word-
+		/// breaking characters, but rather whole words are kept together.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void GetLongestUsefulCommonSubstring_SurrogatePairs_CorrectlyDeterminesWordFormingCharacters()
+		{
+			Assert.AreEqual(GetUtf16StringFromUtf32CodePoints(0x12368, 0x12361, 0x12362,
+					0x12364, 0x12361, 0x12365, 0x12367, 0x12366, 0x12363, 0x12378),
+				StringExtensions.GetLongestUsefulCommonSubstring(
+					GetUtf16StringFromUtf32CodePoints(0x12368, 0x12361, 0x12362, 0x12364,
+						0x12361, 0x12365, 0x12367, 0x12366, 0x12363, 0x12378,
+						0x12341, 0x12362, 0x12344, 0x12371, 0x12355, 0x12367, 0x12366, 0x12333),
+					GetUtf16StringFromUtf32CodePoints(0x12368, 0x12361, 0x12362, 0x12364,
+						0x12361, 0x12365, 0x12367, 0x12366, 0x12363, 0x12378,
+						0x12342, 0x12342, 0x12334, 0x12381, 0x12355, 0x12367, 0x12366, 0x12333),
+					out var fWholeWord, .15));
+			Assert.IsFalse(fWholeWord);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Test the LongestUsefulCommonSubstring method. This test ensures that if words have
+		/// letters with diacritics or other combining marks, those are not treated as word-
+		/// breaking characters, but rather whole words are kept together.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void GetLongestUsefulCommonSubstring_SurrogatePairsWithSymbolsAsWordBreaks_CorrectlyDeterminesWordFormingCharacters()
+		{
+			Assert.AreEqual(GetUtf16StringFromUtf32CodePoints(0x12368, 0x12361, 0x20, 0x12362, 0x12364,
+					0x12361, 0x1F64F, 0x12365, 0x12367, 0x12366, 0x12363, 0x12378),
+				StringExtensions.GetLongestUsefulCommonSubstring(
+					GetUtf16StringFromUtf32CodePoints(0x12368, 0x12361, 0x20, 0x12362, 0x12364,
+						0x12361, 0x1F64F, 0x12365, 0x12367, 0x12366, 0x12363, 0x12378, 0x1F030,
+						0x12341, 0x12362, 0x12344, 0x12371, 0x12355, 0x12367, 0x12366, 0x12333),
+					GetUtf16StringFromUtf32CodePoints(0x12368, 0x12361, 0x20, 0x12362, 0x12364,
+						0x12361, 0x1F64F, 0x12365, 0x12367, 0x12366, 0x12363, 0x12378, 0x1F035,
+						0x12342, 0x12342, 0x12334, 0x12381, 0x12355, 0x12367, 0x12366, 0x12333),
+					out var fWholeWord, .15));
+			Assert.IsTrue(fWholeWord);
+		}
+
+		private string GetUtf16StringFromUtf32CodePoints(params int[] codepoints) =>
+			string.Join("", codepoints.Select(cp => Char.ConvertFromUtf32(cp)));
 	}
 }

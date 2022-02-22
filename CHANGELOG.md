@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.SettingProtection] overload of SetSettingsProtection method that takes a ToolStripItem
 - [SIL.WritingSystems] Allow specifying an alias to another Writing System for changing between upper- and lowercase
 - [SIL.Core] Extension method to get longest useful substring
+- [SIL.Core] Extension method IsLikelyWordForming to include letters, format characters, PUA and marks (diacritics, etc.)
 
 ### Changed
 
@@ -51,7 +52,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Keyboarding] Upgraded to version 5.0 (beta) of `L10NSharp.dll`
 - [SIL.Windows.Forms.WritingSystems] Upgraded to version 5.0 (beta) of `L10NSharp.dll`
 - [SIL.Windows.Forms] Upgraded to version 5.0 (beta) of `L10NSharp.dll`
-
+- [SIL.Core] Corrected logic in extension method GetLongestUsefulCommonSubstring
 
 ### Fixed
 
