@@ -448,8 +448,7 @@ namespace SIL.Extensions
 				return string.Empty;
 
 			string bestMatch = string.Empty;
-			for (int ich = 0; ich + bestMatch.Length < s1.Length;
-			     ich += UnicodeInfo.GetUnicodeCategory(s1[ich]) == Surrogate ? 2: 1)
+			for (int ich = 0; ich + bestMatch.Length < s1.Length; ich += IsSurrogate(s1[ich]) ? 2: 1)
 			{
 				if (s1[ich] == kObjReplacementChar || IsWhiteSpace(s1[ich]))
 					continue;
@@ -459,8 +458,7 @@ namespace SIL.Extensions
 
 				do
 				{
-					cchMatch += UnicodeInfo.GetUnicodeCategory(s1[ich + cchMatch]) == Surrogate
-						? 2: 1;
+					cchMatch += IsSurrogate(s1[ich + cchMatch]) ? 2: 1;
 				} while (s1.IsLikelyWordForming(ich + cchMatch));
 
 				//if (cchMatch > maxLength)
@@ -489,7 +487,7 @@ namespace SIL.Extensions
 					{
 						var ch = s1[ich + cchMatch];
 						var incr = 1;
-						if (UnicodeInfo.GetUnicodeCategory(ch) == Surrogate)
+						if (IsSurrogate(ch))
 							incr++;
 						else if (!IsWhiteSpace(ch))
 							candidate = s1.Substring(ich, cchMatch + 1); // include punctuation
@@ -501,8 +499,7 @@ namespace SIL.Extensions
 					{
 						do
 						{
-							cchMatch += UnicodeInfo.GetUnicodeCategory(s1[ich + cchMatch]) == Surrogate
-								? 2: 1;
+							cchMatch += IsSurrogate(s1[ich + cchMatch]) ? 2: 1;
 						} while (s1.IsLikelyWordForming(ich + cchMatch));
 
 						//if (cchMatch > maxLength)
@@ -542,10 +539,11 @@ namespace SIL.Extensions
 			int shortestLen = shortestStr.Length;
 			int cchBestMatch = 0;
 			for (int ich = 0; ich < shortestLen - cchMinUsefulMatch;
-				ich += UnicodeInfo.GetUnicodeCategory(shortestStr[ich]) == Surrogate ? 2: 1)
+			     ich += IsSurrogate(shortestStr[ich]) ? 2: 1)
 			{
 				int cchMatch = cchMinUsefulMatch;
-				if (UnicodeInfo.GetUnicodeCategory(shortestStr[ich + cchMatch]) == Surrogate)
+				var ch = shortestStr[ich + cchMatch];
+				if (IsLowSurrogate(ch))
 					cchMatch++;
 				string bestCandidate = string.Empty;
 				string candidate = shortestStr.Substring(ich, cchMatch);
@@ -569,8 +567,7 @@ namespace SIL.Extensions
 					if (shortestStr[ich + cchMatch] == kObjReplacementChar)
 						break;
 
-					cchMatch += UnicodeInfo.GetUnicodeCategory(shortestStr[ich + cchMatch]) == Surrogate
-						? 2: 1;
+					cchMatch += IsSurrogate(shortestStr[ich + cchMatch]) ? 2: 1;
 					candidate = shortestStr.Substring(ich, cchMatch);
 				} while (true);
 
