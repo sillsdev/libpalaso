@@ -1,5 +1,6 @@
-﻿using System.IO;
+using System.IO;
 using System.Xml.Linq;
+using SIL.IO;
 
 namespace SIL.Lexicon
 {
@@ -27,7 +28,7 @@ namespace SIL.Lexicon
 			if (_settingsDoc == null)
 				_settingsDoc = new XDocument();
 			_settingsDoc.ReplaceNodes(userSettingsElem);
-			_settingsDoc.Save(_settingsFilePath);
+			FileHelper.WriteXmlFileDirectlyToDisk(_settingsDoc.Root, _settingsFilePath);
 		}
 	}
 }
