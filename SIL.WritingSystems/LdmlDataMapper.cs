@@ -952,11 +952,7 @@ namespace SIL.WritingSystems
 					WriteLdml(writer, element, ws);
 					writer.Close();
 				}
-				Exception ex = null;
-				XmlSerializationHelper.SerializeToFile_AvoidCache(filePath,
-					element, out ex);
-				if (ex != null)
-					throw ex;
+				XmlSerializationHelper.SerializeToFileWithWriteThrough(filePath, element);
 			}
 			finally
 			{

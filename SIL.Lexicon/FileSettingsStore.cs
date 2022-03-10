@@ -29,11 +29,8 @@ namespace SIL.Lexicon
 			if (_settingsDoc == null)
 				_settingsDoc = new XDocument();
 			_settingsDoc.ReplaceNodes(userSettingsElem);
-			Exception ex = null;
-			XmlSerializationHelper.SerializeToFile_AvoidCache(_settingsFilePath,
-				_settingsDoc.Root, out ex);
-			if (ex != null)
-				throw ex;
+			XmlSerializationHelper.SerializeToFileWithWriteThrough(_settingsFilePath,
+				_settingsDoc.Root);
 		}
 	}
 }

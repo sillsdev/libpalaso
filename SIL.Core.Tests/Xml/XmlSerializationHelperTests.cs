@@ -457,12 +457,8 @@ namespace SIL.Tests.Xml
 
 			try
 			{
-				XElement element = new XElement("test"); ;
-				Exception ex = null;
-				XmlSerializationHelper.SerializeToFile_AvoidCache(path,
-					element, out ex);
-				if (ex != null)
-					throw ex;
+				XElement element = new XElement("test");
+				XmlSerializationHelper.SerializeToFileWithWriteThrough(path, element);
 				Assert.IsTrue(File.Exists(path));
 			}
 			finally
