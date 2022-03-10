@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using SIL.IO;
 
 namespace SIL.Xml
 {
@@ -271,6 +272,48 @@ namespace SIL.Xml
 			}
 
 			return false;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Serialize an object directly to disk, avoiding the operating system cache.
+		/// 
+		/// This method is intended to prevent the problem with null files being generated
+		/// as reported here: LT-20651, LT-20333, LTB-3915, LTB-3916, and LTB-3917
+		/// The theory is that FieldWorks is closing and power is lost before the operating
+		/// system cache is written to disk. This method is intended to prevent that problem
+		/// by avoiding the cache by writing through the cache directly to disk.
+		///
+		/// The disadvantage of this method is that it is slow; so it should only be used to
+		/// write relatively small files that are not frequently written.
+		/// </summary>
+		/// <param name="data">Object to be serialized to the file.</param>
+		/// <param name="path">The full path (containing the file name and extension).</param>
+		/// ------------------------------------------------------------------------------------
+		public static bool SerializeToFile_AvoidCache<T>(string path, T data, out Exception e)
+		{
+			e = null;
+			try
+			{
+				// Note: RobustFile.Create() uses FileOptions.WriteThrough which causes the data to still be
+				//       written to the operating system cache but it is immediately flushed. If this doesn't
+				//       address the problem then a more thorough solution that completely bypasses the cache
+				//       is to use the c++ CreateFile() api and pass both FILE_FLAG_NO_BUFFERING and
+				//       FILE_FLAG_WRITE_THROUGH.
+				//       https://docs.microsoft.com/en-us/windows/win32/fileio/file-caching
+				using (var writer = RobustFile.Create(path))
+				{
+					XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
+					xmlSerializer.Serialize(writer, data);
+				}
+			}
+			catch (Exception ex)
+			{
+				e = ex;
+				Debug.Fail(ex.Message);
+				return false;
+			}
+			return true;
 		}
 
 		/// ------------------------------------------------------------------------------------

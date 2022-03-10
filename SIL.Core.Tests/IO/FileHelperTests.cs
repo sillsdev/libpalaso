@@ -2,7 +2,6 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System.IO;
-using System.Xml.Linq;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.TestUtilities;
@@ -83,23 +82,5 @@ namespace SIL.Tests.IO
 				Assert.That(FileHelper.Grep(e.TempFile.Path, "lang='ee'"), Is.False);
 			}
 		}
-
-		[Test]
-		public void WriteXmlFileDirectlyToDisk_FileCreated()
-		{
-            var path = _parentFolder.Combine("test.xml");
-
-			try
-			{
-				XElement element = new XElement("test"); ;
-				FileHelper.WriteXmlFileDirectlyToDisk(element, path);
-				Assert.IsTrue(File.Exists(path));
-			}
-			finally
-			{
-				File.Delete(path);
-			}
-		}
-
 	}
 }

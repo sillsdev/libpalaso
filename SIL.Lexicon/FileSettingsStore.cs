@@ -1,6 +1,7 @@
+using System;
 using System.IO;
 using System.Xml.Linq;
-using SIL.IO;
+using SIL.Xml;
 
 namespace SIL.Lexicon
 {
@@ -28,7 +29,11 @@ namespace SIL.Lexicon
 			if (_settingsDoc == null)
 				_settingsDoc = new XDocument();
 			_settingsDoc.ReplaceNodes(userSettingsElem);
-			FileHelper.WriteXmlFileDirectlyToDisk(_settingsDoc.Root, _settingsFilePath);
+			Exception ex = null;
+			XmlSerializationHelper.SerializeToFile_AvoidCache(_settingsFilePath,
+				_settingsDoc.Root, out ex);
+			if (ex != null)
+				throw ex;
 		}
 	}
 }
