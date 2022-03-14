@@ -258,7 +258,7 @@ namespace SIL.Media.Naudio
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// as far as naudio is concerned, we are still "recording" (i.e., accepting waveIn
+		/// as far as NAudio is concerned, we are still "recording" (i.e., accepting waveIn
 		/// data), but we want to stop writing the data to the file.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
@@ -282,16 +282,16 @@ namespace SIL.Media.Naudio
 		/// ------------------------------------------------------------------------------------
 		public virtual void BeginRecording(string waveFileName, bool appendToFile)
 		{
-			if (_recordingState == RecordingState.NotYetStarted)
-				BeginMonitoring();
-
-			if (_recordingState != RecordingState.Monitoring)
-			{
-				throw new InvalidOperationException("Can't begin recording while we are in this state: " + _recordingState.ToString());
-			}
-
 			lock (this)
 			{
+				if (_recordingState == RecordingState.NotYetStarted)
+					BeginMonitoring();
+
+				if (_recordingState != RecordingState.Monitoring)
+				{
+					throw new InvalidOperationException("Can't begin recording while we are in this state: " + _recordingState.ToString());
+				}
+
 				if (_waveInBuffersChanged)
 				{
 					CloseWaveIn();
