@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Linq;
 using NUnit.Framework;
 using SIL.Unicode;
@@ -58,6 +58,7 @@ namespace SIL.Tests.Unicode
 		[TestCase('\u1367')] // ETHIOPIC QUESTION MARK
 		[TestCase('\u1368')] // ETHIOPIC PARAGRAPH SEPARATOR
 		[TestCase('\u166E')] // CANADIAN SYLLABICS FULL STOP
+		[TestCase('\u17D4')] // KHMER SIGN KHAN
 		[TestCase('\u1803')] // MONGOLIAN FULL STOP
 		[TestCase('\u1809')] // MONGOLIAN MANCHU FULL STOP
 		[TestCase('\u1944')] // LIMBU EXCLAMATION MARK
@@ -122,7 +123,7 @@ namespace SIL.Tests.Unicode
 			foreach (var c in CharacterUtils.SentenceFinalPunctuation)
 				Assert.IsTrue(CharacterUtils.IsSentenceFinalPunctuation(c));
 
-			Assert.AreEqual(74, CharacterUtils.SentenceFinalPunctuation.Length,
+			Assert.AreEqual(75, CharacterUtils.SentenceFinalPunctuation.Length,
 				"If sentence-ending characters are added (or removed) in production, ensure that the test cases in the " +
 				"above test match the production code. (Then this number should be changed to match.)");
 		}
