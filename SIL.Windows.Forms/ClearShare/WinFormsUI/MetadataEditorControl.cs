@@ -86,6 +86,8 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 					{
 						_publicDomainCC0.Checked = true;
 						_customRightsStatement.Text = _metadata.License.RightsStatement;
+						_commercial.Checked = true;		// emphasize freedom, set up for transition to normal cc license
+						_derivatives.Checked = true;
 					}
 				}
 				else if(_metadata.License is CustomLicense)
@@ -148,6 +150,20 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			    {
 			        _customRightsStatement.Text = "";
 			    }
+				// We need to ensure that the default CC version is referenced if changing from another
+				// license.  CC0 installs Version 1.0, which is wrong for all other CC licenses.
+				// (See https://issues.bloomlibrary.org/youtrack/issue/BL-11032.)
+				if (previousWasCC0 || !previousWasCC)
+				{
+					// reset license to our desired defaults
+					cc.Version = CreativeCommonsLicense.kDefaultVersion;
+					cc.AttributionRequired = true;
+					cc.CommercialUseAllowed = true;
+					cc.DerivativeRule = CreativeCommonsLicense.DerivativeRules.Derivatives;
+					cc.IntergovernmentalOriganizationQualifier = false;
+					_commercial.Checked = true;
+					_derivatives.Checked = true;
+				}
 			}
 			else if (_publicDomainCC0.Checked)
 			{
