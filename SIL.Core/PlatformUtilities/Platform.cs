@@ -123,6 +123,14 @@ namespace SIL.PlatformUtilities
 					currentDesktop = Environment.GetEnvironmentVariable("GDMSESSION");
 				else if (currentDesktop.ToLowerInvariant() == "ubuntu:gnome")
 					currentDesktop = "gnome";
+				else if (currentDesktop.ToLowerInvariant() == "gnome-classic:gnome")
+				{
+					currentDesktop = "gnome";
+				}
+				else if (currentDesktop.ToLowerInvariant() == "gnome-flashback:gnome")
+				{
+					currentDesktop = "gnome";
+				}
 				return currentDesktop?.ToLowerInvariant();
 			}
 		}
@@ -148,6 +156,11 @@ namespace SIL.PlatformUtilities
 				var gdmSession = Environment.GetEnvironmentVariable("GDMSESSION") ?? "not set";
 				if (gdmSession.ToLowerInvariant().EndsWith("-wayland"))
 					return $"{currentDesktop} ({gdmSession.Split('-')[0]} [display server: Wayland])";
+
+				if (Platform.IsFlatpak)
+				{
+					additionalInfo += " [container: flatpak]";
+				}
 
 				return $"{currentDesktop} ({gdmSession}{additionalInfo})";
 			}
@@ -292,7 +305,7 @@ namespace SIL.PlatformUtilities
 		/// Determines the OS version if on a UNIX based system
 		/// </summary>
 		/// <returns></returns>
-		private static string UnixOrMacVersion()
+		internal static string UnixOrMacVersion()
 		{
 			if (RunTerminalCommand("uname") == "Darwin")
 			{
@@ -301,7 +314,16 @@ namespace SIL.PlatformUtilities
 				return osName + " (" + osVersion + ")";
 			}
 
-			var distro = RunTerminalCommand("bash", "-c '[ $(which lsb_release) ] && [ -f /etc/wasta-release ] && echo \"$(lsb_release -d -s) ($(cat /etc/wasta-release | grep DESCRIPTION | cut -d\\\" -f 2))\" || lsb_release -d -s'");
+			string unameCommand = "uname --kernel-name --kernel-release --kernel-version --machine";
+			var distro = RunTerminalCommand("bash", $"-c 'which lsb_release >/dev/null && [ -f /etc/wasta-release ] && echo \"$(lsb_release -d -s) ($(cat /etc/wasta-release | grep DESCRIPTION | cut -d\\\" -f 2))\" || lsb_release -d -s 2>/dev/null || {unameCommand}'");
+			if (IsFlatpak)
+			{
+				// Flatpak may not have lsb_release and can fall back to uname. But try to report the host distro.
+				string extra = Environment.GetEnvironmentVariable("XDG_SESSION_DESKTOP")
+					?? Environment.GetEnvironmentVariable("DESKTOP_SESSION")
+					?? Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP");
+				return $"Flatpak ({extra} {distro})";
+			}
 			return string.IsNullOrEmpty(distro) ? "UNIX" : distro;
 		}
 
@@ -335,15 +357,66 @@ namespace SIL.PlatformUtilities
 
 		public static bool IsRunning64Bit => Environment.Is64BitProcess;
 
+		/// <summary>
+		/// Is the software running in the GNOME Shell desktop environment?
+		/// This property will also be true if the software is running in the
+		/// GNOME Classic desktop environment.
+		/// </summary>
+		/// <remarks>
+		/// Although GNOME Classic distinguishes itself from GNOME Shell, such as
+		/// with different environment variables, both appear to use the gnome-shell
+		/// binary, and both work with the Gnome Shell parts of
+		/// SIL.Windows.Forms.Keyboarding. GNOME Classic may primarily be a different
+		/// set of extensions being used in GNOME Shell to provide a different
+		/// desktop UI and certain behaviour (like application switching).
+		/// </remarks>
 		public static bool IsGnomeShell
 		{
 			get
 			{
 				if (!IsLinux)
 					return false;
+				if (Platform.DesktopEnvironment == "gnome" && !IsGnomeFlashback)
+				{
+					return true;
+				}
+				return false;
+			}
+		}
 
-				var pids = RunTerminalCommand("pidof", "gnome-shell");
-				return !string.IsNullOrEmpty(pids);
+		/// <summary>
+		/// Is the software running in the GNOME Classic desktop environment?
+		/// (Not meaning it's not running "in GNOME Shell", but is there evidence
+		/// that specifically GNOME Classic is being used?)
+		/// </summary>
+		public static bool IsGnomeClassic
+		{
+			get
+			{
+				return Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP") == "GNOME-Classic:GNOME";
+			}
+		}
+
+
+		/// <summary>
+		/// Is the software running in the GNOME Flashback desktop environment?
+		/// </summary>
+		public static bool IsGnomeFlashback
+		{
+			get
+			{
+				return Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP") == "GNOME-Flashback:GNOME";
+			}
+		}
+
+		/// <summary>
+		/// Is the software running in a flatpak container?
+		/// </summary>
+		public static bool IsFlatpak
+		{
+			get
+			{
+				return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("FLATPAK_ID"));
 			}
 		}
 	}
