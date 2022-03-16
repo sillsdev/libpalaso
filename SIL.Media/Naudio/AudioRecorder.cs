@@ -126,8 +126,7 @@ namespace SIL.Media.Naudio
 			RecordedTime = TimeSpan.Zero;
 			RecordingState = RecordingState.Monitoring;
 			_fileWriterThread.Abort();
-			if (Stopped != null)
-				Stopped(this, new ErrorEventArgs(new Exception("NAudio recording stopped unexpectedly")));
+			Stopped?.Invoke(this, new ErrorEventArgs(new Exception("NAudio recording stopped unexpectedly")));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -135,12 +134,26 @@ namespace SIL.Media.Naudio
 		{
 			if (_waveIn != null)
 			{
-				try { _waveIn.StopRecording(); }
-				catch { /* It's amazing all the bizarre things that can go wrong */ }
+				try
+				{
+					_waveIn.StopRecording();
+				}
+				catch (Exception e)
+				{
+					// It's amazing all the bizarre things that can go wrong.
+					Logger.WriteError(e);
+				}
 				_waveIn.DataAvailable -= waveIn_DataAvailable;
 				_waveIn.RecordingStopped -= OnRecordingStopped;
-				try { _waveIn.Dispose(); }
-				catch { /* It's amazing all the bizarre things that can go wrong */ }
+				try
+				{
+					_waveIn.Dispose();
+				}
+				catch (Exception e)
+				{
+					// It's amazing all the bizarre things that can go wrong.
+					Logger.WriteError(e);
+				}
 				_waveIn = null;
 				RecordingState = RecordingState.Stopped;
 			}
@@ -149,7 +162,7 @@ namespace SIL.Media.Naudio
 		/// ------------------------------------------------------------------------------------
 		public virtual WaveFormat RecordingFormat
 		{
-			get { return _recordingFormat; }
+			get => _recordingFormat;
 			set
 			{
 				_recordingFormat = value;
@@ -158,12 +171,46 @@ namespace SIL.Media.Naudio
 		}
 
 		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Begins monitoring incoming data from the selected device but not
+		/// processing it for the purpose of recording to a file.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">Called when in an invalid state. This
+		/// should only be called once for a new WaveIn device. Note that
+		/// <see cref="BeginRecording(string)"/> also begins monitoring, so if that is called
+		/// directly, this method should not be called.</exception>
+		/// <remarks>Other than the documented exceptions, any otherwise unhandled exception
+		/// thrown as a result of this call will be reported via
+		/// <see cref="ErrorReport.NotifyUserOfProblem(string,object[])"/>.
+		/// Methods in this class should not call this method. Instead use the private
+		/// internal version.</remarks>
+		/// ------------------------------------------------------------------------------------
 		public virtual void BeginMonitoring()
+		{
+			try
+			{
+				if (!BeginMonitoringIfNeeded())
+					throw new InvalidOperationException("only call this once for a new WaveIn device");
+			}
+			catch (Exception e)
+			{
+				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(),
+					e, "There was a problem starting up volume monitoring.");
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>Begins monitoring if in the correct state to do so</summary>
+		/// <returns><c>true</c> if monitoring was started; <c>false</c> if not in a state where
+		/// monitoring could be started (e.g., already monitoring or recording, or stopped
+		/// with a waveIn that is still connected to the stopped/disconnected device).</returns>
+		/// ------------------------------------------------------------------------------------
+		private bool BeginMonitoringIfNeeded()
 		{
 			lock (this)
 			{
 				if (_waveIn != null || (_recordingState != RecordingState.NotYetStarted && _recordingState != RecordingState.Stopped))
-					throw new InvalidOperationException("only call this once for a new WaveIn device");
+					return false;
 				try
 				{
 					Debug.Assert(_waveIn == null);
@@ -180,18 +227,18 @@ namespace SIL.Media.Naudio
 					catch (MmException error)
 					{
 						if (error.Result != MmResult.AlreadyAllocated)
-							//TODO: I get this most of the time, but I don't know how to prevent it... maybe it's a hold over from previous runs? In which case, we need to make this disposable and stop the recording
+							//REVIEW: I get this most of the time, but I don't know how to prevent it... maybe it's a hold over from previous runs? In which case, we need to stop the recording
 							throw;
 					}
 
 					ConnectWithVolumeControl();
 					RecordingState = RecordingState.Monitoring;
+					return true;
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
 					CloseWaveIn();
-					ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), e,
-						 "There was a problem starting up volume monitoring.");
+					throw;
 				}
 			}
 		}
@@ -279,44 +326,82 @@ namespace SIL.Media.Naudio
 			BeginRecording(waveFileName, false);
 		}
 
+		private class InvalidRecordingStateException : InvalidOperationException
+		{
+		}
+
 		/// ------------------------------------------------------------------------------------
 		public virtual void BeginRecording(string waveFileName, bool appendToFile)
 		{
-			lock (this)
+			try
 			{
-				if (_recordingState == RecordingState.NotYetStarted)
-					BeginMonitoring();
+				// This is intentionally done outside of the lock obtained below. In the
+				// unusual case where two different threads (one perhaps being the UI thread)
+				// are trying to start recording (or one is trying to start monitoring
+				// while another tries to start recording). If they are both trying to start
+				// recording, we will end up throwing an InvalidOperationException on one of
+				// them, but we don't care which one. If one is merely trying to start
+				// monitoring and it happens to get there first, the other will find it is no
+				// longer in a valid state to begin monitoring but will happily find that it
+				// is now in a valid state to begin recording. If the one that is trying to
+				// begin recording gets there first, the other one will get the exception.
+				// In any case, handling an InvalidOperationException is the caller's
+				// responsibility.
+				BeginMonitoringIfNeeded();
 
-				if (_recordingState != RecordingState.Monitoring)
+				lock (this)
 				{
-					throw new InvalidOperationException("Can't begin recording while we are in this state: " + _recordingState.ToString());
+					if (_recordingState != RecordingState.Monitoring)
+						throw new InvalidRecordingStateException();
+
+					// Kind of a weird race condition here, but for some reason we allow the
+					// caller to change the buffers without getting a lock or checking the state.
+					// (Even more oddly, if this happens while recording, it doesn't take effect
+					// until the next time they start recording, but if it happens in the
+					// nanoseconds between calling BeginMonitoring_Internal and here, then we
+					// reset. But this was the existing behavior, and changing it now could break
+					// some exiting code.)
+					if (_waveInBuffersChanged)
+					{
+						CloseWaveIn();
+						if (!BeginMonitoringIfNeeded())
+							throw new InvalidRecordingStateException();
+					}
+
+					_bytesRecorded = 0;
+
+					WaveFileWriter writer;
+					if (!File.Exists(waveFileName) || !appendToFile)
+						writer = new WaveFileWriter(waveFileName, _recordingFormat);
+					else
+					{
+						var buffer = GetAudioBufferToAppendTo(waveFileName);
+						writer = new WaveFileWriter(waveFileName, _recordingFormat);
+						writer.Write(buffer, 0, buffer.Length);
+					}
+
+					_fileWriterThread = new FileWriterThread(writer);
+
+					_recordingStartTime = DateTime.Now;
+					_prevRecordedTime = 0d;
+					RecordingState = RecordingState.Recording;
 				}
 
-				if (_waveInBuffersChanged)
-				{
-					CloseWaveIn();
-					BeginMonitoring();
-				}
-
-				_bytesRecorded = 0;
-
-				WaveFileWriter writer;
-				if (!File.Exists(waveFileName) || !appendToFile)
-					writer = new WaveFileWriter(waveFileName, _recordingFormat);
-				else
-				{
-					var buffer = GetAudioBufferToAppendTo(waveFileName);
-					writer = new WaveFileWriter(waveFileName, _recordingFormat);
-					writer.Write(buffer, 0, buffer.Length);
-				}
-				_fileWriterThread = new FileWriterThread(writer);
-
-				_recordingStartTime = DateTime.Now;
-				_prevRecordedTime = 0d;
-				RecordingState = RecordingState.Recording;
+				if (RecordingStarted != null)
+					RecordingStarted(this, EventArgs.Empty);
 			}
-			if (RecordingStarted != null)
-				RecordingStarted(this, EventArgs.Empty);
+			catch (InvalidRecordingStateException e)
+			{
+				var error = new InvalidOperationException(
+					$"Can't begin recording while we are in this state: {_recordingState}", e);
+				Logger.WriteError(error);
+				throw error;
+			}
+			catch (Exception e)
+			{
+				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(),
+					e, "There was a problem starting recording.");
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
