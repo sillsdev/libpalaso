@@ -53,6 +53,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.WritingSystems] Upgraded to version 5.0 (beta) of `L10NSharp.dll`
 - [SIL.Windows.Forms] Upgraded to version 5.0 (beta) of `L10NSharp.dll`
 - [SIL.Core] Corrected logic in extension method GetLongestUsefulCommonSubstring
+- [SIL.Media] Allow RecordingDeviceIndicator to find new sound input device when there was no selected device (state == NotYetStarted)
 
 ### Fixed
 
