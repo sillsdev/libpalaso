@@ -177,8 +177,17 @@ namespace SIL.Media.Naudio
 		/// Begins monitoring incoming data from the selected device but not
 		/// processing it for the purpose of recording to a file.
 		/// </summary>
-		/// <exception cref="InvalidOperationException">Called when in an invalid state. This
-		/// should only be called once for a new WaveIn device. Note that
+		/// <exception cref="InvalidOperationException">Called when in an invalid state. It is
+		/// only valid to call this method when the <see cref="RecordingState"/> is
+		/// <see cref="Media.RecordingState.NotYetStarted"/> or
+		/// <see cref="SIL.Media.RecordingState.Stopped"/>. In other words, this
+		/// should be called (either directly or as a side-effect of setting the
+		/// <see cref="SelectedDevice"/> or calling <see cref="BeginRecording(string)"/> only
+		/// once to create and initialize a new WaveIn device. For example, if merely setting
+		/// <see cref="SelectedDevice"/> for an <see cref="AudioRecorder"/> that is already
+		/// monitoring, do not call this method again. Likewise, when completing a recording
+		/// normally or aborting it (at the caller's request), this will automatically go back
+		/// into a <see cref="SIL.Media.RecordingState.Monitoring"/> state.
 		/// <see cref="BeginRecording(string)"/> also begins monitoring, so if that is called
 		/// directly, this method should not be called.</exception>
 		/// <remarks>Other than the documented exceptions, any otherwise unhandled exception
@@ -201,7 +210,8 @@ namespace SIL.Media.Naudio
 				return;
 			}
 			if (!monitoringStarted)
-				throw new InvalidOperationException("only call this once for a new WaveIn device");
+				throw new InvalidOperationException("Only call this once for a new WaveIn device" +
+					" (i.e., when RecordingState is NotYetStarted or Stopped.");
 
 		}
 

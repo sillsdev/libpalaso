@@ -61,8 +61,8 @@ namespace SIL.Media.Tests
 
 					for (var i = 0; i < 3 && !recordingStopped; i++)
 					{
+						Thread.Sleep(90);
 						Application.DoEvents();
-						Thread.Sleep(200);
 					}
 
 					Assert.That(recordingStopped);
@@ -79,7 +79,6 @@ namespace SIL.Media.Tests
 		{
 			using (var ctrl = new Control())
 			{
-				bool recordingStopped = false;
 				var f = new TempFile();
 				var recorder = new AudioRecorder(1);
 				try
@@ -111,7 +110,6 @@ namespace SIL.Media.Tests
 		{
 			using (var ctrl = new Control())
 			{
-				bool recordingStopped = false;
 				var f = new TempFile();
 				var recorder = new AudioRecorder(1);
 				try
@@ -158,11 +156,15 @@ namespace SIL.Media.Tests
 
 					ctrl.CreateControl();
 
-					for (var i = 0; i < 3 && !monitoringStarted; i++)
-					{
-						Application.DoEvents();
-						Thread.Sleep(200);
-					}
+					// Note: This loop appears to be unnecessary. CreateControl apparently does not
+					// return until the code in the HandleCreated handler executes to completion.
+					// But in case this ever fails, try uncommenting this code to get it to pass.
+					//for (var i = 0; i < 3 && !monitoringStarted; i++)
+					//{
+					//	Thread.Sleep(20);
+					//	Application.DoEvents();
+					//}
+					Assert.That(monitoringStarted);
 
 					recorder.BeginRecording(f.Path);
 					Thread.Sleep(100);
