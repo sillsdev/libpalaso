@@ -63,6 +63,13 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		public static string GetKeyboardSetupApplication(out string arguments)
 		{
+			string prefix = "";
+			if (Platform.IsFlatpak)
+			{
+				prefix = "/run/host";
+			}
+
+			string program = null;
 			arguments = "region layouts";
 			var programs = Platform.IsGnomeShell
 				? new[] {
@@ -73,7 +80,12 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 					"/usr/bin/unity-control-center",
 					"/usr/bin/gnome-control-center"
 				};
-			return programs.FirstOrDefault(File.Exists);
+			program = programs.FirstOrDefault((string path) => File.Exists($"{prefix}{path}"));
+			if (program != null && Platform.IsFlatpak)
+			{
+				KeyboardRetrievingHelper.ToFlatpakSpawn(ref program, ref arguments);
+			}
+			return program;
 		}
 		#endregion
 

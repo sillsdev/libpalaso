@@ -94,48 +94,76 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		internal static string GetKeyboardSetupApplication(out string arguments)
 		{
+			string prefix = "";
+			if (Platform.IsFlatpak)
+			{
+				prefix = "/run/host";
+			}
 			// NOTE: if we get false results (e.g. because the user has installed multiple
 			// desktop environments) we could check for the currently running desktop
 			// (Platform.DesktopEnvironment) and return the matching program
-			arguments = null;
+			arguments = string.Empty;
+			string program = string.Empty;
 			// XFCE
-			if (File.Exists("/usr/bin/xfce4-keyboard-settings"))
-				return "/usr/bin/xfce4-keyboard-settings";
+			if (File.Exists($"{prefix}/usr/bin/xfce4-keyboard-settings"))
+			{
+				program = "/usr/bin/xfce4-keyboard-settings";
+			}
 			// Cinnamon
-			if (File.Exists("/usr/lib/cinnamon-settings/cinnamon-settings.py") && File.Exists("/usr/bin/python"))
+			else if (File.Exists($"{prefix}/usr/lib/cinnamon-settings/cinnamon-settings.py")
+				&& File.Exists($"{prefix}/usr/bin/python"))
 			{
 				arguments = "/usr/lib/cinnamon-settings/cinnamon-settings.py " +
 							(Platform.DesktopEnvironment == "cinnamon"
 								? "region layouts" // Wasta 12
 								: "keyboard");     // Wasta 14;
-				return "/usr/bin/python";
+				program = "/usr/bin/python";
 			}
 			// Cinnamon in Wasta 20.04
-			if (File.Exists("/usr/bin/cinnamon-settings"))
+			else if (File.Exists($"{prefix}/usr/bin/cinnamon-settings"))
 			{
 				arguments = "keyboard -t layouts";
-				return "/usr/bin/cinnamon-settings";
+				program = "/usr/bin/cinnamon-settings";
 			}
 			// GNOME
-			if (File.Exists("/usr/bin/gnome-control-center"))
+			else if (File.Exists($"{prefix}/usr/bin/gnome-control-center"))
 			{
 				arguments = "region layouts";
-				return "/usr/bin/gnome-control-center";
+				program = "/usr/bin/gnome-control-center";
 			}
 			// KDE
-			if (File.Exists("/usr/bin/kcmshell4"))
+			else if (File.Exists($"{prefix}/usr/bin/kcmshell4"))
 			{
 				arguments = "kcm_keyboard";
-				return "/usr/bin/kcmshell4";
+				program = "/usr/bin/kcmshell4";
 			}
 			// Unity
-			if (File.Exists("/usr/bin/unity-control-center"))
+			else if (File.Exists($"{prefix}/usr/bin/unity-control-center"))
 			{
 				arguments = "region layouts";
-				return "/usr/bin/unity-control-center";
+				program = "/usr/bin/unity-control-center";
+			}
+			else
+			{
+				arguments = null;
+				return null;
 			}
 
-			return null;
+			if (Platform.IsFlatpak)
+			{
+				ToFlatpakSpawn(ref program, ref arguments);
+			}
+			return program;
+		}
+
+		/// <summary>
+		/// Modify program and arguments to use flatpak-spawn for requesting to launch a program
+		/// outside of a flatpak container.
+		/// </summary>
+		internal static void ToFlatpakSpawn(ref string program, ref string arguments)
+		{
+			arguments = $"--host --directory=/ {program} {arguments}";
+			program = "flatpak-spawn";
 		}
 	}
 }
