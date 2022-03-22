@@ -2,6 +2,7 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using SIL.Windows.Forms.Keyboarding.Linux;
 

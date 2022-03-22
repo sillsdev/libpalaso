@@ -6,8 +6,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
+using Newtonsoft.Json.Linq;
 using SIL.Reporting;
 using SIL.PlatformUtilities;
+using SIL.Progress;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
@@ -49,13 +51,20 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		protected virtual string[] GetMyKeyboards(IntPtr settingsGeneral)
 		{
-			// This is the proper path for the combined keyboard handling on Cinnamon with IBus.
-			var sources = Unmanaged.g_settings_get_value(settingsGeneral, "preload-engines");
-			if (sources == IntPtr.Zero)
-				return null;
-			var list = KeyboardRetrievingHelper.GetStringArrayFromGVariantArray(sources);
-			Unmanaged.g_variant_unref(sources);
-
+			string[] list = null;
+			if (Platform.IsFlatpak)
+			{
+				list = IbusInputSourcesViaFlatpakSpawn();
+			}
+			else
+			{
+				// This is the proper path for the combined keyboard handling on Cinnamon with IBus.
+				var sources = Unmanaged.g_settings_get_value(settingsGeneral, "preload-engines");
+				if (sources == IntPtr.Zero)
+					return null;
+				list = KeyboardRetrievingHelper.GetStringArrayFromGVariantArray(sources);
+				Unmanaged.g_variant_unref(sources);
+			}
 			// Call these only once per run of the program.
 			if (CombinedIbusKeyboardSwitchingAdaptor.DefaultLayout == null)
 				LoadDefaultXkbSettings();
@@ -63,6 +72,23 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				LoadLatinLayouts(settingsGeneral);
 
 			return list;
+		}
+
+		/// <summary>
+		/// The settings at org.freedesktop.ibus.general preload-engines are not provided by the
+		/// Flatpak portal, so use flatpak-spawn to fetch these values.
+		/// A set of keyboards are returned, like:
+		///   { "xkb:us::eng", "/usr/share/kmfl/IPA14.kmn", "table:thai" }
+		/// </summary>
+		internal static string[] IbusInputSourcesViaFlatpakSpawn()
+		{
+			string program = "gsettings";
+			string args = "get org.freedesktop.ibus.general preload-engines";
+			KeyboardRetrievingHelper.ToFlatpakSpawn(ref program, ref args);
+			var keyboardList = SIL.CommandLineProcessing.CommandLineRunner.Run(
+				$"{program}", $"{args}", "/", 10, new StringBuilderProgress())
+				.StandardOutput;
+			return JArray.Parse(keyboardList).ToObject<string[]>();
 		}
 
 		/// <summary>
