@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
@@ -12,11 +12,6 @@ namespace SIL.Media.Naudio.UI
 	/// as for example when a new microphone is plugged in; (b) switches to the default one if the current
 	/// one is unplugged. You can customize the icons using the __Image properties.
 	/// </summary>
-	/// <remarks>
-	/// Enhance JohnT: Possibly the RecordingDeviceIndicator could become a RecordingDeviceButton and could respond to a click by cycling through
-	/// the available devices, or pop up a chooser...though that is probably overdoing things, users
-	/// are unlikely to have more than two. Currently there is no click behavior.
-	/// </remarks>
 	public partial class RecordingDeviceIndicator : UserControl
 	{
 		private IAudioRecorder _recorder;
@@ -123,8 +118,9 @@ namespace SIL.Media.Naudio.UI
 			if(_recorder == null)
 				return;
 			// Don't try to change horses in the middle of the stream if recording is in progress.
-			if(_recorder.RecordingState != RecordingState.Monitoring &&
-				_recorder.RecordingState != RecordingState.Stopped)
+			if(_recorder.RecordingState == RecordingState.Recording ||
+				_recorder.RecordingState == RecordingState.RequestedStop ||
+				_recorder.RecordingState == RecordingState.Stopping)
 				return;
 			bool foundCurrentDevice = false;
 			var devices = RecordingDevice.Devices.ToList();
