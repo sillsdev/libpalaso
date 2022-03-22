@@ -6,6 +6,7 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using SIL.Extensions;
+using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
@@ -100,9 +101,15 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				string filepath = System.IO.Path.Combine(homedir, file);
 				if (!System.IO.File.Exists(filepath))
 					continue;
+				string program = "xmodmap";
+				string args = filepath;
+				if (Platform.IsFlatpak)
+				{
+					KeyboardRetrievingHelper.ToFlatpakSpawn(ref program, ref args);
+				}
 				var startInfo = new ProcessStartInfo();
-				startInfo.FileName = "xmodmap";
-				startInfo.Arguments = filepath;
+				startInfo.FileName = program;
+				startInfo.Arguments = args;
 				startInfo.UseShellExecute = false;
 				startInfo.CreateNoWindow = true;
 				using (var process = Process.Start(startInfo))
