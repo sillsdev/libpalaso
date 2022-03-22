@@ -2,6 +2,7 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using SIL.Windows.Forms.Keyboarding.Linux;
 
@@ -42,6 +43,22 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			var sut = new CombinedIbusKeyboardRetrievingAdaptorDouble(keyboards);
 
 			return sut.CallHasKeyboards();
+		}
+
+		[TestCase("['xkb:us::eng', '/usr/share/kmfl/IPA14.kmn', 'table:thai']\n",
+			new string[] {
+				"xkb:us::eng", "/usr/share/kmfl/IPA14.kmn", "table:thai"
+			}
+		)]
+		[TestCase("['xkb:us::eng']\n", new string[] {"xkb:us::eng"})]
+		// Gracefully handle an unexpected list of nothing.
+		[TestCase("['']\n", new string[] {})]
+		[TestCase("[]\n", new string[] {})]
+		[TestCase("\n", new string[] {})]
+		[TestCase("", new string[] {})]
+		public void ParseIbusEnginesList(string keyboardList, string[] expected)
+		{
+			Assert.That(CombinedIbusKeyboardRetrievingAdaptor.ParseIbusEnginesList(keyboardList), Is.EqualTo(new List<string>(expected)));
 		}
 	}
 }
