@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using IBusDotNet;
 using SIL.Keyboarding;
+using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
@@ -88,8 +89,28 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		protected virtual string GetKeyboardSetupApplication(out string arguments)
 		{
+			string prefix = "";
+			if (Platform.IsFlatpak)
+			{
+				prefix = "/run/host";
+			}
+
+			string program = null;
 			arguments = null;
-			return File.Exists(IbusSetupApp) ? IbusSetupApp : null;
+			if (File.Exists($"{prefix}{IbusSetupApp}"))
+			{
+				program = IbusSetupApp;
+			}
+			else
+			{
+				return null;
+			}
+
+			if (Platform.IsFlatpak)
+			{
+				KeyboardRetrievingHelper.ToFlatpakSpawn(ref program, ref arguments);
+			}
+			return program;
 		}
 
 		private static bool HasKeyman => File.Exists(KeymanConfigApp);
