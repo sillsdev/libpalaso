@@ -63,11 +63,13 @@ namespace SIL.Lift
 			{
 				transform.Transform(outputOfPassOne, new XsltArgumentList(), output);
 			}
+			#if NET461
 			TempFileCollection tempfiles = transform.TemporaryFiles;
 			if (tempfiles != null) // tempfiles will be null when debugging is not enabled
 			{
 				tempfiles.Delete();
 			}
+			#endif
 			File.Delete(outputOfPassOne);
 
 			return outputOfPassTwo;
