@@ -1,6 +1,8 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using L10NSharp;
+using SIL.Windows.Forms.Extensions;
 using SIL.Windows.Forms.Miscellaneous;
 
 namespace SIL.Windows.Forms.Reporting
@@ -40,8 +42,11 @@ namespace SIL.Windows.Forms.Reporting
 
 		public static void Show(string message)
 		{
-			using (var d = new ProblemNotificationDialog(message, "Problem"))
+			using (var d = new ProblemNotificationDialog(message,
+				LocalizationManager.GetString("ProblemNotificationDialog.Caption", "Problem")))
+			{
 				d.ShowDialog();
+			}
 		}
 
 		private ProblemNotificationDialog()
@@ -73,7 +78,7 @@ namespace SIL.Windows.Forms.Reporting
 				_icon.Image = icon;
 
 			Text = dialogTitle;
-			_message.Text = message;
+			_message.SetMultiLineText(message);
 		}
 
 		private void _acceptButton_Click(object sender, EventArgs e)
