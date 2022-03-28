@@ -60,7 +60,6 @@ namespace SIL.Windows.Forms.Reporting
 		private Label _emailAddress;
 		private static bool s_doIgnoreReport;
 		private TableLayoutPanel tableLayoutPanel1;
-		private L10NSharp.UI.L10NSharpExtender _l10NSharpExtender1;
 		private System.ComponentModel.IContainer components;
 
 		/// <summary>
@@ -168,9 +167,7 @@ namespace SIL.Windows.Forms.Reporting
 			this._privacyNoticeButton = new System.Windows.Forms.Button();
 			this._emailAddress = new System.Windows.Forms.Label();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-			this._l10NSharpExtender1 = new L10NSharp.UI.L10NSharpExtender(this.components);
 			this.tableLayoutPanel1.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this._l10NSharpExtender1)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// m_reproduce
@@ -179,20 +176,12 @@ namespace SIL.Windows.Forms.Reporting
 			this._reproduce.AcceptsTab = true;
 			resources.ApplyResources(this._reproduce, "m_reproduce");
 			this.tableLayoutPanel1.SetColumnSpan(this._reproduce, 2);
-			this._l10NSharpExtender1.SetLocalizableToolTip(this._reproduce, null);
-			this._l10NSharpExtender1.SetLocalizationComment(this._reproduce, null);
-			this._l10NSharpExtender1.SetLocalizationPriority(this._reproduce, L10NSharp.LocalizationPriority.NotLocalizable);
-			this._l10NSharpExtender1.SetLocalizingId(this._reproduce, "ExceptionReportingDialog._reproduce");
 			this._reproduce.Name = "m_reproduce";
 			// 
 			// _detailsForDevelopers
 			// 
 			resources.ApplyResources(this._detailsForDevelopers, "_detailsForDevelopers");
 			this.tableLayoutPanel1.SetColumnSpan(this._detailsForDevelopers, 2);
-			this._l10NSharpExtender1.SetLocalizableToolTip(this._detailsForDevelopers, null);
-			this._l10NSharpExtender1.SetLocalizationComment(this._detailsForDevelopers, null);
-			this._l10NSharpExtender1.SetLocalizationPriority(this._detailsForDevelopers, L10NSharp.LocalizationPriority.NotLocalizable);
-			this._l10NSharpExtender1.SetLocalizingId(this._detailsForDevelopers, "ExceptionReportingDialog._detailsForDevelopers");
 			this._detailsForDevelopers.Name = "_detailsForDevelopers";
 			// 
 			// _details
@@ -200,9 +189,6 @@ namespace SIL.Windows.Forms.Reporting
 			resources.ApplyResources(this._details, "_details");
 			this._details.BackColor = System.Drawing.SystemColors.ControlLightLight;
 			this.tableLayoutPanel1.SetColumnSpan(this._details, 2);
-			this._l10NSharpExtender1.SetLocalizableToolTip(this._details, null);
-			this._l10NSharpExtender1.SetLocalizationComment(this._details, null);
-			this._l10NSharpExtender1.SetLocalizingId(this._details, "ExceptionReportingDialog._details");
 			this._details.Name = "_details";
 			this._details.ReadOnly = true;
 			// 
@@ -210,9 +196,6 @@ namespace SIL.Windows.Forms.Reporting
 			// 
 			resources.ApplyResources(this._sendAndCloseButton, "_sendAndCloseButton");
 			this._sendAndCloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this._l10NSharpExtender1.SetLocalizableToolTip(this._sendAndCloseButton, null);
-			this._l10NSharpExtender1.SetLocalizationComment(this._sendAndCloseButton, null);
-			this._l10NSharpExtender1.SetLocalizingId(this._sendAndCloseButton, "ExceptionReportingDialog._sendAndCloseButton");
 			this._sendAndCloseButton.Name = "_sendAndCloseButton";
 			this._sendAndCloseButton.Click += new System.EventHandler(this.btnClose_Click);
 			// 
@@ -222,10 +205,6 @@ namespace SIL.Windows.Forms.Reporting
 			this._lblPleaseHelp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this.tableLayoutPanel1.SetColumnSpan(this._lblPleaseHelp, 2);
 			this._lblPleaseHelp.ForeColor = System.Drawing.Color.Black;
-			this._l10NSharpExtender1.SetLocalizableToolTip(this._lblPleaseHelp, null);
-			this._l10NSharpExtender1.SetLocalizationComment(this._lblPleaseHelp, null);
-			this._l10NSharpExtender1.SetLocalizationPriority(this._lblPleaseHelp, L10NSharp.LocalizationPriority.NotLocalizable);
-			this._l10NSharpExtender1.SetLocalizingId(this._lblPleaseHelp, "ExceptionReportingDialog._lblPleaseHelp");
 			this._lblPleaseHelp.Name = "_lblPleaseHelp";
 			// 
 			// _notificationText
@@ -234,9 +213,6 @@ namespace SIL.Windows.Forms.Reporting
 			this._notificationText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this.tableLayoutPanel1.SetColumnSpan(this._notificationText, 2);
 			this._notificationText.ForeColor = System.Drawing.Color.Black;
-			this._l10NSharpExtender1.SetLocalizableToolTip(this._notificationText, null);
-			this._l10NSharpExtender1.SetLocalizationComment(this._notificationText, null);
-			this._l10NSharpExtender1.SetLocalizingId(this._notificationText, "ExceptionReportingDialog._notificationText");
 			this._notificationText.Name = "_notificationText";
 			// 
 			// _lblStepsToReproduce
@@ -245,10 +221,6 @@ namespace SIL.Windows.Forms.Reporting
 			this._lblStepsToReproduce.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this.tableLayoutPanel1.SetColumnSpan(this._lblStepsToReproduce, 2);
 			this._lblStepsToReproduce.ForeColor = System.Drawing.Color.Black;
-			this._l10NSharpExtender1.SetLocalizableToolTip(this._lblStepsToReproduce, null);
-			this._l10NSharpExtender1.SetLocalizationComment(this._lblStepsToReproduce, null);
-			this._l10NSharpExtender1.SetLocalizationPriority(this._lblStepsToReproduce, L10NSharp.LocalizationPriority.NotLocalizable);
-			this._l10NSharpExtender1.SetLocalizingId(this._lblStepsToReproduce, "ExceptionReportingDialog._lblStepsToReproduce");
 			this._lblStepsToReproduce.Name = "_lblStepsToReproduce";
 			// 
 			// _methodCombo
@@ -256,9 +228,6 @@ namespace SIL.Windows.Forms.Reporting
 			resources.ApplyResources(this._methodCombo, "_methodCombo");
 			this._methodCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this._methodCombo.FormattingEnabled = true;
-			this._l10NSharpExtender1.SetLocalizableToolTip(this._methodCombo, null);
-			this._l10NSharpExtender1.SetLocalizationComment(this._methodCombo, null);
-			this._l10NSharpExtender1.SetLocalizingId(this._methodCombo, "ExceptionReportingDialog._methodCombo");
 			this._methodCombo.Name = "_methodCombo";
 			this._methodCombo.SelectedIndexChanged += new System.EventHandler(this._methodCombo_SelectedIndexChanged);
 			// 
@@ -266,9 +235,6 @@ namespace SIL.Windows.Forms.Reporting
 			// 
 			resources.ApplyResources(this._privacyNoticeButton, "_privacyNoticeButton");
 			this._privacyNoticeButton.Image = global::SIL.Windows.Forms.Properties.Resources.spy16x16;
-			this._l10NSharpExtender1.SetLocalizableToolTip(this._privacyNoticeButton, null);
-			this._l10NSharpExtender1.SetLocalizationComment(this._privacyNoticeButton, null);
-			this._l10NSharpExtender1.SetLocalizingId(this._privacyNoticeButton, "ExceptionReportingDialog._privacyNoticeButton");
 			this._privacyNoticeButton.Name = "_privacyNoticeButton";
 			this._privacyNoticeButton.UseVisualStyleBackColor = true;
 			this._privacyNoticeButton.Click += new System.EventHandler(this._privacyNoticeButton_Click);
@@ -277,9 +243,6 @@ namespace SIL.Windows.Forms.Reporting
 			// 
 			this._emailAddress.ForeColor = System.Drawing.Color.DimGray;
 			resources.ApplyResources(this._emailAddress, "_emailAddress");
-			this._l10NSharpExtender1.SetLocalizableToolTip(this._emailAddress, null);
-			this._l10NSharpExtender1.SetLocalizationComment(this._emailAddress, null);
-			this._l10NSharpExtender1.SetLocalizingId(this._emailAddress, "ExceptionReportingDialog._emailAddress");
 			this._emailAddress.Name = "_emailAddress";
 			// 
 			// tableLayoutPanel1
@@ -297,11 +260,6 @@ namespace SIL.Windows.Forms.Reporting
 			this.tableLayoutPanel1.Controls.Add(this._detailsForDevelopers, 0, 4);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
 			// 
-			// l10NSharpExtender1
-			// 
-			this._l10NSharpExtender1.LocalizationManagerId = null;
-			this._l10NSharpExtender1.PrefixForNewItems = null;
-			// 
 			// ExceptionReportingDialog
 			// 
 			this.AcceptButton = this._sendAndCloseButton;
@@ -310,9 +268,6 @@ namespace SIL.Windows.Forms.Reporting
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.KeyPreview = true;
-			this._l10NSharpExtender1.SetLocalizableToolTip(this, null);
-			this._l10NSharpExtender1.SetLocalizationComment(this, null);
-			this._l10NSharpExtender1.SetLocalizingId(this, "ExceptionReportingDialog.WindowTitle");
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "ExceptionReportingDialog";
@@ -322,7 +277,6 @@ namespace SIL.Windows.Forms.Reporting
 			this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ExceptionReportingDialog_KeyPress);
 			this.tableLayoutPanel1.ResumeLayout(false);
 			this.tableLayoutPanel1.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this._l10NSharpExtender1)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -330,27 +284,96 @@ namespace SIL.Windows.Forms.Reporting
 		private void SetupMethodCombo()
 		{
 			_methodCombo.Items.Clear();
+			string reportingMethod, closeButtonLabelLethal, closeButtonLabelNonLethal;
+			try
+			{
+				reportingMethod = LocalizationManager.GetString(
+					"ExceptionReportingDialog.ReportingMethod.Email",
+					"Send using my email program");
+			}
+			catch (Exception e)
+			{
+				try { Logger.WriteError(e); } catch { /* We tried. */ }
+				reportingMethod = "Send using my email program";
+			}
+			try
+			{
+				closeButtonLabelLethal = LocalizationManager.GetString(
+					"ExceptionReportingDialog.ReportingMethod.EmailCloseButtonLabelLethal",
+					"&Email and Exit", "Ampersand is optional, to indicate accelerator key");
+			}
+			catch (Exception e)
+			{
+				try { Logger.WriteError(e); } catch { /* We tried. */ }
+				closeButtonLabelLethal = "&Email and Exit";
+			}
+			try
+			{
+				closeButtonLabelNonLethal = LocalizationManager.GetString(
+					"ExceptionReportingDialog.ReportingMethod.EmailCloseButtonLabel",
+					"&Email", "Ampersand is optional, to indicate accelerator key");
+			}
+			catch (Exception e)
+			{
+				try { Logger.WriteError(e); } catch { /* We tried. */ }
+				closeButtonLabelNonLethal = "&Email";
+			}
 			_methodCombo.Items.Add(new ReportingMethod(
-				LocalizationManager.GetString("ExceptionReportingDialog.ReportingMethod.Email", "Send using my email program"),
-				LocalizationManager.GetString("ExceptionReportingDialog.ReportingMethod.EmailCloseButtonLabel", "&Email"),
+				reportingMethod, closeButtonLabelLethal, closeButtonLabelNonLethal,
 				"mapiWithPopup", SendViaEmail));
+			
+			try
+			{
+				reportingMethod = LocalizationManager.GetString(
+					"ExceptionReportingDialog.ReportingMethod.CopyToClipboard",
+					"Copy to clipboard");
+			}
+			catch (Exception e)
+			{
+				try { Logger.WriteError(e); } catch { /* We tried. */ }
+				reportingMethod = "Copy to clipboard";
+			}
+			try
+			{
+				closeButtonLabelLethal = LocalizationManager.GetString(
+					"ExceptionReportingDialog.ReportingMethod.CopyCloseButtonLabelLethal",
+					"&Copy and Exit", "Ampersand is optional, to indicate accelerator key");
+			}
+			catch (Exception e)
+			{
+				try { Logger.WriteError(e); } catch { /* We tried. */ }
+				closeButtonLabelLethal = "&Copy and Exit";
+			}
+			try
+			{
+				closeButtonLabelNonLethal = LocalizationManager.GetString(
+					"ExceptionReportingDialog.ReportingMethod.CopyCloseButtonLabel",
+					"&Copy", "Ampersand is optional, to indicate accelerator key");
+			}
+			catch (Exception e)
+			{
+				try { Logger.WriteError(e); } catch { /* We tried. */ }
+				closeButtonLabelNonLethal = "&Copy";
+			}
 			_methodCombo.Items.Add(new ReportingMethod(
-				LocalizationManager.GetString("ExceptionReportingDialog.ReportingMethod.CopyToClipboard", "Copy to clipboard"),
-				LocalizationManager.GetString("ExceptionReportingDialog.ReportingMethod.CopyCloseButtonLabel", "&Copy"),
+				reportingMethod, closeButtonLabelLethal, closeButtonLabelNonLethal,
 				"clipboard", PutOnClipboard));
 		}
 
-		class ReportingMethod
+		private class ReportingMethod
 		{
 			private readonly string _label;
-			public readonly string CloseButtonLabel;
+			public readonly string CloseButtonLabelLethal;
+			public readonly string CloseButtonLabelNonLethal;
 			public readonly string Id;
 			public readonly Func<bool> Method;
 
-			public ReportingMethod(string label, string closeButtonLabel, string id, Func<bool> method)
+			public ReportingMethod(string label, string closeButtonLabelLethal,
+				string closeButtonLabelNonLethal, string id, Func<bool> method)
 			{
 				_label = label;
-				CloseButtonLabel = closeButtonLabel;
+				CloseButtonLabelLethal = closeButtonLabelLethal;
+				CloseButtonLabelNonLethal = closeButtonLabelNonLethal;
 				Id = id;
 				Method = method;
 			}
@@ -548,7 +571,7 @@ namespace SIL.Windows.Forms.Reporting
 				}
 				catch (Exception err)
 				{
-					//We have more than one report of dieing while logging an exception.
+					//We have more than one report of dying while logging an exception.
 					_details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
 				}
 			}
@@ -689,18 +712,28 @@ namespace SIL.Windows.Forms.Reporting
 			if (!_isLethal)
 			{
 				BackColor = Color.FromArgb(255, 255, 192); //yellow
-				_notificationText.Text = LocalizationManager.GetString(
-					"ExceptionReportingDialog.NonLethalNotification",
-					"Take Courage. It'll work out.",
-					"For more formal cultures, something less cheeky might be better. In most " +
-					"cases, this will be replaced by a more useful message, but there are " +
-					"situations where a user could see this.");
+				try
+				{
+					_notificationText.Text = LocalizationManager.GetString(
+						"ExceptionReportingDialog.NotificationTextNonLethal",
+						"Take Courage. It'll work out.",
+						"For more formal cultures, something less cheeky might be better. In most " +
+						"cases, this will be replaced by a more useful message, but there are " +
+						"situations where a user could see this.");
+				}
+				catch (Exception e)
+				{
+					try { Logger.WriteError(e); } catch { /* We tried. */ }
+				}
+
 				_notificationText.BackColor = BackColor;
 				_lblPleaseHelp.BackColor = BackColor;
 				_lblStepsToReproduce.BackColor = BackColor;
 			}
 
 			SetupCloseButtonText();
+
+			SetLocalizedText();
 		}
 
 		private void ShowReportDialogIfAppropriate(Form owningForm)
@@ -718,8 +751,7 @@ namespace SIL.Windows.Forms.Reporting
 
 
 		}
-
-
+		
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		///
@@ -755,9 +787,23 @@ namespace SIL.Windows.Forms.Reporting
 		{
 			if (ErrorReport.EmailAddress != null)
 			{
-				// REVIEW: Should this be localized? If so, does it *also* need to be kept in
-				// English for support purposes?
-				_details.Text = Format("Please e-mail this to {0} {1}", ErrorReport.EmailAddress, _details.Text);
+				string localizedEmailInstructions = null;
+				try
+				{
+					if (LocalizationManager.UILanguageId != "en")
+					{
+						localizedEmailInstructions = LocalizationManager.GetString(
+							"ExceptionReportingDialog.EmailInstructions",
+							"(Please e-mail this to)");
+						if (localizedEmailInstructions == "(Please e-mail this to)")
+							localizedEmailInstructions = null;
+					}
+				}
+				catch (Exception e)
+				{
+					try { Logger.WriteError(e); } catch { /* We tried. */ }
+				}
+				_details.Text = $"Please e-mail this to {localizedEmailInstructions} {ErrorReport.EmailAddress} {_details.Text}";
 			}
 			try
 			{
@@ -863,8 +909,15 @@ namespace SIL.Windows.Forms.Reporting
 		{
 			if (e.KeyCode == Keys.ShiftKey && Visible)
 			{
-				_sendAndCloseButton.Text = LocalizationManager.GetString(
-					"ExceptionReportingDialog.ContinueButtonLabel", "Continue");
+				try
+				{
+					_sendAndCloseButton.Text = LocalizationManager.GetString(
+						"ExceptionReportingDialog.ContinueButtonLabel", "Continue");
+				}
+				catch (Exception ex)
+				{
+					try { Logger.WriteError(ex); } catch { /* We tried. */ }
+				}
 			}
 			base.OnKeyDown(e);
 		}
@@ -889,21 +942,99 @@ namespace SIL.Windows.Forms.Reporting
 			SetupCloseButtonText();
 		}
 
-		private void SetupCloseButtonText()
+		private void SetupCloseButtonText() =>
+			_sendAndCloseButton.Text = _isLethal ? SelectedMethod.CloseButtonLabelLethal :
+				SelectedMethod.CloseButtonLabelNonLethal;
+
+		private void SetLocalizedText()
 		{
-			_sendAndCloseButton.Text = SelectedMethod.CloseButtonLabel;
+			try
+			{
+				if (LocalizationManager.UILanguageId == "en")
+					return;
+			}
+			catch (Exception e)
+			{
+				try { Logger.WriteError(e); } catch { /* We tried. */ }
+				// If we couldn't get the current UILanguageId without crashing, we don't have much
+				// hope of retrieving localized strings. Just use what Designer resources supplied.
+				return;
+			}
+
+			// All of these strings should be kept in sync with the ones in the Designer-generated
+			// We opted to do it this way instead of using the LocalizationExtender so we could
+			// ensure that applying localizations to the error reporting form would not itself
+			// result in a fatal error.
+			try
+			{
+				Text = LocalizationManager.GetString("ExceptionReportingDialog.WindowTitle",
+					"Error");
+			}
+			catch (Exception e)
+			{
+				try { Logger.WriteError(e); } catch { /* We tried. */ }
+			}
+
+			try
+			{
+				_detailsForDevelopers.Text = LocalizationManager.GetString(
+					"ExceptionReportingDialog._detailsForDevelopers",
+					"Details for the developers:");
+			}
+			catch (Exception e)
+			{
+				try { Logger.WriteError(e); } catch { /* We tried. */ }
+			}
+
+			try
+			{
+				_lblPleaseHelp.Text = LocalizationManager.GetString(
+					"ExceptionReportingDialog._lblPleaseHelp",
+					"To help us fix the problem, we need to gather information on what went wrong.");
+			}
+			catch (Exception e)
+			{
+				try { Logger.WriteError(e); } catch { /* We tried. */ }
+			}
+
 			if (_isLethal)
 			{
-				_sendAndCloseButton.Text = Format(LocalizationManager.GetString(
-						"ExceptionReportingDialog.CloseButtonLethal", "{0} and Exit",
-						"Used together with the normal Close button label (Param 0) to indicate " +
-						"that the the program will have to exit after the error report is sent."),
-					_sendAndCloseButton.Text);
+				try
+				{
+					_notificationText.Text = LocalizationManager.GetString(
+						"ExceptionReportingDialog.NotificationTextLethal",
+						"Well, this is embarrassing.",
+						"For more formal cultures, something less cheeky might be better. In most " +
+						"cases, this will be replaced by a more useful message, but there are " +
+						"situations where a user could see this.");
+				}
+				catch (Exception e)
+				{
+					try { Logger.WriteError(e); } catch { /* We tried. */ }
+				}
 			}
-			//else
-			//{
-			//	_dontSendEmailLink.Text = "Don't Send Email";
-			//}
+
+			try
+			{
+				_lblStepsToReproduce.Text = LocalizationManager.GetString(
+					"ExceptionReportingDialog._lblStepsToReproduce",
+					"Can you list the steps to take to make this happen again, or tell us anything that might be helpful?");
+			}
+			catch (Exception e)
+			{
+				try { Logger.WriteError(e); } catch { /* We tried. */ }
+			}
+
+			try
+			{
+				_privacyNoticeButton.Text = LocalizationManager.GetString(
+					"ExceptionReportingDialog._privacyNoticeButton",
+					"Privacy Notice...");
+			}
+			catch (Exception e)
+			{
+				try { Logger.WriteError(e); } catch { /* We tried. */ }
+			}
 		}
 
 		private ReportingMethod SelectedMethod
@@ -914,8 +1045,8 @@ namespace SIL.Windows.Forms.Reporting
 
 		/// <summary>
 		/// Although this is public and can be set externally for an application that has a custom
-		/// policy (e.e., does not use Jira), be aware that if you want it to localized, you will
-		/// need to reset it if the UI locale changes.
+		/// policy (i.e., does not use Jira), be aware that if you want it to be localized, you
+		/// will need to reset it if the UI locale changes.
 		/// </summary>
 		public static string PrivacyNotice;
 
@@ -924,36 +1055,101 @@ namespace SIL.Windows.Forms.Reporting
 		private static string GetDefaultPrivacyNotice()
 		{
 			var bldr = new StringBuilder();
-			bldr.Append(LocalizationManager.GetString("ExceptionReportingDialog.Privacy.Para1",
-				"If you don't care who reads your bug report, you can disregard this notice."));
+			string nextPara;
+			try
+			{
+				nextPara = LocalizationManager.GetString("ExceptionReportingDialog.Privacy.Para1",
+					"If you don't care who reads your bug report, you can disregard this notice.");
+			}
+			catch (Exception e)
+			{
+				try { Logger.WriteError(e); } catch { /* We tried. */ }
+
+				nextPara = "If you don't care who reads your bug report, you can disregard this " +
+					"notice.";
+			}
+			bldr.Append(nextPara);
 			bldr.Append(Environment.NewLine);
 			bldr.Append(Environment.NewLine);
+
 			// REVIEW: Is the last line (which I have put in parentheses) true and/or helpful?
-			bldr.Append(LocalizationManager.GetString("ExceptionReportingDialog.Privacy.Para2",
-				"When you submit a crash report or other issue, it goes into our issue tracking " +
-				"system, \"Jira\", which is available via the web at https://jira.sil.org/issues." +
-				"(This is a normal way to handle issues in an open-source project.)"));
+			try
+			{
+				nextPara = LocalizationManager.GetString("ExceptionReportingDialog.Privacy.Para2",
+					"When you submit a crash report or other issue, it goes into our issue " +
+					"tracking system, \"Jira\", which is available via the web at " +
+					"https://jira.sil.org/issues." +
+					"(This is a normal way to handle issues in an open-source project.)");
+			}
+			catch (Exception e)
+			{
+				try { Logger.WriteError(e); } catch { /* We tried. */ }
+
+				nextPara = "When you submit a crash report or other issue, it goes into our issue " +
+					"tracking system, \"Jira\", which is available via the web at " +
+					"https://jira.sil.org/issues." +
+					"(This is a normal way to handle issues in an open-source project.)";
+			}
+			bldr.Append(nextPara);
 			bldr.Append(Environment.NewLine);
 			bldr.Append(Environment.NewLine);
-			bldr.Append(LocalizationManager.GetString("ExceptionReportingDialog.Privacy.Para3",
-				"Our issue-tracking system is not searchable by those without an account. " +
-				"Therefore, search engines (like Google) will not find your bug reports."));
+
+			try
+			{
+				nextPara = LocalizationManager.GetString("ExceptionReportingDialog.Privacy.Para3",
+					"Our issue-tracking system is not searchable by those without an account. " +
+					"Therefore, search engines (like Google) will not find your bug reports.");
+			}
+			catch (Exception e)
+			{
+				try { Logger.WriteError(e); } catch { /* We tried. */ }
+
+				nextPara = "Our issue-tracking system is not searchable by those without an " +
+					"account. Therefore, search engines (like Google) will not find your bug " +
+					"reports.";
+			}
+			bldr.Append(nextPara);
 			bldr.Append(Environment.NewLine);
 			bldr.Append(Environment.NewLine);
-			bldr.Append(LocalizationManager.GetString("ExceptionReportingDialog.Privacy.Para4",
-				"However, anyone can make an account and then read your report. So if you have " +
-				"something private to say, please send it to one of the developers privately " +
-				"with a note that you don't want the issue in our issue tracking system. If " +
-				"necessary, we can make a place-holder for your issue without the private " +
-				"information so the issue can still be tracked and not get lost."));
+			
+			try
+			{
+				nextPara = LocalizationManager.GetString("ExceptionReportingDialog.Privacy.Para4",
+					"However, anyone can make an account and then read your report. So if you " +
+					"have something private to say, please send it to one of the developers " +
+					"privately with a note that you don't want the issue in our issue tracking " +
+					"system. If necessary, we can make a place-holder for your issue without " +
+					"the private information so the issue can still be tracked and not get lost.");
+			}
+			catch (Exception e)
+			{
+				try { Logger.WriteError(e); } catch { /* We tried. */ }
+
+				nextPara = "However, anyone can make an account and then read your report. So if" +
+					" you have something private to say, please send it to one of the developers" +
+					" privately with a note that you don't want the issue in our issue tracking " +
+					"system. If necessary, we can make a place-holder for your issue without " +
+					"the private information so the issue can still be tracked and not get lost.";
+			}
+			bldr.Append(nextPara);
 
 			return bldr.ToString();
 		}
 
 		private void _privacyNoticeButton_Click(object sender, EventArgs e)
 		{
-			MessageBox.Show(LocalizedPrivacyNotice, LocalizationManager.GetString(
-				"ExceptionReportingDialog.PrivacyNoticeCaption", "Privacy Notice"));
+			string caption;
+			try
+			{
+				caption = LocalizationManager.GetString(
+					"ExceptionReportingDialog.PrivacyNoticeCaption", "Privacy Notice");
+			}
+			catch (Exception ex)
+			{
+				try { Logger.WriteError(ex); } catch { /* We tried. */ }
+				caption = "Privacy Notice";
+			}
+			MessageBox.Show(LocalizedPrivacyNotice, caption);
 		}
 
 		private void ExceptionReportingDialog_KeyPress(object sender, KeyPressEventArgs e)
