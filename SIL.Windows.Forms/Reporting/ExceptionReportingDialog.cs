@@ -803,7 +803,8 @@ namespace SIL.Windows.Forms.Reporting
 				{
 					try { Logger.WriteError(e); } catch { /* We tried. */ }
 				}
-				_details.Text = $"Please e-mail this to {localizedEmailInstructions} {ErrorReport.EmailAddress} {_details.Text}";
+				_details.Text = $"Please e-mail this to {localizedEmailInstructions} {ErrorReport.EmailAddress}" +
+					$"{Environment.NewLine}{_details.Text}";
 			}
 			try
 			{
