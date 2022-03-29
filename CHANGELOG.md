@@ -56,6 +56,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Corrected logic in extension method GetLongestUsefulCommonSubstring
 - [SIL.Windows.Forms.ClearShare.WinFormsUI] Default to CC-BY for new CC licenses
 - [SIL.Media] Allow RecordingDeviceIndicator to find new sound input device when there was no selected device (state == NotYetStarted)
+- [SIL.Windows.Forms] Internationalized the ExceptionReportingDialog.
 
 ### Fixed
 
@@ -67,6 +68,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Keyboarding] Copy `SIL.Windows.Forms.Keyboarding.dll.config` to output directory
 - [SIL.WritingSystems] Fix case mismatch with `needsCompiling` attribute
 - [SIL.Windows.Forms.ClearShare.WinFormsUI] Restore default version (4.0) for CC licenses after CC0 was used
+- [SIL.Windows.Forms] Layout issues in the ExceptionReportingDialog to prevent overlapping text.
 
 ## [8.0.0] - 2021-03-04
 
