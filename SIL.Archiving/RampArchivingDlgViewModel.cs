@@ -1806,7 +1806,8 @@ namespace SIL.Archiving
 		#region Language functions
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Get the path and file name of the RAMP Languages file
+		/// Get the path and file name of the RAMP Languages file.
+		/// Note that RAMP 3 does not ship the languages file.
 		/// </summary>
 		/// <returns>The full name of the RAMP languages file</returns>
 		/// ------------------------------------------------------------------------------------
@@ -1820,16 +1821,16 @@ namespace SIL.Archiving
 			if (dir == null)
 				throw new DirectoryNotFoundException("The RAMP directory was not found.");
 
+			// RAMP 3.0 doesn't have languages.yaml, so just return string.Empty if it is not found.
 
 			if (Platform.IsWindows)
 			{
-				//Ramp 3.0 Package doesn't have languages.yaml
 				if (!Directory.Exists(Path.Combine(dir, "data")))
 				{
 					return string.Empty;
 				}
 			}
-			// on Linux the exe and data directory are not in the same directory
+			// On Linux the exe and data directory are not in the same directory
 			if (!Directory.Exists(Path.Combine(dir, "data")))
 			{
 				dir = Directory.GetParent(dir).FullName;
@@ -1837,20 +1838,20 @@ namespace SIL.Archiving
 					dir = Path.Combine(dir, "share");
 			}
 
-			// get the data directory
+			// Get the data directory
 			dir = Path.Combine(dir, "data");
 			if (!Directory.Exists(dir))
-				throw new DirectoryNotFoundException(string.Format("The path {0} is not valid.", dir));
+				return string.Empty;
 
-			// get the options directory
+			// Get the options directory
 			dir = Path.Combine(dir, "options");
 			if (!Directory.Exists(dir))
-				throw new DirectoryNotFoundException(string.Format("The path {0} is not valid.", dir));
+				return string.Empty;
 
-			// get the languages.yaml file
+			// Get the languages.yaml file
 			var langFile = Path.Combine(dir, "languages.yaml");
 			if (!File.Exists(langFile))
-				throw new FileNotFoundException(string.Format("The file {0} was not found.", langFile));
+				return string.Empty;
 
 			return langFile;
 		}
