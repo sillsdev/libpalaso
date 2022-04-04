@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 //For UML diagram, see ProgressSystem.uml (done in StarUML)
 
@@ -146,9 +147,9 @@ namespace SIL.Progress.Commands
 		/// Override this method to invoke the actual
 		/// long operation using your preferred async mode.
 		/// </summary>
-		protected abstract void BeginInvokeCore();
+		protected abstract Task BeginInvokeCore();
 
-		protected abstract void BeginInvokeCore2(ProgressState progress);
+		protected abstract Task BeginInvokeCore2(ProgressState progress);
 
 		/// <summary>
 		/// Raises the Finish event.
