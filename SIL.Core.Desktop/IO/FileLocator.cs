@@ -237,7 +237,7 @@ namespace SIL.IO
 				return null;
 
 			var value = key.GetValue(string.Empty) as string;
-			key.Close();
+			key.Dispose();
 
 			if (value == null)
 				return null;
@@ -252,7 +252,7 @@ namespace SIL.IO
 			}
 
 			value = key?.GetValue(string.Empty) as string;
-			key?.Close();
+			key?.Dispose();
 
 			if (value == null)
 				return null;
