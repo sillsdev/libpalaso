@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NETSTANDARD
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Management;
@@ -112,3 +113,4 @@ namespace SIL.UsbDrive.Windows
 		}
 	}
 }
+#endif

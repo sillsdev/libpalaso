@@ -1,4 +1,5 @@
-﻿// Copyright (c) 2009-2016 SIL International
+﻿#if !NETSTANDARD
+// Copyright (c) 2009-2016 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -74,3 +75,4 @@ namespace SIL.UsbDrive.Linux
 		}
 	}
 }
+#endif

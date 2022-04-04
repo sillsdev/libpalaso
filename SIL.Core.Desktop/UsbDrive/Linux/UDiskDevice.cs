@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NETSTANDARD
+using System;
 using System.Collections.Generic;
 using NDesk.DBus;
 using DBusProperties = org.freedesktop.DBus.Properties;
@@ -84,3 +85,4 @@ namespace SIL.UsbDrive.Linux
 
 	}
 }
+#endif

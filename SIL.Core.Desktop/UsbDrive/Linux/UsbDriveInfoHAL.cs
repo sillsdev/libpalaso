@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NETSTANDARD
+using System;
 using System.Collections.Generic;
 using System.IO;
 using NDesk.DBus;
@@ -141,3 +142,4 @@ namespace SIL.UsbDrive.Linux
 		}
 	}
 }
+#endif
