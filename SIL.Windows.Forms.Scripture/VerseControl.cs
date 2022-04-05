@@ -7,9 +7,11 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using SIL.PlatformUtilities;
 using SIL.Scripture;
 using SIL.Extensions;
+using SIL.Windows.Forms.Miscellaneous;
 
 namespace SIL.Windows.Forms.Scripture
 {
@@ -649,11 +651,93 @@ namespace SIL.Windows.Forms.Scripture
 
 		void uiBook_KeyDown(object sender, KeyEventArgs e)
 		{
+			if (CanPasteScriptureRef(e))
+				return;
+
 			// Don't select all On Linux on Enter as combo text remains selected
 			// when focus moved to the TextForm.
 			if (IsBook())
 				if (AcceptOnEnter(e) && !Platform.IsLinux)
 					uiBook.SelectAll();
+		}
+
+		/// <summary>
+		/// Updates verse control with pasted verse reference, if pasted reference is valid.
+		/// </summary>
+		/// <param name="e">KeyDown event args. e.SuppessKeyPress will be set to true if control is updated</param>
+		/// <returns>True if verse control has been updated</returns>
+		private bool CanPasteScriptureRef(KeyEventArgs e)
+		{
+			// ignore everything except CTRL-V
+			if (e.Alt || e.Shift || !e.Control || e.KeyCode != Keys.V)
+				return false;
+
+			// nothing to do if clipboard is empty
+			if (!PortableClipboard.ContainsText())
+				return false;
+
+			// if pasting text, check to see if clipboard contain verse reference
+			string text = PortableClipboard.GetText();
+			if (!IsValidReference(text, out var book, out var chapter, out var verse))
+				return false;
+			uiBook.Text = book;
+			uiChapter.Text = chapter;
+			uiVerse.Text = verse;
+			e.SuppressKeyPress = true;
+			AcceptOnEnter(new KeyEventArgs(Keys.Enter));
+			return true;
+
+		}
+
+		/// <summary>
+		/// Check to see if text is a valid reference - either using GEN 1:1 format or localized book names
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="book"></param>
+		/// <param name="chapter"></param>
+		/// <param name="verse"></param>
+		/// <returns>True if string is a valid reference</returns>
+		private bool IsValidReference(string text, out string book, out string chapter,
+			out string verse)
+		{
+			book = chapter = verse = null;
+
+			// check for standard reference in form: GEN 1:27
+			var match = Regex.Match(text, @"^([0-9A-Za-z]{3})\s*(\d+)[\p{Po}](\d+)$");
+			if (match.Success)
+			{
+
+				book = match.Groups[1].Value;
+				chapter = match.Groups[2].Value;
+				verse = match.Groups[3].Value;
+				return Canon.IsBookIdValid(book);
+			}
+
+			// check for localized name match
+			match = Regex.Match(text, @"^(.*?)(\d+)[\p{Po}](\d+)$");
+			if (!match.Success)
+				return false;
+
+			var searchBook = match.Groups[1].Value.Trim();
+			chapter = match.Groups[2].Value;
+			verse = match.Groups[3].Value;
+
+			// search for unique entry based on full localized name
+			var bookItem = allBooks.SingleOrDefault(b =>
+				b.Name.Length >= searchBook.Length &&
+				b.Name.StartsWith(searchBook, StringComparison.OrdinalIgnoreCase));
+
+			// if first search fails, try searching BaseName (diacritics removed)
+			if (bookItem == null)
+				bookItem = allBooks.SingleOrDefault(b =>
+					b.BaseName.Length >= searchBook.Length &&
+					b.BaseName.StartsWith(searchBook, StringComparison.OrdinalIgnoreCase));
+
+			if (bookItem == null)
+				return false;
+
+			book = bookItem.Abbreviation;
+			return true;
 		}
 
 		/// <summary>
@@ -803,6 +887,9 @@ namespace SIL.Windows.Forms.Scripture
 
 		void uiChapter_KeyDown(object sender, KeyEventArgs e)
 		{
+			if (CanPasteScriptureRef(e))
+				return;
+
 			if (AcceptOnEnter(e))
 			{
 				uiChapter.SelectAll();
@@ -870,6 +957,9 @@ namespace SIL.Windows.Forms.Scripture
 
 		void uiVerse_KeyDown(object sender, KeyEventArgs e)
 		{
+			if (CanPasteScriptureRef(e))
+				return;
+
 			if (AcceptOnEnter(e)) uiVerse.SelectAll();
 		}
 
