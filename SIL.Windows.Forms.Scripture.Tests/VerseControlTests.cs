@@ -70,6 +70,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 		[TestCase("2CO 3:18", "2CO 3:18", true)]
 		[TestCase("2CO3:18", "2CO 3:18", true)]
 		[TestCase("2CO 3.18", "2CO 3:18", true)]
+		[TestCase("2CO 3", "2CO 3:1", true)]
 		public void PastedTextGetsExpectedResult(string text, string expectedResult, bool isValid)
 		{
 			m_verseCtrl.VerseRef = new VerseRef("MAT", "1", "1", ScrVers.English);

@@ -651,7 +651,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		void uiBook_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (CanPasteScriptureRef(e))
+			if (HandlePasteScriptureRef(e))
 				return;
 
 			// Don't select all On Linux on Enter as combo text remains selected
@@ -666,7 +666,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// </summary>
 		/// <param name="e">KeyDown event args. e.SuppessKeyPress will be set to true if control is updated</param>
 		/// <returns>True if verse control has been updated</returns>
-		private bool CanPasteScriptureRef(KeyEventArgs e)
+		private bool HandlePasteScriptureRef(KeyEventArgs e)
 		{
 			// ignore everything except CTRL-V
 			if (e.Alt || e.Shift || !e.Control || e.KeyCode != Keys.V)
@@ -677,7 +677,7 @@ namespace SIL.Windows.Forms.Scripture
 				return false;
 
 			// if pasting text, check to see if clipboard contain verse reference
-			string text = PortableClipboard.GetText();
+			string text = PortableClipboard.GetText().Trim();
 			if (!IsValidReference(text, out var book, out var chapter, out var verse))
 				return false;
 			uiBook.Text = book;
@@ -703,24 +703,21 @@ namespace SIL.Windows.Forms.Scripture
 			book = chapter = verse = null;
 
 			// check for standard reference in form: GEN 1:27
-			var match = Regex.Match(text, @"^([0-9A-Za-z]{3})\s*(\d+)[\p{Po}](\d+)$");
-			if (match.Success)
-			{
-
-				book = match.Groups[1].Value;
-				chapter = match.Groups[2].Value;
-				verse = match.Groups[3].Value;
-				return Canon.IsBookIdValid(book);
-			}
-
-			// check for localized name match
-			match = Regex.Match(text, @"^(.*?)(\d+)[\p{Po}](\d+)$");
+			var match = Regex.Match(text, MultilingScrBooks.VerseRefRegex);
 			if (!match.Success)
 				return false;
 
-			var searchBook = match.Groups[1].Value.Trim();
-			chapter = match.Groups[2].Value;
-			verse = match.Groups[3].Value;
+			var searchBook = match.Groups["book"].Value;
+			chapter = match.Groups["chapter"].Value;
+			verse = match.Groups["verse"].Value;
+			// verse is optional in regex, make it 1 if not given
+			if (string.IsNullOrEmpty(verse))
+				verse = "1";
+			if (Canon.IsBookIdValid(searchBook))
+			{
+				book = searchBook;
+				return true;
+			}
 
 			// search for unique entry based on full localized name
 			var bookItem = allBooks.SingleOrDefault(b =>
@@ -887,7 +884,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		void uiChapter_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (CanPasteScriptureRef(e))
+			if (HandlePasteScriptureRef(e))
 				return;
 
 			if (AcceptOnEnter(e))
@@ -957,7 +954,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		void uiVerse_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (CanPasteScriptureRef(e))
+			if (HandlePasteScriptureRef(e))
 				return;
 
 			if (AcceptOnEnter(e)) uiVerse.SelectAll();
