@@ -34,6 +34,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.WritingSystems] Allow specifying an alias to another Writing System for changing between upper- and lowercase
 - [SIL.Core] Extension method to get longest useful substring
 - [SIL.Core] Extension method IsLikelyWordForming to include letters, format characters, PUA and marks (diacritics, etc.)
+- [SIL.Core.Desktop, SIL.Lift, SIL.Linux.Logging] Added .NET Standard 2.0 target.
+- [SIL.Core.Desktop] USBDrive API is only supported in .NET Framework.
 - [SIL.Windows.Forms] Caller can override the default save image metadata action from the image toolbox
 
 ### Changed
