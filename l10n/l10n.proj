@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks/>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>SIL.libpalaso.l10ns</PackageId>
     <Version>$(GitVersion_NuGetVersion)</Version>
     <Authors>Jason Naylor</Authors>
