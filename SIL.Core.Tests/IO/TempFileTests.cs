@@ -106,5 +106,63 @@ namespace SIL.Tests.IO
 			Assert.IsFalse(File.Exists(filePath));		// doesn't crash "deleting" non-existent file
 			Assert.IsFalse(File.Exists(filePath2));		// deletes file that was created
 		}
+
+		[Test]
+		// In case we're ever running tests in parallel, setting NamePrefix at a random
+		// point in some other test could cause problems.
+		[Parallelizable(ParallelScope.None)]
+		public void WithNamePrefix_CreatesFileStartingWithThat()
+		{
+			TempFile.NamePrefix = "MyWonderfulTest";
+			var temp = new TempFile();
+			Assert.That(Path.GetFileName(temp.Path), Does.StartWith("MyWonderfulTest"));
+			temp.Dispose();
+			TempFile.NamePrefix = null;
+		}
+
+		[Test]
+		// In case we're ever running tests in parallel, setting NamePrefix at a random
+		// point in some other test could cause problems.
+		[Parallelizable(ParallelScope.None)]
+		public void WithExtension_Works()
+		{
+			TempFile.NamePrefix = null; // make sure it works with no NamePrefix
+			var temp = TempFile.WithExtension("xfgj");
+			Assert.That(Path.GetExtension(temp.Path), Is.EqualTo(".xfgj"));
+			temp.Dispose();
+		}
+
+		[Test]
+		// In case we're ever running tests in parallel, setting NamePrefix at a random
+		// point in some other test could cause problems.
+		[Parallelizable(ParallelScope.None)]
+		public void WithNamePrefixAndExtension_CreatesFileStartingWithThat()
+		{
+			TempFile.NamePrefix = "MyWonderfulTest";
+			var temp = TempFile.WithExtension("xfgj");
+			Assert.That(Path.GetFileName(temp.Path), Does.StartWith("MyWonderfulTest"));
+			Assert.That(Path.GetExtension(temp.Path), Is.EqualTo(".xfgj"));
+			temp.Dispose();
+			TempFile.NamePrefix = null;
+		}
+
+		[Test]
+		// In case we're ever running tests in parallel, setting NamePrefix at a random
+		// point in some other test could cause problems.
+		[Parallelizable(ParallelScope.None)]
+		public void CleanupTempFolder_RemovesFilesAndDirectories()
+		{
+			TempFile.NamePrefix = "MyWonderfulTest";
+			var temp1 = new TempFile();
+			var temp2 = new TempFile();
+			RobustFile.Delete(temp2.Path);
+			Directory.CreateDirectory(temp2.Path);
+			var childPath = Path.Combine(temp2.Path, "abcde.txt");
+			File.WriteAllText(childPath, "this is trash");
+			TempFile.CleanupTempFolder();
+			Assert.That(RobustFile.Exists(temp1.Path), Is.False);
+			Assert.That(Directory.Exists(temp2.Path), Is.False);
+			TempFile.NamePrefix = null;
+		}
 	}
 }
