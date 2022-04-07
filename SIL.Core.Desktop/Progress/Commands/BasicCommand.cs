@@ -58,14 +58,14 @@ namespace SIL.Progress.Commands
 				_progressCallback,
 				_primaryStatusTextCallback,
 				_secondaryStatusTextCallback));
-			await EndWork(workTask).ConfigureAwait(false);
+			await EndWork(workTask).ConfigureAwait(false); //resume execution on any thread
 		}
 
 		protected override async Task BeginInvokeCore2(ProgressState progress)
 		{
 			WorkInvoker2 worker = DoWork2;
 			var workTask = Task.Run(() => worker.Invoke(progress));
-			await EndWork(workTask).ConfigureAwait(false);
+			await EndWork(workTask).ConfigureAwait(false); //resume execution on any thread
 		}
 
 		protected abstract void DoWork(
@@ -81,7 +81,7 @@ namespace SIL.Progress.Commands
 		{
 			try
 			{
-				await workTask.ConfigureAwait(false);
+				await workTask.ConfigureAwait(false); //resume execution on any thread
 				OnFinish(EventArgs.Empty);
 			}
 			catch (Exception e)
