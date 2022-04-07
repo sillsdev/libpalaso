@@ -545,6 +545,11 @@ namespace SIL.Windows.Forms.WritingSystems
 				{
 					if (prohibitedList.Contains(cultureInfo.Name, StringComparison.OrdinalIgnoreCase))
 						continue;
+
+					// Do not add languages that are not installed.
+					if (!SystemCollator.ValidateLanguageTag(cultureInfo.Name, out _))
+						continue;
+
 					yield return new KeyValuePair<string, string>(cultureInfo.Name, cultureInfo.DisplayName);
 				}
 			}

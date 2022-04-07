@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Extension method IsLikelyWordForming to include letters, format characters, PUA and marks (diacritics, etc.)
 - [SIL.Core.Desktop, SIL.Lift, SIL.Linux.Logging] Added .NET Standard 2.0 target.
 - [SIL.Core.Desktop] USBDrive API is only supported in .NET Framework.
+- [SIL.Windows.Forms] Caller can override the default save image metadata action from the image toolbox
 
 ### Changed
 
@@ -57,6 +58,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Corrected logic in extension method GetLongestUsefulCommonSubstring
 - [SIL.Windows.Forms.ClearShare.WinFormsUI] Default to CC-BY for new CC licenses
 - [SIL.Media] Allow RecordingDeviceIndicator to find new sound input device when there was no selected device (state == NotYetStarted)
+- [SIL.Windows.Forms] Internationalized the ExceptionReportingDialog.
 
 ### Fixed
 
@@ -68,6 +70,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Keyboarding] Copy `SIL.Windows.Forms.Keyboarding.dll.config` to output directory
 - [SIL.WritingSystems] Fix case mismatch with `needsCompiling` attribute
 - [SIL.Windows.Forms.ClearShare.WinFormsUI] Restore default version (4.0) for CC licenses after CC0 was used
+- [SIL.Windows.Forms] Layout issues in the ExceptionReportingDialog to prevent overlapping text.
 
 ## [8.0.0] - 2021-03-04
 
@@ -111,7 +114,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle.Tests] Create nuget package
 - [SIL.Windows.Forms] Use the new Registered trademark logo (in About Box). Remove 132x148 logo.
 - [SIL.Windows.Forms] Use [Markdig](https://github.com/lunet-io/markdig) instead of
-    [MarkdownDeep.NET](https://www.toptensoftware.com/markdowndeep/)
+  [MarkdownDeep.NET](https://www.toptensoftware.com/markdowndeep/)
 
 ### Fixed
 
@@ -143,7 +146,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   on both Windows and Linux (although the limitations what works and what doesn't work remain the
   same)
 - [SIL.Media] cleanup of `AudioSession` API: rename `AudioIrrKlangSession` to `WindowsAudioSession`.
-  `AudioAlsaSession` and `WindowsAudioSession` are now  internal (they were never intended to
+  `AudioAlsaSession` and `WindowsAudioSession` are now internal (they were never intended to
   be used directly)
 - [SIL.Media] move some interfaces around so that they live in `SIL.Media` instead of
   `SIL.Media.Naudio`: `IAudioRecorder`, `RecordingState`, `IAudioPlayer`

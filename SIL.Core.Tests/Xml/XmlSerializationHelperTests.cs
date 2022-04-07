@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 using NUnit.Framework;
+using SIL.TestUtilities;
 using SIL.Xml;
 
 namespace SIL.Tests.Xml
@@ -445,6 +447,24 @@ namespace SIL.Tests.Xml
 			var lines = result.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList();
 			Assert.IsTrue(lines.First().StartsWith("<MyRoot"));
 			Assert.IsTrue(lines.Last().EndsWith("MyRoot>"));
+		}
+
+		[Test]
+		public void WriteXmlFileDirectlyToDisk_FileCreated()
+		{
+			TemporaryFolder parentFolder = new TemporaryFolder("XmlSerializationHelperTests");
+			var path = parentFolder.Combine("test.xml");
+
+			try
+			{
+				XElement element = new XElement("test");
+				XmlSerializationHelper.SerializeToFileWithWriteThrough(path, element);
+				Assert.IsTrue(File.Exists(path));
+			}
+			finally
+			{
+				File.Delete(path);
+			}
 		}
 	}
 }

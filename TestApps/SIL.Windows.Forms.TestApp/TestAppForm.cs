@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2014 SIL International
+// Copyright (c) 2013-2022 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -349,6 +349,11 @@ and displays it as HTML.
 		{
 			var parent = new ParentOfModalChild();
 			parent.Show();
+		}
+
+		private void btnThrowException_Click(object sender, EventArgs e)
+		{
+			throw new Exception("This is a test of the error reporting window!");
 		}
 	}
 }

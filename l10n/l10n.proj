@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <PackageId>SIL.libpalaso.l10ns</PackageId>
     <Version>$(GitVersion_NuGetVersion)</Version>
     <Authors>Jason Naylor</Authors>
     <Company>SIL International</Company>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.0.1" GeneratePathProperty="true" />
+	<PackageReference Include="GitVersion.MsBuild" Version="5.9.0" GeneratePathProperty="true" />
 	<PackageReference Include="L10NSharp.ExtractXliff" Version="4.1.0-beta0036" GeneratePathProperty="true" />
     <PackageReference Include="NuGet.CommandLine" Version="5.4.0" GeneratePathProperty="true" />
     <PackageReference Include="SIL.BuildTasks" Version="2.3.0-beta.14" GeneratePathProperty="true" />

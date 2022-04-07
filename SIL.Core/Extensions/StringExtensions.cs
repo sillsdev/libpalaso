@@ -74,10 +74,7 @@ namespace SIL.Extensions
 		{
 			try
 			{
-				if (args.Length == 0)
-					return format;
-				else
-					return string.Format(format, args);
+				return args.Length == 0 ? format : string.Format(format, args);
 			}
 			catch (Exception e)
 			{

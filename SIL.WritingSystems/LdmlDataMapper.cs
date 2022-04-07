@@ -946,12 +946,13 @@ namespace SIL.WritingSystems
 				// except NewLineOnAttributes to conform to SLDR files
 				var writerSettings = CanonicalXmlSettings.CreateXmlWriterSettings();
 				writerSettings.NewLineOnAttributes = false;
-				using (var writer = XmlWriter.Create(filePath, writerSettings))
+				StringBuilder strBuilder = new StringBuilder();
+				using (var writer = XmlWriter.Create(strBuilder, writerSettings))
 				{
 					WriteLdml(writer, element, ws);
-					writer.Flush();
 					writer.Close();
 				}
+				XmlSerializationHelper.SerializeToFileWithWriteThrough(filePath, element);
 			}
 			finally
 			{

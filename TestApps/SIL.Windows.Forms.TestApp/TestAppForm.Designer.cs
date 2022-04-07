@@ -1,9 +1,9 @@
-﻿// ---------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
 using SIL.Windows.Forms.Keyboarding;
 
-#region // Copyright (c) 2013, SIL International. All Rights Reserved.
-// <copyright from='2013' to='2013' company='SIL International'>
-//		Copyright (c) 2013, SIL International. All Rights Reserved.
+#region // Copyright (c) 2022, SIL International. All Rights Reserved.
+// <copyright from='2013' to='2022' company='SIL International'>
+//		Copyright (c) 2022, SIL International. All Rights Reserved.
 //
 //		Distributable under the terms of either the Common Public License or the
 //		GNU Lesser General Public License, as specified in the LICENSING.txt file.
@@ -64,6 +64,7 @@ namespace SIL.Windows.Forms.TestApp
 			this.btnSilAboutBox = new System.Windows.Forms.Button();
 			this.btnShowReleaseNotes = new System.Windows.Forms.Button();
 			this.superToolTip1 = new SIL.Windows.Forms.SuperToolTip.SuperToolTip(this.components);
+			this.btnThrowException = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
 			this.btnMetaDataEditor = new System.Windows.Forms.Button();
 			this.btnSelectFile = new System.Windows.Forms.Button();
@@ -84,6 +85,16 @@ namespace SIL.Windows.Forms.TestApp
 			this.btnFolderBrowserControl.Text = "FolderBrowserControl";
 			this.btnFolderBrowserControl.UseVisualStyleBackColor = true;
 			this.btnFolderBrowserControl.Click += new System.EventHandler(this.OnFolderBrowserControlClicked);
+			// 
+			// btnThrowException
+			// 
+			this.btnThrowException.Location = new System.Drawing.Point(12, 418);
+			this.btnThrowException.Name = "btnThrowException";
+			this.btnThrowException.Size = new System.Drawing.Size(157, 23);
+			this.btnThrowException.TabIndex = 8;
+			this.btnThrowException.Text = "Throw Unhandled Exception";
+			this.btnThrowException.UseVisualStyleBackColor = true;
+			this.btnThrowException.Click += new System.EventHandler(this.btnThrowException_Click);
 			// 
 			// btnLookupISOCodeDialog
 			// 
@@ -248,7 +259,8 @@ namespace SIL.Windows.Forms.TestApp
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(187, 453);
+			this.ClientSize = new System.Drawing.Size(187, 489);
+			this.Controls.Add(this.btnThrowException);
 			this.Controls.Add(this.btnShowFormWithModalChild);
 			this.Controls.Add(this.btnTestContributorsList);
 			this.Controls.Add(this.recordPlayButton);
@@ -289,5 +301,6 @@ namespace SIL.Windows.Forms.TestApp
 		private System.Windows.Forms.Button recordPlayButton;
 		private System.Windows.Forms.Button btnTestContributorsList;
 		private System.Windows.Forms.Button btnShowFormWithModalChild;
+		private System.Windows.Forms.Button btnThrowException;
 	}
 }
