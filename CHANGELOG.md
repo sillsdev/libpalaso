@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
-- [SIL.Core.IO] NamePrefix setting and CleanupTempFolder method added to TempFile
+- [SIL.Core] NamePrefix setting and CleanupTempFolder method added to TempFile
 - [SIL.Core] Utility methods to remove XML namespaces
 - [SIL.Core.Desktop] Serializable class `UpdateSettings` (settings for getting updates)
 - [SIL.Windows.Forms] `CssLinkHref` property to `ShowReleaseNotesDialog` to allow linking to CSS
