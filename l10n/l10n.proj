@@ -1,23 +1,41 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks/>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <PackageId>SIL.libpalaso.l10ns</PackageId>
     <Version>$(GitVersion_NuGetVersion)</Version>
     <Authors>Jason Naylor</Authors>
     <Company>SIL International</Company>
+	<RestartBuild Condition="'$(PkgL10NSharp_ExtractXliff)' == ''">true</RestartBuild>
+	<RestartBuild Condition="'$(PkgL10NSharp_ExtractXliff)' != ''">false</RestartBuild>
   </PropertyGroup>
+  
   <ItemGroup>
 	<PackageReference Include="GitVersion.MsBuild" Version="5.9.0" GeneratePathProperty="true" />
-	<PackageReference Include="L10NSharp.ExtractXliff" Version="4.1.0-beta0036" GeneratePathProperty="true" />
-    <PackageReference Include="NuGet.CommandLine" Version="5.4.0" GeneratePathProperty="true" />
+	<PackageReference Include="L10NSharp.ExtractXliff" Version="5.0.0-beta0080" GeneratePathProperty="true" />
+    <PackageReference Include="NuGet.CommandLine" Version="6.1.0" GeneratePathProperty="true" />
     <PackageReference Include="SIL.BuildTasks" Version="2.3.0-beta.14" GeneratePathProperty="true" />
   </ItemGroup>
+  
   <UsingTask TaskName="NormalizeLocales" AssemblyFile="$(PkgSIL_BuildTasks)\tools\SIL.BuildTasks.dll" />
-  <Target Name="UpdateCrowdin" DependsOnTargets="restore;GetVersion">
+  
+  <Target Name="UpdateCrowdin">
+	<Message Text="RestartBuild=$(RestartBuild)"/>
+	<CallTarget Targets="RestoreBuildDependencies"/>
+	<CallTarget Targets="UpdateCrowdinInternal" Condition="!$(RestartBuild)" />
+  </Target>
+  
+  <Target Name="RestoreBuildDependencies" DependsOnTargets="restore">
+	<MSBuild Projects="$(MSBuildProjectFullPath)" Targets="UpdateCrowdinInternal" Properties="Configuration=$(Configuration)" Condition="$(RestartBuild)" />
+  </Target>
+	
+  <Target Name="UpdateCrowdinInternal" DependsOnTargets="GetVersion">
 	<MSBuild Projects="..\build\Palaso.proj" Targets="Build" Properties="Configuration=Release" />
 	<Exec Command="&quot;$(PkgL10NSharp_ExtractXliff)\tools\ExtractXliff.exe&quot; -n SIL -o Palaso.dll -x Palaso.en.xlf -p $(GitVersion_NuGetVersion) -m SIL.Localizer.GetString -m SIL.Localizer.Localize -g ../Output/Release/net461/SIL.*.dll" />
 	<!-- <Exec Command="overcrowdin updatefiles" /> -->
   </Target>
+  
+  <!-- REVIEW: This probably needs to make use of the RestartBuild logic also.  -->
   <Target Name="PackageL10ns" DependsOnTargets="restore;GetVersion">
 	<RemoveDir Directories="CommonLibsL10ns" />
 	<Exec Command="overcrowdin download -e -f CommonLibsL10ns.zip" />

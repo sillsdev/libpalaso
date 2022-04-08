@@ -404,7 +404,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 				_acquireImageControl = new AcquireImageControl();
 				_acquireImageControl.ImageLoadingExceptionReporter =
 					ImageLoadingExceptionReporter;
-				_acquireImageControl.SetIntialSearchString(InitialSearchString);
+				_acquireImageControl.SetInitialSearchString(InitialSearchString);
 				_acquireImageControl.SearchLanguage = _incomingSearchLanguage;
 				return _acquireImageControl;
 			});
