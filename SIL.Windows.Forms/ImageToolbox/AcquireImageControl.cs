@@ -246,25 +246,47 @@ namespace SIL.Windows.Forms.ImageToolbox
 			catch (ImageDeviceNotFoundException error)
 			{
 				_messageLabel.Text = error.Message + Environment.NewLine + Environment.NewLine +
-									 "Note: this program works with devices that have a 'WIA' driver, not the old-style 'TWAIN' driver";
+					TwainDriverNotSupportedMessage;
 				_messageLabel.Visible = true;
 			}
 			catch (WIA_Version2_MissingException)
 			{
-				_messageLabel.Text = "Windows XP does not come with a crucial DLL that lets you use a WIA scanner with this program. Get a technical person to download and follow the directions at http://vbnet.mvps.org/files/updates/wiaautsdk.zip";
+				_messageLabel.Text = WIAVersion2MissingMessage;
 				_messageLabel.Visible = true;
 			}
 			catch (Exception error)
 			{
-				ErrorReport.NotifyUserOfProblem(error, "Problem Getting Image".Localize("ImageToolbox.ProblemGettingImageFromDevice"));
+				ErrorReport.NotifyUserOfProblem(error, ProblemGettingImageFromDeviceMessage);
 			}
 		}
+
+		// This is a separate property because L10nSharp's extraction code cannot properly load
+		// Interop.WIA by reflection, so any strings contained in methods that depend on WIA
+		// calls are omitted.
+		private string TwainDriverNotSupportedMessage =>
+			"Note: this program works with devices that have a 'WIA' driver, not the old-style " +
+			"'TWAIN' driver".Localize("ImageToolbox.TwainDriverNotSupported");
+
+		// This is a separate property because L10nSharp's extraction code cannot properly load
+		// Interop.WIA by reflection, so any strings contained in methods that depend on WIA
+		// calls are omitted.
+		private string WIAVersion2MissingMessage =>
+			"Windows XP does not come with a crucial DLL that lets you use a WIA scanner with " +
+			"this program. Get a technical person to download and follow the directions at " +
+			"http://vbnet.mvps.org/files/updates/wiaautsdk.zip".Localize(
+				"ImageToolbox.WindowsXpMissingWiaV2Dll");
+
+		// This is a separate property because L10nSharp's extraction code cannot properly load
+		// Interop.WIA by reflection, so any strings contained in methods that depend on WIA
+		// calls are omitted.
+		private string ProblemGettingImageFromDeviceMessage =>
+			"Problem Getting Image".Localize("ImageToolbox.ProblemGettingImageFromDevice");
 
 		/// <summary>
 		/// use if the calling app already has some notion of what the user might be looking for (e.g. the definition in a dictionary program)
 		/// </summary>
 		/// <param name="searchTerm"></param>
-		public void SetIntialSearchString(string searchTerm)
+		public void SetInitialSearchString(string searchTerm)
 		{
 			_galleryControl.SetIntialSearchTerm(searchTerm);
 		}
@@ -274,8 +296,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// </summary>
 		public string SearchLanguage
 		{
-			get { return _galleryControl.SearchLanguage; }
-			set { _galleryControl.SearchLanguage = value; }
+			get => _galleryControl.SearchLanguage;
+			set => _galleryControl.SearchLanguage = value;
 		}
 
 		/*
