@@ -9,8 +9,8 @@
   </PropertyGroup>
   <ItemGroup>
 	<PackageReference Include="GitVersion.MsBuild" Version="5.9.0" GeneratePathProperty="true" />
-	<PackageReference Include="L10NSharp.ExtractXliff" Version="4.1.0-beta0036" GeneratePathProperty="true" />
-    <PackageReference Include="NuGet.CommandLine" Version="5.4.0" GeneratePathProperty="true" />
+	<PackageReference Include="L10NSharp.ExtractXliff" Version="5.0.0-beta0080" GeneratePathProperty="true" />
+    <PackageReference Include="NuGet.CommandLine" Version="6.1.0" GeneratePathProperty="true" />
     <PackageReference Include="SIL.BuildTasks" Version="2.3.0-beta.14" GeneratePathProperty="true" />
   </ItemGroup>
   <UsingTask TaskName="NormalizeLocales" AssemblyFile="$(PkgSIL_BuildTasks)\tools\SIL.BuildTasks.dll" />
