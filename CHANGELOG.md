@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
-
+- [SIL.Core] NamePrefix setting and CleanupTempFolder method added to TempFile
 - [SIL.Core] Utility methods to remove XML namespaces
 - [SIL.Core.Desktop] Serializable class `UpdateSettings` (settings for getting updates)
 - [SIL.Windows.Forms] `CssLinkHref` property to `ShowReleaseNotesDialog` to allow linking to CSS
@@ -57,6 +57,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.ClearShare.WinFormsUI] Default to CC-BY for new CC licenses
 - [SIL.Media] Allow RecordingDeviceIndicator to find new sound input device when there was no selected device (state == NotYetStarted)
 - [SIL.Windows.Forms] Internationalized the ExceptionReportingDialog.
+- [SIL.Windows.Forms] Corrected typo in the name of AcquireImageControl.SetInitialSearchString
 
 ### Fixed
 

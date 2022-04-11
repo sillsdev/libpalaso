@@ -518,6 +518,10 @@
         <note>ID: ImageToolbox.PictureFiles</note>
         <note>Shown in the file-picking dialog to describe what kind of files the dialog is filtering for</note>
       </trans-unit>
+      <trans-unit id="ImageToolbox.ProblemGettingImageFromDevice">
+        <source xml:lang="en">Problem Getting Image</source>
+        <note>ID: ImageToolbox.ProblemGettingImageFromDevice</note>
+      </trans-unit>
       <trans-unit id="ImageToolbox.ProblemLoadingImage">
         <source xml:lang="en">Sorry, there was a problem loading that image.</source>
         <note>ID: ImageToolbox.ProblemLoadingImage</note>
@@ -537,6 +541,14 @@
       <trans-unit id="ImageToolbox.SetUpMetadataLink">
         <source xml:lang="en">Set up metadata...</source>
         <note>ID: ImageToolbox.SetUpMetadataLink</note>
+      </trans-unit>
+      <trans-unit id="ImageToolbox.TwainDriverNotSupported">
+        <source xml:lang="en">'TWAIN' driver</source>
+        <note>ID: ImageToolbox.TwainDriverNotSupported</note>
+      </trans-unit>
+      <trans-unit id="ImageToolbox.WindowsXpMissingWiaV2Dll">
+        <source xml:lang="en">http://vbnet.mvps.org/files/updates/wiaautsdk.zip</source>
+        <note>ID: ImageToolbox.WindowsXpMissingWiaV2Dll</note>
       </trans-unit>
       <trans-unit id="IpaIdentifierView.betterLabel1">
         <source xml:lang="en">Purpose:</source>
