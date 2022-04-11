@@ -112,6 +112,8 @@ namespace SIL.Scripture
         #region Data members
         /// <summary>The maximum number of Scripture books that may be returned to the caller.</summary>
         public const int LastBook = 66;
+        /// <summary>Regular expression used to parse verse reference strings.</summary>
+		public const string VerseRefRegex = @"(?<book>\w?.*[a-zA-Z])\s?((?<chapter>\d+)(\D+(?<verse>\d+))?)?";
 
 		/// <summary>// Indicates whether to process deutero-canonical book names.</summary>
 		protected bool m_fProcessDeuteroCanonical = false;
@@ -478,7 +480,7 @@ namespace SIL.Scripture
 		/// ------------------------------------------------------------------------------------
 		public virtual BCVRef ParseRefString(string sTextToBeParsed, int startingBook)
 		{
-			Regex regex = new Regex(@"(?<book>\w?.*[a-zA-Z])\s?((?<chapter>\d+)(\D+(?<verse>\d+))?)?");
+			Regex regex = new Regex(VerseRefRegex);
 			Match match = regex.Match(sTextToBeParsed.TrimStart());
 			if (match.Success)
 			{
