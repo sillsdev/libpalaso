@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using SIL.Reporting;
 using SIL.PlatformUtilities;
@@ -88,6 +89,10 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			var keyboardList = SIL.CommandLineProcessing.CommandLineRunner.Run(
 				$"{program}", $"{args}", "/", 10, new StringBuilderProgress())
 				.StandardOutput;
+			// gsettings is giving parseable json with items, but at least
+			// when the list is empty, it might include the type and show "@as []".
+			// Trim any such beginning "@as " to not cause json parsing problems.
+			keyboardList = Regex.Replace(keyboardList, "^@as ", "");
 			return JArray.Parse(keyboardList).ToObject<string[]>();
 		}
 
