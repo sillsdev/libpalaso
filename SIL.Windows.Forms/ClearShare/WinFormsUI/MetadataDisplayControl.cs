@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Windows.Forms;
 using L10NSharp;
@@ -57,7 +57,18 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			{
 				if (metaData.License is NullLicense)
 				{
-					AddRow("No license specified".Localize("MetadataDisplay.NoLicense"));
+					// In April 2022, we realized that checking for NullLicense is not sufficient.
+					// The model has a flaw as NullLicense could mean
+					// 1) we just read the data and no license was set
+					// or
+					// 2) the user has set the license to all rights reserved.
+					// So now instead of blindly assuming NullLicense means the license hasn't been set, we look at the
+					// copyright also. If the copyright has been set, we assume the license was set to all rights reserved.
+					// If the copyright has not been set, we assume the license has not been set either.
+					if (string.IsNullOrEmpty(metaData.CopyrightNotice))
+						AddRow("No license specified".Localize("MetadataDisplay.NoLicense"));
+					else
+						AddRow("All rights reserved".Localize("MetadataDisplay.AllRightsReserved"));
 				}
 				else
 				{
