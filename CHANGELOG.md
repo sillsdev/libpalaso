@@ -37,6 +37,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core.Desktop, SIL.Lift, SIL.Linux.Logging] Added .NET Standard 2.0 target.
 - [SIL.Core.Desktop] USBDrive API is only supported in .NET Framework.
 - [SIL.Windows.Forms] Caller can override the default save image metadata action from the image toolbox
+- [SIL.Core, SIL.Windows.Forms] `IErrorReporter` interface added a simpler overload of NotifyUserOfProblem method, which must be implemented by IErrorReporters.
+  (It is acceptable for implementers to just fill some parameters then call the original method)
+  `ConsoleErrorReporter` and `WinFormsErrorReporter` implement `IErrorReporter`'s new interface method
 
 ### Changed
 
@@ -60,6 +63,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] Allow RecordingDeviceIndicator to find new sound input device when there was no selected device (state == NotYetStarted)
 - [SIL.Windows.Forms] Internationalized the ExceptionReportingDialog.
 - [SIL.Windows.Forms] Corrected typo in the name of AcquireImageControl.SetInitialSearchString
+- [SIL.Core] ConsoleErrorReporter logs exception if available
+- [SIL.Core, SIL.Windows.Forms] If WinFormsErrorReporter is set as the ErrorReporter, and ErrorReporter.NotifyUserOfProblem(IRepeatNoticePolicy, Exception, String, params object[]) is passed null for the exception, the "Details" button will no longer appear, making this consistent with the no-Exception overload of this method
 
 ### Fixed
 
