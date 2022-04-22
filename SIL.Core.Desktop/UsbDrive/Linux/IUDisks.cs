@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NETSTANDARD
+using System;
 using NDesk.DBus;
 using org.freedesktop.DBus;
 
@@ -306,3 +307,4 @@ namespace SIL.UsbDrive.Linux
 </node>
 */
 #endregion
+#endif
