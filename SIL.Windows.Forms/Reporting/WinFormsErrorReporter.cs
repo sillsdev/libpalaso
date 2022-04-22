@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 using SIL.Extensions;
 using SIL.Reporting;
@@ -11,6 +11,36 @@ namespace SIL.Windows.Forms.Reporting
 		public void ReportFatalException(Exception e)
 		{
 			ExceptionReportingDialog.ReportException(e, null);
+		}
+
+		/// <summary>
+		// Notifies the user of {message}, if {policy} permits.
+		// If {exception} is non-null, then a "Details" button will appear, which if pressed, will invoke {ErrorReport.OnShowDetails(exception, message)}
+		/// </summary>
+		/// <remarks>
+		/// For legacy reasons, this function will wait for the user to respond to the UI dialog.
+		/// (This is just because that's what it always used to do. It can be changed if desired, assuming all its references continue to work correctly)
+		/// </remarks>
+		public void NotifyUserOfProblem(IRepeatNoticePolicy policy, Exception exception, string message)
+		{
+			string alternateButton1Label;
+			ErrorResult resultIfAlternateButtonPressed;
+			if (exception == null)
+			{
+				alternateButton1Label = null;
+				resultIfAlternateButtonPressed = default(ErrorResult);
+			}
+			else
+			{
+				alternateButton1Label = "Details";
+				resultIfAlternateButtonPressed = ErrorResult.Yes;
+			}
+			var result = NotifyUserOfProblem(policy, alternateButton1Label, resultIfAlternateButtonPressed, message);
+
+			if (result == ErrorResult.Yes)
+			{
+				ErrorReport.OnShowDetails(exception, message);
+			}
 		}
 
 		public ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy,

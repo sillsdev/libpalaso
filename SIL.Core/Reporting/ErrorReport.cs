@@ -17,10 +17,27 @@ namespace SIL.Reporting
 	public interface IErrorReporter
 	{
 		void ReportFatalException(Exception e);
+
+		/// <summary>
+		/// Notify the user of the <paramref name="exception"/> and <paramref name="message"/>, if <paramref name="policy"/> permits, using the IErrorReporter's default options 
+		/// </summary>
+		/// <remarks>In contrast to the <see cref="SIL.Reporting.IErrorReporter.NotifyUserOfProblem(IRepeatNoticePolicy, string, ErrorResult, string)" /> version,
+		/// this method overload does not require the implementation to block (if the caller is not on the UI thread)
+		/// I would suggest that it should not block (if the caller is not on the UI thread).
+		/// By not blocking, you reduce headache and worry about the application deadlocking.
+		/// This will allow the caller to do an easy "fire and forget" of the problem notification mechanism</remarks>
+		void NotifyUserOfProblem(IRepeatNoticePolicy policy, Exception exception, string message);
+
+		/// <summary>
+		/// Notify the user of the <paramref name="message"/>, if <paramref name="policy"/> permits. Customize the alternate button label. Wait for user input. Return button clicked to the user.
+		/// </summary>
+		/// <remarks>The method overload should block and wait for the user to press the required button</remarks>
+		/// <returns>The method should return <paramref name="resultIfAlternateButtonPressed"/> if the alternate button is clicked, ErrorResult.OK otherwise</returns>
 		ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
 										string alternateButton1Label,
 										ErrorResult resultIfAlternateButtonPressed,
 										string message);
+
 		void ReportNonFatalException(Exception exception, IRepeatNoticePolicy policy);
 		void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args);
 		void ReportNonFatalMessageWithStackTrace(string message, params object[] args);
@@ -473,23 +490,27 @@ namespace SIL.Reporting
 
 		public static ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy, string messageFmt, params object[] args)
 		{
-			return NotifyUserOfProblem(policy, null, default(ErrorResult), messageFmt, args);
+			NotifyUserOfProblem(policy, null, messageFmt, args);
+			return ErrorResult.OK;
 		}
 
-		public static void NotifyUserOfProblem(Exception error, string messageFmt, params object[] args)
+		public static void NotifyUserOfProblem(Exception exception, string messageFmt, params object[] args)
 		{
-			NotifyUserOfProblem(new ShowAlwaysPolicy(), error, messageFmt, args);
+			NotifyUserOfProblem(new ShowAlwaysPolicy(), exception, messageFmt, args);
 		}
-
-		public static void NotifyUserOfProblem(IRepeatNoticePolicy policy, Exception error, string messageFmt, params object[] args)
+	
+		public static void NotifyUserOfProblem(IRepeatNoticePolicy policy, Exception exception, string messageFmt, params object[] args)
 		{
-			var result = NotifyUserOfProblem(policy, "Details", ErrorResult.Yes, messageFmt, args);
-			if (result == ErrorResult.Yes)
+			var message = string.Format(messageFmt, args);
+			if (s_justRecordNonFatalMessagesForTesting)
 			{
-				OnShowDetails(error, string.Format(messageFmt, args));
+				s_previousNonFatalMessage = message;
+				return;
 			}
 
-			UsageReporter.ReportException(false, null, error, String.Format(messageFmt, args));
+			_errorReporter.NotifyUserOfProblem(policy, exception, message);
+
+			UsageReporter.ReportException(false, null, exception, message);
 		}
 
 		public static ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
