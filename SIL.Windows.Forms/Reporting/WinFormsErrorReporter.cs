@@ -13,6 +13,32 @@ namespace SIL.Windows.Forms.Reporting
 			ExceptionReportingDialog.ReportException(e, null);
 		}
 
+		/// <summary>
+		// Notifies the user of {message}, if {policy} permits.
+		// If {exception} is non-null, then a "Details" button will appear, which if pressed, will invoke {ErrorReport.OnShowDetails(exception, message)}
+		/// </summary>
+		public void NotifyUserOfProblem(IRepeatNoticePolicy policy, Exception exception, string message)
+		{
+			string alternateButton1Label;
+			ErrorResult resultIfAlternateButtonPressed;
+			if (exception == null)
+			{
+				alternateButton1Label = null;
+				resultIfAlternateButtonPressed = default(ErrorResult);
+			}
+			else
+			{
+				alternateButton1Label = "Details";
+				resultIfAlternateButtonPressed = ErrorResult.Yes;
+			}
+			var result = NotifyUserOfProblem(policy, alternateButton1Label, resultIfAlternateButtonPressed, message);
+
+			if (result == ErrorResult.Yes)
+			{
+				ErrorReport.OnShowDetails(exception, message);
+			}
+		}
+
 		public ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
 									string alternateButton1Label,
 									ErrorResult resultIfAlternateButtonPressed,
