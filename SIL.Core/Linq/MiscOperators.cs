@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -41,6 +41,30 @@ namespace SIL.Linq
 		{
 			foreach (TSource element in source)
 				action (element);
+		}
+
+		// Like SingeOrDefault, but doesn't throw exception if more than one match is found
+		// Returns found item or null if item isn't found or there is more than one match
+		public static TSource ExactlyOne<TSource>(this IEnumerable<TSource> source,
+			Func<TSource, bool> predicate)
+		{
+			if (source == null) throw new ArgumentNullException(nameof(source));
+			if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+			TSource foundItem = default(TSource);
+			bool matchFound = false;
+			foreach (var item in source)
+			{
+				if (predicate(item))
+				{
+					if (matchFound)
+						return default(TSource);
+
+					matchFound = true;
+					foundItem = item;
+				}
+			}
+
+			return foundItem;
 		}
 	}
 }
