@@ -43,28 +43,28 @@ namespace SIL.Linq
 				action (element);
 		}
 
-		// Like SingeOrDefault, but doesn't throw exception if more than one match is found
-		// Returns found item or null if item isn't found or there is more than one match
-		public static TSource ExactlyOne<TSource>(this IEnumerable<TSource> source,
+		/// <summary>Like SingeOrDefault, but doesn't throw exception if more than one match is found.</summary>
+		/// <returns>found item or null if item isn't found or there is more than one match</returns>
+		public static TSource OnlyOrDefault<TSource>(this IEnumerable<TSource> source,
 			Func<TSource, bool> predicate)
 		{
 			if (source == null) throw new ArgumentNullException(nameof(source));
 			if (predicate == null) throw new ArgumentNullException(nameof(predicate));
-			TSource foundItem = default(TSource);
-			bool matchFound = false;
-			foreach (var item in source)
+			return source.Where(predicate).OnlyOrDefault();
+		}
+
+		/// <summary>Like SingeOrDefault, but doesn't throw exception if more than one match is found.</summary>
+		/// <returns>first element if enumeration contains or null if enumeration is empty or contains more than one element</returns>
+		public static TSource OnlyOrDefault<TSource>(this IEnumerable<TSource> source)
+		{
+			if (source == null) throw new ArgumentNullException(nameof(source));
+			using (var enumerator = source.GetEnumerator())
 			{
-				if (predicate(item))
-				{
-					if (matchFound)
-						return default(TSource);
-
-					matchFound = true;
-					foundItem = item;
-				}
+				if (!enumerator.MoveNext())
+					return default(TSource);
+				var result = enumerator.Current;
+				return enumerator.MoveNext() ? default(TSource) : result;
 			}
-
-			return foundItem;
 		}
 	}
 }

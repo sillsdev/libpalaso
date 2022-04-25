@@ -53,7 +53,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 		{
 			PortableClipboard.SetText("JER 31:32");
 			m_verseCtrl.GotoBookField();
-			bool handled = m_verseCtrl.CallProcessCmdKey();
+			bool handled = m_verseCtrl.CallProcessCmdKeyWithCtrlV();
 			Assert.AreEqual("JER", m_verseCtrl.VerseRef.Book);
 			Assert.AreEqual(31, m_verseCtrl.VerseRef.ChapterNum);
 			Assert.AreEqual(32, m_verseCtrl.VerseRef.VerseNum);
@@ -79,7 +79,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 			m_verseCtrl.VerseRef = new VerseRef("MAT", "1", "1", ScrVers.English);
 			PortableClipboard.SetText(text);
 			m_verseCtrl.GotoBookField();
-			bool handled = m_verseCtrl.CallProcessCmdKey();
+			bool handled = m_verseCtrl.CallProcessCmdKeyWithCtrlV();
 			Assert.AreEqual(isValid, handled);
 			Assert.AreEqual(expectedResult, m_verseCtrl.VerseRef.ToString());
 		}
@@ -93,13 +93,13 @@ namespace SIL.Windows.Forms.Scripture.Tests
 			// text box should bring up the message box in OnClick.
 			var menuStrip = new MenuStrip() {Anchor = AnchorStyles.Top};
 			m_ctrlOwner.Controls.Add(menuStrip);
-			var menuItem = new ToolStripMenuItem("Paste", null, OnClick);
+			var menuItem = new ToolStripMenuItem("Paste", null, OnPasteClick);
 			menuItem.ShortcutKeys = Keys.V | Keys.Control;
 			menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { menuItem });
 			m_ctrlOwner.ShowDialog();
 		}
 
-		private void OnClick(object sender, EventArgs e)
+		private void OnPasteClick(object sender, EventArgs e)
 		{
 			MessageBox.Show("You pasted text", "Event happened");
 		}
@@ -107,7 +107,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 
 	internal static class VerseControlTestHelperExt
 	{
-		internal static bool CallProcessCmdKey(this VerseControl verseControl)
+		internal static bool CallProcessCmdKeyWithCtrlV(this VerseControl verseControl)
 		{
 			Keys keysData = Keys.Control | Keys.V;
 			Message msg = Message.Create(IntPtr.Zero, 0x100, IntPtr.Zero, IntPtr.Zero);

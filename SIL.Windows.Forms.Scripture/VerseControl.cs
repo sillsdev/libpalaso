@@ -727,13 +727,13 @@ namespace SIL.Windows.Forms.Scripture
 			}
 
 			// search for unique entry based on full localized name
-			var bookItem = allBooks.ExactlyOne(b =>
+			var bookItem = allBooks.OnlyOrDefault(b =>
 				b.Name.Length >= searchBook.Length &&
 				b.Name.StartsWith(searchBook, StringComparison.OrdinalIgnoreCase));
 
 			// if first search fails, try searching BaseName (diacritics removed)
 			if (bookItem == null)
-				bookItem = allBooks.ExactlyOne(b =>
+				bookItem = allBooks.OnlyOrDefault(b =>
 					b.BaseName.Length >= searchBook.Length &&
 					b.BaseName.StartsWith(searchBook, StringComparison.OrdinalIgnoreCase));
 
