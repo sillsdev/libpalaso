@@ -43,7 +43,7 @@ namespace SIL.Linq
 				action (element);
 		}
 
-		/// <summary>Like SingeOrDefault, but doesn't throw exception if more than one match is found.</summary>
+		/// <summary>Like SingleOrDefault, but doesn't throw exception if more than one match is found.</summary>
 		/// <returns>found item or null if item isn't found or there is more than one match</returns>
 		public static TSource OnlyOrDefault<TSource>(this IEnumerable<TSource> source,
 			Func<TSource, bool> predicate)
@@ -53,7 +53,7 @@ namespace SIL.Linq
 			return source.Where(predicate).OnlyOrDefault();
 		}
 
-		/// <summary>Like SingeOrDefault, but doesn't throw exception if more than one match is found.</summary>
+		/// <summary>Like SingleOrDefault, but doesn't throw exception if more than one match is found.</summary>
 		/// <returns>first element if enumeration contains or null if enumeration is empty or contains more than one element</returns>
 		public static TSource OnlyOrDefault<TSource>(this IEnumerable<TSource> source)
 		{

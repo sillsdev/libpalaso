@@ -360,12 +360,15 @@ namespace SIL.Windows.Forms.Scripture
 		/// </summary>
 		/// <param name="msg"></param>
 		/// <param name="keyData"></param>
-		/// <returns>true if CTRL-V was used and there was a valid reference in the clipboard</returns>
+		/// <returns>true if CTRL-V was used, otherwise base method is called</returns>
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
 			// check to see if values can be pasted on KeyDown for CTRL-V
 			if (msg.Msg == 0x100 && keyData == (Keys.Control | Keys.V))
-				return HandlePasteScriptureRef();
+			{
+				HandlePasteScriptureRef();
+				return true; // may not have updated verse control, but treat CTRL-V as handled
+			}
 
 			return base.ProcessCmdKey(ref msg, keyData);
 		}
@@ -678,22 +681,21 @@ namespace SIL.Windows.Forms.Scripture
 		/// <summary>
 		/// Updates verse control with pasted verse reference, if pasted reference is valid.
 		/// </summary>
-		/// <returns>True if verse control has been updated</returns>
-		private bool HandlePasteScriptureRef()
+		private void HandlePasteScriptureRef()
 		{
 			// nothing to do if clipboard is empty
 			if (!PortableClipboard.ContainsText())
-				return false;
+				return;
 
 			// if pasting text, check to see if clipboard contain verse reference
 			string text = PortableClipboard.GetText().Trim();
 			if (!IsValidReference(text, out var book, out var chapter, out var verse))
-				return false;
+				return;
 			uiBook.Text = book;
-			uiChapter.Text = chapter;
-			uiVerse.Text = verse;
+			// regular expression makes chapter/verse optional, so use 1 if not found in match
+			uiChapter.Text = chapter.Length > 0 ? chapter : "1";
+			uiVerse.Text = verse.Length > 0 ? verse : "1";
 			AcceptOnEnter(new KeyEventArgs(Keys.Enter));
-			return true;
 		}
 
 		/// <summary>
