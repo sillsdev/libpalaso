@@ -118,6 +118,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.TestUtilities.Tests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClipboardTestApp", "TestApps\ClipboardTestApp\ClipboardTestApp.csproj", "{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tenuto", "Tenuto\Tenuto.csproj", "{7AE2AAB9-710F-4BCF-81B6-A624EC6AC3B5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -296,6 +298,10 @@ Global
 		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AE2AAB9-710F-4BCF-81B6-A624EC6AC3B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AE2AAB9-710F-4BCF-81B6-A624EC6AC3B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AE2AAB9-710F-4BCF-81B6-A624EC6AC3B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AE2AAB9-710F-4BCF-81B6-A624EC6AC3B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
