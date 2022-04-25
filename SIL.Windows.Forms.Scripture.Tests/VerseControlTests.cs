@@ -53,36 +53,34 @@ namespace SIL.Windows.Forms.Scripture.Tests
 		{
 			PortableClipboard.SetText("JER 31:32");
 			m_verseCtrl.GotoBookField();
-			bool handled = m_verseCtrl.CallProcessCmdKeyWithCtrlV();
+			m_verseCtrl.CallProcessCmdKeyWithCtrlV();
 			Assert.AreEqual("JER", m_verseCtrl.VerseRef.Book);
 			Assert.AreEqual(31, m_verseCtrl.VerseRef.ChapterNum);
 			Assert.AreEqual(32, m_verseCtrl.VerseRef.VerseNum);
-			Assert.IsTrue(handled);
 		}
 
-		[TestCase("2 Corinthians 3:18", "2CO 3:18", true)]
-		[TestCase("2 Corinthians3:18", "2CO 3:18", true)]
-		[TestCase("2 Corinthians3*18", "2CO 3:18", true)]
-		[TestCase("2 Corinthians", "2CO 1:1", true)]
-		[TestCase("PSA 119:176", "PSA 119:176", true)]
-		[TestCase("MRK 1:0", "MRK 1:0", true)]
-		[TestCase("MRK", "MRK 1:1", true)]
-		[TestCase("LUK 2.3", "LUK 2:3", true)]
-		[TestCase("jhn 4:5", "JHN 4:5", true)]
-		[TestCase("ACT 99:888", "ACT 28:31", true)]
-		[TestCase("2 Cor 3:18", "2CO 3:18", true)]
-		[TestCase("2 C 3:18", "MAT 1:1", false)]
-		[TestCase("2CO 3:18", "2CO 3:18", true)]
-		[TestCase("2CO3:18", "2CO 3:18", true)]
-		[TestCase("2CO 3.18", "2CO 3:18", true)]
-		[TestCase("2CO 3", "2CO 3:1", true)]
-		public void PastedTextGetsExpectedResult(string text, string expectedResult, bool isValid)
+		[TestCase("2 Corinthians 3:18", "2CO 3:18")]
+		[TestCase("2 Corinthians3:18", "2CO 3:18")]
+		[TestCase("2 Corinthians3*18", "2CO 3:18")]
+		[TestCase("2 Corinthians", "2CO 1:1")]
+		[TestCase("PSA 119:176", "PSA 119:176")]
+		[TestCase("MRK 1:0", "MRK 1:0")]
+		[TestCase("MRK", "MRK 1:1")]
+		[TestCase("LUK 2.3", "LUK 2:3")]
+		[TestCase("jhn 4:5", "JHN 4:5")]
+		[TestCase("ACT 99:888", "ACT 28:31")]
+		[TestCase("2 Cor 3:18", "2CO 3:18")]
+		[TestCase("2 C 3:18", "MAT 1:1")]
+		[TestCase("2CO 3:18", "2CO 3:18")]
+		[TestCase("2CO3:18", "2CO 3:18")]
+		[TestCase("2CO 3.18", "2CO 3:18")]
+		[TestCase("2CO 3", "2CO 3:1")]
+		public void PastedTextGetsExpectedResult(string text, string expectedResult)
 		{
 			m_verseCtrl.VerseRef = new VerseRef("MAT", "1", "1", ScrVers.English);
 			PortableClipboard.SetText(text);
 			m_verseCtrl.GotoBookField();
-			bool handled = m_verseCtrl.CallProcessCmdKeyWithCtrlV();
-			Assert.AreEqual(isValid, handled);
+			m_verseCtrl.CallProcessCmdKeyWithCtrlV();
 			Assert.AreEqual(expectedResult, m_verseCtrl.VerseRef.ToString());
 		}
 
@@ -109,11 +107,11 @@ namespace SIL.Windows.Forms.Scripture.Tests
 
 	internal static class VerseControlTestHelperExt
 	{
-		internal static bool CallProcessCmdKeyWithCtrlV(this VerseControl verseControl)
+		internal static void CallProcessCmdKeyWithCtrlV(this VerseControl verseControl)
 		{
 			Keys keysData = Keys.Control | Keys.V;
 			Message msg = Message.Create(IntPtr.Zero, 0x100, IntPtr.Zero, IntPtr.Zero);
-			return ReflectionHelper.GetBoolResult(verseControl, "ProcessCmdKey", new object[] {msg, keysData});
+			ReflectionHelper.GetBoolResult(verseControl, "ProcessCmdKey", new object[] {msg, keysData});
 		}
 	}
 }
