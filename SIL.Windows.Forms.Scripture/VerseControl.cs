@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using SIL.PlatformUtilities;
 using SIL.Scripture;
 using SIL.Extensions;
+using SIL.Linq;
 using SIL.Windows.Forms.Miscellaneous;
 
 namespace SIL.Windows.Forms.Scripture
@@ -352,6 +353,25 @@ namespace SIL.Windows.Forms.Scripture
 		#endregion
 
 		#region Control Event Methods
+		/// <summary>
+		/// The verse control may be used in forms that have CTRL-V as a shortcut key on a menu item. Since the short
+		/// cut keys are processed before the control will get a KeyDown, ProcessCmdKey needs to be overwritten to
+		/// get the key first.
+		/// </summary>
+		/// <param name="msg"></param>
+		/// <param name="keyData"></param>
+		/// <returns>true if CTRL-V was used, otherwise base method is called</returns>
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			// check to see if values can be pasted on KeyDown for CTRL-V
+			if (msg.Msg == 0x100 && keyData == (Keys.Control | Keys.V))
+			{
+				HandlePasteScriptureRef();
+				return true; // may not have updated verse control, but treat CTRL-V as handled
+			}
+
+			return base.ProcessCmdKey(ref msg, keyData);
+		}
 
 		/// <summary>
 		/// Fires a VerseRefChangedEvent
@@ -651,9 +671,6 @@ namespace SIL.Windows.Forms.Scripture
 
 		void uiBook_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (HandlePasteScriptureRef(e))
-				return;
-
 			// Don't select all On Linux on Enter as combo text remains selected
 			// when focus moved to the TextForm.
 			if (IsBook())
@@ -664,29 +681,21 @@ namespace SIL.Windows.Forms.Scripture
 		/// <summary>
 		/// Updates verse control with pasted verse reference, if pasted reference is valid.
 		/// </summary>
-		/// <param name="e">KeyDown event args. e.SuppessKeyPress will be set to true if control is updated</param>
-		/// <returns>True if verse control has been updated</returns>
-		private bool HandlePasteScriptureRef(KeyEventArgs e)
+		private void HandlePasteScriptureRef()
 		{
-			// ignore everything except CTRL-V
-			if (e.Alt || e.Shift || !e.Control || e.KeyCode != Keys.V)
-				return false;
-
 			// nothing to do if clipboard is empty
 			if (!PortableClipboard.ContainsText())
-				return false;
+				return;
 
 			// if pasting text, check to see if clipboard contain verse reference
 			string text = PortableClipboard.GetText().Trim();
 			if (!IsValidReference(text, out var book, out var chapter, out var verse))
-				return false;
+				return;
 			uiBook.Text = book;
-			uiChapter.Text = chapter;
-			uiVerse.Text = verse;
-			e.SuppressKeyPress = true;
+			// regular expression makes chapter/verse optional, so use 1 if not found in match
+			uiChapter.Text = chapter.Length > 0 ? chapter : "1";
+			uiVerse.Text = verse.Length > 0 ? verse : "1";
 			AcceptOnEnter(new KeyEventArgs(Keys.Enter));
-			return true;
-
 		}
 
 		/// <summary>
@@ -720,13 +729,13 @@ namespace SIL.Windows.Forms.Scripture
 			}
 
 			// search for unique entry based on full localized name
-			var bookItem = allBooks.SingleOrDefault(b =>
+			var bookItem = allBooks.OnlyOrDefault(b =>
 				b.Name.Length >= searchBook.Length &&
 				b.Name.StartsWith(searchBook, StringComparison.OrdinalIgnoreCase));
 
 			// if first search fails, try searching BaseName (diacritics removed)
 			if (bookItem == null)
-				bookItem = allBooks.SingleOrDefault(b =>
+				bookItem = allBooks.OnlyOrDefault(b =>
 					b.BaseName.Length >= searchBook.Length &&
 					b.BaseName.StartsWith(searchBook, StringComparison.OrdinalIgnoreCase));
 
@@ -884,9 +893,6 @@ namespace SIL.Windows.Forms.Scripture
 
 		void uiChapter_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (HandlePasteScriptureRef(e))
-				return;
-
 			if (AcceptOnEnter(e))
 			{
 				uiChapter.SelectAll();
@@ -954,9 +960,6 @@ namespace SIL.Windows.Forms.Scripture
 
 		void uiVerse_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (HandlePasteScriptureRef(e))
-				return;
-
 			if (AcceptOnEnter(e)) uiVerse.SelectAll();
 		}
 

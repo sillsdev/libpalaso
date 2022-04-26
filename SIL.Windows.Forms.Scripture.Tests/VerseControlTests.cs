@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Windows.Forms;
 using NUnit.Framework;
@@ -14,6 +15,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 	{
 		private Form m_ctrlOwner;
 		private VerseControl m_verseCtrl;
+		private TextBox m_textBox;
 
 		#region Setup methods
 		/// ------------------------------------------------------------------------------------
@@ -21,8 +23,12 @@ namespace SIL.Windows.Forms.Scripture.Tests
 		public void TestSetup()
 		{
 			m_ctrlOwner = new Form();
-			m_verseCtrl = new VerseControl();
+			m_verseCtrl = new VerseControl()
+				{Anchor = AnchorStyles.Left | AnchorStyles.Right};
 			m_ctrlOwner.Controls.Add(m_verseCtrl);
+			m_textBox = new TextBox()
+				{Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right, Height = 20};
+			m_ctrlOwner.Controls.Add(m_textBox);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -42,43 +48,39 @@ namespace SIL.Windows.Forms.Scripture.Tests
 		}
 		#endregion
 
-		[TestCase("uiBook_KeyDown")]
-		[TestCase("uiChapter_KeyDown")]
-		[TestCase("uiVerse_KeyDown")]
-		public void PastedStandardReferenceInTextField(string methodName)
+		[Test]
+		public void PastedStandardReferenceInTextField()
 		{
 			PortableClipboard.SetText("JER 31:32");
 			m_verseCtrl.GotoBookField();
-			var keyEvent = new KeyEventArgs(Keys.V | Keys.Control);
-			m_verseCtrl.CallKeyDown(methodName, keyEvent);
+			m_verseCtrl.CallProcessCmdKeyWithCtrlV();
 			Assert.AreEqual("JER", m_verseCtrl.VerseRef.Book);
 			Assert.AreEqual(31, m_verseCtrl.VerseRef.ChapterNum);
 			Assert.AreEqual(32, m_verseCtrl.VerseRef.VerseNum);
-			Assert.IsTrue(keyEvent.SuppressKeyPress);
 		}
 
-		[TestCase("2 Corinthians 3:18", "2CO 3:18", true)]
-		[TestCase("2 Corinthians3:18", "2CO 3:18", true)]
-		[TestCase("2 Corinthians3*18", "2CO 3:18", true)]
-		[TestCase("PSA 119:176", "PSA 119:176", true)]
-		[TestCase("MRK 1:0", "MRK 1:0", true)]
-		[TestCase("LUK 2.3", "LUK 2:3", true)]
-		[TestCase("jhn 4:5", "JHN 4:5", true)]
-		[TestCase("ACT 99:888", "ACT 28:31", true)]
-		[TestCase("2 Cor 3:18", "2CO 3:18", true)]
-		[TestCase("2 C 3:18", "MAT 1:1", false)]
-		[TestCase("2CO 3:18", "2CO 3:18", true)]
-		[TestCase("2CO3:18", "2CO 3:18", true)]
-		[TestCase("2CO 3.18", "2CO 3:18", true)]
-		[TestCase("2CO 3", "2CO 3:1", true)]
-		public void PastedTextGetsExpectedResult(string text, string expectedResult, bool isValid)
+		[TestCase("2 Corinthians 3:18", "2CO 3:18")]
+		[TestCase("2 Corinthians3:18", "2CO 3:18")]
+		[TestCase("2 Corinthians3*18", "2CO 3:18")]
+		[TestCase("2 Corinthians", "2CO 1:1")]
+		[TestCase("PSA 119:176", "PSA 119:176")]
+		[TestCase("MRK 1:0", "MRK 1:0")]
+		[TestCase("MRK", "MRK 1:1")]
+		[TestCase("LUK 2.3", "LUK 2:3")]
+		[TestCase("jhn 4:5", "JHN 4:5")]
+		[TestCase("ACT 99:888", "ACT 28:31")]
+		[TestCase("2 Cor 3:18", "2CO 3:18")]
+		[TestCase("2 C 3:18", "MAT 1:1")]
+		[TestCase("2CO 3:18", "2CO 3:18")]
+		[TestCase("2CO3:18", "2CO 3:18")]
+		[TestCase("2CO 3.18", "2CO 3:18")]
+		[TestCase("2CO 3", "2CO 3:1")]
+		public void PastedTextGetsExpectedResult(string text, string expectedResult)
 		{
 			m_verseCtrl.VerseRef = new VerseRef("MAT", "1", "1", ScrVers.English);
 			PortableClipboard.SetText(text);
 			m_verseCtrl.GotoBookField();
-			var keyEvent = new KeyEventArgs(Keys.V | Keys.Control);
-			m_verseCtrl.CallKeyDown("uiBook_KeyDown", keyEvent);
-			Assert.AreEqual(isValid, keyEvent.SuppressKeyPress);
+			m_verseCtrl.CallProcessCmdKeyWithCtrlV();
 			Assert.AreEqual(expectedResult, m_verseCtrl.VerseRef.ToString());
 		}
 
@@ -86,15 +88,30 @@ namespace SIL.Windows.Forms.Scripture.Tests
 		[Explicit("Test is just intended to be an easy way to see the verse control and test it manually")]
 		public void ShowVerseControl()
 		{
+			// tried to make the default layout show all controls, but you may need to make the form taller
+			// you should be able to paste a reference into the verse control and trying to paste into the
+			// text box should bring up the message box in OnClick.
+			var menuStrip = new MenuStrip() {Anchor = AnchorStyles.Top};
+			m_ctrlOwner.Controls.Add(menuStrip);
+			var menuItem = new ToolStripMenuItem("Paste", null, OnPasteClick);
+			menuItem.ShortcutKeys = Keys.V | Keys.Control;
+			menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { menuItem });
 			m_ctrlOwner.ShowDialog();
+		}
+
+		private void OnPasteClick(object sender, EventArgs e)
+		{
+			MessageBox.Show("You pasted text", "Event happened");
 		}
 	}
 
 	internal static class VerseControlTestHelperExt
 	{
-		internal static void CallKeyDown(this VerseControl verseControl, string methodName, KeyEventArgs eventArgs)
+		internal static void CallProcessCmdKeyWithCtrlV(this VerseControl verseControl)
 		{
-			ReflectionHelper.CallMethod(verseControl, methodName, null, eventArgs);
+			Keys keysData = Keys.Control | Keys.V;
+			Message msg = Message.Create(IntPtr.Zero, 0x100, IntPtr.Zero, IntPtr.Zero);
+			ReflectionHelper.GetBoolResult(verseControl, "ProcessCmdKey", new object[] {msg, keysData});
 		}
 	}
 }
