@@ -2,6 +2,7 @@ namespace Tenuto.Reader {
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Resources;
@@ -1120,9 +1121,16 @@ public class ConsoleController : GrammarReaderController {
 	}
 }
 
-public class ConsoleErrorReporter : Tenuto.Verifier.ErrorHandler {
+public class ErrorContainer : Verifier.ErrorHandler
+{
+	private readonly List<string> _errorMessages = new List<string>();
+
 	public void Error(string msg) {
-		Console.WriteLine(msg);
+		_errorMessages.Add(msg);
+	}
+
+	public ICollection<string> GetErrors() {
+		return _errorMessages.ToArray();
 	}
 }
 

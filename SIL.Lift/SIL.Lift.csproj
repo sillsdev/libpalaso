@@ -8,13 +8,13 @@
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.6.8" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="RelaxNG" Version="3.2.3" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.3.4-*" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj" />
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj" />
+    <ProjectReference Include="..\Tenuto\Tenuto.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migration\LIFT-0.10-0.11.xsl">
