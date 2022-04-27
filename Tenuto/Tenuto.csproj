@@ -13,13 +13,13 @@
     <ProjectGuid>{7AE2AAB9-710F-4BCF-81B6-A624EC6AC3B5}</ProjectGuid>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="lib\relaxngDatatype.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="relaxngDatatype, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="relaxngDatatype, Version=0.0.0.0, Culture=neutral, PublicKeyToken=666de9dd91bf6401">
       <HintPath>lib\relaxngDatatype.dll</HintPath>
     </Reference>
   </ItemGroup>
