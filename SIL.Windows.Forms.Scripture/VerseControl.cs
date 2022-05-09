@@ -736,18 +736,18 @@ namespace SIL.Windows.Forms.Scripture
 
 			searchBook = searchBook.RemoveDiacritics();
 			// search for unique entry using base name of book
-			var bookItem = allBooks.OnlyOrDefault(b => b.BookMatchesSearch(searchBook, -1, true));
+			var bookItem = allBooks.OnlyOrDefault(b => b.BookMatchesSearch(searchBook, -1, true, VerseRef));
 			if (bookItem == null)
 			{
 				int chapterNum = int.Parse(chapter);
 				// take first book that starts with the search text and has the right number of chapters
-				bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, chapterNum, true));
+				bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, chapterNum, true, VerseRef));
 				// take the first book that starts with the search text and has any number of chapters
 				if (bookItem == null)
-					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, -1, true));
+					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, -1, true, VerseRef));
 				// take unique book that contains the search text and has the right number of chapters
 				if (bookItem == null)
-					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, chapterNum, false));
+					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, chapterNum, false, VerseRef));
 			}
 
 			if (bookItem == null)
@@ -1088,7 +1088,7 @@ namespace SIL.Windows.Forms.Scripture
 				return false;
 			}
 
-			internal bool BookMatchesSearch(string searchText, int chapterNum, bool mustStartWithText)
+			internal bool BookMatchesSearch(string searchText, int chapterNum, bool mustStartWithText, IScrVerseRef verseRef)
 			{
 				if (BaseName.Length < searchText.Length)
 					return false;
@@ -1101,9 +1101,13 @@ namespace SIL.Windows.Forms.Scripture
 				if (chapterNum == -1)
 					return true;
 
-				// English versification seems to be pretty complete
 				if (lastChapter == -1)
-					lastChapter = ScrVers.English.GetLastChapter(Canon.BookIdToNumber(Abbreviation));
+				{
+					var lastChapterRef = verseRef.Clone();
+					lastChapterRef.BookNum = Canon.BookIdToNumber(Abbreviation);
+					lastChapter = lastChapterRef.LastChapter;
+				}
+
 				return lastChapter >= chapterNum;
 			}
 		}
