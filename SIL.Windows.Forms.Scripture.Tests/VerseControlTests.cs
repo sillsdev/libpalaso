@@ -70,11 +70,18 @@ namespace SIL.Windows.Forms.Scripture.Tests
 		[TestCase("jhn 4:5", "JHN 4:5")]
 		[TestCase("ACT 99:888", "ACT 28:31")]
 		[TestCase("2 Cor 3:18", "2CO 3:18")]
-		[TestCase("2 C 3:18", "MAT 1:1")]
+		[TestCase("2 Co\u0301r 3:18", "2CO 3:18")] // verify that diacritic will be skipped
+		[TestCase("2 C\u00f3r 3:18", "2CO 3:18")] // verify composed character will work
+		[TestCase("2 C 3:18", "2CH 3:17")] // Partial match finds 2CH, but there are only 17 verses in chapter 3
 		[TestCase("2CO 3:18", "2CO 3:18")]
+		[TestCase("2CO 3\u200f:\u200e18", "2CO 3:18")]
 		[TestCase("2CO3:18", "2CO 3:18")]
 		[TestCase("2CO 3.18", "2CO 3:18")]
 		[TestCase("2CO 3", "2CO 3:1")]
+		[TestCase("Songs 3:3", "SNG 3:3")]
+		[TestCase("ngs 3:3", "MAT 1:1")] // shouldn't find something that start on a word boundary
+		[TestCase("M 6:3", "MIC 6:3")]
+		[TestCase("M 28:18", "MAT 28:18")]
 		public void PastedTextGetsExpectedResult(string text, string expectedResult)
 		{
 			m_verseCtrl.VerseRef = new VerseRef("MAT", "1", "1", ScrVers.English);
