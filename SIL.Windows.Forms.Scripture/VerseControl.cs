@@ -692,6 +692,8 @@ namespace SIL.Windows.Forms.Scripture
 			// if pasting text, check to see if clipboard contain verse reference. Remove RTL and LTR marks that may be there
 			// for punctuation to display in correct order.
 			string text = PortableClipboard.GetText().Trim().Replace(rtlMark, "").Replace(ltrMark, "");
+			// diacritics seem to have caused problems in Regex on Linux, so remove them before processing text
+			text = text.RemoveDiacritics();
 			if (!IsValidReference(text, out var book, out var chapter, out var verse))
 				return;
 
@@ -734,7 +736,6 @@ namespace SIL.Windows.Forms.Scripture
 				return true;
 			}
 
-			searchBook = searchBook.RemoveDiacritics();
 			// search for unique entry using base name of book
 			var bookItem = allBooks.OnlyOrDefault(b => b.BookMatchesSearch(searchBook, -1, true, VerseRef));
 			if (bookItem == null)
