@@ -70,11 +70,11 @@ namespace SIL.Windows.Forms.Scripture.Tests
 		[TestCase("jhn 4:5", ExpectedResult = "JHN 4:5")]
 		[TestCase("ACT 99:888", ExpectedResult = "ACT 28:31")]
 		[TestCase("2 Cor 3:18", ExpectedResult = "2CO 3:18")]
-		[TestCase("2 Co\u0301r 3:18", ExpectedResult = "2CO 3:18")] // verify that diacritic will be skipped
-		[TestCase("2 C\u00f3r 3:18", ExpectedResult = "2CO 3:18")] // verify composed character will work
+		[TestCase("2 Co\u0301r 3:18", ExpectedResult = "2CO 3:18", ExcludePlatform = "Linux", Reason = "Clipboard problems with text")] // verify that diacritic will be skipped
+		[TestCase("2 C\u00f3r 3:18", ExpectedResult = "2CO 3:18", ExcludePlatform = "Linux", Reason = "Clipboard problems with text")] // verify composed character will work
 		[TestCase("2 C 3:18", ExpectedResult = "2CH 3:17")] // Partial match finds 2CH, but there are only 17 verses in chapter 3
 		[TestCase("2CO 3:18", ExpectedResult = "2CO 3:18")]
-		[TestCase("2CO 3\u200f:\u200e18", ExpectedResult = "2CO 3:18")]
+		[TestCase("2CO 3\u200f:\u200e18", ExpectedResult = "2CO 3:18", ExcludePlatform = "Linux", Reason = "Clipboard problems with text")]
 		[TestCase("2CO3:18", ExpectedResult = "2CO 3:18")]
 		[TestCase("2CO 3.18", ExpectedResult = "2CO 3:18")]
 		[TestCase("2CO 3", ExpectedResult = "2CO 3:1")]
