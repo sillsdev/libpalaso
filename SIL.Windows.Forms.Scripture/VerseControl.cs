@@ -25,6 +25,8 @@ namespace SIL.Windows.Forms.Scripture
 		#region Fields and Constructors
 
 		private const FontStyle searchTextStyle = FontStyle.Bold;
+		private const string rtlMark = "\u200f";
+		private const string ltrMark = "\u200e";
 		const int AbbreviationLength = 3; // length of book abbreviation
 		BookSet booksPresentSet = new BookSet();
 		string abbreviations = "";
@@ -687,14 +689,18 @@ namespace SIL.Windows.Forms.Scripture
 			if (!PortableClipboard.ContainsText())
 				return;
 
-			// if pasting text, check to see if clipboard contain verse reference
-			string text = PortableClipboard.GetText().Trim();
+			// if pasting text, check to see if clipboard contain verse reference. Remove RTL and LTR marks that may be there
+			// for punctuation to display in correct order.
+			string text = PortableClipboard.GetText().Trim().Replace(rtlMark, "").Replace(ltrMark, "");
+			// diacritics seem to have caused problems in Regex on Linux, so remove them before processing text
+			text = text.RemoveDiacritics();
 			if (!IsValidReference(text, out var book, out var chapter, out var verse))
 				return;
+
 			uiBook.Text = book;
-			// regular expression makes chapter/verse optional, so use 1 if not found in match
-			uiChapter.Text = chapter.Length > 0 ? chapter : "1";
-			uiVerse.Text = verse.Length > 0 ? verse : "1";
+			uiChapter.Text = chapter;
+			uiVerse.Text = verse;
+
 			AcceptOnEnter(new KeyEventArgs(Keys.Enter));
 		}
 
@@ -719,7 +725,9 @@ namespace SIL.Windows.Forms.Scripture
 			var searchBook = match.Groups["book"].Value;
 			chapter = match.Groups["chapter"].Value;
 			verse = match.Groups["verse"].Value;
-			// verse is optional in regex, make it 1 if not given
+			// chapter and verse is optional in regex, make it 1 if not given
+			if (string.IsNullOrEmpty(chapter))
+				chapter ="1";
 			if (string.IsNullOrEmpty(verse))
 				verse = "1";
 			if (Canon.IsBookIdValid(searchBook))
@@ -728,16 +736,20 @@ namespace SIL.Windows.Forms.Scripture
 				return true;
 			}
 
-			// search for unique entry based on full localized name
-			var bookItem = allBooks.OnlyOrDefault(b =>
-				b.Name.Length >= searchBook.Length &&
-				b.Name.StartsWith(searchBook, StringComparison.OrdinalIgnoreCase));
-
-			// if first search fails, try searching BaseName (diacritics removed)
+			// search for unique entry using base name of book
+			var bookItem = allBooks.OnlyOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef, false));
 			if (bookItem == null)
-				bookItem = allBooks.OnlyOrDefault(b =>
-					b.BaseName.Length >= searchBook.Length &&
-					b.BaseName.StartsWith(searchBook, StringComparison.OrdinalIgnoreCase));
+			{
+				int chapterNum = int.Parse(chapter);
+				// take first book that starts with the search text and has the right number of chapters
+				bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, chapterNum, VerseRef, true));
+				// take the first book that starts with the search text and has any number of chapters
+				if (bookItem == null)
+					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef, true));
+				// take the first book contains any match of search text and has any number of chapters
+				if (bookItem == null)
+					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef, false));
+			}
 
 			if (bookItem == null)
 				return false;
@@ -1013,6 +1025,7 @@ namespace SIL.Windows.Forms.Scripture
 			public string Name; // localized name
 			public string BaseName; // upper-case localized name without diacritics
 			public bool isPresent; // true if book has data
+			private int lastChapter = -1;
 
 			public override string ToString()
 			{
@@ -1074,6 +1087,26 @@ namespace SIL.Windows.Forms.Scripture
 				if (BaseName.StartsWith(startsWith, StringComparison.Ordinal))
 					return true;
 				return false;
+			}
+
+			internal bool BookMatchesSearch(string searchText, int chapterNum, IScrVerseRef verseRef, bool mustStartWithText)
+			{
+				if (BaseName.Length < searchText.Length)
+					return false;
+				if (!Regex.IsMatch(BaseName, $"{(mustStartWithText ? "^" : "\\b")}{Regex.Escape(searchText)}", RegexOptions.IgnoreCase))
+					return false;
+
+				if (chapterNum == -1)
+					return true;
+
+				if (lastChapter == -1)
+				{
+					var lastChapterRef = verseRef.Clone();
+					lastChapterRef.BookNum = Canon.BookIdToNumber(Abbreviation);
+					lastChapter = lastChapterRef.LastChapter;
+				}
+
+				return lastChapter >= chapterNum;
 			}
 		}
 		#endregion

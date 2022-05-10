@@ -59,29 +59,38 @@ namespace SIL.Windows.Forms.Scripture.Tests
 			Assert.AreEqual(32, m_verseCtrl.VerseRef.VerseNum);
 		}
 
-		[TestCase("2 Corinthians 3:18", "2CO 3:18")]
-		[TestCase("2 Corinthians3:18", "2CO 3:18")]
-		[TestCase("2 Corinthians3*18", "2CO 3:18")]
-		[TestCase("2 Corinthians", "2CO 1:1")]
-		[TestCase("PSA 119:176", "PSA 119:176")]
-		[TestCase("MRK 1:0", "MRK 1:0")]
-		[TestCase("MRK", "MRK 1:1")]
-		[TestCase("LUK 2.3", "LUK 2:3")]
-		[TestCase("jhn 4:5", "JHN 4:5")]
-		[TestCase("ACT 99:888", "ACT 28:31")]
-		[TestCase("2 Cor 3:18", "2CO 3:18")]
-		[TestCase("2 C 3:18", "MAT 1:1")]
-		[TestCase("2CO 3:18", "2CO 3:18")]
-		[TestCase("2CO3:18", "2CO 3:18")]
-		[TestCase("2CO 3.18", "2CO 3:18")]
-		[TestCase("2CO 3", "2CO 3:1")]
-		public void PastedTextGetsExpectedResult(string text, string expectedResult)
+		[TestCase("2 Corinthians 3:18", ExpectedResult = "2CO 3:18")]
+		[TestCase("2 Corinthians3:18", ExpectedResult = "2CO 3:18")]
+		[TestCase("2 Corinthians3*18", ExpectedResult = "2CO 3:18")]
+		[TestCase("2 Corinthians", ExpectedResult = "2CO 1:1")]
+		[TestCase("PSA 119:176", ExpectedResult = "PSA 119:176")]
+		[TestCase("MRK 1:0", ExpectedResult = "MRK 1:0")]
+		[TestCase("MRK", ExpectedResult = "MRK 1:1")]
+		[TestCase("LUK 2.3", ExpectedResult = "LUK 2:3")]
+		[TestCase("jhn 4:5", ExpectedResult = "JHN 4:5")]
+		[TestCase("ACT 99:888", ExpectedResult = "ACT 28:31")]
+		[TestCase("2 Cor 3:18", ExpectedResult = "2CO 3:18")]
+		[TestCase("2 Co\u0301r 3:18", ExpectedResult = "2CO 3:18", ExcludePlatform = "Linux", Reason = "Clipboard problems with text")] // verify that diacritic will be skipped
+		[TestCase("2 C\u00f3r 3:18", ExpectedResult = "2CO 3:18", ExcludePlatform = "Linux", Reason = "Clipboard problems with text")] // verify composed character will work
+		[TestCase("2 C 3:18", ExpectedResult = "2CH 3:17")] // Partial match finds 2CH, but there are only 17 verses in chapter 3
+		[TestCase("2CO 3:18", ExpectedResult = "2CO 3:18")]
+		[TestCase("2CO 3\u200f:\u200e18", ExpectedResult = "2CO 3:18", ExcludePlatform = "Linux", Reason = "Clipboard problems with text")]
+		[TestCase("2CO3:18", ExpectedResult = "2CO 3:18")]
+		[TestCase("2CO 3.18", ExpectedResult = "2CO 3:18")]
+		[TestCase("2CO 3", ExpectedResult = "2CO 3:1")]
+		[TestCase("Songs 3:3", ExpectedResult = "SNG 3:3")]
+		[TestCase("ngs 3:3", ExpectedResult = "MAT 1:1")] // search should fail since search text doesn't start on a word boundary
+		[TestCase("M 6:3", ExpectedResult = "MIC 6:3")]
+		[TestCase("M 28:18", ExpectedResult = "MAT 28:18")]
+		[TestCase("{bad...[regex", ExpectedResult = "MAT 1:1")] // verify that bad regex express in search text doesn't cause exception
+		[TestCase("CO 3:7", ExpectedResult = "COL 3:7")] // verify that we get COL 3:7 and not 1CO 3:7
+		public string PastedTextGetsExpectedResult(string text)
 		{
 			m_verseCtrl.VerseRef = new VerseRef("MAT", "1", "1", ScrVers.English);
 			PortableClipboard.SetText(text);
 			m_verseCtrl.GotoBookField();
 			m_verseCtrl.CallProcessCmdKeyWithCtrlV();
-			Assert.AreEqual(expectedResult, m_verseCtrl.VerseRef.ToString());
+			return m_verseCtrl.VerseRef.ToString();
 		}
 
 		[Test]
