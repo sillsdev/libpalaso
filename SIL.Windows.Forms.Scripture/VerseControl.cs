@@ -737,15 +737,18 @@ namespace SIL.Windows.Forms.Scripture
 			}
 
 			// search for unique entry using base name of book
-			var bookItem = allBooks.OnlyOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef));
+			var bookItem = allBooks.OnlyOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef, false));
 			if (bookItem == null)
 			{
 				int chapterNum = int.Parse(chapter);
-				// take first book that matches the search text and has the right number of chapters
-				bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, chapterNum, VerseRef));
-				// take the first book that matches the search text and has any number of chapters
+				// take first book that starts with the search text and has the right number of chapters
+				bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, chapterNum, VerseRef, true));
+				// take the first book that starts with the search text and has any number of chapters
 				if (bookItem == null)
-					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef));
+					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef, true));
+				// take the first book contains any match of search text and has any number of chapters
+				if (bookItem == null)
+					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef, false));
 			}
 
 			if (bookItem == null)
@@ -1086,11 +1089,11 @@ namespace SIL.Windows.Forms.Scripture
 				return false;
 			}
 
-			internal bool BookMatchesSearch(string searchText, int chapterNum, IScrVerseRef verseRef)
+			internal bool BookMatchesSearch(string searchText, int chapterNum, IScrVerseRef verseRef, bool mustStartWithText)
 			{
 				if (BaseName.Length < searchText.Length)
 					return false;
-				if (!Regex.IsMatch(BaseName, $"\\b{Regex.Escape(searchText)}", RegexOptions.IgnoreCase))
+				if (!Regex.IsMatch(BaseName, $"{(mustStartWithText ? "^" : "\\b")}{Regex.Escape(searchText)}", RegexOptions.IgnoreCase))
 					return false;
 
 				if (chapterNum == -1)

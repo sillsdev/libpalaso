@@ -83,6 +83,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 		[TestCase("M 6:3", ExpectedResult = "MIC 6:3")]
 		[TestCase("M 28:18", ExpectedResult = "MAT 28:18")]
 		[TestCase("{bad...[regex", ExpectedResult = "MAT 1:1")] // verify that bad regex express in search text doesn't cause exception
+		[TestCase("CO 3:7", ExpectedResult = "COL 3:7")] // verify that we get COL 3:7 and not 1CO 3:7
 		public string PastedTextGetsExpectedResult(string text)
 		{
 			m_verseCtrl.VerseRef = new VerseRef("MAT", "1", "1", ScrVers.English);
