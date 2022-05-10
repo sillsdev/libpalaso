@@ -737,18 +737,15 @@ namespace SIL.Windows.Forms.Scripture
 			}
 
 			// search for unique entry using base name of book
-			var bookItem = allBooks.OnlyOrDefault(b => b.BookMatchesSearch(searchBook, -1, true, VerseRef));
+			var bookItem = allBooks.OnlyOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef));
 			if (bookItem == null)
 			{
 				int chapterNum = int.Parse(chapter);
-				// take first book that starts with the search text and has the right number of chapters
-				bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, chapterNum, true, VerseRef));
-				// take the first book that starts with the search text and has any number of chapters
+				// take first book that matches the search text and has the right number of chapters
+				bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, chapterNum, VerseRef));
+				// take the first book that matches the search text and has any number of chapters
 				if (bookItem == null)
-					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, -1, true, VerseRef));
-				// take unique book that contains the search text and has the right number of chapters
-				if (bookItem == null)
-					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, chapterNum, false, VerseRef));
+					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef));
 			}
 
 			if (bookItem == null)
@@ -1089,14 +1086,11 @@ namespace SIL.Windows.Forms.Scripture
 				return false;
 			}
 
-			internal bool BookMatchesSearch(string searchText, int chapterNum, bool mustStartWithText, IScrVerseRef verseRef)
+			internal bool BookMatchesSearch(string searchText, int chapterNum, IScrVerseRef verseRef)
 			{
 				if (BaseName.Length < searchText.Length)
 					return false;
-				if (mustStartWithText && !BaseName.StartsWith(searchText, StringComparison.OrdinalIgnoreCase))
-					return false;
-				// want search to only match string that begins on a word boundary
-				if (!mustStartWithText && !BaseName.Contains(" " + searchText, StringComparison.OrdinalIgnoreCase))
+				if (!Regex.IsMatch(BaseName, $"\\b{Regex.Escape(searchText)}", RegexOptions.IgnoreCase))
 					return false;
 
 				if (chapterNum == -1)

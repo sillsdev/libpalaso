@@ -82,6 +82,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 		[TestCase("ngs 3:3", ExpectedResult = "MAT 1:1")] // search should fail since search text doesn't start on a word boundary
 		[TestCase("M 6:3", ExpectedResult = "MIC 6:3")]
 		[TestCase("M 28:18", ExpectedResult = "MAT 28:18")]
+		[TestCase("{bad...[regex", ExpectedResult = "MAT 1:1")] // verify that bad regex express in search text doesn't cause exception
 		public string PastedTextGetsExpectedResult(string text)
 		{
 			m_verseCtrl.VerseRef = new VerseRef("MAT", "1", "1", ScrVers.English);
