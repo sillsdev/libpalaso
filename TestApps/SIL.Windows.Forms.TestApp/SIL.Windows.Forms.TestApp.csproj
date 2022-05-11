@@ -21,6 +21,7 @@
     <PackageReference Include="GitVersion.MsBuild" Version="5.6.8" PrivateAssets="all" />
     <PackageReference Include="Icu4c.Win.Min" Version="56.1.82" />
     <PackageReference Include="L10NSharp" Version="5.0.0-beta0059" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
   </ItemGroup>
 
   <ItemGroup>
