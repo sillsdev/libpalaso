@@ -8,7 +8,7 @@ namespace SIL.WritingSystems.Migration
 	/// <summary>
 	/// This identifies the version of an LDML file via /ldml/special/palaso:version/@value node
 	/// Note that there is an exception for LDML files containing /ldml/identity/language/@type beginning with "x-".
-	/// This is in order to accomodate Flex LDML files that store enirely private use language tags differently.
+	/// This is in order to accomodate Flex LDML files that store entirely private use language tags differently.
 	/// There should also be checks for private use script and region, but we'll wait and see if this is really a problem.
 	/// The counterpart to this exception is found in the LdmlDataMapper which treats these types of files specially.
 	/// </summary>

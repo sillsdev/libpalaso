@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Extension method to get longest useful substring
 - [SIL.Core] Extension method IsLikelyWordForming to include letters, format characters, PUA and marks (diacritics, etc.)
 - [SIL.Windows.Forms] Caller can override the default save image metadata action from the image toolbox
+- [SIL.Core] Added override of SerializeToFileWithWriteThrough to simplify error handling.
 
 ### Changed
 

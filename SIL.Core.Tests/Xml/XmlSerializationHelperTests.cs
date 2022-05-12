@@ -6,8 +6,9 @@ using System.Text;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using NUnit.Framework;
+using SIL.IO;
 using SIL.TestUtilities;
-using SIL.Xml;
+using static SIL.Xml.XmlSerializationHelper;
 
 namespace SIL.Tests.Xml
 {
@@ -366,7 +367,7 @@ namespace SIL.Tests.Xml
 		[TestCase(false)]
 		public void Deserialize_NullTextReader_GetsDefaultObject(bool dispose)
 		{
-			Assert.IsNull(XmlSerializationHelper.Deserialize<object>(null, dispose));
+			Assert.IsNull(Deserialize<object>(null, dispose));
 		}
 
 		[TestCase(true)]
@@ -378,7 +379,7 @@ namespace SIL.Tests.Xml
 			var stringWriter = new MyStringWriter(sb);
 			try
 			{
-				XmlSerializationHelper.Serialize(stringWriter, testObj, out var error, null,
+				Serialize(stringWriter, testObj, out var error, null,
 					dispose);
 				Assert.IsNull(error);
 
@@ -386,7 +387,7 @@ namespace SIL.Tests.Xml
 				try
 				{
 					var result =
-						XmlSerializationHelper.Deserialize<TestObject>(textReader, dispose);
+						Deserialize<TestObject>(textReader, dispose);
 					Assert.AreEqual(testObj.TestObjName, result.TestObjName);
 					Assert.AreEqual(testObj.AllThings.Count, result.AllThings.Count);
 					Assert.IsTrue(testObj.AllThings.Select(t => t.Id)
@@ -418,7 +419,7 @@ namespace SIL.Tests.Xml
 		[Test]
 		public void SerializeToString_NoEncodingSpecified_XmlHeaderHasDefaultUtf16Encoding()
 		{
-			var result = XmlSerializationHelper.SerializeToString(new TestObject("Fred"));
+			var result = SerializeToString(new TestObject("Fred"));
 			var lines = result.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList();
 			Assert.IsTrue(lines[0].StartsWith("<?xml"));
 			Assert.That(lines[0].Contains("encoding=\"utf-16\""));
@@ -429,7 +430,7 @@ namespace SIL.Tests.Xml
 		[Test]
 		public void SerializeToString_EncodingSpecified_XmlHeaderHasExpectedEncoding()
 		{
-			var result = XmlSerializationHelper.SerializeToString(new TestObject("Fred"),
+			var result = SerializeToString(new TestObject("Fred"),
 				Encoding.UTF8);
 			var lines = result.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList();
 			Assert.IsTrue(lines[0].StartsWith("<?xml"));
@@ -441,7 +442,7 @@ namespace SIL.Tests.Xml
 		[Test]
 		public void SerializeToString_OmitXmlHeading_XmlHeaderHasExpectedEncoding()
 		{
-			var result = XmlSerializationHelper.SerializeToString(new TestObject("Fred"),
+			var result = SerializeToString(new TestObject("Fred"),
 				true);
 			Assert.IsFalse(result.StartsWith("<?xml"));
 			var lines = result.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -458,12 +459,39 @@ namespace SIL.Tests.Xml
 			try
 			{
 				XElement element = new XElement("test");
-				XmlSerializationHelper.SerializeToFileWithWriteThrough(path, element);
+				SerializeToFileWithWriteThrough(path, element);
 				Assert.IsTrue(File.Exists(path));
 			}
 			finally
 			{
 				File.Delete(path);
+			}
+		}
+
+		[Test]
+		public void WriteXmlFileDirectlyToDisk_BogusFile_ErrorReturned()
+		{
+			XElement element = new XElement("test");
+			SerializeToFileWithWriteThrough(@":\....Bogus:path", element, out var error);
+			Assert.That(error, Is.Not.Null);
+		}
+
+		[Test]
+		public void WriteXmlFileDirectlyToDisk_NullData_DeserializableFileCreated()
+		{
+			var path = Path.GetTempFileName();
+			try
+			{
+				SerializeToFileWithWriteThrough(path, (XElement)null, out var error);
+				Assert.That(error, Is.Null);
+				Assert.IsTrue(File.Exists(path));
+
+				var deserializedNullObject = DeserializeFromFile<XElement>(path);
+				Assert.That(deserializedNullObject, Is.Null);
+			}
+			finally
+			{
+				RobustFile.Delete(path);
 			}
 		}
 	}
