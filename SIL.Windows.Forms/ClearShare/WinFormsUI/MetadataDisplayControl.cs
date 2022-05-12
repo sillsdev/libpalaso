@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Windows.Forms;
 using L10NSharp;
@@ -57,7 +57,10 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			{
 				if (metaData.License is NullLicense)
 				{
-					AddRow("No license specified".Localize("MetadataDisplay.NoLicense"));
+					if (metaData.IsLicenseNotSet)
+						AddRow("No license specified".Localize("MetadataDisplay.NoLicense"));
+					else
+						AddRow("All rights reserved".Localize("MetadataDisplay.AllRightsReserved"));
 				}
 				else
 				{

@@ -7,9 +7,12 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using SIL.PlatformUtilities;
 using SIL.Scripture;
 using SIL.Extensions;
+using SIL.Linq;
+using SIL.Windows.Forms.Miscellaneous;
 
 namespace SIL.Windows.Forms.Scripture
 {
@@ -22,6 +25,8 @@ namespace SIL.Windows.Forms.Scripture
 		#region Fields and Constructors
 
 		private const FontStyle searchTextStyle = FontStyle.Bold;
+		private const string rtlMark = "\u200f";
+		private const string ltrMark = "\u200e";
 		const int AbbreviationLength = 3; // length of book abbreviation
 		BookSet booksPresentSet = new BookSet();
 		string abbreviations = "";
@@ -350,6 +355,25 @@ namespace SIL.Windows.Forms.Scripture
 		#endregion
 
 		#region Control Event Methods
+		/// <summary>
+		/// The verse control may be used in forms that have CTRL-V as a shortcut key on a menu item. Since the short
+		/// cut keys are processed before the control will get a KeyDown, ProcessCmdKey needs to be overwritten to
+		/// get the key first.
+		/// </summary>
+		/// <param name="msg"></param>
+		/// <param name="keyData"></param>
+		/// <returns>true if CTRL-V was used, otherwise base method is called</returns>
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			// check to see if values can be pasted on KeyDown for CTRL-V
+			if (msg.Msg == 0x100 && keyData == (Keys.Control | Keys.V))
+			{
+				HandlePasteScriptureRef();
+				return true; // may not have updated verse control, but treat CTRL-V as handled
+			}
+
+			return base.ProcessCmdKey(ref msg, keyData);
+		}
 
 		/// <summary>
 		/// Fires a VerseRefChangedEvent
@@ -657,6 +681,84 @@ namespace SIL.Windows.Forms.Scripture
 		}
 
 		/// <summary>
+		/// Updates verse control with pasted verse reference, if pasted reference is valid.
+		/// </summary>
+		private void HandlePasteScriptureRef()
+		{
+			// nothing to do if clipboard is empty
+			if (!PortableClipboard.ContainsText())
+				return;
+
+			// if pasting text, check to see if clipboard contain verse reference. Remove RTL and LTR marks that may be there
+			// for punctuation to display in correct order.
+			string text = PortableClipboard.GetText().Trim().Replace(rtlMark, "").Replace(ltrMark, "");
+			// diacritics seem to have caused problems in Regex on Linux, so remove them before processing text
+			text = text.RemoveDiacritics();
+			if (!IsValidReference(text, out var book, out var chapter, out var verse))
+				return;
+
+			uiBook.Text = book;
+			uiChapter.Text = chapter;
+			uiVerse.Text = verse;
+
+			AcceptOnEnter(new KeyEventArgs(Keys.Enter));
+		}
+
+		/// <summary>
+		/// Check to see if text is a valid reference - either using GEN 1:1 format or localized book names
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="book"></param>
+		/// <param name="chapter"></param>
+		/// <param name="verse"></param>
+		/// <returns>True if string is a valid reference</returns>
+		private bool IsValidReference(string text, out string book, out string chapter,
+			out string verse)
+		{
+			book = chapter = verse = null;
+
+			// check for standard reference in form: GEN 1:27
+			var match = Regex.Match(text, MultilingScrBooks.VerseRefRegex);
+			if (!match.Success)
+				return false;
+
+			var searchBook = match.Groups["book"].Value;
+			chapter = match.Groups["chapter"].Value;
+			verse = match.Groups["verse"].Value;
+			// chapter and verse is optional in regex, make it 1 if not given
+			if (string.IsNullOrEmpty(chapter))
+				chapter ="1";
+			if (string.IsNullOrEmpty(verse))
+				verse = "1";
+			if (Canon.IsBookIdValid(searchBook))
+			{
+				book = searchBook;
+				return true;
+			}
+
+			// search for unique entry using base name of book
+			var bookItem = allBooks.OnlyOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef, false));
+			if (bookItem == null)
+			{
+				int chapterNum = int.Parse(chapter);
+				// take first book that starts with the search text and has the right number of chapters
+				bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, chapterNum, VerseRef, true));
+				// take the first book that starts with the search text and has any number of chapters
+				if (bookItem == null)
+					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef, true));
+				// take the first book contains any match of search text and has any number of chapters
+				if (bookItem == null)
+					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef, false));
+			}
+
+			if (bookItem == null)
+				return false;
+
+			book = bookItem.Abbreviation;
+			return true;
+		}
+
+		/// <summary>
 		/// Check whether it's okay to accept book field.
 		/// </summary>
 		/// <returns>True if current book field uniquely identifies a book.</returns>
@@ -923,6 +1025,7 @@ namespace SIL.Windows.Forms.Scripture
 			public string Name; // localized name
 			public string BaseName; // upper-case localized name without diacritics
 			public bool isPresent; // true if book has data
+			private int lastChapter = -1;
 
 			public override string ToString()
 			{
@@ -984,6 +1087,26 @@ namespace SIL.Windows.Forms.Scripture
 				if (BaseName.StartsWith(startsWith, StringComparison.Ordinal))
 					return true;
 				return false;
+			}
+
+			internal bool BookMatchesSearch(string searchText, int chapterNum, IScrVerseRef verseRef, bool mustStartWithText)
+			{
+				if (BaseName.Length < searchText.Length)
+					return false;
+				if (!Regex.IsMatch(BaseName, $"{(mustStartWithText ? "^" : "\\b")}{Regex.Escape(searchText)}", RegexOptions.IgnoreCase))
+					return false;
+
+				if (chapterNum == -1)
+					return true;
+
+				if (lastChapter == -1)
+				{
+					var lastChapterRef = verseRef.Clone();
+					lastChapterRef.BookNum = Canon.BookIdToNumber(Abbreviation);
+					lastChapter = lastChapterRef.LastChapter;
+				}
+
+				return lastChapter >= chapterNum;
 			}
 		}
 		#endregion
