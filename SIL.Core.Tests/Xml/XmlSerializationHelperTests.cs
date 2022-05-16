@@ -451,7 +451,7 @@ namespace SIL.Tests.Xml
 		}
 
 		[Test]
-		public void WriteXmlFileDirectlyToDisk_FileCreated()
+		public void SerializeToFileWithWriteThrough_Normal_FileCreated()
 		{
 			TemporaryFolder parentFolder = new TemporaryFolder("XmlSerializationHelperTests");
 			var path = parentFolder.Combine("test.xml");
@@ -469,7 +469,7 @@ namespace SIL.Tests.Xml
 		}
 
 		[Test]
-		public void WriteXmlFileDirectlyToDisk_BogusFile_ErrorReturned()
+		public void SerializeToFileWithWriteThrough_BogusFile_ErrorReturned()
 		{
 			XElement element = new XElement("test");
 			SerializeToFileWithWriteThrough(@":\....Bogus:path", element, out var error);
@@ -477,7 +477,7 @@ namespace SIL.Tests.Xml
 		}
 
 		[Test]
-		public void WriteXmlFileDirectlyToDisk_NullData_DeserializableFileCreated()
+		public void SerializeToFileWithWriteThrough_NullData_DeserializableFileCreated()
 		{
 			var path = Path.GetTempFileName();
 			try
