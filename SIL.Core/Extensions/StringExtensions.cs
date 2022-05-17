@@ -9,6 +9,9 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using SIL.PlatformUtilities;
 using static System.Char;
+using JetBrains.Annotations;
+using static System.Globalization.UnicodeCategory;
+using UnicodeInfo = System.Globalization.CharUnicodeInfo;
 
 namespace SIL.Extensions
 {
@@ -16,6 +19,7 @@ namespace SIL.Extensions
 	{
 		public const char kObjReplacementChar = '\uFFFC';
 
+		[PublicAPI]
 		public static List<string> SplitTrimmed(this string s, char separator)
 		{
 			if (s.Trim() == string.Empty)
@@ -33,6 +37,7 @@ namespace SIL.Extensions
 					r.Add(trim);
 				}
 			}
+
 			return r;
 		}
 
@@ -41,6 +46,7 @@ namespace SIL.Extensions
 		/// Gets an int array from a comma-delimited string of numbers.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static int[] ToIntArray(this string str)
 		{
 			List<int> array = new List<int>();
@@ -63,14 +69,12 @@ namespace SIL.Extensions
 		/// normal string.format will throw if it can't do the format; this is dangerous if you're, for example
 		/// just logging stuff that might contain messed up strings (myWorkSafe paths)
 		/// </summary>
-		public static string FormatWithErrorStringInsteadOfException(this string format, params object[] args)
+		public static string FormatWithErrorStringInsteadOfException(this string format,
+			params object[] args)
 		{
 			try
 			{
-				if (args.Length == 0)
-					return format;
-				else
-					return string.Format(format, args);
+				return args.Length == 0 ? format : string.Format(format, args);
 			}
 			catch (Exception e)
 			{
@@ -79,11 +83,14 @@ namespace SIL.Extensions
 				{
 					argList = argList + arg + ",";
 				}
-				argList = argList.Trim(new char[] {','});
-				return "FormatWithErrorStringInsteadOfException(" + format + "," + argList + ") Exception: " + e.Message;
+
+				argList = argList.Trim(new char[] { ',' });
+				return "FormatWithErrorStringInsteadOfException(" + format + "," + argList +
+					") Exception: " + e.Message;
 			}
 		}
 
+		[PublicAPI]
 		public static string EscapeAnyUnicodeCharactersIllegalInXml(this string text)
 		{
 			//we actually want to preserve html markup, just escape the disallowed unicode characters
@@ -105,12 +112,13 @@ namespace SIL.Extensions
 			return text.Normalize(NormalizationForm.FormC);
 		}
 
-		private static object _lockUsedForEscaping = new object(); 
+		private static object _lockUsedForEscaping = new object();
 		private static StringBuilder _bldrUsedForEscaping;
 		private static XmlWriterSettings _settingsUsedForEscaping;
 		private static XmlWriter _writerUsedForEscaping;
 
-		public static string EscapeSoXmlSeesAsPureTextAndEscapeCharactersIllegalInXml(this string text)
+		public static string EscapeSoXmlSeesAsPureTextAndEscapeCharactersIllegalInXml(
+			this string text)
 		{
 			lock (_lockUsedForEscaping)
 			{
@@ -121,12 +129,17 @@ namespace SIL.Extensions
 				if (_settingsUsedForEscaping == null)
 				{
 					_settingsUsedForEscaping = new XmlWriterSettings();
-					_settingsUsedForEscaping.NewLineHandling = NewLineHandling.None;		// don't fiddle with newlines
-					_settingsUsedForEscaping.ConformanceLevel = ConformanceLevel.Fragment;	// allow just text by itself
-					_settingsUsedForEscaping.CheckCharacters = false;						// allow invalid characters in
+					_settingsUsedForEscaping.NewLineHandling =
+						NewLineHandling.None; // don't fiddle with newlines
+					_settingsUsedForEscaping.ConformanceLevel =
+						ConformanceLevel.Fragment; // allow just text by itself
+					_settingsUsedForEscaping.CheckCharacters =
+						false; // allow invalid characters in
 				}
+
 				if (_writerUsedForEscaping == null)
-					_writerUsedForEscaping = XmlWriter.Create(_bldrUsedForEscaping, _settingsUsedForEscaping);
+					_writerUsedForEscaping =
+						XmlWriter.Create(_bldrUsedForEscaping, _settingsUsedForEscaping);
 
 				_writerUsedForEscaping.WriteString(text);
 				_writerUsedForEscaping.Flush();
@@ -138,6 +151,7 @@ namespace SIL.Extensions
 		/// Similar to Path.Combine, but it combines as may parts as you have into a single, platform-appropriate path.
 		/// </summary>
 		/// <example> string path = "my".Combine("stuff", "toys", "ball.txt")</example>
+		[PublicAPI]
 		public static string CombineForPath(this string rootPath, params string[] partsOfThePath)
 		{
 			string result = rootPath;
@@ -145,6 +159,7 @@ namespace SIL.Extensions
 			{
 				result = Path.Combine(result, s);
 			}
+
 			return result;
 		}
 
@@ -171,6 +186,7 @@ namespace SIL.Extensions
 		/// <param name="input">the string to clean</param>
 		/// <param name="errorChar">the character which replaces bad characters</param>
 		/// <remarks>This is platform-specific.</remarks>
+		[PublicAPI]
 		public static string SanitizeFilename(this string input, char errorChar) =>
 			SanitizeFilename(input, errorChar, false);
 
@@ -179,6 +195,7 @@ namespace SIL.Extensions
 		/// </summary>
 		/// <param name="input">the string to clean</param>
 		/// <param name="errorChar">the character which replaces bad characters</param>
+		[PublicAPI]
 		public static string SanitizePath(this string input, char errorChar)
 		{
 			var invalidPathChars = Path.GetInvalidPathChars();
@@ -188,13 +205,15 @@ namespace SIL.Extensions
 			{
 				sanitized = Regex.Replace(sanitized, "^(:)(.*)", $"{errorChar}$3");
 				sanitized = Regex.Replace(sanitized, "^([^a-zA-Z])(:)(.*)", $"$1{errorChar}$3");
-				sanitized = new String(sanitized.Take(2).ToArray()) + new String(sanitized.Skip(2).ToArray()).Replace(':', errorChar);
+				sanitized = new String(sanitized.Take(2).ToArray()) +
+					new String(sanitized.Skip(2).ToArray()).Replace(':', errorChar);
 			}
 
 			return sanitized;
 		}
 
-		private static string Sanitize(string input, char[] invalidChars, char errorChar, bool replaceNbsp,
+		private static string Sanitize(string input, char[] invalidChars, char errorChar,
+			bool replaceNbsp,
 			bool allowTrailingUpHierarchyDots)
 		{
 			// Caller ensures invalidChars is sorted, so we can use a binary search, which should be lightning fast.
@@ -206,24 +225,28 @@ namespace SIL.Extensions
 			}
 
 			if (Array.BinarySearch(invalidChars, errorChar) >= 0)
-				throw new ArgumentException("The character used to replace bad characters must not itself be an invalid character.", nameof(errorChar));
+				throw new ArgumentException(
+					"The character used to replace bad characters must not itself be an invalid character.",
+					nameof(errorChar));
 
 			var result = new StringBuilder();
 
 			foreach (var characterToTest in input)
 			{
 				if (Array.BinarySearch(invalidChars, characterToTest) >= 0 ||
-					characterToTest < ' ' || // eliminate all control characters
-					// Apparently Windows allows the ORC in *some* positions in filenames, but
-					// that can't be good, so we'll replace that too.
-					characterToTest == '\uFFFC')
+				    characterToTest < ' ' || // eliminate all control characters
+				    // Apparently Windows allows the ORC in *some* positions in filenames, but
+				    // that can't be good, so we'll replace that too.
+				    characterToTest == '\uFFFC')
 				{
 					if (result.Length > 0 || errorChar != ' ')
 						result.Append(errorChar);
 				}
-				else if (result.Length > 0 || !characterToTest.IsInvalidFilenameLeadingOrTrailingSpaceChar())
+				else if (result.Length > 0 ||
+				         !characterToTest.IsInvalidFilenameLeadingOrTrailingSpaceChar())
 				{
-					result.Append((replaceNbsp && characterToTest == '\u00A0') ? ' ' : characterToTest);
+					result.Append((replaceNbsp && characterToTest == '\u00A0') ? ' '
+						: characterToTest);
 				}
 			}
 
@@ -232,8 +255,8 @@ namespace SIL.Extensions
 			{
 				var lastChar = result[lastCharPos];
 				if ((lastChar == '.' && (!allowTrailingUpHierarchyDots ||
-					!TrailingDotIsValidHierarchySpecifier(result, lastCharPos))) ||
-					lastChar.IsInvalidFilenameLeadingOrTrailingSpaceChar())
+					    !TrailingDotIsValidHierarchySpecifier(result, lastCharPos))) ||
+				    lastChar.IsInvalidFilenameLeadingOrTrailingSpaceChar())
 				{
 					if (!IsWhiteSpace(lastChar))
 					{
@@ -242,6 +265,7 @@ namespace SIL.Extensions
 						// valid hierarchy specifiers.
 						allowTrailingUpHierarchyDots = false;
 					}
+
 					result.Remove(lastCharPos, 1);
 					lastCharPos--;
 				}
@@ -252,7 +276,8 @@ namespace SIL.Extensions
 			return result.Length == 0 ? errorChar.ToString() : result.ToString();
 		}
 
-		private static bool TrailingDotIsValidHierarchySpecifier(StringBuilder result, int lastCharPos)
+		private static bool TrailingDotIsValidHierarchySpecifier(StringBuilder result,
+			int lastCharPos)
 		{
 			Debug.Assert(lastCharPos == result.Length - 1 && result[lastCharPos] == '.');
 
@@ -263,12 +288,13 @@ namespace SIL.Extensions
 				// useful. If the caller wants that, they could just not specify anything.
 				return true;
 			}
+
 			if (result[lastCharPos - 1] == '.')
 			{
 				// This is a probably a valid up-one-level specifier.
 				if (lastCharPos == 1 ||
-					result[lastCharPos - 2] == Path.DirectorySeparatorChar ||
-					result[lastCharPos - 2] == Path.AltDirectorySeparatorChar)
+				    result[lastCharPos - 2] == Path.DirectorySeparatorChar ||
+				    result[lastCharPos - 2] == Path.AltDirectorySeparatorChar)
 					return true;
 			}
 
@@ -306,6 +332,7 @@ namespace SIL.Extensions
 		/// Removes the ampersand accelerator prefix from the specified text.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static string RemoveAcceleratorPrefix(this string text)
 		{
 			text = text.Replace("&&", kObjReplacementChar.ToString(CultureInfo.InvariantCulture));
@@ -333,6 +360,7 @@ namespace SIL.Extensions
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
+		[PublicAPI]
 		public static string NullTrim(this string value)
 		{
 			return value.NullTrim(null);
@@ -341,16 +369,19 @@ namespace SIL.Extensions
 		/// <summary>
 		/// Determines whether the string contains the specified string using the specified comparison.
 		/// </summary>
-		public static bool Contains(this String stringToSearch, String stringToFind, StringComparison comparison)
+		public static bool Contains(this String stringToSearch, String stringToFind,
+			StringComparison comparison)
 		{
-			int ind = stringToSearch.IndexOf(stringToFind, comparison); //This comparer should be extended to be "-"/"_" insensitive as well.
+			int ind = stringToSearch.IndexOf(stringToFind,
+				comparison); //This comparer should be extended to be "-"/"_" insensitive as well.
 			return ind != -1;
 		}
 
 		/// <summary>
 		/// Determines whether the list of string contains the specified string using the specified comparison.
 		/// </summary>
-		public static bool Contains(this IEnumerable<string> listToSearch, string itemToFind, StringComparison comparison)
+		public static bool Contains(this IEnumerable<string> listToSearch, string itemToFind,
+			StringComparison comparison)
 		{
 			foreach (string s in listToSearch)
 			{
@@ -359,12 +390,14 @@ namespace SIL.Extensions
 					return true;
 				}
 			}
+
 			return false;
 		}
 
 		/// <summary>
 		/// Removes diacritics from the specified string
 		/// </summary>
+		[PublicAPI]
 		public static string RemoveDiacritics(this string stIn)
 		{
 			string stFormD = stIn.Normalize(NormalizationForm.FormD);
@@ -372,8 +405,8 @@ namespace SIL.Extensions
 
 			foreach (char t in stFormD)
 			{
-				UnicodeCategory uc = GetUnicodeCategory(t);
-				if (uc != UnicodeCategory.NonSpacingMark)
+				UnicodeCategory uc = Char.GetUnicodeCategory(t);
+				if (uc != NonSpacingMark)
 					sb.Append(t);
 			}
 
@@ -397,6 +430,11 @@ namespace SIL.Extensions
 		/// for it to be considered useful.</param>
 		/// <returns>The longest whole-word (or otherwise "useful") substring that two strings
 		/// have in common.</returns>
+		/// <remarks>The algorithm for computing differences works with strings that are normalized
+		/// either as composed or decomposed. For efficiency it expects them to both be composed or
+		/// both be decomposed and does not check this or convert them to ensure this condition is
+		/// met.</remarks>
+		[PublicAPI]
 		public static string GetLongestUsefulCommonSubstring(this string s1, string s2,
 			out bool foundWholeWords, double minPctForPartialWordMatch = 1.0)
 		{
@@ -407,7 +445,7 @@ namespace SIL.Extensions
 				return string.Empty;
 
 			string bestMatch = string.Empty;
-			for (int ich = 0; ich + bestMatch.Length < s1.Length; ich++)
+			for (int ich = 0; ich + bestMatch.Length < s1.Length; ich += IsSurrogate(s1[ich]) ? 2: 1)
 			{
 				if (s1[ich] == kObjReplacementChar || IsWhiteSpace(s1[ich]))
 					continue;
@@ -417,9 +455,8 @@ namespace SIL.Extensions
 
 				do
 				{
-					cchMatch++;
-				}
-				while (ich + cchMatch < s1.Length && IsLetter(s1[ich + cchMatch])); // Need CPE?
+					cchMatch += IsSurrogate(s1[ich + cchMatch]) ? 2: 1;
+				} while (s1.IsLikelyWordForming(ich + cchMatch));
 
 				//if (cchMatch > maxLength)
 				//{
@@ -433,6 +470,7 @@ namespace SIL.Extensions
 					ich += ichOrc;
 					continue;
 				}
+
 				int ichMatch = 0;
 				do
 				{
@@ -442,11 +480,15 @@ namespace SIL.Extensions
 					bestCandidate = candidate;
 					if (ich + cchMatch == s1.Length || s1[ich + cchMatch] == kObjReplacementChar)
 						break;
-					if (!IsLetter(s1[ich + cchMatch]))
+					if (!s1.IsLikelyWordForming(ich + cchMatch))
 					{
-						if (!IsWhiteSpace(s1[ich + cchMatch]))
+						var ch = s1[ich + cchMatch];
+						var incr = 1;
+						if (IsSurrogate(ch))
+							incr++;
+						else if (!IsWhiteSpace(ch))
 							candidate = s1.Substring(ich, cchMatch + 1); // include punctuation
-						cchMatch++;
+						cchMatch += incr;
 						//if (cchMatch > maxLength)
 						//    break;
 					}
@@ -454,17 +496,18 @@ namespace SIL.Extensions
 					{
 						do
 						{
-							cchMatch++;
-						}
-						while (ich + cchMatch < s1.Length && IsLetter(s1[ich + cchMatch])); // Need CPE?
+							cchMatch += IsSurrogate(s1[ich + cchMatch]) ? 2: 1;
+						} while (s1.IsLikelyWordForming(ich + cchMatch));
+
 						//if (cchMatch > maxLength)
 						//    break;
 						candidate = s1.Substring(ich, cchMatch);
 					}
 				} while (true);
+
 				if (bestCandidate.Trim().Length > bestMatch.Trim().Length)
 					bestMatch = bestCandidate;
-				if (IsLetter(s1[ich]))
+				if (s1.IsLikelyWordForming(ich))
 				{
 					ich = s1.IndexOf(" ", ich, StringComparison.Ordinal);
 					if (ich < 0)
@@ -488,12 +531,17 @@ namespace SIL.Extensions
 				longestStr = s2;
 				shortestStr = s1;
 			}
+
 			int cchMinUsefulMatch = (int)(minPctForPartialWordMatch * shortestStr.Length);
 			int shortestLen = shortestStr.Length;
 			int cchBestMatch = 0;
-			for (int ich = 0; ich < shortestLen - cchMinUsefulMatch; ich++)
+			for (int ich = 0; ich < shortestLen - cchMinUsefulMatch;
+			     ich += IsSurrogate(shortestStr[ich]) ? 2: 1)
 			{
 				int cchMatch = cchMinUsefulMatch;
+				var ch = shortestStr[ich + cchMatch];
+				if (IsLowSurrogate(ch))
+					cchMatch++;
 				string bestCandidate = string.Empty;
 				string candidate = shortestStr.Substring(ich, cchMatch);
 				int ichOrc = candidate.IndexOf(kszObject, StringComparison.Ordinal);
@@ -502,19 +550,24 @@ namespace SIL.Extensions
 					ich += ichOrc;
 					continue;
 				}
+
 				int ichMatch = 0;
 				do
 				{
 					ichMatch = longestStr.IndexOf(candidate, ichMatch, StringComparison.Ordinal);
-					if (ichMatch < 0 || ichMatch < shortestLen && shortestStr[ichMatch] == kObjReplacementChar)
+					if (ichMatch < 0 || ichMatch < shortestLen &&
+					    shortestStr[ichMatch] == kObjReplacementChar)
 						break;
 					bestCandidate = candidate;
 					if (ich + cchMatch == shortestLen)
 						break;
-                    if (shortestStr[ich + cchMatch] == kObjReplacementChar)
-                        break;
-					candidate = shortestStr.Substring(ich, ++cchMatch);
+					if (shortestStr[ich + cchMatch] == kObjReplacementChar)
+						break;
+
+					cchMatch += IsSurrogate(shortestStr[ich + cchMatch]) ? 2: 1;
+					candidate = shortestStr.Substring(ich, cchMatch);
 				} while (true);
+
 				if (cchMatch > cchBestMatch && bestCandidate.Any(c => !IsWhiteSpace(c)))
 				{
 					cchMinUsefulMatch = cchBestMatch = cchMatch;
@@ -523,6 +576,54 @@ namespace SIL.Extensions
 			}
 
 			return bestMatch;
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether the (Unicode) character at the indicated index position
+		/// in the string is likely to be used in a word (as opposed to being a word-breaking
+		/// character).
+		/// </summary>
+		/// <param name="s">The string containing the character to check.</param>
+		/// <param name="index">The index of the character to check. (For surrogate pairs
+		/// this should refer to the position of the high-order byte, though it seems to
+		/// tolerate referring to the position between the two bytes.)</param>
+		/// <param name="returnFalseAtEndOfString">Allows special treatment of the character
+		/// position at the end of the string (i.e., <paramref name="index"/> ==
+		/// <paramref name="s"/>.<see cref="string.Length"/>) as a convenience so the caller
+		/// can call this in a loop and have it return false when the end of the string is
+		/// encountered.</param>
+		/// <exception cref="ArgumentOutOfRangeException">Index refers to a location that is not
+		/// in the given string. See <paramref name="returnFalseAtEndOfString"/> for more
+		/// information.</exception>
+		/// <exception cref="ArgumentNullException"><paramref name="s"/> is null.</exception>
+		/// <remarks>This correctly handles surrogate pairs.</remarks>
+		public static bool IsLikelyWordForming(this string s, int index,
+			bool returnFalseAtEndOfString = true)
+		{
+			if (index == s.Length && returnFalseAtEndOfString)
+				return false;
+
+			switch (CharUnicodeInfo.GetUnicodeCategory(s, index))
+			{
+				// REVIEW: Enclosing marks are seldom (if ever) used in normal (e.g., Scripture)
+				// text. Probably best not to treat them as word-forming here.
+				//case UnicodeCategory.EnclosingMark:
+
+				// Most characters in the Format category (ZWJ, ZWNJ, bi-di marks, soft hyphen)
+				// that are likely to appear in text are word-forming.
+				case Format:
+				case LowercaseLetter:
+				case ModifierLetter:
+				case NonSpacingMark:
+				case OtherLetter:
+				case PrivateUse: // Most likely PUA characters will be letters
+				case SpacingCombiningMark:
+				case TitlecaseLetter:
+				case UppercaseLetter:
+					return true;
+			}
+
+			return false;
 		}
 	}
 }

@@ -474,11 +474,20 @@ namespace SIL.Windows.Forms.ClearShare
 
 		public void SetupReasonableLicenseDefaultBeforeEditing()
 		{
-			if(License == null || License is NullLicense)
-			{
-				License= new CreativeCommonsLicense(true,true,CreativeCommonsLicense.DerivativeRules.Derivatives);
+			if (IsLicenseNotSet) {
+				License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
 			}
 		}
+
+		// In April 2022, we realized that checking for NullLicense is not sufficient.
+		// The model has a flaw as NullLicense could mean
+		// 1) we just read the data and no license was set
+		// or
+		// 2) the user has set the license to all rights reserved.
+		// So now instead of blindly assuming NullLicense means the license hasn't been set, we look at the
+		// copyright also. If the copyright has been set, we assume the license was set to all rights reserved.
+		// If the copyright has not been set, we assume the license has not been set either.
+		public bool IsLicenseNotSet => License == null || (License is NullLicense && string.IsNullOrEmpty(CopyrightNotice));
 
 		public Metadata DeepCopy()
 		{

@@ -48,8 +48,20 @@ namespace SIL.WritingSystems
 			string langTagsContent = LanguageRegistryResources.langTags;
 			// The cached file is renamed if it's invalid during Sldr.InitializeLanguageTags().
 			var cachedAllTagsPath = Path.Combine(Sldr.SldrCachePath, "langtags.json");
-			if (File.Exists(cachedAllTagsPath))
-				langTagsContent = RobustFile.ReadAllText(cachedAllTagsPath);
+			// But if that file is somehow not accessible, don't crash here!
+			try
+			{
+				if (File.Exists(cachedAllTagsPath))
+					langTagsContent = RobustFile.ReadAllText(cachedAllTagsPath);
+			}
+			// The above call to Sldr.InitializeLanguageTags() should have already sent a Debug message,
+			// if either of these 2 catches trap an exception.
+			catch (UnauthorizedAccessException)
+			{
+			}
+			catch (IOException)
+			{
+			}
 			List<AllTagEntry> rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(langTagsContent);
 
 			foreach (AllTagEntry entry in rootObject)

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -32,6 +32,7 @@ namespace SIL.Unicode
 				'\u1367', // ETHIOPIC QUESTION MARK
 				'\u1368', // ETHIOPIC PARAGRAPH SEPARATOR
 				'\u166E', // CANADIAN SYLLABICS FULL STOP
+				'\u17D4', // KHMER SIGN KHAN (Comments: functions as a full stop, period)
 				'\u1803', // MONGOLIAN FULL STOP
 				'\u1809', // MONGOLIAN MANCHU FULL STOP
 				'\u1944', // LIMBU EXCLAMATION MARK
@@ -153,6 +154,7 @@ namespace SIL.Unicode
 				case '\u1367': // ETHIOPIC QUESTION MARK
 				case '\u1368': // ETHIOPIC PARAGRAPH SEPARATOR
 				case '\u166E': // CANADIAN SYLLABICS FULL STOP
+				case '\u17D4': // KHMER SIGN KHAN
 				case '\u1803': // MONGOLIAN FULL STOP
 				case '\u1809': // MONGOLIAN MANCHU FULL STOP
 				case '\u1944': // LIMBU EXCLAMATION MARK

@@ -1,23 +1,32 @@
 using System;
 using System.Windows.Forms;
 using SIL.Reporting;
+using SIL.Windows.Forms.ClearShare;
 
 namespace SIL.Windows.Forms.ImageToolbox
 {
 	public partial class ImageToolboxDialog : Form
 	{
-		/// <summary>
-		///
-		/// </summary>
 		/// <param name="imageInfo">optional (can be null)</param>
 		/// <param name="initialSearchString">optional</param>
-		public ImageToolboxDialog(PalasoImage imageInfo, string initialSearchString)
+		public ImageToolboxDialog(PalasoImage imageInfo, string initialSearchString) : this(imageInfo, initialSearchString, null) { }
+
+		/// <param name="imageInfo">optional (can be null)</param>
+		/// <param name="initialSearchString">optional</param>
+		/// <param name="editMetadataActionOverride">If non-null, this action will be used
+		/// instead of the default (launching <see cref="ClearShare.WinFormsUI.MetadataEditorDialog"/>).
+		/// For example, the client may want to use a different UI to edit the `Metadata`.
+		/// The `Action<Metadata>` callback saves the modified `Metadata` to the image.
+		/// <see cref="ImageToolboxControl.SetNewImageMetadata(Metadata)"/></param>
+		public ImageToolboxDialog(PalasoImage imageInfo, string initialSearchString, Action<Metadata, Action<Metadata>> editMetadataActionOverride)
 		{
 			InitializeComponent();
 			_imageToolboxControl.ImageInfo = imageInfo;
 			_imageToolboxControl.InitialSearchString = initialSearchString;
+			_imageToolboxControl.EditMetadataActionOverride = editMetadataActionOverride;
 			SearchLanguage = "en";	// unless the caller specifies otherwise explicitly
 		}
+
 		public PalasoImage ImageInfo { get { return _imageToolboxControl.ImageInfo; } }
 		/// <summary>
 		/// Used to report problems loading images. See more detail on AcquireImageControl

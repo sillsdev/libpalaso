@@ -340,6 +340,14 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		}
 
+		/// <summary>
+		/// If set, this action will be used instead of the default (launching <see cref="MetadataEditorDialog"/>).
+		/// For example, the client may want to use a different UI to edit the `Metadata`.
+		/// The `Action<Metadata>` callback saves the modified `Metadata` to the image.
+		/// <see cref="SetNewImageMetadata(Metadata)"/>
+		/// </summary>
+		public Action<Metadata, Action<Metadata>> EditMetadataActionOverride { get; set; }
+
 		private void OnEditMetadataLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			//http://jira.palaso.org/issues/browse/BL-282 hada null in here somewhere
@@ -351,17 +359,28 @@ namespace SIL.Windows.Forms.ImageToolbox
 			//the following dialog out with a reasonable default.
 			_imageInfo.Metadata.SetupReasonableLicenseDefaultBeforeEditing();
 
+			if (EditMetadataActionOverride != null)
+			{
+				EditMetadataActionOverride(_imageInfo.Metadata, SetNewImageMetadata);
+				return;
+			}
+
 			using(var dlg = new MetadataEditorDialog(_imageInfo.Metadata))
 			{
 				if(DialogResult.OK == dlg.ShowDialog())
 				{
 					Guard.AgainstNull(dlg.Metadata, " dlg.Metadata");
-					_imageInfo.Metadata = dlg.Metadata;
-					SetupMetaDataControls(_imageInfo.Metadata);
-					//Not doing this anymore, too risky. See https://jira.sil.org/browse/BL-1001 _imageInfo.SaveUpdatedMetadataIfItMakesSense();
-					_imageInfo.Metadata.StoreAsExemplar(Metadata.FileCategory.Image);
+					SetNewImageMetadata(dlg.Metadata);
 				}
 			}
+		}
+
+		private void SetNewImageMetadata(Metadata newMetadata)
+		{
+			_imageInfo.Metadata = newMetadata;
+			SetupMetaDataControls(_imageInfo.Metadata);
+			//Not doing this anymore, too risky. See https://jira.sil.org/browse/BL-1001 _imageInfo.SaveUpdatedMetadataIfItMakesSense();
+			_imageInfo.Metadata.StoreAsExemplar(Metadata.FileCategory.Image);
 		}
 
 		private void OnLoad(object sender, EventArgs e)
@@ -385,7 +404,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 				_acquireImageControl = new AcquireImageControl();
 				_acquireImageControl.ImageLoadingExceptionReporter =
 					ImageLoadingExceptionReporter;
-				_acquireImageControl.SetIntialSearchString(InitialSearchString);
+				_acquireImageControl.SetInitialSearchString(InitialSearchString);
 				_acquireImageControl.SearchLanguage = _incomingSearchLanguage;
 				return _acquireImageControl;
 			});

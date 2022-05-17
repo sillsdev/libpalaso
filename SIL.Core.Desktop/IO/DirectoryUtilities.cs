@@ -126,7 +126,8 @@ namespace SIL.IO
 
 			// get current settings
 			var everyone = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
-			var security = Directory.GetAccessControl(fullDirectoryPath, AccessControlSections.Access);
+			var directory = new DirectoryInfo(fullDirectoryPath);
+			var security = directory.GetAccessControl(AccessControlSections.Access);
 			var currentRules = security.GetAccessRules(true, true, typeof(SecurityIdentifier));
 
 			// if everyone already has full control, return now
@@ -149,7 +150,7 @@ namespace SIL.IO
 															PropagationFlags.None,
 															AccessControlType.Allow);
 				security.AddAccessRule(fullControl);
-				Directory.SetAccessControl(fullDirectoryPath, security);
+				directory.SetAccessControl(security);
 
 				returnVal = true;
 			}
