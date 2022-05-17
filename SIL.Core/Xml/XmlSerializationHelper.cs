@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using JetBrains.Annotations;
 using SIL.IO;
 
 namespace SIL.Xml
@@ -277,9 +278,45 @@ namespace SIL.Xml
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Serialize an object directly to disk, avoiding the operating system cache.
+		///
+		/// This method is intended to prevent problems when power is lost before the operating
+		/// system cache is written to disk by writing through the cache directly to disk.
+		///
+		/// The disadvantage of this method is that it is slow; so it should only be used to
+		/// write relatively small files that are not frequently written.
+		/// </summary>
+		/// <param name="path">The full path (containing the file name and extension).</param>
+		/// <param name="data">Object to be serialized to the file.</param>
+		/// <param name="e">The exception generated during the deserialization.</param>
+		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
+		public static void SerializeToFileWithWriteThrough<T>(string path, T data,
+			out Exception e)
+		{
+			e = null;
+
+			try
+			{
+				// ENHANCE: For perhaps even more robustness, we could try using
+				// TempFileForSafeWriting or create a backup before serializing and then the
+				// caller could attempt to deserialize from the backup if the serialized file
+				// was corrupt...
+				SerializeToFileWithWriteThrough(path, data);
+			}
+			catch (Exception outEx)
+			{
+				e = outEx;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Serialize an object directly to disk, avoiding the operating system cache.
 		/// 
 		/// This method is intended to prevent the problem with null files being generated
 		/// as reported here: LT-20651, LT-20333, LTB-3915, LTB-3916, and LTB-3917
+		/// Sometimes also reported as missing root element: HT-431, SP-764, SP-2229, PG-870,
+		/// WS-362, etc.
 		/// The theory is that FieldWorks is closing and power is lost before the operating
 		/// system cache is written to disk. This method is intended to prevent that problem
 		/// by writing through the cache directly to disk.
@@ -290,6 +327,7 @@ namespace SIL.Xml
 		/// <param name="path">The full path (containing the file name and extension).</param>
 		/// <param name="data">Object to be serialized to the file.</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static void SerializeToFileWithWriteThrough<T>(string path, T data)
 		{
 			// Note: RobustFile.Create() uses FileOptions.WriteThrough which causes the data to still be

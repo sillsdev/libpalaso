@@ -283,7 +283,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			"Problem Getting Image".Localize("ImageToolbox.ProblemGettingImageFromDevice");
 
 		/// <summary>
-		/// use if the calling app already has some notion of what the user might be looking for (e.g. the definition in a dictionary program)
+		/// Use if the calling app already has some notion of what the user might be looking for (e.g. the definition in a dictionary program)
 		/// </summary>
 		/// <param name="searchTerm"></param>
 		public void SetInitialSearchString(string searchTerm)

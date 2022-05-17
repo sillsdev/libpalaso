@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core, SIL.Windows.Forms] `IErrorReporter` interface added a simpler overload of NotifyUserOfProblem method, which must be implemented by IErrorReporters.
   (It is acceptable for implementers to just fill some parameters then call the original method)
   `ConsoleErrorReporter` and `WinFormsErrorReporter` implement `IErrorReporter`'s new interface method
+- [SIL.Core] Added override of SerializeToFileWithWriteThrough to simplify error handling.
 
 ### Changed
 

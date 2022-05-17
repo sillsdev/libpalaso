@@ -35,7 +35,7 @@ namespace SIL.Tests.IO
 
 		[TestCase(false)]
 		[TestCase(true)] // Simulate situation on the JAARS network in 2016, .net's built-in File.Replace fails on the network drives.
-		public void WriteWasSuccessful_TargetAndBakcupDidNotExist_BackupFileStillDoesNotExist(bool simulateVolumeThatCannotHandleFileReplace)
+		public void WriteWasSuccessful_TargetAndBackupDidNotExist_BackupFileStillDoesNotExist(bool simulateVolumeThatCannotHandleFileReplace)
 		{
 			var targetPath = Path.GetTempFileName();
 			File.Delete(targetPath);
