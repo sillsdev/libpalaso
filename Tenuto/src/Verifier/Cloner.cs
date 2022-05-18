@@ -1,2 +1,0 @@
-namespace Tenuto.Grammar.Util {
-}
