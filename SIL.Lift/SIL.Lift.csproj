@@ -15,7 +15,6 @@
     <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj" />
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj" />
-    <ProjectReference Include="..\Tenuto\Tenuto.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migration\LIFT-0.10-0.11.xsl">
