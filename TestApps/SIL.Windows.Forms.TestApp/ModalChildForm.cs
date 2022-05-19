@@ -31,7 +31,7 @@ namespace SIL.Windows.Forms.TestApp
 			cboWhiteSpaceCharacters.DisplayMember = "Name";
 
 			// Set a separator for how the checked items will appear in the Text portion.
-			cboWhiteSpaceCharacters.ValueSeparator = ", ";
+			cboWhiteSpaceCharacters.ValueSeparator = ", "; // This is actually the default.
 
 			Color[] colors =
 			{
