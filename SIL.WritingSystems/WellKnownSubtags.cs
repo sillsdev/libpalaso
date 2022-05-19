@@ -7,6 +7,13 @@ namespace SIL.WritingSystems
 	{
 		/// <summary>
 		/// An unlisted language.
+		/// According to https://datatracker.ietf.org/doc/html/rfc5646, the subtags in the range
+		/// 'qaa' through 'qtz' (corresponding to codes reserved by ISO 639-2 for private use)
+		/// are reserved for private use in language tags. These codes MAY be used for non-
+		/// registered primary language subtags (instead of using private use subtags following
+		/// 'x-'). Our practice in SIL is to use qaa as a generic "Unlisted Language". When used
+		/// to represent a specific language (typically one whose registration is in process), it
+		/// will generally be followed by x- and a provisional language code.
 		/// </summary>
 		public const string UnlistedLanguage = "qaa";
 
@@ -44,5 +51,7 @@ namespace SIL.WritingSystems
 		/// A pinyin variant.
 		/// </summary>
 		public const string PinyinVariant = "pinyin";
+
+		public const string ChineseSimplifiedTag = "zh-CN";
 	}
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -106,8 +106,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		public string SortRules
 		{
-			get { return _sortRules ?? string.Empty; }
-			set { _sortRules = value; }
+			get => _sortRules ?? string.Empty;
+			set => _sortRules = value;
 		}
 
 		public string SpellCheckingId { get; set; }
@@ -120,7 +120,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				{
 					// Use the language subtag unless it's an unlisted language.
 					// If it's an unlisted language, use the private use area language subtag.
-					if (Language == "qaa")
+					if (Language == WellKnownSubtags.UnlistedLanguage)
 					{
 						int idx = Id.IndexOf("-x-");
 						if (idx > 0 && Id.Length > idx + 3)
@@ -160,9 +160,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		public void SetAllComponents(string language, string script, string region, string variant)
 		{
-			string variantPart;
-			string privateUsePart;
-			IetfLanguageTag.SplitVariantAndPrivateUse(variant, out variantPart, out privateUsePart);
+			IetfLanguageTag.SplitVariantAndPrivateUse(variant, out var variantPart, out var privateUsePart);
 			_rfcTag = new Rfc5646Tag(language, script, region, variantPart, privateUsePart);
 			_id = Bcp47Tag;
 		}
@@ -175,10 +173,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		readonly List<KeyboardDefinitionV1> _knownKeyboards = new List<KeyboardDefinitionV1>();
 
-		public IEnumerable<KeyboardDefinitionV1> KnownKeyboards
-		{
-			get { return _knownKeyboards; }
-		}
+		public IEnumerable<KeyboardDefinitionV1> KnownKeyboards => _knownKeyboards;
 
 		public void AddKnownKeyboard(KeyboardDefinitionV1 newKeyboard)
 		{

@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using L10NSharp;
 using SIL.Extensions;
 using SIL.WritingSystems;
+using static System.String;
+using static SIL.WritingSystems.IetfLanguageTag;
+using static SIL.WritingSystems.WellKnownSubtags;
 
 namespace SIL.Windows.Forms.WritingSystems
 {
@@ -19,35 +23,25 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public Func<LanguageInfo, bool> MatchingLanguageFilter { get; set; }
 
-		public LanguageLookup LanguageLookup
-		{
-			get { return _languageLookup; }
-		}
+		[PublicAPI]
+		public LanguageLookup LanguageLookup => _languageLookup;
 
 		public string SearchText
 		{
-			get { return _searchText; }
-			set { _searchText = value.Trim(); }
+			get => _searchText;
+			set => _searchText = value.Trim();
 		}
 
-		public bool HaveSufficientInformation
-		{
-			get
-			{
-				return _desiredLanguageName != null && SelectedLanguage != null &&
-					_desiredLanguageName != UnlistedLanguageName && _desiredLanguageName.Length > 0;
-			}
-		}
+		public bool HaveSufficientInformation =>
+			_desiredLanguageName != null && SelectedLanguage != null &&
+			_desiredLanguageName != UnlistedLanguageName && _desiredLanguageName.Length > 0;
 
 		public string DesiredLanguageName
 		{
-			get
-			{
-				return _desiredLanguageName ?? string.Empty;
-			}
+			get => _desiredLanguageName ?? Empty;
 			set
 			{
-				_desiredLanguageName = value == null ? null : value.Trim();
+				_desiredLanguageName = value?.Trim();
 				if (SelectedLanguage != null)
 					SelectedLanguage.DesiredName = _desiredLanguageName;
 			}
@@ -58,10 +52,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			_languageLookup = new LanguageLookup(!_includeScriptMarkers);
 		}
 
-		public bool AreLanguagesLoaded
-		{
-			get { return _languageLookup != null; }
-		}
+		public bool AreLanguagesLoaded => _languageLookup != null;
 
 		public IEnumerable<LanguageInfo> MatchingLanguages
 		{
@@ -69,7 +60,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				if (_searchText == "?")
 				{
-					yield return new LanguageInfo {LanguageTag = "qaa", Names = {UnlistedLanguageName}};
+					yield return new LanguageInfo { LanguageTag = UnlistedLanguage, Names = { UnlistedLanguageName } };
 					yield break;
 				}
 
@@ -84,8 +75,8 @@ namespace SIL.Windows.Forms.WritingSystems
 		}
 
 		/// <summary>
-		/// If so desired, filter out any language whose tags contain a Script value.  Except that there are 90+
-		/// languages in the data whose tags all contain a Script value.  Since we don't want to lose access to
+		/// If so desired, filter out any language whose tags contain a Script value. Except that there are 90+
+		/// languages in the data whose tags all contain a Script value. Since we don't want to lose access to
 		/// those languages, we detect when that happens and pass the first occurrence with the tag adjusted to
 		/// the bare language code.
 		/// </summary>
@@ -95,18 +86,14 @@ namespace SIL.Windows.Forms.WritingSystems
 				return true;
 
 			// written this way to avoid having to catch predictable exceptions as the user is typing
-			string language;
-			string script;
-			string region;
-			string variant;
-			if (IetfLanguageTag.TryGetParts(li.LanguageTag, out language, out script, out region, out variant))
-				return string.IsNullOrEmpty(script);	// OK only if no script.
-			return true;	// Not a tag?  Don't filter it out.
+			if (TryGetParts(li.LanguageTag, out _, out var script, out _, out _))
+				return IsNullOrEmpty(script);   // OK only if no script.
+			return true;    // Not a tag?  Don't filter it out.
 		}
 
 		/// <summary>
 		/// Filter out tags that contain a region marker unless the caller has already specified that region
-		/// markers are allowed in language tags.  Note that li.LanguageTag can be just a search string the
+		/// markers are allowed in language tags. Note that li.LanguageTag can be just a search string the
 		/// user has typed, which might be a (partial) language tag or might be (part of) a language name.
 		/// If the tag doesn't actually parse as a language tag, we assume the user is typing something other
 		/// than a language tag and consider it not to be something we'd filter out as specifying a region.
@@ -117,22 +104,18 @@ namespace SIL.Windows.Forms.WritingSystems
 				return true;
 
 			// always include Chinese languages with region codes
-			if (li.LanguageTag.IsOneOf("zh-CN", "zh-TW"))
+			if (li.LanguageTag.IsOneOf(ChineseSimplifiedTag, "zh-TW"))
 				return true;
 
 			// written this way to avoid having to catch predictable exceptions as the user is typing
-			string language;
-			string script;
-			string region;
-			string variant;
-			if (IetfLanguageTag.TryGetParts(li.LanguageTag, out language, out script, out region, out variant))
-				return string.IsNullOrEmpty(region);	// OK only if no region.
-			return true;	// Not a tag?  Don't filter it out.
+			if (TryGetParts(li.LanguageTag, out _, out _, out var region, out _))
+				return IsNullOrEmpty(region);   // OK only if no region.
+			return true;    // Not a tag?  Don't filter it out.
 		}
 
 		public LanguageInfo SelectedLanguage
 		{
-			get { return _selectedLanguage; }
+			get => _selectedLanguage;
 			set
 			{
 				var oldValue = _selectedLanguage;
@@ -147,7 +130,7 @@ namespace SIL.Windows.Forms.WritingSystems
 					_originalLanguageInfo = _selectedLanguage.ShallowCopy();
 				}
 
-				if (LanguageTag == "qaa")
+				if (LanguageTag == UnlistedLanguage)
 				{
 					if (_searchText == "?")
 						return;
@@ -186,7 +169,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			get
 			{
 				if (_selectedLanguage == null)
-					return string.Empty;
+					return Empty;
 				return _selectedLanguage.LanguageTag;
 			}
 		}
@@ -196,7 +179,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		private bool _includeScriptMarkers = true;	// preserve old default behavior
 		public bool IncludeScriptMarkers
 		{
-			get { return _includeScriptMarkers;}
+			get => _includeScriptMarkers;
 			set
 			{
 				_includeScriptMarkers = value;
@@ -206,7 +189,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private static bool LanguageTagContainsScrRegVarInfo(LanguageInfo languageInfo)
 		{
-			if (string.IsNullOrEmpty(languageInfo?.LanguageTag))
+			if (IsNullOrEmpty(languageInfo?.LanguageTag))
 				return false;
 
 			// Review: Someone tell me if this isn't sufficient!?
@@ -225,6 +208,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				: languageInfo.LanguageTag;
 		}
 
+		[PublicAPI]
 		public string LanguageTagWithoutScriptRegionVariant => LanguageTagWithoutSubtags(SelectedLanguage);
 
 		public string OriginalLanguageTagWithoutSubtags => LanguageTagWithoutSubtags(_originalLanguageInfo);

@@ -1,11 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Icu;
+using JetBrains.Annotations;
 using SIL.Code;
 using SIL.Extensions;
+using static System.String;
+using static SIL.Unicode.CharacterUtils;
+using static SIL.WritingSystems.WellKnownSubtags;
 
 namespace SIL.WritingSystems
 {
@@ -15,6 +21,8 @@ namespace SIL.WritingSystems
 	/// </summary>
 	public static class IetfLanguageTag
 	{
+		private const string kInvalidTagMsg = "The IETF language tag is invalid.";
+
 		private const string PrivateUseExpr = "[xX](-" + PrivateUseSubExpr + ")+";
 		// according to RFC-5646 the private use subtag can be up to 8 characters
 		// some data in alltags uses longer ones so relaxing this requirement
@@ -56,6 +64,7 @@ namespace SIL.WritingSystems
 		private static readonly Regex ScriptPattern;
 		private static readonly Regex RegionPattern;
 		private static readonly Regex PrivateUsePattern;
+		private static readonly bool UseICUForLanguageNames;
 
 		static IetfLanguageTag()
 		{
@@ -66,30 +75,34 @@ namespace SIL.WritingSystems
 			ScriptPattern = new Regex("\\A(" + ScriptExpr + ")\\z", RegexOptions.ExplicitCapture);
 			RegionPattern = new Regex("\\A(" + RegionExpr + ")\\z", RegexOptions.ExplicitCapture);
 			PrivateUsePattern = new Regex("\\A(" + PrivateUseSubExpr + ")\\z", RegexOptions.ExplicitCapture);
+			UseICUForLanguageNames = GetLocalizedLanguageNameFromIcu("en", "es") == "inglés";
 		}
 
 		/// <summary>
-		/// Return Variant Subtags based on the code, looking up and returning subtags for standard codes or creating new ones for custom (private use) codes
+		/// Get Variant Subtags based on the code, looking up and returning subtags for standard
+		/// codes or creating new ones for custom (private use) codes.
 		/// </summary>
-		/// <param name="variantCodes">Variant code</param>
-		/// <param name="variantSubtags">return as variantsubtags</param>
-		/// <param name="variantNames">comma separated list of variant names to use with each private use code in variantCodes</param>
-		/// <returns></returns>
+		/// <param name="variantCodes">Variant codes (see <see cref="SplitVariantAndPrivateUse")/></param>
+		/// <param name="variantSubtags">List of identified variant subtags</param>
+		/// <param name="variantNames">Comma-separated list of variant names to use with each
+		/// private use code in variantCodes</param>
+		/// <returns><c>true</c>if a <see cref="variantSubtags"/> is set to a non-null collection;
+		/// <c>false</c> otherwise. (Note that if no</returns>
+		[PublicAPI]
 		public static bool TryGetVariantSubtags(string variantCodes, out IEnumerable<VariantSubtag> variantSubtags, string variantNames = "")
 		{
-			if (string.IsNullOrEmpty(variantCodes))
+			if (IsNullOrEmpty(variantCodes))
 			{
 				variantSubtags = Enumerable.Empty<VariantSubtag>();
 				return true;
 			}
 
-			string standardVariantCodes, privateUseVariantCodes;
-			SplitVariantAndPrivateUse(variantCodes, out standardVariantCodes, out privateUseVariantCodes);
+			SplitVariantAndPrivateUse(variantCodes, out var standardVariantCodes,
+				out var privateUseVariantCodes);
 			var variantSubtagsList = new List<VariantSubtag>();
 			foreach (string standardCode in standardVariantCodes.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries))
 			{
-				VariantSubtag variantSubtag;
-				if (StandardSubtags.RegisteredVariants.TryGet(standardCode, out variantSubtag))
+				if (StandardSubtags.RegisteredVariants.TryGet(standardCode, out var variantSubtag))
 				{
 					variantSubtagsList.Add(variantSubtag);
 				}
@@ -104,15 +117,14 @@ namespace SIL.WritingSystems
 			int index = 0;
 			foreach (string privateUseCode in privateUseVariantCodes.Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries))
 			{
-				VariantSubtag variantSubtag;
-				if (!StandardSubtags.CommonPrivateUseVariants.TryGet(privateUseCode, out variantSubtag))
+				if (!StandardSubtags.CommonPrivateUseVariants.TryGet(privateUseCode, out var variantSubtag))
 				{
 					if (!PrivateUsePattern.IsMatch(privateUseCode))
 					{
 						variantSubtags = null;
 						return false;
 					}
-					if (!string.IsNullOrEmpty(variantNames) && index < variantName.Length)
+					if (!IsNullOrEmpty(variantNames) && index < variantName.Length)
 					{
 						variantSubtag = new VariantSubtag(privateUseCode, variantName[index]);
 						index++;
@@ -134,25 +146,29 @@ namespace SIL.WritingSystems
 			if (variantSubtagsArray.Length == 0)
 				return null;
 
-			return ConcatenateVariantAndPrivateUse(string.Join("-", variantSubtagsArray.Where(v => !v.IsPrivateUse).Select(v => v.Code)),
-				string.Join("-", variantSubtagsArray.Where(v => v.IsPrivateUse).Select(v => v.Code)));
+			return ConcatenateVariantAndPrivateUse(Join("-", variantSubtagsArray.Where(v => !v.IsPrivateUse).Select(v => v.Code)),
+				Join("-", variantSubtagsArray.Where(v => v.IsPrivateUse).Select(v => v.Code)));
 		}
 
+		[PublicAPI]
 		public static bool IsValidLanguageCode(string code)
 		{
 			return LangPattern.IsMatch(code) || SignLangPattern.IsMatch(code);
 		}
 
+		[PublicAPI]
 		public static bool IsValidScriptCode(string code)
 		{
 			return ScriptPattern.IsMatch(code);
 		}
 
+		[PublicAPI]
 		public static bool IsValidRegionCode(string code)
 		{
 			return RegionPattern.IsMatch(code);
 		}
 
+		[PublicAPI]
 		public static bool IsValidPrivateUseCode(string code)
 		{
 			return PrivateUsePattern.IsMatch(code);
@@ -163,11 +179,11 @@ namespace SIL.WritingSystems
 		/// language tag, it will return it.
 		/// </summary>
 		/// <param name="icuLocale">The ICU locale.</param>
-		/// <returns></returns>
+		[PublicAPI]
 		public static string ToLanguageTag(string icuLocale)
 		{
-			if (string.IsNullOrEmpty(icuLocale))
-				throw new ArgumentNullException("icuLocale");
+			if (IsNullOrEmpty(icuLocale))
+				throw new ArgumentNullException(nameof(icuLocale));
 
 			if (icuLocale.Contains("-"))
 			{
@@ -190,7 +206,7 @@ namespace SIL.WritingSystems
 				}
 			}
 
-			var locale = new Locale(icuLocale);
+			var locale = GetLocale(icuLocale);
 			string icuLanguageCode = locale.Language;
 			string languageCode;
 			if (icuLanguageCode.Length == 4 && icuLanguageCode.StartsWith("x"))
@@ -250,7 +266,7 @@ namespace SIL.WritingSystems
 		/// ------------------------------------------------------------------------------------
 		private static IEnumerable<VariantSubtag> TranslateVariantCode(string variantCode)
 		{
-			if (string.IsNullOrEmpty(variantCode))
+			if (IsNullOrEmpty(variantCode))
 				yield break;
 
 			switch (variantCode)
@@ -272,14 +288,11 @@ namespace SIL.WritingSystems
 					yield return WellKnownSubtags.PinyinVariant;
 					break;
 				default:
-					string[] subcodes = variantCode.Split(new[] {'_'}, StringSplitOptions.RemoveEmptyEntries);
-					if (subcodes.Length > 1)
+					string[] subCodes = variantCode.Split(new[] {'_'}, StringSplitOptions.RemoveEmptyEntries);
+					if (subCodes.Length > 1)
 					{
-						foreach (string subcode in subcodes)
-						{
-							foreach (string translatedCode in TranslateVariantCode(subcode))
-								yield return translatedCode;
-						}
+						foreach (var translatedCode in subCodes.SelectMany(TranslateVariantCode))
+							yield return translatedCode;
 					}
 					else
 					{
@@ -289,26 +302,19 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		internal static int GetIndexOfFirstNonCommonPrivateUseVariant(IEnumerable<VariantSubtag> variantSubtags)
-		{
-			int i = 0;
-			foreach (VariantSubtag variantSubtag in variantSubtags)
-			{
-				if ((variantSubtag.IsPrivateUse) && (!StandardSubtags.CommonPrivateUseVariants.Contains(variantSubtag.Name)))
-					return i;
-				i++;
-			}
-			return -1;
-		}
+		internal static int GetIndexOfFirstNonCommonPrivateUseVariant(IEnumerable<VariantSubtag> variantSubtags) =>
+			variantSubtags.IndexOf(vst =>
+				vst.IsPrivateUse && !StandardSubtags.CommonPrivateUseVariants.Contains(vst.Name));
 
 		/// <summary>
 		/// A convenience method to help consumers deal with variant and private use subtags both being stored in the Variant property.
 		/// This method will search the Variant part of the BCP47 tag for an "x" extension marker and split the tag into variant and private use sections
 		/// Note the complementary method "ConcatenateVariantAndPrivateUse"
 		/// </summary>
-		/// <param name="variantAndPrivateUse">The string containing variant and private use sections seperated by an "x" private use subtag</param>
+		/// <param name="variantAndPrivateUse">The string containing variant and private use sections separated by an "x" private use subtag</param>
 		/// <param name="variant">The resulting variant section</param>
 		/// <param name="privateUse">The resulting private use section</param>
+		[PublicAPI]
 		public static void SplitVariantAndPrivateUse(string variantAndPrivateUse, out string variant, out string privateUse)
 		{
 			if (variantAndPrivateUse.StartsWith("x-", StringComparison.OrdinalIgnoreCase)) // Private Use at the beginning
@@ -344,19 +350,19 @@ namespace SIL.WritingSystems
 		/// <returns>The resulting combination of registeredVariantSubtags and private use.</returns>
 		public static string ConcatenateVariantAndPrivateUse(string registeredVariantSubtags, string privateUseSubtags)
 		{
-			if (string.IsNullOrEmpty(privateUseSubtags))
+			if (IsNullOrEmpty(privateUseSubtags))
 			{
 				return registeredVariantSubtags;
 			}
 			if (!privateUseSubtags.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 			{
-				privateUseSubtags = string.Concat("x-", privateUseSubtags);
+				privateUseSubtags = Concat("x-", privateUseSubtags);
 			}
 
 			string variantToReturn = registeredVariantSubtags;
-			if (!string.IsNullOrEmpty(privateUseSubtags))
+			if (!IsNullOrEmpty(privateUseSubtags))
 			{
-				if (!string.IsNullOrEmpty(variantToReturn))
+				if (!IsNullOrEmpty(variantToReturn))
 				{
 					variantToReturn += "-";
 				}
@@ -383,11 +389,12 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Creates a language tag from the specified subtags.
 		/// </summary>
+		[PublicAPI]
 		public static string Create(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags,
 			bool validate = true)
 		{
-			string langTag, message, paramName;
-			if (!TryCreate(languageSubtag, scriptSubtag, regionSubtag, variantSubtags, out langTag, out message, out paramName))
+			if (!TryCreate(languageSubtag, scriptSubtag, regionSubtag, variantSubtags,
+				out var langTag, out var message, out var paramName))
 			{
 				if (validate)
 					throw new ArgumentException(message, paramName);
@@ -399,19 +406,22 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Validates the creation of an IETF language tag.
 		/// </summary>
-		public static bool Validate(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags, out string message)
+		[PublicAPI]
+		public static bool Validate(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag,
+			RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags, out string message)
 		{
-			string langTag, paramName;
-			return TryCreate(languageSubtag, scriptSubtag, regionSubtag, variantSubtags, out langTag, out message, out paramName);
+			return TryCreate(languageSubtag, scriptSubtag, regionSubtag, variantSubtags, out _, out message, out _);
 		}
 
-		private static bool TryCreate(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags,
+		private static bool TryCreate(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag,
+			RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags,
 			out string langTag, out string message, out string paramName)
 		{
 			message = null;
 			paramName = null;
 			VariantSubtag[] variantSubtagsArray = variantSubtags.ToArray();
-			if (languageSubtag == null && (scriptSubtag != null || regionSubtag != null || variantSubtagsArray.Length == 0 || variantSubtagsArray.Any(v => !v.IsPrivateUse)))
+			if (languageSubtag == null && (scriptSubtag != null || regionSubtag != null ||
+				variantSubtagsArray.Length == 0 || variantSubtagsArray.Any(v => !v.IsPrivateUse)))
 			{
 				message = "A language subtag is required.";
 				paramName = "languageSubtag";
@@ -430,7 +440,7 @@ namespace SIL.WritingSystems
 						message = "The private use language code is invalid.";
 						paramName = "languageSubtag";
 					}
-					sb.Append("qaa");
+					sb.Append(UnlistedLanguage);
 					isCustomLanguage = true;
 				}
 				else
@@ -566,19 +576,20 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Tries to create a language tag from the specified subtag codes.
 		/// </summary>
+		[PublicAPI]
 		public static bool TryCreate(string languageCode, string scriptCode, string regionCode, string variantCodes, out string langTag)
 		{
-			string message, paramName;
-			return TryCreate(languageCode, scriptCode, regionCode, variantCodes, out langTag, out message, out paramName);
+			return TryCreate(languageCode, scriptCode, regionCode, variantCodes, out langTag, out _, out _);
 		}
 
 		/// <summary>
 		/// Creates a language tag from the specified subtag codes.
 		/// </summary>
+		[PublicAPI]
 		public static string Create(string languageCode, string scriptCode, string regionCode, string variantCodes, bool validate = true)
 		{
-			string langTag, message, paramName;
-			if (!TryCreate(languageCode, scriptCode, regionCode, variantCodes, out langTag, out message, out paramName))
+			if (!TryCreate(languageCode, scriptCode, regionCode, variantCodes,
+				out var langTag, out var message, out var paramName))
 			{
 				if (validate)
 					throw new ArgumentException(message, paramName);
@@ -589,26 +600,28 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Validates the creation of an IETF language tag.
 		/// </summary>
-		public static bool Validate(string languageCode, string scriptCode, string regionCode, string variantCodes, out string message)
+		[PublicAPI]
+		public static bool Validate(string languageCode, string scriptCode, string regionCode,
+			string variantCodes, out string message)
 		{
-			string langTag, paramName;
-			return TryCreate(languageCode, scriptCode, regionCode, variantCodes, out langTag, out message, out paramName);
+			return TryCreate(languageCode, scriptCode, regionCode, variantCodes, out _,
+				out message, out _);
 		}
 
-		private static bool TryCreate(string languageCode, string scriptCode, string regionCode, string variantCodes,
-			out string langTag, out string message, out string paramName)
+		private static bool TryCreate(string languageCode, string scriptCode, string regionCode,
+			string variantCodes, out string langTag, out string message, out string paramName)
 		{
 			message = null;
 			paramName = null;
-			if (string.IsNullOrEmpty(languageCode) && (!string.IsNullOrEmpty(scriptCode) || !string.IsNullOrEmpty(regionCode)
-				|| (!string.IsNullOrEmpty(variantCodes) && !variantCodes.StartsWith("x-", StringComparison.InvariantCultureIgnoreCase))))
+			if (IsNullOrEmpty(languageCode) && (!IsNullOrEmpty(scriptCode) || !IsNullOrEmpty(regionCode)
+				|| (!IsNullOrEmpty(variantCodes) && !variantCodes.StartsWith("x-", StringComparison.InvariantCultureIgnoreCase))))
 			{
 				message = "A language code is required.";
 				paramName = "languageCode";
 			}
 
 			var sb = new StringBuilder();
-			if (!string.IsNullOrEmpty(languageCode))
+			if (!IsNullOrEmpty(languageCode))
 			{
 				if (!StandardSubtags.IsValidIso639LanguageCode(languageCode))
 				{
@@ -618,7 +631,7 @@ namespace SIL.WritingSystems
 				sb.Append(languageCode);
 			}
 
-			if (!string.IsNullOrEmpty(scriptCode))
+			if (!IsNullOrEmpty(scriptCode))
 			{
 				if (message == null && !StandardSubtags.IsValidIso15924ScriptCode(scriptCode))
 				{
@@ -634,7 +647,7 @@ namespace SIL.WritingSystems
 				}
 			}
 
-			if (!string.IsNullOrEmpty(regionCode))
+			if (!IsNullOrEmpty(regionCode))
 			{
 				if (message == null && !StandardSubtags.IsValidIso3166RegionCode(regionCode))
 				{
@@ -646,7 +659,7 @@ namespace SIL.WritingSystems
 				sb.Append(regionCode);
 			}
 
-			if (!string.IsNullOrEmpty(variantCodes))
+			if (!IsNullOrEmpty(variantCodes))
 			{
 				if (message == null)
 				{
@@ -698,14 +711,14 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Converts the specified language tag to an ICU locale.
 		/// </summary>
+		[PublicAPI]
 		public static string ToIcuLocale(string langTag)
 		{
-			LanguageSubtag languageSubtag;
-			ScriptSubtag scriptSubtag;
-			RegionSubtag regionSubtag;
-			IEnumerable<VariantSubtag> variantSubtags;
-			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
-				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			if (!TryGetSubtags(langTag, out var languageSubtag, out var scriptSubtag,
+				    out var regionSubtag, out var variantSubtags))
+			{
+				throw new ArgumentException(kInvalidTagMsg, nameof(langTag));
+			}
 
 			var sb = new StringBuilder();
 			//start with the LanguageCode
@@ -738,7 +751,7 @@ namespace SIL.WritingSystems
 			{
 				icuVariant = "X_PY";
 			}
-			if (!string.IsNullOrEmpty(icuVariant))
+			if (!IsNullOrEmpty(icuVariant))
 				sb.AppendFormat(regionSubtag == null ? "__{0}" : "_{0}", icuVariant);
 
 			return sb.ToString();
@@ -753,10 +766,11 @@ namespace SIL.WritingSystems
 		/// <param name="region">The region part.</param>
 		/// <param name="variant">The variant and private-use part.</param>
 		/// <returns></returns>
-		public static bool TryGetParts(string langTag, out string language, out string script, out string region, out string variant)
+		public static bool TryGetParts(string langTag, out string language, out string script,
+			out string region, out string variant)
 		{
 			if (langTag == null)
-				throw new ArgumentNullException("langTag");
+				throw new ArgumentNullException(nameof(langTag));
 
 			if (!TryParse(langTag, out language, out script, out region, out variant))
 				return false;
@@ -764,7 +778,8 @@ namespace SIL.WritingSystems
 			return true;
 		}
 
-		private static bool TryParse(string langTag, out string language, out string script, out string region, out string variant)
+		private static bool TryParse(string langTag, out string language, out string script,
+			out string region, out string variant)
 		{
 			language = null;
 			script = null;
@@ -775,10 +790,10 @@ namespace SIL.WritingSystems
 			if (!match.Success)
 				return false;
 
-			Group signlanguageGroup = match.Groups["signlanguage"];
-			if (signlanguageGroup.Success)
+			Group signLanguageGroup = match.Groups["signlanguage"];
+			if (signLanguageGroup.Success)
 			{
-				language = signlanguageGroup.Value;
+				language = signLanguageGroup.Value;
 			}
 			else
 			{
@@ -875,7 +890,7 @@ namespace SIL.WritingSystems
 			out RegionSubtag regionSubtag, out IEnumerable<VariantSubtag> variantSubtags)
 		{
 			if (langTag == null)
-				throw new ArgumentNullException("langTag");
+				throw new ArgumentNullException(nameof(langTag));
 
 			languageSubtag = null;
 			scriptSubtag = null;
@@ -977,8 +992,7 @@ namespace SIL.WritingSystems
 				{
 					if (variants.Contains(variantCode))
 						return false;
-					VariantSubtag variantSubtag;
-					if (!StandardSubtags.RegisteredVariants.TryGet(variantCode, out variantSubtag))
+					if (!StandardSubtags.RegisteredVariants.TryGet(variantCode, out var variantSubtag))
 						return false;
 					variantSubtagsList.Add(variantSubtag);
 					variants.Add(variantCode);
@@ -990,8 +1004,7 @@ namespace SIL.WritingSystems
 			{
 				if (variants.Contains(privateUseCode) || privateUseCode.Equals("x", StringComparison.InvariantCultureIgnoreCase))
 					return false;
-				VariantSubtag variantSubtag;
-				if (!StandardSubtags.CommonPrivateUseVariants.TryGet(privateUseCode, out variantSubtag))
+				if (!StandardSubtags.CommonPrivateUseVariants.TryGet(privateUseCode, out var variantSubtag))
 					variantSubtag = new VariantSubtag(privateUseCode);
 				variantSubtagsList.Add(variantSubtag);
 				variants.Add(privateUseCode);
@@ -1005,11 +1018,10 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public static bool IsScriptImplied(string langTag)
 		{
-			string language, script, region, variant;
-			if (!TryParse(langTag, out language, out script, out region, out variant))
-				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			if (!TryParse(langTag, out var language, out var script, out var region, out _))
+				throw new ArgumentException(kInvalidTagMsg, nameof(langTag));
 
-			return string.IsNullOrEmpty(script) || script.Equals(GetImplicitScriptCode(language, region));
+			return IsNullOrEmpty(script) || script.Equals(GetImplicitScriptCode(language, region));
 		}
 
 		private static string GetImplicitScriptCode(LanguageSubtag languageSubtag, RegionSubtag regionSubtag)
@@ -1025,141 +1037,128 @@ namespace SIL.WritingSystems
 
 		private static string GetImplicitScriptCode(string languageCode, string regionCode)
 		{
-			if (string.IsNullOrEmpty(languageCode))
+			if (IsNullOrEmpty(languageCode))
 				return null;
 			string langTag = languageCode;
-			if (!string.IsNullOrEmpty(regionCode))
+			if (!IsNullOrEmpty(regionCode))
 				langTag += "-" + regionCode;
 
-			SldrLanguageTagInfo langTagInfo;
-			if (Sldr.LanguageTags.TryGet(langTag, out langTagInfo) || Sldr.LanguageTags.TryGet(languageCode, out langTagInfo))
+			if (Sldr.LanguageTags.TryGet(langTag, out var langTagInfo) ||
+			    Sldr.LanguageTags.TryGet(languageCode, out langTagInfo))
+			{
 				return langTagInfo.ImplicitScriptCode;
+			}
+
 			return null;
 		}
 
 		/// <summary>
 		/// Gets the language subtag of the specified language tag.
 		/// </summary>
+		[PublicAPI]
 		public static LanguageSubtag GetLanguageSubtag(string langTag)
 		{
-			LanguageSubtag languageSubtag;
-			ScriptSubtag scriptSubtag;
-			RegionSubtag regionSubtag;
-			IEnumerable<VariantSubtag> variantSubtags;
-			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
-				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			if (!TryGetSubtags(langTag, out var languageSubtag, out _, out _, out _))
+				throw new ArgumentException(kInvalidTagMsg, nameof(langTag));
 			return languageSubtag;
 		}
 
 		/// <summary>
 		/// Gets the script subtag of the specified language tag.
 		/// </summary>
+		[PublicAPI]
 		public static ScriptSubtag GetScriptSubtag(string langTag)
 		{
-			LanguageSubtag languageSubtag;
-			ScriptSubtag scriptSubtag;
-			RegionSubtag regionSubtag;
-			IEnumerable<VariantSubtag> variantSubtags;
-			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
-				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			if (!TryGetSubtags(langTag, out _, out var scriptSubtag, out _, out _))
+				throw new ArgumentException(kInvalidTagMsg, nameof(langTag));
 			return scriptSubtag;
 		}
 
 		/// <summary>
 		/// Gets the region subtag of the specified language tag.
 		/// </summary>
+		[PublicAPI]
 		public static RegionSubtag GetRegionSubtag(string langTag)
 		{
-			LanguageSubtag languageSubtag;
-			ScriptSubtag scriptSubtag;
-			RegionSubtag regionSubtag;
-			IEnumerable<VariantSubtag> variantSubtags;
-			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
-				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			if (!TryGetSubtags(langTag, out _, out _, out var regionSubtag, out _))
+				throw new ArgumentException(kInvalidTagMsg, nameof(langTag));
 			return regionSubtag;
 		}
 
 		/// <summary>
 		/// Gets the variant and private-use subtags of the specified language tag.
 		/// </summary>
+		[PublicAPI]
 		public static IEnumerable<VariantSubtag> GetVariantSubtags(string langTag)
 		{
-			LanguageSubtag languageSubtag;
-			ScriptSubtag scriptSubtag;
-			RegionSubtag regionSubtag;
-			IEnumerable<VariantSubtag> variantSubtags;
-			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
-				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			if (!TryGetSubtags(langTag, out _, out _, out _, out var variantSubtags))
+				throw new ArgumentException(kInvalidTagMsg, nameof(langTag));
 			return variantSubtags;
 		}
 
 		/// <summary>
 		/// Gets the language part of the specified language tag.
 		/// </summary>
+		[PublicAPI]
 		public static string GetLanguagePart(string langTag)
 		{
-			string language, script, region, variant;
-			if (!TryGetParts(langTag, out language, out script, out region, out variant))
-				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			if (!TryGetParts(langTag, out var language, out _, out _, out _))
+				throw new ArgumentException(kInvalidTagMsg, nameof(langTag));
 			return language;
 		}
 
 		/// <summary>
 		/// Gets the script part of the specified language tag.
 		/// </summary>
+		[PublicAPI]
 		public static string GetScriptPart(string langTag)
 		{
-			string language, script, region, variant;
-			if (!TryGetParts(langTag, out language, out script, out region, out variant))
-				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			if (!TryGetParts(langTag, out _, out var script, out _, out _))
+				throw new ArgumentException(kInvalidTagMsg, nameof(langTag));
 			return script;
 		}
 
 		/// <summary>
 		/// Gets the region part of the specified language tag.
 		/// </summary>
+		[PublicAPI]
 		public static string GetRegionPart(string langTag)
 		{
-			string language, script, region, variant;
-			if (!TryGetParts(langTag, out language, out script, out region, out variant))
-				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			if (!TryGetParts(langTag, out _, out _, out var region, out _))
+				throw new ArgumentException(kInvalidTagMsg, nameof(langTag));
 			return region;
 		}
 
 		/// <summary>
 		/// Gets the variant and private-use part of the specified language tag.
 		/// </summary>
+		[PublicAPI]
 		public static string GetVariantPart(string langTag)
 		{
-			string language, script, region, variant;
-			if (!TryGetParts(langTag, out language, out script, out region, out variant))
-				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			if (!TryGetParts(langTag, out _, out _, out _, out var variant))
+				throw new ArgumentException(kInvalidTagMsg, nameof(langTag));
 			return variant;
 		}
 
 		/// <summary>
 		/// Determines whether the specified language tag is valid.
 		/// </summary>
+		[PublicAPI]
 		public static bool IsValid(string langTag)
 		{
-			string language, script, region, variant;
-			return TryGetParts(langTag, out language, out script, out region, out variant);
+			return TryGetParts(langTag, out _, out _, out _, out _);
 		}
 
 		/// <summary>
 		/// Canonicalizes the specified language tag.
 		/// </summary>
+		[PublicAPI]
 		public static string Canonicalize(string langTag)
 		{
-			LanguageSubtag languageSubtag;
-			ScriptSubtag scriptSubtag;
-			RegionSubtag regionSubtag;
-			IEnumerable<VariantSubtag> variantSubtags;
-			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
-				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
-			string newLangTag, message, paramName;
-			if (!TryCreate(languageSubtag, scriptSubtag, regionSubtag, variantSubtags, out newLangTag, out message, out paramName))
-				throw new ArgumentException(message, "langTag");
+			if (!TryGetSubtags(langTag, out var languageSubtag, out var scriptSubtag, out var regionSubtag, out var variantSubtags))
+				throw new ArgumentException(kInvalidTagMsg, nameof(langTag));
+			if (!TryCreate(languageSubtag, scriptSubtag, regionSubtag, variantSubtags, out var newLangTag, out var message, out _))
+				throw new ArgumentException(message, nameof(langTag));
 			return newLangTag;
 		}
 
@@ -1169,15 +1168,16 @@ namespace SIL.WritingSystems
 		/// </summary>
 		/// <param name="ietfLanguageTag"></param>
 		/// <param name="otherLangTags"></param>
+		[PublicAPI]
 		public static string ToUniqueLanguageTag(string ietfLanguageTag, IEnumerable<string> otherLangTags)
 		{
 			// Parse for variants
-			LanguageSubtag languageSubtag;
-			ScriptSubtag scriptSubtag;
-			RegionSubtag regionSubtag;
-			IEnumerable<VariantSubtag> variantSubtags;
-			if (!TryGetSubtags(ietfLanguageTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
-				throw new ArgumentException("The IETF language tag is invalid.", "ietfLanguageTag");
+			if (!TryGetSubtags(ietfLanguageTag, out var languageSubtag, out var scriptSubtag,
+				    out var regionSubtag, out var variantSubtags))
+			{
+				throw new ArgumentException(kInvalidTagMsg, nameof(ietfLanguageTag));
+			}
+
 			List<VariantSubtag> variants = variantSubtags.ToList();
 
 			VariantSubtag lastDuplSubtag = null;
@@ -1187,11 +1187,11 @@ namespace SIL.WritingSystems
 			{
 				if (lastDuplSubtag != null)
 					variants.Remove(lastDuplSubtag);
-				var curDuplStubtag = new VariantSubtag(string.Format("dupl{0}", duplicateNumber));
-				if (!variants.Contains(curDuplStubtag))
+				var curDuplSubtag = new VariantSubtag($"dupl{duplicateNumber}");
+				if (!variants.Contains(curDuplSubtag))
 				{
-					variants.Add(curDuplStubtag);
-					lastDuplSubtag = curDuplStubtag;
+					variants.Add(curDuplSubtag);
+					lastDuplSubtag = curDuplSubtag;
 				}
 				duplicateNumber++;
 				ietfLanguageTag = Create(languageSubtag, scriptSubtag, regionSubtag, variants);
@@ -1199,10 +1199,11 @@ namespace SIL.WritingSystems
 			return ietfLanguageTag;
 		}
 
+		[PublicAPI]
 		public static bool AreTagsEquivalent(string firstTag, string secondTag)
 		{
-			Guard.AgainstNullOrEmptyString(firstTag, "firstTag");
-			Guard.AgainstNullOrEmptyString(secondTag, "secondTag");
+			Guard.AgainstNullOrEmptyString(firstTag, nameof(firstTag));
+			Guard.AgainstNullOrEmptyString(secondTag, nameof(secondTag));
 			if (IsValid(firstTag) && IsValid(secondTag))
 			{
 				return Canonicalize(firstTag).Equals(Canonicalize(secondTag));
@@ -1210,5 +1211,314 @@ namespace SIL.WritingSystems
 			// If the tags aren't valid the only way they can be equivalent is if they are equal
 			return firstTag.Equals(secondTag, StringComparison.InvariantCultureIgnoreCase);
 		}
+
+		#region From Bloom (LanguageLookupModelExtensions)
+		/// <summary>
+		/// A smarter way to get a name for an iso code. Recent rework on writing systems has
+		/// apparently fixed many of our problems as StandardSubtags.TryGetLanguageFromIso3Code()
+		/// finds 3-letter entries now. This adds fall-backs for 2-letter codes and strips off
+		/// Script/Region/Variant codes. If we can't find ANY name, the out param is set to the
+		/// isoCode itself, and we return false.
+		/// </summary>
+		/// <returns>true if it found a name</returns>
+		public static bool GetBestLanguageName(string isoCode, out string name)
+		{
+			// BL-8081/8096: Perhaps we got in here with Script/Region/Variant tag(s).
+			// Try to get a match on the part of the isoCode up to the first hyphen.
+			var codeToMatch = GetGeneralCode(isoCode.ToLowerInvariant());
+			if (!IsNullOrEmpty(codeToMatch))
+			{
+				if (StandardSubtags.TryGetLanguageFromIso3Code(codeToMatch, out var match))
+				{
+					name = match.Name;
+					return true;
+				}
+				// Perhaps we only have a 2-letter code (e.g. 'fr'), in that case, this will likely find it.
+				if (StandardSubtags.RegisteredLanguages.TryGet(codeToMatch, out match))
+				{
+					name = match.Name;
+					if (codeToMatch == UnlistedLanguage)
+						name += $" ({isoCode})";
+					return true;
+				}
+			}
+			name = isoCode; // At this point, the best name we can come up with is the isoCode itself.
+			return false;
+		}
+		
+		private static readonly Dictionary<Tuple<string, string>, string> MapIsoCodesToLanguageName =
+			new Dictionary<Tuple<string, string>, string>();
+
+		private static readonly Dictionary<string, Locale> MapCodesToIcuLocale =
+			new Dictionary<string, Locale>();
+
+		private static Locale GetLocale(string ietfLanguageTag)
+		{
+			string icuCode = ietfLanguageTag.Replace("-", "_");
+			if (!MapCodesToIcuLocale.TryGetValue(icuCode, out var locale))
+			{
+				locale = new Locale(icuCode);
+				MapCodesToIcuLocale.Add(icuCode, locale);
+			}
+			return locale;
+		}
+
+		private static string GetLocalizedLanguageNameFromIcu(string languageTag, string uiLanguageTag) =>
+			GetLocale(languageTag).GetDisplayName(GetLocale(uiLanguageTag));
+
+		/// <summary>
+		/// Get the language name in the indicated language if possible. Otherwise, get the name in
+		/// the language itself if possible. It that doesn't work, return the English name. If we
+		/// don't know even that, return the code as the name.
+		/// </summary>
+		[PublicAPI]
+		public static string GetLocalizedLanguageName(string languageTag, string uiLanguageTag)
+		{
+			if (UseICUForLanguageNames)
+				return GetLocalizedLanguageNameFromIcu(languageTag, uiLanguageTag);
+
+			var key = new Tuple<string, string>(languageTag, uiLanguageTag);
+			if (MapIsoCodesToLanguageName.TryGetValue(key, out var langName))
+				return langName;
+			var uiLanguageCode = GetLanguagePart(uiLanguageTag);
+
+			Debug.Assert(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == uiLanguageCode ||
+				CultureInfo.CurrentUICulture.ThreeLetterISOLanguageName == uiLanguageCode,
+				$"The current UI language should match {nameof(uiLanguageTag)}. This method " +
+				"depends on CultureInfo.DisplayName returning the language name in the current " +
+				"UI language.");
+			try
+			{
+				var generalCode = GetGeneralCode(languageTag);
+				var ci = CultureInfo.GetCultureInfo(generalCode);
+				// CultureInfo.DisplayName is known to be broken in Mono as it always returns EnglishName.
+				// I can't tell that Windows behaves any differently, but maybe it does if the system is
+				// installed as a Spanish language, French language, or whatever language, system.
+				// If DisplayName does not do what we want (but returns the same as EnglishName), then
+				// we return just NativeName if it exists.  This seems less objectionable (ethnocentric)
+				// than returning the EnglishName value.
+				langName = ci.DisplayName;
+				if ((langName == ci.EnglishName || generalCode == ChineseSimplifiedTag) && uiLanguageCode != "en")
+					langName = FixBotchedNativeName(ci.NativeName);
+				if (IsNullOrWhiteSpace(langName))
+					langName = ci.EnglishName;
+				if (!ci.EnglishName.StartsWith("Unknown Language"))	// Windows .Net behavior
+				{
+					MapIsoCodesToLanguageName.Add(key, langName);
+					return langName;
+				}
+			}
+			catch (Exception e)
+			{
+				// ignore exception, but log on terminal.
+				System.Diagnostics.Debug.WriteLine($"GetLocalizedLanguageName ignoring exception: {e.Message}");
+			}
+			// We get here after either an exception was thrown or the returned CultureInfo
+			// helpfully told us it is for an unknown language (instead of throwing).
+			// Handle a few languages that we do know the English and native names for,
+			// and that are being localized for Bloom.
+			langName = GetNativeNameIfKnown(languageTag);
+			if (uiLanguageCode == "en" || IsNullOrWhiteSpace(langName))
+				langName = GetEnglishNameIfKnown(languageTag);
+			if (IsNullOrWhiteSpace(langName))
+				langName = languageTag;
+			MapIsoCodesToLanguageName.Add(key, langName);
+			return langName;
+		}
+
+		private static readonly Dictionary<string, string> MapIsoCodeToSubtitledLanguageName =
+			new Dictionary<string, string>();
+
+		/// <summary>
+		/// Get the language name in its own language and script if possible. If it's not a Latin
+		/// script, add an English name suffix.
+		/// If we don't know a native name, but do know an English name, return the language code
+		/// with an English name suffix.
+		/// If we know nothing, return the language code.
+		/// </summary>
+		/// <remarks>
+		/// This might be easier to implement reliably with Full ICU for a larger set of languages,
+		/// but we if only the Min ICU DLL is included, that information is definitely not
+		/// available.
+		/// This method is suitable to generate menu labels in the UI language chooser menu, which
+		/// are most likely to be major languages known to both Windows and Linux.
+		/// GetEnglishNameIfKnown and GetNativeNameIfKnown may need to be updated if localizations
+		/// are done into regional (or national) languages of some countries.
+		/// </remarks>
+		[PublicAPI]
+		public static string GetNativeLanguageNameWithEnglishSubtitle(string code)
+		{
+			if (MapIsoCodeToSubtitledLanguageName.TryGetValue(code, out var langName))
+				return langName;
+			string nativeName;
+			var generalCode = GetGeneralCode(code);
+			try
+			{
+				// englishNameSuffix is always an empty string if we don't need it.
+				string englishNameSuffix = Empty;
+				var ci = CultureInfo.GetCultureInfo(generalCode);	// this may throw or produce worthless empty object
+				if (NeedEnglishSuffixForLanguageName(ci))
+					englishNameSuffix = $" ({GetManuallyOverriddenEnglishNameIfNeeded(code, ()=>ci.EnglishName)})";
+
+				nativeName = FixBotchedNativeName(ci.NativeName);
+				if (IsNullOrWhiteSpace(nativeName))
+					nativeName = code;
+				// Remove any country (or script?) names apart from Chinese (Simplified)
+				if (ci.Name != ChineseSimplifiedTag)
+				{
+					var idxCountry = englishNameSuffix.LastIndexOf(" (", StringComparison.Ordinal);
+					if (englishNameSuffix.Length > 0 && idxCountry > 0)
+						englishNameSuffix = englishNameSuffix.Substring(0, idxCountry) + ")";
+					idxCountry = nativeName.IndexOf(" (", StringComparison.Ordinal);
+					if (idxCountry > 0)
+						nativeName = nativeName.Substring(0, idxCountry);
+				}
+				else
+				{
+					// I have seen more cruft after the country name a few times, so remove that as well.
+					// The parenthetical expansion always seems to start "(Simplified", which we want to keep.
+					// We need double close parentheses because there's one open parenthesis before
+					// "Chinese" and another open parenthesis before "Simplified" (which precedes ", China").
+					// Also, we don't worry about the parenthetical content of the native Chinese name.
+					var idxCountry = englishNameSuffix.IndexOf(", China", StringComparison.Ordinal);
+					if (englishNameSuffix.Length > 0 && idxCountry > 0)
+						englishNameSuffix = englishNameSuffix.Substring(0, idxCountry) + "))";
+				}
+				langName = nativeName + englishNameSuffix;
+				if (!ci.EnglishName.StartsWith("Unknown Language"))	// Windows .Net behavior
+				{
+					MapIsoCodeToSubtitledLanguageName.Add(code, langName);
+					return langName;
+				}
+			}
+			catch (Exception e)
+			{
+				// ignore exception, but log on terminal.
+				System.Diagnostics.Debug.WriteLine($"GetNativeLanguageNameWithEnglishSubtitle ignoring exception: {e.Message}");
+			}
+			// We get here after either an exception was thrown or the returned CultureInfo
+			// helpfully told us it is for an unknown language (instead of throwing).
+			// Handle a few languages that we do know the English and native names for
+			// (that are being localized for Bloom).
+			if (LanguageSubtag.IsUnlistedCode(generalCode) && GetBestLanguageName(code, out langName))
+				return langName;
+			var englishName = GetManuallyOverriddenEnglishNameIfNeeded(code, () => GetEnglishNameIfKnown(generalCode));
+			nativeName = GetNativeNameIfKnown(generalCode);
+			if (IsNullOrWhiteSpace(nativeName) && IsNullOrWhiteSpace(englishName))
+				langName = code;
+			else if (IsNullOrWhiteSpace(nativeName))
+				langName = code + " (" + englishName + ")";
+			else if (IsNullOrWhiteSpace(englishName))
+			{
+				// I don't think this will ever happen...
+				if (IsLatinChar(nativeName[0]))
+					langName = nativeName;
+				else
+					langName = nativeName + $" ({code})";
+			}
+			else
+			{
+				if (IsLatinChar(nativeName[0]))
+					langName = nativeName;
+				else
+					langName = nativeName + $" ({englishName})";
+			}
+			MapIsoCodeToSubtitledLanguageName.Add(code, langName);
+			return langName;
+		}
+
+		public static string GetManuallyOverriddenEnglishNameIfNeeded(string code, Func<string> defaultOtherwise)
+		{
+			// We used pbu in Crowdin for some reason which is "Northern Pashto,"
+			// but we want this label to just be the generic macrolanguage "Pashto."
+			return code == "pbu" ? "Pashto" : defaultOtherwise();
+		}
+
+		/// <summary>
+		/// Check whether we need to add an English suffix to the native language name. This is true if we don't know
+		/// the native name at all or if the native name is not in a Latin alphabet.
+		/// </summary>
+		private static bool NeedEnglishSuffixForLanguageName(CultureInfo ci)
+		{
+			if (IsNullOrWhiteSpace(ci.NativeName))
+				return true;
+			var testChar = ci.NativeName[0];
+			return ci.EnglishName != ci.NativeName && !IsLatinChar(testChar);
+		}
+
+		/// <summary>
+		/// Gte the language part of the given tag, except leave zh-CN alone.
+		/// </summary>
+		public static string GetGeneralCode(string code)
+		{
+			// Though you might be tempted to simplify this by using GetLanguagePart, don't: this
+			// methods works with three-letter codes even if there is a valid 2-letter code that
+			// should be used instead.
+			var idxCountry = code.IndexOf("-");
+			if (idxCountry == -1 || code == ChineseSimplifiedTag)
+				return code;
+			return code.Substring(0, idxCountry);
+		}
+
+		/// <summary>
+		/// For what languages we know about, return the English name. If we don't know anything, return null.
+		/// This is called only when CultureInfo doesn't supply the information we need.
+		/// </summary>
+		private static string GetEnglishNameIfKnown(string code)
+		{
+			if (!GetBestLanguageName(code, out var englishName))
+			{
+				switch (code)
+				{
+					case "pbu":  englishName = "Pashto";  break;
+					case "prs":  englishName = "Dari";             break;
+					case "tpi":  englishName = "New Guinea Pidgin English"; break;
+					default:     englishName = null;               break;
+				}
+			}
+			return englishName;
+		}
+
+		/// <summary>
+		/// For the languages we know about, return the native name. If we don't know anything, return null.
+		/// (This applies only to languages that CultureInfo doesn't know about on at least one of Linux and
+		/// Windows.)
+		/// </summary>
+		private static string GetNativeNameIfKnown(string code)
+		{
+			switch (code)
+			{
+				case "pbu":  return "پښتو";
+				case "prs":  return "دری";
+				case "tpi":  return "Tok Pisin";
+				default:     return null;
+			}
+		}
+
+		/// <summary>
+		/// Fix any native language names that we know either .Net or Mono gets wrong.
+		/// </summary>
+		private static string FixBotchedNativeName(string name)
+		{
+			// See http://issues.bloomlibrary.org/youtrack/issue/BL-5223.
+			switch (name)
+			{
+				// .Net gets this one wrong,but Mono gets it right.
+				case "Indonesia": return "Bahasa Indonesia";
+
+				// Although these look the same, what Windows supplies as the "Native Name"
+				// Wiktionary lists it as a different word and says that the word we have
+				// hardcoded here (and above in GetNativeNameIfKnown) is the correct name.
+				// Wikipedia seems to agree. Interestingly, Google brings up the Wikipedia
+				// info for Dari when you search for either one, even though the presumably
+				// incorrect version does not actually appear on that Wikipedia page. It
+				// would be nice to find someone who is an authority on this, so we could
+				// report it to Microsoft as a bug if it is indeed incorrect.
+				case "درى": return "دری";
+			
+				default: return name;
+			}
+		}
+		#endregion
 	}
 }
