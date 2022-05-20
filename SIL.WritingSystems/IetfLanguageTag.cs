@@ -1275,7 +1275,10 @@ namespace SIL.WritingSystems
 		public static string GetLocalizedLanguageName(string languageTag, string uiLanguageTag)
 		{
 			if (UseICUForLanguageNames)
-				return GetLocalizedLanguageNameFromIcu(languageTag, uiLanguageTag);
+			{
+				return GetLocalizedLanguageNameFromIcu(GetGeneralCode(languageTag),
+					GetGeneralCode(uiLanguageTag));
+			}
 
 			var key = new Tuple<string, string>(languageTag, uiLanguageTag);
 			if (MapIsoCodesToLanguageName.TryGetValue(key, out var langName))
@@ -1287,6 +1290,7 @@ namespace SIL.WritingSystems
 				$"The current UI language should match {nameof(uiLanguageTag)}. This method " +
 				"depends on CultureInfo.DisplayName returning the language name in the current " +
 				"UI language.");
+
 			try
 			{
 				var generalCode = GetGeneralCode(languageTag);
