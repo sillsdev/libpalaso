@@ -1515,7 +1515,12 @@ namespace SIL.WritingSystems
 				// would be nice to find someone who is an authority on this, so we could
 				// report it to Microsoft as a bug if it is indeed incorrect.
 				case "درى": return "دری";
-			
+				// Incorrect capitalization on older Windows OS versions.
+				case "Português": return "português";
+				// REVIEW: For Chinese, older Windows OS versions return 中文(中华人民共和国) instead
+				// of 中文(中国) {i.e., Chinese (People's Republic of China) instead of
+				// Chinese (China). Do we consider that "botched"?
+
 				default: return name;
 			}
 		}
