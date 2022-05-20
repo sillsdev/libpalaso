@@ -33,6 +33,7 @@ namespace SIL.Windows.Forms.TestApp
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.btnCancel = new System.Windows.Forms.Button();
 			this.btnOk = new System.Windows.Forms.Button();
+			this.cboWhiteSpaceCharacters = new SIL.Windows.Forms.CheckedComboBox.CheckedComboBox();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -53,8 +54,9 @@ namespace SIL.Windows.Forms.TestApp
 			// 
 			// btnCancel
 			// 
+			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnCancel.Location = new System.Drawing.Point(326, 74);
+			this.btnCancel.Location = new System.Drawing.Point(326, 109);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(75, 23);
 			this.btnCancel.TabIndex = 2;
@@ -63,13 +65,27 @@ namespace SIL.Windows.Forms.TestApp
 			// 
 			// btnOk
 			// 
+			this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.btnOk.Location = new System.Drawing.Point(245, 74);
+			this.btnOk.Location = new System.Drawing.Point(245, 109);
 			this.btnOk.Name = "btnOk";
 			this.btnOk.Size = new System.Drawing.Size(75, 23);
 			this.btnOk.TabIndex = 3;
 			this.btnOk.Text = "OK";
 			this.btnOk.UseVisualStyleBackColor = true;
+			// 
+			// cboWhiteSpaceCharacters
+			// 
+			this.cboWhiteSpaceCharacters.CheckOnClick = true;
+			this.cboWhiteSpaceCharacters.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
+			this.cboWhiteSpaceCharacters.DropDownHeight = 1;
+			this.cboWhiteSpaceCharacters.FormattingEnabled = true;
+			this.cboWhiteSpaceCharacters.IntegralHeight = false;
+			this.cboWhiteSpaceCharacters.Location = new System.Drawing.Point(15, 60);
+			this.cboWhiteSpaceCharacters.Name = "cboWhiteSpaceCharacters";
+			this.cboWhiteSpaceCharacters.Size = new System.Drawing.Size(190, 21);
+			this.cboWhiteSpaceCharacters.TabIndex = 4;
+			this.cboWhiteSpaceCharacters.ValueSeparator = ", ";
 			// 
 			// ModalChildForm
 			// 
@@ -77,7 +93,8 @@ namespace SIL.Windows.Forms.TestApp
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btnOk;
-			this.ClientSize = new System.Drawing.Size(413, 109);
+			this.ClientSize = new System.Drawing.Size(413, 144);
+			this.Controls.Add(this.cboWhiteSpaceCharacters);
 			this.Controls.Add(this.btnOk);
 			this.Controls.Add(this.btnCancel);
 			this.Controls.Add(this.textBox1);
@@ -96,5 +113,6 @@ namespace SIL.Windows.Forms.TestApp
 		private System.Windows.Forms.TextBox textBox1;
 		private System.Windows.Forms.Button btnCancel;
 		private System.Windows.Forms.Button btnOk;
+		private CheckedComboBox.CheckedComboBox cboWhiteSpaceCharacters;
 	}
 }
