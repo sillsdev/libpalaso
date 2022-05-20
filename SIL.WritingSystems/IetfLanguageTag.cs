@@ -1379,12 +1379,13 @@ namespace SIL.WritingSystems
 				}
 				else
 				{
-					// I have seen more cruft after the country name a few times, so remove that as well.
-					// The parenthetical expansion always seems to start "(Simplified", which we want to keep.
-					// We need double close parentheses because there's one open parenthesis before
-					// "Chinese" and another open parenthesis before "Simplified" (which precedes ", China").
-					// Also, we don't worry about the parenthetical content of the native Chinese name.
-					var idxCountry = englishNameSuffix.IndexOf(", China", StringComparison.Ordinal);
+					// I have seen more cruft after the country name a few times, so remove that
+					// as well. The parenthetical expansion always seems to start "(Simplified",
+					// which we want to keep. We need double close parentheses because there's one
+					// open parenthesis before "Chinese" and another open parenthesis before
+					// "Simplified" (which precedes ", China" or ", PRC"). Also, we don't worry
+					// about the parenthetical content of the native Chinese name.
+					var idxCountry = englishNameSuffix.IndexOf(", ", StringComparison.Ordinal);
 					if (englishNameSuffix.Length > 0 && idxCountry > 0)
 						englishNameSuffix = englishNameSuffix.Substring(0, idxCountry) + "))";
 				}
