@@ -919,7 +919,6 @@ namespace SIL.WritingSystems.Tests
 		[TestCase("fr", "fr", ExpectedResult = "français")]
 		[TestCase("es-419", "es-ES", ExpectedResult = "español")]
 		[TestCase("zh-CN", "en", ExpectedResult = "Chinese (Simplified, PRC)")]
-		[TestCase("zh-CN", "zh-CN", ExpectedResult = "中文(中国)")]
 		[TestCase("pbu", "pbu", ExpectedResult = "پښتو")]
 		[TestCase("pbu", "tpi", ExpectedResult = "پښتو")]
 		[TestCase("prs", "en", ExpectedResult = "Dari")]
@@ -933,6 +932,8 @@ namespace SIL.WritingSystems.Tests
 		[TestCase("qaa-x-kal", "pbu", ExpectedResult = "Language Not Listed (qaa-x-kal)")]
 		[TestCase("noh", "en", ExpectedResult = "Nomu")]
 		[TestCase("noh", "noh", ExpectedResult = "Nomu")]
+		// See REVIEW comment in IEtfLanguageTag.FixBotchedNativeName
+		[TestCase("zh-CN", "zh-CN", "中文(中华人民共和国)", ExpectedResult = "中文(中国)")]
 		// Not sure if this fallback for Dari is truly acceptable. Although it looks the same and
 		// is what Windows supplies as the "Native Name", Wiktionary lists it as a different word
 		// and says that the word we have hardcoded in IetfLanguageTags.GetNativeNameIfKnown is the
@@ -957,6 +958,12 @@ namespace SIL.WritingSystems.Tests
 				if (result == acceptableEnglishFallback)
 					Assert.Ignore("Got an acceptable (English) fallback name, but not what we really wanted.");
 				return result;
+			}
+			catch (CultureNotFoundException)
+			{
+				if (PlatformUtilities.Platform.IsPreWindows10)
+					Assert.Ignore("This TestCase requires a culture which is not supported prior to Windows 10.");
+				throw;
 			}
 			finally
 			{

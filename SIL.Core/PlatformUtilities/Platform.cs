@@ -36,6 +36,8 @@ namespace SIL.PlatformUtilities
 		}
 		public static bool IsDotNet => !IsMono;
 
+		public static bool IsPreWindows10 => IsWindows && OperatingSystemDescription != "Windows 10";
+
 #if NETSTANDARD2_0
 		public static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 		public static bool IsMac => RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
