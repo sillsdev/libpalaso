@@ -1302,8 +1302,13 @@ namespace SIL.WritingSystems
 				// we return just NativeName if it exists.  This seems less objectionable (ethnocentric)
 				// than returning the EnglishName value.
 				langName = ci.DisplayName;
-				if ((langName == ci.EnglishName || generalCode == ChineseSimplifiedTag) && uiLanguageCode != "en")
-					langName = FixBotchedNativeName(ci.NativeName);
+				if (uiLanguageCode != "en")
+				{
+					if (generalCode == ChineseSimplifiedTag)
+						langName = ci.NativeName;
+					else if (langName == ci.EnglishName)
+						langName = FixBotchedNativeName(ci.NativeName);
+				}
 				if (IsNullOrWhiteSpace(langName))
 					langName = ci.EnglishName;
 				if (!ci.EnglishName.StartsWith("Unknown Language"))	// Windows .Net behavior
