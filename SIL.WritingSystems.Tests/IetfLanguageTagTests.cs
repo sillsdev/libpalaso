@@ -696,7 +696,7 @@ namespace SIL.WritingSystems.Tests
 		[TestCase("am-Ethi", ExpectedResult = "Ethi")]
 		[TestCase("am-Latn", ExpectedResult = "Latn")]
 		[TestCase("qed-Lepc-x-rubbish", ExpectedResult = "Lepc")]
-		public string GetScriptPart_ValidIetfTag_ReturnsLanguage(string tag)
+		public string GetScriptPart_ValidIetfTag_ReturnsScript(string tag)
 		{
 			return IetfLanguageTag.GetScriptPart(tag);
 		}
@@ -714,7 +714,7 @@ namespace SIL.WritingSystems.Tests
 		[TestCase("tpi-Lepc-BR-fonipa-x-blah", ExpectedResult = "BR")]
 		[TestCase("am-Ethi", ExpectedResult = null)]
 		[TestCase("qed-Lepc-x-rubbish", ExpectedResult = null)]
-		public string GetRegionPart_ValidIetfTag_ReturnsLanguage(string tag)
+		public string GetRegionPart_ValidIetfTag_ReturnsRegion(string tag)
 		{
 			return IetfLanguageTag.GetRegionPart(tag);
 		}
@@ -731,7 +731,7 @@ namespace SIL.WritingSystems.Tests
 		[TestCase("tpi-Lepc-BR-fonipa-x-blah", ExpectedResult = "fonipa-x-blah")]
 		[TestCase("am-Ethi", ExpectedResult = null)]
 		[TestCase("qed-Lepc-x-rubbish", ExpectedResult = "x-rubbish")]
-		public string GetVariantPart_ValidIetfTag_ReturnsLanguage(string tag)
+		public string GetVariantPart_ValidIetfTag_ReturnsVariant(string tag)
 		{
 			return IetfLanguageTag.GetVariantPart(tag);
 		}
@@ -943,7 +943,7 @@ namespace SIL.WritingSystems.Tests
 		[TestCase("prs", "prs", /*"درى",*/ ExpectedResult = "دری")]
 		[TestCase("prs", "fr", /*"درى",*/ ExpectedResult = "دری")]
 		public string GetLocalizedLanguageName_Valid_GetsNameInTargetLanguageOrNativeAsFallback(
-			string tag, string uiTag, string acceptableEnglishFallback = null)
+			string tag, string uiTag, string acceptableFallback = null)
 		{
 			var uiLanguageCode = IetfLanguageTag.GetLanguagePart(uiTag);
 			var resetUiCultureTo =
@@ -968,7 +968,7 @@ namespace SIL.WritingSystems.Tests
 			try
 			{
 				var result = IetfLanguageTag.GetLocalizedLanguageName(tag, uiTag);
-				if (result == acceptableEnglishFallback)
+				if (result == acceptableFallback)
 					Assert.Ignore("Got an acceptable (English) fallback name, but not what we really wanted.");
 				return result;
 			}
