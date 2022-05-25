@@ -1274,16 +1274,36 @@ namespace SIL.WritingSystems
 		[PublicAPI]
 		public static string GetLocalizedLanguageName(string languageTag, string uiLanguageTag)
 		{
+			var generalCode = GetGeneralCode(languageTag);
+			var uiLanguageCode = GetLanguagePart(uiLanguageTag);
+
+			if (generalCode == ChineseSimplifiedTag && uiLanguageCode == "en")
+			{
+				// This corresponds to what we (currently) get as the "English Subtitle" in
+				// GetNativeLanguageNameWithEnglishSubtitle. Not sure if it really matters here,
+				// but the ICU-supplied name (e.g., used on Linux), and the EnglishName and
+				// DisplayName supplied via the Windows CultureInfo are all subtly different in
+				// unhelpful ways:
+				// ICU: Chinese (China)
+				// DisplayName: Chinese (Simplified, PRC)
+				// EnglishName: Chinese (Simplified, China)
+				// Ideally, we should probably either have GetNativeLanguageNameWithEnglishSubtitle
+				// use this same constant or factor out the complex logic so that we always compute
+				// the same value based on a single well-defined source. But it's not clear whether
+				// one of those approaches is superior.
+				return "Chinese (Simplified)";
+			}
+
 			if (UseICUForLanguageNames)
 			{
-				return GetLocalizedLanguageNameFromIcu(GetGeneralCode(languageTag),
-					GetGeneralCode(uiLanguageTag));
+				var name = GetLocalizedLanguageNameFromIcu(generalCode, uiLanguageCode);
+				if (name != generalCode)
+					return name;
 			}
 
 			var key = new Tuple<string, string>(languageTag, uiLanguageTag);
 			if (MapIsoCodesToLanguageName.TryGetValue(key, out var langName))
 				return langName;
-			var uiLanguageCode = GetLanguagePart(uiLanguageTag);
 
 			Debug.Assert(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == uiLanguageCode ||
 				CultureInfo.CurrentUICulture.ThreeLetterISOLanguageName == uiLanguageCode,
@@ -1293,7 +1313,6 @@ namespace SIL.WritingSystems
 
 			try
 			{
-				var generalCode = GetGeneralCode(languageTag);
 				var ci = CultureInfo.GetCultureInfo(generalCode);
 				// CultureInfo.DisplayName is known to be broken in Mono as it always returns EnglishName.
 				// I can't tell that Windows behaves any differently, but maybe it does if the system is

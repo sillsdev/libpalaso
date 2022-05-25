@@ -918,7 +918,7 @@ namespace SIL.WritingSystems.Tests
 		[TestCase("en-x-etic", "fr-FR-x-unknown", "English", ExpectedResult = "anglais")]
 		[TestCase("fr", "fr", ExpectedResult = "français")]
 		[TestCase("es-419", "es-ES", ExpectedResult = "español")]
-		[TestCase("zh-CN", "en", ExpectedResult = "Chinese (Simplified, PRC)")]
+		[TestCase("zh-CN", "en", ExpectedResult = "Chinese (Simplified)")]
 		[TestCase("pbu", "pbu", ExpectedResult = "پښتو")]
 		[TestCase("pbu", "tpi", ExpectedResult = "پښتو")]
 		[TestCase("prs", "en", ExpectedResult = "Dari")]
@@ -961,6 +961,9 @@ namespace SIL.WritingSystems.Tests
 					if (PlatformUtilities.Platform.IsPreWindows10)
 						Assert.Ignore(
 							"This TestCase requires a culture which is not supported prior to Windows 10.");
+					if (PlatformUtilities.Platform.IsLinux)
+						Assert.Ignore(
+							"This TestCase requires a culture which is not supported on this version of Linux.");
 					throw;
 				}
 			}
