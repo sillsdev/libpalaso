@@ -975,8 +975,9 @@ namespace SIL.WritingSystems.Tests
 					Assert.Ignore("Got an acceptable fallback name, but not what we really wanted.");
 				if (tag == WellKnownSubtags.ChineseSimplifiedTag && uiTag == WellKnownSubtags.ChineseSimplifiedTag)
 				{
-					// On Linux, there's a space before the opening parenthesis. That's fine.
-					result = result.Replace(" ", "");
+					// In ICU, the parentheses are thin "Chinese" ones with included spacing.
+					// That's fine.
+					result = result.Replace("（", "(").Replace("）", ")");
 				}
 				return result;
 			}
@@ -1019,7 +1020,7 @@ namespace SIL.WritingSystems.Tests
 			if (result == "中文(中华人民共和国) (Chinese (Simplified))" && PlatformUtilities.Platform.IsPreWindows10)
 				Assert.Pass("Acceptable on older versions of the OS");
 			if (result == "中文 (中国) (Chinese (Simplified))" && PlatformUtilities.Platform.IsLinux)
-				Assert.Pass("Extra spaces is acceptable");
+				Assert.Pass("Extra space is acceptable");
 			Assert.That(result, Is.EqualTo("中文(中国) (Chinese (Simplified))"));
 		}
 		#endregion
