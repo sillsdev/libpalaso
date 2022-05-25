@@ -972,7 +972,12 @@ namespace SIL.WritingSystems.Tests
 			{
 				var result = IetfLanguageTag.GetLocalizedLanguageName(tag, uiTag);
 				if (result == acceptableFallback)
-					Assert.Ignore("Got an acceptable (English) fallback name, but not what we really wanted.");
+					Assert.Ignore("Got an acceptable fallback name, but not what we really wanted.");
+				if (tag == WellKnownSubtags.ChineseSimplifiedTag && uiTag == WellKnownSubtags.ChineseSimplifiedTag)
+				{
+					// On Linux, there's a space before the opening parenthesis. That's fine.
+					result = result.Replace(" ", "");
+				}
 				return result;
 			}
 			finally
@@ -1013,6 +1018,8 @@ namespace SIL.WritingSystems.Tests
 			var result = IetfLanguageTag.GetNativeLanguageNameWithEnglishSubtitle("zh-CN");
 			if (result == "中文(中华人民共和国) (Chinese (Simplified))" && PlatformUtilities.Platform.IsPreWindows10)
 				Assert.Pass("Acceptable on older versions of the OS");
+			if (result == "中文 (中国) (Chinese (Simplified))" && PlatformUtilities.Platform.IsLinux)
+				Assert.Pass("Extra spaces is acceptable");
 			Assert.That(result, Is.EqualTo("中文(中国) (Chinese (Simplified))"));
 		}
 		#endregion
