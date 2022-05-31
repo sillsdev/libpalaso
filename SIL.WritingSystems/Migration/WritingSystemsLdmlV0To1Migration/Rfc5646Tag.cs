@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -173,7 +173,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		private bool _requiresValidTag = true;
 
 		public Rfc5646Tag() :
-			this("qaa", String.Empty, String.Empty, String.Empty, String.Empty)
+			this(WellKnownSubtags.UnlistedLanguage, String.Empty, String.Empty, String.Empty, String.Empty)
 		{
 		}
 

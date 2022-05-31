@@ -7,8 +7,8 @@ using SIL.ObjectModel;
 namespace SIL.WritingSystems
 {
 	/// <summary>
-	/// This class parses the IANA subtag registry in order to provide a list of valid language, script, region and variant subtags
-	/// for use by the IetfLanguageTagHelper and other classes.
+	/// This class parses the IANA subtag registry in order to provide a list of valid language,
+	/// script, region and variant subtags for use by <see cref="IetfLanguageTag"/> and other classes.
 	///
 	/// Languages and scripts that are newer than the subtag registry may be added with AddScript and AddLanguage
 	/// </summary>

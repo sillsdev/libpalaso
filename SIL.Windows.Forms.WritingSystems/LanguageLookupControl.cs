@@ -200,7 +200,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				&& info.LanguageTag!= "zh-Hans" && info.LanguageTag != "zh-Hant";
 			// per BL-4780 we prefer these names for the common Chinese codes.
 			// One reason is to that they sort alphabetically as Chinese.
-			SetLanguageAlias("zh-CN", "Chinese, Simplified (简体中文)");
+			SetLanguageAlias(WellKnownSubtags.ChineseSimplifiedTag, "Chinese, Simplified (简体中文)");
 			SetLanguageAlias("zh-TW", "Chinese, Traditional (繁体中文)");
 		}
 

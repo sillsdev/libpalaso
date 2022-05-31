@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   `ConsoleErrorReporter` and `WinFormsErrorReporter` implement `IErrorReporter`'s new interface method
 - [SIL.Core] Added override of SerializeToFileWithWriteThrough to simplify error handling.
 - [SIL.Windows.Forms] Added a CheckedComboBox control
+- [SIL.WritingSystems] Added several methods to IetfLanguageTag class to support getting language names.
 
 ### Changed
 

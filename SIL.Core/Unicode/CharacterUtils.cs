@@ -252,5 +252,10 @@ namespace SIL.Unicode
 
 			return match.Success;
 		}
+
+		/// <summary>
+		/// Return true for ASCII, Latin-1, Latin Ext. A, Latin Ext. B, IPA Extensions, and Spacing Modifier Letters.
+		/// </summary>
+		public static bool IsLatinChar(char test) => test <= 0x02FF;
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SIL.Extensions;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using static SIL.WritingSystems.WellKnownSubtags;
 
 namespace SIL.WritingSystems.Migration
 {
@@ -293,7 +294,7 @@ namespace SIL.WritingSystems.Migration
 			// care about to the appropriate position in the private use section.
 			// In the process we may remove anything non-alphanumeric, since otherwise we may move a marker that later
 			// disappears (pathologically).
-			MoveFirstPartToPrivateUseIfNecessary(_languageSubTag, StandardSubtags.IsValidIso639LanguageCode, "qaa", true);
+			MoveFirstPartToPrivateUseIfNecessary(_languageSubTag, StandardSubtags.IsValidIso639LanguageCode, UnlistedLanguage, true);
 			MoveFirstPartToPrivateUseIfNecessary(_scriptSubTag, StandardSubtags.IsValidIso15924ScriptCode, "Qaaa", false);
 			MoveFirstPartToPrivateUseIfNecessary(_regionSubTag, StandardSubtags.IsValidIso3166RegionCode, "QM", false);
 			//This fixes a bug where the LdmlAdaptorV1 was writing out Zxxx as part of the variant to mark an audio writing system
@@ -375,7 +376,7 @@ namespace SIL.WritingSystems.Migration
 			if ((_languageSubTag.IsEmpty && (!_scriptSubTag.IsEmpty || !_regionSubTag.IsEmpty || !_variantSubTag.IsEmpty)) ||
 				(_languageSubTag.IsEmpty && _scriptSubTag.IsEmpty && _regionSubTag.IsEmpty && _variantSubTag.IsEmpty && _privateUseSubTag.IsEmpty))
 			{
-				_languageSubTag.AddToSubtag("qaa");
+				_languageSubTag.AddToSubtag(UnlistedLanguage);
 			}
 
 			// Two more legacy problems. We don't allow -etic or -emic without fonipa, so insert if needed.
