@@ -52,6 +52,14 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public const string PinyinVariant = "pinyin";
 
+		/// <summary>
+		/// Simplified (as opposed to traditional) Chinese
+		/// </summary>
 		public const string ChineseSimplifiedTag = "zh-CN";
+
+		/// <summary>
+		/// Traditional (as opposed to simplified) Chinese
+		/// </summary>
+		public const string ChineseTraditionalTag = "zh-TW";
 	}
 }

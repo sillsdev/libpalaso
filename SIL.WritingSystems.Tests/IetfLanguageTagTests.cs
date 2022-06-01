@@ -996,6 +996,7 @@ namespace SIL.WritingSystems.Tests
 		[TestCase("en-x-etic", ExpectedResult = "English")]
 		[TestCase("en-Ethi", ExpectedResult = "English")]
 		[TestCase("en-US", ExpectedResult = "English")]
+		[TestCase("en-GB", ExpectedResult = "English")]
 		[TestCase("en-x-etic", ExpectedResult = "English")]
 		[TestCase("fr", ExpectedResult = "français")]
 		[TestCase("es", ExpectedResult = "español")]
@@ -1013,15 +1014,17 @@ namespace SIL.WritingSystems.Tests
 			return IetfLanguageTag.GetNativeLanguageNameWithEnglishSubtitle(tag);
 		}
 
-		[Test]
-		public void GetNativeLanguageNameWithEnglishSubtitle_China_GetsNativeNamePlusEnglishAsNeeded()
+		[TestCase("zh-CN", "中文(中华人民共和国) (Chinese (Simplified))", "中文 (中国) (Chinese (Simplified))", ExpectedResult = "中文(中国) (Chinese (Simplified))")]
+		[TestCase("zh-TW", "中文(中华人民共和国) (Chinese (Traditional))", "中文 (台灣) (Chinese (Traditional))", ExpectedResult = "中文(台灣) (Chinese (Traditional))")]
+		public string GetNativeLanguageNameWithEnglishSubtitle_China_GetsNativeNamePlusEnglishAsNeeded(
+			string tag, string acceptableResultPreWindows10, string acceptableResultLinux)
 		{
-			var result = IetfLanguageTag.GetNativeLanguageNameWithEnglishSubtitle("zh-CN");
-			if (result == "中文(中华人民共和国) (Chinese (Simplified))" && PlatformUtilities.Platform.IsPreWindows10)
+			var result = IetfLanguageTag.GetNativeLanguageNameWithEnglishSubtitle(tag);
+			if (result == acceptableResultPreWindows10 && PlatformUtilities.Platform.IsPreWindows10)
 				Assert.Pass("Acceptable on older versions of the OS");
-			if (result == "中文 (中国) (Chinese (Simplified))" && PlatformUtilities.Platform.IsLinux)
+			if (result == acceptableResultLinux && PlatformUtilities.Platform.IsLinux)
 				Assert.Pass("Extra space is acceptable");
-			Assert.That(result, Is.EqualTo("中文(中国) (Chinese (Simplified))"));
+			return result;
 		}
 		#endregion
 

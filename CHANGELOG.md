@@ -43,6 +43,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Added override of SerializeToFileWithWriteThrough to simplify error handling.
 - [SIL.Windows.Forms] Added a CheckedComboBox control
 - [SIL.WritingSystems] Added several methods to IetfLanguageTag class to support getting language names.
+- [SIL.Windows.Forms.WritingSystems] Added common UI string MoreLanguagesMenuText
+- [SIL.WritingSystems] Added WellKnownSubtag zh-TW.
 
 ### Changed
 
@@ -68,6 +70,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Corrected typo in the name of AcquireImageControl.SetInitialSearchString
 - [SIL.Core] ConsoleErrorReporter logs exception if available
 - [SIL.Core, SIL.Windows.Forms] If WinFormsErrorReporter is set as the ErrorReporter, and ErrorReporter.NotifyUserOfProblem(IRepeatNoticePolicy, Exception, String, params object[]) is passed null for the exception, the "Details" button will no longer appear, making this consistent with the no-Exception overload of this method
+- [SIL.WritingSystems] Changed behavior of IetfLanguageTag to better handle zh-TW.
 
 ### Fixed
 

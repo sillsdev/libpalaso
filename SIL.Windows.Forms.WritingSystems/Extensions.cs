@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -78,5 +78,8 @@ namespace SIL.Windows.Forms.WritingSystems
 
 			return ws;
 		}
+
+		public static string MoreLanguagesMenuText => LocalizationManager.GetString("Common.MoreMenuItem",
+			"&More...", "Last item in menu of UI languages, used to open localization dialog box");
 	}
 }
