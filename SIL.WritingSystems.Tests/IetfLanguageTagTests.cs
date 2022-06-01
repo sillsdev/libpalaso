@@ -1015,7 +1015,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[TestCase("zh-CN", "中文(中华人民共和国) (Chinese (Simplified))", "中文 (中国) (Chinese (Simplified))", ExpectedResult = "中文(中国) (Chinese (Simplified))")]
-		[TestCase("zh-TW", "中文(中华人民共和国) (Chinese (Traditional))", "中文 (台灣) (Chinese (Traditional))", ExpectedResult = "中文(台灣) (Chinese (Traditional))")]
+		[TestCase("zh-TW", "中文(中华人民共和国) (Chinese (Traditional))", "中文 (台湾) (Chinese (Traditional))", ExpectedResult = "中文(台灣) (Chinese (Traditional))")]
 		public string GetNativeLanguageNameWithEnglishSubtitle_China_GetsNativeNamePlusEnglishAsNeeded(
 			string tag, string acceptableResultPreWindows10, string acceptableResultLinux)
 		{
