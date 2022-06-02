@@ -43,7 +43,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Added override of SerializeToFileWithWriteThrough to simplify error handling.
 - [SIL.Windows.Forms] Added a CheckedComboBox control
 - [SIL.WritingSystems] Added several methods to IetfLanguageTag class to support getting language names.
-- [SIL.Windows.Forms.WritingSystems] Added common UI string MoreLanguagesMenuText
+- [SIL.Windows.Forms.WritingSystems] Added extension method InitializeWithAvailableUILocales
 - [SIL.WritingSystems] Added WellKnownSubtag zh-TW.
 
 ### Changed
