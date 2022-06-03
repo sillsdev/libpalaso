@@ -1245,7 +1245,7 @@ namespace SIL.WritingSystems
 			name = isoCode; // At this point, the best name we can come up with is the isoCode itself.
 			return false;
 		}
-		
+
 		private static readonly Dictionary<Tuple<string, string>, string> MapIsoCodesToLanguageName =
 			new Dictionary<Tuple<string, string>, string>();
 
@@ -1384,16 +1384,17 @@ namespace SIL.WritingSystems
 			{
 				// englishNameSuffix is always an empty string if we don't need it.
 				string englishNameSuffix = Empty;
-				var ci = CultureInfo.GetCultureInfo(generalCode);	// this may throw or produce worthless empty object
+				var ci = CultureInfo.GetCultureInfo(generalCode); // this may throw or produce worthless empty object
 				if (NeedEnglishSuffixForLanguageName(ci))
 					englishNameSuffix = $" ({GetManuallyOverriddenEnglishNameIfNeeded(code, ()=>ci.EnglishName)})";
 
 				nativeName = FixBotchedNativeName(ci.NativeName);
 				if (IsNullOrWhiteSpace(nativeName))
 					nativeName = code;
-				// Remove any country (or script?) names apart from Chinese (Simplified)
-				if (ci.Name != ChineseSimplifiedTag)
+
+				if (ci.Name != ChineseSimplifiedTag && ci.Name != ChineseTraditionalTag)
 				{
+					// Remove any country (or script?) names.
 					var idxCountry = englishNameSuffix.LastIndexOf(" (", StringComparison.Ordinal);
 					if (englishNameSuffix.Length > 0 && idxCountry > 0)
 						englishNameSuffix = englishNameSuffix.Substring(0, idxCountry) + ")";
@@ -1401,7 +1402,7 @@ namespace SIL.WritingSystems
 					if (idxCountry > 0)
 						nativeName = nativeName.Substring(0, idxCountry);
 				}
-				else
+				else if (englishNameSuffix.Length > 0)
 				{
 					// I have seen more cruft after the country name a few times, so remove that
 					// as well. The parenthetical expansion always seems to start "(Simplified",
@@ -1410,7 +1411,7 @@ namespace SIL.WritingSystems
 					// "Simplified" (which precedes ", China" or ", PRC"). Also, we don't worry
 					// about the parenthetical content of the native Chinese name.
 					var idxCountry = englishNameSuffix.IndexOf(", ", StringComparison.Ordinal);
-					if (englishNameSuffix.Length > 0 && idxCountry > 0)
+					if (idxCountry > 0)
 						englishNameSuffix = englishNameSuffix.Substring(0, idxCountry) + "))";
 				}
 				langName = nativeName + englishNameSuffix;
@@ -1476,7 +1477,7 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Gte the language part of the given tag, except leave zh-CN alone.
+		/// Get the language part of the given tag.
 		/// </summary>
 		public static string GetGeneralCode(string code)
 		{
@@ -1484,7 +1485,7 @@ namespace SIL.WritingSystems
 			// methods works with three-letter codes even if there is a valid 2-letter code that
 			// should be used instead.
 			var idxCountry = code.IndexOf("-");
-			if (idxCountry == -1 || code == ChineseSimplifiedTag)
+			if (idxCountry == -1 || code == ChineseSimplifiedTag || code == ChineseTraditionalTag)
 				return code;
 			return code.Substring(0, idxCountry);
 		}
