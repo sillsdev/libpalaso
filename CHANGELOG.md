@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- [SIL.Windows.Forms] Added extension method InitializeWithAvailableUILocales.
+
+### Changed
+- [SIL.Windows.Forms.WritingSystems] Moved (internal) extension method InitializeWithAvailableUILocales to SIL.Windows.Forms.
+
 ## [9.0.0] - 2022-06-03
 
 ### Added
