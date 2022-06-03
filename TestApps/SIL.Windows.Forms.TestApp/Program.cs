@@ -13,6 +13,8 @@ namespace SIL.Windows.Forms.TestApp
 {
 	static class Program
 	{
+		internal static ILocalizationManager PrimaryL10NManager;
+
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
@@ -48,7 +50,7 @@ namespace SIL.Windows.Forms.TestApp
 
 			var localizationFolder = Path.GetDirectoryName(
 				FileLocationUtilities.GetFileDistributedWithApplication(distFilesEnglishStrings));
-			LocalizationManager.Create(localizationType, preferredUILocale, "Palaso", "Palaso",
+			PrimaryL10NManager = LocalizationManager.Create(localizationType, preferredUILocale, "Palaso", "Palaso",
 				"1.0.0", localizationFolder, "SIL/Palaso", null, "");
 
 			if (testCommandLineRunner)
