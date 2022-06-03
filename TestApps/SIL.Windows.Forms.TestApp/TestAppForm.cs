@@ -44,6 +44,7 @@ namespace SIL.Windows.Forms.TestApp
 		{
 			InitializeComponent();
 			Text = Platform.DesktopEnvironmentInfoString;
+			_uiLanguageMenu.InitializeWithAvailableUILocales(l => true, Program.PrimaryL10NManager);
 		}
 
 		private void OnFolderBrowserControlClicked(object sender, EventArgs e)

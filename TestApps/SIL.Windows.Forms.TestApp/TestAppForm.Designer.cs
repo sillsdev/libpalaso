@@ -57,38 +57,50 @@ namespace SIL.Windows.Forms.TestApp
 			this.components = new System.ComponentModel.Container();
 			SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper superToolTipInfoWrapper1 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper();
 			SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo superToolTipInfo1 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo();
-			this.btnFolderBrowserControl = new System.Windows.Forms.Button();
-			this.btnLookupISOCodeDialog = new System.Windows.Forms.Button();
-			this.btnWritingSystemSetupDialog = new System.Windows.Forms.Button();
-			this.btnImageToolbox = new System.Windows.Forms.Button();
-			this.btnSilAboutBox = new System.Windows.Forms.Button();
-			this.btnShowReleaseNotes = new System.Windows.Forms.Button();
-			this.superToolTip1 = new SIL.Windows.Forms.SuperToolTip.SuperToolTip(this.components);
+			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+			this._uiLanguageMenu = new System.Windows.Forms.ToolStripDropDownButton();
 			this.btnThrowException = new System.Windows.Forms.Button();
-			this.label1 = new System.Windows.Forms.Label();
-			this.btnMetaDataEditor = new System.Windows.Forms.Button();
-			this.btnSelectFile = new System.Windows.Forms.Button();
-			this._silAboutBoxGecko = new System.Windows.Forms.Button();
-			this.btnSettingProtectionDialog = new System.Windows.Forms.Button();
-			this.btnFlexibleMessageBox = new System.Windows.Forms.Button();
-			this.recordPlayButton = new System.Windows.Forms.Button();
-			this.btnTestContributorsList = new System.Windows.Forms.Button();
 			this.btnShowFormWithModalChild = new System.Windows.Forms.Button();
+			this.btnTestContributorsList = new System.Windows.Forms.Button();
+			this.recordPlayButton = new System.Windows.Forms.Button();
+			this.btnFlexibleMessageBox = new System.Windows.Forms.Button();
+			this.btnSettingProtectionDialog = new System.Windows.Forms.Button();
+			this._silAboutBoxGecko = new System.Windows.Forms.Button();
+			this.label1 = new System.Windows.Forms.Label();
+			this.btnSelectFile = new System.Windows.Forms.Button();
+			this.btnMetaDataEditor = new System.Windows.Forms.Button();
+			this.btnShowReleaseNotes = new System.Windows.Forms.Button();
+			this.btnSilAboutBox = new System.Windows.Forms.Button();
+			this.btnImageToolbox = new System.Windows.Forms.Button();
+			this.btnWritingSystemSetupDialog = new System.Windows.Forms.Button();
+			this.btnLookupISOCodeDialog = new System.Windows.Forms.Button();
+			this.btnFolderBrowserControl = new System.Windows.Forms.Button();
+			this.superToolTip1 = new SIL.Windows.Forms.SuperToolTip.SuperToolTip(this.components);
+			this.toolStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// btnFolderBrowserControl
+			// toolStrip1
 			// 
-			this.btnFolderBrowserControl.Location = new System.Drawing.Point(12, 12);
-			this.btnFolderBrowserControl.Name = "btnFolderBrowserControl";
-			this.btnFolderBrowserControl.Size = new System.Drawing.Size(157, 23);
-			this.btnFolderBrowserControl.TabIndex = 0;
-			this.btnFolderBrowserControl.Text = "FolderBrowserControl";
-			this.btnFolderBrowserControl.UseVisualStyleBackColor = true;
-			this.btnFolderBrowserControl.Click += new System.EventHandler(this.OnFolderBrowserControlClicked);
+			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._uiLanguageMenu});
+			this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+			this.toolStrip1.Name = "toolStrip1";
+			this.toolStrip1.Size = new System.Drawing.Size(187, 25);
+			this.toolStrip1.TabIndex = 9;
+			this.toolStrip1.Text = "toolStrip1";
+			// 
+			// _uiLanguageMenu
+			// 
+			this._uiLanguageMenu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+			this._uiLanguageMenu.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this._uiLanguageMenu.Name = "_uiLanguageMenu";
+			this._uiLanguageMenu.Size = new System.Drawing.Size(58, 22);
+			this._uiLanguageMenu.Text = "English";
+			this._uiLanguageMenu.ToolTipText = "User-interface Language";
 			// 
 			// btnThrowException
 			// 
-			this.btnThrowException.Location = new System.Drawing.Point(12, 418);
+			this.btnThrowException.Location = new System.Drawing.Point(12, 440);
 			this.btnThrowException.Name = "btnThrowException";
 			this.btnThrowException.Size = new System.Drawing.Size(157, 23);
 			this.btnThrowException.TabIndex = 8;
@@ -96,65 +108,72 @@ namespace SIL.Windows.Forms.TestApp
 			this.btnThrowException.UseVisualStyleBackColor = true;
 			this.btnThrowException.Click += new System.EventHandler(this.btnThrowException_Click);
 			// 
-			// btnLookupISOCodeDialog
+			// btnShowFormWithModalChild
 			// 
-			this.btnLookupISOCodeDialog.Location = new System.Drawing.Point(12, 41);
-			this.btnLookupISOCodeDialog.Name = "btnLookupISOCodeDialog";
-			this.btnLookupISOCodeDialog.Size = new System.Drawing.Size(157, 23);
-			this.btnLookupISOCodeDialog.TabIndex = 0;
-			this.btnLookupISOCodeDialog.Text = "LanguageLookupDialog";
-			this.btnLookupISOCodeDialog.UseVisualStyleBackColor = true;
-			this.btnLookupISOCodeDialog.Click += new System.EventHandler(this.OnLanguageLookupDialogClicked);
+			this.btnShowFormWithModalChild.Location = new System.Drawing.Point(12, 411);
+			this.btnShowFormWithModalChild.Name = "btnShowFormWithModalChild";
+			this.btnShowFormWithModalChild.Size = new System.Drawing.Size(157, 23);
+			this.btnShowFormWithModalChild.TabIndex = 7;
+			this.btnShowFormWithModalChild.Text = "Form w/ Modal Child...";
+			this.btnShowFormWithModalChild.UseVisualStyleBackColor = true;
+			this.btnShowFormWithModalChild.Click += new System.EventHandler(this.btnShowFormWithModalChild_Click);
 			// 
-			// btnWritingSystemSetupDialog
+			// btnTestContributorsList
 			// 
-			this.btnWritingSystemSetupDialog.Location = new System.Drawing.Point(12, 70);
-			this.btnWritingSystemSetupDialog.Name = "btnWritingSystemSetupDialog";
-			this.btnWritingSystemSetupDialog.Size = new System.Drawing.Size(157, 23);
-			this.btnWritingSystemSetupDialog.TabIndex = 0;
-			this.btnWritingSystemSetupDialog.Text = "WritingSystemSetupDialog";
-			this.btnWritingSystemSetupDialog.UseVisualStyleBackColor = true;
-			this.btnWritingSystemSetupDialog.Click += new System.EventHandler(this.OnWritingSystemSetupDialogClicked);
+			this.btnTestContributorsList.Location = new System.Drawing.Point(12, 382);
+			this.btnTestContributorsList.Name = "btnTestContributorsList";
+			this.btnTestContributorsList.Size = new System.Drawing.Size(157, 23);
+			this.btnTestContributorsList.TabIndex = 6;
+			this.btnTestContributorsList.Text = "Test Contributors List...";
+			this.btnTestContributorsList.UseVisualStyleBackColor = true;
+			this.btnTestContributorsList.Click += new System.EventHandler(this.btnTestContributorsList_Click);
 			// 
-			// btnImageToolbox
+			// recordPlayButton
 			// 
-			this.btnImageToolbox.Location = new System.Drawing.Point(12, 99);
-			this.btnImageToolbox.Name = "btnImageToolbox";
-			this.btnImageToolbox.Size = new System.Drawing.Size(157, 23);
-			this.btnImageToolbox.TabIndex = 0;
-			this.btnImageToolbox.Text = "Image Toolbox";
-			this.btnImageToolbox.UseVisualStyleBackColor = true;
-			this.btnImageToolbox.Click += new System.EventHandler(this.OnImageToolboxClicked);
+			this.recordPlayButton.Location = new System.Drawing.Point(12, 353);
+			this.recordPlayButton.Name = "recordPlayButton";
+			this.recordPlayButton.Size = new System.Drawing.Size(157, 23);
+			this.recordPlayButton.TabIndex = 5;
+			this.recordPlayButton.Text = "Record and play back sound";
+			this.recordPlayButton.UseVisualStyleBackColor = true;
+			this.recordPlayButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.recordPlayButton_MouseDown);
+			this.recordPlayButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.recordPlayButton_MouseUp);
 			// 
-			// btnSilAboutBox
+			// btnFlexibleMessageBox
 			// 
-			this.btnSilAboutBox.Location = new System.Drawing.Point(12, 128);
-			this.btnSilAboutBox.Name = "btnSilAboutBox";
-			this.btnSilAboutBox.Size = new System.Drawing.Size(157, 23);
-			this.btnSilAboutBox.TabIndex = 0;
-			this.btnSilAboutBox.Text = "SIL AboutBox";
-			this.btnSilAboutBox.UseVisualStyleBackColor = true;
-			this.btnSilAboutBox.Click += new System.EventHandler(this.OnSilAboutBoxClicked);
+			this.btnFlexibleMessageBox.Location = new System.Drawing.Point(12, 324);
+			this.btnFlexibleMessageBox.Name = "btnFlexibleMessageBox";
+			this.btnFlexibleMessageBox.Size = new System.Drawing.Size(157, 23);
+			this.btnFlexibleMessageBox.TabIndex = 4;
+			this.btnFlexibleMessageBox.Text = "Flexible Message Box";
+			this.btnFlexibleMessageBox.UseVisualStyleBackColor = true;
+			this.btnFlexibleMessageBox.Click += new System.EventHandler(this.btnFlexibleMessageBox_Click);
 			// 
-			// btnShowReleaseNotes
+			// btnSettingProtectionDialog
 			// 
-			this.btnShowReleaseNotes.Location = new System.Drawing.Point(12, 185);
-			this.btnShowReleaseNotes.Name = "btnShowReleaseNotes";
-			this.btnShowReleaseNotes.Size = new System.Drawing.Size(157, 23);
-			this.btnShowReleaseNotes.TabIndex = 0;
-			this.btnShowReleaseNotes.Text = "Show Release Notes";
-			this.btnShowReleaseNotes.UseVisualStyleBackColor = true;
-			this.btnShowReleaseNotes.Click += new System.EventHandler(this.OnShowReleaseNotesClicked);
+			this.btnSettingProtectionDialog.Location = new System.Drawing.Point(12, 294);
+			this.btnSettingProtectionDialog.Name = "btnSettingProtectionDialog";
+			this.btnSettingProtectionDialog.Size = new System.Drawing.Size(157, 23);
+			this.btnSettingProtectionDialog.TabIndex = 3;
+			this.btnSettingProtectionDialog.Text = "SettingProtectionDialog";
+			this.btnSettingProtectionDialog.UseVisualStyleBackColor = true;
+			this.btnSettingProtectionDialog.Click += new System.EventHandler(this.btnSettingProtectionDialog_Click);
 			// 
-			// superToolTip1
+			// _silAboutBoxGecko
 			// 
-			this.superToolTip1.FadingInterval = 10;
+			this._silAboutBoxGecko.Location = new System.Drawing.Point(12, 179);
+			this._silAboutBoxGecko.Name = "_silAboutBoxGecko";
+			this._silAboutBoxGecko.Size = new System.Drawing.Size(157, 23);
+			this._silAboutBoxGecko.TabIndex = 2;
+			this._silAboutBoxGecko.Text = "SIL AboutBox (Gecko)";
+			this._silAboutBoxGecko.UseVisualStyleBackColor = true;
+			this._silAboutBoxGecko.Click += new System.EventHandler(this.OnSilAboutBoxGeckoClicked);
 			// 
 			// label1
 			// 
 			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(12, 425);
+			this.label1.Location = new System.Drawing.Point(12, 447);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(149, 13);
 			superToolTipInfo1.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
@@ -174,19 +193,9 @@ namespace SIL.Windows.Forms.TestApp
 			this.label1.TabIndex = 1;
 			this.label1.Text = "Hover over me to see a tooltip";
 			// 
-			// btnMetaDataEditor
-			// 
-			this.btnMetaDataEditor.Location = new System.Drawing.Point(12, 214);
-			this.btnMetaDataEditor.Name = "btnMetaDataEditor";
-			this.btnMetaDataEditor.Size = new System.Drawing.Size(157, 23);
-			this.btnMetaDataEditor.TabIndex = 0;
-			this.btnMetaDataEditor.Text = "Meta Data Editor";
-			this.btnMetaDataEditor.UseVisualStyleBackColor = true;
-			this.btnMetaDataEditor.Click += new System.EventHandler(this.OnShowMetaDataEditorClicked);
-			// 
 			// btnSelectFile
 			// 
-			this.btnSelectFile.Location = new System.Drawing.Point(12, 243);
+			this.btnSelectFile.Location = new System.Drawing.Point(12, 265);
 			this.btnSelectFile.Name = "btnSelectFile";
 			this.btnSelectFile.Size = new System.Drawing.Size(157, 23);
 			this.btnSelectFile.TabIndex = 0;
@@ -194,72 +203,86 @@ namespace SIL.Windows.Forms.TestApp
 			this.btnSelectFile.UseVisualStyleBackColor = true;
 			this.btnSelectFile.Click += new System.EventHandler(this.OnSelectFileClicked);
 			// 
-			// _silAboutBoxGecko
+			// btnMetaDataEditor
 			// 
-			this._silAboutBoxGecko.Location = new System.Drawing.Point(12, 157);
-			this._silAboutBoxGecko.Name = "_silAboutBoxGecko";
-			this._silAboutBoxGecko.Size = new System.Drawing.Size(157, 23);
-			this._silAboutBoxGecko.TabIndex = 2;
-			this._silAboutBoxGecko.Text = "SIL AboutBox (Gecko)";
-			this._silAboutBoxGecko.UseVisualStyleBackColor = true;
-			this._silAboutBoxGecko.Click += new System.EventHandler(this.OnSilAboutBoxGeckoClicked);
+			this.btnMetaDataEditor.Location = new System.Drawing.Point(12, 236);
+			this.btnMetaDataEditor.Name = "btnMetaDataEditor";
+			this.btnMetaDataEditor.Size = new System.Drawing.Size(157, 23);
+			this.btnMetaDataEditor.TabIndex = 0;
+			this.btnMetaDataEditor.Text = "Meta Data Editor";
+			this.btnMetaDataEditor.UseVisualStyleBackColor = true;
+			this.btnMetaDataEditor.Click += new System.EventHandler(this.OnShowMetaDataEditorClicked);
 			// 
-			// btnSettingProtectionDialog
+			// btnShowReleaseNotes
 			// 
-			this.btnSettingProtectionDialog.Location = new System.Drawing.Point(12, 272);
-			this.btnSettingProtectionDialog.Name = "btnSettingProtectionDialog";
-			this.btnSettingProtectionDialog.Size = new System.Drawing.Size(157, 23);
-			this.btnSettingProtectionDialog.TabIndex = 3;
-			this.btnSettingProtectionDialog.Text = "SettingProtectionDialog";
-			this.btnSettingProtectionDialog.UseVisualStyleBackColor = true;
-			this.btnSettingProtectionDialog.Click += new System.EventHandler(this.btnSettingProtectionDialog_Click);
+			this.btnShowReleaseNotes.Location = new System.Drawing.Point(12, 207);
+			this.btnShowReleaseNotes.Name = "btnShowReleaseNotes";
+			this.btnShowReleaseNotes.Size = new System.Drawing.Size(157, 23);
+			this.btnShowReleaseNotes.TabIndex = 0;
+			this.btnShowReleaseNotes.Text = "Show Release Notes";
+			this.btnShowReleaseNotes.UseVisualStyleBackColor = true;
+			this.btnShowReleaseNotes.Click += new System.EventHandler(this.OnShowReleaseNotesClicked);
 			// 
-			// btnFlexibleMessageBox
+			// btnSilAboutBox
 			// 
-			this.btnFlexibleMessageBox.Location = new System.Drawing.Point(12, 302);
-			this.btnFlexibleMessageBox.Name = "btnFlexibleMessageBox";
-			this.btnFlexibleMessageBox.Size = new System.Drawing.Size(157, 23);
-			this.btnFlexibleMessageBox.TabIndex = 4;
-			this.btnFlexibleMessageBox.Text = "Flexible Message Box";
-			this.btnFlexibleMessageBox.UseVisualStyleBackColor = true;
-			this.btnFlexibleMessageBox.Click += new System.EventHandler(this.btnFlexibleMessageBox_Click);
+			this.btnSilAboutBox.Location = new System.Drawing.Point(12, 150);
+			this.btnSilAboutBox.Name = "btnSilAboutBox";
+			this.btnSilAboutBox.Size = new System.Drawing.Size(157, 23);
+			this.btnSilAboutBox.TabIndex = 0;
+			this.btnSilAboutBox.Text = "SIL AboutBox";
+			this.btnSilAboutBox.UseVisualStyleBackColor = true;
+			this.btnSilAboutBox.Click += new System.EventHandler(this.OnSilAboutBoxClicked);
 			// 
-			// recordPlayButton
+			// btnImageToolbox
 			// 
-			this.recordPlayButton.Location = new System.Drawing.Point(12, 331);
-			this.recordPlayButton.Name = "recordPlayButton";
-			this.recordPlayButton.Size = new System.Drawing.Size(157, 23);
-			this.recordPlayButton.TabIndex = 5;
-			this.recordPlayButton.Text = "Record and play back sound";
-			this.recordPlayButton.UseVisualStyleBackColor = true;
-			this.recordPlayButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.recordPlayButton_MouseDown);
-			this.recordPlayButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.recordPlayButton_MouseUp);
+			this.btnImageToolbox.Location = new System.Drawing.Point(12, 121);
+			this.btnImageToolbox.Name = "btnImageToolbox";
+			this.btnImageToolbox.Size = new System.Drawing.Size(157, 23);
+			this.btnImageToolbox.TabIndex = 0;
+			this.btnImageToolbox.Text = "Image Toolbox";
+			this.btnImageToolbox.UseVisualStyleBackColor = true;
+			this.btnImageToolbox.Click += new System.EventHandler(this.OnImageToolboxClicked);
 			// 
-			// btnTestContributorsList
+			// btnWritingSystemSetupDialog
 			// 
-			this.btnTestContributorsList.Location = new System.Drawing.Point(12, 360);
-			this.btnTestContributorsList.Name = "btnTestContributorsList";
-			this.btnTestContributorsList.Size = new System.Drawing.Size(157, 23);
-			this.btnTestContributorsList.TabIndex = 6;
-			this.btnTestContributorsList.Text = "Test Contributos List...";
-			this.btnTestContributorsList.UseVisualStyleBackColor = true;
-			this.btnTestContributorsList.Click += new System.EventHandler(this.btnTestContributorsList_Click);
+			this.btnWritingSystemSetupDialog.Location = new System.Drawing.Point(12, 92);
+			this.btnWritingSystemSetupDialog.Name = "btnWritingSystemSetupDialog";
+			this.btnWritingSystemSetupDialog.Size = new System.Drawing.Size(157, 23);
+			this.btnWritingSystemSetupDialog.TabIndex = 0;
+			this.btnWritingSystemSetupDialog.Text = "WritingSystemSetupDialog";
+			this.btnWritingSystemSetupDialog.UseVisualStyleBackColor = true;
+			this.btnWritingSystemSetupDialog.Click += new System.EventHandler(this.OnWritingSystemSetupDialogClicked);
 			// 
-			// btnShowFormWithModalChild
+			// btnLookupISOCodeDialog
 			// 
-			this.btnShowFormWithModalChild.Location = new System.Drawing.Point(12, 389);
-			this.btnShowFormWithModalChild.Name = "btnShowFormWithModalChild";
-			this.btnShowFormWithModalChild.Size = new System.Drawing.Size(157, 23);
-			this.btnShowFormWithModalChild.TabIndex = 7;
-			this.btnShowFormWithModalChild.Text = "Form w/ Modal Child...";
-			this.btnShowFormWithModalChild.UseVisualStyleBackColor = true;
-			this.btnShowFormWithModalChild.Click += new System.EventHandler(this.btnShowFormWithModalChild_Click);
+			this.btnLookupISOCodeDialog.Location = new System.Drawing.Point(12, 63);
+			this.btnLookupISOCodeDialog.Name = "btnLookupISOCodeDialog";
+			this.btnLookupISOCodeDialog.Size = new System.Drawing.Size(157, 23);
+			this.btnLookupISOCodeDialog.TabIndex = 0;
+			this.btnLookupISOCodeDialog.Text = "LanguageLookupDialog";
+			this.btnLookupISOCodeDialog.UseVisualStyleBackColor = true;
+			this.btnLookupISOCodeDialog.Click += new System.EventHandler(this.OnLanguageLookupDialogClicked);
+			// 
+			// btnFolderBrowserControl
+			// 
+			this.btnFolderBrowserControl.Location = new System.Drawing.Point(12, 34);
+			this.btnFolderBrowserControl.Name = "btnFolderBrowserControl";
+			this.btnFolderBrowserControl.Size = new System.Drawing.Size(157, 23);
+			this.btnFolderBrowserControl.TabIndex = 0;
+			this.btnFolderBrowserControl.Text = "FolderBrowserControl";
+			this.btnFolderBrowserControl.UseVisualStyleBackColor = true;
+			this.btnFolderBrowserControl.Click += new System.EventHandler(this.OnFolderBrowserControlClicked);
+			// 
+			// superToolTip1
+			// 
+			this.superToolTip1.FadingInterval = 10;
 			// 
 			// TestAppForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(187, 489);
+			this.Controls.Add(this.toolStrip1);
 			this.Controls.Add(this.btnThrowException);
 			this.Controls.Add(this.btnShowFormWithModalChild);
 			this.Controls.Add(this.btnTestContributorsList);
@@ -278,6 +301,8 @@ namespace SIL.Windows.Forms.TestApp
 			this.Controls.Add(this.btnFolderBrowserControl);
 			this.Name = "TestAppForm";
 			this.Text = "SIL.Windows.Forms.TestApp";
+			this.toolStrip1.ResumeLayout(false);
+			this.toolStrip1.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -302,5 +327,7 @@ namespace SIL.Windows.Forms.TestApp
 		private System.Windows.Forms.Button btnTestContributorsList;
 		private System.Windows.Forms.Button btnShowFormWithModalChild;
 		private System.Windows.Forms.Button btnThrowException;
+		private System.Windows.Forms.ToolStrip toolStrip1;
+		private System.Windows.Forms.ToolStripDropDownButton _uiLanguageMenu;
 	}
 }

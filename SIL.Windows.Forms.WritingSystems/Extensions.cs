@@ -11,9 +11,9 @@ using static SIL.WritingSystems.IetfLanguageTag;
 
 namespace SIL.Windows.Forms.WritingSystems
 {
-	internal static class Extensions
+	public static class Extensions
 	{
-		public static string ToValidVariantString(this string unknownString)
+		internal static string ToValidVariantString(this string unknownString)
 		{
 			// var1-var2-var3
 			// var1-privateUse1-x-privateUse2
@@ -55,7 +55,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			return variantString;
 		}
 
-		public static WritingSystemDefinition CreateAndWarnUserIfOutOfDate(this IWritingSystemFactory wsFactory, string langTag)
+		internal static WritingSystemDefinition CreateAndWarnUserIfOutOfDate(this IWritingSystemFactory wsFactory, string langTag)
 		{
 			WritingSystemDefinition ws;
 			bool upToDate;
