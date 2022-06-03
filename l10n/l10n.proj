@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(NuGetPackageRoot)\gitversion.msbuild\build\GitVersion.MsBuild.targets" Condition="Exists('$(PkgGitVersion_GitVersion_MsBuild)\build\GitVersion.MsBuild.targets')" />
   <PropertyGroup>
     <TargetFrameworks/>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -6,13 +7,15 @@
     <Version>$(GitVersion_NuGetVersion)</Version>
     <Authors>Jason Naylor</Authors>
     <Company>SIL International</Company>
-	<RestartBuild Condition="'$(PkgL10NSharp_ExtractXliff)' == ''">true</RestartBuild>
-	<RestartBuild Condition="'$(PkgL10NSharp_ExtractXliff)' != ''">false</RestartBuild>
+	<RestartBuild Condition="'$(PkgL10NSharp_ExtractXliff)' == '' OR $(PkgGitVersion_GitVersion_MsBuild) == ''">true</RestartBuild>
+	<RestartBuild Condition="'$(PkgL10NSharp_ExtractXliff)' != '' AND $(PkgGitVersion_GitVersion_MsBuild) != ''">false</RestartBuild>
   </PropertyGroup>
   
   <ItemGroup>
-	<PackageReference Include="GitVersion.MsBuild" Version="5.9.0" GeneratePathProperty="true" />
-	<PackageReference Include="L10NSharp.ExtractXliff" Version="5.0.0-beta0080" GeneratePathProperty="true" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.9.0" GeneratePathProperty="true">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="L10NSharp.ExtractXliff" Version="5.0.0-beta0080" GeneratePathProperty="true" />
     <PackageReference Include="NuGet.CommandLine" Version="6.1.0" GeneratePathProperty="true" />
     <PackageReference Include="SIL.BuildTasks" Version="2.3.0-beta.14" GeneratePathProperty="true" />
   </ItemGroup>

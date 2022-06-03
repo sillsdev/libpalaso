@@ -1,0 +1,65 @@
+
+name: Update l10n Source Strings
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    strategy:
+      fail-fast: false
+    runs-on: windows-2019
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f
+      with:
+        fetch-depth: 0
+
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@51f68377c181a79065c61bd492bd49be4575c439
+      with:
+        dotnet-version: 5.0.x
+
+    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+    - name: Setup MSBuild.exe (Windows OS)
+      uses: microsoft/setup-msbuild@ab534842b4bdf384b8aaf93765dc6f721d9f5fab
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true # So the PATH can be set by this step
+
+    - name: Restore packages
+      run: msbuild l10n/l10n.proj /t:restore /p:Configuration=Release /p:Platform="Any CPU"
+
+    - name: Update l10n strings
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true # So gitversion can set environment vars during the build
+      run: msbuild l10n/l10n.proj /t:UpdateCrowdin /p:Configuration=Release /p:Platform="Any CPU"
+
+    - name: Publish l10n strings
+      uses: actions/upload-artifact@v2
+      with:
+        name: Palaso.en.xlf
+        path: l10n/Palaso.en.xlf
+        if-no-files-found: error
+
+  upload:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download strings
+      uses: actions/download-artifact@v3
+      with:
+        name: Palaso.en.xlf
+        path: Palaso.en.xlf
+
+    - name: Upload Source Strings To Crowdin
+      uses: crowdin/github-action@ecd7eb0ef6f3cfa16293c79e9cbc4bc5b5fd9c49
+      with:
+        upload_sources: true
+        upload_sources_args: '-s Palaso.en.xlf -t %local%/Palaso.%locale%.xlf -T ${{ secrets.CROWDIN_PAT }} -i ${{ secrets.CROWDIN_PROJECT_ID }}'
+        push_translations: false
+        create_pull_request: false
