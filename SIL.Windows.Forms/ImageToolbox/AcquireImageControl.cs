@@ -7,7 +7,6 @@ using L10NSharp;
 using SIL.PlatformUtilities;
 using SIL.Reporting;
 using System.Drawing.Imaging;
-using Microsoft.SqlServer.Server;
 using SIL.IO;
 using WIA;
 
