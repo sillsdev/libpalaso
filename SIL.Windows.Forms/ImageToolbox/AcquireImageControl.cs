@@ -38,7 +38,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		void _galleryControl_ImageChanged(object sender, EventArgs e)
 		{
-			//propogate that event to the outer toolbox
+			// Propagate that event to the outer toolbox
 			if (ImageChanged != null)
 				ImageChanged(sender, e);
 		}
@@ -50,9 +50,9 @@ namespace SIL.Windows.Forms.ImageToolbox
 			if (_actModal)
 				return;		// The GTK file chooser on Linux isn't acting modal, so we simulate it.
 			_actModal = true;
-			// Something in the Mono runtime state machine keeps the GTK filechooser from getting the
+			// Something in the Mono runtime state machine keeps the GTK file chooser from getting the
 			// focus immediately when we invoke OpenFileDialogWithViews.ShowDialog() directly at this
-			// point.  Waiting for the next idle gets it into a state where the filechooser does receive
+			// point.  Waiting for the next idle gets it into a state where the file chooser does receive
 			// the focus as desired.  See https://silbloom.myjetbrains.com/youtrack/issue/BL-5809.
 			if (Platform.IsMono)
 				Application.Idle += DelayGetImageFileFromSystem;
@@ -74,7 +74,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		// load, but it's the default exception if anything is wrong with a file loaded by
 		// Image.FromFile(), so it could happen with a largish image that's corrupted;
 		// TagLib.CorruptFileException (most cases where file is not valid image data, though
-		// its main meaning is that specfically the metadata can't be read).
+		// its main meaning is that specifically the metadata can't be read).
 		public Action<string, Exception, string> ImageLoadingExceptionReporter { get; set; }
 
 		private void GetImageFileFromSystem()
@@ -97,7 +97,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 					dlg.Title = "Choose Picture File".Localize("ImageToolbox.FileChooserTitle", "Title shown for a file chooser dialog brought up by the ImageToolbox");
 
-					//NB: dissallowed gif because of a .net crash:  http://jira.palaso.org/issues/browse/BL-85
+					//NB: disallowed gif because of a .net crash:  http://jira.palaso.org/issues/browse/BL-85
 					dlg.Filter = "picture files".Localize("ImageToolbox.PictureFiles", "Shown in the file-picking dialog to describe what kind of files the dialog is filtering for") + "(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
 
 					if (DialogResult.OK == dlg.ShowDialog(this.ParentForm))
@@ -166,7 +166,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 					BeginInvoke(new Action<string>(OpenFileFromDrag), s);
 
-					ParentForm.Activate();        // in the case Explorer overlaps this form
+					ParentForm?.Activate();        // in the case Explorer overlaps this form
 				}
 			}
 			catch (Exception)
@@ -183,14 +183,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			_scannerButton.Checked = _cameraButton.Checked = false;
 			_currentImage = image;
 			SetMode(Modes.SingleImage);
-			if (image == null)
-			{
-				_pictureBox.Image = null;
-			}
-			else
-			{
-				_pictureBox.Image = image.Image;
-			}
+			_pictureBox.Image = image?.Image;
 		}
 
 		public PalasoImage GetImage()
@@ -305,7 +298,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		/*
 		/// <summary>
-		/// Bitmaps --> PNG, JPEGs stay as jpegs.
+		/// Bitmaps --> PNG, JPEGs stay as JPEGs.
 		/// Will delete the incoming file if it needs to do a conversion.
 		/// </summary>
 		private string ConvertToPngOrJpegIfNotAlready(string incoming)
@@ -347,8 +340,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private string ConvertToPngOrJpegIfNotAlready(ImageFile wiaImageFile)
 		{
-			Image acquiredImage;//with my scanner, always a .bmp
-
 			var imageBytes = (byte[])wiaImageFile.FileData.get_BinaryData();
 			if (wiaImageFile.FileExtension == ".jpg" || wiaImageFile.FileExtension == ".png")
 			{
@@ -372,8 +363,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 				TempFile jpeg = TempFile.WithExtension(".jpg");
 				TempFile png = TempFile.WithExtension(".png");
 
-				//DOCS: "You must keep the stream open for the lifetime of the Image."(maybe just true for jpegs)
-				using (acquiredImage = Image.FromStream(stream))
+				//DOCS: "You must keep the stream open for the lifetime of the Image." (maybe just true for jpeg images)
+				using (var acquiredImage = Image.FromStream(stream))
 				{
 					acquiredImage.Save(jpeg.Path, ImageFormat.Jpeg);
 					acquiredImage.Save(png.Path, ImageFormat.Png);
@@ -413,7 +404,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 					_galleryControl.Visible = false;
 					break;
 				default:
-					throw new ArgumentOutOfRangeException("mode");
+					throw new ArgumentOutOfRangeException(nameof(mode));
 			}
 		}
 
@@ -437,7 +428,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			}
 			// This control can get loaded when the overall dialog is being disposed.
 			// See https://issues.bloomlibrary.org/youtrack/issue/BL-10314 if you don't believe me.
-			Load -= new EventHandler(AcquireImageControl_Load);
+			Load -= AcquireImageControl_Load;
 		}
 
 		/// <summary>
