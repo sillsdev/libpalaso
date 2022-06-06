@@ -60,6 +60,6 @@ jobs:
       uses: crowdin/github-action@ecd7eb0ef6f3cfa16293c79e9cbc4bc5b5fd9c49
       with:
         upload_sources: true
-        upload_sources_args: '-s Palaso.en.xlf -t %local%/Palaso.%locale%.xlf -T ${{ secrets.CROWDIN_PAT }} -i ${{ secrets.CROWDIN_PROJECT_ID }}'
+        upload_sources_args: '-s /home/runner/work/libpalaso/libpalaso/Palaso.en.xlf -t %local%/Palaso.%locale%.xlf -T ${{ secrets.CROWDIN_PAT }} -i ${{ secrets.CROWDIN_PROJECT_ID }}'
         push_translations: false
         create_pull_request: false
