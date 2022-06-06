@@ -35,7 +35,6 @@
   <Target Name="UpdateCrowdinInternal" DependsOnTargets="GetVersion">
 	<MSBuild Projects="..\build\Palaso.proj" Targets="Build" Properties="Configuration=Release" />
 	<Exec Command="&quot;$(PkgL10NSharp_ExtractXliff)\tools\ExtractXliff.exe&quot; -n SIL -o Palaso.dll -x Palaso.en.xlf -p $(GitVersion_NuGetVersion) -m SIL.Localizer.GetString -m SIL.Localizer.Localize -g ../Output/Release/net461/SIL.*.dll" />
-	<!-- <Exec Command="overcrowdin updatefiles" /> -->
   </Target>
   
   <!-- REVIEW: This probably needs to make use of the RestartBuild logic also.  -->

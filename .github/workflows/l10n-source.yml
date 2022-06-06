@@ -6,6 +6,10 @@ on:
     branches: [master]
   workflow_dispatch:
 
+concurrency: 
+  group: ${{ github.workflow }}-update-l10n
+  cancel-in-progress: true
+
 jobs:
 
   build:
@@ -39,27 +43,9 @@ jobs:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true # So gitversion can set environment vars during the build
       run: msbuild l10n/l10n.proj /t:UpdateCrowdin /p:Configuration=Release /p:Platform="Any CPU"
 
-    - name: Publish l10n strings
-      uses: actions/upload-artifact@v2
-      with:
-        name: Palaso.en.xlf
-        path: l10n/Palaso.en.xlf
-        if-no-files-found: error
+    - name: Install Crowdin cli
+      run: npm i -g @crowdin/cli
 
-  upload:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - name: Download strings
-      uses: actions/download-artifact@v3
-      with:
-        name: Palaso.en.xlf
-        path: Palaso.en.xlf
-
-    - name: Upload Source Strings To Crowdin
-      uses: crowdin/github-action@ecd7eb0ef6f3cfa16293c79e9cbc4bc5b5fd9c49
-      with:
-        upload_sources: true
-        upload_sources_args: '-s /home/runner/work/libpalaso/libpalaso/Palaso.en.xlf -t %local%/Palaso.%locale%.xlf -T ${{ secrets.CROWDIN_PAT }} -i ${{ secrets.CROWDIN_PROJECT_ID }}'
-        push_translations: false
-        create_pull_request: false
+    - name: Upload Palaso.en.xlf source file
+      working-directory: ./l10n
+      run: crowdin upload sources -T ${{ secrets.CROWDIN_PAT }} -i ${{ secrets.CROWDIN_PROJECT_ID }}
