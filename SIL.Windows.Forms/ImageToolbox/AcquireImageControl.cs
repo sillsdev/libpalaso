@@ -7,6 +7,7 @@ using L10NSharp;
 using SIL.PlatformUtilities;
 using SIL.Reporting;
 using System.Drawing.Imaging;
+using Microsoft.SqlServer.Server;
 using SIL.IO;
 using WIA;
 
@@ -264,17 +265,20 @@ namespace SIL.Windows.Forms.ImageToolbox
 		// Interop.WIA by reflection, so any strings contained in methods that depend on WIA
 		// calls are omitted.
 		private string TwainDriverNotSupportedMessage =>
-			"Note: this program works with devices that have a 'WIA' driver, not the old-style " +
-			"'TWAIN' driver".Localize("ImageToolbox.TwainDriverNotSupported");
+			LocalizationManager.GetString("ImageToolbox.TwainDriverNotSupported",
+				"Note: this program works with devices that have a \"WIA\" driver, not the " +
+				"old-style \"TWAIN\" driver");
 
 		// This is a separate property because L10nSharp's extraction code cannot properly load
 		// Interop.WIA by reflection, so any strings contained in methods that depend on WIA
 		// calls are omitted.
 		private string WIAVersion2MissingMessage =>
+			string.Format(
+			LocalizationManager.GetString("ImageToolbox.WindowsXpMissingWiaV2Dll",
 			"Windows XP does not come with a crucial DLL that lets you use a WIA scanner with " +
-			"this program. Get a technical person to download and follow the directions at " +
-			"http://vbnet.mvps.org/files/updates/wiaautsdk.zip".Localize(
-				"ImageToolbox.WindowsXpMissingWiaV2Dll");
+			"this program. Get a technical person to download and follow the directions at {0}",
+			"Param 0: URL to download a zip file"),
+			"http://vbnet.mvps.org/files/updates/wiaautsdk.zip");
 
 		// This is a separate property because L10nSharp's extraction code cannot properly load
 		// Interop.WIA by reflection, so any strings contained in methods that depend on WIA
