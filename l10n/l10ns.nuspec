@@ -11,6 +11,6 @@
 		<copyright>Copyright © 2010-2020 SIL International</copyright>
     </metadata>
 	<files>
-	  <file src="CommonLibsL10ns\**\Palaso.*.xlf" target="content" />
+	  <file src="**\Palaso.*.xlf" target="content" />
     </files>
 </package>

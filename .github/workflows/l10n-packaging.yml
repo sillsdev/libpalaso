@@ -1,0 +1,53 @@
+
+name: Package latest l10ns
+
+on:
+  workflow_dispatch:
+
+concurrency: 
+  group: ${{ github.workflow }}-package-l10ns
+  cancel-in-progress: true
+
+jobs:
+
+  build:
+    strategy:
+      fail-fast: false
+    runs-on: windows-2019
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f
+      with:
+        fetch-depth: 0
+
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@51f68377c181a79065c61bd492bd49be4575c439
+      with:
+        dotnet-version: 5.0.x
+
+    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+    - name: Setup MSBuild.exe (Windows OS)
+      uses: microsoft/setup-msbuild@ab534842b4bdf384b8aaf93765dc6f721d9f5fab
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true # So the PATH can be set by this step
+
+    - name: Install Crowdin cli
+      run: npm i -g @crowdin/cli
+
+    - name: Download localizations
+      working-directory: ./l10n
+      run: crowdin download --all -T ${{ secrets.CROWDIN_PAT }} -i ${{ secrets.CROWDIN_PROJECT_ID }}
+
+    - name: Restore packages
+      run: msbuild l10n/l10n.proj /t:restore /p:Configuration=Release /p:Platform="Any CPU"
+
+    - name: Build Nuget package of localizations
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true # So gitversion can set environment vars during the build
+      run: msbuild l10n/l10n.proj /t:PackageL10ns /p:Configuration=Release /p:Platform="Any CPU"
+
+    - name: Publish Nuget package
+      working-directory: ./l10n
+      run: dotnet nuget push *.nupkg --api-key ${{ secrets.SILLSDEV_PUBLISH_NUGET_ORG }} --source https://api.nuget.org/v3/index.json
