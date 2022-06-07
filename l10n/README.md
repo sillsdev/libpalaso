@@ -18,21 +18,15 @@ Then the Crowdin cli is used to update that file in Crowdin based on the crowdin
 It can also be run manually as follows:
 ```
 msbuild l10n.proj /t:UpdateCrowdin
-crowdin  upload sources -i CROWDIN_PROJECT_ID -T CROWDIN_ACCESS_TOKEN
+crowdin upload sources -i CROWDIN_PROJECT_ID -T CROWDIN_ACCESS_TOKEN
 ```
 
 ### Building Nuget package with the latest translations
+This process is run manually from a github action whenever a package with updated translations is needed
 
-Overcrowdin is used to build and download the latest translation data.
-
-The resulting file is unzipped and a Nuget package is built from the l10ns.nuspec file
-
-This process is run whenever a tag is pushed to the libpalaso repository.
-
-It can also be run manually as follows:
+It can also be run manually on a developer machine as follows:
 ```
-dotnet tool install -g overcrowdin
-set CROWDIN_COMMONLIB_KEY=TheApiKeyForTheSilCommonLibrariesProject
+crowdin download --all -i CROWDIN_PROJECT_ID -T CROWDIN_ACCESS_TOKEN
 msbuild l10n.proj /t:PackageL10ns
 nuget push -ApiKey TheSilNugetApiKey SIL.libpalaso.l10n.nupkg
 ```

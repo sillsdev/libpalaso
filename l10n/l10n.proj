@@ -37,12 +37,9 @@
 	<Exec Command="&quot;$(PkgL10NSharp_ExtractXliff)\tools\ExtractXliff.exe&quot; -n SIL -o Palaso.dll -x Palaso.en.xlf -p $(GitVersion_NuGetVersion) -m SIL.Localizer.GetString -m SIL.Localizer.Localize -g ../Output/Release/net461/SIL.*.dll" />
   </Target>
   
-  <!-- REVIEW: This probably needs to make use of the RestartBuild logic also.  -->
   <Target Name="PackageL10ns" DependsOnTargets="restore;GetVersion">
-	<RemoveDir Directories="CommonLibsL10ns" />
-	<Exec Command="overcrowdin download -e -f CommonLibsL10ns.zip" />
-	<Unzip SourceFiles="CommonLibsL10ns.zip" DestinationFolder="CommonLibsL10ns" ContinueOnError="true"/>
-	<NormalizeLocales L10nsDirectory="CommonLibsL10ns" />
+	<!-- Expects `crowdin download -i CROWDIN_PROJECT_ID -T CROWDIN_ACCESS_TOKEN` to have been run first -->
+	<NormalizeLocales L10nsDirectory="." />
 	<Exec Command="&quot;$(PkgNuGet_CommandLine)\tools\NuGet.exe&quot; pack l10ns.nuspec -Version $(GitVersion_NuGetVersion)" />
   </Target>
 </Project>
