@@ -91,6 +91,13 @@ namespace SIL.Windows.Forms.Extensions
 			Func<string, bool> localeSelectedAction = null, ILocalizationManager lm = null,
 			Func<bool> moreSelected = null, Dictionary<string, string> additionalNamedLocales = null)
 		{
+			void DropDownOpening(object sender, EventArgs e)
+			{
+				menu.DropDownItems.OfType<ToolStripMenuItem>()
+					.FirstOrDefault(m => (m.Tag as string) == LocalizationManager.UILanguageId)?.Select();
+			}
+
+			menu.DropDownOpening -= DropDownOpening;
 			menu.DropDownItems.Clear();
 
 			var namedLocales = new SortedDictionary<string, string>(StringComparer.CurrentCulture);
@@ -111,7 +118,7 @@ namespace SIL.Windows.Forms.Extensions
 
 			foreach (var locale in namedLocales)
 			{
-				var item = menu.DropDownItems.Add(locale.Key);
+				var item = menu.DropDownItems.Add(locale.Key) as ToolStripMenuItem;
 				var languageId = locale.Value;
 				item.Tag = languageId;
 				item.Click += (a, b) =>
@@ -121,7 +128,6 @@ namespace SIL.Windows.Forms.Extensions
 						return;
 					
 					LocalizationManager.SetUILanguage(languageId, true);
-					item.Select(); // This doesn't actually do anything noticeable.
 					if (menu is ToolStripDropDownButton btn)
 						btn.Text = item.Text;
 				};
@@ -131,6 +137,8 @@ namespace SIL.Windows.Forms.Extensions
 						btn.Text = item.Text;
 				}
 			}
+
+			menu.DropDownOpening += DropDownOpening;
 
 			if (lm != null)
 			{
