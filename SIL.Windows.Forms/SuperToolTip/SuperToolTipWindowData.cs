@@ -160,6 +160,10 @@ namespace SIL.Windows.Forms.SuperToolTip
 		}
 		private void SetBodyData()
 		{
+			// Do this before setting the Text so lblBody's parents
+			// can properly adjust to this max size. BL-11297
+			lblBody.MaximumSize = new Size(200, 1000);
+
 			lblBody.Text = _superToolTipInfo.BodyText;
 			lblBody.Font = _superToolTipInfo.BodyFont;
 			lblBody.ForeColor = _superToolTipInfo.BodyForeColor;
@@ -170,8 +174,6 @@ namespace SIL.Windows.Forms.SuperToolTip
 				picBody.Size = new Size(picBody.Size.Width, height);
 			}
 
-			//jh
-			lblBody.MaximumSize = new Size(200, 1000);
 		}
 		#endregion
 
