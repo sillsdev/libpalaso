@@ -75,7 +75,19 @@ namespace SIL.WritingSystems
 			ScriptPattern = new Regex("\\A(" + ScriptExpr + ")\\z", RegexOptions.ExplicitCapture);
 			RegionPattern = new Regex("\\A(" + RegionExpr + ")\\z", RegexOptions.ExplicitCapture);
 			PrivateUsePattern = new Regex("\\A(" + PrivateUseSubExpr + ")\\z", RegexOptions.ExplicitCapture);
-			UseICUForLanguageNames = GetLocalizedLanguageNameFromIcu("en", "es") == "inglés";
+			try
+			{
+				UseICUForLanguageNames = GetLocalizedLanguageNameFromIcu("en", "es") == "inglés";
+			} catch (Exception)
+			{
+				// Since the whole purpose of calling GetLocalizedLanguageNameFromIcu is just to determine
+				// if ICU is available, I think it is ok to say that any Exception it might throw
+				// is cause for not continuing to try to use ICU.
+				// Note that at least in Bloom's case of ICU not being available,
+				// what you actually get thrown here is a System.IO.FileLoadException.
+				// That then gets propagated out past here as a TypeInitializationException.
+				UseICUForLanguageNames = false;
+			}
 		}
 
 		/// <summary>
