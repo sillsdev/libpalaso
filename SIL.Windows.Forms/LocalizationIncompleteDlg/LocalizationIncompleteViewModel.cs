@@ -59,7 +59,7 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 			_issueRequestForLocalization = issueRequestForLocalization;
 		}
 
-		public bool ShouldShowDialog(string languageId)
+		public virtual bool ShouldShowDialog(string languageId)
 		{
 			RequestedLanguageId = languageId;
 			return PrimaryLocalizationManager != null && PrimaryLocalizationManager
