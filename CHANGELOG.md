@@ -18,9 +18,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - [SIL.Windows.Forms] Added extension method InitializeWithAvailableUILocales.
+- [SIL.Windows.Forms] Added LocalizationIncompleteDlg and LocalizationIncompleteViewModel classes
 
 ### Changed
 - [SIL.Windows.Forms.WritingSystems] Moved (internal) extension method InitializeWithAvailableUILocales to SIL.Windows.Forms.
+- [SIL.Windows.Forms.WritingSystems] Added additional optional parameters to ToolStripExtensions.InitializeWithAvailableUILocales.
 
 ## [9.0.0] - 2022-06-03
 
