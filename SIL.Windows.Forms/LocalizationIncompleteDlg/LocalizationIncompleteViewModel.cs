@@ -11,7 +11,9 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 	public class LocalizationIncompleteViewModel
 	{
 		public ILocalizationManager PrimaryLocalizationManager { get; }
-		public string EmailAddressForLocalizationRequests { get; }
+
+		public string EmailAddressForLocalizationRequests =>
+			LocalizationManager.EmailForSubmissions;
 
 		private readonly string _crowdinProjectName;
 		private readonly Action _issueRequestForLocalization;
@@ -41,20 +43,15 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 		/// Constructor for a <see cref="LocalizationIncompleteViewModel"/>
 		/// </summary>
 		/// <param name="appLm">The primary localization manager for the application</param>
-		/// <param name="emailAddressForLocalizationRequests">The contact email address for the
-		/// application for the purpose of requesting additional information about localizing,
-		/// submitting localizations, etc.</param>
 		/// <param name="crowdinProjectName">The name of the project in Crowdin. This is the
 		/// part of the Crowdin project's URL following https://crowdin.com/project/</param>
 		/// <param name="issueRequestForLocalization">An action to handle issuing a localization
 		/// request (typically by passing the <see cref="StandardAnalyticsInfo"/> to
 		/// DesktopAnalytics.Track</param>
 		public LocalizationIncompleteViewModel(ILocalizationManager appLm,
-			string emailAddressForLocalizationRequests, string crowdinProjectName,
-			Action issueRequestForLocalization)
+			string crowdinProjectName, Action issueRequestForLocalization)
 		{
 			PrimaryLocalizationManager = appLm;
-			EmailAddressForLocalizationRequests = emailAddressForLocalizationRequests;
 			_crowdinProjectName = crowdinProjectName;
 			_issueRequestForLocalization = issueRequestForLocalization;
 		}

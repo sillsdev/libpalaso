@@ -51,7 +51,7 @@ namespace SIL.Windows.Forms.TestApp
 			InitializeComponent();
 			Text = Platform.DesktopEnvironmentInfoString;
 			_localizationIncompleteViewModel = new LocalizationIncompleteViewModel(
-				Program.PrimaryL10NManager, "testapp@sil.org", "testapp",
+				Program.PrimaryL10NManager, "testapp",
 				IssueAnalyticsRequest);
 			_uiLanguageMenu.InitializeWithAvailableUILocales(l => true, Program.PrimaryL10NManager,
 				_localizationIncompleteViewModel, additionalNamedLocales:new Dictionary<string, string> {
