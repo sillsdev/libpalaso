@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -121,6 +121,6 @@
     <value>17, 17</value>
   </metadata>
   <data name="_lblLocalizationIncomplete.Text" xml:space="preserve">
-    <value>The localization of {0} int {1} is very incomplete. With the exception  of a few common buttons, menu items and dialog boxes, you will not see the text displayed in {1}. However, we are tracking requests for localization. If we can contact you about your need, please provide your enail address.</value>
+    <value>The localization of {0} in {1} is very incomplete. With the exception  of a few common buttons, menu items and dialog boxes, you will not see the text displayed in {1}. However, we are tracking requests for localization. If we can contact you about your need, please provide your email address.</value>
   </data>
 </root>

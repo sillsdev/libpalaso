@@ -12,48 +12,48 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 	/// </summary>
 	public partial class LocalizationIncompleteDlg : Form
 	{
-		private readonly LocalizationIncompleteViewModel _localizationViewModel;
+		private readonly LocalizationIncompleteViewModel _model;
 
-		public LocalizationIncompleteDlg(LocalizationIncompleteViewModel localizationViewModel)
+		public LocalizationIncompleteDlg(LocalizationIncompleteViewModel model)
 		{
-			_localizationViewModel = localizationViewModel;
+			_model = model;
 			InitializeComponent();
 
-			var lm = localizationViewModel.PrimaryLocalizationManager;
+			var lm = model.PrimaryLocalizationManager;
 			if (lm.Name != null)
 				Text = lm.Name;
 
 			_lblLocalizationIncomplete.Text = string.Format(_lblLocalizationIncomplete.Text,
-				lm.Name, localizationViewModel.RequestedLanguageId);
+				lm.Name, model.RequestedLanguageId);
 
-			_lblUsers.Text = string.Format(_lblUsers.Text, localizationViewModel.RequestedLanguageId);
+			_lblUsers.Text = string.Format(_lblUsers.Text, model.RequestedLanguageId);
 
 			_chkAbleToHelp.Text = string.Format(_chkAbleToHelp.Text, lm.Name,
-				localizationViewModel.RequestedLanguageId);
+				model.RequestedLanguageId);
 
 			_linkCrowdinAndEmailInstructions.Visible =
-				_localizationViewModel.CrowdinProjectUrl != null;
+				_model.CrowdinProjectUrl != null;
 
-			_lblMoreInromationEmail.Text = string.Format(_lblMoreInromationEmail.Text,
-				localizationViewModel.EmailAddressForLocalizationRequests);
+			_lblMoreInformationEmail.Text = string.Format(_lblMoreInformationEmail.Text,
+				model.EmailAddressForLocalizationRequests);
 		}
 
 		private void btnOk_Click(object sender, EventArgs e)
 		{
-			_localizationViewModel.UserEmailAddress = _txtUserEmailAddress.Text;
-			_localizationViewModel.NumberOfUsers = (int)_numUsers.Value;
-			_localizationViewModel.AbleToHelp = _chkAbleToHelp.Checked;
-			_localizationViewModel.IssueRequestForLocalization();
+			_model.UserEmailAddress = _txtUserEmailAddress.Text;
+			_model.NumberOfUsers = (int)_numUsers.Value;
+			_model.AbleToHelp = _chkAbleToHelp.Checked;
+			_model.IssueRequestForLocalization();
 		}
 
 		private void _btnCopy_Click(object sender, EventArgs e)
 		{
-			Clipboard.SetText(_localizationViewModel.EmailAddressForLocalizationRequests);
+			Clipboard.SetText(_model.EmailAddressForLocalizationRequests);
 		}
 
 		private void _lblCrowdinAndEmailInstructions_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			Process.SafeStart(_localizationViewModel.CrowdinProjectUrl);
+			Process.SafeStart(_model.CrowdinProjectUrl);
 		}
 	}
 }

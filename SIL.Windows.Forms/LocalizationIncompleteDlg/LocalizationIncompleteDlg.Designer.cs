@@ -41,7 +41,7 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 			this._linkCrowdinAndEmailInstructions = new System.Windows.Forms.LinkLabel();
 			this.l10NSharpExtender1 = new L10NSharp.UI.L10NSharpExtender(this.components);
 			this._chkAbleToHelp = new System.Windows.Forms.CheckBox();
-			this._lblMoreInromationEmail = new System.Windows.Forms.Label();
+			this._lblMoreInformationEmail = new System.Windows.Forms.Label();
 			this._btnCopy = new System.Windows.Forms.Button();
 			this.tableLayoutPanel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._numUsers)).BeginInit();
@@ -62,7 +62,7 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 			this.tableLayoutPanel1.Controls.Add(this._lblUsers, 0, 2);
 			this.tableLayoutPanel1.Controls.Add(this._numUsers, 1, 3);
 			this.tableLayoutPanel1.Controls.Add(this._chkAbleToHelp, 1, 4);
-			this.tableLayoutPanel1.Controls.Add(this._lblMoreInromationEmail, 1, 6);
+			this.tableLayoutPanel1.Controls.Add(this._lblMoreInformationEmail, 1, 6);
 			this.tableLayoutPanel1.Controls.Add(this._btnCopy, 2, 6);
 			this.tableLayoutPanel1.Controls.Add(this.btnOk, 2, 7);
 			this.tableLayoutPanel1.Controls.Add(this._linkCrowdinAndEmailInstructions, 1, 5);
@@ -118,7 +118,7 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 			this.l10NSharpExtender1.SetLocalizableToolTip(this._lblLocalizationIncomplete, null);
 			this.l10NSharpExtender1.SetLocalizationComment(this._lblLocalizationIncomplete, "Param 0: Localization Manager name (usually the same as the application name); Pa" +
         "ram 1: Name of the selected user interface language.");
-			this.l10NSharpExtender1.SetLocalizingId(this._lblLocalizationIncomplete, "DialogBoxes.LocalizationIncompleteDlg.LocalizationIncompleteDlg._lblLocalizationI" +
+			this.l10NSharpExtender1.SetLocalizingId(this._lblLocalizationIncomplete, "DialogBoxes.LocalizationIncompleteDlg._lblLocalizationI" +
         "ncomplete");
 			this._lblLocalizationIncomplete.Location = new System.Drawing.Point(3, 0);
 			this._lblLocalizationIncomplete.Name = "_lblLocalizationIncomplete";
@@ -146,8 +146,8 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 			this._lblEmailAddress.AutoSize = true;
 			this.l10NSharpExtender1.SetLocalizableToolTip(this._lblEmailAddress, null);
 			this.l10NSharpExtender1.SetLocalizationComment(this._lblEmailAddress, null);
-			this.l10NSharpExtender1.SetLocalizationPriority(this._lblEmailAddress, L10NSharp.LocalizationPriority.NotLocalizable);
-			this.l10NSharpExtender1.SetLocalizingId(this._lblEmailAddress, "DialogBoxes.LocalizationIncompleteDlg.LocalizationIncompleteDlg._lblEmailAddress");
+			this.l10NSharpExtender1.SetLocalizationPriority(this._lblEmailAddress, L10NSharp.LocalizationPriority.Medium);
+			this.l10NSharpExtender1.SetLocalizingId(this._lblEmailAddress, "DialogBoxes.LocalizationIncompleteDlg._lblEmailAddress");
 			this._lblEmailAddress.Location = new System.Drawing.Point(3, 57);
 			this._lblEmailAddress.Name = "_lblEmailAddress";
 			this._lblEmailAddress.Size = new System.Drawing.Size(75, 13);
@@ -160,8 +160,8 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 			this.tableLayoutPanel1.SetColumnSpan(this._lblUsers, 4);
 			this.l10NSharpExtender1.SetLocalizableToolTip(this._lblUsers, null);
 			this.l10NSharpExtender1.SetLocalizationComment(this._lblUsers, "Param 0: Selected user interface language");
-			this.l10NSharpExtender1.SetLocalizationPriority(this._lblUsers, L10NSharp.LocalizationPriority.NotLocalizable);
-			this.l10NSharpExtender1.SetLocalizingId(this._lblUsers, "DialogBoxes.LocalizationIncompleteDlg.LocalizationIncompleteDlg._lblUsers");
+			this.l10NSharpExtender1.SetLocalizationPriority(this._lblUsers, L10NSharp.LocalizationPriority.Medium);
+			this.l10NSharpExtender1.SetLocalizingId(this._lblUsers, "DialogBoxes.LocalizationIncompleteDlg._lblUsers");
 			this._lblUsers.Location = new System.Drawing.Point(3, 77);
 			this._lblUsers.Name = "_lblUsers";
 			this._lblUsers.Padding = new System.Windows.Forms.Padding(0, 12, 0, 8);
@@ -175,7 +175,7 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 			this.l10NSharpExtender1.SetLocalizableToolTip(this._numUsers, null);
 			this.l10NSharpExtender1.SetLocalizationComment(this._numUsers, null);
 			this.l10NSharpExtender1.SetLocalizationPriority(this._numUsers, L10NSharp.LocalizationPriority.NotLocalizable);
-			this.l10NSharpExtender1.SetLocalizingId(this._numUsers, "DialogBoxes.LocalizationIncompleteDlg.LocalizationIncompleteDlg._numUsers");
+			this.l10NSharpExtender1.SetLocalizingId(this._numUsers, "DialogBoxes.LocalizationIncompleteDlg._numUsers");
 			this._numUsers.Location = new System.Drawing.Point(84, 113);
 			this._numUsers.Minimum = new decimal(new int[] {
             1,
@@ -199,8 +199,8 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 			this._linkCrowdinAndEmailInstructions.LinkArea = new System.Windows.Forms.LinkArea(0, 39);
 			this.l10NSharpExtender1.SetLocalizableToolTip(this._linkCrowdinAndEmailInstructions, null);
 			this.l10NSharpExtender1.SetLocalizationComment(this._linkCrowdinAndEmailInstructions, null);
-			this.l10NSharpExtender1.SetLocalizationPriority(this._linkCrowdinAndEmailInstructions, L10NSharp.LocalizationPriority.NotLocalizable);
-			this.l10NSharpExtender1.SetLocalizingId(this._linkCrowdinAndEmailInstructions, "DialogBoxes.LocalizationIncompleteDlg.LocalizationIncompleteDlg._linkCrowdinAndEm" +
+			this.l10NSharpExtender1.SetLocalizationPriority(this._linkCrowdinAndEmailInstructions, L10NSharp.LocalizationPriority.Medium);
+			this.l10NSharpExtender1.SetLocalizingId(this._linkCrowdinAndEmailInstructions, "DialogBoxes.LocalizationIncompleteDlg._linkCrowdinAndEm" +
         "ailInstructions");
 			this._linkCrowdinAndEmailInstructions.Location = new System.Drawing.Point(389, 175);
 			this._linkCrowdinAndEmailInstructions.Name = "_linkCrowdinAndEmailInstructions";
@@ -214,7 +214,7 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 			// l10NSharpExtender1
 			// 
 			this.l10NSharpExtender1.LocalizationManagerId = null;
-			this.l10NSharpExtender1.PrefixForNewItems = "DialogBoxes.LocalizationIncompleteDlg";
+			this.l10NSharpExtender1.PrefixForNewItems = "DialogBoxes";
 			// 
 			// _chkAbleToHelp
 			// 
@@ -235,18 +235,17 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 			// 
 			// _lblMoreInromationEmail
 			// 
-			this._lblMoreInromationEmail.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this._lblMoreInromationEmail.AutoSize = true;
-			this.l10NSharpExtender1.SetLocalizableToolTip(this._lblMoreInromationEmail, null);
-			this.l10NSharpExtender1.SetLocalizationComment(this._lblMoreInromationEmail, "Param 0: email address");
-			this.l10NSharpExtender1.SetLocalizationPriority(this._lblMoreInromationEmail, L10NSharp.LocalizationPriority.NotLocalizable);
-			this.l10NSharpExtender1.SetLocalizingId(this._lblMoreInromationEmail, "DialogBoxes.LocalizationIncompleteDlg.LocalizationIncompleteDlg._lblMoreInromatio" +
-        "nEmail");
-			this._lblMoreInromationEmail.Location = new System.Drawing.Point(84, 202);
-			this._lblMoreInromationEmail.Name = "_lblMoreInromationEmail";
-			this._lblMoreInromationEmail.Size = new System.Drawing.Size(149, 13);
-			this._lblMoreInromationEmail.TabIndex = 9;
-			this._lblMoreInromationEmail.Text = "For more information, email {0}";
+			this._lblMoreInformationEmail.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this._lblMoreInformationEmail.AutoSize = true;
+			this.l10NSharpExtender1.SetLocalizableToolTip(this._lblMoreInformationEmail, null);
+			this.l10NSharpExtender1.SetLocalizationComment(this._lblMoreInformationEmail, "Param 0: email address");
+			this.l10NSharpExtender1.SetLocalizationPriority(this._lblMoreInformationEmail, L10NSharp.LocalizationPriority.Medium);
+			this.l10NSharpExtender1.SetLocalizingId(this._lblMoreInformationEmail, "DialogBoxes.LocalizationIncompleteDlg._lblMoreInformationEmail");
+			this._lblMoreInformationEmail.Location = new System.Drawing.Point(84, 202);
+			this._lblMoreInformationEmail.Name = "_lblMoreInformationEmail";
+			this._lblMoreInformationEmail.Size = new System.Drawing.Size(149, 13);
+			this._lblMoreInformationEmail.TabIndex = 9;
+			this._lblMoreInformationEmail.Text = "For more information, email {0}";
 			// 
 			// _btnCopy
 			// 
@@ -258,7 +257,7 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 			this._btnCopy.Image = global::SIL.Windows.Forms.Properties.Resources.copy_icon;
 			this.l10NSharpExtender1.SetLocalizableToolTip(this._btnCopy, "Copy email address to clipboard");
 			this.l10NSharpExtender1.SetLocalizationComment(this._btnCopy, null);
-			this.l10NSharpExtender1.SetLocalizingId(this._btnCopy, "DialogBoxes.LocalizationIncompleteDlg.button1");
+			this.l10NSharpExtender1.SetLocalizingId(this._btnCopy, "DialogBoxes.LocalizationIncompleteDlg._btnCopy");
 			this._btnCopy.Location = new System.Drawing.Point(236, 196);
 			this._btnCopy.Margin = new System.Windows.Forms.Padding(0);
 			this._btnCopy.Name = "_btnCopy";
@@ -305,7 +304,7 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 		private System.Windows.Forms.NumericUpDown _numUsers;
 		private System.Windows.Forms.LinkLabel _linkCrowdinAndEmailInstructions;
 		private System.Windows.Forms.CheckBox _chkAbleToHelp;
-		private System.Windows.Forms.Label _lblMoreInromationEmail;
+		private System.Windows.Forms.Label _lblMoreInformationEmail;
 		private System.Windows.Forms.Button _btnCopy;
 	}
 }
