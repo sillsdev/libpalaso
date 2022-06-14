@@ -51,7 +51,7 @@ namespace SIL.Windows.Forms.TestApp
 			var localizationFolder = Path.GetDirectoryName(
 				FileLocationUtilities.GetFileDistributedWithApplication(distFilesEnglishStrings));
 			PrimaryL10NManager = LocalizationManager.Create(localizationType, preferredUILocale, "Palaso", "Palaso",
-				"1.0.0", localizationFolder, "SIL/Palaso", null, "");
+				"1.0.0", localizationFolder, "SIL/Palaso", null, "testapp@sil.org");
 
 			if (testCommandLineRunner)
 			{
