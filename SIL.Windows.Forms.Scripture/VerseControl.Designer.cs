@@ -20,6 +20,33 @@
 			base.Dispose(disposing);
 		}
 
+		/// <summary> 
+		/// Set tooltip for the verse spinner.
+		/// </summary>
+		/// <param name="tooltiptext">string that contains the desired tooltip text</param>
+		public void SetToolTipVerseSpinner(string tooltiptext)
+		{
+			this.uiToolTip.SetToolTip(this.uiVerseSpinner, tooltiptext);
+		}
+
+		/// <summary> 
+		/// Set tooltip for the chapter spinner.
+		/// </summary>
+		/// <param name="tooltiptext">string that contains the desired tooltip text</param>
+		public void SetToolTipChapterSpinner(string tooltiptext)
+		{
+			this.uiToolTip.SetToolTip(this.uiChapterSpinner, tooltiptext);
+		}
+
+		/// <summary> 
+		/// Set tooltip for the book selector.
+		/// </summary>
+		/// <param name="tooltiptext">string that contains the desired tooltip text</param>
+		public void SetToolTipBookSelector(string tooltiptext)
+		{
+			this.uiToolTip.SetToolTip(this.uiBook, tooltiptext);
+		}
+
 		#region Component Designer generated code
 
 		/// <summary> 
@@ -131,7 +158,6 @@
 			this.uiBook.Name = "uiBook";
 			this.uiBook.Size = new System.Drawing.Size(53, 22);
 			this.uiBook.TabIndex = 5;
-			this.uiToolTip.SetToolTip(this.uiBook, "Select Book");
 			this.uiBook.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.uiBook_DrawItem);
 			this.uiBook.SelectionChangeCommitted += new System.EventHandler(this.uiBook_SelectionChangeCommitted);
 			this.uiBook.FontChanged += new System.EventHandler(this.uiBook_FontChanged);
