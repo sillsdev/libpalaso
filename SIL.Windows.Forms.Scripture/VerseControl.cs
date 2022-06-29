@@ -261,6 +261,41 @@ namespace SIL.Windows.Forms.Scripture
 			set { advanceToEnd = value; }
 		}
 
+		/// <summary> 
+		/// Set tooltip for the verse spinner and text field.
+		/// </summary>
+		public string ToolTipVerseSelector
+		{
+			set
+			{
+				this.uiToolTip.SetToolTip(this.uiVerseSpinner, value);
+				this.uiToolTip.SetToolTip(this.uiVerse, value);
+			}
+		}
+
+		/// <summary> 
+		/// Set tooltip for the chapter spinner and text field.
+		/// </summary>
+		public string ToolTipChapterSelector
+		{
+			set
+			{
+				this.uiToolTip.SetToolTip(this.uiChapterSpinner, value);
+				this.uiToolTip.SetToolTip(this.uiChapter, value);
+			}
+		}
+
+		/// <summary> 
+		/// Set tooltip for the book selector.
+		/// </summary>
+		public string ToolTipBookSelector
+		{
+			set
+			{
+				this.uiToolTip.SetToolTip(this.uiBook, value);
+			}
+		}
+
 		#endregion
 
 		#region Internal Updating Methods

@@ -131,7 +131,6 @@
 			this.uiBook.Name = "uiBook";
 			this.uiBook.Size = new System.Drawing.Size(53, 22);
 			this.uiBook.TabIndex = 5;
-			this.uiToolTip.SetToolTip(this.uiBook, "Select Book");
 			this.uiBook.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.uiBook_DrawItem);
 			this.uiBook.SelectionChangeCommitted += new System.EventHandler(this.uiBook_SelectionChangeCommitted);
 			this.uiBook.FontChanged += new System.EventHandler(this.uiBook_FontChanged);
