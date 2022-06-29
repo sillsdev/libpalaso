@@ -20,33 +20,6 @@
 			base.Dispose(disposing);
 		}
 
-		/// <summary> 
-		/// Set tooltip for the verse spinner.
-		/// </summary>
-		/// <param name="tooltiptext">string that contains the desired tooltip text</param>
-		public void SetToolTipVerseSpinner(string tooltiptext)
-		{
-			this.uiToolTip.SetToolTip(this.uiVerseSpinner, tooltiptext);
-		}
-
-		/// <summary> 
-		/// Set tooltip for the chapter spinner.
-		/// </summary>
-		/// <param name="tooltiptext">string that contains the desired tooltip text</param>
-		public void SetToolTipChapterSpinner(string tooltiptext)
-		{
-			this.uiToolTip.SetToolTip(this.uiChapterSpinner, tooltiptext);
-		}
-
-		/// <summary> 
-		/// Set tooltip for the book selector.
-		/// </summary>
-		/// <param name="tooltiptext">string that contains the desired tooltip text</param>
-		public void SetToolTipBookSelector(string tooltiptext)
-		{
-			this.uiToolTip.SetToolTip(this.uiBook, tooltiptext);
-		}
-
 		#region Component Designer generated code
 
 		/// <summary> 
