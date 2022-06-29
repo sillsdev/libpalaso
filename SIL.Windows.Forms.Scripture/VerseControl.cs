@@ -406,6 +406,12 @@ namespace SIL.Windows.Forms.Scripture
 				HandlePasteScriptureRef();
 				return true; // may not have updated verse control, but treat CTRL-V as handled
 			}
+			// copy values to clipboard on KeyDown for CTRL-C
+			if (msg.Msg == 0x100 && keyData == (Keys.Control | Keys.C))
+			{
+				PortableClipboard.SetText(VerseRef.ToString());
+				return true;
+			}
 
 			return base.ProcessCmdKey(ref msg, keyData);
 		}
