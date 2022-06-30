@@ -400,14 +400,15 @@ namespace SIL.Windows.Forms.Scripture
 		/// <returns>true if CTRL-V was used, otherwise base method is called</returns>
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
+			const int WM_KEYDOWN = 0x100;
 			// check to see if values can be pasted on KeyDown for CTRL-V
-			if (msg.Msg == 0x100 && keyData == (Keys.Control | Keys.V))
+			if (msg.Msg == WM_KEYDOWN && keyData == (Keys.Control | Keys.V))
 			{
 				HandlePasteScriptureRef();
 				return true; // may not have updated verse control, but treat CTRL-V as handled
 			}
 			// copy values to clipboard on KeyDown for CTRL-C
-			if (msg.Msg == 0x100 && keyData == (Keys.Control | Keys.C))
+			if (msg.Msg == WM_KEYDOWN && keyData == (Keys.Control | Keys.C))
 			{
 				PortableClipboard.SetText(VerseRef.ToString());
 				return true;
