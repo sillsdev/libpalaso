@@ -30,7 +30,7 @@
 
   <ItemGroup Condition="'$(OS)'=='Windows_NT'">
     <!--These references are required to compile on Windows -->
-    <PackageReference Include="Mono.Posix" Version="5.4.0.201" PrivateAssets="All" />
+    <PackageReference Include="Mono.Posix" Version="7.1.0-final.1.21458.1" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(OS)'!='Windows_NT'">
