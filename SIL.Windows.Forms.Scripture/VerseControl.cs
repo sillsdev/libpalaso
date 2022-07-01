@@ -261,6 +261,41 @@ namespace SIL.Windows.Forms.Scripture
 			set { advanceToEnd = value; }
 		}
 
+		/// <summary> 
+		/// Set tooltip for the verse spinner and text field.
+		/// </summary>
+		public string ToolTipVerseSelector
+		{
+			set
+			{
+				this.uiToolTip.SetToolTip(this.uiVerseSpinner, value);
+				this.uiToolTip.SetToolTip(this.uiVerse, value);
+			}
+		}
+
+		/// <summary> 
+		/// Set tooltip for the chapter spinner and text field.
+		/// </summary>
+		public string ToolTipChapterSelector
+		{
+			set
+			{
+				this.uiToolTip.SetToolTip(this.uiChapterSpinner, value);
+				this.uiToolTip.SetToolTip(this.uiChapter, value);
+			}
+		}
+
+		/// <summary> 
+		/// Set tooltip for the book selector.
+		/// </summary>
+		public string ToolTipBookSelector
+		{
+			set
+			{
+				this.uiToolTip.SetToolTip(this.uiBook, value);
+			}
+		}
+
 		#endregion
 
 		#region Internal Updating Methods
@@ -365,11 +400,18 @@ namespace SIL.Windows.Forms.Scripture
 		/// <returns>true if CTRL-V was used, otherwise base method is called</returns>
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
+			const int WM_KEYDOWN = 0x100;
 			// check to see if values can be pasted on KeyDown for CTRL-V
-			if (msg.Msg == 0x100 && keyData == (Keys.Control | Keys.V))
+			if (msg.Msg == WM_KEYDOWN && keyData == (Keys.Control | Keys.V))
 			{
 				HandlePasteScriptureRef();
 				return true; // may not have updated verse control, but treat CTRL-V as handled
+			}
+			// copy values to clipboard on KeyDown for CTRL-C
+			if (msg.Msg == WM_KEYDOWN && keyData == (Keys.Control | Keys.C))
+			{
+				PortableClipboard.SetText(VerseRef.ToString());
+				return true;
 			}
 
 			return base.ProcessCmdKey(ref msg, keyData);
