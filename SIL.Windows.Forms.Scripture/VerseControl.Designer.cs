@@ -1,4 +1,4 @@
-﻿namespace SIL.Windows.Forms.Scripture
+namespace SIL.Windows.Forms.Scripture
 {
 	sealed partial class VerseControl
 	{
@@ -32,9 +32,15 @@
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.uiVerseSpinner = new SIL.Windows.Forms.Widgets.HorizontalSpinner();
 			this.uiChapter = new SIL.Windows.Forms.Widgets.EnterTextBox();
+			this.uiChapter.CopyEvent += HandleCopy;
+			this.uiChapter.PasteEvent += HandlePaste;
 			this.uiVerse = new SIL.Windows.Forms.Widgets.EnterTextBox();
+			this.uiVerse.CopyEvent += HandleCopy;
+			this.uiVerse.PasteEvent += HandlePaste;
 			this.uiChapterSpinner = new SIL.Windows.Forms.Widgets.HorizontalSpinner();
 			this.uiBook = new SIL.Windows.Forms.Widgets.SafeComboBox();
+			this.uiBook.CopyEvent += HandleCopy;
+			this.uiBook.PasteEvent += HandlePaste;
 			this.uiToolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.tableLayoutPanel1.SuspendLayout();
 			this.SuspendLayout();

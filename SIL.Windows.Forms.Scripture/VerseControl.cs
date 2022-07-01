@@ -417,6 +417,17 @@ namespace SIL.Windows.Forms.Scripture
 			return base.ProcessCmdKey(ref msg, keyData);
 		}
 
+		private void HandleCopy()
+		{
+			Clipboard.SetText(VerseRef.ToString());
+		}
+
+		private void HandlePaste()
+		{
+			HandlePasteScriptureRef();
+		}
+
+
 		/// <summary>
 		/// Fires a VerseRefChangedEvent
 		/// </summary>
