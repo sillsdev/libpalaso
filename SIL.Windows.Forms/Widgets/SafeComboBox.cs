@@ -56,7 +56,8 @@ namespace SIL.Windows.Forms.Widgets
 
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
-			GetTextBoxHandle();
+			if (Platform.IsWindows)
+				GetTextBoxHandle();
 
 			if (BeforeMouseDown != null)
 				BeforeMouseDown(this, e);
