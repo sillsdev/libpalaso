@@ -31,14 +31,14 @@ namespace SIL.Windows.Forms.Scripture
 			this.components = new System.ComponentModel.Container();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.uiVerseSpinner = new SIL.Windows.Forms.Widgets.HorizontalSpinner();
-			this.uiChapter = new SIL.Windows.Forms.Widgets.EnterTextBox();
+			this.uiChapter = new VCEnterTextBox();
 			this.uiChapter.CopyEvent += HandleCopy;
 			this.uiChapter.PasteEvent += HandlePaste;
-			this.uiVerse = new SIL.Windows.Forms.Widgets.EnterTextBox();
+			this.uiVerse = new VCEnterTextBox();
 			this.uiVerse.CopyEvent += HandleCopy;
 			this.uiVerse.PasteEvent += HandlePaste;
 			this.uiChapterSpinner = new SIL.Windows.Forms.Widgets.HorizontalSpinner();
-			this.uiBook = new SIL.Windows.Forms.Widgets.SafeComboBox();
+			this.uiBook = new VCSafeComboBox();
 			this.uiBook.CopyEvent += HandleCopy;
 			this.uiBook.PasteEvent += HandlePaste;
 			this.uiToolTip = new System.Windows.Forms.ToolTip(this.components);
@@ -169,10 +169,10 @@ namespace SIL.Windows.Forms.Scripture
 
 		private SIL.Windows.Forms.Widgets.HorizontalSpinner uiVerseSpinner;
 		private SIL.Windows.Forms.Widgets.HorizontalSpinner uiChapterSpinner;
-		private SIL.Windows.Forms.Widgets.EnterTextBox uiChapter;
-		private SIL.Windows.Forms.Widgets.EnterTextBox uiVerse;
+		private VCEnterTextBox uiChapter;
+		private VCEnterTextBox uiVerse;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private System.Windows.Forms.ToolTip uiToolTip;
-		private SIL.Windows.Forms.Widgets.SafeComboBox uiBook;
+		private VCSafeComboBox uiBook;
 	}
 }
