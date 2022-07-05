@@ -1255,7 +1255,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// <summary>
 		/// Handle of the TextBox that is embedded in the ComboBox
 		/// </summary>
-		public class TextBoxHandle : NativeWindow
+		internal class TextBoxHandle : NativeWindow
 		{
 			public event CopyPaste CopyEvent;
 			public event CopyPaste PasteEvent;
