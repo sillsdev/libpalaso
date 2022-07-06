@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 using SIL.PlatformUtilities;
@@ -15,7 +15,7 @@ namespace SIL.Windows.Forms.Widgets
 		/// Occurs before mouse down.
 		/// </summary>
 		public event EventHandler<MouseEventArgs> BeforeMouseDown;
-		
+
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
 			if (BeforeMouseDown != null)

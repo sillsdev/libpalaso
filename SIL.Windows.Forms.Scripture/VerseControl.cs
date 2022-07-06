@@ -7,15 +7,19 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using SIL.PlatformUtilities;
 using SIL.Scripture;
 using SIL.Extensions;
 using SIL.Linq;
 using SIL.Windows.Forms.Miscellaneous;
+using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.Scripture
 {
+	public delegate void CopyPaste();
+
 	/// <summary>
 	/// Control that allows the specifying of a book, chapter and verse
 	/// in the same style as Paratext.
@@ -416,6 +420,17 @@ namespace SIL.Windows.Forms.Scripture
 
 			return base.ProcessCmdKey(ref msg, keyData);
 		}
+
+		private void HandleCopy()
+		{
+			Clipboard.SetText(VerseRef.ToString());
+		}
+
+		private void HandlePaste()
+		{
+			HandlePasteScriptureRef();
+		}
+
 
 		/// <summary>
 		/// Fires a VerseRefChangedEvent
@@ -1183,5 +1198,128 @@ namespace SIL.Windows.Forms.Scripture
 			uiVerse.SelectAll();
 		}
 
+		/// <summary>
+		/// Variant of the SafeComboBox that fires events on a copy/paste action
+		/// that is triggered from the context menu, so by using the mouse.
+		/// </summary>
+		private class VCSafeComboBox : SafeComboBox
+		{
+			public event CopyPaste CopyEvent;
+			public event CopyPaste PasteEvent;
+
+			[DllImport("user32.dll", EntryPoint = "FindWindowExA", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+			private static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+			private TextBoxHandle textBoxHandle;
+
+			/// <summary>
+			/// Get handle of TextBox that is embedded in the ComboBox
+			/// </summary>
+			private void GetTextBoxHandle()
+			{
+				if (textBoxHandle == null)
+				{
+					IntPtr embeddedTextBox = FindWindowEx(this.Handle, IntPtr.Zero, "EDIT", null);
+
+					textBoxHandle = new TextBoxHandle();
+					textBoxHandle.AssignHandle(embeddedTextBox);
+
+					textBoxHandle.CopyEvent += OnCopyEvent;
+					textBoxHandle.PasteEvent += OnPasteEvent;
+				}
+			}
+
+			protected virtual void OnCopyEvent()
+			{
+				CopyEvent?.Invoke();
+			}
+
+			protected virtual void OnPasteEvent()
+			{
+				PasteEvent?.Invoke();
+			}
+
+			/// <summary>
+			/// Get the TextBox handle whenever the user interacts with the object.
+			/// Getting the handle at construction doesn't work, since it appears to change at a later moment.
+			/// </summary>
+			protected override void OnMouseDown(MouseEventArgs e)
+			{
+				if (Platform.IsWindows)
+					GetTextBoxHandle();
+
+				base.OnMouseDown(e);
+			}
+
+			/// <summary>
+			/// Handle of the TextBox that is embedded in the ComboBox
+			/// </summary>
+			private class TextBoxHandle : NativeWindow
+			{
+				public event CopyPaste CopyEvent;
+				public event CopyPaste PasteEvent;
+
+				protected override void WndProc(ref Message m)
+				{
+					switch (m.Msg)
+					{
+						case (0x301): //WM_COPY
+							OnCopyEvent();
+							break;
+						case (0x302): //WM_PASTE
+							OnPasteEvent();
+							break;
+						default:
+							base.WndProc(ref m);
+							break;
+					}
+				}
+
+				protected virtual void OnCopyEvent()
+				{
+					CopyEvent?.Invoke();
+				}
+
+				protected virtual void OnPasteEvent()
+				{
+					PasteEvent?.Invoke();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Variant of the EnterTextBox that fires events on a copy/paste action
+		/// that is triggered from the context menu, so by using the mouse.
+		/// </summary>
+		private class VCEnterTextBox : EnterTextBox
+		{
+			public event CopyPaste CopyEvent;
+			public event CopyPaste PasteEvent;
+
+			protected override void WndProc(ref Message m)
+			{
+				switch (m.Msg)
+				{
+					case (0x301): //WM_COPY
+						OnCopyEvent();
+						break;
+					case (0x302): //WM_PASTE
+						OnPasteEvent();
+						break;
+					default:
+						base.WndProc(ref m);
+						break;
+				}
+			}
+
+			protected virtual void OnCopyEvent()
+			{
+				CopyEvent?.Invoke();
+			}
+
+			protected virtual void OnPasteEvent()
+			{
+				PasteEvent?.Invoke();
+			}
+		}
 	}
 }
