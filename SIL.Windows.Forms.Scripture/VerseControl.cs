@@ -299,6 +299,13 @@ namespace SIL.Windows.Forms.Scripture
 			}
 		}
 
+		public void SetContextMenuLabels(string copyLabel, string pasteLabel)
+		{
+			uiBook.SetContextMenuLabels(copyLabel, pasteLabel);
+			uiChapter.SetContextMenuLabels(copyLabel, pasteLabel);
+			uiVerse.SetContextMenuLabels(copyLabel, pasteLabel);
+		}
+
 		#endregion
 
 		#region Internal Updating Methods
@@ -1209,19 +1216,15 @@ namespace SIL.Windows.Forms.Scripture
 			public VCSafeComboBox()
 			{
 				ContextMenu contextMenu = new ContextMenu();
-				contextMenu.MenuItems.Add("Copy", OnCopyEvent);
-				contextMenu.MenuItems.Add("Paste", OnPasteEvent);
+				contextMenu.MenuItems.Add("Copy", (s, e) => CopyEvent?.Invoke());
+				contextMenu.MenuItems.Add("Paste", (s, e) => PasteEvent?.Invoke());
 				this.ContextMenu = contextMenu;
 			}
 
-			private void OnCopyEvent(object sender, EventArgs e)
+			public void SetContextMenuLabels(string copyLabel, string pasteLabel)
 			{
-				CopyEvent?.Invoke();
-			}
-
-			private void OnPasteEvent(object sender, EventArgs e)
-			{
-				PasteEvent?.Invoke();
+				this.ContextMenu.MenuItems[0].Text = copyLabel;
+				this.ContextMenu.MenuItems[1].Text = pasteLabel;
 			}
 		}
 
@@ -1237,19 +1240,15 @@ namespace SIL.Windows.Forms.Scripture
 			public VCEnterTextBox()
 			{
 				ContextMenu contextMenu = new ContextMenu();
-				contextMenu.MenuItems.Add("Copy", OnCopyEvent);
-				contextMenu.MenuItems.Add("Paste", OnPasteEvent);
+				contextMenu.MenuItems.Add("Copy", (s, e) => CopyEvent?.Invoke());
+				contextMenu.MenuItems.Add("Paste", (s, e) => PasteEvent?.Invoke());
 				this.ContextMenu = contextMenu;
 			}
 
-			private void OnCopyEvent(object sender, EventArgs e)
+			public void SetContextMenuLabels(string copyLabel, string pasteLabel)
 			{
-				CopyEvent?.Invoke();
-			}
-
-			private void OnPasteEvent(object sender, EventArgs e)
-			{
-				PasteEvent?.Invoke();
+				this.ContextMenu.MenuItems[0].Text = copyLabel;
+				this.ContextMenu.MenuItems[1].Text = pasteLabel;
 			}
 		}
 	}
