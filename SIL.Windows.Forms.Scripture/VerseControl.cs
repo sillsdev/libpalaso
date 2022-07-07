@@ -7,7 +7,6 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using SIL.PlatformUtilities;
 using SIL.Scripture;
@@ -1207,82 +1206,22 @@ namespace SIL.Windows.Forms.Scripture
 			public event CopyPaste CopyEvent;
 			public event CopyPaste PasteEvent;
 
-			[DllImport("user32.dll", EntryPoint = "FindWindowExA", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-			private static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
-			private TextBoxHandle textBoxHandle;
-
-			/// <summary>
-			/// Get handle of TextBox that is embedded in the ComboBox
-			/// </summary>
-			private void GetTextBoxHandle()
+			public VCSafeComboBox()
 			{
-				if (textBoxHandle == null)
-				{
-					IntPtr embeddedTextBox = FindWindowEx(this.Handle, IntPtr.Zero, "EDIT", null);
-
-					textBoxHandle = new TextBoxHandle();
-					textBoxHandle.AssignHandle(embeddedTextBox);
-
-					textBoxHandle.CopyEvent += OnCopyEvent;
-					textBoxHandle.PasteEvent += OnPasteEvent;
-				}
+				ContextMenu contextMenu = new ContextMenu();
+				contextMenu.MenuItems.Add("Copy", OnCopyEvent);
+				contextMenu.MenuItems.Add("Paste", OnPasteEvent);
+				this.ContextMenu = contextMenu;
 			}
 
-			protected virtual void OnCopyEvent()
+			private void OnCopyEvent(object sender, EventArgs e)
 			{
 				CopyEvent?.Invoke();
 			}
 
-			protected virtual void OnPasteEvent()
+			private void OnPasteEvent(object sender, EventArgs e)
 			{
 				PasteEvent?.Invoke();
-			}
-
-			/// <summary>
-			/// Get the TextBox handle whenever the user interacts with the object.
-			/// Getting the handle at construction doesn't work, since it appears to change at a later moment.
-			/// </summary>
-			protected override void OnMouseDown(MouseEventArgs e)
-			{
-				if (Platform.IsWindows)
-					GetTextBoxHandle();
-
-				base.OnMouseDown(e);
-			}
-
-			/// <summary>
-			/// Handle of the TextBox that is embedded in the ComboBox
-			/// </summary>
-			private class TextBoxHandle : NativeWindow
-			{
-				public event CopyPaste CopyEvent;
-				public event CopyPaste PasteEvent;
-
-				protected override void WndProc(ref Message m)
-				{
-					switch (m.Msg)
-					{
-						case (0x301): //WM_COPY
-							OnCopyEvent();
-							break;
-						case (0x302): //WM_PASTE
-							OnPasteEvent();
-							break;
-						default:
-							base.WndProc(ref m);
-							break;
-					}
-				}
-
-				protected virtual void OnCopyEvent()
-				{
-					CopyEvent?.Invoke();
-				}
-
-				protected virtual void OnPasteEvent()
-				{
-					PasteEvent?.Invoke();
-				}
 			}
 		}
 
@@ -1295,28 +1234,20 @@ namespace SIL.Windows.Forms.Scripture
 			public event CopyPaste CopyEvent;
 			public event CopyPaste PasteEvent;
 
-			protected override void WndProc(ref Message m)
+			public VCEnterTextBox()
 			{
-				switch (m.Msg)
-				{
-					case (0x301): //WM_COPY
-						OnCopyEvent();
-						break;
-					case (0x302): //WM_PASTE
-						OnPasteEvent();
-						break;
-					default:
-						base.WndProc(ref m);
-						break;
-				}
+				ContextMenu contextMenu = new ContextMenu();
+				contextMenu.MenuItems.Add("Copy", OnCopyEvent);
+				contextMenu.MenuItems.Add("Paste", OnPasteEvent);
+				this.ContextMenu = contextMenu;
 			}
 
-			protected virtual void OnCopyEvent()
+			private void OnCopyEvent(object sender, EventArgs e)
 			{
 				CopyEvent?.Invoke();
 			}
 
-			protected virtual void OnPasteEvent()
+			private void OnPasteEvent(object sender, EventArgs e)
 			{
 				PasteEvent?.Invoke();
 			}
