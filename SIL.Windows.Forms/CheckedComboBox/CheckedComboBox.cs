@@ -2,10 +2,12 @@
 // License: https://www.codeproject.com/info/cpol10.aspx
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using SIL.Reflection;
 using SIL.Windows.Forms.Extensions;
 using static System.String;
 
@@ -47,15 +49,18 @@ namespace SIL.Windows.Forms.CheckedComboBox
 			/// </summary>
 			internal class CustomCheckedListBox : CheckedListBox
 			{
+				private readonly Func<string> _getSummaryDisplayMember;
 				private int _curSelIndex = -1;
 
-				public CustomCheckedListBox()
+				internal CustomCheckedListBox(Func<string> getSummaryDisplayMember)
 				{
-					SelectionMode = SelectionMode.One;
-					HorizontalScrollbar = true;					
+					_getSummaryDisplayMember = getSummaryDisplayMember;
 				}
 
-				public string SummaryDisplayMember { get; set; }
+				protected override void OnItemCheck(ItemCheckEventArgs ice)
+				{
+					base.OnItemCheck(ice);
+				}
 
 				/// <summary>
 				/// Intercepts the keyboard input:
@@ -100,8 +105,20 @@ namespace SIL.Windows.Forms.CheckedComboBox
 					}
 				}
 
-				public object GetItemSummaryText(object item) =>
-					(item as CheckedComboBoxItem)?.SummaryString ?? GetItemText(item);
+				public string GetItemSummaryText(object item)
+				{
+					if (item is CheckedComboBoxItem ccbi)
+						return ccbi.SummaryString;
+
+					var summaryDisplayMember = _getSummaryDisplayMember?.Invoke();
+					if (summaryDisplayMember != null)
+					{
+						var value = ReflectionHelper.GetProperty(item, summaryDisplayMember)?.ToString();
+						if (value != null)
+							return value;
+					}
+					return GetItemText(item);
+				}
 			}
 
 			// Keeps track of whether checked item(s) changed, hence the value of the CheckedComboBox as a whole changed.
@@ -122,7 +139,7 @@ namespace SIL.Windows.Forms.CheckedComboBox
 			// Create a CustomCheckedListBox which fills up the entire form area.
 			private void InitializeComponent()
 			{
-				List = new CustomCheckedListBox();
+				List = new CustomCheckedListBox(() => _ccbParent.SummaryDisplayMember);
 				SuspendLayout();
 				// 
 				// List
@@ -153,15 +170,20 @@ namespace SIL.Windows.Forms.CheckedComboBox
 
 			public string GetCheckedItemsStringValue()
 			{
-				return Join(_ccbParent.ValueSeparator,
-					List.CheckedItems.OfType<object>().Select(i => List.GetItemSummaryText(i)));
+				// Turn into list to prevent a list change from causing an
+				// InvalidOperationException:
+				var checkedItems = List.CheckedItems.OfType<object>().ToList();
+				return Join(_ccbParent.ValueSeparator, checkedItems.Select(
+					i => List.GetItemSummaryText(i)));
 			}
 
 			/// <summary>
-			/// Closes the dropdown portion and enacts any changes according to the specified boolean parameter.
-			/// NOTE: even though the caller might ask for changes to be enacted, this doesn't necessarily mean
-			///	   that any changes have occurred as such. Caller should check the ValueChanged property of the
-			///	   CheckedComboBox (after the dropdown has closed) to determine any actual value changes.
+			/// Closes the dropdown portion and enacts any changes according to the specified
+			/// boolean parameter.
+			/// NOTE: even though the caller might ask for changes to be enacted, this doesn't
+			///	   necessarily mean that any changes have occurred as such. Caller should check the
+			///    ValueChanged property of the CheckedComboBox (after the dropdown has closed) to
+			///    determine any actual value changes.
 			/// </summary>
 			/// <param name="enactChanges"></param>
 			public void CloseDropdown(bool enactChanges)
@@ -231,6 +253,7 @@ namespace SIL.Windows.Forms.CheckedComboBox
 		private readonly System.ComponentModel.IContainer components = null;
 		// A form-derived object representing the drop-down list of the checked combo box.
 		private readonly Dropdown _dropdown;
+		private string _summaryDisplayMember;
 
 		// The valueSeparator character(s) between the ticked elements as they appear in the 
 		// text portion of the CheckedComboBox.
@@ -242,10 +265,21 @@ namespace SIL.Windows.Forms.CheckedComboBox
 			set => _dropdown.List.CheckOnClick = value;
 		}
 
-		public new string DisplayMember
+		protected override void OnDisplayMemberChanged(EventArgs e)
 		{
-			get => _dropdown.List.DisplayMember;
-			set => _dropdown.List.DisplayMember = value;
+			base.OnDisplayMemberChanged(e);
+			_dropdown.List.DisplayMember = DisplayMember;
+		}
+
+		/// <summary>
+		/// If items are not of type <see cref="CheckedComboBoxItem"/>, this indicates
+		/// which member of the items to use for displaying the items in the summary list.
+		/// By default, this will be the same as the base <see cref="ListControl.DisplayMember"/>
+		/// </summary>
+		public string SummaryDisplayMember
+		{
+			get => _summaryDisplayMember ?? DisplayMember;
+			set => _summaryDisplayMember = value;
 		}
 
 		public new CheckedListBox.ObjectCollection Items => _dropdown.List.Items;
@@ -256,7 +290,10 @@ namespace SIL.Windows.Forms.CheckedComboBox
 
 		public bool ValueChanged => _dropdown.ValueChanged;
 
-		// Event handler for when an item check state changes.
+		/// <summary>
+		/// Event handler for when an item check state changes.
+		/// </summary>
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
 		public event ItemCheckEventHandler ItemCheck;
 		
 		public CheckedComboBox()
@@ -307,8 +344,8 @@ namespace SIL.Windows.Forms.CheckedComboBox
 					count = MaxDropDownItems;
 				else if (count == 0)
 					count = 1;
-				
-				_dropdown.Size = new Size(Size.Width, _dropdown.List.ItemHeight * count + 2);
+
+				_dropdown.Size = new Size(DropDownWidth, _dropdown.List.ItemHeight * count + 2);
 				_dropdown.Show(this);
 			}
 		}
