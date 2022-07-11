@@ -163,7 +163,7 @@ namespace SIL.Windows.Forms.Extensions
 				{
 					if (moreSelected != null && !moreSelected.Invoke())
 						return;
-					lm.ShowLocalizationDialogBox(false);
+					lm.ShowLocalizationDialogBox(false, menu.Owner?.FindForm());
 					menu.InitializeWithAvailableUILocales(localeSelectedAction, lm,
 						localizationIncompleteViewModel,
 						moreSelected, additionalNamedLocales);
