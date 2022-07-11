@@ -147,7 +147,9 @@ namespace SIL.WritingSystems
 		///<summary>
 		/// The DefaultBasePath is %CommonApplicationData%\SIL\WritingSystemRepository
 		/// On Windows 7 this is \ProgramData\SIL\WritingSystemRepository\
-		/// On Linux this must be in ~/.local/share so that it may be edited
+		/// On Linux this must be in ~/.local/share so that it may be edited.
+		/// The root may be overridden by environment variable to help in flatpak where
+		/// LocalApplicationData is application-specific.
 		///</summary>
 		public static string DefaultBasePath
 		{
@@ -156,9 +158,12 @@ namespace SIL.WritingSystems
 				// This allows unit tests to set the _defaultBasePath (through reflection)
 				if (string.IsNullOrEmpty(_defaultBasePath))
 				{
-					var basePath = Platform.IsMac ? "/Users/Shared" : Platform.IsLinux
-						? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
-						: Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+					var basePath = Environment.GetEnvironmentVariable("USER_DATA_HOME")
+						?? (Platform.IsMac
+							? "/Users/Shared"
+							: (Platform.IsLinux
+								? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+								: Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)));
 					_defaultBasePath = Path.Combine(basePath, "SIL", "WritingSystemRepository");
 				}
 

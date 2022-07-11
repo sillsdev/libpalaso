@@ -394,6 +394,10 @@ namespace SIL.Reporting
 		/// ------------------------------------------------------------------------------------
 		public static void WriteEvent(string message, params object[] args)
 		{
+			if (Environment.GetEnvironmentVariable("SIL_REPORTING_LOGGING") == "foreground")
+			{
+				Console.WriteLine(FormatMessage(message, args));
+			}
 			if (Singleton != null)
 				Singleton.WriteEventCore(message,args);
 		}

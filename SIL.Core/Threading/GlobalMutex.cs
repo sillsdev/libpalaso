@@ -169,7 +169,13 @@ namespace SIL.Threading
 
 			public LinuxGlobalMutexAdapter(string name)
 			{
-				_name = Path.Combine("/var/lock", name);
+				// Note that XDG_RUNTIME_DIR is not system-wide but per-user.
+				string lockDir = Environment.GetEnvironmentVariable("XDG_RUNTIME_DIR") ?? "/var/lock";
+				string silCoreLockDir = $"{lockDir}/sil-lock";
+				if (!Directory.Exists(silCoreLockDir)) {
+					Directory.CreateDirectory(silCoreLockDir);
+				}
+				_name = Path.Combine(silCoreLockDir, name);
 			}
 
 			public bool Init(bool initiallyOwned)
