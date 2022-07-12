@@ -1235,6 +1235,9 @@ namespace SIL.Windows.Forms.Scripture
 			public event CopyPasteDelegate PasteEvent;
 			public event ContextMenuDelegate PopUpEvent;
 
+			private const int COPY = 0;
+			private const int PASTE = 1;
+
 			public VCSafeComboBox()
 			{
 				ContextMenu contextMenu = new ContextMenu();
@@ -1261,9 +1264,6 @@ namespace SIL.Windows.Forms.Scripture
 				this.ContextMenu.MenuItems[COPY].Text = copyLabel;
 				this.ContextMenu.MenuItems[PASTE].Text = pasteLabel;
 			}
-
-			private readonly int COPY = 0;
-			private readonly int PASTE = 1;
 		}
 
 		/// <summary>
@@ -1276,6 +1276,9 @@ namespace SIL.Windows.Forms.Scripture
 			public event CopyPasteDelegate CopyEvent;
 			public event CopyPasteDelegate PasteEvent;
 			public event ContextMenuDelegate PopUpEvent;
+
+			private const int COPY = 0;
+			private const int PASTE = 1;
 
 			public VCEnterTextBox()
 			{
@@ -1303,9 +1306,6 @@ namespace SIL.Windows.Forms.Scripture
 				this.ContextMenu.MenuItems[COPY].Text = copyLabel;
 				this.ContextMenu.MenuItems[PASTE].Text = pasteLabel;
 			}
-
-			private readonly int COPY = 0;
-			private readonly int PASTE = 1;
 		}
 	}
 }
