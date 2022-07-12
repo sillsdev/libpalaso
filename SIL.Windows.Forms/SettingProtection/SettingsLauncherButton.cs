@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 
 namespace SIL.Windows.Forms.SettingProtection
@@ -9,15 +9,15 @@ namespace SIL.Windows.Forms.SettingProtection
 	/// </summary>
 	public partial class SettingsLauncherButton : UserControl
 	{
-		private SettingsProtectionHelper _helper;
+		private readonly SettingsProtectionHelper _helper;
 
 		public SettingsLauncherButton()
 		{
 			this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
 			InitializeComponent();
 			betterLinkLabel1.Click += OnLinkClicked;
-			_helper = new SettingsProtectionHelper(this.Container);
-			_helper.ManageComponent(this);
+			_helper = new SettingsProtectionHelper(Container);
+			_helper.SetSettingsProtection(this, true);
 		}
 
 		/// <summary>
@@ -29,10 +29,7 @@ namespace SIL.Windows.Forms.SettingProtection
 
 		private void OnLinkClicked(object sender, EventArgs e)
 		{
-			_helper.LaunchSettingsIfAppropriate(() =>
-												{
-													return LaunchSettingsCallback();
-												});
+			_helper.LaunchSettingsIfAppropriate(() => LaunchSettingsCallback());
 		}
 	}
 }

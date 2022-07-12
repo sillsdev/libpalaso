@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Windows.Forms;
+#pragma warning disable CS0618 // Purposely testing more restrictive behavior of deprecated method.
 
 namespace SIL.Windows.Forms.Tests.SettingsProtection
 {
@@ -33,7 +34,7 @@ namespace SIL.Windows.Forms.Tests.SettingsProtection
 					"Passing a tooltip to SettingsProtectionHelper.ManageComponent should have thrown an exception.",
 					"Unexpected success");
 			}
-			catch (ArgumentException e)
+			catch (ArgumentException)
 			{
 				Console.WriteLine("This exception was expected.");
 			}
