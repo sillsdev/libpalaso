@@ -325,7 +325,13 @@ namespace SIL.Windows.Forms.CheckedComboBox
 			if (disposing)
 				components?.Dispose();
 			base.Dispose(disposing);
-		}		
+		}
+
+		protected override void OnHandleCreated(EventArgs e)
+		{
+			base.OnHandleCreated(e);
+			Text = _dropdown.GetCheckedItemsStringValue();
+		}
 
 		protected override void OnDropDown(EventArgs e)
 		{
