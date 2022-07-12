@@ -1,4 +1,4 @@
-﻿
+
 namespace SIL.Windows.Forms.TestApp
 {
 	partial class ModalChildForm
@@ -33,6 +33,9 @@ namespace SIL.Windows.Forms.TestApp
 			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.btnCancel = new System.Windows.Forms.Button();
 			this.btnOk = new System.Windows.Forms.Button();
+			this.lblCheckedIndices = new System.Windows.Forms.Label();
+			this.lblCheckedIndicesData = new System.Windows.Forms.Label();
+			this.chkUseCheckedComboBoxItems = new System.Windows.Forms.CheckBox();
 			this.cboWhiteSpaceCharacters = new SIL.Windows.Forms.CheckedComboBox.CheckedComboBox();
 			this.SuspendLayout();
 			// 
@@ -56,7 +59,7 @@ namespace SIL.Windows.Forms.TestApp
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnCancel.Location = new System.Drawing.Point(326, 109);
+			this.btnCancel.Location = new System.Drawing.Point(326, 131);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(75, 23);
 			this.btnCancel.TabIndex = 2;
@@ -67,25 +70,58 @@ namespace SIL.Windows.Forms.TestApp
 			// 
 			this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.btnOk.Location = new System.Drawing.Point(245, 109);
+			this.btnOk.Location = new System.Drawing.Point(245, 131);
 			this.btnOk.Name = "btnOk";
 			this.btnOk.Size = new System.Drawing.Size(75, 23);
 			this.btnOk.TabIndex = 3;
 			this.btnOk.Text = "OK";
 			this.btnOk.UseVisualStyleBackColor = true;
 			// 
+			// lblCheckedIndices
+			// 
+			this.lblCheckedIndices.AutoSize = true;
+			this.lblCheckedIndices.Location = new System.Drawing.Point(211, 94);
+			this.lblCheckedIndices.Name = "lblCheckedIndices";
+			this.lblCheckedIndices.Size = new System.Drawing.Size(89, 13);
+			this.lblCheckedIndices.TabIndex = 5;
+			this.lblCheckedIndices.Text = "Checked indices:";
+			// 
+			// lblCheckedIndicesData
+			// 
+			this.lblCheckedIndicesData.AutoSize = true;
+			this.lblCheckedIndicesData.Location = new System.Drawing.Point(306, 94);
+			this.lblCheckedIndicesData.Name = "lblCheckedIndicesData";
+			this.lblCheckedIndicesData.Size = new System.Drawing.Size(0, 13);
+			this.lblCheckedIndicesData.TabIndex = 6;
+			// 
+			// chkUseCheckedComboBoxItems
+			// 
+			this.chkUseCheckedComboBoxItems.AutoSize = true;
+			this.chkUseCheckedComboBoxItems.Checked = true;
+			this.chkUseCheckedComboBoxItems.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.chkUseCheckedComboBoxItems.Location = new System.Drawing.Point(15, 68);
+			this.chkUseCheckedComboBoxItems.Name = "chkUseCheckedComboBoxItems";
+			this.chkUseCheckedComboBoxItems.Size = new System.Drawing.Size(241, 17);
+			this.chkUseCheckedComboBoxItems.TabIndex = 7;
+			this.chkUseCheckedComboBoxItems.Text = "Checkbox items are CheckedComboBoxItems";
+			this.chkUseCheckedComboBoxItems.UseVisualStyleBackColor = true;
+			this.chkUseCheckedComboBoxItems.CheckedChanged += new System.EventHandler(this.chkUseCheckedComboBoxItems_CheckedChanged);
+			// 
 			// cboWhiteSpaceCharacters
 			// 
 			this.cboWhiteSpaceCharacters.CheckOnClick = true;
 			this.cboWhiteSpaceCharacters.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
 			this.cboWhiteSpaceCharacters.DropDownHeight = 1;
+			this.cboWhiteSpaceCharacters.DropDownWidth = 220;
 			this.cboWhiteSpaceCharacters.FormattingEnabled = true;
 			this.cboWhiteSpaceCharacters.IntegralHeight = false;
-			this.cboWhiteSpaceCharacters.Location = new System.Drawing.Point(15, 60);
+			this.cboWhiteSpaceCharacters.Location = new System.Drawing.Point(15, 91);
 			this.cboWhiteSpaceCharacters.Name = "cboWhiteSpaceCharacters";
 			this.cboWhiteSpaceCharacters.Size = new System.Drawing.Size(190, 21);
+			this.cboWhiteSpaceCharacters.SummaryDisplayMember = "ArgbValue";
 			this.cboWhiteSpaceCharacters.TabIndex = 4;
 			this.cboWhiteSpaceCharacters.ValueSeparator = ", ";
+			this.cboWhiteSpaceCharacters.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.CboWhiteSpaceCharactersOnItemChecked);
 			// 
 			// ModalChildForm
 			// 
@@ -93,7 +129,10 @@ namespace SIL.Windows.Forms.TestApp
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btnOk;
-			this.ClientSize = new System.Drawing.Size(413, 144);
+			this.ClientSize = new System.Drawing.Size(413, 166);
+			this.Controls.Add(this.chkUseCheckedComboBoxItems);
+			this.Controls.Add(this.lblCheckedIndicesData);
+			this.Controls.Add(this.lblCheckedIndices);
 			this.Controls.Add(this.cboWhiteSpaceCharacters);
 			this.Controls.Add(this.btnOk);
 			this.Controls.Add(this.btnCancel);
@@ -114,5 +153,8 @@ namespace SIL.Windows.Forms.TestApp
 		private System.Windows.Forms.Button btnCancel;
 		private System.Windows.Forms.Button btnOk;
 		private CheckedComboBox.CheckedComboBox cboWhiteSpaceCharacters;
+		private System.Windows.Forms.Label lblCheckedIndices;
+		private System.Windows.Forms.Label lblCheckedIndicesData;
+		private System.Windows.Forms.CheckBox chkUseCheckedComboBoxItems;
 	}
 }
