@@ -115,9 +115,10 @@ namespace SIL.Windows.Forms.TestApp
 			this.cboWhiteSpaceCharacters.DropDownWidth = 220;
 			this.cboWhiteSpaceCharacters.FormattingEnabled = true;
 			this.cboWhiteSpaceCharacters.IntegralHeight = false;
+			this.cboWhiteSpaceCharacters.ItemHeight = 17;
 			this.cboWhiteSpaceCharacters.Location = new System.Drawing.Point(15, 91);
 			this.cboWhiteSpaceCharacters.Name = "cboWhiteSpaceCharacters";
-			this.cboWhiteSpaceCharacters.Size = new System.Drawing.Size(190, 21);
+			this.cboWhiteSpaceCharacters.Size = new System.Drawing.Size(190, 23);
 			this.cboWhiteSpaceCharacters.SummaryDisplayMember = "ArgbValue";
 			this.cboWhiteSpaceCharacters.TabIndex = 4;
 			this.cboWhiteSpaceCharacters.ValueSeparator = ", ";
