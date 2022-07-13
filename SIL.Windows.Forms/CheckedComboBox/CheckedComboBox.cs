@@ -2,6 +2,7 @@
 // License: https://www.codeproject.com/info/cpol10.aspx
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -254,6 +255,7 @@ namespace SIL.Windows.Forms.CheckedComboBox
 		// A form-derived object representing the drop-down list of the checked combo box.
 		private readonly Dropdown _dropdown;
 		private string _summaryDisplayMember;
+		private List<object> _prevItemsCollection;
 
 		// The valueSeparator character(s) between the ticked elements as they appear in the 
 		// text portion of the CheckedComboBox.
@@ -331,6 +333,44 @@ namespace SIL.Windows.Forms.CheckedComboBox
 		{
 			base.OnHandleCreated(e);
 			Text = _dropdown.GetCheckedItemsStringValue();
+
+			_prevItemsCollection = CurrentItems;
+		}
+
+		private List<object> CurrentItems
+		{
+			get
+			{
+				var list = new List<object>(Items.Count);
+				foreach (var item in Items)
+					list.Add(item);
+				return list;
+			}
+		}
+
+		protected override void WndProc(ref Message m)
+		{
+			const int WM_ERASEBKGND = 20;
+
+			switch (m.Msg)
+			{
+				case WM_ERASEBKGND:
+					var current = CurrentItems;
+
+					if (_prevItemsCollection == null)
+					{
+						// Pretty sure this can't happen.
+						_prevItemsCollection = current;
+					}
+					else if (!current.SequenceEqual(_prevItemsCollection))
+					{
+						_prevItemsCollection = current;
+						Text = _dropdown.GetCheckedItemsStringValue();
+					}
+					break;
+			}
+
+			base.WndProc(ref m);
 		}
 
 		protected override void OnDropDown(EventArgs e)
