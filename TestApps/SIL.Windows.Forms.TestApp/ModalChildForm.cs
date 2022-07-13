@@ -89,8 +89,11 @@ namespace SIL.Windows.Forms.TestApp
 
 			foreach (var color in _colors)
 			{
+				// For the sake of illustrating the situation where some items should be initially
+				// selected, we'll select the one corresponding to the current work day.
 				cboWhiteSpaceCharacters.Items.Add(chkUseCheckedComboBoxItems.Checked ?
-					(object)new ColorItem(color) : new ColorObject(color));
+					(object)new ColorItem(color) : new ColorObject(color),
+					cboWhiteSpaceCharacters.Items.Count == (int)DateTime.Now.DayOfWeek);
 			}
 
 			// Make the "Name" property the one to display, rather than the ToString() 
