@@ -59,6 +59,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.WritingSystems] Added several methods to IetfLanguageTag class to support getting language names.
 - [SIL.Windows.Forms.WritingSystems] Added extension method InitializeWithAvailableUILocales
 - [SIL.WritingSystems] Added WellKnownSubtag zh-TW.
+- [SIL.Core] ErrorReport now has a GetErrorReporter() getter function.
+- [SIL.Core] ErrorReport exposes a NotifyUserOfProblemWrapper() protected function, which is designed to make it easier for subclasses to add additional NotifyUserOfProblem options
 
 ### Changed
 
@@ -85,6 +87,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] ConsoleErrorReporter logs exception if available
 - [SIL.Core, SIL.Windows.Forms] If WinFormsErrorReporter is set as the ErrorReporter, and ErrorReporter.NotifyUserOfProblem(IRepeatNoticePolicy, Exception, String, params object[]) is passed null for the exception, the "Details" button will no longer appear, making this consistent with the no-Exception overload of this method
 - [SIL.WritingSystems] Changed behavior of IetfLanguageTag to better handle zh-TW.
+- [SIL.Core] If NotifyUserOfProblem is called with a null exception, it will no longer call UsageReporter.ReportException
 
 ### Fixed
 
