@@ -17,7 +17,8 @@ using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.Scripture
 {
-	public delegate void CopyPaste();
+	public delegate void NoArgsDelegate();
+	public delegate void OneArgDelegate(Object s);
 
 	/// <summary>
 	/// Control that allows the specifying of a book, chapter and verse
@@ -437,6 +438,27 @@ namespace SIL.Windows.Forms.Scripture
 			HandlePasteScriptureRef();
 		}
 
+		private void HandlePopUpContextMenu(Object s)
+		{
+			// Enable paste option if needed
+			if (IsValidReference(GetCleanClipboardText(), out _, out _, out _))
+			{
+				if (s is VCSafeComboBox comboBox)
+					comboBox.EnablePaste();
+				if (s is VCEnterTextBox textBox)
+					textBox.EnablePaste();
+			}
+
+			// Disable tooltips when context menu pops up
+			this.uiToolTip.Active = false;
+		}
+
+		private void HandleCollapseContextMenu()
+		{
+			// Enable tooltips when context menu collapses
+			this.uiToolTip.Active = true;
+		}
+
 
 		/// <summary>
 		/// Fires a VerseRefChangedEvent
@@ -743,21 +765,25 @@ namespace SIL.Windows.Forms.Scripture
 					uiBook.SelectAll();
 		}
 
-		/// <summary>
-		/// Updates verse control with pasted verse reference, if pasted reference is valid.
-		/// </summary>
-		private void HandlePasteScriptureRef()
+		private string GetCleanClipboardText()
 		{
-			// nothing to do if clipboard is empty
+			// return empty string if clipboard is empty
 			if (!PortableClipboard.ContainsText())
-				return;
+				return "";
 
 			// if pasting text, check to see if clipboard contain verse reference. Remove RTL and LTR marks that may be there
 			// for punctuation to display in correct order.
 			string text = PortableClipboard.GetText().Trim().Replace(rtlMark, "").Replace(ltrMark, "");
 			// diacritics seem to have caused problems in Regex on Linux, so remove them before processing text
-			text = text.RemoveDiacritics();
-			if (!IsValidReference(text, out var book, out var chapter, out var verse))
+			return text.RemoveDiacritics();
+		}
+
+		/// <summary>
+		/// Updates verse control with pasted verse reference, if pasted reference is valid.
+		/// </summary>
+		private void HandlePasteScriptureRef()
+		{			
+			if (!IsValidReference(GetCleanClipboardText(), out var book, out var chapter, out var verse))
 				return;
 
 			uiBook.Text = book;
@@ -774,7 +800,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// <param name="book"></param>
 		/// <param name="chapter"></param>
 		/// <param name="verse"></param>
-		/// <returns>True if string is a valid reference</returns>
+		/// <returns>True if string is a valid reference. If valid, it also returns the related book, chapter and verse as string output parameters.</returns>
 		private bool IsValidReference(string text, out string book, out string chapter,
 			out string verse)
 		{
@@ -1205,50 +1231,90 @@ namespace SIL.Windows.Forms.Scripture
 		}
 
 		/// <summary>
-		/// Variant of the SafeComboBox that fires events on a copy/paste action
-		/// that is triggered from the context menu, so by using the mouse.
+		/// Variant of the SafeComboBox that has a custom copy/paste context menu,
+		/// and that fires events when this context menu is opened,
+		/// and when a copy/paste action is triggered from it.
 		/// </summary>
 		private class VCSafeComboBox : SafeComboBox
 		{
-			public event CopyPaste CopyEvent;
-			public event CopyPaste PasteEvent;
+			public event NoArgsDelegate CopyEvent;
+			public event NoArgsDelegate PasteEvent;
+			public event OneArgDelegate PopUpEvent;
+			public event NoArgsDelegate CollapseEvent;
+
+			private const int COPY = 0;
+			private const int PASTE = 1;
 
 			public VCSafeComboBox()
 			{
 				ContextMenu contextMenu = new ContextMenu();
 				contextMenu.MenuItems.Add("Copy", (s, e) => CopyEvent?.Invoke());
 				contextMenu.MenuItems.Add("Paste", (s, e) => PasteEvent?.Invoke());
+				contextMenu.Popup += PopUpContextMenu;
+				contextMenu.Collapse += (s, e) => CollapseEvent?.Invoke();
 				this.ContextMenu = contextMenu;
+			}
+
+			private void PopUpContextMenu(Object s, EventArgs e)
+			{
+				this.ContextMenu.MenuItems[PASTE].Enabled = false;
+
+				PopUpEvent?.Invoke(this);
+			}
+
+			public void EnablePaste()
+			{
+				this.ContextMenu.MenuItems[PASTE].Enabled = true;
 			}
 
 			public void SetContextMenuLabels(string copyLabel, string pasteLabel)
 			{
-				this.ContextMenu.MenuItems[0].Text = copyLabel;
-				this.ContextMenu.MenuItems[1].Text = pasteLabel;
+				this.ContextMenu.MenuItems[COPY].Text = copyLabel;
+				this.ContextMenu.MenuItems[PASTE].Text = pasteLabel;
 			}
 		}
 
 		/// <summary>
-		/// Variant of the EnterTextBox that fires events on a copy/paste action
-		/// that is triggered from the context menu, so by using the mouse.
+		/// Variant of the EnterTextBox that has a custom copy/paste context menu,
+		/// and that fires events when this context menu is opened,
+		/// and when a copy/paste action is triggered from it.
 		/// </summary>
 		private class VCEnterTextBox : EnterTextBox
 		{
-			public event CopyPaste CopyEvent;
-			public event CopyPaste PasteEvent;
+			public event NoArgsDelegate CopyEvent;
+			public event NoArgsDelegate PasteEvent;
+			public event OneArgDelegate PopUpEvent;
+			public event NoArgsDelegate CollapseEvent;
+
+			private const int COPY = 0;
+			private const int PASTE = 1;
 
 			public VCEnterTextBox()
 			{
 				ContextMenu contextMenu = new ContextMenu();
 				contextMenu.MenuItems.Add("Copy", (s, e) => CopyEvent?.Invoke());
 				contextMenu.MenuItems.Add("Paste", (s, e) => PasteEvent?.Invoke());
+				contextMenu.Popup += PopUpContextMenu;
+				contextMenu.Collapse += (s, e) => CollapseEvent?.Invoke();
 				this.ContextMenu = contextMenu;
+			}
+
+			private void PopUpContextMenu(Object s, EventArgs e)
+			{
+				this.ContextMenu.MenuItems[PASTE].Enabled = false;
+
+				PopUpEvent?.Invoke(this);
+			}
+
+			public void EnablePaste()
+			{
+				this.ContextMenu.MenuItems[PASTE].Enabled = true;
 			}
 
 			public void SetContextMenuLabels(string copyLabel, string pasteLabel)
 			{
-				this.ContextMenu.MenuItems[0].Text = copyLabel;
-				this.ContextMenu.MenuItems[1].Text = pasteLabel;
+				this.ContextMenu.MenuItems[COPY].Text = copyLabel;
+				this.ContextMenu.MenuItems[PASTE].Text = pasteLabel;
 			}
 		}
 	}

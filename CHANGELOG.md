@@ -19,10 +19,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - [SIL.Windows.Forms] Added extension method InitializeWithAvailableUILocales.
 - [SIL.Windows.Forms] Added LocalizationIncompleteDlg and LocalizationIncompleteViewModel classes
+- [SIL.Windows.Forms] Added property SummaryDisplayMember to CheckedComboBox.
 
 ### Changed
 - [SIL.Windows.Forms.WritingSystems] Moved (internal) extension method InitializeWithAvailableUILocales to SIL.Windows.Forms.
 - [SIL.Windows.Forms.WritingSystems] Added additional optional localizationIncompleteViewModel parameter to ToolStripExtensions.InitializeWithAvailableUILocales.
+
+### Removed
+- Removed the "new" DisplayMember property from CheckedComboBox (which overrode the base class member). I don't believe this is a breaking change.
 
 ## [9.0.0] - 2022-06-03
 
