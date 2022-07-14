@@ -20,7 +20,7 @@ using SIL.Acknowledgements;
 	Copyright = "Copyright © 2007-2008 Eric Scott Albright",
 	Location = "./Enchant.Net.dll", LicenseUrl = "https://opensource.org/licenses/LGPL-2.1")]
 
-[assembly: Acknowledgement("Mono.Posix", Name = "Mono.Posix", Url = "https://www.nuget.org/packages/Mono.Posix/",
+[assembly: Acknowledgement("Mono.Unix", Name = "Mono.Unix", Url = "https://www.nuget.org/packages/Mono.Unix/",
 	LicenseUrl = "https://opensource.org/licenses/MIT")]
 [assembly: Acknowledgement("taglib-sharp", Name = "TagLib#", Url = "https://github.com/mono/taglib-sharp",
 	Copyright = "Copyright (C) 2005, 2007 Brian Nickel, Copyright (C) 2006 Novell, Inc., Copyright (C) 2002,2003 Scott Wheeler (Original Implementation)",
