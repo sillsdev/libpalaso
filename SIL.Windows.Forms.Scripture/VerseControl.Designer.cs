@@ -36,15 +36,18 @@ namespace SIL.Windows.Forms.Scripture
 			this.uiChapter.CopyEvent += HandleCopy;
 			this.uiChapter.PasteEvent += HandlePaste;
 			this.uiChapter.PopUpEvent += HandlePopUpContextMenu;
+			this.uiChapter.CollapseEvent += HandleCollapseContextMenu;
 			this.uiVerse = new VCEnterTextBox();
 			this.uiVerse.CopyEvent += HandleCopy;
 			this.uiVerse.PasteEvent += HandlePaste;
 			this.uiVerse.PopUpEvent += HandlePopUpContextMenu;
+			this.uiVerse.CollapseEvent += HandleCollapseContextMenu;
 			this.uiChapterSpinner = new SIL.Windows.Forms.Widgets.HorizontalSpinner();
 			this.uiBook = new VCSafeComboBox();
 			this.uiBook.CopyEvent += HandleCopy;
 			this.uiBook.PasteEvent += HandlePaste;
 			this.uiBook.PopUpEvent += HandlePopUpContextMenu;
+			this.uiBook.CollapseEvent += HandleCollapseContextMenu;
 			this.tableLayoutPanel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
