@@ -17,8 +17,8 @@ using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.Scripture
 {
-	public delegate void CopyPasteDelegate();
-	public delegate void ContextMenuDelegate(Object s);
+	public delegate void NoArgsDelegate();
+	public delegate void OneArgDelegate(Object s);
 
 	/// <summary>
 	/// Control that allows the specifying of a book, chapter and verse
@@ -449,8 +449,14 @@ namespace SIL.Windows.Forms.Scripture
 					textBox.EnablePaste();
 			}
 
-			// Hide tooltip when context menu pops up
-			this.uiToolTip.Hide((IWin32Window)s);
+			// Disable tooltips when context menu pops up
+			this.uiToolTip.Active = false;
+		}
+
+		private void HandleCollapseContextMenu()
+		{
+			// Enable tooltips when context menu collapses
+			this.uiToolTip.Active = true;
 		}
 
 
@@ -1226,14 +1232,15 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// <summary>
 		/// Variant of the SafeComboBox that has a custom copy/paste context menu,
-		/// and that fires events when this context menu is openend,
+		/// and that fires events when this context menu is opened,
 		/// and when a copy/paste action is triggered from it.
 		/// </summary>
 		private class VCSafeComboBox : SafeComboBox
 		{
-			public event CopyPasteDelegate CopyEvent;
-			public event CopyPasteDelegate PasteEvent;
-			public event ContextMenuDelegate PopUpEvent;
+			public event NoArgsDelegate CopyEvent;
+			public event NoArgsDelegate PasteEvent;
+			public event OneArgDelegate PopUpEvent;
+			public event NoArgsDelegate CollapseEvent;
 
 			private const int COPY = 0;
 			private const int PASTE = 1;
@@ -1244,6 +1251,7 @@ namespace SIL.Windows.Forms.Scripture
 				contextMenu.MenuItems.Add("Copy", (s, e) => CopyEvent?.Invoke());
 				contextMenu.MenuItems.Add("Paste", (s, e) => PasteEvent?.Invoke());
 				contextMenu.Popup += PopUpContextMenu;
+				contextMenu.Collapse += (s, e) => CollapseEvent?.Invoke();
 				this.ContextMenu = contextMenu;
 			}
 
@@ -1268,14 +1276,15 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// <summary>
 		/// Variant of the EnterTextBox that has a custom copy/paste context menu,
-		/// and that fires events when this context menu is openend,
+		/// and that fires events when this context menu is opened,
 		/// and when a copy/paste action is triggered from it.
 		/// </summary>
 		private class VCEnterTextBox : EnterTextBox
 		{
-			public event CopyPasteDelegate CopyEvent;
-			public event CopyPasteDelegate PasteEvent;
-			public event ContextMenuDelegate PopUpEvent;
+			public event NoArgsDelegate CopyEvent;
+			public event NoArgsDelegate PasteEvent;
+			public event OneArgDelegate PopUpEvent;
+			public event NoArgsDelegate CollapseEvent;
 
 			private const int COPY = 0;
 			private const int PASTE = 1;
@@ -1286,6 +1295,7 @@ namespace SIL.Windows.Forms.Scripture
 				contextMenu.MenuItems.Add("Copy", (s, e) => CopyEvent?.Invoke());
 				contextMenu.MenuItems.Add("Paste", (s, e) => PasteEvent?.Invoke());
 				contextMenu.Popup += PopUpContextMenu;
+				contextMenu.Collapse += (s, e) => CollapseEvent?.Invoke();
 				this.ContextMenu = contextMenu;
 			}
 
