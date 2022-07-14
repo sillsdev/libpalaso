@@ -235,8 +235,6 @@ namespace SIL.ExtractCopyright
 			case "irrKlang.NET4.dll":
 			case "NAudio.dll":
 			case "KeymanLink.dll":
-			// part of Mono runtime, not part of a specific program on Linux
-			case "Mono.Posix":
 			case "Commons.Xml.Relaxng.dll":
 			case "gtk-sharp.dll":
 				return true;

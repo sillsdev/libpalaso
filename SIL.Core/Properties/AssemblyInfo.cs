@@ -13,5 +13,5 @@ using SIL.Acknowledgements;
 [assembly: Acknowledgement("Newtonsoft.Json", Name = "Json.NET", Url = "https://www.nuget.org/packages/Newtonsoft.Json/",
 	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © James Newton-King 2008",
 	Location = "./Newtonsoft.Json.dll")]
-[assembly: Acknowledgement("Mono.Posix", Name = "Mono.Posix", Url = "https://www.nuget.org/packages/Mono.Posix/",
+[assembly: Acknowledgement("Mono.Unix", Name = "Mono.Unix", Url = "https://www.nuget.org/packages/Mono.Unix/",
 	LicenseUrl = "https://opensource.org/licenses/MIT")]

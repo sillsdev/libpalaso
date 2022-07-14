@@ -177,8 +177,7 @@ License: MIT
 				copyrights.AddOrUpdateParagraphFromAcknowledgement(ackDict[key], "");
 			}
 
-			// The Mono.Posix acknowledgement is intentionally ignored, so subtract it from acknowledgment count
-			Assert.LessOrEqual(ackDict.Keys.Count - 1 + 3, copyrights.Paragraphs.Count, "We should have the two standard paragraphs, one paragraph per acknowledgement, and at least one license paragraph");
+			Assert.LessOrEqual(ackDict.Keys.Count + 3, copyrights.Paragraphs.Count, "We should have the two standard paragraphs, one paragraph per acknowledgement, and at least one license paragraph");
 
 			// Collect the license paragraphs, assert that the MIT license has a paragraph, and test its content.
 			var licenseParas = new List<SIL.ExtractCopyright.DebianParagraph>();

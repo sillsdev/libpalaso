@@ -18,7 +18,7 @@ using SIL.Acknowledgements;
 [assembly: Acknowledgement("L10NSharp", Url = "https://github.com/sillsdev/l10nsharp/",
 	Copyright = "Copyright © SIL International 2010-2014", LicenseUrl = "https://opensource.org/licenses/MIT",
 	Location = "./L10NSharp.dll")]
-[assembly: Acknowledgement("Mono.Posix", Url = "https://www.nuget.org/packages/Mono.Posix/",
+[assembly: Acknowledgement("Mono.Unix", Name = "Mono.Unix", Url = "https://www.nuget.org/packages/Mono.Unix/",
 	LicenseUrl = "https://opensource.org/licenses/MIT")]
 [assembly: Acknowledgement("NDesk.DBus", Name = "NDesk.DBus", Url = "https://www.nuget.org/packages/NDesk.DBus/",
 	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © Alp Toker", Location = "./NDesk.DBus.dll")]
