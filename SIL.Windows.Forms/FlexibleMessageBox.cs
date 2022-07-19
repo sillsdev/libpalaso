@@ -589,7 +589,9 @@ namespace SIL.Windows.Forms
 					case ButtonID.Cancel: return LocalizationManager.GetString("Common.CancelButton", "&Cancel");
 					case ButtonID.Yes: return LocalizationManager.GetString("Common.YesButton", "&Yes");
 					case ButtonID.No: return LocalizationManager.GetString("Common.NoButton", "&No");
-					case ButtonID.Abort: return LocalizationManager.GetString("Common.AbortButton", "&Abort");
+					case ButtonID.Abort: return LocalizationManager.GetString("Common.AbortButton", "&Abort",
+						"This button is the first in the set [Abort, Retry, Ignore] used by different dialogs. Abort usually means to give up on " +
+						"the current task. The text of each dialog frequently explains what each button does.");
 					case ButtonID.Retry: return LocalizationManager.GetString("Common.RetryButton", "&Retry");
 					case ButtonID.Ignore: return LocalizationManager.GetString("Common.IgnoreButton", "&Ignore");
 					default:
