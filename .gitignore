@@ -41,3 +41,5 @@ icu4c.readme.txt
 
 .vs/
 /SIL.Windows.Forms/bin-Designer/**
+launchSettings.json
+/l10n/*.xlf

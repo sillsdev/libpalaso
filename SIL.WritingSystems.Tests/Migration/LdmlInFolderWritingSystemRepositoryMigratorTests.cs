@@ -8,6 +8,7 @@ using SIL.Lexicon;
 using SIL.TestUtilities;
 using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using static SIL.WritingSystems.WellKnownSubtags;
 using Is = SIL.TestUtilities.NUnitExtensions.Is;
 
 namespace SIL.WritingSystems.Tests.Migration
@@ -269,7 +270,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				AssertMigrationInfoContains(migrationInfo[2], "de-bogus-stuff", "de-Qaaa-QM-x-bogus-stuff");
 				AssertMigrationInfoContains(migrationInfo[2], "en-Zxxx-x-audio", "en-Zxxx-x-audio");
 				AssertMigrationInfoContains(migrationInfo[2], "en-x-audio", "en-Zxxx-x-audio-dupl0");
-				AssertMigrationInfoContains(migrationInfo[2], "zh-CN", "zh-CN");
+				AssertMigrationInfoContains(migrationInfo[2], ChineseSimplifiedTag, ChineseSimplifiedTag);
 				AssertMigrationInfoContains(migrationInfo[2], "cmn", "zh-CN-x-dupl0");
 
 				AssertMigrationInfoContains(migrationInfo[3], "de-Qaaa-QM-x-bogus-stuff", "de-Qaaa-QM-x-bogus-stuff");

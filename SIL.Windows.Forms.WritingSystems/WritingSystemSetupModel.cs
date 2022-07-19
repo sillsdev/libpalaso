@@ -16,6 +16,8 @@ using SIL.Reporting;
 using SIL.Windows.Forms.Keyboarding;
 using SIL.Windows.Forms.WritingSystems.WSTree;
 using SIL.WritingSystems;
+using static SIL.WritingSystems.IetfLanguageTag;
+using static SIL.WritingSystems.WellKnownSubtags;
 
 namespace SIL.Windows.Forms.WritingSystems
 {
@@ -545,6 +547,11 @@ namespace SIL.Windows.Forms.WritingSystems
 				{
 					if (prohibitedList.Contains(cultureInfo.Name, StringComparison.OrdinalIgnoreCase))
 						continue;
+
+					// Do not add languages that are not installed.
+					if (!SystemCollator.ValidateLanguageTag(cultureInfo.Name, out _))
+						continue;
+
 					yield return new KeyValuePair<string, string>(cultureInfo.Name, cultureInfo.DisplayName);
 				}
 			}
@@ -700,7 +707,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				{
 					if (String.IsNullOrEmpty(CurrentDefinition.Language))
 					{
-						CurrentDefinition.Language = WellKnownSubtags.UnlistedLanguage;
+						CurrentDefinition.Language = UnlistedLanguage;
 					}
 					CurrentDefinition.Region = value;
 					OnCurrentItemUpdated();
@@ -740,7 +747,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				{
 					if(String.IsNullOrEmpty(CurrentDefinition.Language))
 					{
-						CurrentDefinition.Language = WellKnownSubtags.UnlistedLanguage;
+						CurrentDefinition.Language = UnlistedLanguage;
 					}
 					CurrentDefinition.Script = value;
 					OnCurrentItemUpdated();
@@ -764,17 +771,17 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public string CurrentVariant
 		{
-			get { return IetfLanguageTag.GetVariantCodes(CurrentDefinition.Variants) ?? string.Empty; }
+			get { return GetVariantCodes(CurrentDefinition.Variants) ?? string.Empty; }
 			set
 			{
-				if (IetfLanguageTag.GetVariantCodes(CurrentDefinition.Variants) != value)
+				if (GetVariantCodes(CurrentDefinition.Variants) != value)
 				{
 					string fixedVariant = value.ToValidVariantString();
 					if (string.IsNullOrEmpty(CurrentDefinition.Language) && !fixedVariant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
-						CurrentDefinition.Language = WellKnownSubtags.UnlistedLanguage;
+						CurrentDefinition.Language = UnlistedLanguage;
 
 					IEnumerable<VariantSubtag> variantSubtags;
-					if (IetfLanguageTag.TryGetVariantSubtags(fixedVariant, out variantSubtags))
+					if (TryGetVariantSubtags(fixedVariant, out variantSubtags))
 					{
 						VariantSubtag[] originalVariantSubtags = CurrentDefinition.Variants.ToArray();
 						CurrentDefinition.Variants.ReplaceAll(variantSubtags);
@@ -811,7 +818,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			summary.AppendFormat(" {0}", writingSystem.Language.Name);
 			if (writingSystem.Region != null)
 				summary.AppendFormat(" in {0}", writingSystem.Region.Code);
-			if (writingSystem.Script != null && !IetfLanguageTag.IsScriptImplied(writingSystem.LanguageTag))
+			if (writingSystem.Script != null && !IsScriptImplied(writingSystem.LanguageTag))
 				summary.AppendFormat(" written in {0} script", CurrentIso15924Script.ShortName);
 
 			summary.AppendFormat(". ({0})", writingSystem.LanguageTag);
@@ -962,10 +969,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 		}
 
-		public virtual List<WritingSystemDefinition> WritingSystemDefinitions
-		{
-			get { return _writingSystemDefinitions; }
-		}
+		public virtual List<WritingSystemDefinition> WritingSystemDefinitions =>
+			_writingSystemDefinitions;
 
 		public enum SelectionsForSpecialCombo
 		{
@@ -994,15 +999,15 @@ namespace SIL.Windows.Forms.WritingSystems
 				// If there is a non-default script present on a LanguageTag with IPA load it up in the Script/Region/Variant instead.
 				// This will avoid silently clearing script codes from existing IPA writing systems that didn't follow best practice on scripts.
 				if (_currentWritingSystem.IpaStatus != IpaStatusChoices.NotIpa
-					&& (_currentWritingSystem.Script == null || IetfLanguageTag.IsScriptImplied(_currentWritingSystem.LanguageTag)))
+					&& (_currentWritingSystem.Script == null || IsScriptImplied(_currentWritingSystem.LanguageTag)))
 				{
 					return SelectionsForSpecialCombo.Ipa;
 				}
-				if (_currentWritingSystem.Language == WellKnownSubtags.UnlistedLanguage)
+				if (_currentWritingSystem.Language == UnlistedLanguage)
 				{
 					return SelectionsForSpecialCombo.UnlistedLanguageDetails;
 				}
-				if ((_currentWritingSystem.Script != null && !IetfLanguageTag.IsScriptImplied(_currentWritingSystem.LanguageTag))
+				if ((_currentWritingSystem.Script != null && !IsScriptImplied(_currentWritingSystem.LanguageTag))
 					|| _currentWritingSystem.Region != null
 					|| _currentWritingSystem.Variants.Count > 0
 				)
@@ -1028,7 +1033,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				{
 					if(String.IsNullOrEmpty(_currentWritingSystem.Language))
 					{
-						_currentWritingSystem.Language = WellKnownSubtags.UnlistedLanguage;
+						_currentWritingSystem.Language = UnlistedLanguage;
 					}
 					_currentWritingSystem.IpaStatus = value;
 					OnCurrentItemUpdated();
@@ -1401,7 +1406,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				return;
 			}
 
-			if (ws.Abbreviation == WellKnownSubtags.UnlistedLanguage) // special case for Unlisted Language
+			if (ws.Abbreviation == UnlistedLanguage) // special case for Unlisted Language
 			{
 				ws.Abbreviation = "v"; // TODO magic string!!! UnlistedLanguageView.DefaultAbbreviation;
 			}
@@ -1632,7 +1637,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			// FieldWorks marks custom languages, regions, and scripts with the first
 			// available code designated for such purposes, but also adds information to the
 			// variant in the private use area.  Don't throw any of that away here.
-			if (CurrentIso != "qaa" && CurrentRegion != "QM" && CurrentScriptCode != "Qaaa")
+			if (CurrentIso != UnlistedLanguage && CurrentRegion != "QM" && CurrentScriptCode != "Qaaa")
 				CurrentVariant = string.Empty;
 			if (CurrentRegion != "QM")
 				CurrentRegion = string.Empty;
@@ -1656,7 +1661,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			if (CurrentDefinition != null)
 			{
-				CurrentVariant = IetfLanguageTag.GetVariantCodes(CurrentDefinition.Variants);
+				CurrentVariant = GetVariantCodes(CurrentDefinition.Variants);
 				CurrentRegion = CurrentDefinition.Region;
 				CurrentScriptCode = CurrentDefinition.Script;
 				CurrentIsVoice = CurrentDefinition.IsVoice;

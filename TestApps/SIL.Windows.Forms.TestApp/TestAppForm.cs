@@ -1,7 +1,8 @@
-// Copyright (c) 2013-2014 SIL International
+// Copyright (c) 2013-2022 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -23,6 +24,8 @@ using SIL.Windows.Forms.SettingProtection;
 using SIL.Windows.Forms.WritingSystems;
 using SIL.WritingSystems;
 using SIL.Media;
+using SIL.Windows.Forms.Extensions;
+using SIL.Windows.Forms.LocalizationIncompleteDlg;
 
 namespace SIL.Windows.Forms.TestApp
 {
@@ -34,6 +37,7 @@ namespace SIL.Windows.Forms.TestApp
 	public partial class TestAppForm : Form
 	{
 		private bool _KeyboardControllerInitialized;
+		private LocalizationIncompleteViewModel _localizationIncompleteViewModel;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -44,6 +48,28 @@ namespace SIL.Windows.Forms.TestApp
 		{
 			InitializeComponent();
 			Text = Platform.DesktopEnvironmentInfoString;
+			_localizationIncompleteViewModel = new LocalizationIncompleteViewModel(
+				Program.PrimaryL10NManager, "testapp",
+				IssueAnalyticsRequest);
+			_uiLanguageMenu.InitializeWithAvailableUILocales(l => true, Program.PrimaryL10NManager,
+				_localizationIncompleteViewModel, additionalNamedLocales:new Dictionary<string, string> {
+					{ "Some untranslated language", WellKnownSubtags.UnlistedLanguage } });
+		}
+
+		private void IssueAnalyticsRequest()
+		{
+			if (InvokeRequired)
+				Invoke(new Action(IssueAnalyticsRequest));
+			else
+			{
+				var msg = "Request issued for localization into " +
+					_localizationIncompleteViewModel.StandardAnalyticsInfo["Requested language"];
+				if (!string.IsNullOrWhiteSpace(_localizationIncompleteViewModel.UserEmailAddress))
+					msg += Environment.NewLine + "by " +
+						_localizationIncompleteViewModel.StandardAnalyticsInfo["User email"];
+				msg +=  Environment.NewLine + $"for {_localizationIncompleteViewModel.NumberOfUsers} users";
+				MessageBox.Show(msg, Text);
+			}
 		}
 
 		private void OnFolderBrowserControlClicked(object sender, EventArgs e)
@@ -349,6 +375,11 @@ and displays it as HTML.
 		{
 			var parent = new ParentOfModalChild();
 			parent.Show();
+		}
+
+		private void btnThrowException_Click(object sender, EventArgs e)
+		{
+			throw new Exception("This is a test of the error reporting window!");
 		}
 	}
 }

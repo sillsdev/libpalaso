@@ -62,7 +62,7 @@ namespace SIL.Media
 		public void StopRecordingAndSaveAsWav()
 		{
 			if (!_thinkWeAreRecording)
-				throw new ApplicationException("Stop Recording called when we weren't recording.  Use IsRecording to check first.");
+				throw new ApplicationException("Stop Recording called when we weren't recording. Use IsRecording to check first.");
 
 			_thinkWeAreRecording = false;
 			_recorder.StopRecordingAudio();

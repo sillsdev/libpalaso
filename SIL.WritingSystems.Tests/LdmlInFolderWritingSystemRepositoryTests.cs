@@ -10,7 +10,7 @@ using NUnit.Framework;
 using SIL.Extensions;
 using SIL.Keyboarding;
 using SIL.TestUtilities;
-using Is = SIL.TestUtilities.NUnitExtensions.Is;
+using static SIL.WritingSystems.WellKnownSubtags;
 
 namespace SIL.WritingSystems.Tests
 {
@@ -1058,7 +1058,8 @@ namespace SIL.WritingSystems.Tests
 ");
 
 				WritingSystemDefinition chWS;
-				Assert.That(environment.LocalRepository.WritingSystemFactory.Create("zh-CN", out chWS), Is.False);
+				Assert.That(environment.LocalRepository.WritingSystemFactory.Create(
+					ChineseSimplifiedTag, out chWS), Is.False);
 				Assert.That(chWS.Language, Is.EqualTo((LanguageSubtag) "zh"));
 				Assert.That(chWS.Script, Is.EqualTo((ScriptSubtag) "Hans"));
 				Assert.That(chWS.Region, Is.EqualTo((RegionSubtag) "CN"));
@@ -1068,7 +1069,7 @@ namespace SIL.WritingSystems.Tests
 				// ensure that the template is used when the writing system is saved
 				environment.LocalRepository.Set(chWS);
 				environment.LocalRepository.Save();
-				XElement ldmlElem = XElement.Load(environment.GetPathForLocalWSId("zh-CN"));
+				XElement ldmlElem = XElement.Load(environment.GetPathForLocalWSId(ChineseSimplifiedTag));
 				Assert.That((string) ldmlElem.Elements("layout").Elements("orientation").Elements("lineOrder").First(), Is.EqualTo("top-to-bottom"));
 			}
 		}

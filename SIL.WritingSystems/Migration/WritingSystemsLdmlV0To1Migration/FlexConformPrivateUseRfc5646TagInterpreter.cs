@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SIL.Data;
@@ -38,7 +38,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			_variant = IetfLanguageTag.ConcatenateVariantAndPrivateUse(newVariant, newPrivateUse);
 
 			if (!string.IsNullOrEmpty(script) || !string.IsNullOrEmpty(region) || !string.IsNullOrEmpty(newVariant))
-				_language = "qaa";
+				_language = WellKnownSubtags.UnlistedLanguage;
 		}
 
 		private IEnumerable<string> StripXs(string newPrivateUse)

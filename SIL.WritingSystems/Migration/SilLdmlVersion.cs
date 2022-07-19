@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Xml.Linq;
 using SIL.Migration;
 
@@ -18,7 +18,7 @@ namespace SIL.WritingSystems.Migration
 			XElement ldmlElem = XElement.Load(filePath);
 			if (ldmlElem.Name == "ldml")
 			{
-				// The exisitence of any other special namespace means invalid version
+				// The existence of any other special namespace means invalid version
 				foreach (var elem in ldmlElem.Elements("special"))
 				{
 					if (!string.IsNullOrEmpty((string)elem.Attribute(XNamespace.Xmlns+"palaso")) || 

@@ -448,6 +448,12 @@ namespace SIL.WritingSystems
 				catch (WebException)
 				{
 				}
+				catch (UnauthorizedAccessException)
+				{
+				}
+				catch (IOException)
+				{
+				}
 			}
 			_languageTags = new ReadOnlyKeyedCollection<string, SldrLanguageTagInfo>(ParseAllTagsJson(cachedAllTagsPath));
 		}
@@ -482,6 +488,15 @@ namespace SIL.WritingSystems
 					rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(File.ReadAllText(cachedAllTagsPath));
 					return DeriveTagsFromJsonEntries(rootObject);
 				}
+			}
+			// If the user somehow got their SLDR locked against access, what can we do but attempt to go on!?
+			catch (UnauthorizedAccessException ex)
+			{
+				Debug.Fail($"Inaccessible SLDR cache at: {cachedAllTagsPath}{Environment.NewLine}{ex.Message}");
+			}
+			catch (IOException ex)
+			{
+				Debug.Fail($"Error reading SLDR cache at: {cachedAllTagsPath}{Environment.NewLine}{ex.Message}");
 			}
 			catch (JsonReaderException)
 			{

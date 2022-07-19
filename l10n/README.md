@@ -11,31 +11,22 @@ We are using .xlf with Crowdin so if you are using L10nSharp with TMX you will n
 
 All the strings that are internationalized in all of the libpalaso projects are uploaded to Crowdin in Palaso.en.xlf
 
-The L10nSharp tool ExtractXliff is run on the project to get any updates to the source strings resulting in a new Palaso.en.xlf file.
+A Github action runs when commits are merged into master which uses the L10nSharp tool ExtractXliff to get any updates to the source strings resulting in a new Palaso.en.xlf file.
 
-Overcrowdin is used to upload this file to Crowdin. * NOT YET *
-
-This process is run automatically by a GitHub action if the commit comment mentions any of 'localize, l10n, i18n, internationalize, spelling' * NOT YET *
+Then the Crowdin cli is used to update that file in Crowdin based on the crowdin.yml file.
 
 It can also be run manually as follows:
 ```
-dotnet tool install -g overcrowdin
-set CROWDIN_COMMONLIB_KEY=TheApiKeyForTheSilCommonLibrariesProject
 msbuild l10n.proj /t:UpdateCrowdin
+crowdin upload sources -i CROWDIN_PROJECT_ID -T CROWDIN_ACCESS_TOKEN
 ```
 
 ### Building Nuget package with the latest translations
+This process is run manually from a github action whenever a package with updated translations is needed
 
-Overcrowdin is used to build and download the latest translation data.
-
-The resulting file is unzipped and a Nuget package is built from the l10ns.nuspec file
-
-This process is run whenever a tag is pushed to the libpalaso repository.
-
-It can also be run manually as follows:
+It can also be run manually on a developer machine as follows:
 ```
-dotnet tool install -g overcrowdin
-set CROWDIN_COMMONLIB_KEY=TheApiKeyForTheSilCommonLibrariesProject
+crowdin download --all -i CROWDIN_PROJECT_ID -T CROWDIN_ACCESS_TOKEN
 msbuild l10n.proj /t:PackageL10ns
 nuget push -ApiKey TheSilNugetApiKey SIL.libpalaso.l10n.nupkg
 ```

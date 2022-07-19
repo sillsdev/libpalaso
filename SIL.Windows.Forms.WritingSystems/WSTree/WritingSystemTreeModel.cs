@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SIL.WritingSystems;
@@ -117,7 +117,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 					}
 				}
 
-				if (itemToUseForSuggestions.Language == "qaa")
+				if (itemToUseForSuggestions.Language == WellKnownSubtags.UnlistedLanguage)
 				{
 					var treeItem = new WritingSystemRenameUnlistedLanguageTreeItem(item => _setupModel.RenameIsoCode(itemToUseForSuggestions));
 					parent.Children.Add(treeItem);

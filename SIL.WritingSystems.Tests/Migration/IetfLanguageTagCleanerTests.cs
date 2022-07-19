@@ -183,7 +183,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		{
 			var cleaner = new IetfLanguageTagCleaner("zh", "", "", "", "");
 			cleaner.Clean();
-			VerifyRfcCleaner(cleaner, "zh", "", "CN", "", "zh-CN");
+			VerifyRfcCleaner(cleaner, "zh", "", "CN", "", WellKnownSubtags.ChineseSimplifiedTag);
 		}
 
 		[Test]
@@ -191,7 +191,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		{
 			var cleaner = new IetfLanguageTagCleaner("cmn", "", "", "", "");
 			cleaner.Clean();
-			VerifyRfcCleaner(cleaner, "zh", "", "CN", "", "zh-CN");
+			VerifyRfcCleaner(cleaner, "zh", "", "CN", "", WellKnownSubtags.ChineseSimplifiedTag);
 		}
 
 		[Test]

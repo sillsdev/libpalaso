@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using NUnit.Framework;
 
@@ -242,8 +243,10 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Create_SimplifiedChinese_SuppressesScript()
 		{
-			Assert.That(IetfLanguageTag.Create("zh", "Hans", "CN", string.Empty), Is.EqualTo("zh-CN"));
-			Assert.That(IetfLanguageTag.Create("zh", "Hans", "CN", Enumerable.Empty<VariantSubtag>()), Is.EqualTo("zh-CN"));
+			Assert.That(IetfLanguageTag.Create("zh", "Hans", "CN", string.Empty),
+				Is.EqualTo(WellKnownSubtags.ChineseSimplifiedTag));
+			Assert.That(IetfLanguageTag.Create("zh", "Hans", "CN", Enumerable.Empty<VariantSubtag>()),
+				Is.EqualTo(WellKnownSubtags.ChineseSimplifiedTag));
 		}
 
 		[Test]
@@ -255,7 +258,8 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Create_ValidPrivateUseTag_ReturnsTag()
 		{
-			Assert.That(IetfLanguageTag.Create("qaa", "Zxxx", "GB", "fonipa-x-emic-Jimmy"), Is.EqualTo("qaa-Zxxx-GB-fonipa-x-emic-Jimmy"));
+			Assert.That(IetfLanguageTag.Create("qaa", "Zxxx", "GB", "fonipa-x-emic-Jimmy"),
+				Is.EqualTo("qaa-Zxxx-GB-fonipa-x-emic-Jimmy"));
 		}
 		#endregion
 
@@ -286,7 +290,8 @@ namespace SIL.WritingSystems.Tests
 		{
 			Assert.That(IetfLanguageTag.Canonicalize("en-Latn-US"), Is.EqualTo("en-US"));
 			Assert.That(IetfLanguageTag.Canonicalize("zh-hans-Cn-x-stuff"), Is.EqualTo("zh-CN-x-stuff"));
-			Assert.That(IetfLanguageTag.Canonicalize("zH-hans-Cn"), Is.EqualTo("zh-CN"));
+			Assert.That(IetfLanguageTag.Canonicalize("zH-hans-Cn"),
+				Is.EqualTo(WellKnownSubtags.ChineseSimplifiedTag));
 			Assert.That(IetfLanguageTag.Canonicalize("zH-Hant-tW-x-stuff"), Is.EqualTo("zh-TW-x-stuff"));
 			Assert.That(IetfLanguageTag.Canonicalize("Zh-hant-Tw"), Is.EqualTo("zh-TW"));
 			Assert.That(IetfLanguageTag.Canonicalize("oro-Latn"), Is.EqualTo("oro"));
@@ -666,6 +671,79 @@ namespace SIL.WritingSystems.Tests
 		}
 		#endregion
 
+		#region Get__Part
+		[TestCase("en", ExpectedResult = "en")]
+		[TestCase("tpi-AR", ExpectedResult = "tpi")]
+		[TestCase("tpi-Lepc-BR-fonipa-x-blah", ExpectedResult = "tpi")]
+		[TestCase("qaa", ExpectedResult = "qaa")]
+		[TestCase("qed", ExpectedResult = "qed")]
+		[TestCase("qed-Lepc-x-rubbish", ExpectedResult = "qed")]
+		public string GetLanguagePart_ValidIetfTag_ReturnsLanguage(string tag)
+		{
+			return IetfLanguageTag.GetLanguagePart(tag);
+		}
+
+		[TestCase("a")]
+		[TestCase("-")]
+		public void GetLanguagePart_InvalidIetfTag_ThrowsArgumentException(string tag)
+		{
+			Assert.That(() => IetfLanguageTag.GetLanguagePart(tag), Throws.ArgumentException);
+		}
+		
+		[TestCase("en", ExpectedResult = null)]
+		[TestCase("tpi-AR", ExpectedResult = null)]
+		[TestCase("tpi-Lepc-BR-fonipa-x-blah", ExpectedResult = "Lepc")]
+		[TestCase("am-Ethi", ExpectedResult = "Ethi")]
+		[TestCase("am-Latn", ExpectedResult = "Latn")]
+		[TestCase("qed-Lepc-x-rubbish", ExpectedResult = "Lepc")]
+		public string GetScriptPart_ValidIetfTag_ReturnsScript(string tag)
+		{
+			return IetfLanguageTag.GetScriptPart(tag);
+		}
+
+		[TestCase("a")]
+		[TestCase("-")]
+		[TestCase("qed-?~")]
+		public void GetScriptPart_InvalidIetfTag_ThrowsArgumentException(string tag)
+		{
+			Assert.That(() => IetfLanguageTag.GetScriptPart(tag), Throws.ArgumentException);
+		}
+		
+		[TestCase("en", ExpectedResult = null)]
+		[TestCase("tpi-AR", ExpectedResult = "AR")]
+		[TestCase("tpi-Lepc-BR-fonipa-x-blah", ExpectedResult = "BR")]
+		[TestCase("am-Ethi", ExpectedResult = null)]
+		[TestCase("qed-Lepc-x-rubbish", ExpectedResult = null)]
+		public string GetRegionPart_ValidIetfTag_ReturnsRegion(string tag)
+		{
+			return IetfLanguageTag.GetRegionPart(tag);
+		}
+
+		[TestCase("--")]
+		[TestCase("qed-?~")]
+		public void GetRegionPart_InvalidIetfTag_ThrowsArgumentException(string tag)
+		{
+			Assert.That(() => IetfLanguageTag.GetRegionPart(tag), Throws.ArgumentException);
+		}
+		
+		[TestCase("en", ExpectedResult = null)]
+		[TestCase("tpi-AR", ExpectedResult = null)]
+		[TestCase("tpi-Lepc-BR-fonipa-x-blah", ExpectedResult = "fonipa-x-blah")]
+		[TestCase("am-Ethi", ExpectedResult = null)]
+		[TestCase("qed-Lepc-x-rubbish", ExpectedResult = "x-rubbish")]
+		public string GetVariantPart_ValidIetfTag_ReturnsVariant(string tag)
+		{
+			return IetfLanguageTag.GetVariantPart(tag);
+		}
+
+		[TestCase("---")]
+		[TestCase("qed-?~")]
+		public void GetVariantPart_InvalidIetfTag_ThrowsArgumentException(string tag)
+		{
+			Assert.That(() => IetfLanguageTag.GetVariantPart(tag), Throws.ArgumentException);
+		}
+		#endregion
+
 		#region GetVariantCodes
 		[Test]
 		public void GetVariantCodes_EmptyVariants_ReturnsEmpty()
@@ -829,5 +907,173 @@ namespace SIL.WritingSystems.Tests
 		{
 			Assert.That(IetfLanguageTag.IsScriptImplied(tag), Is.EqualTo(expectedResult));
 		}
+
+		#region GetLocalizedLanguageName
+		[TestCase("en", "en", ExpectedResult = "English")]
+		[TestCase("en-Latn-US", "en", ExpectedResult = "English")]
+		[TestCase("en-x-etic", "en-GB", ExpectedResult = "English")]
+		[TestCase("en-Ethi", "en-GB", ExpectedResult = "English")]
+		[TestCase("en-US", "en-US", ExpectedResult = "English")]
+		[TestCase("en-US", "es", "English", ExpectedResult = "inglés")]
+		[TestCase("en-x-etic", "fr-FR-x-unknown", "English", ExpectedResult = "anglais")]
+		[TestCase("fr", "fr", ExpectedResult = "français")]
+		[TestCase("es-419", "es-ES", ExpectedResult = "español")]
+		[TestCase("zh-CN", "en", ExpectedResult = "Chinese (Simplified)")]
+		[TestCase("pbu", "pbu", ExpectedResult = "پښتو")]
+		[TestCase("pbu", "tpi", ExpectedResult = "پښتو")]
+		[TestCase("prs", "en", ExpectedResult = "Dari")]
+		[TestCase("tpi", "tpi", ExpectedResult = "Tok Pisin")]
+		[TestCase("es", "tpi", ExpectedResult = "español")]
+		[TestCase("es", "fr", "español", ExpectedResult = "espagnol")]
+		[TestCase("es", "de", "español", ExpectedResult = "Spanisch")]
+		[TestCase("pt-BR", "en-US", ExpectedResult = "Portuguese")]
+		[TestCase("pt", "pt-PT", ExpectedResult = "português")]
+		[TestCase("qaa-x-kal", "en", ExpectedResult = "Language Not Listed (qaa-x-kal)")]
+		[TestCase("qaa-x-kal", "pbu", ExpectedResult = "Language Not Listed (qaa-x-kal)")]
+		[TestCase("noh", "en", ExpectedResult = "Nomu")]
+		[TestCase("noh", "noh", ExpectedResult = "Nomu")]
+		// See REVIEW comment in IEtfLanguageTag.FixBotchedNativeName
+		[TestCase("zh-CN", "zh-CN", "中文(中华人民共和国)", ExpectedResult = "中文(中国)")]
+		// Not sure if this fallback for Dari is truly acceptable. Although it looks the same and
+		// is what Windows supplies as the "Native Name", Wiktionary lists it as a different word
+		// and says that the word we have hardcoded in IetfLanguageTags.GetNativeNameIfKnown is the
+		// correct name. Wikipedia seems to agree. Interestingly, Google brings up the Wikipedia
+		// info for Dari when you search for either one, even though the presumably incorrect
+		// version does not actually appear on that Wikipedia page.
+		[TestCase("prs", "prs", /*"درى",*/ ExpectedResult = "دری")]
+		[TestCase("prs", "fr", /*"درى",*/ ExpectedResult = "دری")]
+		public string GetLocalizedLanguageName_Valid_GetsNameInTargetLanguageOrNativeAsFallback(
+			string tag, string uiTag, string acceptableFallback = null)
+		{
+			var uiLanguageCode = IetfLanguageTag.GetLanguagePart(uiTag);
+			var resetUiCultureTo =
+				CultureInfo.CurrentUICulture.TwoLetterISOLanguageName != uiLanguageCode &&
+				CultureInfo.CurrentUICulture.ThreeLetterISOLanguageName != uiLanguageCode ?
+					CultureInfo.CurrentUICulture : null;
+			if (resetUiCultureTo != null)
+			{
+				try
+				{
+					CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(uiLanguageCode);
+				}
+				catch (CultureNotFoundException)
+				{
+					if (PlatformUtilities.Platform.IsPreWindows10)
+						Assert.Ignore(
+							"This TestCase requires a culture which is not supported prior to Windows 10.");
+					if (PlatformUtilities.Platform.IsLinux)
+						Assert.Ignore(
+							"This TestCase requires a culture which is not supported on this version of Linux.");
+					throw;
+				}
+			}
+
+			try
+			{
+				var result = IetfLanguageTag.GetLocalizedLanguageName(tag, uiTag);
+				if (result == acceptableFallback)
+					Assert.Ignore("Got an acceptable fallback name, but not what we really wanted.");
+				if (tag == WellKnownSubtags.ChineseSimplifiedTag && uiTag == WellKnownSubtags.ChineseSimplifiedTag)
+				{
+					// In ICU, the parentheses are thin "Chinese" ones with included spacing.
+					// That's fine.
+					result = result.Replace("（", "(").Replace("）", ")");
+				}
+				return result;
+			}
+			finally
+			{
+				if (resetUiCultureTo != null)
+					CultureInfo.CurrentUICulture = resetUiCultureTo;
+			}
+		}
+		#endregion
+		
+		#region GetNativeLanguageNameWithEnglishSubtitle
+
+		[TestCase("en", ExpectedResult = "English")]
+		[TestCase("en-Latn-US", ExpectedResult = "English")]
+		[TestCase("en-x-etic", ExpectedResult = "English")]
+		[TestCase("en-Ethi", ExpectedResult = "English")]
+		[TestCase("en-US", ExpectedResult = "English")]
+		[TestCase("en-GB", ExpectedResult = "English")]
+		[TestCase("en-x-etic", ExpectedResult = "English")]
+		[TestCase("fr", ExpectedResult = "français")]
+		[TestCase("es", ExpectedResult = "español")]
+		[TestCase("es-419", ExpectedResult = "español")]
+		[TestCase("pbu", ExpectedResult = "پښتو (Pashto)")]
+		[TestCase("prs", ExpectedResult = "دری (Dari)")]
+		[TestCase("tpi", ExpectedResult = "Tok Pisin")]
+		[TestCase("pt", ExpectedResult = "português")]
+		[TestCase("pt-BR", ExpectedResult = "português")]
+		[TestCase("qaa-x-kal", ExpectedResult = "Language Not Listed (qaa-x-kal)")]
+		[TestCase("noh", ExpectedResult = "noh (Nomu)")]
+		public string GetNativeLanguageNameWithEnglishSubtitle_Valid_GetsNativeNamePlusEnglishAsNeeded(
+			string tag)
+		{
+			return IetfLanguageTag.GetNativeLanguageNameWithEnglishSubtitle(tag);
+		}
+
+		[TestCase("zh-CN", "中文(中华人民共和国) (Chinese (Simplified))", "中文 (中国) (Chinese (Simplified))", ExpectedResult = "中文(中国) (Chinese (Simplified))")]
+		[TestCase("zh-TW", "中文(中华人民共和国) (Chinese (Traditional))", "中文 (台湾) (Chinese (Traditional))", ExpectedResult = "中文(台灣) (Chinese (Traditional))")]
+		public string GetNativeLanguageNameWithEnglishSubtitle_China_GetsNativeNamePlusEnglishAsNeeded(
+			string tag, string acceptableResultPreWindows10, string acceptableResultLinux)
+		{
+			var result = IetfLanguageTag.GetNativeLanguageNameWithEnglishSubtitle(tag);
+			if (result == acceptableResultPreWindows10 && PlatformUtilities.Platform.IsPreWindows10)
+				Assert.Pass("Acceptable on older versions of the OS");
+			if (result == acceptableResultLinux && PlatformUtilities.Platform.IsLinux)
+				Assert.Pass("Extra space is acceptable");
+			return result;
+		}
+		#endregion
+
+		#region GetBestLanguageName
+		/// <summary>
+		/// No match at all.
+		/// </summary>
+		[Test]
+		public void GetBestLanguageName_ForXYZ_FindsXYZ()
+		{
+			Assert.That(IetfLanguageTag.GetBestLanguageName("xyz", out var name), Is.False);
+			Assert.That(name, Is.EqualTo("xyz"));
+		}
+
+		/// <summary>
+		/// In this test, StandardSubtags.RegisteredLanguages has some, but none have the exact right code.
+		/// </summary>
+		[Test]
+		public void GetBestLanguageName_ForArab_FindsArab()
+		{
+			Assert.That(IetfLanguageTag.GetBestLanguageName("arab", out var name), Is.False);
+			Assert.That(name, Is.EqualTo("arab"));
+		}
+
+		/// <summary>
+		/// We test various 2 and 3-letter codes to make sure they get the expected language name.
+		/// We also make sure that various tags get stripped off when searching for Best Name.
+		/// The method for getting the "General code" (w/o Script/Region/Variant codes) has an exception for Chinese.
+		/// But this method doesn't trigger it (which is okay at this point).
+		/// </summary>
+		[Test]
+		[TestCase("ara", "Arabic")] // classic 3-letter code
+		[TestCase("fr", "French")] // classic 2-letter code
+		[TestCase("nsk", "Naskapi")]
+		[TestCase("nsk-Latn", "Naskapi")]
+		[TestCase("nsk-Latn-x-Quebec", "Naskapi")]
+		[TestCase("nsk-Latn-CA-x-Quebec", "Naskapi")]
+		[TestCase("nsk-misc-garbage", "Naskapi")]
+		[TestCase("shu", "Chadian Arabic")]
+		[TestCase("shu-arab", "Chadian Arabic")]
+		[TestCase("shu-latn", "Chadian Arabic")]
+		[TestCase("sok", "Sokoro")] // Should not be required to have a '-Latn' tag.
+		[TestCase("zh-CN", "Chinese")]
+		[TestCase("zho", "Chinese")]
+		public void GetBestLanguageName_ForLotsOfVariants_FindsExpectedName(string codeVariant, string expectedResult)
+		{
+			Assert.That(IetfLanguageTag.GetBestLanguageName(codeVariant, out var name), Is.True);
+			Assert.That(name, Is.EqualTo(expectedResult));
+		}
+		#endregion
 	}
 }

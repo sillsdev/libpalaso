@@ -11,6 +11,8 @@ using SIL.Code;
 using SIL.Extensions;
 using SIL.IO;
 using SIL.Text;
+using static SIL.WritingSystems.IetfLanguageTag;
+using static SIL.WritingSystems.WellKnownSubtags;
 
 namespace SIL.WritingSystems
 {
@@ -48,8 +50,20 @@ namespace SIL.WritingSystems
 			string langTagsContent = LanguageRegistryResources.langTags;
 			// The cached file is renamed if it's invalid during Sldr.InitializeLanguageTags().
 			var cachedAllTagsPath = Path.Combine(Sldr.SldrCachePath, "langtags.json");
-			if (File.Exists(cachedAllTagsPath))
-				langTagsContent = RobustFile.ReadAllText(cachedAllTagsPath);
+			// But if that file is somehow not accessible, don't crash here!
+			try
+			{
+				if (File.Exists(cachedAllTagsPath))
+					langTagsContent = RobustFile.ReadAllText(cachedAllTagsPath);
+			}
+			// The above call to Sldr.InitializeLanguageTags() should have already sent a Debug message,
+			// if either of these 2 catches trap an exception.
+			catch (UnauthorizedAccessException)
+			{
+			}
+			catch (IOException)
+			{
+			}
 			List<AllTagEntry> rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(langTagsContent);
 
 			foreach (AllTagEntry entry in rootObject)
@@ -61,7 +75,7 @@ namespace SIL.WritingSystems
 					AddLanguage(entry.tag, entry.iso639_3, entry.full, entry.name, entry.localname, entry.region, entry.names, entry.regions, entry.tags, entry.iana, entry.regionName);
 				}
 			}
-			AddLanguage("qaa", "qaa", "qaa", "Unlisted Language");
+			AddLanguage(UnlistedLanguage, UnlistedLanguage, UnlistedLanguage, "Unlisted Language");
 			if (ensureDefaultTags)
 				EnsureDefaultTags();
 		}
@@ -89,7 +103,7 @@ namespace SIL.WritingSystems
 				string script;
 				string region;
 				string variant;
-				if (!IetfLanguageTag.TryGetParts(tag, out language, out script, out region, out variant))
+				if (!TryGetParts(tag, out language, out script, out region, out variant))
 				{
 					prevLang = tag;	// shouldn't happen, but if it does...
 					continue;
@@ -423,8 +437,8 @@ namespace SIL.WritingSystems
 				string script;
 				string region;
 				string variant;
-				var xtagParses = IetfLanguageTag.TryGetParts(x.LanguageTag, out xlanguage, out script, out region, out variant);
-				var ytagParses = IetfLanguageTag.TryGetParts(y.LanguageTag, out ylanguage, out script, out region, out variant);
+				var xtagParses = TryGetParts(x.LanguageTag, out xlanguage, out script, out region, out variant);
+				var ytagParses = TryGetParts(y.LanguageTag, out ylanguage, out script, out region, out variant);
 				var bothTagLanguagesMatchSearch = xtagParses && ytagParses && xlanguage == ylanguage &&
 					_searchString.Equals(xlanguage, StringComparison.InvariantCultureIgnoreCase);
 				if (!bothTagLanguagesMatchSearch)
