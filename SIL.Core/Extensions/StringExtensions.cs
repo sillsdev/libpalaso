@@ -578,6 +578,8 @@ namespace SIL.Extensions
 			return bestMatch;
 		}
 
+		public static Func<string, int, UnicodeCategory> AltImplGetUnicodeCategory { get; set; }
+
 		/// <summary>
 		/// Gets a value indicating whether the (Unicode) character at the indicated index position
 		/// in the string is likely to be used in a word (as opposed to being a word-breaking
@@ -596,14 +598,19 @@ namespace SIL.Extensions
 		/// in the given string. See <paramref name="returnFalseAtEndOfString"/> for more
 		/// information.</exception>
 		/// <exception cref="ArgumentNullException"><paramref name="s"/> is null.</exception>
-		/// <remarks>This correctly handles surrogate pairs.</remarks>
+		/// <remarks>This correctly handles surrogate pairs.
+		/// Note that the normal implementation of this does not use ICU to get the character
+		/// category. An application that uses ICU can substitute an ICU-based implementation by
+		/// setting <see cref="AltImplGetUnicodeCategory"/>.</remarks>
 		public static bool IsLikelyWordForming(this string s, int index,
 			bool returnFalseAtEndOfString = true)
 		{
 			if (index == s.Length && returnFalseAtEndOfString)
 				return false;
 
-			switch (CharUnicodeInfo.GetUnicodeCategory(s, index))
+			var cat = AltImplGetUnicodeCategory?.Invoke(s, index) ?? UnicodeInfo.GetUnicodeCategory(s, index);
+
+			switch (cat)
 			{
 				// REVIEW: Enclosing marks are seldom (if ever) used in normal (e.g., Scripture)
 				// text. Probably best not to treat them as word-forming here.
