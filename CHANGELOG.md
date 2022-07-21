@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Added property SummaryDisplayMember to CheckedComboBox.
 - [SIL.Core] ErrorReport now has a GetErrorReporter() getter function.
 - [SIL.Core] ErrorReport exposes a NotifyUserOfProblemWrapper() protected function, which is designed to make it easier for subclasses to add additional NotifyUserOfProblem options
+- [SIL.Core] Added AltImplGetUnicodeCategory function to StringExtensions
 
 ### Changed
 - [SIL.Windows.Forms.WritingSystems] Moved (internal) extension method InitializeWithAvailableUILocales to SIL.Windows.Forms.
