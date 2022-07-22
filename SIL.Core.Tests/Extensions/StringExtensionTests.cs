@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,18 @@ namespace SIL.Tests.Extensions
 	[TestFixture]
 	public class StringExtensionTests
 	{
+		[SetUp]
+		public void Setup()
+		{
+			Assert.That(StringExtensions.AltImplGetUnicodeCategory, Is.Null);
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			StringExtensions.AltImplGetUnicodeCategory = null;
+		}
+
 		[Test]
 		public void SplitTrimmed_StringHasSpacesOnly_GivesEmptyList()
 		{
@@ -714,6 +727,68 @@ namespace SIL.Tests.Extensions
 		{
 			Assert.AreEqual("", StringExtensions.GetLongestUsefulCommonSubstring(a, b,
 				out var _, minPctForPartialWordMatch));
+		}
+
+		[TestCase("\u200D")] // Format: ZWJ
+		[TestCase("s")] // Lowercase letter
+		[TestCase("\u02C6")] // Modifier letter
+		[TestCase("\u02C6")] // NonSpacingMark
+		[TestCase("\u02C6")] // OtherLetter
+		[TestCase("\u100000")] // PrivateUse
+		[TestCase("\u094C")] // SpacingCombiningMa
+		[TestCase("\u01C8")] // TitlecaseLetter:
+		[TestCase("Q")] // Uppercase letter
+		public void IsLikelyWordForming_WordFormingCharactersKnownToDotNet_ReturnsTrue(string s)
+		{
+			Assert.IsTrue(s.IsLikelyWordForming(0, false));
+		}
+
+		[TestCase(")")] // ClosePunctuation
+		[TestCase("\u203F")] // ConnectorPunctuation
+		[TestCase("\u0000")] // Control
+		[TestCase("$")] // CurrencySymbol
+		[TestCase("-")] // DashPunctuation
+		[TestCase("5")] // DecimalDigitNumber
+		[TestCase("\u20DD")] // EnclosingMark
+		[TestCase("»")] // FinalQuotePunctuation
+		[TestCase("\u201C")] // InitialQuotePunctuation
+		[TestCase("\u2129")] // LetterNumber
+		[TestCase("\u2028")] // LineSeparator
+		[TestCase("+")] // MathSymbol
+		[TestCase("\u0060")] // ModifierSymbol
+		[TestCase("[")] // OpenPunctuation
+		[TestCase("\u00B2")] // OtherNumber
+		[TestCase("!")] // OtherPunctuation
+		[TestCase("\u00B0")] // OtherSymbol
+		[TestCase("\u2029")] // ParagraphSeparator
+		[TestCase(" ")] // SpaceSeparator
+		public void IsLikelyWordForming_OtherCharactersKnownToDotNet_ReturnsFalse(string s)
+		{
+			Assert.IsFalse(s.IsLikelyWordForming(0, false));
+		}
+
+		private const string kVietnameseAlternateReadingMark = "\u00016FF0";
+
+		[Test]
+		[Category("ByHand")]
+		[Explicit("This test was written to demonstrate the need for an alternate implementation " +
+			"for characters that are not known to .Net (see next test).")]
+		public void IsLikelyWordForming_VietnameseAlternateReadingMarkCa_ReturnsTrue()
+		{
+			// We expect this to fail unless we upgrade to some future .Net version that knows
+			// about this code point.
+			Assert.IsTrue(kVietnameseAlternateReadingMark.IsLikelyWordForming(0, false));
+		}
+
+		[Test]
+		public void IsLikelyWordForming_CharactersNotKnownToDotNetButHandledByAlternateImplementation_ReturnsTrue()
+		{
+			StringExtensions.AltImplGetUnicodeCategory = (str, index) =>
+				str.Substring(index, kVietnameseAlternateReadingMark.Length) ==
+				kVietnameseAlternateReadingMark ? UnicodeCategory.SpacingCombiningMark :
+				CharUnicodeInfo.GetUnicodeCategory(str, index);
+
+			Assert.IsTrue(kVietnameseAlternateReadingMark.IsLikelyWordForming(0, false));
 		}
 
 		private string GetUtf16StringFromUtf32CodePoints(params int[] codepoints) =>

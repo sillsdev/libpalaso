@@ -579,6 +579,17 @@ namespace SIL.Extensions
 		}
 
 		/// <summary>
+		/// Alternate implementation of the method to get the Unicode character category of a
+		/// character in a string. The default implementation is based on the Unicode support in
+		/// System.Globalization because SIL.Core does not reference Icu.net, but if a product is
+		/// using a version of ICU that has more up-to-date information, that is the preferred
+		/// source. Although this function has a public setter, clients that initialize the Sldr
+		/// (in SIL.WritingSystems) will not normally need to set this directly, since that
+		/// initialization automatically hooks up an ICU-based implementation.
+		/// </summary>
+		public static Func<string, int, UnicodeCategory> AltImplGetUnicodeCategory { get; set; }
+
+		/// <summary>
 		/// Gets a value indicating whether the (Unicode) character at the indicated index position
 		/// in the string is likely to be used in a word (as opposed to being a word-breaking
 		/// character).
@@ -596,14 +607,19 @@ namespace SIL.Extensions
 		/// in the given string. See <paramref name="returnFalseAtEndOfString"/> for more
 		/// information.</exception>
 		/// <exception cref="ArgumentNullException"><paramref name="s"/> is null.</exception>
-		/// <remarks>This correctly handles surrogate pairs.</remarks>
+		/// <remarks>This correctly handles surrogate pairs.
+		/// Note that the normal implementation of this does not use ICU to get the character
+		/// category. An application that uses ICU can substitute an ICU-based implementation by
+		/// setting <see cref="AltImplGetUnicodeCategory"/>.</remarks>
 		public static bool IsLikelyWordForming(this string s, int index,
 			bool returnFalseAtEndOfString = true)
 		{
 			if (index == s.Length && returnFalseAtEndOfString)
 				return false;
 
-			switch (CharUnicodeInfo.GetUnicodeCategory(s, index))
+			var cat = AltImplGetUnicodeCategory?.Invoke(s, index) ?? UnicodeInfo.GetUnicodeCategory(s, index);
+
+			switch (cat)
 			{
 				// REVIEW: Enclosing marks are seldom (if ever) used in normal (e.g., Scripture)
 				// text. Probably best not to treat them as word-forming here.
@@ -620,6 +636,7 @@ namespace SIL.Extensions
 				case SpacingCombiningMark:
 				case TitlecaseLetter:
 				case UppercaseLetter:
+				case OtherNotAssigned: // Most likely a word-forming character added in a later version of Unicode.
 					return true;
 			}
 

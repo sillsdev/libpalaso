@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Xml;
 using NUnit.Framework;
-using SIL.ObjectModel;
 using SIL.TestUtilities;
 using Is = SIL.TestUtilities.NUnitExtensions.Is;
 
