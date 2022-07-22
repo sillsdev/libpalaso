@@ -596,8 +596,9 @@ namespace SIL.Extensions
 		/// </summary>
 		/// <param name="s">The string containing the character to check.</param>
 		/// <param name="index">The index of the character to check. (For surrogate pairs
-		/// this should refer to the position of the high-order byte, though it seems to
-		/// tolerate referring to the position between the two bytes.)</param>
+		/// this should refer to the position of the high-order byte. The implementation
+		/// might tolerate referring to the position between the two bytes, but it is best
+		/// not to rely on this.)</param>
 		/// <param name="returnFalseAtEndOfString">Allows special treatment of the character
 		/// position at the end of the string (i.e., <paramref name="index"/> ==
 		/// <paramref name="s"/>.<see cref="string.Length"/>) as a convenience so the caller
