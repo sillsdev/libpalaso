@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using System.Text;
 using SIL.IO;
 using SIL.PlatformUtilities;
 using SIL.Threading;
@@ -20,8 +19,8 @@ namespace SIL.WritingSystems
 	public class GlobalWritingSystemRepository : GlobalWritingSystemRepository<WritingSystemDefinition>
 	{
 		///<summary>
-		/// Initializes the global writing system repository.  Migrates any ldml files if required,
-		/// notifying of any changes of writing system id that occured during migration.
+		/// Initializes the global writing system repository. Migrates any ldml files if required,
+		/// notifying of any changes of writing system id that occurred during migration.
 		///</summary>
 		public static GlobalWritingSystemRepository Initialize(Action<int, IEnumerable<LdmlMigrationInfo>> migrationHandler = null)
 		{
