@@ -10,7 +10,9 @@ using System.Net;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Web;
+using Icu;
 using Newtonsoft.Json;
+using SIL.Extensions;
 using SIL.ObjectModel;
 using SIL.PlatformUtilities;
 using SIL.Threading;
@@ -141,6 +143,39 @@ namespace SIL.WritingSystems
 			_offlineMode = offlineMode;
 			SldrCachePath = sldrCachePath;
 			_embeddedAllTagsTime = embeddedAllTagsTime;
+
+			InitializeGetUnicodeCategoryBasedOnIcu();
+		}
+
+		/// <summary>
+		/// This initialization sets an ICU-based implementation to get the Unicode character
+		/// category of a character in a string. The default implementation used in
+		/// StringExtensions is based on the Unicode support in System.Globalization because
+		/// SIL.Core does not reference Icu.net, but if a product is using a version of ICU
+		/// that has more up-to-date information, that is the preferred source.
+		/// </summary>
+		private static void InitializeGetUnicodeCategoryBasedOnIcu()
+		{
+			if (StringExtensions.AltImplGetUnicodeCategory != null)
+				return;
+
+			// Unfortunately, this version has to be looked up in the docs. There is no way
+			// (e.g. from System.Globalization) to look this up at runtime.
+			const double unicodeVersionOfDotNet4_6_2 = 8.0;
+
+			if (double.Parse(Wrapper.UnicodeVersion) > unicodeVersionOfDotNet4_6_2)
+			{
+				StringExtensions.AltImplGetUnicodeCategory = (s, index) =>
+				{
+					if (index < 0 || index >= s.Length)
+						throw new ArgumentOutOfRangeException(nameof(index), index,
+							"Index out of range. Must be a positive number less than the" +
+							$" length ({s.Length}) of the string: {{s}}");
+
+					return Character.GetCharType(char.ConvertToUtf32(s, index))
+						.ToUnicodeCategory();
+				};
+			}
 		}
 
 		public static bool IsInitialized => _sldrCacheMutex != null;

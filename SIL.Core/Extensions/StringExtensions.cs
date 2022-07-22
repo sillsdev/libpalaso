@@ -578,6 +578,15 @@ namespace SIL.Extensions
 			return bestMatch;
 		}
 
+		/// <summary>
+		/// Alternate implementation of the method to get the Unicode character category of a
+		/// character in a string. The default implementation is based on the Unicode support in
+		/// System.Globalization because SIL.Core does not reference Icu.net, but if a product is
+		/// using a version of ICU that has more up-to-date information, that is the preferred
+		/// source. Although this function has a public setter, clients that initialize the Sldr
+		/// (in SIL.WritingSystems) will not normally need to set this directly, since that
+		/// initialization automatically hooks up an ICU-based implementation.
+		/// </summary>
 		public static Func<string, int, UnicodeCategory> AltImplGetUnicodeCategory { get; set; }
 
 		/// <summary>
@@ -627,6 +636,7 @@ namespace SIL.Extensions
 				case SpacingCombiningMark:
 				case TitlecaseLetter:
 				case UppercaseLetter:
+				case OtherNotAssigned: // Most likely a word-forming character added in a later version of Unicode.
 					return true;
 			}
 
