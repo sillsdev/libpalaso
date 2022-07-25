@@ -445,21 +445,19 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[Test]
-		public void GetUnicodeCategoryBasedOnICU_HighSurrogate_GetsCorrectCategory()
+		[TestCase(0)]
+		[TestCase(2)]
+		public void GetUnicodeCategoryBasedOnICU_HighSurrogate_GetsCorrectCategory(int pos)
 		{
-			Assert.That(Sldr.GetUnicodeCategoryBasedOnICU("\U00020056\U000200D9", 0),
-				Is.EqualTo(UnicodeCategory.OtherLetter));
-			Assert.That(Sldr.GetUnicodeCategoryBasedOnICU("\U00020056\U000200D9", 2),
+			Assert.That(Sldr.GetUnicodeCategoryBasedOnICU("\U00020056\U000200D9", pos),
 				Is.EqualTo(UnicodeCategory.OtherLetter));
 		}
 
-		[Test]
-		public void GetUnicodeCategoryBasedOnICU_LowSurrogate_GetsCorrectCategory()
+		[TestCase(1)]
+		[TestCase(3)]
+		public void GetUnicodeCategoryBasedOnICU_LowSurrogate_GetsCorrectCategory(int pos)
 		{
-			Assert.That(Sldr.GetUnicodeCategoryBasedOnICU("\U00020056\U000200D9", 1),
-				Is.EqualTo(UnicodeCategory.OtherLetter));
-			Assert.That(Sldr.GetUnicodeCategoryBasedOnICU("\U00020056\U000200D9", 3),
+			Assert.That(Sldr.GetUnicodeCategoryBasedOnICU("\U00020056\U000200D9", pos),
 				Is.EqualTo(UnicodeCategory.OtherLetter));
 		}
 
