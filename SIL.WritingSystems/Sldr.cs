@@ -161,21 +161,38 @@ namespace SIL.WritingSystems
 
 			// Unfortunately, this version has to be looked up in the docs. There is no way
 			// (e.g. from System.Globalization) to look this up at runtime.
-			const double unicodeVersionOfDotNet4_6_2 = 8.0;
+			const double unicodeVersionOfDotNet462 = 8.0;
 
-			if (double.Parse(Wrapper.UnicodeVersion) > unicodeVersionOfDotNet4_6_2)
-			{
-				StringExtensions.AltImplGetUnicodeCategory = (s, index) =>
-				{
-					if (index < 0 || index >= s.Length)
-						throw new ArgumentOutOfRangeException(nameof(index), index,
-							"Index out of range. Must be a positive number less than the" +
-							$" length ({s.Length}) of the string: {{s}}");
+			if (double.Parse(Wrapper.UnicodeVersion) > unicodeVersionOfDotNet462)
+				StringExtensions.AltImplGetUnicodeCategory = GetUnicodeCategoryBasedOnICU;
+		}
 
-					return Character.GetCharType(char.ConvertToUtf32(s, index))
-						.ToUnicodeCategory();
-				};
-			}
+		/// <summary>
+		/// Uses ICU to get the Unicode category of the character at the indicated position in the
+		/// string.
+		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">Index out of range. Must be a positive
+		/// number less than the length of the <see cref="s"/></exception>
+		/// <exception cref="ArgumentException">String contains invalid surrogate characters (e.g.,
+		/// a low surrogate that is not preceded by a high surrogate)</exception>
+		/// <remarks>Internal for testing.</remarks>
+		internal static UnicodeCategory GetUnicodeCategoryBasedOnICU(string s, int index)
+		{
+			if (index < 0 || index >= s.Length)
+				throw new ArgumentOutOfRangeException(nameof(index), index,
+					"Index out of range. Must be a positive number less than the" +
+					$" length ({s.Length}) of the string: {{s}}");
+
+			// Just to be a bit more robust (like the default
+			// "UnicodeInfo.GetUnicodeCategory" implementation), if they gave us the index
+			// of the low surrogate and there is a valid high surrogate character preceding
+			// it, we'll fix things up so it doesn't throw an exception.
+			if (char.IsLowSurrogate(s, index) && index > 0 &&
+				char.IsHighSurrogate(s, index - 1))
+				index--;
+
+			return Character.GetCharType(char.ConvertToUtf32(s, index))
+				.ToUnicodeCategory();
 		}
 
 		public static bool IsInitialized => _sldrCacheMutex != null;

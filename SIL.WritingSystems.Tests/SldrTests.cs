@@ -444,5 +444,31 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(File.Exists(langTagsPath), Is.False);
 			}
 		}
+
+		[Test]
+		public void GetUnicodeCategoryBasedOnICU_HighSurrogate_GetsCorrectCategory()
+		{
+			Assert.That(Sldr.GetUnicodeCategoryBasedOnICU("\U00020056\U000200D9", 0),
+				Is.EqualTo(UnicodeCategory.OtherLetter));
+			Assert.That(Sldr.GetUnicodeCategoryBasedOnICU("\U00020056\U000200D9", 2),
+				Is.EqualTo(UnicodeCategory.OtherLetter));
+		}
+
+		[Test]
+		public void GetUnicodeCategoryBasedOnICU_LowSurrogate_GetsCorrectCategory()
+		{
+			Assert.That(Sldr.GetUnicodeCategoryBasedOnICU("\U00020056\U000200D9", 1),
+				Is.EqualTo(UnicodeCategory.OtherLetter));
+			Assert.That(Sldr.GetUnicodeCategoryBasedOnICU("\U00020056\U000200D9", 3),
+				Is.EqualTo(UnicodeCategory.OtherLetter));
+		}
+
+		[Test]
+		public void GetUnicodeCategoryBasedOnICU_LowSurrogateAtStartOfString_ThrowsArgumentException()
+		{
+			var bogusString = "\U00020056\U000200D9".Substring(1);
+			Assert.That(() => Sldr.GetUnicodeCategoryBasedOnICU(bogusString, 0),
+				Throws.ArgumentException);
+		}
 	}
 }
