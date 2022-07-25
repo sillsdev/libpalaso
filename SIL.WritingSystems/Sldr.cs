@@ -187,6 +187,7 @@ namespace SIL.WritingSystems
 			// "UnicodeInfo.GetUnicodeCategory" implementation), if they gave us the index
 			// of the low surrogate and there is a valid high surrogate character preceding
 			// it, we'll fix things up so it doesn't throw an exception.
+			// Note: This logic is not correct on a big-endian machinee.
 			if (char.IsLowSurrogate(s, index) && index > 0 &&
 				char.IsHighSurrogate(s, index - 1))
 				index--;
