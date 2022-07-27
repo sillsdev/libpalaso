@@ -158,13 +158,19 @@ namespace SIL.WritingSystems
 		{
 			if (StringExtensions.AltImplGetUnicodeCategory != null)
 				return;
+			try
+			{
+				// Unfortunately, this version has to be looked up in the docs. There is no way
+				// (e.g. from System.Globalization) to look this up at runtime.
+				const double unicodeVersionOfDotNet462 = 8.0;
 
-			// Unfortunately, this version has to be looked up in the docs. There is no way
-			// (e.g. from System.Globalization) to look this up at runtime.
-			const double unicodeVersionOfDotNet462 = 8.0;
-
-			if (double.Parse(Wrapper.UnicodeVersion) > unicodeVersionOfDotNet462)
-				StringExtensions.AltImplGetUnicodeCategory = GetUnicodeCategoryBasedOnICU;
+				if (double.Parse(Wrapper.UnicodeVersion) > unicodeVersionOfDotNet462)
+					StringExtensions.AltImplGetUnicodeCategory = GetUnicodeCategoryBasedOnICU;
+			}
+			catch (System.IO.FileLoadException)
+			{
+				// The program doesn't have the ICU library available.  We can live with this.
+			}
 		}
 
 		/// <summary>
