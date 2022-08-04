@@ -828,11 +828,11 @@ namespace SIL.Windows.Forms.Scripture
 			// chapter and verse is optional in regex, make it 1 if not given
 			if (string.IsNullOrEmpty(chapter))
 				chapter ="1";
-			else if (chapter.Length > 3 && Regex.IsMatch(chapter, @"^\d+$"))
+			else if (chapter.Length > 3)
 				return false;
 			if (string.IsNullOrEmpty(verse))
 				verse = "1";
-			else if (verse.Length > 3 && Regex.IsMatch(verse, @"^\d+$"))
+			else if (verse.Length > 3)
 				return false;
 			if (Canon.IsBookIdValid(searchBook))
 			{
