@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] ErrorReport exposes a NotifyUserOfProblemWrapper() protected function, which is designed to make it easier for subclasses to add additional NotifyUserOfProblem options
 - [SIL.Core] Added AltImplGetUnicodeCategory function to StringExtensions
 - [SIL.WritingSystems] Added static class IcuUCharCategoryExtensions with a method ToUnicodeCategory to translate from Character.UCharCategory to System.Globalization.UnicodeCategory.
+- [SIL.Windows.Forms.Scripture] Added event InvalidReferencePasted to VerseControl, which is fired whenever an attempt to paste an invalid scripture reference is made.
 
 ### Changed
 - [SIL.Windows.Forms.WritingSystems] Moved (internal) extension method InitializeWithAvailableUILocales to SIL.Windows.Forms.
