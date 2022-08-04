@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [10.0.0] - 2022-08-04
+
 ### Added
 - [SIL.Windows.Forms] Added extension method InitializeWithAvailableUILocales.
 - [SIL.Windows.Forms] Added LocalizationIncompleteDlg and LocalizationIncompleteViewModel classes
@@ -191,8 +193,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
   projects
 
-[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v9.0.0...master
+[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v10.0.0...master
 
+[10.0.0]: https://github.com/sillsdev/libpalaso/compare/v9.0.0...v10.0.0
 [9.0.0]: https://github.com/sillsdev/libpalaso/compare/v8.0.0...v9.0.0
 [8.0.0]: https://github.com/sillsdev/libpalaso/compare/v7.0.0...v8.0.0
 [7.0.0]: https://github.com/sillsdev/libpalaso/compare/v5.0...v7.0.0
