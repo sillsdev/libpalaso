@@ -829,11 +829,11 @@ namespace SIL.Windows.Forms.Scripture
 			if (string.IsNullOrEmpty(chapter))
 				chapter ="1";
 			else if (chapter.Length > 3 && Regex.IsMatch(chapter, @"^\d+$"))
-				chapter = chapter.Substring(0, 3);
+				return false;
 			if (string.IsNullOrEmpty(verse))
 				verse = "1";
 			else if (verse.Length > 3 && Regex.IsMatch(verse, @"^\d+$"))
-				verse = verse.Substring(0, 3);
+				return false;
 			if (Canon.IsBookIdValid(searchBook))
 			{
 				book = searchBook;
