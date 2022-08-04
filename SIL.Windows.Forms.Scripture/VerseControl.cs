@@ -57,6 +57,8 @@ namespace SIL.Windows.Forms.Scripture
 		public event EventHandler InvalidBookEntered;
 		/// <summary>Fired when any part of the reference is invalid</summary>
 		public event EventHandler InvalidReferenceEntered;
+		/// <summary>Fired when any part of the pasted reference is invalid</summary>
+		public event EventHandler InvalidReferencePasted;
 		/// <summary>Fired when any textbox for the reference gets focus</summary>
 		public event EventHandler TextBoxGotFocus;
 
@@ -488,6 +490,12 @@ namespace SIL.Windows.Forms.Scripture
 				InvalidReferenceEntered(this, EventArgs.Empty);
 		}
 
+		private void OnInvalidPastedReference()
+		{
+			if (InvalidReferencePasted != null)
+				InvalidReferencePasted(this, EventArgs.Empty);
+		}
+
 		private void OnTextBoxGotFocus()
 		{
 			if (TextBoxGotFocus != null)
@@ -782,9 +790,12 @@ namespace SIL.Windows.Forms.Scripture
 		/// Updates verse control with pasted verse reference, if pasted reference is valid.
 		/// </summary>
 		private void HandlePasteScriptureRef()
-		{			
+		{
 			if (!IsValidReference(GetCleanClipboardText(), out var book, out var chapter, out var verse))
+			{
+				OnInvalidPastedReference();
 				return;
+			}
 
 			uiBook.Text = book;
 			uiChapter.Text = chapter;
@@ -817,8 +828,12 @@ namespace SIL.Windows.Forms.Scripture
 			// chapter and verse is optional in regex, make it 1 if not given
 			if (string.IsNullOrEmpty(chapter))
 				chapter ="1";
+			else if (chapter.Length > 3)
+				return false;
 			if (string.IsNullOrEmpty(verse))
 				verse = "1";
+			else if (verse.Length > 3)
+				return false;
 			if (Canon.IsBookIdValid(searchBook))
 			{
 				book = searchBook;
