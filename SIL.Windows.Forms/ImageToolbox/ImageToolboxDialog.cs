@@ -54,14 +54,12 @@ namespace SIL.Windows.Forms.ImageToolbox
 			//enhance: doesn't tell us all that much.
 			UsageReporter.SendNavigationNotice("ImageToolboxDialog/Ok");
 			DialogResult = (ImageInfo==null || ImageInfo.Image==null)? DialogResult.Cancel : DialogResult.OK;
-			_imageToolboxControl.Closing();
 			Close();
 		}
 
 		private void _cancelButton_Click(object sender, EventArgs e)
 		{
 			DialogResult = DialogResult.Cancel;
-			_imageToolboxControl.Closing();
 			Close();
 		}
 
