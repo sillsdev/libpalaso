@@ -19,6 +19,7 @@ namespace SIL.PlatformUtilities
 
 		public static bool IsUnix => Environment.OSVersion.Platform == PlatformID.Unix;
 		public static bool IsWasta => IsUnix && System.IO.File.Exists("/etc/wasta-release");
+		public static bool IsFlatpak => IsUnix && !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("FLATPAK_ID"));
 
 		public static bool IsCinnamon => IsUnix &&
 			(SessionManager.StartsWith("/usr/bin/cinnamon-session") ||

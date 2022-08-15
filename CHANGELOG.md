@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [10.0.0] - 2022-08-04
 
 ### Added
+- [SIL.Core] Added SIL.PlatformUtilities.Platform.IsFlatpak property.
 - [SIL.Windows.Forms] Added extension method InitializeWithAvailableUILocales.
 - [SIL.Windows.Forms] Added LocalizationIncompleteDlg and LocalizationIncompleteViewModel classes
 - [SIL.Windows.Forms] Added property SummaryDisplayMember to CheckedComboBox.
@@ -29,6 +30,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Scripture] Added event InvalidReferencePasted to VerseControl, which is fired whenever an attempt to paste an invalid scripture reference is made.
 
 ### Changed
+- [SIL.Core] Fixed SIL.IO.PathUtilities.DeleteToRecycleBin and .GetDefaultFileManager to work in a flatpak environment.
+- [SIL.Windows.Forms] Fixed ImageToolbox.ImageGallery.ImageCollectionManager.FromStandardLocations to work in a flatpak environment.
 - [SIL.Windows.Forms.WritingSystems] Moved (internal) extension method InitializeWithAvailableUILocales to SIL.Windows.Forms.
 - [SIL.Windows.Forms.WritingSystems] Added additional optional localizationIncompleteViewModel parameter to ToolStripExtensions.InitializeWithAvailableUILocales.
 - [SIL.Core] If NotifyUserOfProblem is called with a null exception, it will no longer call UsageReporter.ReportException

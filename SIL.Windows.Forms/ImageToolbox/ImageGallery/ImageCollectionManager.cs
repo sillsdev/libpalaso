@@ -47,17 +47,21 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 			// Linux: typically /usr/share/SIL/ImageCollections
 			// (This is not the typical place for a Linux package to install things
 			// and CamelCase is not a standard way to name folders.
-			// Typically each package would make its own folder at the root of /user/share.
+			// Typically each package would make its own folder at the root of /usr/share.
 			// Then something like sil-image-collection might plausibly be part of each
 			// folder name.
 			// But that will require a whole different strategy for finding them, possibly
 			// something like an environment variable, or we could search the whole
-			// of /user/share for folders starting with sil-image-collection. Let's wait and see whether anyone
+			// of /usr/share for folders starting with sil-image-collection. Let's wait and see whether anyone
 			// actually wants to do this and doesn't find the current proposal satisfactory.)
 			//unit tests can override this
-			ImageCollectionsFolder =
-				Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)
-					.CombineForPath("SIL", "ImageCollections");
+			ImageCollectionsFolder = null;
+			if (PlatformUtilities.Platform.IsFlatpak)
+				ImageCollectionsFolder = "/app/share/SIL/ImageCollections";
+			if (ImageCollectionsFolder == null || !Directory.Exists(ImageCollectionsFolder))
+				ImageCollectionsFolder =
+					Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)
+						.CombineForPath("SIL", "ImageCollections");
 			_searchLanguage = searchLanguageId;
 			_collections = new List<ImageCollection>();
 		}
