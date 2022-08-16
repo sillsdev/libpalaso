@@ -9,6 +9,7 @@ using System.Xml.Linq;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.Keyboarding;
+using SIL.Reporting;
 using SIL.TestUtilities;
 using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
@@ -71,6 +72,17 @@ namespace SIL.WritingSystems.Tests
 			Assert.Throws<ArgumentNullException>(
 				() => adaptor.Read("foo.ldml", null)
 			);
+		}
+
+		[Test]
+		[Category("ByHand")]
+		public void ReadFromXmlReader_ShippingEnglish(/*[Values("ar","az", "bn")]string locale*/)
+		{
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+			foreach (var file in Directory.EnumerateFiles(@"C:\fwrepo\fw\DistFiles\Templates", "*.ldml"))
+			{
+				adaptor.Read(file, CreateWritingSystem(), Logger.WriteError);
+			}
 		}
 
 		[Test]
