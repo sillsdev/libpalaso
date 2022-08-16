@@ -74,6 +74,19 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		[Category("ByHand")]
+		public void ReadFromXmlReader_ShippedByFieldWorks()
+		{
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+			var errors = new StringBuilder();
+			foreach (var file in Directory.EnumerateFiles(@"C:\fwrepo\fw\DistFiles\Templates", "*.ldml"))
+			{
+				adaptor.Read(file, CreateWritingSystem(), ex => errors.AppendLine($"Error loading {file}:").AppendLine(ex.ToString()).AppendLine());
+			}
+			Assert.That(errors.ToString(), Is.Empty);
+		}
+
+		[Test]
 		public void ReadFromXmlReader_NullXmlReader_Throws()
 		{
 			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());

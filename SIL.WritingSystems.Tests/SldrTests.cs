@@ -31,6 +31,20 @@ namespace SIL.WritingSystems.Tests
 
 			private TemporaryFolder FolderContainingLdml { get; }
 
+			/// <summary>
+			/// Tries to get the LDML file for the requested ietfLanguageTag from the SLDR.
+			/// If unable to connect to SLDR, ignores the remainder of the test.
+			/// </summary>
+			/// <returns>The name the downloaded LDML file (to get the full path, combine with <see cref="FilePath"/></returns>
+			public string TryGetLdmlFile(string ietfLanguageTag)
+			{
+				if (GetLdmlFile(ietfLanguageTag, out var filename) == SldrStatus.UnableToConnectToSldr)
+				{
+					Assert.Ignore("SLDR is offline");
+				}
+				return Path.Combine(FilePath, filename);
+			}
+
 			public SldrStatus GetLdmlFile(string ietfLanguageTag, out string filename)
 			{
 				return Sldr.GetLdmlFile(FolderContainingLdml.Path, ietfLanguageTag, new List<string> { "characters" }, out filename);
@@ -76,7 +90,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			using var environment = new TestEnvironment();
 			const string ietfLanguageTag = "!@#";
-			Assert.That(() => environment.GetLdmlFile(ietfLanguageTag, out var filename),
+			Assert.That(() => environment.GetLdmlFile(ietfLanguageTag, out _),
 				Throws.ArgumentException);
 		}
 
@@ -113,7 +127,7 @@ namespace SIL.WritingSystems.Tests
 			using var environment = new TestEnvironment(false);
 			const string ietfLanguageTag = "qaa";
 
-			var sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out var filename);
+			var sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out _);
 			if (sldrStatus == SldrStatus.UnableToConnectToSldr)
 				Assert.Ignore("Ignored because SLDR is offline.");
 			Assert.That(sldrStatus, Is.EqualTo(SldrStatus.NotFound));
@@ -125,7 +139,7 @@ namespace SIL.WritingSystems.Tests
 			using var environment = new TestEnvironment();
 			const string ietfLanguageTag = "lo-LA-fonipa";
 
-			Assert.That(environment.GetLdmlFile(ietfLanguageTag, out var filename), Is.EqualTo(SldrStatus.NotFound));
+			Assert.That(environment.GetLdmlFile(ietfLanguageTag, out _), Is.EqualTo(SldrStatus.NotFound));
 		}
 
 		[Test]
@@ -274,7 +288,39 @@ namespace SIL.WritingSystems.Tests
 				.HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@source='cldr']", environment.NamespaceManager);
 		}
 
-		#region internal methods
+		[Test]
+		[Category("LongRunning")] // ~2 minutes
+		public void GetLdmlFile_GetsValidLDML([Values("false", "true")] string isStaging,
+			[Values("az", "bn", "de", "es", "en-GB", "fa", "hi", "hu", "id", "km", "ml", "ms", "my",
+				"ne", "pt", "ru", "rw", "ta", "te", "th", "tr", "ur", "vi", "zh", "zh-CN")] string ietfLanguageTag)
+		{
+			DownloadAndVerifyLDML(isStaging, ietfLanguageTag);
+		}
+
+		[Test]
+		public void GetLdmlFile_GetsValidLDML([Values("ar", "en", "fr", "ko", "sw")] string ietfLanguageTag)
+		{
+			DownloadAndVerifyLDML("false", ietfLanguageTag);
+		}
+
+		private static void DownloadAndVerifyLDML(string isStaging, string ietfLanguageTag)
+		{
+			using var environment = new TestEnvironment(false);
+			var originalStagingValue = Environment.GetEnvironmentVariable(Sldr.SldrStaging);
+			try
+			{
+				Environment.SetEnvironmentVariable(Sldr.SldrStaging, isStaging);
+				var file = Path.Combine(environment.FilePath, environment.TryGetLdmlFile(ietfLanguageTag));
+				var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+				adaptor.Read(file, new WritingSystemDefinition("en", "Latn", "US", string.Empty, "eng", false), ex => Assert.Fail(ex.ToString()));
+			}
+			finally
+			{
+				Environment.SetEnvironmentVariable(Sldr.SldrStaging, originalStagingValue);
+			}
+		}
+
+		#region tests for internal methods
 
 		[Test]
 		public void ReadSilIdentity_GetsRevidAndUid()
@@ -386,10 +432,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				Assert.Ignore($"Delete the langtags.json from {langTagsPath} and run this test solo");
 			}
-			if (testEnv.GetLdmlFile("en", out var enLdml) == SldrStatus.UnableToConnectToSldr)
-			{
-				Assert.Ignore("SLDR is offline");
-			}
+			testEnv.TryGetLdmlFile("en");
 			Assert.That(Sldr.LanguageTags, Is.Not.Empty);
 			Assert.That(File.Exists(langTagsPath), Is.True);
 		}
