@@ -1351,9 +1351,30 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		[Test]
+		[SetCulture("zh")]
+		public void Write_LdmlIsNicelyFormatted_Chinese()
+		{
+			Write_LdmlIsNicelyFormatted(null);
+		}
+
+		[Test]
+		[SetCulture("en")]
+		public void Write_LdmlIsNicelyFormatted_English()
+		{
+			Write_LdmlIsNicelyFormatted(null);
+		}
+
+		[Test]
+		[SetCulture("de")]
+		public void Write_LdmlIsNicelyFormatted_German()
+		{
+			Write_LdmlIsNicelyFormatted(null);
+		}
+
 		[TestCase(null)]
 		[TestCase("\u0000\u0000")]
-		public void Write_LdmlIsNicelyFormatted(string curentContent)
+		public void Write_LdmlIsNicelyFormatted(string currentContent)
 		{
 			using (var file = new TempFile())
 			{
@@ -1361,7 +1382,7 @@ namespace SIL.WritingSystems.Tests
 				var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
 				ws.DateModified = new DateTime(01, 01, 01, 0, 0, 0, DateTimeKind.Utc);
-				Stream existingDataStream = curentContent == null ? null : new MemoryStream(Encoding.UTF8.GetBytes(curentContent));
+				Stream existingDataStream = currentContent == null ? null : new MemoryStream(Encoding.UTF8.GetBytes(currentContent));
 				adaptor.Write(file.Path, ws, existingDataStream);
 
 				//change the read writing system and write it out again
