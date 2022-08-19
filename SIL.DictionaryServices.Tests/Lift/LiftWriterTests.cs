@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -902,15 +902,12 @@ namespace SIL.DictionaryServices.Tests.Lift
 		}
 
 		/// <summary>
-		/// Regression: WS-34576
+		/// Regression: WS-34576, LT-20698
 		/// </summary>
 		[Test]
-		public void Add_CultureUsesPeriodForTimeSeparator_DateAttributesOutputWithColon()
+		public void Add_CultureUsesPeriodForTimeSeparator_DateAttributesOutputWithColon([Values("en-US", "de-DE")] string culture)
 		{
-			var culture = new CultureInfo("en-US");
-			culture.DateTimeFormat.TimeSeparator = ".";
-
-			Thread.CurrentThread.CurrentCulture = culture;
+			Thread.CurrentThread.CurrentCulture = new CultureInfo(culture) {DateTimeFormat = {TimeSeparator = "."}};
 
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -922,9 +919,8 @@ namespace SIL.DictionaryServices.Tests.Lift
 				session.LiftWriter.End();
 				string result = session.StringBuilder.ToString();
 				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
-					String.Format("//entry[@dateModified=\"{0}\"]",
-								  entry.ModificationTime.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture))
-					);
+					$"//entry[@dateModified=\"{entry.ModificationTime.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture)}\"]"
+				);
 				Assert.IsTrue(result.Contains(":"), "should contain colons");
 				Assert.IsFalse(result.Contains("."), "should not contain periods");
 			}

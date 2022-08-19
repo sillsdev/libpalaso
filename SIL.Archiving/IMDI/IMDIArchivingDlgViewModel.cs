@@ -10,6 +10,7 @@ using L10NSharp;
 using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI.Schema;
 using System.Windows.Forms;
+using SIL.Extensions;
 
 namespace SIL.Archiving.IMDI
 {
@@ -476,7 +477,7 @@ namespace SIL.Archiving.IMDI
 				
 				if (string.IsNullOrEmpty(_corpusDirectoryName))
 				{
-					var baseName = NormalizeDirectoryName(_titles[_id] + " " + DateTime.Today.ToString("yyyy-MM-dd"));
+					var baseName = NormalizeDirectoryName(_titles[_id] + " " + DateTime.Today.ToISO8601TimeFormatDateOnlyString());
 					var test = baseName;
 					var i = 1;
 
