@@ -393,11 +393,12 @@ namespace SIL.WritingSystems
 			ws.KnownKeyboards.Clear();
 		}
 
+		// TODO REVIEW (Hasso) 2022.08: did we mean to throw whenever a <special xmlns:palaso.../> element exists?
 		private static void CheckVersion(XElement specialElem, WritingSystemDefinition ws)
 		{
 			// Flag invalid versions (0-2 inclusive) from reading legacy LDML files
 			// We're intentionally not using WritingSystemLDmlVersionGetter and the
-			// cheeck for Flex7V0Compatible because the migrator will have handled that.
+			// check for Flex7V0Compatible because the migrator will have handled that.
 			if (!string.IsNullOrEmpty((string) specialElem.Attribute(XNamespace.Xmlns + "fw")) ||
 				!string.IsNullOrEmpty((string) specialElem.Attribute(XNamespace.Xmlns + "palaso")))
 			{
@@ -410,7 +411,7 @@ namespace SIL.WritingSystems
 					version = string.IsNullOrEmpty(version) ? "0" : version;
 				}
 				throw new ApplicationException(String.Format(
-					"The LDML tag '{0}' is version {1}.  Version {2} was expected.",
+					"The LDML file for tag '{0}' is version {1}.  Version {2} was expected.",
 					ws.LanguageTag,
 					version,
 					CurrentLdmlLibraryVersion

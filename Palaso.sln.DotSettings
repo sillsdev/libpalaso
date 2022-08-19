@@ -8,6 +8,12 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=UI/@EntryIndexedValue">UI</s:String>
 	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/CustomBuildToolPath/@EntryValue">/opt/mono5-sil/lib/mono/msbuild/15.0/bin/MSBuild.dll</s:String>
 	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/MonoExePath/@EntryValue">/opt/mono5-sil/bin/mono-sil.sh</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/Todo/TodoPatterns/=8FBA5605FBAE874CA150590605FEAB64/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/Todo/TodoPatterns/=8FBA5605FBAE874CA150590605FEAB64/Color/@EntryValue">#FFCF9D32</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/Todo/TodoPatterns/=8FBA5605FBAE874CA150590605FEAB64/MatchComments/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/Todo/TodoPatterns/=8FBA5605FBAE874CA150590605FEAB64/Name/@EntryValue">Review</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/Todo/TodoPatterns/=8FBA5605FBAE874CA150590605FEAB64/Pattern/@EntryValue">(?&lt;=\W|^)(?&lt;TAG&gt;REVIEW)(\W|$)(.*)</s:String>
+	<s:String x:Key="/Default/PatternsAndTemplates/Todo/TodoPatterns/=8FBA5605FBAE874CA150590605FEAB64/TodoIconStyle/@EntryValue">Normal</s:String>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=acknowledgements/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=adaptor/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=analytics/@EntryIndexedValue">True</s:Boolean>
