@@ -164,8 +164,11 @@ namespace SIL.WritingSystems
 				// (e.g. from System.Globalization) to look this up at runtime.
 				const double unicodeVersionOfDotNet462 = 8.0;
 
-				if (double.Parse(Wrapper.UnicodeVersion) > unicodeVersionOfDotNet462)
+				if (double.TryParse(Wrapper.UnicodeVersion, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out var icuUnicodeVersion) &&
+				    icuUnicodeVersion > unicodeVersionOfDotNet462)
+				{
 					StringExtensions.AltImplGetUnicodeCategory = GetUnicodeCategoryBasedOnICU;
+				}
 			}
 			catch (System.IO.FileLoadException)
 			{
