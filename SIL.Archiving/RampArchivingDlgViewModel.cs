@@ -14,6 +14,7 @@ using Ionic.Zip;
 using L10NSharp;
 using SIL.Archiving.Generic;
 using SIL.Archiving.Properties;
+using SIL.Extensions;
 using SIL.IO;
 using SIL.PlatformUtilities;
 using SIL.Windows.Forms.ClearShare;
@@ -949,7 +950,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void SetCreationDate(DateTime date)
 		{
-			SetCreationDate(date.ToString("yyyy-MM-dd"));
+			SetCreationDate(date.ToISO8601TimeFormatDateOnlyString());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -998,7 +999,7 @@ namespace SIL.Archiving
 		{
 			PreventDuplicateMetadataProperty(MetadataProperties.ModifiedDate);
 
-			_metsPairs.Add(JSONUtils.MakeKeyValuePair(kDateModified, date.ToString("yyyy-MM-dd")));
+			_metsPairs.Add(JSONUtils.MakeKeyValuePair(kDateModified, date.ToISO8601TimeFormatDateOnlyString()));
 		}
 
 		/// ------------------------------------------------------------------------------------
