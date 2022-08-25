@@ -224,8 +224,11 @@ namespace SIL.IO
 			// move file or directory
 			if (Directory.Exists(filePath) || File.Exists(filePath))
 			{
-				var trashPath = Path.Combine(Environment.GetFolderPath(
-					Environment.SpecialFolder.LocalApplicationData), "Trash");
+				var localDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+				// We want to use the standard Trash location for flatpak, not the sandboxed one.
+				if (Platform.IsFlatpak)
+					localDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".local/share");
+				var trashPath = Path.Combine(localDataPath, "Trash");
 				var trashedFileName = Path.GetRandomFileName();
 				if (!Directory.Exists(trashPath))
 				{
@@ -239,6 +242,13 @@ namespace SIL.IO
 
 				WriteTrashInfoFile(trashPath, filePath, trashedFileName);
 				// Directory.Move works for directories and files
+				if (Platform.IsFlatpak)
+				{
+					// flatpak mounts pieces of the file system differently for sandboxing, so Move won't work.
+					DirectoryHelper.Copy(filePath, recyclePath);
+					Directory.Delete(filePath, true);
+					return true;
+				}
 				DirectoryHelper.Move(filePath, recyclePath);
 				return true;
 			}
@@ -377,9 +387,13 @@ namespace SIL.IO
 					return fallbackFileManager;
 				}
 				// Look in /usr/share/applications for .desktop file
-				var desktopFilename = Path.Combine(
-					Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-					"applications", desktopFile);
+				string desktopFilename = null;
+				if (Platform.IsFlatpak)
+					desktopFilename = Path.Combine("/app/share/applications", desktopFile);
+				if (desktopFilename == null || !File.Exists(desktopFilename))
+					desktopFilename = Path.Combine(
+						Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+						"applications", desktopFile);
 				if (!File.Exists(desktopFilename))
 				{
 					// We didn't find the .desktop file yet, so check in ~/.local/share/applications

@@ -16,6 +16,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- [SIL.Core] Added SIL.PlatformUtilities.Platform.IsFlatpak property.
+- [SIL.Core.Desktop] Added Testing channel to UpdateSettings.
+
+### Fixed
+
+- [SIL.Core] Fixed SIL.IO.PathUtilities.DeleteToRecycleBin and .GetDefaultFileManager to work in a flatpak environment.
+- [SIL.Windows.Forms] Fixed ImageToolbox.ImageGallery.ImageCollectionManager.FromStandardLocations to work in a flatpak environment.
+- [SIL.WritingSystems] Fixed SLDR initialization for users with European number formats.
+
 ## [10.0.0] - 2022-08-04
 
 ### Added

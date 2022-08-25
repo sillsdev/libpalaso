@@ -29,7 +29,17 @@ namespace SIL.Settings
 			/// Get the latest nightly builds (not recommended)
 			/// </summary>
 			/// <remarks>This option should not be made available to users</remarks>
-			Nightly
+			Nightly,
+
+			/// <summary>
+			/// Get specific testing builds (not recommended)
+			/// </summary>
+			/// <remarks>
+			/// This option should not be made available to users
+			/// This option is intended for very specific testing builds.
+			/// e.g Testing that appropriate warnings are presented before updating if a data model has changed.
+			/// </remarks>
+			Testing
 		}
 
 		public enum Behaviors
