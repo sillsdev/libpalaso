@@ -113,7 +113,7 @@ namespace SIL.Scripture
         /// <summary>The maximum number of Scripture books that may be returned to the caller.</summary>
         public const int LastBook = 66;
         /// <summary>Regular expression used to parse verse reference strings.</summary>
-		public const string VerseRefRegex = @"(?<book>\w?.*\p{L})\s?((?<chapter>\d+)(\D+(?<verse>\d+))?)?";
+		public const string VerseRefRegex = @"(?<book>\w?.*\p{L})\s?((?<chapter>\d+)([\s:](?<verse>\d+))?)?";
 
 		/// <summary>// Indicates whether to process deutero-canonical book names.</summary>
 		protected bool m_fProcessDeuteroCanonical = false;
