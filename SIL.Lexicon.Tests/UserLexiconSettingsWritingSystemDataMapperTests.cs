@@ -61,6 +61,33 @@ namespace SIL.Lexicon.Tests
 		}
 
 		[Test]
+		public void Read_LocalKeyboardInKnownKeyboards_DoesNotCrash()
+		{
+			const string userSettingsXml =
+				@"<UserLexiconSettings>
+  <WritingSystems>
+    <WritingSystem id=""en-US"">
+      <LocalKeyboard>sil_cameroon_azerty</LocalKeyboard>
+      <KnownKeyboards>
+        <KnownKeyboard>sil_cameroon_azerty</KnownKeyboard>
+        <KnownKeyboard>sil_cameroon_qwerty</KnownKeyboard>
+      </KnownKeyboards>
+      <DefaultFontName>Times New Roman</DefaultFontName>
+    </WritingSystem>
+  </WritingSystems>
+</UserLexiconSettings>";
+
+			var userSettingsDataMapper = new UserLexiconSettingsWritingSystemDataMapper(new MemorySettingsStore { SettingsElement = XElement.Parse(userSettingsXml) });
+
+			var ws1 = new WritingSystemDefinition("en-US");
+			userSettingsDataMapper.Read(ws1);
+
+			Assert.That(ws1.LocalKeyboard.Id, Is.EqualTo("sil_cameroon_azerty"));
+			Assert.That(ws1.KnownKeyboards[0].Id, Is.EqualTo("sil_cameroon_azerty"));
+			Assert.That(ws1.KnownKeyboards[1].Id, Is.EqualTo("sil_cameroon_qwerty"));
+		}
+
+		[Test]
 		public void Read_EmptyXml_NothingSet()
 		{
 			var userSettingsDataMapper = new UserLexiconSettingsWritingSystemDataMapper(new MemorySettingsStore());
