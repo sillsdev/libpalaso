@@ -222,7 +222,7 @@ namespace SIL.DblBundle
 
 		private string ConvertMetadataIfNecessary(string metadataPath)
 		{
-			decimal? version = GetVersionFromMetadata(metadataPath);
+			var version = GetVersionFromMetadata(metadataPath);
 			if (version == null)
 			{
 				// If we are unable to determine the version number, we store that information.
@@ -232,18 +232,18 @@ namespace SIL.DblBundle
 					new ApplicationException(
 						"Unable to determine the DBL metadata version. You may need a newer version of the application to read this bundle.");
 			}
-			else if (version < 2)
+			else if (version < new Version(2, 0))
 			{
 				return metadataPath;
 			}
-			else if (version > 2.1M)
+			else if (version > new Version(2, 2))
 			{
 				// If the version number is higher than we know how to handle, we store that information.
 				// We'll still attempt to convert and read the metadata.
 				// If we hit an exception during that attempt, we will display this message to the user rather than the specific exception.
 				m_loadException =
 					new ApplicationException(
-						$"The metadata version for this DBL bundle is {version} which is greater than the highest known version (2.1). " +
+						$"The metadata version for this DBL bundle is {version} which is greater than the highest known version (2.2). " +
 						"You may need a new version of the application to read this bundle.");
 			}
 
@@ -254,15 +254,36 @@ namespace SIL.DblBundle
 			return ConvertMetadata(metadataPath, version);
 		}
 
-		private string ConvertMetadata(string metadataPath, decimal? version)
+		private string ConvertMetadata(string metadataPath, Version version)
 		{
 			using (var convertedMetadata = TempFile.WithExtension("xml"))
 			{
 				var myXslTrans = new XslCompiledTransform();
-				if (version == 2.0M)
-					myXslTrans.Load(new XmlTextReader(new StringReader(Resources.text_2_0_to_1_5_xsl)));
-				else
-					myXslTrans.Load(new XmlTextReader(new StringReader(Resources.text_2_1_to_1_5_xsl)));
+				switch (version.Major)
+				{
+					case 2:
+						{
+							switch (version.Minor)
+							{
+								case 0:
+									myXslTrans.Load(new XmlTextReader(new StringReader(
+										Resources.text_2_0_to_1_5_xsl)));
+									break;
+								case 1:
+									myXslTrans.Load(new XmlTextReader(new StringReader(
+										Resources.text_2_1_to_1_5_xsl)));
+									break;
+
+								case 2:
+								default:
+									myXslTrans.Load(new XmlTextReader(new StringReader(
+										Resources.text_2_2_to_1_5_xsl)));
+									break;
+							}
+						}
+						break;
+				}
+					
 				myXslTrans.Transform(metadataPath, convertedMetadata.Path);
 
 				convertedMetadata.Detach();
@@ -275,11 +296,11 @@ namespace SIL.DblBundle
 		/// For version 2, it is stored in the version attribute.
 		/// Here's hoping they don't move it again in version 3...
 		/// </summary>
-		private decimal? GetVersionFromMetadata(string metadataPath)
+		private Version? GetVersionFromMetadata(string metadataPath)
 		{
 			XmlDocument doc = new XmlDocument();
 			doc.Load(metadataPath);
-			string versionStr = null;
+			string versionStr = string.Empty;
 			var versionAttr = doc.SelectSingleNode("/DBLMetadata/@version");
 			if (versionAttr != null)
 				versionStr = versionAttr.Value;
@@ -289,10 +310,7 @@ namespace SIL.DblBundle
 				if (versionAttr != null)
 					versionStr = versionAttr.Value;
 			}
-			decimal version;
-			if (Decimal.TryParse(versionStr, out version))
-				return version;
-			return null;
+			return Version.TryParse(versionStr, out var version) ? version : null;
 		}
 
 		#endregion

@@ -29,14 +29,15 @@ namespace SIL.DblBundle.Tests.Text
 		[OneTimeSetUp]
 		public void TestFixtureSetup()
 		{
-			using (var zippedBundle = CreateZippedTextBundleFromResources(true, false, true))
+			using (var zippedBundle = CreateZippedTextBundleFromResources(true, false, MetadataVersion.V1_4))
 				_legacyBundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
-			using (var zippedBundle = CreateZippedTextBundleFromResources(false, false, true))
+			using (var zippedBundle = CreateZippedTextBundleFromResources(false, false, MetadataVersion.V1_4))
 				_legacyBundleWithoutLdml = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
 			using (var zippedBundle = CreateZippedTextBundleFromResources())
 				_bundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
 			using (var zippedBundle = CreateZippedTextBundleFromResources(false))
 				_bundleWithoutLdml = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
+			
 		}
 
 		/// <summary>
@@ -62,6 +63,33 @@ namespace SIL.DblBundle.Tests.Text
 			Assert.AreEqual("7881095a69332502", bundle.Id);
 			Assert.AreEqual("Ri utzilaj tzij re ri kanimajawal Jesucristo", bundle.Name);
 			Assert.AreEqual("acr", bundle.LanguageIso);
+		}
+
+		/// <summary>
+		/// Tests that metadata can be read with three-.
+		/// </summary>
+		[Test]
+		public void CreateBundle_VersionHasRevision_MetadataLoadedCorrectly()
+		{
+			using (var zippedBundle = CreateZippedTextBundleFromResources(true, false, MetadataVersion.V2_2_1))
+				using (var bundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path))
+			{
+				Assert.AreEqual("55ec700d9e0d77ea", bundle.Id);
+				Assert.AreEqual("English Majority Text Version", bundle.Name);
+				Assert.AreEqual("eng", bundle.LanguageIso);
+				Assert.AreEqual("English Majority Text Version", bundle.Metadata.Name);
+				Assert.AreEqual("English Majority Text Version", bundle.Metadata.Identification.NameLocal);
+				Assert.AreEqual("xhtml", bundle.Metadata.Copyright.Statement.ContentType);
+				Assert.AreEqual("<p>© 2014 Dr. Paul W. Esposito</p>",
+					bundle.Metadata.Copyright.Statement.InternalNodes.Single().OuterXml);
+				Assert.AreEqual("xhtml",
+					bundle.Metadata.Promotion.PromoVersionInfo.ContentType);
+				Assert.AreEqual("<p>Translated by Dr. Paul W. Esposito.</p>",
+					bundle.Metadata.Promotion.PromoVersionInfo.InternalNodes.Single().OuterXml);
+				Assert.AreEqual(27, bundle.Metadata.AvailableBibleBooks.Count);
+				Assert.AreEqual("MAT", bundle.Metadata.Canons.Single().CanonBooks.First().Code);
+				Assert.AreEqual("REV", bundle.Metadata.Canons.Single().CanonBooks.Last().Code);
+			}
 		}
 
 		/// <summary>
@@ -128,7 +156,7 @@ namespace SIL.DblBundle.Tests.Text
 		[Test]
 		public void GetFonts_BundleWithFont_ReturnsEnumerationWithFont()
 		{
-			using (var zippedBundle = CreateZippedTextBundleFromResources(false, false, false, true))
+			using (var zippedBundle = CreateZippedTextBundleFromResources(false, false, MetadataVersion.V2_1, true))
 				using (var bundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path))
 				{
 					var fontInfo = bundle.GetFonts().Single();
@@ -197,10 +225,19 @@ namespace SIL.DblBundle.Tests.Text
 			});
 		}
 
+		private enum MetadataVersion
+		{
+			V1_4,
+			V2_1,
+			V2_2_1,
+		}
+
 		/// <summary>
 		/// Helper method for tests to create a zipped text bundle.
 		/// </summary>
-		public static TempFile CreateZippedTextBundleFromResources(bool includeLdml = true, bool invalidUsxDirectory = false, bool legacyFormat = false, bool includeFont = false)
+		private static TempFile CreateZippedTextBundleFromResources(bool includeLdml = true,
+			bool invalidUsxDirectory = false, MetadataVersion version = MetadataVersion.V2_1,
+			bool includeFont = false)
 		{
 			TempFile bundle = TempFile.WithExtension(DblBundleFileUtils.kDblBundleExtension);
 
@@ -213,10 +250,25 @@ namespace SIL.DblBundle.Tests.Text
 			using (var matUsx = TempFile.WithFilename("MAT.usx"))
 			using (var zip = new ZipFile())
 			{
-				File.WriteAllText(metadataXml.Path, legacyFormat ? Resources.metadata_xml : Resources.metadataVersion2_1_xml);
+				string xml;
+				var subdirectory = "release";
+				switch (version)
+				{
+					case MetadataVersion.V1_4:
+						xml = Resources.metadata_xml;
+						subdirectory = string.Empty;
+						break;
+					case MetadataVersion.V2_1:
+						xml = Resources.metadataVersion2_1_xml;
+						break;
+					case MetadataVersion.V2_2_1:
+						xml = Resources.metadataVersion2_2_1_xml;
+						break;
+					default:
+						throw new ArgumentOutOfRangeException(nameof(version), version, null);
+				}
+				File.WriteAllText(metadataXml.Path, xml);
 				zip.AddFile(metadataXml.Path, string.Empty);
-
-				var subdirectory = legacyFormat ? string.Empty : "release";
 
 				File.WriteAllBytes(englishLds.Path, Resources.English_lds);
 				zip.AddFile(englishLds.Path, subdirectory);
@@ -236,7 +288,9 @@ namespace SIL.DblBundle.Tests.Text
 					zip.AddFile(ttf.Path, subdirectory);
 				}
 				File.WriteAllBytes(matUsx.Path, Resources.MAT_usx);
-				zip.AddFile(matUsx.Path, (legacyFormat ? "" : "release/") + (invalidUsxDirectory ? "USX_999" : "USX_1"));
+				if (subdirectory != String.Empty)
+					subdirectory += "/";
+				zip.AddFile(matUsx.Path, subdirectory + (invalidUsxDirectory ? "USX_999" : "USX_1"));
 				zip.Save(bundle.Path);
 			}
 

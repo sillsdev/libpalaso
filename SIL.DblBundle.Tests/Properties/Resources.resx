@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -141,5 +141,8 @@
   </data>
   <data name="AppSILI" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\TestBundleFiles\AppSILI.TTF;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="metadataVersion2_2_1_xml" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TestBundleFiles\metadataVersion2_2_1.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
 </root>
