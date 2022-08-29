@@ -29,13 +29,13 @@ namespace SIL.DblBundle.Tests.Text
 		[OneTimeSetUp]
 		public void TestFixtureSetup()
 		{
-			using (var zippedBundle = CreateZippedTextBundleFromResources(true, false, MetadataVersion.V1_4))
+			using (var zippedBundle = CreateZippedTextBundleFromResources(MetadataVersion.V1_4, true, false))
 				_legacyBundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
-			using (var zippedBundle = CreateZippedTextBundleFromResources(false, false, MetadataVersion.V1_4))
+			using (var zippedBundle = CreateZippedTextBundleFromResources(MetadataVersion.V1_4, false, false))
 				_legacyBundleWithoutLdml = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
-			using (var zippedBundle = CreateZippedTextBundleFromResources())
+			using (var zippedBundle = CreateZippedTextBundleFromResources(MetadataVersion.V2_1))
 				_bundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
-			using (var zippedBundle = CreateZippedTextBundleFromResources(false))
+			using (var zippedBundle = CreateZippedTextBundleFromResources(MetadataVersion.V2_1, false))
 				_bundleWithoutLdml = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
 			
 		}
@@ -71,7 +71,7 @@ namespace SIL.DblBundle.Tests.Text
 		[Test]
 		public void CreateBundle_VersionHasRevision_MetadataLoadedCorrectly()
 		{
-			using (var zippedBundle = CreateZippedTextBundleFromResources(true, false, MetadataVersion.V2_2_1))
+			using (var zippedBundle = CreateZippedTextBundleFromResources(MetadataVersion.V2_2_1))
 				using (var bundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path))
 			{
 				Assert.AreEqual("55ec700d9e0d77ea", bundle.Id);
@@ -156,7 +156,7 @@ namespace SIL.DblBundle.Tests.Text
 		[Test]
 		public void GetFonts_BundleWithFont_ReturnsEnumerationWithFont()
 		{
-			using (var zippedBundle = CreateZippedTextBundleFromResources(false, false, MetadataVersion.V2_1, true))
+			using (var zippedBundle = CreateZippedTextBundleFromResources(MetadataVersion.V2_1, false, false,  true))
 				using (var bundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path))
 				{
 					var fontInfo = bundle.GetFonts().Single();
@@ -225,6 +225,19 @@ namespace SIL.DblBundle.Tests.Text
 			});
 		}
 
+		/// <summary>
+		/// Helper method for tests to create a zipped text bundle.
+		/// </summary>
+		/// <remarks>ENHANCE: This version of this method should probably be retired and replaced
+		/// by the more useful and meaningful (private) version, but it didn't seem worth a
+		/// breaking change.</remarks>
+		public static TempFile CreateZippedTextBundleFromResources(bool includeLdml = true,
+			bool invalidUsxDirectory = false, bool legacy = false, bool includeFont = false)
+		{
+			return CreateZippedTextBundleFromResources(legacy ? MetadataVersion.V1_4 : MetadataVersion.V2_1,
+				includeLdml, invalidUsxDirectory, includeFont);
+		}
+
 		private enum MetadataVersion
 		{
 			V1_4,
@@ -235,9 +248,8 @@ namespace SIL.DblBundle.Tests.Text
 		/// <summary>
 		/// Helper method for tests to create a zipped text bundle.
 		/// </summary>
-		private static TempFile CreateZippedTextBundleFromResources(bool includeLdml = true,
-			bool invalidUsxDirectory = false, MetadataVersion version = MetadataVersion.V2_1,
-			bool includeFont = false)
+		private static TempFile CreateZippedTextBundleFromResources(MetadataVersion version,
+			bool includeLdml = true, bool invalidUsxDirectory = false, bool includeFont = false)
 		{
 			TempFile bundle = TempFile.WithExtension(DblBundleFileUtils.kDblBundleExtension);
 
