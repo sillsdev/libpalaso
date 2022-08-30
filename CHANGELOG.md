@@ -16,6 +16,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- [SIL.DblBundle] Added const strings to UsxNode for the various USX element names.
+- [SIL.DblBundle] Added protected method GetAttribute to UsxNode.
+- [SIL.DblBundle] Added sealed subclasses of UsxNode: UsxPara and UsxChar.
+- [SIL.DblBundle] Added property IsChapterStart to UsxChapter.
+
+### Fixed
+- [SIL.DblBundle] Attempting to construct a UsxNode based on an invalid XmlNode now throws an exception in the constructor in most cases rather than later when properties are accessed.
+- [SIL.DblBundle] Accessing UsxChapter.ChapterNumber on a chapter end node returns the chapter umber (from the eid attribute) instead of throwing an exception.
+
+### Changed
+- [SIL.DblBundle.Tests] Added optional parameter to GetChaptersAndParasForMarkOneContaining2Verses.
+- [SIL.DblBundle] Made UsxNode abstract.
+- [SIL.DblBundle] Made UsxNode.StyleTag virtual. Calling UsxChapter.StyleTag on a chapter end node returns null instead of throwing an exception.
+- [SIL.DblBundle] Made UsxChapter sealed.
+
 ## [10.1.0] - 2022-08-26
 
 ### Added
