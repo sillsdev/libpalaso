@@ -296,9 +296,9 @@ namespace SIL.DblBundle
 		/// For version 2, it is stored in the version attribute.
 		/// Here's hoping they don't move it again in version 3...
 		/// </summary>
-		private Version? GetVersionFromMetadata(string metadataPath)
+		private Version GetVersionFromMetadata(string metadataPath)
 		{
-			XmlDocument doc = new XmlDocument();
+			var doc = new XmlDocument();
 			doc.Load(metadataPath);
 			string versionStr = string.Empty;
 			var versionAttr = doc.SelectSingleNode("/DBLMetadata/@version");
@@ -312,7 +312,6 @@ namespace SIL.DblBundle
 			}
 			return Version.TryParse(versionStr, out var version) ? version : null;
 		}
-
 		#endregion
 
 		#region IDisposable Members
