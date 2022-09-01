@@ -63,7 +63,7 @@ namespace SIL.DblBundle.Usx
 	public sealed class UsxPara : UsxNode
 	{
 		/// <summary>
-		/// Creates a an object representing a USX paragraph based on a USX node.
+		/// Creates an object representing a USX paragraph based on a USX node.
 		/// </summary>
 		public UsxPara(XmlNode node) : base(node)
 		{
@@ -79,7 +79,7 @@ namespace SIL.DblBundle.Usx
 	public sealed class UsxChar : UsxNode
 	{
 		/// <summary>
-		/// Creates a an object representing a USX paragraph based on a USX node.
+		/// Creates an object representing a USX paragraph based on a USX node.
 		/// </summary>
 		public UsxChar(XmlNode node) : base(node)
 		{
@@ -95,7 +95,7 @@ namespace SIL.DblBundle.Usx
 	public sealed class UsxChapter : UsxNode
 	{
 		/// <summary>
-		/// Creates a an object representing the start or end of a chapter based
+		/// Creates an object representing the start or end of a chapter based
 		/// on a USX node.
 		/// </summary>
 		public UsxChapter(XmlNode node) : base(node)
