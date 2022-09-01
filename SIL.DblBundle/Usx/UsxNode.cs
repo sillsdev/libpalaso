@@ -58,7 +58,7 @@ namespace SIL.DblBundle.Usx
 	}
 
 	/// <summary>
-	/// A USX node that specifies a chapter start or end
+	/// A USX node that represents a paragraph (including poetry lines, etc.)
 	/// </summary>
 	public sealed class UsxPara : UsxNode
 	{
@@ -118,15 +118,14 @@ namespace SIL.DblBundle.Usx
 		/// Gets whether this node represents the start (as opposed to the end) of a chapter.
 		/// </summary>
 		/// <remarks>Starting with USX v. 3, chapter nodes can have an "eid" attribute (and no
-		/// "number" attribute) to indicate that the end of a chapter. A chapter node should
-		/// never have both and "sid" and an "eid" attribute, but to accommodate older versions
-		/// of USX, we can't just check for the presence of an "sid" attribute. We probably
-		/// could just check for the presence of a "number" attribute or the absence of an "eid"
-		/// attribute, but just in case some future version of USX allows the number to be
-		/// specified for an end node or the possibility of both an "sid" and an "eid" in the
-		/// same node (neither of which seems likely, since this would definitely break backwards
-		/// compatibility), we'll take this safer approach of explicitly looking for an "sid" or
-		/// the absence of an "eid".</remarks>
+		/// "number" attribute) to indicate the end of a chapter. A chapter node should never have
+		/// both an "sid" and an "eid" attribute, but to accommodate older versions of USX, we
+		/// can't just check for the presence of an "sid" attribute. We probably could just check
+		/// for the presence of a "number" attribute or the absence of an "eid" attribute, but just
+		/// in case some future version of USX allows the number to be specified for an end node or
+		/// the possibility of both an "sid" and an "eid" in the same node (neither of which seems
+		/// likely, since this would definitely break backwards compatibility), we'll take this
+		/// safer approach of explicitly looking for an "sid" or the absence of an "eid".</remarks>
 		public bool IsChapterStart => GetAttribute("sid") != null || GetAttribute("eid") == null;
 
 		/// <summary>

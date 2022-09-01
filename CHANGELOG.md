@@ -24,10 +24,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 - [SIL.DblBundle] Attempting to construct a UsxNode based on an invalid XmlNode now throws an exception in the constructor in most cases rather than later when properties are accessed.
-- [SIL.DblBundle] Accessing UsxChapter.ChapterNumber on a chapter end node returns the chapter umber (from the eid attribute) instead of throwing an exception.
+- [SIL.DblBundle] Accessing UsxChapter.ChapterNumber on a chapter end node returns the chapter number (from the eid attribute) instead of throwing an exception.
 
 ### Changed
-- [SIL.DblBundle.Tests] Added optional parameter to GetChaptersAndParasForMarkOneContaining2Verses.
+- [SIL.DblBundle.Tests] Made GetChaptersAndParasForMarkOneContaining2Verses private.
 - [SIL.DblBundle] Made UsxNode abstract.
 - [SIL.DblBundle] Made UsxNode.StyleTag virtual. Calling UsxChapter.StyleTag on a chapter end node returns null instead of throwing an exception.
 - [SIL.DblBundle] Made UsxChapter sealed.

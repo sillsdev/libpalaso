@@ -35,10 +35,9 @@ namespace SIL.DblBundle.Tests.Usx
 			return xmlDoc;
 		}
 
-		public static XmlNodeList GetChaptersAndParasForMarkOneContaining2Verses(bool includeChapterEndNode = false)
+		private XmlNodeList GetChaptersAndParasForMarkOneContaining2Verses()
 		{
-			var usxDocument = new UsxDocument(CreateMarkOneDoc(kParaNodeText +
-				(includeChapterEndNode ? "<chapter eid=\"MRK 1\" />" : "")));
+			var usxDocument = new UsxDocument(CreateMarkOneDoc(kParaNodeText));
 			return usxDocument.GetChaptersAndParas();
 		}
 
