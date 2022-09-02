@@ -291,8 +291,8 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		[Category("LongRunning")] // ~2 minutes
 		public void GetLdmlFile_GetsValidLDML([Values("false", "true")] string isStaging,
-			[Values("az", "bn", "de", "es", "en-GB", "fa", "hi", "hu", "id", "km", "ml", "ms", "my",
-				"ne", "pt", "ru", "rw", "ta", "te", "th", "tr", "ur", "vi", "zh", "zh-CN")] string ietfLanguageTag)
+			[Values("ar", "az", "bn", "de", "en", "es", "en-GB", "fa", "fr", "hi", "hu", "id", "km", "ko", "ml", "ms", "my",
+				"ne", "pt", "ru", "rw", "sw", "ta", "te", "th", "tr", "ur", "vi", "zh", "zh-CN")] string ietfLanguageTag)
 		{
 			DownloadAndVerifyLDML(isStaging, ietfLanguageTag);
 		}
