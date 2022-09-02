@@ -50,6 +50,15 @@ namespace SIL.Reporting
 			_singleton = handler;
 		}
 
+		/// <summary>
+		/// If Init has been called, gets the <see cref="Type"/> of the handler used; otherwise
+		/// <c>null</c>
+		/// </summary>
+		/// <remarks>This allows a clean way for clients to check to see whether a (suitable)
+		/// handler has already been set in situations where it is impossible to know if some
+		/// other code (e.g., a plugin) may have already called <see cref="Init()"/>.</remarks>
+		public static Type TypeOfExistingHandler => _singleton?.GetType();
+
 		// ReSharper disable once MemberCanBePrivate.Global
 		/// <summary>
 		/// Get all the types we can load from the assembly.

@@ -69,5 +69,22 @@ namespace SIL.Tests
 			Assert.That(() => ExceptionHandler.Init(new TestExceptionHandler()),
 				Throws.InvalidOperationException.With.Message.Contains(nameof(ConsoleExceptionHandler)));
 		}
+
+		[Test]
+		public void TypeOfExistingHandler_NotInitialized_ReturnsNull()
+		{
+			Assert.That(ExceptionHandler.TypeOfExistingHandler, Is.Null);
+		}
+		
+		[Test]
+		public void TypeOfExistingHandler_Initialized_ReturnsTypeOfHandler()
+		{
+			// Setup
+			ExceptionHandler.Init(new TestExceptionHandler());
+
+			// Execute
+			Assert.That(ExceptionHandler.TypeOfExistingHandler,
+				Is.EqualTo(typeof(TestExceptionHandler)));
+		}
 	}
 }
