@@ -5,7 +5,7 @@
     <Company>SIL International</Company>
     <Authors>SIL International</Authors>
     <Product>libpalaso</Product>
-    <Copyright>Copyright © 2010-2021 SIL International</Copyright>
+    <Copyright>Copyright © 2010-2022 SIL International</Copyright>
     <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
