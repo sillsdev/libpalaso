@@ -6,6 +6,7 @@ using System.Xml;
 using NUnit.Framework;
 using SIL.TestUtilities;
 using Is = SIL.TestUtilities.NUnitExtensions.Is;
+// ReSharper disable AccessToStaticMemberViaDerivedType
 
 namespace SIL.WritingSystems.Tests
 {
@@ -32,22 +33,22 @@ namespace SIL.WritingSystems.Tests
 			private TemporaryFolder FolderContainingLdml { get; }
 
 			/// <summary>
-			/// Tries to get the LDML file for the requested ietfLanguageTag from the SLDR.
-			/// If unable to connect to SLDR, ignores the remainder of the test.
+			/// Same as <see cref="GetLdmlFile"/>, but ignores any subsequent asserts if unable to connect to SLDR.
 			/// </summary>
-			/// <returns>The name the downloaded LDML file (to get the full path, combine with <see cref="FilePath"/></returns>
-			public string TryGetLdmlFile(string ietfLanguageTag)
+			public SldrStatus TryGetLdmlFile(string ietfLanguageTag, out string filename)
 			{
-				if (GetLdmlFile(ietfLanguageTag, out var filename) == SldrStatus.UnableToConnectToSldr)
+				var status = GetLdmlFile(ietfLanguageTag, out filename);
+				if (status == SldrStatus.UnableToConnectToSldr)
 				{
-					Assert.Ignore("SLDR is offline");
+					Assert.Ignore("Ignored because SLDR is offline");
 				}
-				return Path.Combine(FilePath, filename);
+				return status;
 			}
 
 			public SldrStatus GetLdmlFile(string ietfLanguageTag, out string filename)
 			{
-				return Sldr.GetLdmlFile(FolderContainingLdml.Path, ietfLanguageTag, new List<string> { "characters" }, out filename);
+				var status =  Sldr.GetLdmlFile(FolderContainingLdml.Path, ietfLanguageTag, new List<string> { "characters" }, out filename);
+				return status;
 			}
 
 			public string FilePath => FolderContainingLdml.Path;
@@ -72,7 +73,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var path = string.Empty;
 			const string ietfLanguageTag = "en";
-			Assert.That(() => Sldr.GetLdmlFile(path, ietfLanguageTag, out var filename),
+			Assert.That(() => Sldr.GetLdmlFile(path, ietfLanguageTag, out _),
 				Throws.ArgumentException);
 		}
 
@@ -81,7 +82,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			const string path = "/dev/null/";
 			const string ietfLanguageTag = "en";
-			Assert.That(() => Sldr.GetLdmlFile(path, ietfLanguageTag, out var filename),
+			Assert.That(() => Sldr.GetLdmlFile(path, ietfLanguageTag, out _),
 				Throws.TypeOf<DirectoryNotFoundException>());
 		}
 
@@ -127,9 +128,7 @@ namespace SIL.WritingSystems.Tests
 			using var environment = new TestEnvironment(false);
 			const string ietfLanguageTag = "qaa";
 
-			var sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out _);
-			if (sldrStatus == SldrStatus.UnableToConnectToSldr)
-				Assert.Ignore("Ignored because SLDR is offline.");
+			var sldrStatus = environment.TryGetLdmlFile(ietfLanguageTag, out _);
 			Assert.That(sldrStatus, Is.EqualTo(SldrStatus.NotFound));
 		}
 
@@ -148,9 +147,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			using var environment = new TestEnvironment(false);
 			const string ietfLanguageTag = "oro";
-			var sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out var filename);
-			if (sldrStatus == SldrStatus.UnableToConnectToSldr)
-				Assert.Ignore("Ignored because SLDR is offline.");
+			var sldrStatus = environment.TryGetLdmlFile(ietfLanguageTag, out var filename);
 
 			Assert.That(sldrStatus, Is.EqualTo(SldrStatus.FromSldr));
 			Assert.That(File.Exists(Path.Combine(environment.FilePath, filename)), Is.True);
@@ -223,11 +220,8 @@ namespace SIL.WritingSystems.Tests
 		{
 			using var environment = new TestEnvironment(false);
 			const string ietfLanguageTag = "en-GB";
-			var sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out var filename);
-			if (sldrStatus == SldrStatus.UnableToConnectToSldr)
-				Assert.Ignore("Ignored because SLDR is offline.");
 
-			Assert.That(sldrStatus, Is.EqualTo(SldrStatus.FromSldr));
+			Assert.That(environment.TryGetLdmlFile(ietfLanguageTag, out var filename), Is.EqualTo(SldrStatus.FromSldr));
 
 			var filePath = Path.Combine(environment.FilePath, filename);
 			AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']", environment.NamespaceManager);
@@ -278,11 +272,9 @@ namespace SIL.WritingSystems.Tests
 			File.WriteAllText(Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml"), content);
 			File.WriteAllText(Path.Combine(Sldr.SldrCachePath, ietfLanguageTag + ".ldml"), content);
 
-			var sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out var filename);
-			if (sldrStatus == SldrStatus.UnableToConnectToSldr)
-				Assert.Ignore("Ignored because SLDR is offline.");
+			environment.TryGetLdmlFile(ietfLanguageTag, out var filename);
 			// Call a second time, this should use the Cache now. However, this still reports it as FromSldr
-			sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out filename);
+			var sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out filename);
 			Assert.That(sldrStatus, Is.EqualTo(SldrStatus.FromSldr));
 			AssertThatXmlIn.File(Path.Combine(environment.FilePath, filename))
 				.HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@source='cldr']", environment.NamespaceManager);
@@ -290,6 +282,7 @@ namespace SIL.WritingSystems.Tests
 
 		[Test]
 		[Category("LongRunning")] // ~2 minutes
+		[Category("ByHand")] // The following test tests a smaller sample each checkin; this can be used when a larger sample needs to be tested.
 		public void GetLdmlFile_GetsValidLDML([Values("false", "true")] string isStaging,
 			[Values("ar", "az", "bn", "de", "en", "es", "en-GB", "fa", "fr", "hi", "hu", "id", "km", "ko", "ml", "ms", "my",
 				"ne", "pt", "ru", "rw", "sw", "ta", "te", "th", "tr", "ur", "vi", "zh", "zh-CN")] string ietfLanguageTag)
@@ -310,8 +303,13 @@ namespace SIL.WritingSystems.Tests
 			try
 			{
 				Environment.SetEnvironmentVariable(Sldr.SldrStaging, isStaging);
-				var file = Path.Combine(environment.FilePath, environment.TryGetLdmlFile(ietfLanguageTag));
+				environment.TryGetLdmlFile(ietfLanguageTag, out var filename);
+				var file = Path.Combine(environment.FilePath, filename);
 				var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+
+				// SUT
+				// LdmlDataMapper.Read catches any exceptions reading the file, but calls a callback when catching these exceptions.
+				// To test that LDML files are read successfully, provide a callback that will report any exception and fail the test.
 				adaptor.Read(file, new WritingSystemDefinition("en", "Latn", "US", string.Empty, "eng", false), ex => Assert.Fail(ex.ToString()));
 			}
 			finally
@@ -432,7 +430,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				Assert.Ignore($"Delete the langtags.json from {langTagsPath} and run this test solo");
 			}
-			testEnv.TryGetLdmlFile("en");
+			testEnv.TryGetLdmlFile("en", out _);
 			Assert.That(Sldr.LanguageTags, Is.Not.Empty);
 			Assert.That(File.Exists(langTagsPath), Is.True);
 		}
