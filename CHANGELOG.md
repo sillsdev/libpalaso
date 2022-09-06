@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle] Added protected method GetAttribute to UsxNode.
 - [SIL.DblBundle] Added sealed subclasses of UsxNode: UsxPara and UsxChar.
 - [SIL.DblBundle] Added property IsChapterStart to UsxChapter.
+- [SIL.Reporting] Added TypeOfExistingHandler property to ExceptionHandler.
 
 ### Fixed
 - [SIL.DblBundle] Attempting to construct a UsxNode based on an invalid XmlNode now throws an exception in the constructor in most cases rather than later when properties are accessed.
