@@ -187,6 +187,9 @@ namespace SIL.Scripture.Tests
 		[TestCase("Luk 5,15", ExpectedResult = 42005015)]
 		[TestCase("luk 5.15", ExpectedResult = 42005015)]
 		[TestCase("LUK5:15", ExpectedResult = 42005015)]
+		[TestCase("LUK5/15", ExpectedResult = 42005015)]
+		[TestCase("LUK5_15", ExpectedResult = 42005015)]
+		[TestCase("LUK5;15", ExpectedResult = 42005015)]
 		[TestCase("4T1:5", ExpectedResult = 55001005)]
 		public int ParseRefString_EdgeCases(string input)
 		{
