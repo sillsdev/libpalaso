@@ -184,10 +184,25 @@ namespace SIL.Scripture.Tests
 		/// Tests edge cases when parsing a reference string
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		// 4T corresponds to 2 Timothy
+		[TestCase("4T1:5", ExpectedResult = 55001005)]
+		// Letters are not supported as chapter/verse separators
+		[TestCase("LUK 5a15", ExpectedResult = 1001001)]
+		// Letters are not supported as chapter/verse separators
+		[TestCase("LUK5α15", ExpectedResult = 1001001)]
+		// ३ is Devanagari digit 3, which is not supported as chapter/verse separators
+		[TestCase("LUK 5३15", ExpectedResult = 42001001)]
+		// ३,५ are Devanagari digits 3,4, which are not supported as chapter/verse identifiers
+		[TestCase("LUK ३:५", ExpectedResult = 42001001)]
+		
 		[TestCase("Luk 5,15", ExpectedResult = 42005015)]
 		[TestCase("luk 5.15", ExpectedResult = 42005015)]
 		[TestCase("LUK5:15", ExpectedResult = 42005015)]
-		[TestCase("4T1:5", ExpectedResult = 55001005)]
+		[TestCase("LUK 5/15", ExpectedResult = 42005015)]
+		[TestCase("LUK5_15", ExpectedResult = 42005015)]
+		[TestCase("LUK5;15", ExpectedResult = 42005015)]
+		[TestCase("LUK5 15", ExpectedResult = 42005015)]
+		[TestCase("LUK 5 15", ExpectedResult = 42005015)]
 		public int ParseRefString_EdgeCases(string input)
 		{
 			return m_mlscrBook.ParseRefString(input).BBCCCVVV;
