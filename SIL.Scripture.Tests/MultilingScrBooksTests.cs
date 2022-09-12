@@ -184,13 +184,16 @@ namespace SIL.Scripture.Tests
 		/// Tests edge cases when parsing a reference string
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[TestCase("4T1:5", ExpectedResult = 55001005)]
 		[TestCase("Luk 5,15", ExpectedResult = 42005015)]
 		[TestCase("luk 5.15", ExpectedResult = 42005015)]
 		[TestCase("LUK5:15", ExpectedResult = 42005015)]
-		[TestCase("LUK5/15", ExpectedResult = 42005015)]
+		[TestCase("LUK 5/15", ExpectedResult = 42005015)]
 		[TestCase("LUK5_15", ExpectedResult = 42005015)]
 		[TestCase("LUK5;15", ExpectedResult = 42005015)]
-		[TestCase("4T1:5", ExpectedResult = 55001005)]
+		[TestCase("LUK 5३15", ExpectedResult = 42001001)]
+		[TestCase("LUK 5a15", ExpectedResult = 1001001)]
+		[TestCase("LUK5α15", ExpectedResult = 1001001)]
 		public int ParseRefString_EdgeCases(string input)
 		{
 			return m_mlscrBook.ParseRefString(input).BBCCCVVV;
