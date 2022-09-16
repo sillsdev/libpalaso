@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle] Added sealed subclasses of UsxNode: UsxPara and UsxChar.
 - [SIL.DblBundle] Added property IsChapterStart to UsxChapter.
 - [SIL.Reporting] Added TypeOfExistingHandler property to ExceptionHandler.
+- [SIL.Core.Desktop] Added aiff and m4a formats to AudioFileExtensions
 
 ### Fixed
 
@@ -37,6 +38,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle] Made UsxChapter sealed.
 - [SIL.Core] `FileLocationUtilities.GetDirectoryDistributedWithApplication` not only checks in
   `DistFiles`, `common`, and `src` subdirectories, but also directly in the application or solution directory.
+- [SIL.Core.Desktop] Fixed typo in list of AudioFileExtensions: "acc" changed to "aac"
 - [SIL.Archiving] Changed REAP access protocol label from "Insite users" to "REAP users"
 - [SIL.Archiving] Fixed typo in name of ArchiveAccessProtocol.GetDocumentationUri methods
 - [SIL.Archiving] Changed ArchiveAccessProtocol.GetDocumentationUri methods
