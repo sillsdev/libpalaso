@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle] Added sealed subclasses of UsxNode: UsxPara and UsxChar.
 - [SIL.DblBundle] Added property IsChapterStart to UsxChapter.
 - [SIL.Reporting] Added TypeOfExistingHandler property to ExceptionHandler.
+- [SIL.Core.Desktop] Added aiff and m4a formats to AudioFileExtensions
 
 ### Fixed
 - [SIL.DblBundle] Attempting to construct a UsxNode based on an invalid XmlNode now throws an exception in the constructor in most cases rather than later when properties are accessed.
@@ -32,6 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle] Made UsxNode abstract.
 - [SIL.DblBundle] Made UsxNode.StyleTag virtual. Calling UsxChapter.StyleTag on a chapter end node returns null instead of throwing an exception.
 - [SIL.DblBundle] Made UsxChapter sealed.
+- [SIL.Core.Desktop] Fixed typo in list of AudioFileExtensions: "acc" changed to "aac"
 
 ## [10.1.0] - 2022-08-26
 
