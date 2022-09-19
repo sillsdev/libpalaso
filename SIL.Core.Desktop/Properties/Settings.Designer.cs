@@ -60,6 +60,7 @@ namespace SIL.Properties {
   <string>.m4v</string>
   <string>.m2v</string>
   <string>.webm</string>
+  <string>.mkv</string>
 </ArrayOfString>")]
         public global::System.Collections.Specialized.StringCollection VideoFileExtensions {
             get {
