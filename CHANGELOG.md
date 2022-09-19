@@ -23,7 +23,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle] Added sealed subclasses of UsxNode: UsxPara and UsxChar.
 - [SIL.DblBundle] Added property IsChapterStart to UsxChapter.
 - [SIL.Reporting] Added TypeOfExistingHandler property to ExceptionHandler.
-- [SIL.Core.Desktop] Added aiff and m4a formats to AudioFileExtensions
+- [SIL.Core.Desktop] Added aiff, m4a, voc, and amr formats to AudioFileExtensions
+- [SIL.Core.Desktop] Added webm formats to VideoFileExtensions
 
 ### Fixed
 

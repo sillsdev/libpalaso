@@ -35,6 +35,8 @@ namespace SIL.Properties {
   <string>.ogg</string>
   <string>.flac</string>
   <string>.m4a</string>
+  <string>.voc</string>
+  <string>.amr</string>
 </ArrayOfString>")]
         public global::System.Collections.Specialized.StringCollection AudioFileExtensions {
             get {
@@ -57,6 +59,7 @@ namespace SIL.Properties {
   <string>.mts</string>
   <string>.m4v</string>
   <string>.m2v</string>
+  <string>.webm</string>
 </ArrayOfString>")]
         public global::System.Collections.Specialized.StringCollection VideoFileExtensions {
             get {
