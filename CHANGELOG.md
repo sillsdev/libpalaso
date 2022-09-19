@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle] Added property IsChapterStart to UsxChapter.
 - [SIL.Reporting] Added TypeOfExistingHandler property to ExceptionHandler.
 - [SIL.Core.Desktop] Added aiff, m4a, voc, and amr formats to AudioFileExtensions
-- [SIL.Core.Desktop] Added webm formats to VideoFileExtensions
+- [SIL.Core.Desktop] Added webm and mkv formats to VideoFileExtensions
 
 ### Fixed
 
