@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace SIL
 {
-	public class EntryAssembly
+	public static class EntryAssembly
 	{
 		public static string Location
 		{
