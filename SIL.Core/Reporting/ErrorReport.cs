@@ -200,7 +200,7 @@ namespace SIL.Reporting
 			{
 				var asm = Assembly.GetEntryAssembly();
 				var ver = asm.GetName().Version;
-				var file = PathHelper.StripFilePrefix(asm.CodeBase);
+				var file = PathHelper.StripFilePrefix(asm.Location);
 				var fi = new FileInfo(file);
 
 				return $"Version {ver.Major}.{ver.Minor}.{ver.Build} Built on {fi.CreationTime:dd-MMM-yyyy}";
@@ -216,7 +216,7 @@ namespace SIL.Reporting
 		{
 #if NETSTANDARD
 			return ".NET Standard";
-#else
+#elif net461
 			if (!Platform.IsWindows)
 				return string.Empty;
 
@@ -224,6 +224,8 @@ namespace SIL.Reporting
 			{
 				return key == null ? "(unable to determine)" : $"{key.GetValue("Version")} ({key.GetValue("Release")})";
 			}
+#else
+			return RuntimeInformation.FrameworkDescription;
 #endif
 		}
 

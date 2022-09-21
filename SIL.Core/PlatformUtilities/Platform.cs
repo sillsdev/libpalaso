@@ -5,7 +5,7 @@
 
 using System;
 using System.Diagnostics;
-#if !NETSTANDARD2_0
+#if NET461
 using System.Management;
 #endif
 using System.Runtime.InteropServices;
@@ -39,14 +39,7 @@ namespace SIL.PlatformUtilities
 
 		public static bool IsPreWindows10 => IsWindows && OperatingSystemDescription != "Windows 10";
 
-#if NETSTANDARD2_0
-		public static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
-		public static bool IsMac => RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
-		public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-
-		public static bool IsDotNetCore => RuntimeInformation.FrameworkDescription == ".NET Core";
-		public static bool IsDotNetFramework => IsDotNet && RuntimeInformation.FrameworkDescription == ".NET Framework";
-#elif NET461
+#if NET461
 		private static readonly string UnixNameMac = "Darwin";
 		private static readonly string UnixNameLinux = "Linux";
 
@@ -89,6 +82,13 @@ namespace SIL.PlatformUtilities
 
 		[DllImport("libc")]
 		private static extern int uname(IntPtr buf);
+#else
+		public static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+		public static bool IsMac => RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+		public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
+		public static bool IsDotNetCore => RuntimeInformation.FrameworkDescription == ".NET Core";
+		public static bool IsDotNetFramework => IsDotNet && RuntimeInformation.FrameworkDescription == ".NET Framework";
 #endif
 
 		/// <summary>

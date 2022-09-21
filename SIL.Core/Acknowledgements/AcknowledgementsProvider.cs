@@ -42,7 +42,13 @@ namespace SIL.Acknowledgements
 			if (entryAssembly != null) // Can happen in tests
 			{
 				var assemblyName = GetNonUriExecutingAssemblyName(execAssembly);
-				var codeBase = Path.GetDirectoryName(GetFullNonUriFileName(entryAssembly.CodeBase));
+				var codeBase = Path.GetDirectoryName(GetFullNonUriFileName(
+#if NET461
+					// CodeBase gives us original path if assembly is shadow-copied
+					entryAssembly.CodeBase));
+#else
+					entryAssembly.Location));
+#endif
 				var components = Directory.EnumerateFiles(codeBase).Where(
 					file => Path.HasExtension(file) &&
 					(Path.GetExtension(file).ToLowerInvariant() == ".exe" || Path.GetExtension(file).ToLowerInvariant() == ".dll") &&
@@ -107,7 +113,7 @@ namespace SIL.Acknowledgements
 
 		private static string GetNonUriExecutingAssemblyName(Assembly execAssembly)
 		{
-			var assemblyName = GetFullNonUriFileName(execAssembly.CodeBase);
+			var assemblyName = GetFullNonUriFileName(execAssembly.Location);
 			// On Windows, GetExecutingAssembly().CodeBase puts the file extension in UPPERCASE! Why!?
 			if (Platform.IsWindows)
 			{
