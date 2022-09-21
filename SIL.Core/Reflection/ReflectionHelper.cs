@@ -444,7 +444,7 @@ namespace SIL.Reflection
 					version += " (apparent build date: ";
 					try
 					{
-						string path = PathHelper.StripFilePrefix(assembly.CodeBase);
+						string path = PathHelper.StripFilePrefix(assembly.Location);
 						version += File.GetLastWriteTimeUtc(path).ToString("dd-MMM-yyyy") + ")";
 					}
 					catch
@@ -469,7 +469,13 @@ namespace SIL.Reflection
 				bool unitTesting = Assembly.GetEntryAssembly() == null;
 				if (unitTesting)
 				{
-					path = new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath;
+#if net461
+					// CodeBase gives us original path if assembly is shadow-copied
+					var codeBase = Assembly.GetExecutingAssembly().CodeBase;
+#else
+					var codeBase = Assembly.GetExecutingAssembly().Location;
+#endif
+					path = new Uri(codeBase).AbsolutePath;
 					path = Uri.UnescapeDataString(path);
 				}
 				else
