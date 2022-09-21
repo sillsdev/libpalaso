@@ -32,6 +32,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle] Made UsxNode abstract.
 - [SIL.DblBundle] Made UsxNode.StyleTag virtual. Calling UsxChapter.StyleTag on a chapter end node returns null instead of throwing an exception.
 - [SIL.DblBundle] Made UsxChapter sealed.
+- [SIL.Core] `FileLocationUtilities.GetDirectoryDistributedWithApplication` not only checks in
+  `DistFiles`, `common`, and `src` subdirectories, but also directly in the application or solution directory.
 
 ## [10.1.0] - 2022-08-26
 
