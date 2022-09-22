@@ -48,54 +48,6 @@ namespace SIL.TestUtilities {
 		}
 
 		[Test]
-		public void GetTemporaryFile_FileExistsInTemporarySubdirectory()
-		{
-			TemporaryFolder temporaryFolder = new TemporaryFolder(TestContext.CurrentContext.Test.Name);
-#pragma warning disable 618
-			string pathToFile = temporaryFolder.GetTemporaryFile();
-#pragma warning restore 618
-			Assert.IsTrue(File.Exists(pathToFile));
-			temporaryFolder.Dispose();
-			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
-		}
-
-		[Test]
-		public void GetTemporaryFile_Name_FileWithNameExistsInTemporarySubdirectory()
-		{
-			TemporaryFolder temporaryFolder = new TemporaryFolder(TestContext.CurrentContext.Test.Name);
-#pragma warning disable 618
-			string pathToFile = temporaryFolder.GetTemporaryFile("blah");
-#pragma warning restore 618
-			Assert.IsTrue(File.Exists(pathToFile));
-			Assert.AreEqual(pathToFile, Path.Combine(temporaryFolder.Path, "blah"));
-			temporaryFolder.Dispose();
-			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
-		}
-
-		[Test]
-		public void GetTemporaryFile_CalledTwice_BothFilesFoundInSameTemporarySubdirectory()
-		{
-			TemporaryFolder temporaryFolder = new TemporaryFolder(TestContext.CurrentContext.Test.Name);
-#pragma warning disable 618
-			temporaryFolder.GetTemporaryFile();
-			temporaryFolder.GetTemporaryFile();
-#pragma warning restore 618
-			Assert.AreEqual(2, Directory.GetFiles(temporaryFolder.Path).Length);
-			temporaryFolder.Dispose();
-			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
-		}
-
-		[Test]
-		public void Delete_RemovesTemporarySubDirectory()
-		{
-			TemporaryFolder temporaryFolder = new TemporaryFolder("NonStandard");
-#pragma warning disable 618
-			temporaryFolder.Delete();
-#pragma warning restore 618
-			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
-		}
-
-		[Test]
 		public void Delete_FileInDirectory_RemovesTemporaryDirectory()
 		{
 			TemporaryFolder temporaryFolder = new TemporaryFolder("NonStandard");

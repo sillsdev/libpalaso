@@ -116,18 +116,12 @@ namespace SIL.TestUtilities
 		/// <summary>
 		/// Create a TemporaryFolder based on a pre-existing directory, which will be deleted when this is disposed.
 		/// </summary>
-		static public TemporaryFolder TrackExisting(string path)
+		public static TemporaryFolder TrackExisting(string path)
 		{
 			Debug.Assert(Directory.Exists(path), @"TrackExisting given non existant folder to track.");
 			var f = new TemporaryFolder(false);
 			f._path = path;
 			return f;
-		}
-
-		[Obsolete("Go ahead and give it a name related to the test.  Makes it easier to track down problems.")]
-		public TemporaryFolder()
-			: this(System.IO.Path.GetRandomFileName())
-		{
 		}
 
 		/// <summary>
@@ -158,12 +152,6 @@ namespace SIL.TestUtilities
 			Directory.CreateDirectory(_path);
 		}
 
-		[Obsolete("Path is preferred")]
-		public string FolderPath
-		{
-			get { return _path; }
-		}
-
 		/// <summary>
 		/// Same as FolderPath, but I repent of that poor name
 		/// </summary>
@@ -174,12 +162,6 @@ namespace SIL.TestUtilities
 
 
 		public void Dispose()
-		{
-			TestUtilities.DeleteFolderThatMayBeInUse(_path);
-		}
-
-		[Obsolete("It's better to wrap the use of this in a using() so that it is automatically cleaned up, even if a test fails.")]
-		public void Delete()
 		{
 			TestUtilities.DeleteFolderThatMayBeInUse(_path);
 		}
@@ -205,21 +187,6 @@ namespace SIL.TestUtilities
 			}
 			return TempFile.TrackExisting(s);
 		}
-
-		[Obsolete("It's better to use the explict GetNewTempFile, which makes you say if you want the file to be created or not, and give you back a whole TempFile class, which is itself IDisposable.")]
-		public string GetTemporaryFile()
-		{
-			return GetTemporaryFile(System.IO.Path.GetRandomFileName());
-		}
-
-		[Obsolete("It's better to use the explict GetNewTempFile, which makes you say if you want the file to be created or not, and give you back a whole TempFile class, which is itself IDisposable.")]
-		public string GetTemporaryFile(string name)
-		{
-			string s = System.IO.Path.Combine(_path, name);
-			File.Create(s).Close();
-			return s;
-		}
-
 
 		/// <summary>
 		/// Similar to Path.Combine, but you don't have to specify the location of the temporaryfolder itself, and you can add multiple parts to combine.

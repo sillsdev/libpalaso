@@ -22,12 +22,6 @@ namespace SIL.Media
 			return new WindowsAudioSession(filePath);
 		}
 
-		[Obsolete("This was a unfortunate method name. Use CreateAudioSession Instead.")]
-		public static ISimpleAudioSession AudioSession(string filePath)
-		{
-			return CreateAudioSession(filePath);
-		}
-
 		///<summary>Adds an AssemblyResolve handler to redirect all attempts to load the
 		/// irrKlang.Net.dll to the architecture specific subdirectory.</summary>
 		private static void RedirectIrrKlangAssembly()

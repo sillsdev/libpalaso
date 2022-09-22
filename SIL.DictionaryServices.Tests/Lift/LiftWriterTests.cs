@@ -143,13 +143,6 @@ namespace SIL.DictionaryServices.Tests.Lift
 			return doc.FirstChild.Attributes[attribute].ToString();
 		}
 
-		[Obsolete("Use AssertEqualsCanonicalString(string, string) instead")]
-		private static void AssertEqualsCanonicalString(string expected, LiftExportTestSessionBase session)
-		{
-			string canonicalAnswer = CanonicalXml.ToCanonicalStringFragment(expected);
-			Assert.AreEqual(canonicalAnswer, session.StringBuilder.ToString());
-		}
-
 		private static void AssertEqualsCanonicalString(string expected, string actual)
 		{
 			string canonicalAnswer = CanonicalXml.ToCanonicalStringFragment(expected);

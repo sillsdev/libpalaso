@@ -1,5 +1,5 @@
-// Copyright (c) 2018 SIL International 
-// This software is licensed under the MIT License (http://opensource.org/licenses/MIT) 
+// Copyright (c) 2018 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -739,7 +739,7 @@ namespace SIL.Windows.Forms.ClearShare
 		/// Tell if there is previously saved values from a file in the user setting.
 		/// </summary>
 		/// <param name="category">e.g. "image", "document"</param>
-		static public bool HaveStoredExemplar(FileCategory category)
+		public static bool HaveStoredExemplar(FileCategory category)
 		{
 			return File.Exists(GetExemplarPath(category));
 		}
@@ -748,7 +748,7 @@ namespace SIL.Windows.Forms.ClearShare
 		/// Deletes the stored exemplar (if it exists).  This can be useful if a program
 		/// wants to establish "CC BY" as the default license for a new product.
 		/// </summary>
-		static public void DeleteStoredExemplar(FileCategory category)
+		public static void DeleteStoredExemplar(FileCategory category)
 		{
 			var path = GetExemplarPath(category);
 			if (File.Exists(path))
@@ -758,23 +758,11 @@ namespace SIL.Windows.Forms.ClearShare
 		/// <summary>
 		/// Gets a text combining the creator, copyright, and license
 		/// </summary>
-		/// <param name="idealIso639LanguageCode">e.g. "en" or "fr"</param>
-		/// <returns></returns>
-		[Obsolete("Instead, use the version with a prioritized list")]
-		public string GetSummaryParagraph(string idealIso639LanguageCode)
-		{
-			string idOfLanguageUsed;
-			return GetSummaryParagraph(new string[] { idealIso639LanguageCode }, out idOfLanguageUsed);
-		}
-
-		/// <summary>
-		/// Gets a text combining the creator, copyright, and license
-		/// </summary>
 		/// <remarks>It's possible to get parts in multiple languages if some parts have been localized, and other parts haven't</remarks>
 		/// <param name="languagePriorityIds">The summary will be in the first language available.</param>
 		/// <param name="idOfLanguageUsed"></param>
 		/// <returns></returns>
-		public string GetSummaryParagraph(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed) 
+		public string GetSummaryParagraph(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
 		{
 			var b = new StringBuilder();
 			string creatorLabel = LocalizationManager.GetString("MetadataDisplay.CreatorLabel", "Creator");
@@ -798,7 +786,7 @@ namespace SIL.Windows.Forms.ClearShare
 		/// For use on a hyperlink/button
 		/// </summary>
 		/// <returns></returns>
-		static public string GetStoredExemplarSummaryString(FileCategory category)
+		public static string GetStoredExemplarSummaryString(FileCategory category)
 		{
 			try
 			{

@@ -9,22 +9,6 @@ namespace SIL.Extensions
 	public static class CollectionExtensions
 	{
 		#region IEnumerable
-		[Obsolete("Use String.Join() instead.")]
-		public static string Concat<T>(this IEnumerable<T> list, string seperator)
-		{
-			string s = string.Empty;
-
-			foreach (var part in list)
-			{
-				s += part + seperator;
-			}
-			if (s.Length > 0)
-			{
-				return s.Substring(0, s.Length - seperator.Length);
-			}
-			return string.Empty;
-		}
-
 		public static IEnumerable<T> Concat<T>(this IEnumerable<T> source, T item)
 		{
 			foreach (T i in source)
@@ -40,12 +24,11 @@ namespace SIL.Extensions
 
 		public static IEnumerable<Tuple<TFirst, TSecond>> Zip<TFirst, TSecond>(this IEnumerable<TFirst> first, IEnumerable<TSecond> second)
 		{
-			using (IEnumerator<TFirst> iterator1 = first.GetEnumerator())
-			using (IEnumerator<TSecond> iterator2 = second.GetEnumerator())
-			{
-				while (iterator1.MoveNext() && iterator2.MoveNext())
-					yield return Tuple.Create(iterator1.Current, iterator2.Current);
-			} 
+			using IEnumerator<TFirst> iterator1 = first.GetEnumerator();
+			using IEnumerator<TSecond> iterator2 = second.GetEnumerator();
+
+			while (iterator1.MoveNext() && iterator2.MoveNext())
+				yield return Tuple.Create(iterator1.Current, iterator2.Current);
 		}
 
 		public static IEnumerable<Tuple<TFirst, TSecond, TThird>> Zip<TFirst, TSecond, TThird>(this IEnumerable<TFirst> first, IEnumerable<TSecond> second, IEnumerable<TThird> third)

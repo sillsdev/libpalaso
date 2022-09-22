@@ -134,51 +134,9 @@ namespace SIL.IO
 			return path;
 		}
 
-		[Obsolete("Use FileLocationUtilities.DirectoryOfApplicationOrSolution")]
-		public static string DirectoryOfApplicationOrSolution => FileLocationUtilities.DirectoryOfApplicationOrSolution;
-
-		[Obsolete("Use FileLocationUtilities.DirectoryOfTheApplicationExecutable")]
-		public static string DirectoryOfTheApplicationExecutable => FileLocationUtilities.DirectoryOfTheApplicationExecutable;
-
 		protected List<string> SearchPaths
 		{
 			get { return _searchPaths; }
-		}
-
-		[Obsolete("Use FileLocationUtilities.LocateExecutable")]
-		public static string LocateExecutable(bool throwExceptionIfNotFound, params string[] partsOfTheSubPath)
-		{
-			return FileLocationUtilities.LocateExecutable(throwExceptionIfNotFound, partsOfTheSubPath);
-		}
-
-		[Obsolete("Use FileLocationUtilities.LocateExecutable")]
-		public static string LocateExecutable(params string[] partsOfTheSubPath)
-		{
-			return FileLocationUtilities.LocateExecutable(partsOfTheSubPath);
-		}
-
-		[Obsolete("Use FileLocationUtilities.GetFileDistributedWithApplication")]
-		public static string GetFileDistributedWithApplication(bool optional, params string[] partsOfTheSubPath)
-		{
-			return FileLocationUtilities.GetFileDistributedWithApplication(optional, partsOfTheSubPath);
-		}
-
-		[Obsolete("Use FileLocationUtilities.GetFileDistributedWithApplication")]
-		public static string GetFileDistributedWithApplication(params string[] partsOfTheSubPath)
-		{
-			return FileLocationUtilities.GetFileDistributedWithApplication(partsOfTheSubPath);
-		}
-
-		[Obsolete("Use FileLocationUtilities.GetDirectoryDistributedWithApplication")]
-		public static string GetDirectoryDistributedWithApplication(bool optional, params string[] partsOfTheSubPath)
-		{
-			return FileLocationUtilities.GetDirectoryDistributedWithApplication(optional, partsOfTheSubPath);
-		}
-
-		[Obsolete("Use FileLocationUtilities.GetDirectoryDistributedWithApplication")]
-		public static string GetDirectoryDistributedWithApplication(params string[] partsOfTheSubPath)
-		{
-			return FileLocationUtilities.GetDirectoryDistributedWithApplication(partsOfTheSubPath);
 		}
 
 		/// <summary>
@@ -192,13 +150,6 @@ namespace SIL.IO
 		}
 
 		#region Methods for locating file in program files folders
-		[Obsolete("Use FileLocationUtilities.LocateInProgramFiles")]
-		public static string LocateInProgramFiles(string exeName, bool fallBackToDeepSearch,
-			params string[] subFoldersToSearch)
-		{
-			return FileLocationUtilities.LocateInProgramFiles(exeName, fallBackToDeepSearch, subFoldersToSearch);
-		}
-
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Searches the registry and returns the full path to the application program used to

@@ -29,27 +29,6 @@ namespace SIL.Data
 			_dataMapper = dataMapper;
 		}
 
-		[Obsolete]
-		private static List<RecordToken<T>> CreateResultsWithNoDuplicates(IEnumerable<IEnumerable<RecordToken<T>>> initialResults)
-		{
-			Dictionary<RecordToken<T>, object> alreadyUsedTokens = new Dictionary<RecordToken<T>, object>();
-			List<RecordToken<T>> results = new List<RecordToken<T>>();
-			foreach (IEnumerable<RecordToken<T>> resultSet in initialResults)
-			{
-				foreach (RecordToken<T> token in resultSet)
-				{
-					if (alreadyUsedTokens.ContainsKey(token))
-					{
-						continue;
-					}
-
-					alreadyUsedTokens.Add(token, null);
-					results.Add(token);
-				}
-			}
-			return results;
-		}
-
 		public RecordToken<T> this[int index]
 		{
 			get { return _results[index]; }

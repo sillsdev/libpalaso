@@ -19,16 +19,6 @@ namespace SIL.Reporting
 		private static UsageReporter s_singleton;
 		private Exception _mostRecentException;
 
-		[Obsolete("Better to use the version which explicitly sets the reportAsDeveloper flag")]
-		public static void Init(ReportingSettings settings, string domain, string googleAnalyticsAccountCode)
-		{
-#if DEBUG
-			Init(settings,domain,googleAnalyticsAccountCode, true);
-#else
-			Init(settings,domain,googleAnalyticsAccountCode, false);
-#endif
-		}
-
 		/// <summary>
 		///
 		/// </summary>

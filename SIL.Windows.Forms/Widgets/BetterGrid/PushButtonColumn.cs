@@ -112,15 +112,6 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		public int ButtonWidth { get; set; }
 
 		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Gets or sets a value indicating whether or not to paint a combo box style button
-		/// in the column's owned cells. If false, a push button style is drawn.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		[Obsolete("Use ButtonStyle Property")]
-		public bool UseComboButtonStyle { get; set; }
-
-		/// ------------------------------------------------------------------------------------
 		public ButtonType ButtonStyle { get; set; }
 
 		/// ------------------------------------------------------------------------------------
