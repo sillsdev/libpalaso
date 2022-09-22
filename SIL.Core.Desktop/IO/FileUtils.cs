@@ -13,50 +13,23 @@ namespace SIL.IO
 	/// </summary>
 	public static class FileUtils
 	{
-		public static StringCollection TextFileExtensions
-		{
-			get { return Properties.Settings.Default.TextFileExtensions; }
-		}
+		public static StringCollection TextFileExtensions => Properties.Settings.Default.TextFileExtensions;
 
-		public static StringCollection AudioFileExtensions
-		{
-			get { return Properties.Settings.Default.AudioFileExtensions; }
-		}
+		public static StringCollection AudioFileExtensions => Properties.Settings.Default.AudioFileExtensions;
 
-		public static StringCollection VideoFileExtensions
-		{
-			get { return Properties.Settings.Default.VideoFileExtensions; }
-		}
+		public static StringCollection VideoFileExtensions => Properties.Settings.Default.VideoFileExtensions;
 
-		public static StringCollection ImageFileExtensions
-		{
-			get { return Properties.Settings.Default.ImageFileExtensions; }
-		}
+		public static StringCollection ImageFileExtensions => Properties.Settings.Default.ImageFileExtensions;
 
-		public static StringCollection DatasetFileExtensions
-		{
-			  get { return Properties.Settings.Default.DatasetFileExtensions; }
-		}
+		public static StringCollection DatasetFileExtensions => Properties.Settings.Default.DatasetFileExtensions;
 
-		public static StringCollection SoftwareAndFontFileExtensions
-		{
-			  get { return Properties.Settings.Default.SoftwareAndFontFileExtensions; }
-		}
+		public static StringCollection SoftwareAndFontFileExtensions => Properties.Settings.Default.SoftwareAndFontFileExtensions;
 
-		public static StringCollection PresentationFileExtensions
-		{
-			  get { return Properties.Settings.Default.PresentationFileExtensions; }
-		}
+		public static StringCollection PresentationFileExtensions => Properties.Settings.Default.PresentationFileExtensions;
 
-		public static StringCollection MusicalNotationFileExtensions
-		{
-			  get { return Properties.Settings.Default.MusicalNotationFileExtensions; }
-		}
+		public static StringCollection MusicalNotationFileExtensions => Properties.Settings.Default.MusicalNotationFileExtensions;
 
-		public static StringCollection ZipFileExtensions
-		{
-			  get { return Properties.Settings.Default.ZipFileExtensions; }
-		}
+		public static StringCollection ZipFileExtensions => Properties.Settings.Default.ZipFileExtensions;
 
 		public static bool GetIsZipFile(string path)
 		{
@@ -256,79 +229,5 @@ namespace SIL.IO
 				throw error; // pass it up to the caller
 			}
 		}
-
-		[Obsolete("Use FileHelper.IsLocked()")]
-		public static bool IsFileLocked(string filePath)
-		{
-			return FileHelper.IsLocked(filePath);
-		}
-
-		[Obsolete("Use FileHelper.Grep()")]
-		public static bool GrepFile(string inputPath, string pattern)
-		{
-			return FileHelper.Grep(inputPath, pattern);
-		}
-
-		/// <summary>
-		/// Make sure the given <paramref name="pathToFile"/> file is 'valid'.
-		///
-		/// Valid means that
-		///		1. <paramref name="pathToFile"/> must not be null or an empty string
-		///		2. <paramref name="pathToFile"/> must exist, and
-		///		3. The extension for <paramref name="pathToFile"/> must equal <paramref name="expectedExtension"/>
-		///			(Or both must be null)
-		/// </summary>
-		[Obsolete("Use PathHelper.CheckValidPathname()")]
-		public static bool CheckValidPathname(string pathToFile, string expectedExtension)
-		{
-			return PathHelper.CheckValidPathname(pathToFile, expectedExtension);
-		}
-
-		[Obsolete("Use RobustFile.ReplaceByCopyDelete()")]
-		public static void ReplaceByCopyDelete(string sourcePath, string destinationPath, string backupPath)
-		{
-			RobustFile.ReplaceByCopyDelete(sourcePath, destinationPath, backupPath);
-		}
-
-		/// <summary>
-		/// When calling external exe's on Windows any non-ascii characters can get converted to '?'. This
-		/// will convert them to 8.3 format which is all ascii (and do nothing on Linux).
-		/// </summary>
-		[Obsolete("Use PathHelper.MakePathSafeFromEncodingProblems()")]
-		public static string MakePathSafeFromEncodingProblems(string path)
-		{
-			return PathHelper.MakePathSafeFromEncodingProblems(path);
-		}
-
-		/// <summary>
-		/// Normalize the path so that it uses forward slashes instead of backslashes. This is
-		/// useful when a path gets read from a file that gets shared between Windows and Linux -
-		/// if the path contains backslashes it can't be found on Linux.
-		/// </summary>
-		[Obsolete("Use PathHelper.NormalizePath()")]
-		public static string NormalizePath(string path)
-		{
-			return PathHelper.NormalizePath(path);
-		}
-
-		/// <summary>
-		/// Strips file URI prefix from the beginning of a file URI string, and keeps
-		/// a beginning slash if in Linux.
-		/// eg "file:///C:/Windows" becomes "C:/Windows" in Windows, and
-		/// "file:///usr/bin" becomes "/usr/bin" in Linux.
-		/// Returns the input unchanged if it does not begin with "file:".
-		///
-		/// Does not convert the result into a valid path or a path using current platform
-		/// path separators.
-		///
-		/// See uri.LocalPath, http://en.wikipedia.org/wiki/File_URI , and
-		/// http://blogs.msdn.com/b/ie/archive/2006/12/06/file-uris-in-windows.aspx .
-		/// </summary>
-		[Obsolete("Use PathHelper.StripFilePrefix()")]
-		public static string StripFilePrefix(string fileString)
-		{
-			return PathHelper.StripFilePrefix(fileString);
-		}
-
 	}
 }

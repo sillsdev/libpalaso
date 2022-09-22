@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
+
 - [SIL.DblBundle] Added const strings to UsxNode for the various USX element names.
 - [SIL.DblBundle] Added protected method GetAttribute to UsxNode.
 - [SIL.DblBundle] Added sealed subclasses of UsxNode: UsxPara and UsxChar.
@@ -24,16 +25,52 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Reporting] Added TypeOfExistingHandler property to ExceptionHandler.
 
 ### Fixed
+
 - [SIL.DblBundle] Attempting to construct a UsxNode based on an invalid XmlNode now throws an exception in the constructor in most cases rather than later when properties are accessed.
 - [SIL.DblBundle] Accessing UsxChapter.ChapterNumber on a chapter end node returns the chapter number (from the eid attribute) instead of throwing an exception.
 
 ### Changed
+
 - [SIL.DblBundle.Tests] Made GetChaptersAndParasForMarkOneContaining2Verses private.
 - [SIL.DblBundle] Made UsxNode abstract.
 - [SIL.DblBundle] Made UsxNode.StyleTag virtual. Calling UsxChapter.StyleTag on a chapter end node returns null instead of throwing an exception.
 - [SIL.DblBundle] Made UsxChapter sealed.
 - [SIL.Core] `FileLocationUtilities.GetDirectoryDistributedWithApplication` not only checks in
   `DistFiles`, `common`, and `src` subdirectories, but also directly in the application or solution directory.
+
+### Removed
+
+- [SIL.Core.Desktop] Removed deprecated properties and methods from `FileLocator`:
+  `DirectoryOfApplicationOrSolution`, `DirectoryOfTheApplicationExecutable`, `LocateExecutable`,
+  `GetFileDistributedWithApplication`, `GetDirectoryDistributedWithApplication`,
+  and `LocateInProgramFiles`.
+- [SIL.Core.Desktop] Removed deprecated methods from `DirectoryUtilities`:
+  `CopyDirectoryWithException`, `AreDirectoriesEquivalent`, `MoveDirectorySafely`,
+  `GetSafeDirectories`, `DeleteDirectoryRobust`, `GetUniqueFolderPath`. and `DirectoryIsEmpty`.
+- [SIL.Core.Desktop] Removed deprecated methods from `FileUtils`: `IsFileLocked`,
+  `GrepFile`, `CheckValidPathname`, `ReplaceByCopyDelete`, `MakePathSafeFromEncodingProblems`,
+  `NormalizePath`, and `StripFilePrefix`.
+- [SIL.Core] Removed deprecated class `CoreSetup`.
+- [SIL.Core] Removed deprecated method `CreateResultsWithNoDuplicates` from `ResultSet`.
+- [SIL.Core] Removed deprecated extension method `IEnumerable<T>.Concat<T>(string)`.
+- [SIL.Core] Removed deprecated methods from `PathUtilities`: `GetDeviceNumber`,
+  `PathsAreOnSameVolume`, `PathContainsDirectory`.
+- [SIL.Core] Removed deprecated class `HttpUtilityFromMono`.
+- [SIL.Core] Removed deprecated parameterless `Init` method from `ExceptionHandler`.
+- [SIL.Core] Removed deprecated `Init` method from `UsageReporter` (the one without
+  the `reportAsDeveloper` parameter).
+- [SIL.Core] Removed deprecated methods from `XmlUtils`: `GetAttributeValue`,
+  `GetManditoryAttributeValue`, and `AppendAttribute`.
+- [SIL.DblBundle] Removed deprecated methods from `TextBundle`: `CopyVersificationFile`,
+  `CopyFontFiles`, and `CopyLdmlFile`.
+- [SIL.DictionaryServices.Tests] Removed deprecated `AssertEqualsCanonicalString`
+  method from `LiftWriterTests`.
+- [SIL.Media] Removed deprecated `AudioSession` method from `AudioFactory`.
+- [SIL.TestUtilities] Removed deprecated c'tor, properties and methods from
+  `TemporaryFolder`: `TemporaryFolder()`, `FolderPath`, `Delete`, and `GetTemporaryFile`.
+- [SIL.Windows.Forms] Removed deprecated `GetSummaryParagraph(string)` method from
+  `MetaData`.
+- [SIL.Windows.Forms] Removed deprecated `UseComboButtonStyle` from PushButtonColumn`.
 
 ## [10.1.0] - 2022-08-26
 

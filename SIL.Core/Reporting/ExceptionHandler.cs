@@ -17,26 +17,6 @@ namespace SIL.Reporting
 
 		private static ExceptionHandler _singleton;
 
-		// ------------------------------------------------------------------------------------
-		//We removed all references to Winforms from SIL.Core.dll but our error reporting relied heavily on it.
-		//Not wanting to break existing applications we have now added this class initializer which will
-		//look for a reference to SIL.Windows.Forms in the consuming app and if it exists instantiate the
-		//ExceptionHandler from there through Reflection. Otherwise we will simply use a console
-		//exception handler
-		/// <summary>
-		/// Initialize the ExceptionHandler. By default, the exception handler will be initialized with a ConsoleExceptionHandler
-		/// unless the entry assembly uses a dependency on SIL.Windows.Forms.dll. In that case we default to the WinFormsExceptionHandler
-		/// </summary>
-		[Obsolete("Use ExceptionHandler.Init(ExceptionHandler) instead, e.g. ExceptionHandler.Init(new ConsoleExceptionHandler()) or ExceptionHandler.Init(new WinFormsExceptionHandler())")]
-		public static void Init()
-		{
-			if (_singleton != null)
-				throw new InvalidOperationException($"An ExceptionHandler (of type ${_singleton.GetType()}) has already been set.");
-
-			//If we can't find the WinFormsExceptionHandler we'll use the Console
-			_singleton = GetObjectFromSilWindowsForms<ExceptionHandler>() ?? new ConsoleExceptionHandler();
-		}
-
 		/// <summary>
 		/// Initialize the ExceptionHandler. This method should be called only once.
 		/// </summary>
