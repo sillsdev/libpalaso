@@ -1,67 +1,156 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
+using FFMpegCore;
+using FFMpegCore.Exceptions;
+using SIL.IO;
+using SIL.PlatformUtilities;
+using SIL.Reporting;
+using static System.Environment;
+using static System.Environment.SpecialFolder;
 
 namespace SIL.Media
 {
 	/// <summary>
-	/// This class uses ffmpeg to gather information about media streams
+	/// This class uses FFprobe to gather information about media streams
 	/// </summary>
 	public class MediaInfo
 	{
-		/// <summary>
-		/// The actual ffmpeg output
-		/// </summary>
-		public string RawData;
+		private const string kProbeExe = "ffprobe.exe";
 
-		private  MediaInfo(string ffmpegOutput)
+		/// <summary>
+		/// If your app knows where FFProbe lives, you can set this before making any calls.
+		/// If this is explicitly set to null, the next time we need to use FFprobe, we will
+		/// try to find it the usual way.
+		/// </summary>
+		public static string FFprobeLocation { get; set; }
+
+		/// <summary>
+		/// Find the path to ffmpeg, and remember it (some apps (like SayMore) call ffmpeg a lot)
+		/// </summary>
+		/// <returns></returns>
+		private static string LocateAndRememberFFprobe()
 		{
-			RawData = ffmpegOutput;
-			Audio = new AudioInfo(ffmpegOutput);
-			if (ffmpegOutput.Contains("Video:"))
+			if (null != FFprobeLocation) // NOTE: string.Empty means we already looked and didn't find it.
+				return FFprobeLocation;
+			FFprobeLocation = LocateFFprobe() ?? string.Empty;
+			if (!string.IsNullOrEmpty(FFprobeLocation))
+				GlobalFFOptions.Configure(new FFOptions
+					{ BinaryFolder = Path.GetDirectoryName(FFprobeLocation) });
+			return FFprobeLocation;
+		}
+
+		/// <summary>
+		/// Although we used to require users to download FFmpeg separately because of licensing
+		/// and patent concerns, now FFprobe will typically be distributed with SIL software on
+		/// Windows or automatically installed via package dependencies on other platforms, but if
+		/// something wants to use this library and work with a version of it that the user
+		/// downloaded or compiled locally, this tries to find where they put it.
+		/// </summary>
+		/// <returns>the path, if found, else null</returns>
+		private static string LocateFFprobe()
+		{
+			if (!Platform.IsWindows)
 			{
-				Video = new VideoInfo(ffmpegOutput);
+				// On Linux or MacOS, we can safely assume the package has included the needed
+				// dependency and will have been installed in an expected location
+				return new [] {"/usr/bin/ffprobe", "/usr/bin/avprobe", "/usr/local/bin/ffprobe",
+					"/usr/local/bin/avprobe"}.FirstOrDefault(File.Exists);
+			}
+
+			string withApplicationDirectory = GetPathToBundledFFprobe();
+
+			if (withApplicationDirectory != null)
+				return withApplicationDirectory;
+
+			// The user might have installed it using choco, so let's look there.
+			var chocoInstallLocation = Path.Combine(GetFolderPath(CommonApplicationData),
+				"chocolatey", "lib", "ffmpeg", "tools", "ffmpeg", "bin", kProbeExe);
+
+			if (File.Exists(chocoInstallLocation))
+				return chocoInstallLocation;
+			return null;
+		}
+
+		private static string GetPathToBundledFFprobe()
+		{
+			try
+			{
+				return FileLocationUtilities.GetFileDistributedWithApplication(true, "ffmpeg", kProbeExe) ??
+					FileLocationUtilities.GetFileDistributedWithApplication(true, "ffprobe", kProbeExe);
+			}
+			catch (Exception e)
+			{
+				Logger.WriteError(e);
+				return null;
 			}
 		}
 
 		///<summary>
-		/// Returns false if it can't find ffmpeg
+		/// Returns false if it can't find FFprobe
 		///</summary>
-		static public bool HaveNecessaryComponents
+		public static bool HaveNecessaryComponents => !string.IsNullOrEmpty(LocateAndRememberFFprobe());
+
+		public IMediaAnalysis AnalysisData { get; }
+
+		private MediaInfo(IMediaAnalysis mediaAnalysis)
 		{
-			get
+			AnalysisData = mediaAnalysis;
+			if (mediaAnalysis != null)
 			{
-				return FFmpegRunner.HaveNecessaryComponents;
+				if (mediaAnalysis.PrimaryAudioStream != null)
+					Audio = new AudioInfo(mediaAnalysis);
+				if (mediaAnalysis.PrimaryVideoStream != null)
+					Video = new VideoInfo(mediaAnalysis);
 			}
 		}
 
-		static public MediaInfo GetInfo(string path)
+		/// <summary>
+		/// Gets the media information for the requested media file. If media information
+		/// the error is logged and an object is returned with null Audio and Video.
+		/// </summary>
+		public static MediaInfo GetInfo(string path)
 		{
-			if(!HaveNecessaryComponents)
+			var info = GetInfo(path, out var e);
+			if (e != null)
 			{
-				return new MediaInfo("Could not locate FFMpeg");
+				Logger.WriteError(e);
+				return new MediaInfo(null);
 			}
-			var p = new Process();
-			p.StartInfo.FileName = FFmpegRunner.LocateAndRememberFFmpeg();
-			p.StartInfo.Arguments = ( "-i " + "\""+path+"\"");
-			p.StartInfo.RedirectStandardError = true;
-			p.StartInfo.UseShellExecute = false;
-			p.StartInfo.CreateNoWindow = true;
-			p.Start();
 
-			string ffmpegOutput = p.StandardError.ReadToEnd();
-			if(!p.WaitForExit(3000))
+			return info;
+		}
+
+		/// <summary>
+		/// Gets the media information for the requested media file
+		/// </summary>
+		/// <param name="path">Path of the media file</param>
+		/// <param name="error">If this method returns null, this will be set to indicate the error
+		/// that occurred. If FFprobe could not be found to do the analysis, this will be an
+		/// <see cref="ApplicationException"/></param>; otherwise, it will probably be an
+		/// <see cref="FFMpegException"/>.
+		/// <returns>A new MediaInfo object, or null if media information could not be retrieved.</returns>
+		public static MediaInfo GetInfo(string path, out Exception error)
+		{
+			if (!HaveNecessaryComponents)
 			{
-				try
-				{
-					p.Kill();
-				}
-				catch(Exception)
-				{ //couldn't stop it, oh well.
-				}
-				throw new ApplicationException("FFMpeg seems to have hung");
+				error = new ApplicationException("Could not locate FFprobe");
+				return null;
 			}
-			return new MediaInfo(ffmpegOutput);
+
+			try
+			{
+				error = null;
+				return new MediaInfo(FFProbe.Analyse(path));
+			}
+			catch (Exception e)
+			{
+				error = e;
+				return null;
+			}
 		}
 
 		public AudioInfo Audio { get; private set;}
@@ -89,94 +178,21 @@ namespace SIL.Media
 
 		public class AudioInfo
 		{
-
-			internal AudioInfo(string ffmpegOutput)
+			internal AudioInfo(IMediaAnalysis mediaAnalysis)
 			{
-				ExtractDuration(ffmpegOutput);
+				mediaAnalysis.Format.
+				AudioStreams = mediaAnalysis.AudioStreams;
+				var primaryAudio = mediaAnalysis.PrimaryAudioStream;
+				Debug.Assert(primaryAudio != null);
+				Duration = primaryAudio.Duration;
+				Encoding = primaryAudio.CodecName;
+				ChannelCount = primaryAudio.Channels;
+				BitDepth = primaryAudio.SampleRateHz
 				ExtractBitDepth(ffmpegOutput);
 				ExtractSamplesPerSecond(ffmpegOutput);
-				ExtractChannels(ffmpegOutput);
 				ExtractEncoding(ffmpegOutput);
 			}
-
-			private void ExtractEncoding(string ffmpegOutput)
-			{
-
-				var match = Regex.Match(ffmpegOutput, "Audio: ([^,]*)");
-				if (match.Groups.Count == 2)
-				{
-					Encoding = match.Groups[1].Value;
-				}
-			}
-
-			private void ExtractChannels(string ffmpegOutput)
-			{
-				var regex = new Regex(", ([^,]*) channels");
-				if (regex.IsMatch(ffmpegOutput))
-				{
-					var match = regex.Match(ffmpegOutput);
-					var value = match.Groups[1].Value;
-
-					int channelCount;
-
-					if (int.TryParse(value, out channelCount))
-					{
-						this.ChannelCount = channelCount;
-					}
-					return;
-				}
-				// older versions (i.e. 9.18 which comes with trusty) have a slightly different
-				// output format
-				regex = new Regex(", (mono|stereo|quad|hexagonal|octagonal|downmix|[2-7].[0-1](\\(.\\))?),");
-				if (regex.IsMatch(ffmpegOutput))
-				{
-					var match = regex.Match(ffmpegOutput);
-					var value = match.Groups[1].Value;
-					switch (value)
-					{
-						case "mono":
-							this.ChannelCount = 1;
-							break;
-						case "stereo":
-						case "downmix":
-							this.ChannelCount = 2;
-							break;
-						case "2.1":
-						case "3.0":
-						case "3.0(back)":
-							this.ChannelCount = 3;
-							break;
-						case "3.1":
-						case "4.0":
-						case "quad":
-						case "quad(side)":
-							this.ChannelCount = 4;
-							break;
-						case "4.1":
-						case "5.0":
-							this.ChannelCount = 5;
-							break;
-						case "5.1":
-						case "6.0":
-						case "6.0(front)":
-						case "hexagonal":
-							this.ChannelCount = 6;
-							break;
-						case "6.1":
-						case "6.1(front)":
-						case "7.0":
-						case "7.0(front)":
-							this.ChannelCount = 7;
-							break;
-						case "7.1":
-						case "7.1(wide)":
-						case "octagonal":
-							this.ChannelCount = 8;
-							break;
-					}
-				}
-			}
-
+			
 			private void ExtractSamplesPerSecond(string ffmpegOutput)
 			{
 				var match = Regex.Match(ffmpegOutput, ", ([^,]*) Hz");
@@ -209,7 +225,7 @@ namespace SIL.Media
 						return;
 					}
 				}
-				//no pcm found, use the myserious "s24, s32" stuff, which may be misleading
+				//no pcm found, use the mysterious "s24, s32" stuff, which may be misleading
 
 				 match = Regex.Match(ffmpegOutput, @", s(\d+),");
 				if (match.Groups.Count == 2)
@@ -225,20 +241,13 @@ namespace SIL.Media
 				}
 			}
 
-			private void ExtractDuration(string ffmpegOutput)
-			{
-				Duration = MediaInfo.GetDuration(ffmpegOutput);
-			}
-
-
-
-			public TimeSpan Duration { get; private set;}
+			private IReadOnlyList<AudioStream> AudioStreams { get; }
+			public TimeSpan Duration { get; }
 			public int ChannelCount { get; private set;}
 			public int SamplesPerSecond { get; private set;}
 			public int BitDepth { get; private set;}
 			public string Encoding { get; private set;}
 		}
-
 
 		public class VideoInfo
 		{

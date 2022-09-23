@@ -32,12 +32,10 @@ namespace SIL.Media
 		}
 
 		/// <summary>
-		/// ffmpeg is more of a "compile it yourself" thing, and yet
-		/// SIL doesn't necessarily want to be redistributing something
-		/// which may violate software patents (e.g. mp3) in certain countries, so
-		/// we ask users to get it themselves.
-		/// See: http://www.ffmpeg.org/legal.html
-		/// This tries to find where they put it.
+		/// FFmpeg will typically be distributed with SIL software on Windows or automatically
+		/// installed via package dependencies on other platforms, but if something wants to
+		/// use this library and work with a version of it that the user downloaded or compiled
+		/// locally, this tries to find where they put it.
 		/// </summary>
 		/// <returns>the path, if found, else null</returns>
 		static private string LocateFFmpeg()
@@ -63,8 +61,8 @@ namespace SIL.Media
 				Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
 			};
 
-			/* We DON't SUPPORT THIS ONE (it lacks some information on the output, at least as of
-			 * Julu 2010)
+			/* We DON'T SUPPORT THIS ONE (it lacks some information on the output, at least as of
+			 * July 2010)
 			 //from http://www.arachneweb.co.uk/software/windows/avchdview/ffmpeg.html
 			foreach (var path in progFileDirs)
 			{
@@ -74,6 +72,10 @@ namespace SIL.Media
 			}
 			 */
 
+			// REVIEW: I just followed the instructions in the current version of Audacity for
+			// installing FFmpeg for Audacity and the result is a folder that does not contain
+			// ffmpeg.exe. This maybe used to work, but I don't think we'll ever find ffmpeg this
+			// way now.
 			//http://manual.audacityteam.org/index.php?title=FAQ:Installation_and_Plug-Ins#installffmpeg
 			foreach (var path in progFileDirs)
 			{
@@ -142,7 +144,7 @@ namespace SIL.Media
 
 		/// <summary>
 		/// Extracts the audio from a video. Note, it will fail if the file exists, so the client
-		/// is resonsible for verifying with the user and deleting the file before calling this.
+		/// is responsible for verifying with the user and deleting the file before calling this.
 		/// </summary>
 		/// <param name="inputPath"></param>
 		/// <param name="outputPath"></param>
