@@ -24,7 +24,7 @@
 	{"label":"","description":"<unknown>"},
 	{"label":"Entity curators","description":"Restricted to Entity curators"},
 	{"label":"Entity","description":"Restricted to Entity staff"},
-	{"label":"Insite users","description":"Restricted to Insite users"},
+	{"label":"REAP users","description":"Restricted to REAP users"},
 	{"label":"Strategic partners","description":"Restricted to Strategic partners"},
 	{"label":"Public","description":"Public"}]},
 {"protocol":"TLA","documentation":"tla.html","choices":[
