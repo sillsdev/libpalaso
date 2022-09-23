@@ -294,43 +294,6 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Deprecated: use GetOptionalAttributeValue instead.
-		/// </summary>
-		/// <param name="node"></param>
-		/// <param name="attrName"></param>
-		/// <param name="defaultValue"></param>
-		/// <returns></returns>
-		[Obsolete("Use GetOptionalAttributeValue instead")]
-		public static string GetAttributeValue(XmlNode node, string attrName, string defaultValue)
-		{
-			return GetOptionalAttributeValue(node, attrName, defaultValue);
-		}
-
-		/// <summary>
-		/// Get an optional attribute value from an XmlNode.
-		/// </summary>
-		/// <param name="node">The XmlNode to look in.</param>
-		/// <param name="attrName">The attribute to find.</param>
-		/// <returns>The value of the attribute, or null, if not found.</returns>
-		[Obsolete("Use GetOptionalAttributeValue instead")]
-		public static string GetAttributeValue(XmlNode node, string attrName)
-		{
-			return GetOptionalAttributeValue(node, attrName);
-		}
-
-		/// <summary>
-		/// Get an optional attribute value from an XElement.
-		/// </summary>
-		/// <param name="element">The XElement to look in.</param>
-		/// <param name="attrName">The attribute to find.</param>
-		/// <returns>The value of the attribute, or null, if not found.</returns>
-		[Obsolete("Use GetOptionalAttributeValue instead")]
-		public static string GetAttributeValue(XElement element, string attrName)
-		{
-			return GetOptionalAttributeValue(element, attrName);
-		}
-
-		/// <summary>
 		/// Get an optional attribute value from an XmlNode.
 		/// </summary>
 		/// <param name="node">The XmlNode to look in.</param>
@@ -490,27 +453,6 @@ namespace SIL.Xml
 			return -1;
 		}
 
-		#region Obsolete mis-spelled methods
-		[Obsolete("Use GetMandatoryAttributeValue instead")]
-		public static string GetManditoryAttributeValue(XmlNode node, string attrName)
-		{
-			return GetMandatoryAttributeValue(node, attrName);
-		}
-
-		[Obsolete("Use GetMandatoryAttributeValue instead")]
-		public static string GetManditoryAttributeValue(XElement element, string attrName)
-		{
-			return GetMandatoryAttributeValue(element, attrName);
-		}
-
-		[Obsolete("Use GetMandatoryAttributeValue instead")]
-		public static string GetManditoryAttributeValue(XPathNavigator node, string attrName)
-		{
-			return GetMandatoryAttributeValue(node, attrName);
-		}
-
-		#endregion
-
 		/// <summary>
 		/// Get an obligatory attribute value.
 		/// </summary>
@@ -566,15 +508,6 @@ namespace SIL.Xml
 			XmlElement xe = node.OwnerDocument.CreateElement(elementName);
 			node.AppendChild(xe);
 			return xe;
-		}
-
-		/// <summary>
-		/// Append an attribute with the specified name and value to parent.
-		/// </summary>
-		[Obsolete("Use SetAttribute instead")]
-		public static void AppendAttribute(XmlNode parent, string attrName, string attrVal)
-		{
-			SetAttribute(parent, attrName, attrVal);
 		}
 
 		/// <summary>

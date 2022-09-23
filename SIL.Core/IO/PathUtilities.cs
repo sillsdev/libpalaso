@@ -328,8 +328,8 @@ namespace SIL.IO
 		/// <param name="directory">Full path of the directory</param>
 		public static void OpenDirectoryInExplorer(string directory)
 		{
-			//Enhance: on Windows, use ShellExecuteExW instead, as it will probably be able to 
-			//handle languages with combining characters (diactrics), whereas this explorer 
+			//Enhance: on Windows, use ShellExecuteExW instead, as it will probably be able to
+			//handle languages with combining characters (diactrics), whereas this explorer
 			//approach will fail (at least as of windows 8.1)
 
 			var fileManager = DefaultFileManager;
@@ -363,72 +363,70 @@ namespace SIL.IO
 
 		private static string GetDefaultFileManager()
 		{
-			if (PlatformUtilities.Platform.IsWindows)
+			if (Platform.IsWindows)
 				return "explorer.exe";
 
 			const string fallbackFileManager = "xdg-open";
 
-			using (var xdgmime = new Process())
+			using var xdgmime = new Process();
+			bool processError = false;
+			xdgmime.RunProcess("xdg-mime", "query default inode/directory", exception =>  {
+				processError = true;
+			});
+			if (processError)
 			{
-				bool processError = false;
-				xdgmime.RunProcess("xdg-mime", "query default inode/directory", exception =>  {
-					processError = true;
-				});
-				if (processError)
+				Logger.WriteMinorEvent("Error executing 'xdg-mime query default inode/directory'");
+				return fallbackFileManager;
+			}
+			string desktopFile = xdgmime.StandardOutput.ReadToEnd().TrimEnd(' ', '\n', '\r');
+			xdgmime.WaitForExit();
+			if (string.IsNullOrEmpty(desktopFile))
+			{
+				Logger.WriteMinorEvent("Didn't find default value for mime type inode/directory");
+				return fallbackFileManager;
+			}
+			// Look in /usr/share/applications for .desktop file
+			string desktopFilename = null;
+			if (Platform.IsFlatpak)
+				desktopFilename = Path.Combine("/app/share/applications", desktopFile);
+			if (desktopFilename == null || !File.Exists(desktopFilename))
+				desktopFilename = Path.Combine(
+					Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+					"applications", desktopFile);
+			if (!File.Exists(desktopFilename))
+			{
+				// We didn't find the .desktop file yet, so check in ~/.local/share/applications
+				desktopFilename = Path.Combine(
+					Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+					"applications", desktopFile);
+			}
+			if (!File.Exists(desktopFilename))
+			{
+				Logger.WriteMinorEvent("Can't find desktop file for {0}", desktopFile);
+				return fallbackFileManager;
+			}
+			using (var reader = File.OpenText(desktopFilename))
+			{
+				string line;
+				for (line = reader.ReadLine();
+					!line.StartsWith("Exec=", StringComparison.InvariantCultureIgnoreCase) && !reader.EndOfStream;
+					line = reader.ReadLine())
 				{
-					Logger.WriteMinorEvent("Error executing 'xdg-mime query default inode/directory'");
-					return fallbackFileManager;
 				}
-				string desktopFile = xdgmime.StandardOutput.ReadToEnd().TrimEnd(' ', '\n', '\r');
-				xdgmime.WaitForExit();
-				if (string.IsNullOrEmpty(desktopFile))
-				{
-					Logger.WriteMinorEvent("Didn't find default value for mime type inode/directory");
-					return fallbackFileManager;
-				}
-				// Look in /usr/share/applications for .desktop file
-				string desktopFilename = null;
-				if (Platform.IsFlatpak)
-					desktopFilename = Path.Combine("/app/share/applications", desktopFile);
-				if (desktopFilename == null || !File.Exists(desktopFilename))
-					desktopFilename = Path.Combine(
-						Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-						"applications", desktopFile);
-				if (!File.Exists(desktopFilename))
-				{
-					// We didn't find the .desktop file yet, so check in ~/.local/share/applications
-					desktopFilename = Path.Combine(
-						Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-						"applications", desktopFile);
-				}
-				if (!File.Exists(desktopFilename))
-				{
-					Logger.WriteMinorEvent("Can't find desktop file for {0}", desktopFile);
-					return fallbackFileManager;
-				}
-				using (var reader = File.OpenText(desktopFilename))
-				{
-					string line;
-					for (line = reader.ReadLine();
-						!line.StartsWith("Exec=", StringComparison.InvariantCultureIgnoreCase) && !reader.EndOfStream;
-						line = reader.ReadLine())
-					{
-					}
 
-					if (!line.StartsWith("Exec=", StringComparison.InvariantCultureIgnoreCase))
-					{
-						Logger.WriteMinorEvent("Can't find Exec line in {0}", desktopFile);
-						_defaultFileManager = string.Empty;
-						return _defaultFileManager;
-					}
-
-					var start = "Exec=".Length;
-					var argStart = line.IndexOf('%');
-					var cmdLine = argStart > 0 ? line.Substring(start, argStart - start) : line.Substring(start);
-					cmdLine = cmdLine.TrimEnd();
-					Logger.WriteMinorEvent("Detected default file manager as {0}", cmdLine);
-					return cmdLine;
+				if (!line.StartsWith("Exec=", StringComparison.InvariantCultureIgnoreCase))
+				{
+					Logger.WriteMinorEvent("Can't find Exec line in {0}", desktopFile);
+					_defaultFileManager = string.Empty;
+					return _defaultFileManager;
 				}
+
+				var start = "Exec=".Length;
+				var argStart = line.IndexOf('%');
+				var cmdLine = argStart > 0 ? line.Substring(start, argStart - start) : line.Substring(start);
+				cmdLine = cmdLine.TrimEnd();
+				Logger.WriteMinorEvent("Detected default file manager as {0}", cmdLine);
+				return cmdLine;
 			}
 		}
 
@@ -436,31 +434,7 @@ namespace SIL.IO
 
 		private static string DefaultFileManager
 		{
-			get
-			{
-				if (_defaultFileManager == null)
-					_defaultFileManager = GetDefaultFileManager();
-
-				return _defaultFileManager;
-			}
-		}
-
-		[Obsolete("Use PathHelper.GetDeviceNumber()")]
-		public static int GetDeviceNumber(string filePath)
-		{
-			return PathHelper.GetDeviceNumber(filePath);
-		}
-
-		[Obsolete("Use PathHelper.PathsAreOnSameVolume()")]
-		public static bool PathsAreOnSameVolume(string firstPath, string secondPath)
-		{
-			return PathHelper.AreOnSameVolume(firstPath, secondPath);
-		}
-
-		[Obsolete("Use PathHelper.ContainsDirectory()")]
-		public static bool PathContainsDirectory(string path, string directory)
-		{
-			return PathHelper.ContainsDirectory(path, directory);
+			get { return _defaultFileManager ??= GetDefaultFileManager(); }
 		}
 	}
 }
