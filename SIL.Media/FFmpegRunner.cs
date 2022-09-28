@@ -23,7 +23,7 @@ namespace SIL.Media
 		/// Find the path to ffmpeg, and remember it (some apps (like SayMore) call ffmpeg a lot)
 		/// </summary>
 		/// <returns></returns>
-		static internal string LocateAndRememberFFmpeg()
+		internal static string LocateAndRememberFFmpeg()
 		{
 			if (null != FFmpegLocation) //NO! string.empty means we looked and didn't find: string.IsNullOrEmpty(s_ffmpegLocation))
 				return FFmpegLocation;
@@ -38,7 +38,7 @@ namespace SIL.Media
 		/// locally, this tries to find where they put it.
 		/// </summary>
 		/// <returns>the path, if found, else null</returns>
-		static private string LocateFFmpeg()
+		private static string LocateFFmpeg()
 		{
 			if (Platform.IsLinux)
 			{
@@ -102,7 +102,7 @@ namespace SIL.Media
 		///<summary>
 		/// Returns false if it can't find ffmpeg
 		///</summary>
-		static public bool HaveNecessaryComponents
+		public static bool HaveNecessaryComponents
 		{
 			get
 			{
@@ -113,7 +113,7 @@ namespace SIL.Media
 		///<summary>
 		/// Returns false if it can't find ffmpeg
 		///</summary>
-		static private bool HaveValidFFMpegOnPath
+		private static bool HaveValidFFMpegOnPath
 		{
 			get
 			{

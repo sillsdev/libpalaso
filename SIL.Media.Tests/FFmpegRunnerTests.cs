@@ -20,7 +20,7 @@ namespace SIL.Media.Tests
 		[OneTimeSetUp]
 		public void CheckRequirements()
 		{
-			if (!MediaInfo.HaveNecessaryComponents)
+			if (!FFmpegRunner.HaveNecessaryComponents)
 				Assert.Ignore("These tests require ffmpeg to be installed.");
 		}
 
@@ -28,7 +28,7 @@ namespace SIL.Media.Tests
 		[Category("RequiresFfmpeg")]
 		public void HaveNecessaryComponents_ReturnsTrue()
 		{
-			Assert.IsTrue(MediaInfo.HaveNecessaryComponents);
+			Assert.IsTrue(FFmpegRunner.HaveNecessaryComponents);
 		}
 
 		[Test]
