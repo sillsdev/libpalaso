@@ -37,6 +37,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle] Made UsxChapter sealed.
 - [SIL.Core] `FileLocationUtilities.GetDirectoryDistributedWithApplication` not only checks in
   `DistFiles`, `common`, and `src` subdirectories, but also directly in the application or solution directory.
+- [SIL.Archiving] Changed REAP access protocol label from "Insite users" to "REAP users"
+- [SIL.Archiving] Fixed typo in name of ArchiveAccessProtocol.GetDocumentationUri methods
+- [SIL.Archiving] Changed ArchiveAccessProtocol.GetDocumentationUri methods
+- [SIL.Archiving] Changed ArchiveAccessProtocol.SetChoicesFromCsv to thow ArgumentNullException instead of NullReferenceException. Also made it discard duplicate choices if the list contains duplicates.
 
 ### Removed
 
