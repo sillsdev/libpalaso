@@ -1279,13 +1279,20 @@ namespace SIL.WritingSystems
 			GetLocale(languageTag).GetDisplayName(GetLocale(uiLanguageTag));
 
 		/// <summary>
-		/// Get the language name in the indicated language if possible. Otherwise, get the name in
-		/// the language itself if possible. It that doesn't work, return the English name. If we
-		/// don't know even that, return the code as the name.
+		/// Get the language name in the language of uiLanguageTag if possible
+		/// (and if uiLanguageTag is provided).
+		/// Otherwise, get the name in the language itself if possible (autonym).
+		/// It that doesn't work, return the English name.
+		/// If we don't know even that, return the tag as the name.
+		/// Note, in most cases, we do not get the language name in uiLanguage unless
+		/// using ICU or uiLanguage happens to match the system CurrentCulture.
 		/// </summary>
 		[PublicAPI]
 		public static string GetLocalizedLanguageName(string languageTag, string uiLanguageTag)
 		{
+			if (IsNullOrEmpty(uiLanguageTag))
+				uiLanguageTag = languageTag; // get autonym
+
 			var generalCode = GetGeneralCode(languageTag);
 			var uiLanguageCode = GetLanguagePart(uiLanguageTag);
 
@@ -1317,11 +1324,12 @@ namespace SIL.WritingSystems
 			if (MapIsoCodesToLanguageName.TryGetValue(key, out var langName))
 				return langName;
 
-			Debug.Assert(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == uiLanguageCode ||
-				CultureInfo.CurrentUICulture.ThreeLetterISOLanguageName == uiLanguageCode,
-				$"The current UI language should match {nameof(uiLanguageTag)}. This method " +
-				"depends on CultureInfo.DisplayName returning the language name in the current " +
-				"UI language.");
+			// This would be nice but does not actually reflect the way Bloom uses this code.
+			//Debug.Assert(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == uiLanguageCode ||
+			//	CultureInfo.CurrentUICulture.ThreeLetterISOLanguageName == uiLanguageCode,
+			//	$"The current UI language should match {nameof(uiLanguageTag)}. This method " +
+			//	"depends on CultureInfo.DisplayName returning the language name in the current " +
+			//	"UI language.");
 
 			try
 			{
