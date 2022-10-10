@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace SIL.Keyboarding
 {
@@ -12,7 +12,29 @@ namespace SIL.Keyboarding
 	/// Review: possibly that method and this class should be made abstract?</remarks>
 	public class DefaultKeyboardDefinition : IKeyboardDefinition
 	{
-		private readonly List<string> _urls = new List<string>();
+		private class SortedSetList<T> : SortedSet<T>, IList<T>
+		{
+			public int IndexOf(T item)
+			{
+				throw new System.NotImplementedException();
+			}
+
+			public void Insert(int index, T item)
+			{
+				Add(item);
+			}
+
+			public void RemoveAt(int index)
+			{
+				throw new System.NotImplementedException();
+			}
+
+			public T this[int index]
+			{
+				get => throw new System.NotImplementedException();
+				set => throw new System.NotImplementedException();
+			}
+		}
 
 		public DefaultKeyboardDefinition(string id, string name)
 			: this(id, name, string.Empty, string.Empty, false)
@@ -89,7 +111,7 @@ namespace SIL.Keyboarding
 		/// <summary>
 		/// Gets the keyboard source URLs.
 		/// </summary>
-		public IList<string> Urls => _urls;
+		public IList<string> Urls { get; } = new SortedSetList<string>();
 
 		/// <summary>
 		/// Returns a <see cref="T:System.String"/> that represents the current
