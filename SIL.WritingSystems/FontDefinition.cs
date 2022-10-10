@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Specialized;
 using System.Linq;
 using SIL.ObjectModel;
@@ -33,11 +33,10 @@ namespace SIL.WritingSystems
 		private FontRoles _roles;
 		private FontEngines _engines;
 		private string _subset;
-		private readonly ObservableList<string> _urls;
 
 		private void SetupCollectionChangeListeners()
 		{
-			_urls.CollectionChanged += UrlsCollectionChanged;
+			Urls.CollectionChanged += UrlsCollectionChanged;
 		}
 
 		private void UrlsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -51,7 +50,7 @@ namespace SIL.WritingSystems
 			_relativeSize = 1.0f;
 			_engines = FontEngines.Graphite | FontEngines.OpenType;
 			_roles = FontRoles.Default;
-			_urls = new ObservableList<string>();
+			Urls = new ObservableSortedSet<string>();
 			SetupCollectionChangeListeners();
 		}
 
@@ -66,7 +65,7 @@ namespace SIL.WritingSystems
 			_roles = fd._roles;
 			_engines = fd._engines;
 			_subset = fd._subset;
-			_urls = new ObservableList<string>(fd._urls);
+			Urls = new ObservableSortedSet<string>(fd.Urls);
 			SetupCollectionChangeListeners();
 		}
 
@@ -128,15 +127,13 @@ namespace SIL.WritingSystems
 			set { Set(() => Subset, ref _subset, value); }
 		}
 
-		public IObservableList<string> Urls
-		{
-			get { return _urls; }
-		}
+		public IObservableSet<string> Urls { get; }
 
 		public override bool ValueEquals(FontDefinition other)
 		{
 			if (other == null)
 				return false;
+			// ReSharper disable once CompareOfFloatsByEqualityOperator
 			return _name == other._name && _relativeSize == other._relativeSize && Features == other.Features && Language == other.Language
 				&& OpenTypeLanguage == other.OpenTypeLanguage && MinVersion == other.MinVersion && _roles == other._roles
 				&& _engines == other._engines && Subset == other.Subset && Urls.SequenceEqual(other.Urls);

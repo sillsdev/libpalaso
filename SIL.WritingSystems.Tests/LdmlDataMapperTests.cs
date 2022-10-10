@@ -1181,18 +1181,15 @@ namespace SIL.WritingSystems.Tests
 				wsToLdml.KnownKeyboards.Add(kbd2);
 				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
-				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath(
-						"/ldml/special/sil:external-resources/sil:kbd[@id='Compiled Keyman9' and @type='kmx']/sil:url[text()='http://wirl.scripts.sil.org/keyman']",
-						environment.NamespaceManager);
-				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath(
-						"/ldml/special/sil:external-resources/sil:kbd[@id='Compiled Keyman9' and @type='kmx']/sil:url[text()='http://scripts.sil.org/cms/scripts/page.php?item_id=keyman9']",
-						environment.NamespaceManager);
-				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasNoMatchForXpath(
-						"/ldml/special/sil:external-resources/sil:kbd[@id='Unknown System Keyboard']",
-						environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath(
+					"/ldml/special/sil:external-resources/sil:kbd[@id='Compiled Keyman9' and @type='kmx']/sil:url[text()='http://wirl.scripts.sil.org/keyman']",
+					1, environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath(
+					"/ldml/special/sil:external-resources/sil:kbd[@id='Compiled Keyman9' and @type='kmx']/sil:url[text()='http://scripts.sil.org/cms/scripts/page.php?item_id=keyman9']",
+					1, environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasNoMatchForXpath(
+					"/ldml/special/sil:external-resources/sil:kbd[@id='Unknown System Keyboard']",
+					environment.NamespaceManager);
 
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
@@ -1237,6 +1234,34 @@ namespace SIL.WritingSystems.Tests
 			AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:kbd[@id='en-GB_SusannasFavoriteKeyboard' and @type='msklc']", 1, environment.NamespaceManager);
 			// Should not have any other custom SIL elements
 			AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasNoMatchForXpath("/ldml/special/sil:external-resources/*[name() != 'sil:kbd']", environment.NamespaceManager);
+		}
+
+		[Test]
+		public void Write_KeyboardUrlsWrittenOnlyOnce()
+		{
+			using var environment = new TestEnvironment();
+			var urls = new List<string>
+			{
+				"http://wirl.scripts.sil.org/keyman",
+				"http://wirl.scripts.sil.org/keyman",
+				"http://wirl.scripts.sil.org/keyman",
+				"http://scripts.sil.org/cms/scripts/page.php?item_id=keyman9"
+			};
+			IKeyboardDefinition kbd1 = Keyboard.Controller.CreateKeyboard("Compiled Keyman9", KeyboardFormat.CompiledKeyman, urls);
+
+			var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
+			wsToLdml.KnownKeyboards.Add(kbd1);
+			var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+			ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+			AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath(
+				"/ldml/special/sil:external-resources/sil:kbd[@id='Compiled Keyman9' and @type='kmx']/sil:url[text()='http://wirl.scripts.sil.org/keyman']",
+				1, environment.NamespaceManager);
+			AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath(
+				"/ldml/special/sil:external-resources/sil:kbd[@id='Compiled Keyman9' and @type='kmx']/sil:url[text()='http://scripts.sil.org/cms/scripts/page.php?item_id=keyman9']",
+				1, environment.NamespaceManager);
+			AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath(
+				"/ldml/special/sil:external-resources/sil:kbd[@id='Compiled Keyman9' and @type='kmx']/sil:url",
+				2, environment.NamespaceManager);
 		}
 
 		[Test]
