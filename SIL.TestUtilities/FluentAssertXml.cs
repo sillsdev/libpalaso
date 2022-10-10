@@ -178,6 +178,22 @@ namespace SIL.TestUtilities
 		/// <summary>
 		/// Will honor default namespace
 		/// </summary>
+		public void HasSpecifiedNumberOfMatchesForXpath(int count, string xpath, XmlNamespaceManager nameSpaceManager = null)
+		{
+			HasSpecifiedNumberOfMatchesForXpath(xpath, count, true, nameSpaceManager);
+		}
+
+		/// <summary>
+		/// Will honor default namespace
+		/// </summary>
+		public void HasSpecifiedNumberOfMatchesForXpath(int count, string xpath, bool verbose, XmlNamespaceManager nameSpaceManager = null)
+		{
+			HasSpecifiedNumberOfMatchesForXpath(xpath, count, verbose, nameSpaceManager);
+		}
+
+		/// <summary>
+		/// Will honor default namespace
+		/// </summary>
 		public void HasSpecifiedNumberOfMatchesForXpath(string xpath, int count, bool verbose, XmlNamespaceManager nameSpaceManager = null)
 		{
 			var nodes = nameSpaceManager == null ? NodeOrDom.SafeSelectNodes(xpath) : NodeOrDom.SafeSelectNodes(xpath, nameSpaceManager);
