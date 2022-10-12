@@ -987,8 +987,25 @@ namespace SIL.WritingSystems.Tests
 					CultureInfo.CurrentUICulture = resetUiCultureTo;
 			}
 		}
+
+		[TestCase("en")]
+		[TestCase("en-US")]
+		[TestCase("en-Latn-US")]
+		[TestCase("fr")]
+		[TestCase("fr-FR")]
+		[TestCase("prs")]
+		[TestCase("tpi")]
+		[TestCase("in")]
+		[TestCase("zh-CN")]
+		[TestCase("qaa-x-kal")]
+		public void GetLocalizedLanguageName_NoUiLanguageProvided_UsesFallbacksCorrectly(string tag)
+		{
+			var resultWithoutGivingUiLanguage = IetfLanguageTag.GetLocalizedLanguageName(tag, "");
+			var resultWhenUiLanguageMatchesTag = IetfLanguageTag.GetLocalizedLanguageName(tag, tag);
+			Assert.That(resultWithoutGivingUiLanguage, Is.EqualTo(resultWhenUiLanguageMatchesTag));
+		}
 		#endregion
-		
+
 		#region GetNativeLanguageNameWithEnglishSubtitle
 
 		[TestCase("en", ExpectedResult = "English")]
