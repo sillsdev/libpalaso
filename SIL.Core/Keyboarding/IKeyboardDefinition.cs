@@ -91,6 +91,6 @@ namespace SIL.Keyboarding
 		/// Gets the keyboard source URL.
 		/// For now these will not be changed
 		/// </summary>
-		IList<string> Urls { get; }
+		ISet<string> Urls { get; }
 	}
 }

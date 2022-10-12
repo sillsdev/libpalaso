@@ -1442,7 +1442,7 @@ namespace SIL.WritingSystems
 			RemoveIfEmpty(ref externalResourcesElem);
 		}
 
-		private static void WriteFontElement(XElement externalResourcesElem, WritingSystemDefinition ws)
+		private void WriteFontElement(XElement externalResourcesElem, WritingSystemDefinition ws)
 		{
 			Debug.Assert(externalResourcesElem != null);
 			Debug.Assert(ws != null);
@@ -1486,13 +1486,14 @@ namespace SIL.WritingSystems
 					}
 					fontElem.SetAttributeValue("engines", fontEngineList.Count == 0 ? null : string.Join(" ", fontEngineList));
 				}
-				WriteUniqueUrls(fontElem, font.Urls);
+				foreach (var url in font.Urls)
+					fontElem.Add(new XElement(Sil + "url", url));
 
 				externalResourcesElem.Add(fontElem);
 			}
 		}
 
-		private static void WriteSpellcheckElement(XElement externalResourcesElem, WritingSystemDefinition ws)
+		private void WriteSpellcheckElement(XElement externalResourcesElem, WritingSystemDefinition ws)
 		{
 			Debug.Assert(externalResourcesElem != null);
 			Debug.Assert(ws != null);
@@ -1505,12 +1506,16 @@ namespace SIL.WritingSystems
 				scElem.SetAttributeValue("type", SpellCheckDictionaryFormatsToSpellCheck[scd.Format]);
 
 				// URL elements
-				WriteUniqueUrls(scElem, scd.Urls);
+				foreach (var url in scd.Urls)
+				{
+					var urlElem  = new XElement(Sil + "url", url);
+					scElem.Add(urlElem);
+				}
 				externalResourcesElem.Add(scElem);
 			}
 		}
 
-		private static void WriteKeyboardElement(XElement externalResourcesElem, WritingSystemDefinition ws)
+		private void WriteKeyboardElement(XElement externalResourcesElem, WritingSystemDefinition ws)
 		{
 			Debug.Assert(externalResourcesElem != null);
 			Debug.Assert(ws != null);
@@ -1533,22 +1538,13 @@ namespace SIL.WritingSystems
 				if (!string.IsNullOrEmpty(keyboard.Id))
 				{
 					kbdElem.SetAttributeValue("type", KeyboardFormatToKeyboard[keyboard.Format]);
-					WriteUniqueUrls(kbdElem, keyboard.Urls);
+					foreach (var url in keyboard.Urls)
+					{
+						var urlElem = new XElement(Sil + "url", url);
+						kbdElem.Add(urlElem);
+					}
 				}
 				externalResourcesElem.Add(kbdElem);
-			}
-		}
-
-		private static void WriteUniqueUrls(XElement parentElem, IEnumerable<string> urls)
-		{
-			var alreadyWritten = new HashSet<string>();
-			foreach (var url in urls)
-			{
-				if (!alreadyWritten.Contains(url))
-				{
-					alreadyWritten.Add(url);
-					parentElem.Add(new XElement(Sil + "url", url));
-				}
 			}
 		}
 
