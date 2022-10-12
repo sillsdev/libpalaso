@@ -1626,12 +1626,15 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void DuplicatedFontUrlInLdml_LoadsOnlyOne()
 		{
+			using var env = new TestEnvironment();
 			using var tempFile = new TempFile();
 			using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
 			{
 				var fontElem = LdmlContentForTests.DuplicateFirstUrlElem(LdmlContentForTests.FontElem);
 				writer.Write(LdmlContentForTests.Version3("qaa", "", "", "", fontElem));
 			}
+			AssertThatXmlIn.File(tempFile.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:font", 1, env.NamespaceManager);
+			AssertThatXmlIn.File(tempFile.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:font/sil:url", 3, env.NamespaceManager);
 			var ws = new WritingSystemDefinition();
 			var dataMapper = new LdmlDataMapper(new TestWritingSystemFactory());
 
@@ -1643,12 +1646,17 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void DuplicatedSpellCheckUrlInLdml_LoadsOnlyOne()
 		{
+			using var env = new TestEnvironment();
 			using var tempFile = new TempFile();
 			using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
 			{
 				var spellCheckerElem = LdmlContentForTests.DuplicateFirstUrlElem(LdmlContentForTests.SpellCheckerElem);
 				writer.Write(LdmlContentForTests.Version3("qaa", "", "", "", spellCheckerElem));
 			}
+			AssertThatXmlIn.File(tempFile.Path).HasSpecifiedNumberOfMatchesForXpath(
+				"/ldml/special/sil:external-resources/sil:spellcheck", 1, env.NamespaceManager);
+			AssertThatXmlIn.File(tempFile.Path).HasSpecifiedNumberOfMatchesForXpath(
+				"/ldml/special/sil:external-resources/sil:spellcheck/sil:url", 3, env.NamespaceManager);
 			var ws = new WritingSystemDefinition();
 			var dataMapper = new LdmlDataMapper(new TestWritingSystemFactory());
 
@@ -1660,12 +1668,15 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void DuplicatedKeyboardUrlInLdml_LoadsOnlyOne()
 		{
+			using var env = new TestEnvironment();
 			using var tempFile = new TempFile();
 			using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
 			{
 				var keyboardElem = LdmlContentForTests.DuplicateFirstUrlElem(LdmlContentForTests.KeyboardElem);
 				writer.Write(LdmlContentForTests.Version3("qaa", "", "", "", keyboardElem));
 			}
+			AssertThatXmlIn.File(tempFile.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:kbd", 1, env.NamespaceManager);
+			AssertThatXmlIn.File(tempFile.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:kbd/sil:url", 3, env.NamespaceManager);
 			var ws = new WritingSystemDefinition();
 			var dataMapper = new LdmlDataMapper(new TestWritingSystemFactory());
 
