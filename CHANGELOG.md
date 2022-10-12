@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- [SIL.Core] Added `ObjectModel.ObservableISet` as a parent class to the existing `ObservableHashSet`
+- [SIL.Core] Added `ObjectModel.ObservableSortedSet` (child class of `ObservableISet`)
 - [SIL.DblBundle] Added const strings to UsxNode for the various USX element names.
 - [SIL.DblBundle] Added protected method GetAttribute to UsxNode.
 - [SIL.DblBundle] Added sealed subclasses of UsxNode: UsxPara and UsxChar.
@@ -28,19 +30,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [SIL.DblBundle] Attempting to construct a UsxNode based on an invalid XmlNode now throws an exception in the constructor in most cases rather than later when properties are accessed.
 - [SIL.DblBundle] Accessing UsxChapter.ChapterNumber on a chapter end node returns the chapter number (from the eid attribute) instead of throwing an exception.
+- [SIL.WritingSystems] Prevent (and clean up) duplicate URLs in LDML files for Fonts, Keyboards, and Spell Check Dictionaries.
 
 ### Changed
 
-- [SIL.DblBundle.Tests] Made GetChaptersAndParasForMarkOneContaining2Verses private.
-- [SIL.DblBundle] Made UsxNode abstract.
-- [SIL.DblBundle] Made UsxNode.StyleTag virtual. Calling UsxChapter.StyleTag on a chapter end node returns null instead of throwing an exception.
-- [SIL.DblBundle] Made UsxChapter sealed.
-- [SIL.Core] `FileLocationUtilities.GetDirectoryDistributedWithApplication` not only checks in
-  `DistFiles`, `common`, and `src` subdirectories, but also directly in the application or solution directory.
 - [SIL.Archiving] Changed REAP access protocol label from "Insite users" to "REAP users"
 - [SIL.Archiving] Fixed typo in name of ArchiveAccessProtocol.GetDocumentationUri methods
 - [SIL.Archiving] Changed ArchiveAccessProtocol.GetDocumentationUri methods
 - [SIL.Archiving] Changed ArchiveAccessProtocol.SetChoicesFromCsv to thow ArgumentNullException instead of NullReferenceException. Also made it discard duplicate choices if the list contains duplicates.
+- [SIL.Core] `FileLocationUtilities.GetDirectoryDistributedWithApplication` checks not only in
+  `DistFiles`, `common`, and `src` subdirectories, but also directly in the application or solution directory.
+- [SIL.Core] Store URLs in Sets instead of Lists in `IKeyboardDefinition` (to prevent duplicates)
+- [SIL.DblBundle.Tests] Made GetChaptersAndParasForMarkOneContaining2Verses private.
+- [SIL.DblBundle] Made UsxNode abstract.
+- [SIL.DblBundle] Made UsxNode.StyleTag virtual. Calling UsxChapter.StyleTag on a chapter end node returns null instead of throwing an exception.
+- [SIL.DblBundle] Made UsxChapter sealed.
+- [SIL.Core] Store URLs in Sets instead of Lists in `FontDefinition` and `SpellCheckDictionaryDefinition` (to prevent duplicates)
 
 ### Removed
 
