@@ -670,6 +670,14 @@ namespace SIL.WritingSystems.Tests
 		</sil:external-resources>
 	</special>".Replace("'", "\"");
 
+		public static string DuplicateFirstUrlElem(string outerElem)
+		{
+			var ichMin = outerElem.IndexOf("<sil:url", StringComparison.Ordinal);
+			var ichLim = outerElem.IndexOf("</sil:url>", StringComparison.Ordinal) + 10;
+			var urlElem = outerElem.Substring(ichMin, ichLim - ichMin);
+			return outerElem.Insert(ichMin, urlElem);
+		}
+
 		/// <summary>
 		/// Minimal LDML for version 3
 		/// </summary>
