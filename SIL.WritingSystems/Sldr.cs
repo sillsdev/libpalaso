@@ -451,9 +451,10 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		public static void InitializeLanguageTags()
+		public static void InitializeLanguageTags(bool downloadLangTags = true)
 		{
 			LoadLanguageTagsIfNecessary();
+			if (downloadLangTags) LoadLanguageTags();
 		}
 
 		/// <summary>
@@ -470,35 +471,75 @@ namespace SIL.WritingSystems
 				CreateSldrCacheDirectory();
 
 				cachedAllTagsPath = Path.Combine(SldrCachePath, "langtags.json");
+				string etagPath;
+				etagPath = Path.Combine(SldrCachePath, "langtags.json.etag");
 				var sinceTime = _embeddedAllTagsTime.ToUniversalTime();
 				if (File.Exists(cachedAllTagsPath))
 				{
 					var fileTime = File.GetLastWriteTimeUtc(cachedAllTagsPath);
 					if (sinceTime > fileTime)
+					{
 						// delete the old langtags.json file if a newer embedded one is available.
 						// this can happen if the application is upgraded to use a newer version of SIL.WritingSystems
 						// that has an updated embedded langtags.json file.
 						File.Delete(cachedAllTagsPath);
+						File.Delete(etagPath);
+					}
 					else
 						sinceTime = fileTime;
 				}
 				sinceTime += TimeSpan.FromSeconds(1);
-				try
+
+			}
+			_languageTags = new ReadOnlyKeyedCollection<string, SldrLanguageTagInfo>(ParseAllTagsJson(cachedAllTagsPath));
+		}
+
+		public static void LoadLanguageTags()
+		{
+			CreateSldrCacheDirectory();
+			string cachedAllTagsPath;
+			cachedAllTagsPath = Path.Combine(SldrCachePath, "langtags.json");
+			string etagPath;
+			etagPath = Path.Combine(SldrCachePath, "langtags.json.etag");
+			string etag;
+			string currentEtag;
+			try
+			{
+				if (_offlineMode)
+					throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
+				// get SLDR langtags.json from the SLDR api compressed
+				// it will throw WebException or have status HttpStatusCode.NotModified if file is unchanged or not get it
+				var langtagsUrl =
+					$"{SldrRepository}index.html?query=langtags&ext=json{StagingParameter}";
+				var webRequest = (HttpWebRequest)WebRequest.Create(Uri.EscapeUriString(langtagsUrl));
+				webRequest.UserAgent = UserAgent;
+				webRequest.Timeout = 10000;
+				webRequest.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+				using var webResponse = (HttpWebResponse)webRequest.GetResponse();
+				if (File.Exists(etagPath))
 				{
-					if (_offlineMode)
-						throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
-
-
-					// get SLDR langtags.json from the SLDR api compressed
-					// it will throw WebException or have status HttpStatusCode.NotModified if file is unchanged or not get it
-					var langtagsUrl =
-						$"{SldrRepository}index.html?query=langtags&ext=json{StagingParameter}";
-					var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(langtagsUrl));
-					webRequest.UserAgent = UserAgent;
-					webRequest.IfModifiedSince = sinceTime;
-					webRequest.Timeout = 10000;
-					webRequest.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-					using var webResponse = (HttpWebResponse) webRequest.GetResponse();
+					etag = File.ReadAllText(etagPath);
+					currentEtag = webResponse.Headers.Get("Etag");
+					if (etag == "")
+					{
+						File.WriteAllText(etagPath, currentEtag);
+					}
+					else if (!etag.Equals(currentEtag))
+					{
+						File.WriteAllText(etagPath, etag);
+						webRequest.Headers.Set(etag, "If-None-Match");
+						if (webResponse.StatusCode != HttpStatusCode.NotModified)
+						{
+							using Stream output = File.OpenWrite(cachedAllTagsPath);
+							using var input = webResponse.GetResponseStream();
+							input.CopyTo(output);
+						}
+					}
+				}
+				else
+				{
+					currentEtag = webResponse.Headers.Get("Etag");
+					File.WriteAllText(etagPath, currentEtag);
 					if (webResponse.StatusCode != HttpStatusCode.NotModified)
 					{
 						using Stream output = File.OpenWrite(cachedAllTagsPath);
@@ -506,18 +547,18 @@ namespace SIL.WritingSystems
 						input.CopyTo(output);
 					}
 				}
-				catch (WebException)
-				{
-				}
-				catch (UnauthorizedAccessException)
-				{
-				}
-				catch (IOException)
-				{
-				}
 			}
-			_languageTags = new ReadOnlyKeyedCollection<string, SldrLanguageTagInfo>(ParseAllTagsJson(cachedAllTagsPath));
+			catch (WebException)
+			{
+			}
+			catch (UnauthorizedAccessException)
+			{
+			}
+			catch (IOException)
+			{
+			}
 		}
+
 
 		private static IKeyedCollection<string, SldrLanguageTagInfo> ParseAllTagsJson(string cachedAllTagsPath)
 		{

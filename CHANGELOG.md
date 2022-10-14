@@ -174,6 +174,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] ConsoleErrorReporter logs exception if available
 - [SIL.Core, SIL.Windows.Forms] If WinFormsErrorReporter is set as the ErrorReporter, and ErrorReporter.NotifyUserOfProblem(IRepeatNoticePolicy, Exception, String, params object[]) is passed null for the exception, the "Details" button will no longer appear, making this consistent with the no-Exception overload of this method
 - [SIL.WritingSystems] Changed behavior of IetfLanguageTag to better handle zh-TW.
+- [SIL.WritingSystems] Download of langtag.json handled with etag instead of IF-MODIFIED-SINCE Header(#987)
 
 ### Fixed
 
