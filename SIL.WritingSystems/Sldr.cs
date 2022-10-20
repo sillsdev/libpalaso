@@ -453,8 +453,8 @@ namespace SIL.WritingSystems
 
 		public static void InitializeLanguageTags(bool downloadLangTags = true)
 		{
+			if (downloadLangTags) DownloadLanguageTags();
 			LoadLanguageTagsIfNecessary();
-			if (downloadLangTags) LoadLanguageTags();
 		}
 
 		/// <summary>
@@ -488,13 +488,12 @@ namespace SIL.WritingSystems
 					else
 						sinceTime = fileTime;
 				}
-				sinceTime += TimeSpan.FromSeconds(1);
 
 			}
 			_languageTags = new ReadOnlyKeyedCollection<string, SldrLanguageTagInfo>(ParseAllTagsJson(cachedAllTagsPath));
 		}
 
-		public static void LoadLanguageTags()
+		public static void DownloadLanguageTags()
 		{
 			CreateSldrCacheDirectory();
 			string cachedAllTagsPath;
@@ -519,17 +518,15 @@ namespace SIL.WritingSystems
 				if (File.Exists(etagPath))
 				{
 					etag = File.ReadAllText(etagPath);
+					webRequest.Headers.Set(etag, "If-None-Match");
 					currentEtag = webResponse.Headers.Get("Etag");
-					if (etag == "")
+					if (!etag.Equals(currentEtag))
 					{
-						File.WriteAllText(etagPath, currentEtag);
-					}
-					else if (!etag.Equals(currentEtag))
-					{
-						File.WriteAllText(etagPath, etag);
-						webRequest.Headers.Set(etag, "If-None-Match");
+						//File.WriteAllText(etagPath, currentEtag);
+						//webRequest.Headers.Set(etag, "If-None-Match");
 						if (webResponse.StatusCode != HttpStatusCode.NotModified)
 						{
+							File.WriteAllText(etagPath, currentEtag);
 							using Stream output = File.OpenWrite(cachedAllTagsPath);
 							using var input = webResponse.GetResponseStream();
 							input.CopyTo(output);
