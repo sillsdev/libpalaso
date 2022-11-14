@@ -5,6 +5,7 @@
     <AssemblyTitle>SIL.Windows.Forms.Tests</AssemblyTitle>
     <Description>Unit tests for SIL.Windows.Forms</Description>
     <UseWindowsForms>true</UseWindowsForms>
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
 
   <ItemGroup>
