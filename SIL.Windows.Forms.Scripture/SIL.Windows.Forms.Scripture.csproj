@@ -5,6 +5,7 @@
     <AssemblyTitle>SIL.Windows.Forms.Scripture</AssemblyTitle>
     <Description>SIL.Windows.Forms.Scripture contains Windows Forms UI elements for displaying Scripture.</Description>
     <UseWindowsForms>true</UseWindowsForms>
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
 
   <ItemGroup>

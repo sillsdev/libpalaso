@@ -5,6 +5,7 @@
     <AssemblyTitle>SIL.Windows.Forms.WritingSystems</AssemblyTitle>
     <Description>SIL.Windows.Forms.WritingSystems contains Windows Forms UI elements for displaying and editing writing systems as defined by the SIL.WritingSystems assembly.</Description>
     <UseWindowsForms>true</UseWindowsForms>
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
 
   <ItemGroup>
