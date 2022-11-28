@@ -113,9 +113,7 @@ namespace SIL.Windows.Forms.Tests.Hotspot
 		}
 
 		[Test]
-		public void
-			HotSpotMouseEnter_MouseOverHotSpotThenOffControlThenBackOverSameHotSpot_FiresMouseEnter
-			()
+		public void HotSpotMouseEnter_MouseOverHotSpotThenOffControlThenBackOverSameHotSpot_FiresMouseEnter()
 		{
 			bool mouseEnterFired = false;
 			_spot1.MouseEnter += delegate { mouseEnterFired = true; };

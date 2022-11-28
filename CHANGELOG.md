@@ -46,6 +46,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle] Made UsxNode.StyleTag virtual. Calling UsxChapter.StyleTag on a chapter end node returns null instead of throwing an exception.
 - [SIL.DblBundle] Made UsxChapter sealed.
 - [SIL.Core] Store URLs in Sets instead of Lists in `FontDefinition` and `SpellCheckDictionaryDefinition` (to prevent duplicates)
+- [SIL.Windows.Forms] Upgraded to L10nSharp 6.0.0
+- [SIL.Windows.Forms.DblBundle] Upgraded to L10nSharp 6.0.0
+- [SIL.Windows.Forms.WritingSystems] Upgraded to L10nSharp 6.0.0
 
 ### Removed
 
