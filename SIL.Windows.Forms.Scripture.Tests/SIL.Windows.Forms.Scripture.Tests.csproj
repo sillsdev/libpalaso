@@ -1,10 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <RootNamespace>SIL.Windows.Forms.Scripture.Tests</RootNamespace>
     <AssemblyName>SIL.Windows.Forms.Scripture.Tests</AssemblyName>
     <Description>Unit tests for SIL.Windows.Forms.Scripture</Description>
     <IsPackable>false</IsPackable>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
 
   <ItemGroup>
