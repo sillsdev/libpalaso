@@ -335,7 +335,7 @@ namespace SIL.PlatformUtilities
 		/// <returns>The returned output</returns>
 		private static string RunTerminalCommand(string cmd, string args = null)
 		{
-			var proc = new Process {
+			using (var proc = new Process {
 				EnableRaisingEvents = false,
 				StartInfo = {
 					FileName = cmd,
@@ -343,11 +343,13 @@ namespace SIL.PlatformUtilities
 					UseShellExecute = false,
 					RedirectStandardOutput = true
 				}
-			};
-			proc.Start();
-			proc.WaitForExit();
-			var output = proc.StandardOutput.ReadToEnd();
-			return output.Trim();
+			})
+			{
+				proc.Start();
+				proc.WaitForExit();
+				var output = proc.StandardOutput.ReadToEnd();
+				return output.Trim();
+			}
 		}
 
 		/// <summary>

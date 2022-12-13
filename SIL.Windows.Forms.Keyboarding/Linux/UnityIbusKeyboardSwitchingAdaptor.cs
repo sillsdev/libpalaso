@@ -20,13 +20,14 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			const string schema = "org.gnome.desktop.input-sources";
 			bool okay = true;
+			IntPtr settings = IntPtr.Zero;
 			try
 			{
 				okay &= GlibHelper.SchemaIsInstalled(schema);
 				if (!okay)
 					return;
 
-				var settings = Unmanaged.g_settings_new(schema);
+				settings = Unmanaged.g_settings_new(schema);
 				okay &= settings != IntPtr.Zero;
 				if (!okay)
 					return;
@@ -35,6 +36,9 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			}
 			finally
 			{
+				if (settings != IntPtr.Zero)
+					Unmanaged.g_object_unref(settings);
+
 				if (!okay)
 				{
 					Console.WriteLine("UnityIbusKeyboardAdaptor.SelectKeyboard({0}) failed", index);

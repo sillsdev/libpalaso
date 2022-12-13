@@ -52,6 +52,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		protected virtual string[] GetMyKeyboards(IntPtr settingsGeneral)
 		{
+			IntPtr sources = IntPtr.Zero;
 			string[] list = null;
 			if (Platform.IsFlatpak)
 			{
@@ -59,13 +60,21 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			}
 			else
 			{
-				// This is the proper path for the combined keyboard handling on Cinnamon with IBus.
-				var sources = Unmanaged.g_settings_get_value(settingsGeneral, "preload-engines");
-				if (sources == IntPtr.Zero)
-					return null;
-				list = KeyboardRetrievingHelper.GetStringArrayFromGVariantArray(sources);
-				Unmanaged.g_variant_unref(sources);
+				try
+				{
+					// This is the proper path for the combined keyboard handling on Cinnamon with IBus.
+					sources = Unmanaged.g_settings_get_value(settingsGeneral, "preload-engines");
+					if (sources == IntPtr.Zero)
+						return null;
+					list = KeyboardRetrievingHelper.GetStringArrayFromGVariantArray(sources);
+				}
+				finally
+				{
+					if (sources != IntPtr.Zero)
+						Unmanaged.g_variant_unref(sources);
+				}
 			}
+
 			// Call these only once per run of the program.
 			if (CombinedIbusKeyboardSwitchingAdaptor.DefaultLayout == null)
 				LoadDefaultXkbSettings();
