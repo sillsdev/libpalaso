@@ -142,9 +142,9 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		/// <summary>
 		/// Parses a keyboard list from gdbus into a list of keyboards.
-		/// For example, parses "(<<[('xkb', 'us'), ('ibus', 'table:thai')]>>,)\n" to
-		/// the list { "xkb;;us", "ibus;;table:thai" }.
 		/// </summary>
+		// For example, parses "(<<[('xkb', 'us'), ('ibus', 'table:thai')]>>,)\n" to
+		// the list { "xkb;;us", "ibus;;table:thai" }.
 		internal static List<string> ParseGDBusKeyboardList(string keyboardList)
 		{
 			string[] keyboards = keyboardList.Split(new string[] {"), "},
