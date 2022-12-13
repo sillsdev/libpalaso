@@ -93,7 +93,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// Returns the list of keyboards or <c>null</c> if we can't get the combined keyboards
 		/// list.
 		/// </summary>
-		private static string[] GetMyKeyboards()
+		internal static string[] GetMyKeyboards()
 		{
 			if (Platform.IsFlatpak)
 			{

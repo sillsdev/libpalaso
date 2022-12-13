@@ -15,6 +15,12 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 		}
 
+		protected override string GnomeInputSourceType => "xkb";
+		protected override string GnomeInputSourceLayout =>
+			string.IsNullOrEmpty(IBusKeyboardEngine.LayoutVariant)
+				? IBusKeyboardEngine.Layout
+				: $"{IBusKeyboardEngine.Layout}+{IBusKeyboardEngine.LayoutVariant}";
+
 		protected override string KeyboardIdentifier => _ibusKeyboard.Name;
 	}
 }
