@@ -104,7 +104,7 @@ namespace SIL.IO
 		{
 			var extension = ((expectedExtension == null) || (expectedExtension.Trim() == String.Empty))
 								? null
-								: expectedExtension.StartsWith(".") ? expectedExtension.Substring(1) : expectedExtension;
+								: expectedExtension.StartsWith(".") ? expectedExtension : "." + expectedExtension;
 
 			if (string.IsNullOrEmpty(pathToFile) || !File.Exists(pathToFile))
 				return false;
@@ -113,7 +113,7 @@ namespace SIL.IO
 			if (actualExtension == String.Empty)
 				actualExtension = null;
 			return (actualExtension == null && extension == null) || (actualExtension != null && extension != null &&
-				   actualExtension.ToLowerInvariant() == "." + extension.ToLowerInvariant());
+				   string.Equals(actualExtension, extension, StringComparison.InvariantCultureIgnoreCase));
 		}
 
 		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
