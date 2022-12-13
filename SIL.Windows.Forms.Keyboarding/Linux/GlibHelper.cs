@@ -9,6 +9,9 @@ using System.Text;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
+	/// <summary>
+	/// Helps interacting with GIO (https://docs.gtk.org/gio/index.html).
+	/// </summary>
 	public static class GlibHelper
 	{
 		/// <summary>
