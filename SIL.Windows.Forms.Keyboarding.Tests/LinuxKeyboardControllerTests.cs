@@ -147,6 +147,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 
 		[Test]
 		[Category("No IM Running")]
+		[Ignore("It can leave keyboard settings changed from running tests")]
 		public void Deactivate_NoIMRunning_DoesNotThrow()
 		{
 			Keyboard.Controller.ActivateDefaultKeyboard();
