@@ -200,6 +200,7 @@ namespace TestAppKeyboard
 			this.cbOnEnter.TabIndex = 1;
 			this.cbOnEnter.Text = "Set keyboard on enter";
 			this.cbOnEnter.UseVisualStyleBackColor = true;
+			this.cbOnEnter.Checked = true;
 			// 
 			// label7
 			// 
