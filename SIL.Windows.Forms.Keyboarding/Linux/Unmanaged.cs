@@ -19,6 +19,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		[DllImport("libgobject-2.0.so")]
 		internal extern static void g_object_unref(IntPtr obj);
 
+		/// <summary>See https://docs.gtk.org/gio/struct.SettingsSchemaSource.html</summary>
 		[DllImport("libgio-2.0.so")]
 		internal extern static IntPtr g_settings_schema_source_get_default();
 
@@ -26,6 +27,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		internal extern static IntPtr g_settings_schema_source_lookup(IntPtr source,
 				string schema_id, bool recursive);
 
+		/// <summary>See https://docs.gtk.org/gio/class.Settings.html</summary>
 		[DllImport("libgio-2.0.so")]
 		internal extern static IntPtr g_settings_new(string schema_id);
 

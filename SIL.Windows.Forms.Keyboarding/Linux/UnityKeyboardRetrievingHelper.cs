@@ -125,6 +125,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// <summary>
 		/// Return list of GNOME input sources, as queried of gsettings by way of a dbus Flatpak portal.
 		/// https://flatpak.github.io/xdg-desktop-portal/#gdbus-org.freedesktop.portal.Settings
+		/// Note: This wouldn't need to stay implemented via a portal, but could flatpak-spawn gsettings since other things are.
 		/// </summary>
 		internal static string[] GnomeInputSourcesViaFlatpakPortal()
 		{
