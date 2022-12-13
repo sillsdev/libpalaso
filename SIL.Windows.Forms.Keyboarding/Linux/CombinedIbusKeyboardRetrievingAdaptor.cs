@@ -168,11 +168,28 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			{
 				try
 				{
-					if (!GlibHelper.SchemaIsInstalled(GSettingsSchema))
-						return false;
-					_settingsGeneral = Unmanaged.g_settings_new(GSettingsSchema);
-					if (_settingsGeneral == IntPtr.Zero)
-						return false;
+					if (Platform.IsFlatpak)
+					{
+						// It's less important what schema is available in the flatpak
+						// environment, and more important what is available on the host.
+						// Unfortunately `gsettings` does not make use of success and
+						// failure return codes, so parse the output.
+						if (KeyboardRetrievingHelper
+							.RunOnHostEvenIfFlatpak("gsettings", $"list-keys {GSettingsSchemaId}").StandardOutput
+							.StartsWith("No such schema"))
+						{
+							return false;
+						}
+					}
+					else
+					{
+						if (!GlibHelper.SchemaIsInstalled(GSettingsSchemaId))
+							return false;
+						_settingsGeneral = Unmanaged.g_settings_new(GSettingsSchemaId);
+						if (_settingsGeneral == IntPtr.Zero)
+							return false;
+					}
+
 					if (!base.IsApplicable)
 						return false;
 				}
