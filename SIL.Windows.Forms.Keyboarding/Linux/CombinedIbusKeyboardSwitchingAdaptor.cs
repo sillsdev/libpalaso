@@ -31,9 +31,18 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		private static readonly string[] knownXModMapFiles = {".xmodmap", ".xmodmaprc", ".Xmodmap", ".Xmodmaprc"};
 
 		private KeyboardDescription _defaultKeyboard;
+		private int _ibusToXkbDelayMs = 0;
 
 		public CombinedIbusKeyboardSwitchingAdaptor(IIbusCommunicator ibusCommunicator) : base(ibusCommunicator)
 		{
+			// Wasta panel keyboard icon switching can be delayed to ensure the correct
+			// icon is shown when moving from an ibus field to an xkb field. The necessary
+			// delay is likely CPU dependent, and can be configured with this environment
+			// variable. For example,
+			//     SIL_KEYBOARDING_IBUS_XKB_DELAY=368 flatpak run org.sil.FieldWorks
+			// The problem is only cosmetic, so the delay can be let at 0 and a wrong
+			// keyboard icon can be ignored.
+			int.TryParse(System.Environment.GetEnvironmentVariable("SIL_KEYBOARDING_IBUS_XKB_DELAY"), out _ibusToXkbDelayMs);
 		}
 
 		/// <summary>
@@ -183,11 +192,51 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 			SetXkbLayout(parentLayout, variant, option);
 
-			if (!ibusKeyboard.Name.StartsWith("xkb:", StringComparison.InvariantCulture))
+			// In Wasta 20.04 and 22.04, when you move from an ibus input area to an xkb
+			// input area, in some situations this can result in the old ibus icon still
+			// showing in the Cinnamon panel, after the new xkb icon briefly appears, even
+			// though the keyboard is now typing with the new xkb keyboard. It may relate
+			// to the ibus icon flipping between different icons for the same ibus
+			// keyboard. To work around this, we can pause for a moment before setting the
+			// xkb keyboard using ibus again. This results in the xkb keyboard icon showing
+			// and staying in the panel. How long to pause may be related to CPU speed,
+			// which means no value is necessarily right. The icon in the panel usually
+			// corresponds to the first item in the list from
+			// `gsettings get org.freedesktop.ibus.general engines-order`, but not always
+			// so after the icon is wrong.
+			// The problem is presumably related to other areas of our keyboard handling,
+			// and so more investigation into what is happening may relieve the situation
+			// without the need for a sleep.
+			// The problem is merely cosmetic and may cause confusion, but does not have a
+			// behavioural problem and can be ignored without needing to delay.
+
+			bool switchingFromXkb = false;
+
+			if (_ibusToXkbDelayMs > 0)
 			{
-				// Set the IBus keyboard
-				var context = GlobalCachedInputContext.InputContext;
-				context.SetEngine(ibusKeyboard.IBusKeyboardEngine.LongName);
+				string output = KeyboardRetrievingHelper
+					.RunOnHostEvenIfFlatpak("gsettings", $"get org.freedesktop.ibus.general engines-order")
+					.StandardOutput;
+				string[] panelKeyboardList = KeyboardRetrievingHelper.ToStringArray(output);
+				switchingFromXkb = panelKeyboardList.Count() > 0
+					&& panelKeyboardList.First().StartsWith("xkb:", StringComparison.InvariantCulture);
+			}
+
+			// Instruct IBus to set the xkb or IBus keyboard
+			var context = GlobalCachedInputContext.InputContext;
+			string desiredKeyboard = ibusKeyboard.IBusKeyboardEngine.LongName;
+			context.SetEngine(desiredKeyboard);
+
+			if (_ibusToXkbDelayMs > 0)
+			{
+				bool switchingToXkb = desiredKeyboard.StartsWith("xkb:", StringComparison.InvariantCulture);
+				if (!switchingFromXkb && switchingToXkb)
+				{
+					// Help the ibus icon also show the correct keyboard icon in the
+					// Cinnamon panel.
+					System.Threading.Thread.Sleep(_ibusToXkbDelayMs);
+					context.SetEngine(desiredKeyboard);
+				}
 			}
 		}
 
