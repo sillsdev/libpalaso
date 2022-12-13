@@ -43,5 +43,14 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 
 			return sut.CallHasKeyboards();
 		}
+
+		[TestCase("", ExpectedResult = new string[] {})]
+		[TestCase("[]", ExpectedResult = new string[] {})]
+		[TestCase("['aaa']", ExpectedResult = new string[] {"aaa"})]
+		[TestCase("['aaa', 'bbb']", ExpectedResult = new string[] {"aaa", "bbb"})]
+		public string[] ToStringArray(string input)
+		{
+			return KeyboardRetrievingHelper.ToStringArray(input);
+		}
 	}
 }

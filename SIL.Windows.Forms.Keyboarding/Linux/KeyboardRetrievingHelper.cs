@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using SIL.CommandLineProcessing;
@@ -16,27 +17,44 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	{
 		public static void AddIbusVersionAsErrorReportProperty()
 		{
-			var settingsGeneral = IntPtr.Zero;
-			try
+			const string ibusSchemaId = "org.freedesktop.ibus.general";
+			const string key = "version";
+			string version = string.Empty;
+			if (Platform.IsFlatpak)
 			{
-				const string ibusSchema = "org.freedesktop.ibus.general";
-				if (!GlibHelper.SchemaIsInstalled(ibusSchema))
-					return;
-				settingsGeneral = Unmanaged.g_settings_new(ibusSchema);
-				if (settingsGeneral == IntPtr.Zero)
-					return;
-				var version = Unmanaged.g_settings_get_string(settingsGeneral, "version");
-				ErrorReport.AddProperty("IbusVersion", version);
+				version = GSettingsGetStringFromHost(ibusSchemaId, key);
 			}
-			catch
+			else
 			{
-				// Ignore any error we might get
+				var settingsGeneral = IntPtr.Zero;
+				try
+				{
+					if (!GlibHelper.SchemaIsInstalled(ibusSchemaId))
+						return;
+					settingsGeneral = Unmanaged.g_settings_new(ibusSchemaId);
+					if (settingsGeneral == IntPtr.Zero)
+						return;
+					version = Unmanaged.g_settings_get_string(settingsGeneral, key);
+				}
+				catch
+				{
+					// Ignore any error we might get
+				}
+				finally
+				{
+					if (settingsGeneral != IntPtr.Zero)
+						Unmanaged.g_object_unref(settingsGeneral);
+				}
 			}
-			finally
-			{
-				if (settingsGeneral != IntPtr.Zero)
-					Unmanaged.g_object_unref(settingsGeneral);
-			}
+			ErrorReport.AddProperty("IbusVersion", version);
+		}
+
+		private static string GSettingsGetStringFromHost(string schemaId, string key)
+		{
+			return RunOnHostEvenIfFlatpak("gsettings", $"get {schemaId} {key}")
+				.StandardOutput
+				.Trim()
+				.Trim('\'');
 		}
 
 		/// <summary>
@@ -178,5 +196,19 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			return CommandLineRunner.Run(program, arguments,
 				"/", 10, new StringBuilderProgress());
 		}
+
+		/// <summary>
+		/// Transforms string input like "['ara', 'bg', 'cz']"
+		/// to an array of strings like   {"ara", "bg", "cz"}.
+		/// </summary>
+		internal static string[] ToStringArray(string input)
+		{
+			return input
+				.Trim('[', ']', '\n')
+				.Split(new string[]{", "}, StringSplitOptions.RemoveEmptyEntries)
+				.Select((string item) => item.Trim('\''))
+				.ToArray<string>();
+		}
+
 	}
 }

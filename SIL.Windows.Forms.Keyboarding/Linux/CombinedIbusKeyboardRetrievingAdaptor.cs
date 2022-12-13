@@ -41,7 +41,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 		}
 
-		private static string GSettingsSchema { get { return "org.freedesktop.ibus.general"; } }
+		private static string GSettingsSchemaId { get { return "org.freedesktop.ibus.general"; } }
 
 		// To find the corresponding schema for a dconf path, e.g. /desktop/ibus/general/preload-engines:
 		//     $ gsettings list-schemas | grep desktop.ibus.general
@@ -146,18 +146,52 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// </summary>
 		private static void LoadLatinLayouts(IntPtr settingsGeneral)
 		{
-			IntPtr value = Unmanaged.g_settings_get_value(settingsGeneral, "xkb-latin-layouts");
-			CombinedIbusKeyboardSwitchingAdaptor.LatinLayouts =
-				KeyboardRetrievingHelper.GetStringArrayFromGVariantArray(value);
-			Unmanaged.g_variant_unref(value);
 
-			CombinedIbusKeyboardSwitchingAdaptor.UseXmodmap = Unmanaged.g_settings_get_boolean(
-				settingsGeneral, "use-xmodmap");
+			CombinedIbusKeyboardSwitchingAdaptor.LatinLayouts = GetXkbLatinLayouts(settingsGeneral);
+			string useXModmapKey = "use-xmodmap";
+			bool useXModmap = false;
+			if (Platform.IsFlatpak)
+				useXModmap = GSettingsGetBooleanFromHost(GSettingsSchemaId, useXModmapKey);
+			else
+				useXModmap = Unmanaged.g_settings_get_boolean(settingsGeneral, useXModmapKey);
+			CombinedIbusKeyboardSwitchingAdaptor.UseXmodmap = useXModmap;
 			//Console.WriteLine("DEBUG use-xmodmap = {0}", _use_xmodmap);
 			//Console.Write("DEBUG xkb-latin-layouts =");
 			//for (int i = 0; i < _latinLayouts.Length; ++i)
 			//	Console.Write("  '{0}'", _latinLayouts[i]);
 			//Console.WriteLine();
+		}
+
+		private static string[] GetXkbLatinLayouts(IntPtr settingsGeneral)
+		{
+			string keyName = "xkb-latin-layouts";
+			if (Platform.IsFlatpak)
+			{
+				string output = KeyboardRetrievingHelper.RunOnHostEvenIfFlatpak("gsettings", $"get {GSettingsSchemaId} {keyName}").StandardOutput;
+				return KeyboardRetrievingHelper.ToStringArray(output);
+			}
+			else
+			{
+				IntPtr value = IntPtr.Zero;
+				try
+				{
+					value = Unmanaged.g_settings_get_value(settingsGeneral, keyName);
+					return KeyboardRetrievingHelper.GetStringArrayFromGVariantArray(value);
+				}
+				finally
+				{
+					if (value != IntPtr.Zero)
+						Unmanaged.g_variant_unref(value);
+				}
+			}
+		}
+
+
+		private static bool GSettingsGetBooleanFromHost(string schemaId, string key)
+		{
+			string output = KeyboardRetrievingHelper.RunOnHostEvenIfFlatpak("gsettings", $"get {schemaId} {key}")
+				.StandardOutput.Trim();
+			return output == "true";
 		}
 
 		#region Specific implementations of IKeyboardRetriever
