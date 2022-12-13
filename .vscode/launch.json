@@ -29,6 +29,11 @@
 			"env": {
 			  // Use this mono.
 			  // "PATH": "/opt/mono5-sil/bin:${env:PATH}",
+			  "SIL_REPORTING_LOGGING": "foreground",
+			  // Electron overrides XDG_CURRENT_DESKTOP with "Unity" (see
+			  // https://www.electronjs.org/docs/latest/api/environment-variables ).
+			  // Undo this for a more accurate keyboard test.
+			  "XDG_CURRENT_DESKTOP": "${env:ORIGINAL_XDG_CURRENT_DESKTOP}"
 			},
 			"type": "mono",
 			"request": "launch",

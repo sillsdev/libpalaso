@@ -22,13 +22,13 @@ namespace TestAppKeyboard
 			KeyboardController.RegisterControl(testAreaB, eventHandler);
 			KeyboardController.RegisterControl(testAreaC, eventHandler);
 
-			LoadKeyboards(keyboardsA);
-			LoadKeyboards(keyboardsB);
-			LoadKeyboards(keyboardsC);
-			LoadKeyboards(currentKeyboard);
+			LoadKeyboards(keyboardsA, 0);
+			LoadKeyboards(keyboardsB, 1);
+			LoadKeyboards(keyboardsC, 2);
+			LoadKeyboards(currentKeyboard, 0);
 		}
 
-		private static void LoadKeyboards(ComboBox comboBox)
+		private static void LoadKeyboards(ComboBox comboBox, int preferredInitialKeyboard)
 		{
 			IEnumerable<IKeyboardDefinition> keyboards = Keyboard.Controller.AvailableKeyboards;
 			foreach (var keyboard in keyboards)
@@ -43,7 +43,10 @@ namespace TestAppKeyboard
 				return;
 			}
 
-			comboBox.SelectedIndex = 0;
+			if (preferredInitialKeyboard < comboBox.Items.Count)
+				comboBox.SelectedIndex = preferredInitialKeyboard;
+			else
+				comboBox.SelectedIndex = 0;
 		}
 
 		private void testAreaA_Enter(object sender, EventArgs e)
