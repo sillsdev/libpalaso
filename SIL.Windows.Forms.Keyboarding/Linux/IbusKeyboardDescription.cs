@@ -24,6 +24,15 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		}
 
 		/// <summary>
+		/// Identifier for this keyboard in the format used by org.gnome.desktop.input-sources sources.
+		/// For example, ('xkb', 'us+mac') or ('ibus', 'table:thai')  See
+		/// https://gitlab.gnome.org/GNOME/gsettings-desktop-schemas/-/blob/master/schemas/org.gnome.desktop.input-sources.gschema.xml.in
+		/// </summary>
+		public virtual string GnomeInputSourceIdentifier => $"('{GnomeInputSourceType}', '{GnomeInputSourceLayout}')";
+		protected virtual string GnomeInputSourceType => "ibus";
+		protected virtual string GnomeInputSourceLayout => IBusKeyboardEngine.LongName;
+
+		/// <summary>
 		/// Produce IBus keyboard identifier which is similar to the actual ibus switcher menu.
 		/// </summary>
 		private static string FormatKeyboardIdentifier(string layout, string locale)

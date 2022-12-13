@@ -5,7 +5,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using SIL.CommandLineProcessing;
 using SIL.PlatformUtilities;
+using SIL.Progress;
 using SIL.Reporting;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
@@ -164,6 +166,17 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			arguments = $"--host --directory=/ {program} {arguments}";
 			program = "flatpak-spawn";
+		}
+
+		/// <summary>Run a program. If the current process is in flatpak, then run the program
+		/// on the host system that is hosting flatpak, via spawn.</summary>
+		internal static ExecutionResult RunOnHostEvenIfFlatpak(string program, string arguments)
+		{
+			if (Platform.IsFlatpak)
+				KeyboardRetrievingHelper.ToFlatpakSpawn(ref program, ref arguments);
+			Logger.WriteEvent($"Running {program} {arguments}");
+			return CommandLineRunner.Run(program, arguments,
+				"/", 10, new StringBuilderProgress());
 		}
 	}
 }
