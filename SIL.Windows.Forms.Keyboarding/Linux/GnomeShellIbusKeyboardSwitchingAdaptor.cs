@@ -18,10 +18,17 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	public class GnomeShellIbusKeyboardSwitchingAdaptor: IbusKeyboardSwitchingAdaptor
 	{
 		private KeyboardDescription _defaultKeyboard;
+		private int _kbSwitchPauseMs = 0;
 
 		public GnomeShellIbusKeyboardSwitchingAdaptor(IIbusCommunicator ibusCommunicator)
 			: base(ibusCommunicator)
 		{
+			// Delay to help keyboard switching. It is likely CPU dependent, and can be
+			// configured with this environment variable. For example,
+			//     SIL_KEYBOARDING_GNOME_SWITCH_PAUSE=25 flatpak run org.sil.FieldWorks
+			if (!int.TryParse(
+				Environment.GetEnvironmentVariable("SIL_KEYBOARDING_GNOME_SWITCH_PAUSE"), out _kbSwitchPauseMs))
+				_kbSwitchPauseMs = 25;
 		}
 
 		protected override void SelectKeyboard(KeyboardDescription keyboard)
@@ -75,8 +82,13 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			string arguments = $"set org.gnome.desktop.input-sources sources";
 			KeyboardRetrievingHelper.RunOnHostEvenIfFlatpak(program,
 				$"{arguments} \"{desiredKeyboardAfront}\"");
-			// Set keyboards back. Note that one source (https://unix.stackexchange.com/a/711918) suggested to
-			// briefly pause between the two settings. This does not appear to be needed in Ubuntu 22.04.
+			// Set keyboards back. One source (https://unix.stackexchange.com/a/711918)
+			// suggested to briefly pause between the two settings. I have sometimes seen
+			// the need for this in Ubuntu 20.04 so far, but not yet in Ubuntu 22.04.
+			// Sometimes without the delay, the panel changes are both requested, but the
+			// first panel change didn't result in a lasting change to the keyboard (or
+			// panel icon).
+			System.Threading.Thread.Sleep(_kbSwitchPauseMs);
 			KeyboardRetrievingHelper.RunOnHostEvenIfFlatpak(program,
 				$"{arguments} \"{ToInputSourcesFormat(configuredInputSources)}\"");
 		}
