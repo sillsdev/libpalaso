@@ -214,6 +214,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				return null;
 			}
 			return () => {
+				Logger.WriteEvent($"Launching keyboard setup: {setupApp} {args}");
 				using (Process.Start(setupApp, args)) { }
 			};
 		}

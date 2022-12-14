@@ -148,8 +148,31 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			// GNOME
 			else if (File.Exists($"{prefix}/usr/bin/gnome-control-center"))
 			{
-				arguments = "region layouts";
 				program = "/usr/bin/gnome-control-center";
+				// Different versions of Gnome Control Center have needed different
+				// arguments to jump to the right place for keyboard layout configuration.
+				// Set arguments accordingly. Fall back to a default of using the arguments
+				// for the latest supported Gnome Control Center.
+				arguments = "keyboard";
+				try
+				{
+					string output = KeyboardRetrievingHelper.RunOnHostEvenIfFlatpak(program, "--version").StandardOutput;
+					// output looks like "gnome-control-center 41.7".
+					string version = output.Split(' ')[1];
+					string majorVersion = version.Split('.')[0];
+					int majorVersionNumber = 0;
+					if (int.TryParse(majorVersion, out majorVersionNumber))
+					{
+						if (majorVersionNumber >= 3)
+							arguments = "region";
+						if (majorVersionNumber >= 41)
+							arguments = "keyboard";
+					}
+				}
+				catch (Exception e)
+				{
+					Logger.WriteEvent($"Ignoring exception when looking for gnome-control-center version: {e}");
+				}
 			}
 			// KDE
 			else if (File.Exists($"{prefix}/usr/bin/kcmshell4"))

@@ -8,6 +8,7 @@ using System.IO;
 using IBusDotNet;
 using SIL.Keyboarding;
 using SIL.PlatformUtilities;
+using SIL.Reporting;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
@@ -189,6 +190,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			}
 			return () =>
 			{
+				Logger.WriteEvent($"Launching keyboard setup: {setupApp} {args}");
 				using (Process.Start(setupApp, args)) { }
 			};
 		}
@@ -206,6 +208,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				{
 					KeyboardRetrievingHelper.ToFlatpakSpawn(ref program, ref arguments);
 				}
+				Logger.WriteEvent($"Launching secondary keyboard setup: {program} {arguments}");
 				using (Process.Start(program, arguments)) { }
 			};
 		}
