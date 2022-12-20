@@ -273,7 +273,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\output\Debug\icu.net.dll</HintPath>
     </Reference>
-    <Reference Include="L10NSharp, Version=2.0.40.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="L10NSharp">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Debug\L10NSharp.dll</HintPath>
     </Reference>

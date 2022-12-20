@@ -105,8 +105,8 @@ mkdir -p ../lib/DebugMono
 mkdir -p ../lib/ReleaseMono
 
 # download artifact dependencies
-copy_auto http://build.palaso.org/guestAuth/repository/download/L10NSharp_L10NSharpMasterMonoContinuous/latest.lastSuccessful/L10NSharp.dll ../lib/ReleaseMono/L10NSharp.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/L10NSharp_L10NSharpMasterMonoContinuous/latest.lastSuccessful/L10NSharp.dll ../lib/DebugMono/L10NSharp.dll
+copy_auto http://build.palaso.org/guestAuth/repository/download/L10NSharp_L10NSharpMasterMonoContinuous/libpalaso-6.0.0-692.tcbuildtag/L10NSharp.dll ../lib/ReleaseMono/L10NSharp.dll
+copy_auto http://build.palaso.org/guestAuth/repository/download/L10NSharp_L10NSharpMasterMonoContinuous/libpalaso-6.0.0-692.tcbuildtag/L10NSharp.dll ../lib/DebugMono/L10NSharp.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt411/latest.lastSuccessful/taglib-sharp.dll ../lib/ReleaseMono/taglib-sharp.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt411/latest.lastSuccessful/taglib-sharp.dll ../lib/DebugMono/taglib-sharp.dll
 # End of script
