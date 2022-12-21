@@ -81,6 +81,7 @@ namespace SIL.Windows.Forms.Scripture
 			this.uiVerseSpinner.Location = new System.Drawing.Point(166, 0);
 			this.uiVerseSpinner.Margin = new System.Windows.Forms.Padding(0);
 			this.uiVerseSpinner.Name = "uiVerseSpinner";
+			this.uiVerseSpinner.RightToLeft = System.Windows.Forms.RightToLeft.Inherit;
 			this.uiVerseSpinner.Size = new System.Drawing.Size(25, 22);
 			this.uiVerseSpinner.TabIndex = 9;
 			this.uiVerseSpinner.TabStop = false;
@@ -122,6 +123,7 @@ namespace SIL.Windows.Forms.Scripture
 			this.uiChapterSpinner.Location = new System.Drawing.Point(97, 0);
 			this.uiChapterSpinner.Margin = new System.Windows.Forms.Padding(0);
 			this.uiChapterSpinner.Name = "uiChapterSpinner";
+			this.uiChapterSpinner.RightToLeft = System.Windows.Forms.RightToLeft.Inherit;
 			this.uiChapterSpinner.Size = new System.Drawing.Size(25, 22);
 			this.uiChapterSpinner.TabIndex = 8;
 			this.uiChapterSpinner.TabStop = false;
