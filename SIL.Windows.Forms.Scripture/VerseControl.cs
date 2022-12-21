@@ -562,17 +562,32 @@ namespace SIL.Windows.Forms.Scripture
 		void DrawBookParts(string[] parts, Graphics gr, Rectangle bounds, Color theColor, Font font1, Font font2)
 		{
 			Font theFont = font1;
+			int right = bounds.Right;
+			bool rtl = RightToLeft == RightToLeft.Yes;
+			if (!rtl)
+				bounds.X += 2;
+			bounds.Width -= 2;
 			for (int i = 0; i < parts.Length; i++)
 			{
 				string theText = parts[i];
 				if (i == 2)
-					bounds.X = (int)abbreviationWidth; // tab over to name column
+				{
+					if (rtl)
+						bounds.Width = right - (int)abbreviationWidth;
+					else
+						bounds.X = (int)abbreviationWidth; // tab over to name column
+				}
+
 				if (theText != "")
 				{
 					// UserControl does not have UseCompatibleTextRendering.
-					var size = TextRenderer.MeasureText(gr, theText, theFont, bounds.Size, TextFormatFlags.NoPadding|TextFormatFlags.WordBreak);
-					TextRenderer.DrawText(gr, theText, theFont, bounds, theColor, TextFormatFlags.NoPadding|TextFormatFlags.WordBreak);
-					bounds.X += size.Width;
+					TextFormatFlags flags = TextFormatFlags.NoPadding | TextFormatFlags.SingleLine;
+					if (rtl)
+						flags |= TextFormatFlags.Right;
+					var size = TextRenderer.MeasureText(gr, theText, theFont, bounds.Size, TextFormatFlags.NoPadding|TextFormatFlags.SingleLine);
+					TextRenderer.DrawText(gr, theText, theFont, bounds, theColor, flags);
+					if (!rtl)
+						bounds.X += size.Width;
 					bounds.Width -= size.Width;
 				}
 				theFont = Equals(theFont, font1) ? font2 : font1; // flip-flop font
