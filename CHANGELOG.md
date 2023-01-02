@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- [SIL.Core] Added `SIL.Reporting.FontAnalytics` class.
 - [SIL.Core] Added `ObjectModel.ObservableISet` as a parent class to the existing `ObservableHashSet`
 - [SIL.Core] Added `ObjectModel.ObservableSortedSet` (child class of `ObservableISet`)
 - [SIL.DblBundle] Added const strings to UsxNode for the various USX element names.
