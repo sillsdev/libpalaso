@@ -584,7 +584,7 @@ namespace SIL.Windows.Forms.Scripture
 					TextFormatFlags flags = TextFormatFlags.NoPadding | TextFormatFlags.SingleLine;
 					if (rtl)
 						flags |= TextFormatFlags.Right;
-					var size = TextRenderer.MeasureText(gr, theText, theFont, bounds.Size, TextFormatFlags.NoPadding|TextFormatFlags.SingleLine);
+					var size = TextRenderer.MeasureText(gr, theText, theFont, bounds.Size, flags);
 					TextRenderer.DrawText(gr, theText, theFont, bounds, theColor, flags);
 					if (!rtl)
 						bounds.X += size.Width;
