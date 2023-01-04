@@ -160,7 +160,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			string useXModmapKey = "use-xmodmap";
 			bool useXModmap = false;
 			if (Platform.IsFlatpak)
-				useXModmap = GSettingsGetBooleanFromHost(GSettingsSchemaId, useXModmapKey);
+				useXModmap = KeyboardRetrievingHelper.GSettingsGetBooleanFromHost(GSettingsSchemaId, useXModmapKey);
 			else
 				useXModmap = Unmanaged.g_settings_get_boolean(settingsGeneral, useXModmapKey);
 			CombinedIbusKeyboardSwitchingAdaptor.UseXmodmap = useXModmap;
@@ -173,11 +173,11 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		private static string[] GetXkbLatinLayouts(IntPtr settingsGeneral)
 		{
+			// xkb-latin-layouts is type "as" (https://github.com/ibus/ibus/blob/main/data/dconf/org.freedesktop.ibus.gschema.xml)
 			string keyName = "xkb-latin-layouts";
 			if (Platform.IsFlatpak)
 			{
-				string output = KeyboardRetrievingHelper.RunOnHostEvenIfFlatpak("gsettings", $"get {GSettingsSchemaId} {keyName}").StandardOutput;
-				return KeyboardRetrievingHelper.ToStringArray(output);
+				return KeyboardRetrievingHelper.GSettingsGetStringArrayFromHost(GSettingsSchemaId, keyName);
 			}
 			else
 			{
@@ -193,14 +193,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 						Unmanaged.g_variant_unref(value);
 				}
 			}
-		}
-
-
-		private static bool GSettingsGetBooleanFromHost(string schemaId, string key)
-		{
-			string output = KeyboardRetrievingHelper.RunOnHostEvenIfFlatpak("gsettings", $"get {schemaId} {key}")
-				.StandardOutput.Trim();
-			return output == "true";
 		}
 
 		#region Specific implementations of IKeyboardRetriever
