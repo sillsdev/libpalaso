@@ -177,10 +177,10 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 					int majorVersionNumber = 0;
 					if (int.TryParse(majorVersion, out majorVersionNumber))
 					{
-						if (majorVersionNumber >= 3)
-							arguments = "region";
 						if (majorVersionNumber >= 41)
 							arguments = "keyboard";
+						else if (majorVersionNumber >= 3)
+							arguments = "region";
 					}
 				}
 				catch (Exception e)
@@ -246,6 +246,5 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				.Select((string item) => item.Trim('\''))
 				.ToArray<string>();
 		}
-
 	}
 }
