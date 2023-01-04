@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle] Attempting to construct a UsxNode based on an invalid XmlNode now throws an exception in the constructor in most cases rather than later when properties are accessed.
 - [SIL.DblBundle] Accessing UsxChapter.ChapterNumber on a chapter end node returns the chapter number (from the eid attribute) instead of throwing an exception.
 - [SIL.WritingSystems] Prevent (and clean up) duplicate URLs in LDML files for Fonts, Keyboards, and Spell Check Dictionaries.
+- [SIL.Archiving] Set UseZip64WhenSaving to Zip64Option.AsNecessary to prevent crash with large archives
 
 ### Changed
 
