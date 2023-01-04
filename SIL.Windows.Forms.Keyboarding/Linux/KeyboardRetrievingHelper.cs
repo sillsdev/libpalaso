@@ -49,12 +49,26 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			ErrorReport.AddProperty("IbusVersion", version);
 		}
 
-		private static string GSettingsGetStringFromHost(string schemaId, string key)
+		internal static string GSettingsGetStringFromHost(string schemaId, string key)
 		{
 			return RunOnHostEvenIfFlatpak("gsettings", $"get {schemaId} {key}")
 				.StandardOutput
 				.Trim()
 				.Trim('\'');
+		}
+
+		internal static bool GSettingsGetBooleanFromHost(string schemaId, string key)
+		{
+			string output = RunOnHostEvenIfFlatpak("gsettings", $"get {schemaId} {key}")
+				.StandardOutput.Trim();
+			return output == "true";
+		}
+
+		/// <summary>Return a string array. For querying gsettings with type "as".</summary>
+		internal static string[] GSettingsGetStringArrayFromHost(string schemaId, string key)
+		{
+			return ToStringArray(RunOnHostEvenIfFlatpak("gsettings", $"get {schemaId} {key}")
+				.StandardOutput);
 		}
 
 		/// <summary>
