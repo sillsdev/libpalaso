@@ -9,7 +9,7 @@ using SIL.Windows.Forms.Widgets.BetterGrid;
 
 namespace SIL.Windows.Forms.TestApp
 {
-	public partial class ContributorsForm : Form
+	public class ContributorsForm : Form
 	{
 		private TableLayoutPanel _tableLayout;
 		private ContributorsListControl _contributorsControl;
@@ -36,32 +36,19 @@ namespace SIL.Windows.Forms.TestApp
 		{
 			var autoCompleter = new AutoCompleter();
 			_model = new ContributorsListControlViewModel(autoCompleter, () => { });
-			var dataGridView = new DataGridView();
-
-			_contributorsControl = new ContributorsListControl(_model);
-			_contributorsControl.Dock = DockStyle.Fill;
-			_contributorsControl.Location = new System.Drawing.Point(0, 0);
-			_contributorsControl.Name = "_contributorsControl";
-
-			_contributorsControl.ValidatingContributor += HandleValidatingContributor;
-
-			// set the column header text
-			string[] headerText =
-			{
-				"Name",
-				"Role",
-				"Date",
-				"Comments"
-			};
-
-			for (var i = 0; i < headerText.Length; i++)
-				_contributorsControl.SetColumnHeaderText(i, headerText[i]);
 
 			InitializeComponent();
 			autoCompleter.Source = _contributorNames;
 
 			var contribs = new ContributionCollection(new [] { new Contribution("Fred", new Role("a", "Author", "guy who writes stuff")) });
 			_model.SetContributionList(contribs);
+			
+			_contributorsControl.Grid.Columns["name"].AutoSizeMode =
+				DataGridViewAutoSizeColumnMode.AllCells;
+			_contributorsControl.Grid.Columns["role"].AutoSizeMode =
+				DataGridViewAutoSizeColumnMode.AllCells;
+			_contributorsControl.Grid.Columns["comments"].AutoSizeMode =
+				DataGridViewAutoSizeColumnMode.Fill;
 		}
 
 		private void InitializeComponent()
@@ -110,6 +97,26 @@ namespace SIL.Windows.Forms.TestApp
 			_contributorNames.Rows[0].Cells[0].Value = "Andrew";
 			_contributorNames.Rows[1].Cells[0].Value = "Fred";
 			_contributorNames.Rows[2].Cells[0].Value = "Tom";
+
+			_contributorsControl = new ContributorsListControl(_model)
+			{
+				Dock = DockStyle.Fill,
+				Location = new System.Drawing.Point(0, 0),
+				Name = "_contributorsControl"
+			};
+			_contributorsControl.ValidatingContributor += HandleValidatingContributor;
+
+			// set the column header text
+			string[] headerText =
+			{
+				"Name",
+				"Role",
+				"Date",
+				"Comments"
+			};
+
+			for (var i = 0; i < headerText.Length; i++)
+				_contributorsControl.SetColumnHeaderText(i, headerText[i]);
 
 			_tableLayout.Controls.Add(_contributorsControl, 0, 0);
 			_tableLayout.SetColumnSpan(_contributorsControl, 2);

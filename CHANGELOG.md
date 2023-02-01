@@ -16,34 +16,53 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+
 ### Added
 
+- [SIL.Core.Desktop] Added aiff, m4a, voc, and amr formats to AudioFileExtensions
+- [SIL.Core.Desktop] Added webm and mkv formats to VideoFileExtensions
+
+### Changed
+
+- [SIL.Core.Desktop] Fixed typo in list of AudioFileExtensions: "acc" changed to "aac"
+
+## [11.0.0] - 2023-01-19
+
+### Added
+
+- [SIL.Core] Added `SIL.Reporting.FontAnalytics` class.
+- [SIL.Core] Added `ObjectModel.ObservableISet` as a parent class to the existing `ObservableHashSet`
+- [SIL.Core] Added `ObjectModel.ObservableSortedSet` (child class of `ObservableISet`)
 - [SIL.DblBundle] Added const strings to UsxNode for the various USX element names.
 - [SIL.DblBundle] Added protected method GetAttribute to UsxNode.
 - [SIL.DblBundle] Added sealed subclasses of UsxNode: UsxPara and UsxChar.
 - [SIL.DblBundle] Added property IsChapterStart to UsxChapter.
 - [SIL.Reporting] Added TypeOfExistingHandler property to ExceptionHandler.
-- [SIL.Core.Desktop] Added aiff, m4a, voc, and amr formats to AudioFileExtensions
-- [SIL.Core.Desktop] Added webm and mkv formats to VideoFileExtensions
 
 ### Fixed
 
 - [SIL.DblBundle] Attempting to construct a UsxNode based on an invalid XmlNode now throws an exception in the constructor in most cases rather than later when properties are accessed.
 - [SIL.DblBundle] Accessing UsxChapter.ChapterNumber on a chapter end node returns the chapter number (from the eid attribute) instead of throwing an exception.
+- [SIL.WritingSystems] Prevent (and clean up) duplicate URLs in LDML files for Fonts, Keyboards, and Spell Check Dictionaries.
+- [SIL.Archiving] Set UseZip64WhenSaving to Zip64Option.AsNecessary to prevent crash with large archives
 
 ### Changed
 
-- [SIL.DblBundle.Tests] Made GetChaptersAndParasForMarkOneContaining2Verses private.
-- [SIL.DblBundle] Made UsxNode abstract.
-- [SIL.DblBundle] Made UsxNode.StyleTag virtual. Calling UsxChapter.StyleTag on a chapter end node returns null instead of throwing an exception.
-- [SIL.DblBundle] Made UsxChapter sealed.
-- [SIL.Core] `FileLocationUtilities.GetDirectoryDistributedWithApplication` not only checks in
-  `DistFiles`, `common`, and `src` subdirectories, but also directly in the application or solution directory.
-- [SIL.Core.Desktop] Fixed typo in list of AudioFileExtensions: "acc" changed to "aac"
 - [SIL.Archiving] Changed REAP access protocol label from "Insite users" to "REAP users"
 - [SIL.Archiving] Fixed typo in name of ArchiveAccessProtocol.GetDocumentationUri methods
 - [SIL.Archiving] Changed ArchiveAccessProtocol.GetDocumentationUri methods
 - [SIL.Archiving] Changed ArchiveAccessProtocol.SetChoicesFromCsv to thow ArgumentNullException instead of NullReferenceException. Also made it discard duplicate choices if the list contains duplicates.
+- [SIL.Core] `FileLocationUtilities.GetDirectoryDistributedWithApplication` checks not only in
+  `DistFiles`, `common`, and `src` subdirectories, but also directly in the application or solution directory.
+- [SIL.Core] Store URLs in Sets instead of Lists in `IKeyboardDefinition` (to prevent duplicates)
+- [SIL.DblBundle.Tests] Made GetChaptersAndParasForMarkOneContaining2Verses private.
+- [SIL.DblBundle] Made UsxNode abstract.
+- [SIL.DblBundle] Made UsxNode.StyleTag virtual. Calling UsxChapter.StyleTag on a chapter end node returns null instead of throwing an exception.
+- [SIL.DblBundle] Made UsxChapter sealed.
+- [SIL.Core] Store URLs in Sets instead of Lists in `FontDefinition` and `SpellCheckDictionaryDefinition` (to prevent duplicates)
+- [SIL.Windows.Forms] Upgraded to L10nSharp 6.0.0
+- [SIL.Windows.Forms.DblBundle] Upgraded to L10nSharp 6.0.0
+- [SIL.Windows.Forms.WritingSystems] Upgraded to L10nSharp 6.0.0
 
 ### Removed
 
@@ -271,8 +290,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
   projects
 
-[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v10.1.0...master
+[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v11.0.0...master
 
+[11.0.0]: https://github.com/sillsdev/libpalaso/compare/v10.1.0...v11.0.0
 [10.1.0]: https://github.com/sillsdev/libpalaso/compare/v10.0.0...v10.1.0
 [10.0.0]: https://github.com/sillsdev/libpalaso/compare/v9.0.0...v10.0.0
 [9.0.0]: https://github.com/sillsdev/libpalaso/compare/v8.0.0...v9.0.0

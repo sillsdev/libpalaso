@@ -12,7 +12,6 @@ namespace SIL.Keyboarding
 	/// Review: possibly that method and this class should be made abstract?</remarks>
 	public class DefaultKeyboardDefinition : IKeyboardDefinition
 	{
-		private readonly List<string> _urls = new List<string>();
 
 		public DefaultKeyboardDefinition(string id, string name)
 			: this(id, name, string.Empty, string.Empty, false)
@@ -89,7 +88,7 @@ namespace SIL.Keyboarding
 		/// <summary>
 		/// Gets the keyboard source URLs.
 		/// </summary>
-		public IList<string> Urls => _urls;
+		public ISet<string> Urls { get; } = new SortedSet<string>();
 
 		/// <summary>
 		/// Returns a <see cref="T:System.String"/> that represents the current

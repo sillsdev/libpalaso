@@ -1735,6 +1735,7 @@ namespace SIL.Archiving
 				using (var zip = new ZipFile())
 				{
 					// RAMP packages must not be compressed or RAMP can't read them.
+					zip.UseZip64WhenSaving = Zip64Option.AsNecessary; // See SP-2291
 					zip.CompressionLevel = Ionic.Zlib.CompressionLevel.None;
 					zip.AddFiles(filesToCopyAndZip.Values, @"\");
 					zip.AddFile(_metsFilePath, string.Empty);

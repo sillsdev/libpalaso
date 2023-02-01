@@ -30,16 +30,13 @@ namespace SIL.Windows.Forms.TestApp
 			Icu.Wrapper.Init();
 
 			var testCommandLineRunner = false;
-			var distFilesEnglishStrings = "Palaso.en.tmx";
-			var localizationType = TranslationMemory.Tmx;
+			var distFilesEnglishStrings = "Palaso.en.xlf";
+			var localizationType = TranslationMemory.XLiff;
 			var preferredUILocale = "fr";
 			if (args.Length > 0)
 			{
-				if (args[0].Equals(TranslationMemory.XLiff.ToString(), OrdinalIgnoreCase))
+				if (args[0].Equals("es", OrdinalIgnoreCase))
 				{
-					distFilesEnglishStrings =
-						Path.ChangeExtension(distFilesEnglishStrings, "xlf");
-					localizationType = TranslationMemory.XLiff;
 					preferredUILocale = "es";
 				}
 				else

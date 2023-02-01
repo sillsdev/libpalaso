@@ -1,19 +1,21 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <RootNamespace>SIL.Windows.Forms.WritingSystems.Tests</RootNamespace>
     <AssemblyName>SIL.Windows.Forms.WritingSystems.Tests</AssemblyName>
     <Description>Unit tests for SIL.Windows.Forms.WritingSystems</Description>
     <IsPackable>false</IsPackable>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersion.MsBuild" Version="5.10.3" PrivateAssets="all" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
     <PackageReference Include="ibusdotnet" Version="2.0.3" />
-    <PackageReference Include="Moq" Version="4.18.1" />
+    <PackageReference Include="Moq" Version="4.18.2" />
     <PackageReference Include="NDesk.DBus" Version="0.15.0" />
     <PackageReference Include="NUnit" Version="3.13.3" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" PrivateAssets="All" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.3.1" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

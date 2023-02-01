@@ -287,7 +287,7 @@ namespace SIL.WritingSystems
 					var requestedElements = string.Empty;
 					if (topLevelElementsArray.Length > 0)
 						requestedElements = $"&inc[]={string.Join("&inc[]=", topLevelElementsArray)}";
-					var requestedUserId = !string.IsNullOrEmpty(uid) ? $"&uid={uid}" : string.Empty;
+					var requestedUserId = !string.IsNullOrEmpty(uid) && uid != DefaultUserId ? $"&uid={uid}" : string.Empty;
 					var requestedRevid = !string.IsNullOrEmpty(revid) ? $"&revid={revid}" : string.Empty;
 					var url = BuildLdmlRequestUrl(sldrLanguageTag, requestedElements, requestedUserId, requestedRevid);
 

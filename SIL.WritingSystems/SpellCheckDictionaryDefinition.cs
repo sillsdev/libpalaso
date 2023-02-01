@@ -1,4 +1,4 @@
-﻿using System.Collections.Specialized;
+using System.Collections.Specialized;
 using System.Linq;
 using SIL.ObjectModel;
 
@@ -14,11 +14,10 @@ namespace SIL.WritingSystems
 	public class SpellCheckDictionaryDefinition : DefinitionBase<SpellCheckDictionaryDefinition>
 	{
 		private readonly SpellCheckDictionaryFormat _format;
-		private readonly ObservableList<string> _urls;
 
 		private void SetupCollectionChangeListeners()
 		{
-			_urls.CollectionChanged += _urls_CollectionChanged;
+			Urls.CollectionChanged += _urls_CollectionChanged;
 		}
 
 		private void _urls_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -29,14 +28,14 @@ namespace SIL.WritingSystems
 		public SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat format)
 		{
 			_format = format;
-			_urls = new ObservableList<string>();
+			Urls = new ObservableSortedSet<string>();
 			SetupCollectionChangeListeners();
 		}
 
 		public SpellCheckDictionaryDefinition(SpellCheckDictionaryDefinition other)
 		{
 			_format = other._format;
-			_urls = new ObservableList<string>(other._urls);
+			Urls = new ObservableSortedSet<string>(other.Urls);
 			SetupCollectionChangeListeners();
 		}
 
@@ -45,10 +44,7 @@ namespace SIL.WritingSystems
 			get { return _format; }
 		}
 
-		public IObservableList<string> Urls
-		{
-			get { return _urls; }
-		}
+		public IObservableSet<string> Urls { get; }
 
 		public override bool ValueEquals(SpellCheckDictionaryDefinition other)
 		{
