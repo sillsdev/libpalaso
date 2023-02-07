@@ -496,6 +496,9 @@ namespace SIL.WritingSystems
 		public static void DownloadLanguageTags()
 		{
 			CreateSldrCacheDirectory();
+			if (_offlineMode)
+					throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
+
 			string cachedAllTagsPath;
 			cachedAllTagsPath = Path.Combine(SldrCachePath, "langtags.json");
 			string etagPath;
@@ -504,45 +507,40 @@ namespace SIL.WritingSystems
 			string currentEtag;
 			try
 			{
-				if (_offlineMode)
-					throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
 				// get SLDR langtags.json from the SLDR api compressed
 				// it will throw WebException or have status HttpStatusCode.NotModified if file is unchanged or not get it
 				var langtagsUrl =
 					$"{SldrRepository}index.html?query=langtags&ext=json{StagingParameter}";
 				var webRequest = (HttpWebRequest)WebRequest.Create(Uri.EscapeUriString(langtagsUrl));
+				webRequest.Headers.Set("If-None-Match", etag);
 				webRequest.UserAgent = UserAgent;
 				webRequest.Timeout = 10000;
 				webRequest.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 				using var webResponse = (HttpWebResponse)webRequest.GetResponse();
-				if (File.Exists(etagPath))
+				if (webResponse.StatusCode != "OK")
+				{ 
+					return;
+				}
+
+				if (File.Exists(etagPath) && File.Exists(cachedAllTagsPath))
 				{
 					etag = File.ReadAllText(etagPath);
-					webRequest.Headers.Set(etag, "If-None-Match");
 					currentEtag = webResponse.Headers.Get("Etag");
 					if (!etag.Equals(currentEtag))
 					{
-						//File.WriteAllText(etagPath, currentEtag);
-						//webRequest.Headers.Set(etag, "If-None-Match");
-						if (webResponse.StatusCode != HttpStatusCode.NotModified)
-						{
-							File.WriteAllText(etagPath, currentEtag);
-							using Stream output = File.OpenWrite(cachedAllTagsPath);
-							using var input = webResponse.GetResponseStream();
-							input.CopyTo(output);
-						}
+						File.WriteAllText(etagPath, currentEtag);
+						using Stream output = File.OpenWrite(cachedAllTagsPath);
+						using var input = webResponse.GetResponseStream();
+						input?.CopyTo(output);
 					}
 				}
 				else
 				{
 					currentEtag = webResponse.Headers.Get("Etag");
 					File.WriteAllText(etagPath, currentEtag);
-					if (webResponse.StatusCode != HttpStatusCode.NotModified)
-					{
-						using Stream output = File.OpenWrite(cachedAllTagsPath);
-						using var input = webResponse.GetResponseStream();
-						input.CopyTo(output);
-					}
+					using Stream output = File.OpenWrite(cachedAllTagsPath);
+					using var input = webResponse.GetResponseStream();
+					input?.CopyTo(output);
 				}
 			}
 			catch (WebException)
