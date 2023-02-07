@@ -102,18 +102,17 @@ namespace SIL.IO
 		/// </summary>
 		public static bool CheckValidPathname(string pathToFile, string expectedExtension)
 		{
-			var extension = ((expectedExtension == null) || (expectedExtension.Trim() == String.Empty))
-								? null
-								: expectedExtension.StartsWith(".") ? expectedExtension.Substring(1) : expectedExtension;
-
 			if (string.IsNullOrEmpty(pathToFile) || !File.Exists(pathToFile))
 				return false;
 
+			var expectedExtensionNormalized = string.IsNullOrWhiteSpace(expectedExtension)
+								? null
+								: expectedExtension.StartsWith(".") ? expectedExtension : "." + expectedExtension;
+
 			var actualExtension = Path.GetExtension(pathToFile);
-			if (actualExtension == String.Empty)
+			if (actualExtension == string.Empty)
 				actualExtension = null;
-			return (actualExtension == null && extension == null) || (actualExtension != null && extension != null &&
-				   actualExtension.ToLowerInvariant() == "." + extension.ToLowerInvariant());
+			return string.Equals(actualExtension, expectedExtensionNormalized, StringComparison.InvariantCultureIgnoreCase);
 		}
 
 		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]

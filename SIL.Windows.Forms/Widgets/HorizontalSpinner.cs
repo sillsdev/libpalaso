@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
@@ -144,9 +144,19 @@ namespace SIL.Windows.Forms.Widgets
 				RightState = SpinnerState.Pushed;
 
 			if (leftBounds.Contains(e.Location))
-				OnDecrement();
+			{
+				if (RightToLeft == RightToLeft.No)
+					OnDecrement();
+				else
+					OnIncrement();
+			}
 			else if (rightBounds.Contains(e.Location))
-				OnIncrement();
+			{
+				if (RightToLeft == RightToLeft.No)
+					OnIncrement();
+				else
+					OnDecrement();
+			}
 		}
 
 		protected override void OnMouseUp(MouseEventArgs e)
