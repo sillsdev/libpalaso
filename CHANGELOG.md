@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core.Desktop] Added aiff, m4a, voc, and amr formats to AudioFileExtensions
 - [SIL.Core.Desktop] Added webm and mkv formats to VideoFileExtensions
 - [SIL.Media] MediaInfo.AnalysisData property
+- [SIL.Media] MediaInfo.FFProbeFolder
 
 ### Changed
 
