@@ -15,7 +15,8 @@ namespace SIL.Media
 	/// </summary>
 	public class MediaInfo
 	{
-		private const string kFFProbeExe = "ffprobe.exe";
+		private static string FFProbeExe => Platform.IsWindows ? "ffprobe.exe" : "ffprobe";
+
 		private static string s_ffProbeFolder;
 		
 		/// <summary>
@@ -42,7 +43,7 @@ namespace SIL.Media
 					if (!Directory.Exists(value))
 						throw new DirectoryNotFoundException("Directory not found: " + value);
 
-					if (Platform.IsWindows && !File.Exists(Path.Combine(value, kFFProbeExe)))
+					if (!File.Exists(Path.Combine(value, FFProbeExe)))
 					{
 						throw new FileNotFoundException(
 							"Path is not a folder containing FFProbe.exe: " + value);
@@ -86,15 +87,15 @@ namespace SIL.Media
 
 			if (Platform.IsWindows)
 			{
-				if (IsNullOrEmpty(folder) || !File.Exists(Path.Combine(folder, kFFProbeExe)))
+				if (IsNullOrEmpty(folder) || !File.Exists(Path.Combine(folder, FFProbeExe)))
 				{
 					var withApplicationDirectory =
-						GetFileDistributedWithApplication(true, "ffmpeg", kFFProbeExe) ??
-						GetFileDistributedWithApplication(true, "ffprobe", kFFProbeExe);
+						GetFileDistributedWithApplication(true, "ffmpeg", FFProbeExe) ??
+						GetFileDistributedWithApplication(true, "ffprobe", FFProbeExe);
 
 					folder = !IsNullOrEmpty(withApplicationDirectory) ?
 						Path.GetDirectoryName(withApplicationDirectory) :
-						GetFFMpegFolderFromChocoInstall();
+						GetFFMpegFolderFromChocoInstall(FFProbeExe);
 
 					if (folder != null)
 					{
@@ -108,7 +109,7 @@ namespace SIL.Media
 			return folder;
 		}
 
-		internal static string GetFFMpegFolderFromChocoInstall(string exeNeeded = kFFProbeExe)
+		internal static string GetFFMpegFolderFromChocoInstall(string exeNeeded)
 		{
 			try
 			{
