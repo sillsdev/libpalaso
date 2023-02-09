@@ -83,6 +83,8 @@ namespace SIL.Media
 		/// <returns>A folder where FFProbe can be found; else <see cref="Empty"/></returns>
 		private static string GetPresumedFFProbeFolder()
 		{
+			// REVIEW: I think that on platforms other than Windows, this will get the actual
+			// install location of FFMpeg/FFProbe.
 			var folder = GlobalFFOptions.Current.BinaryFolder;
 
 			if (Platform.IsWindows)
