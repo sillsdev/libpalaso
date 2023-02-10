@@ -10,7 +10,6 @@
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
     <UseWindowsForms>true</UseWindowsForms>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
-    <Copyright>Copyright © 2010-2023 SIL International</Copyright>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FFMpegCore" Version="5.0.0" />
