@@ -15,7 +15,7 @@ namespace SIL.Media.Tests
 	/// </summary>
 	[Category("SkipOnTeamCity")]
 	[TestFixture]
-	public class FFMpegRunnerTests
+	public class FFmpegRunnerTests
 	{
 		[OneTimeSetUp]
 		public void CheckRequirements()

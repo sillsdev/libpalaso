@@ -23,14 +23,14 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFFProbe")]
+		[Category("RequiresFFprobe")]
 		public void HaveNecessaryComponents_ReturnsTrue()
 		{
 			Assert.IsTrue(MediaInfo.HaveNecessaryComponents);
 		}
 
 		[Test]
-		[Category("RequiresFFProbe")]
+		[Category("RequiresFFprobe")]
 		public void VideoInfo_Duration_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -43,7 +43,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFFProbe")]
+		[Category("RequiresFFprobe")]
 		public void VideoInfo_Encoding_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -54,7 +54,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFFProbe")]
+		[Category("RequiresFFprobe")]
 		public void VideoInfo_Resolution_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -65,7 +65,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFFProbe")]
+		[Category("RequiresFFprobe")]
 		public void VideoInfo_FramesPerSecond_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -77,7 +77,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFFProbe")]
+		[Category("RequiresFFprobe")]
 		public void AudioInfo_Duration_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
@@ -89,7 +89,7 @@ namespace SIL.Media.Tests
 
 
 		[Test]
-		[Category("RequiresFFProbe")]
+		[Category("RequiresFFprobe")]
 		public void AudioInfo_SampleFrequency_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
@@ -100,7 +100,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFFProbe")]
+		[Category("RequiresFFprobe")]
 		public void AudioInfo_Channels_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
@@ -111,7 +111,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFFProbe")]
+		[Category("RequiresFFprobe")]
 		public void AudioInfo_BitDepth_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
@@ -122,7 +122,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFFProbe")]
+		[Category("RequiresFFprobe")]
 		public void AudioInfo_H4N24BitStereoBitDepth_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources._24bitH4NSample, ".wav"))
@@ -133,7 +133,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFFProbe")]
+		[Category("RequiresFFprobe")]
 		public void GetMediaInfo_AudioFile_VideoInfoAndImageInfoAreNull()
 		{
 			using (var file = TempFile.FromResource(Resources.finished,".wav"))

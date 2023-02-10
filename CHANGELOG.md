@@ -22,13 +22,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core.Desktop] Added aiff, m4a, voc, and amr formats to AudioFileExtensions
 - [SIL.Core.Desktop] Added webm and mkv formats to VideoFileExtensions
 - [SIL.Media] MediaInfo.AnalysisData property
-- [SIL.Media] MediaInfo.FFProbeFolder
+- [SIL.Media] MediaInfo.FFprobeFolder
 
 ### Changed
 
 - [SIL.Core.Desktop] Fixed typo in list of AudioFileExtensions: "acc" changed to "aac"
-- [SIL.Media] FFmpegRunner will now also look for and use a version of FFMpeg installed using chocolatey
-- [SIL.Media] MediaInfo now used FFProbe instead of FFMPeg to get media information. Depends on FFMpegCore library.
+- [SIL.Media] FFmpegRunner will now also look for and use a version of FFmpeg installed using chocolatey
+- [SIL.Media] MediaInfo now used FFprobe instead of FFmpeg to get media information. Depends on FFMpegCore library.
 
 ### Removed
 - [SIL.Media] MediaInfo.RawData property (replaced by AnalysisData)

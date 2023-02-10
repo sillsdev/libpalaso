@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using FFMpegCore;
 using FFMpegCore.Exceptions;
+using JetBrains.Annotations;
 using SIL.PlatformUtilities;
 using SIL.Reporting;
 using static System.String;
@@ -11,29 +12,31 @@ using static SIL.IO.FileLocationUtilities;
 namespace SIL.Media
 {
 	/// <summary>
-	/// This class uses FFProbe (via FFMpegCore) to gather information about media streams.
+	/// This class uses FFprobe (via FFMpegCore) to gather information about media streams.
 	/// </summary>
 	public class MediaInfo
 	{
-		private static string FFProbeExe => Platform.IsWindows ? "ffprobe.exe" : "ffprobe";
+		private static string FFprobeExe => Platform.IsWindows ? "ffprobe.exe" : "ffprobe";
 
 		private static string s_ffProbeFolder;
 		
 		/// <summary>
-		/// Returns false if it can't find FFProbe
+		/// Returns false if it can't find FFprobe
 		/// </summary>
-		public static bool HaveNecessaryComponents => !IsNullOrEmpty(LocateAndRememberFFProbe());
+		public static bool HaveNecessaryComponents => !IsNullOrEmpty(LocateAndRememberFFprobe());
 
 		/// <summary>
-		/// The folder where FFProbe should be found. An application can use this to set
+		/// The folder where FFprobe should be found. An application can use this to set
 		/// the location before making any calls.
 		/// </summary>
 		/// <exception cref="DirectoryNotFoundException">Folder does not exist</exception>
-		/// <exception cref="FileNotFoundException">Folder does not contain FFProbe.exe</exception>
+		/// <exception cref="FileNotFoundException">Folder does not contain the ffprobe
+		/// executable</exception>
 		/// <remarks>If set to <see cref="Empty"/>, indicates to this library that
-		/// FFProbe is not installed, and therefore methods to retrieve media info will
+		/// FFprobe is not installed, and therefore methods to retrieve media info will
 		/// fail unconditionally (i.e. they will throw an exception)</remarks>
-		public static string FFProbeFolder
+		[PublicAPI]
+		public static string FFprobeFolder
 		{
 			get => s_ffProbeFolder;
 			set
@@ -43,10 +46,10 @@ namespace SIL.Media
 					if (!Directory.Exists(value))
 						throw new DirectoryNotFoundException("Directory not found: " + value);
 
-					if (!File.Exists(Path.Combine(value, FFProbeExe)))
+					if (!File.Exists(Path.Combine(value, FFprobeExe)))
 					{
 						throw new FileNotFoundException(
-							"Path is not a folder containing FFProbe.exe: " + value);
+							"Path is not a folder containing FFprobe.exe: " + value);
 					}
 				}
 
@@ -55,49 +58,49 @@ namespace SIL.Media
 		}
 
 		/// <summary>
-		/// Find the path to FFProbe, and remember it.
+		/// Find the path to FFprobe, and remember it.
 		/// </summary>
 		/// <returns></returns>
-		private static string LocateAndRememberFFProbe()
+		private static string LocateAndRememberFFprobe()
 		{
-			if (null != FFProbeFolder)
-				return FFProbeFolder;
+			if (null != FFprobeFolder)
+				return FFprobeFolder;
 			try
 			{
-				FFProbeFolder = GetPresumedFFProbeFolder();
+				FFprobeFolder = GetPresumedFFprobeFolder();
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
 				return null;
 			}
-			return FFProbeFolder;
+			return FFprobeFolder;
 		}
 
 		/// <summary>
-		/// On Windows, FFProbe will typically be distributed with SIL software, but if something
+		/// On Windows, FFprobe will typically be distributed with SIL software, but if something
 		/// wants to use this library and work with a version of it that the user downloaded or
 		/// compiled locally, this tries to find where they put it. On other platforms, ffprobe
 		/// should be installed in the standard location by the package manager.
 		/// </summary>
-		/// <returns>A folder where FFProbe can be found; else <see cref="Empty"/></returns>
-		private static string GetPresumedFFProbeFolder()
+		/// <returns>A folder where FFprobe can be found; else <see cref="Empty"/></returns>
+		private static string GetPresumedFFprobeFolder()
 		{
 			// REVIEW: I think that on platforms other than Windows, this will get the actual
-			// install location of FFMpeg/FFProbe.
+			// install location of ffmpeg/ffprobe.
 			var folder = GlobalFFOptions.Current.BinaryFolder;
 
 			if (Platform.IsWindows)
 			{
-				if (IsNullOrEmpty(folder) || !File.Exists(Path.Combine(folder, FFProbeExe)))
+				if (IsNullOrEmpty(folder) || !File.Exists(Path.Combine(folder, FFprobeExe)))
 				{
 					var withApplicationDirectory =
-						GetFileDistributedWithApplication(true, "ffmpeg", FFProbeExe) ??
-						GetFileDistributedWithApplication(true, "ffprobe", FFProbeExe);
+						GetFileDistributedWithApplication(true, "ffmpeg", FFprobeExe) ??
+						GetFileDistributedWithApplication(true, "ffprobe", FFprobeExe);
 
 					folder = !IsNullOrEmpty(withApplicationDirectory) ?
 						Path.GetDirectoryName(withApplicationDirectory) :
-						GetFFMpegFolderFromChocoInstall(FFProbeExe);
+						GetFFmpegFolderFromChocoInstall(FFprobeExe);
 
 					if (folder != null)
 					{
@@ -111,7 +114,7 @@ namespace SIL.Media
 			return folder;
 		}
 
-		internal static string GetFFMpegFolderFromChocoInstall(string exeNeeded)
+		internal static string GetFFmpegFolderFromChocoInstall(string exeNeeded)
 		{
 			try
 			{
@@ -131,6 +134,7 @@ namespace SIL.Media
 			}
 		}
 
+		[PublicAPI]
 		public IMediaAnalysis AnalysisData { get; }
 
 		private MediaInfo(IMediaAnalysis mediaAnalysis)
@@ -145,15 +149,18 @@ namespace SIL.Media
 			}
 		}
 
+		[PublicAPI]
 		public static string MissingComponentMessage => Format(
-			Localizer.GetString("FFProbeMissing", "Could not locate {0}",
+			Localizer.GetString("FFprobeMissing", "Could not locate {0}",
 				"Param is the name of a utility program required to be installed."),
-			"FFProbe");
+			FFprobeExe);
 
 		/// <summary>
 		/// Gets the media information for the requested media file. If media information
+		/// cannot be obtained from the file (e.g., because it is not a valid media file),
 		/// the error is logged and an object is returned with null Audio and Video.
 		/// </summary>
+		[PublicAPI]
 		public static MediaInfo GetInfo(string path)
 		{
 			if (!HaveNecessaryComponents)
@@ -174,7 +181,7 @@ namespace SIL.Media
 		/// </summary>
 		/// <param name="path">Path of the media file</param>
 		/// <param name="error">If this method returns null, this will be set to indicate the error
-		/// that occurred. If FFProbe cannot be located, this will be an
+		/// that occurred. If FFprobe cannot be located, this will be an
 		/// <see cref="ApplicationException"/>. Otherwise, it will probably be an
 		/// <see cref="FFMpegException"/>.</param>
 		/// <returns>A new MediaInfo object, or null if media information could not be retrieved.</returns>
@@ -195,10 +202,12 @@ namespace SIL.Media
 		/// <summary>
 		/// Information about the primary audio track, if any
 		/// </summary>
+		[PublicAPI]
 		public AudioInfo Audio { get; }
 		/// <summary>
 		/// Information about the primary video track, if any
 		/// </summary>
+		[PublicAPI]
 		public VideoInfo Video { get; }
 
 		//future public ImageInfo Image { get; private set;}
@@ -221,10 +230,15 @@ namespace SIL.Media
 			/// and they might start and stop at different times, the total duration reported
 			/// by <see cref="MediaInfo.AnalysisData"/> could be greater than this duration.
 			/// </summary>
+			[PublicAPI]
 			public TimeSpan Duration { get; }
+			[PublicAPI]
 			public int ChannelCount { get; }
+			[PublicAPI]
 			public int SamplesPerSecond { get; }
+			[PublicAPI]
 			public int BitDepth { get; }
+			[PublicAPI]
 			public string Encoding { get; }
 		}
 
@@ -245,13 +259,18 @@ namespace SIL.Media
 			/// and they might start and stop at different times, the total duration reported
 			/// by <see cref="MediaInfo.AnalysisData"/> could be greater than this duration.
 			/// </summary>
+			[PublicAPI]
 			public TimeSpan Duration { get; }
 			// For backward compatibility, we want to support FramesPerSecond as an integer value,
 			// but in case clients want the real rate, we supply that as well.
 			// See https://www.hdhead.com/?p=108
+			[PublicAPI]
 			public double FrameRate { get; }
+			[PublicAPI]
 			public int FramesPerSecond => (int)Math.Round(FrameRate, 0);
+			[PublicAPI]
 			public string Resolution { get; }
+			[PublicAPI]
 			public string Encoding { get; }
 		}
 
