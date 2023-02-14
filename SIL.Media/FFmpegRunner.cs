@@ -2,45 +2,52 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using JetBrains.Annotations;
 using SIL.CommandLineProcessing;
 using SIL.IO;
 using SIL.PlatformUtilities;
 using SIL.Progress;
+using static System.String;
 
 namespace SIL.Media
 {
 	///<summary>
-	/// FFmpeg is an open source media processing commandline library
+	/// FFmpeg is an open source media processing commandline library. Note that there is
+	/// a nuget package called FFmpegCore that wraps the exe to provide this functionality.
+	/// It has support for asynchronous processing, and with some poking around we could
+	/// maybe figure out how to use that to provide progress reporting, but it's not clear
+	/// that it would be worth it.
 	///</summary>
 	public class FFmpegRunner
 	{
+		private const string kFFmpegExe = "ffmpeg.exe";
+		private const string mp3LameCodecArg = "-acodec libmp3lame";
+
 		/// <summary>
-		/// If your app knows where FFMPEG lives, you can tell us before making any calls.
+		/// If your app knows where FFmpeg lives, you can tell us before making any calls.
 		/// </summary>
 		public static string FFmpegLocation;
 
 		/// <summary>
-		/// Find the path to ffmpeg, and remember it (some apps (like SayMore) call ffmpeg a lot)
+		/// Find the path to FFmpeg, and remember it (some apps (like SayMore) call FFmpeg a lot)
 		/// </summary>
 		/// <returns></returns>
-		static internal string LocateAndRememberFFmpeg()
+		internal static string LocateAndRememberFFmpeg()
 		{
 			if (null != FFmpegLocation) //NO! string.empty means we looked and didn't find: string.IsNullOrEmpty(s_ffmpegLocation))
 				return FFmpegLocation;
-			FFmpegLocation = LocateFFmpeg();
+			FFmpegLocation = LocateFFmpeg() ?? Empty;
 			return FFmpegLocation;
 		}
 
 		/// <summary>
-		/// ffmpeg is more of a "compile it yourself" thing, and yet
-		/// SIL doesn't necessarily want to be redistributing something
-		/// which may violate software patents (e.g. mp3) in certain countries, so
-		/// we ask users to get it themselves.
-		/// See: http://www.ffmpeg.org/legal.html
-		/// This tries to find where they put it.
+		/// FFmpeg will typically be distributed with SIL software on Windows or automatically
+		/// installed via package dependencies on other platforms, but if something wants to
+		/// use this library and work with a version of it that the user downloaded or compiled
+		/// locally, this tries to find where they put it.
 		/// </summary>
 		/// <returns>the path, if found, else null</returns>
-		static private string LocateFFmpeg()
+		private static string LocateFFmpeg()
 		{
 			if (Platform.IsLinux)
 			{
@@ -55,16 +62,20 @@ namespace SIL.Media
 
 			string withApplicationDirectory = GetPathToBundledFFmpeg();
 
-			if (!string.IsNullOrEmpty(withApplicationDirectory) && File.Exists(withApplicationDirectory))
+			if (withApplicationDirectory != null && File.Exists(withApplicationDirectory))
 				return withApplicationDirectory;
+
+			var fromChoco = MediaInfo.GetFFmpegFolderFromChocoInstall(kFFmpegExe);
+			if (fromChoco != null)
+				return Path.Combine(fromChoco, kFFmpegExe);
 
 			var progFileDirs = new List<string> {
 				Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
 				Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
 			};
 
-			/* We DON't SUPPORT THIS ONE (it lacks some information on the output, at least as of
-			 * Julu 2010)
+			/* We DON'T SUPPORT THIS ONE (it lacks some information on the output, at least as of
+			 * July 2010)
 			 //from http://www.arachneweb.co.uk/software/windows/avchdview/ffmpeg.html
 			foreach (var path in progFileDirs)
 			{
@@ -74,50 +85,50 @@ namespace SIL.Media
 			}
 			 */
 
+			// REVIEW: I just followed the instructions in the current version of Audacity for
+			// installing FFmpeg for Audacity and the result is a folder that does not contain
+			// ffmpeg.exe. This maybe used to work, but I don't think we'll ever find ffmpeg this
+			// way now.
 			//http://manual.audacityteam.org/index.php?title=FAQ:Installation_and_Plug-Ins#installffmpeg
 			foreach (var path in progFileDirs)
 			{
-				var exePath = (Path.Combine(path, "FFmpeg for Audacity/ffmpeg.exe"));
+				var exePath = (Path.Combine(path, "FFmpeg for Audacity", kFFmpegExe));
 				if (File.Exists(exePath))
 					return exePath;
 			}
-			return string.Empty;
+			return null;
 		}
 
 		private static string GetPathToBundledFFmpeg()
 		{
 			try
 			{
-				return FileLocationUtilities.GetFileDistributedWithApplication("ffmpeg", "ffmpeg.exe");
+				return FileLocationUtilities.GetFileDistributedWithApplication("ffmpeg", kFFmpegExe);
 			}
 			catch (Exception)
 			{
-				return string.Empty;
-			}
-		}
-
-
-		///<summary>
-		/// Returns false if it can't find ffmpeg
-		///</summary>
-		static public bool HaveNecessaryComponents
-		{
-			get
-			{
-				return !string.IsNullOrEmpty(LocateFFmpeg());
+				return null;
 			}
 		}
 
 		///<summary>
 		/// Returns false if it can't find ffmpeg
 		///</summary>
-		static private bool HaveValidFFMpegOnPath
+		public static bool HaveNecessaryComponents => LocateFFmpeg() != null;
+
+		private static ExecutionResult NoFFmpeg =>
+			new ExecutionResult { StandardError = "Could not locate FFmpeg" };
+
+		///<summary>
+		/// Returns false if it can't find ffmpeg
+		///</summary>
+		private static bool HaveValidFFmpegOnPath
 		{
 			get
 			{
 				if (Platform.IsWindows)
 				{
-					if (!string.IsNullOrEmpty(LocateFFmpeg()))
+					if (LocateFFmpeg() != null)
 						return true;
 				}
 
@@ -142,7 +153,7 @@ namespace SIL.Media
 
 		/// <summary>
 		/// Extracts the audio from a video. Note, it will fail if the file exists, so the client
-		/// is resonsible for verifying with the user and deleting the file before calling this.
+		/// is responsible for verifying with the user and deleting the file before calling this.
 		/// </summary>
 		/// <param name="inputPath"></param>
 		/// <param name="outputPath"></param>
@@ -151,20 +162,11 @@ namespace SIL.Media
 		/// <returns>log of the run</returns>
 		public static ExecutionResult ExtractMp3Audio(string inputPath, string outputPath, int channels, IProgress progress)
 		{
-			if (string.IsNullOrEmpty(LocateFFmpeg()))
-			{
-				return new ExecutionResult() { StandardError = "Could not locate FFMpeg" };
-			}
+			if (LocateFFmpeg() == null)
+				return NoFFmpeg;
 
-			var arguments = string.Format("-i \"{0}\" -vn -acodec libmp3lame -ac {1} \"{2}\"", inputPath, channels, outputPath);
-			var result = CommandLineRunner.Run(LocateAndRememberFFmpeg(),
-														arguments,
-														Environment.CurrentDirectory,
-														60 * 10, //10 minutes
-														progress
-				);
-
-			progress.WriteVerbose(result.StandardOutput);
+			var arguments = $"-i \"{inputPath}\" -vn {mp3LameCodecArg} -ac {channels} \"{outputPath}\"";
+			var result = RunFFmpeg(arguments, progress);
 
 			//hide a meaningless error produced by some versions of liblame
 			if (result.StandardError.Contains("lame: output buffer too small")
@@ -174,7 +176,7 @@ namespace SIL.Media
 				{
 					ExitCode = 0,
 					StandardOutput = result.StandardOutput,
-					StandardError = string.Empty
+					StandardError = Empty
 				};
 				return doctoredResult;
 			}
@@ -183,9 +185,10 @@ namespace SIL.Media
 
 			return result;
 		}
+
 		/// <summary>
 		/// Extracts the audio from a video. Note, it will fail if the file exists, so the client
-		/// is resonsible for verifying with the user and deleting the file before calling this.
+		/// is responsible for verifying with the user and deleting the file before calling this.
 		/// </summary>
 		/// <param name="inputPath"></param>
 		/// <param name="outputPath"></param>
@@ -194,21 +197,11 @@ namespace SIL.Media
 		/// <returns>log of the run</returns>
 		public static ExecutionResult ExtractOggAudio(string inputPath, string outputPath, int channels, IProgress progress)
 		{
-			if (string.IsNullOrEmpty(LocateFFmpeg()))
-			{
-				return new ExecutionResult() { StandardError = "Could not locate FFMpeg" };
-			}
+			if (LocateFFmpeg() == null)
+				return NoFFmpeg;
 
-			var arguments = string.Format("-i \"{0}\" -vn -acodec vorbis -ac {1} \"{2}\"", inputPath, channels, outputPath);
-			progress.WriteMessage("ffmpeg " + arguments);
-			var result = CommandLineRunner.Run(LocateAndRememberFFmpeg(),
-														arguments,
-														Environment.CurrentDirectory,
-														60 * 10, //10 minutes
-														progress
-				);
-
-			progress.WriteVerbose(result.StandardOutput);
+			var arguments = $"-i \"{inputPath}\" -vn -acodec vorbis -ac {channels} \"{outputPath}\"";
+			var result = RunFFmpeg(arguments, progress);
 
 			//hide a meaningless error produced by some versions of liblame
 			if (result.StandardError.Contains("lame: output buffer too small")
@@ -218,7 +211,7 @@ namespace SIL.Media
 				{
 					ExitCode = 0,
 					StandardOutput = result.StandardOutput,
-					StandardError = string.Empty
+					StandardError = Empty
 				};
 				return doctoredResult;
 			}
@@ -227,7 +220,6 @@ namespace SIL.Media
 
 			return result;
 		}
-
 
 		/// <summary>
 		/// Extracts the audio from a video. Note, it will fail if the file exists, so the client
@@ -238,6 +230,7 @@ namespace SIL.Media
 		/// <param name="channels">0 for same, 1 for mono, 2 for stereo</param>
 		/// <param name="progress"></param>
 		/// <returns>log of the run</returns>
+		[PublicAPI]
 		public static ExecutionResult ExtractBestQualityWavAudio(string inputPath, string outputPath, int channels, IProgress progress)
 		{
 			return ExtractAudio(inputPath, outputPath, "copy", 0, channels, progress);
@@ -254,6 +247,7 @@ namespace SIL.Media
 		/// <param name="channels">0 for same, 1 for mono, 2 for stereo</param>
 		/// <param name="progress"></param>
 		/// <returns>log of the run</returns>
+		[PublicAPI]
 		public static ExecutionResult ExtractPcmAudio(string inputPath, string outputPath,
 			int bitsPerSample, int sampleRate, int channels, IProgress progress)
 		{
@@ -284,32 +278,21 @@ namespace SIL.Media
 		private static ExecutionResult ExtractAudio(string inputPath, string outputPath,
 			string audioCodec, int sampleRate, int channels, IProgress progress)
 		{
-			if (string.IsNullOrEmpty(LocateFFmpeg()))
-			{
-				return new ExecutionResult() { StandardError = "Could not locate FFMpeg" };
-			}
+			if (LocateFFmpeg() == null)
+				return NoFFmpeg;
 
 			var sampleRateArg = "";
 			if (sampleRate > 0)
-				sampleRateArg = string.Format("-ar {0}", sampleRate);
+				sampleRateArg = $"-ar {sampleRate}";
 
 			//TODO: this will output whatever mp3 or wav or whatever is in the video... might not be wav at all!
 			var channelsArg = "";
 			if (channels > 0)
-				channelsArg = string.Format(" -ac {0}", channels);
+				channelsArg = $" -ac {channels}";
 
-			var arguments = string.Format("-i \"{0}\" -vn -acodec {1}  {2} {3} \"{4}\"",
-				inputPath, audioCodec, sampleRateArg, channelsArg, outputPath);
+			var arguments = $"-i \"{inputPath}\" -vn -acodec {audioCodec} {sampleRateArg} {channelsArg} \"{outputPath}\"";
 
-			progress.WriteMessage("ffmpeg " + arguments);
-
-			var result = CommandLineRunner.Run(LocateAndRememberFFmpeg(),
-														arguments,
-														Environment.CurrentDirectory,
-														60 * 10, //10 minutes
-														progress);
-
-			progress.WriteVerbose(result.StandardOutput);
+			var result = RunFFmpeg(arguments, progress);
 
 			//hide a meaningless error produced by some versions of liblame
 			if (result.StandardError.Contains("lame: output buffer too small")
@@ -319,7 +302,7 @@ namespace SIL.Media
 				{
 					ExitCode = 0,
 					StandardOutput = result.StandardOutput,
-					StandardError = string.Empty
+					StandardError = Empty
 				};
 				return doctoredResult;
 			}
@@ -338,19 +321,12 @@ namespace SIL.Media
 		public static ExecutionResult ChangeNumberOfAudioChannels(string inputPath,
 			string outputPath, int channels, IProgress progress)
 		{
-			if (string.IsNullOrEmpty(LocateFFmpeg()))
-				return new ExecutionResult { StandardError = "Could not locate FFMpeg" };
+			if (LocateFFmpeg() == null)
+				return NoFFmpeg;
 
-			var arguments = string.Format("-i \"{0}\" -vn -ac {1} \"{2}\"",
-				inputPath, channels, outputPath);
+			var arguments = $"-i \"{inputPath}\" -vn -ac {channels} \"{outputPath}\"";
 
-			var result = CommandLineRunner.Run(LocateAndRememberFFmpeg(),
-							arguments,
-							Environment.CurrentDirectory,
-							60 * 10, //10 minutes
-							progress);
-
-			progress.WriteVerbose(result.StandardOutput);
+			var result = RunFFmpeg(arguments, progress);
 
 			//hide a meaningless error produced by some versions of liblame
 			if (result.StandardError.Contains("lame: output buffer too small") && File.Exists(outputPath))
@@ -359,7 +335,7 @@ namespace SIL.Media
 				{
 					ExitCode = 0,
 					StandardOutput = result.StandardOutput,
-					StandardError = string.Empty
+					StandardError = Empty
 				};
 
 				return doctoredResult;
@@ -378,26 +354,12 @@ namespace SIL.Media
 		/// <returns>log of the run</returns>
 		public static ExecutionResult MakeLowQualityCompressedAudio(string inputPath, string outputPath, IProgress progress)
 		{
-			if (string.IsNullOrEmpty(LocateAndRememberFFmpeg()))
-			{
-				return new ExecutionResult() { StandardError = "Could not locate FFMpeg" };
-			}
+			if (IsNullOrEmpty(LocateAndRememberFFmpeg()))
+				return NoFFmpeg;
 
-			var arguments = "-i \"" + inputPath + "\" -acodec libmp3lame -ac 1 -ar 8000 \"" + outputPath + "\"";
+			var arguments = $"-i \"{inputPath}\" {mp3LameCodecArg} -ac 1 -ar 8000 \"{outputPath}\"";
 
-
-			progress.WriteMessage("ffmpeg " + arguments);
-
-
-			var result = CommandLineRunner.Run(LocateAndRememberFFmpeg(),
-														arguments,
-														Environment.CurrentDirectory,
-														60 * 10, //10 minutes
-														progress
-				);
-
-			progress.WriteVerbose(result.StandardOutput);
-
+			var result = RunFFmpeg(arguments, progress);
 
 			//hide a meaningless error produced by some versions of liblame
 			if (result.StandardError.Contains("lame: output buffer too small")
@@ -407,7 +369,7 @@ namespace SIL.Media
 				{
 					ExitCode = 0,
 					StandardOutput = result.StandardOutput,
-					StandardError = string.Empty
+					StandardError = Empty
 				};
 			}
 			if (result.StandardError.ToLower().Contains("error")
@@ -430,29 +392,17 @@ namespace SIL.Media
 		/// <returns>log of the run</returns>
 		public static ExecutionResult MakeLowQualitySmallVideo(string inputPath, string outputPath, int maxSeconds, IProgress progress)
 		{
-			if (string.IsNullOrEmpty(LocateAndRememberFFmpeg()))
-			{
-				return new ExecutionResult() { StandardError = "Could not locate FFMpeg" };
-			}
+			if (IsNullOrEmpty(LocateAndRememberFFmpeg()))
+				return NoFFmpeg;
 
 			// isn't working: var arguments = "-i \"" + inputPath + "\" -vcodec mpeg4 -s 160x120 -b 800  -acodec libmp3lame -ar 22050 -ab 32k -ac 1 \"" + outputPath + "\"";
-			var arguments = "-i \"" + inputPath +
-							"\" -vcodec mpeg4 -s 160x120 -b 800 -acodec libmp3lame -ar 22050 -ab 32k -ac 1 ";
+			var arguments = $"-i \"{inputPath}\" -vcodec mpeg4 -s 160x120 -b 800 " +
+				$"{mp3LameCodecArg} -ar 22050 -ab 32k -ac 1 ";
 			if (maxSeconds > 0)
-				arguments += " -t " + maxSeconds + " ";
-			arguments += "\"" + outputPath + "\"";
+				arguments += $" -t {maxSeconds} ";
+			arguments += $"\"{outputPath}\"";
 
-			progress.WriteMessage("ffmpeg " + arguments);
-
-			var result = CommandLineRunner.Run(LocateAndRememberFFmpeg(),
-														arguments,
-														Environment.CurrentDirectory,
-														60 * 10, //10 minutes
-														progress
-				);
-
-			progress.WriteVerbose(result.StandardOutput);
-
+			var result = RunFFmpeg(arguments, progress);
 
 			//hide a meaningless error produced by some versions of liblame
 			if (result.StandardError.Contains("lame: output buffer too small")
@@ -462,9 +412,8 @@ namespace SIL.Media
 				{
 					ExitCode = 0,
 					StandardOutput = result.StandardOutput,
-					StandardError = string.Empty
+					StandardError = Empty
 				};
-
 			}
 			if (result.StandardError.ToLower().Contains("error") //ffmpeg always outputs config info to standarderror
 				|| result.StandardError.ToLower().Contains("unable to")
@@ -479,29 +428,33 @@ namespace SIL.Media
 		/// Converts to low-quality, small picture
 		/// </summary>
 		/// <returns>log of the run</returns>
+		[PublicAPI]
 		public static ExecutionResult MakeLowQualitySmallPicture(string inputPath, string outputPath, IProgress progress)
 		{
-			if (string.IsNullOrEmpty(LocateAndRememberFFmpeg()))
-			{
-				return new ExecutionResult() { StandardError = "Could not locate FFMpeg" };
-			}
+			if (IsNullOrEmpty(LocateAndRememberFFmpeg()))
+				return NoFFmpeg;
 
-			//enhance: how to lower the quality?
+			// ENHANCE: how to lower the quality?
 
-			var arguments = "-i \"" + inputPath + "\" -f image2  -s 176x144 \"" + outputPath + "\"";
+			var arguments = $"-i \"{inputPath}\" -f image2  -s 176x144 \"{outputPath}\"";
 
-			progress.WriteMessage("ffmpeg " + arguments);
+			var result = RunFFmpeg(arguments, progress);
 
-			var result = CommandLineRunner.Run(LocateAndRememberFFmpeg(),
-														arguments,
-														Environment.CurrentDirectory,
-														60 * 10, //10 minutes
-														progress
-				);
-
-			progress.WriteVerbose(result.StandardOutput);
 			if (result.StandardError.ToLower().Contains("error")) //ffmpeg always outputs config info to standarderror
 				progress.WriteError(result.StandardError);
+
+			return result;
+		}
+
+		private static ExecutionResult RunFFmpeg(string arguments, IProgress progress)
+		{
+			progress.WriteMessage("ffmpeg " + arguments);
+
+			const int timeout = 600; // 60 * 10 = 10 minutes
+			var result = CommandLineRunner.Run(LocateAndRememberFFmpeg(), arguments,
+				Environment.CurrentDirectory, timeout, progress);
+
+			progress.WriteVerbose(result.StandardOutput);
 
 			return result;
 		}
