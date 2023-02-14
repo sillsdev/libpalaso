@@ -190,6 +190,7 @@ namespace SIL.Media
 		/// <see cref="ApplicationException"/>. Otherwise, it will probably be an
 		/// <see cref="FFMpegException"/>.</param>
 		/// <returns>A new MediaInfo object, or null if media information could not be retrieved.</returns>
+		[PublicAPI]
 		public static MediaInfo GetInfo(string path, out Exception error)
 		{
 			try
