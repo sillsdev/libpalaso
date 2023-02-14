@@ -162,7 +162,7 @@ namespace SIL.Media
 		/// <returns>log of the run</returns>
 		public static ExecutionResult ExtractMp3Audio(string inputPath, string outputPath, int channels, IProgress progress)
 		{
-			if (LocateFFmpeg() != null)
+			if (LocateFFmpeg() == null)
 				return NoFFmpeg;
 
 			var arguments = $"-i \"{inputPath}\" -vn {mp3LameCodecArg} -ac {channels} \"{outputPath}\"";
@@ -197,7 +197,7 @@ namespace SIL.Media
 		/// <returns>log of the run</returns>
 		public static ExecutionResult ExtractOggAudio(string inputPath, string outputPath, int channels, IProgress progress)
 		{
-			if (LocateFFmpeg() != null)
+			if (LocateFFmpeg() == null)
 				return NoFFmpeg;
 
 			var arguments = $"-i \"{inputPath}\" -vn -acodec vorbis -ac {channels} \"{outputPath}\"";
@@ -278,7 +278,7 @@ namespace SIL.Media
 		private static ExecutionResult ExtractAudio(string inputPath, string outputPath,
 			string audioCodec, int sampleRate, int channels, IProgress progress)
 		{
-			if (LocateFFmpeg() != null)
+			if (LocateFFmpeg() == null)
 				return NoFFmpeg;
 
 			var sampleRateArg = "";
@@ -321,7 +321,7 @@ namespace SIL.Media
 		public static ExecutionResult ChangeNumberOfAudioChannels(string inputPath,
 			string outputPath, int channels, IProgress progress)
 		{
-			if (LocateFFmpeg() != null)
+			if (LocateFFmpeg() == null)
 				return NoFFmpeg;
 
 			var arguments = $"-i \"{inputPath}\" -vn -ac {channels} \"{outputPath}\"";

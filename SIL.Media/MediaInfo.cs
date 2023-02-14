@@ -86,11 +86,16 @@ namespace SIL.Media
 		/// <returns>A folder where FFprobe can be found; else <see cref="Empty"/></returns>
 		private static string GetPresumedFFprobeFolder()
 		{
-			// REVIEW: I think that on platforms other than Windows, this will get the actual
-			// install location of ffmpeg/ffprobe.
 			var folder = GlobalFFOptions.Current.BinaryFolder;
 
-			if (Platform.IsWindows)
+			// On Linux, we assume the package has included the needed dependency.
+			// ENHANCE: Make it possible to find in a non-default location
+			if (!Platform.IsWindows)
+			{
+				if (IsNullOrEmpty(folder) && File.Exists(Path.Combine("/usr/bin", FFprobeExe)))
+					folder = "/usr/bin";
+			}
+			else
 			{
 				if (IsNullOrEmpty(folder) || !File.Exists(Path.Combine(folder, FFprobeExe)))
 				{
