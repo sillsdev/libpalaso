@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [12.0.0] - 2023-02-14
 
 ### Added
 
@@ -31,7 +32,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] MediaInfo now used FFprobe instead of FFmpeg to get media information. Depends on FFMpegCore library.
 
 ### Removed
+
 - [SIL.Media] MediaInfo.RawData property (replaced by AnalysisData)
+
+## [11.0.1] - 2023-01-27
+
+### Fixed
+
+- [SIL.Windows.Forms] Prevent changing row in ContributorsListControl if the row is dirty and is not in a valid state to commit edit (SP-2297)
 
 ## [11.0.0] - 2023-01-19
 
@@ -297,8 +305,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
   projects
 
-[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v11.0.0...master
+[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v12.0.0...master
 
+[12.0.0]: https://github.com/sillsdev/libpalaso/compare/v11.0.1...v12.0.0
+[11.0.1]: https://github.com/sillsdev/libpalaso/compare/v11.0.0...v11.0.1
 [11.0.0]: https://github.com/sillsdev/libpalaso/compare/v10.1.0...v11.0.0
 [10.1.0]: https://github.com/sillsdev/libpalaso/compare/v10.0.0...v10.1.0
 [10.0.0]: https://github.com/sillsdev/libpalaso/compare/v9.0.0...v10.0.0
