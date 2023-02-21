@@ -359,17 +359,33 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// </remarks>
 		public static PalasoImage FromFileRobustly(string path)
 		{
-			return RetryUtility.Retry(() => PalasoImage.FromFile(path),
-				RetryUtility.kDefaultMaxRetryAttempts,
-				RetryUtility.kDefaultRetryDelay,
-				new HashSet<Type>
-				{
-					Type.GetType("System.IO.IOException"),
-					// Odd type to catch... but it seems that Image.FromFile (which is called in the bowels of PalasoImage.FromFile)
-					// throws OutOfMemoryException when the file is inaccessible.
-					// See http://stackoverflow.com/questions/2610416/is-there-a-reason-image-fromfile-throws-an-outofmemoryexception-for-an-invalid-i
-					Type.GetType("System.OutOfMemoryException")
-				});
+			try
+			{
+				return RetryUtility.Retry(() => PalasoImage.FromFile(path),
+					RetryUtility.kDefaultMaxRetryAttempts,
+					RetryUtility.kDefaultRetryDelay,
+					new HashSet<Type>
+					{
+						typeof(System.IO.IOException),
+						// Odd type to catch... but it seems that Image.FromFile (which is called in the bowels of PalasoImage.FromFile)
+						// throws OutOfMemoryException when the file is inaccessible.
+						// See http://stackoverflow.com/questions/2610416/is-there-a-reason-image-fromfile-throws-an-outofmemoryexception-for-an-invalid-i
+						typeof(System.OutOfMemoryException),
+						// Again you'd expect that if it's corrupt, it would stay that way, but
+						// experimentally, it seems we can get this if the file can't be read because it is (temporarily?) locked.
+						// (The text of the message reads, "File could not be read and is possible corrupted", which
+						// suggests they are using this to cover any case of not being able to read the file."
+						typeof(TagLib.CorruptFileException)
+					});
+			}
+			catch (Exception e)
+			{
+				// In case something else goes wrong, at least some errors we've seen from here
+				// (including TagLib.CorruptFileException) don't tell us WHICH FILE has the
+				// problem, so wrap in another layer that does.
+				throw new ApplicationException(
+					"Could not make PalasoImage from " + path + " because " + e.Message, e);
+			}
 		}
 
 		/// <summary>
