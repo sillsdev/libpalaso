@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -139,7 +139,7 @@ namespace SIL.ObjectModel
 
 			IList moved = RemoveItems(oldIndex, count);
 			int index = newIndex;
-			if (newIndex > oldIndex)
+			if (newIndex - count > oldIndex)
 				index -= count;
 
 			bool prevUpdating = _updating;
@@ -189,7 +189,7 @@ namespace SIL.ObjectModel
 
 		private class BulkUpdater : IDisposable
 		{
-			private readonly BulkObservableList<T> _coll; 
+			private readonly BulkObservableList<T> _coll;
 
 			public BulkUpdater(BulkObservableList<T> coll)
 			{
