@@ -307,10 +307,9 @@ namespace SIL.Windows.Forms.ImageToolbox
 			//if(Path.GetExtension(path)==".jpg")
 			{
 				var leakMe = TempFile.WithExtension(GetCorrectImageExtension(path));
-				File.Delete(leakMe.Path);
-				File.Copy(path, leakMe.Path);
+				RobustFile.Copy(path, leakMe.Path, true);
 
-				//we output the tempath so that the caller can clean it up later
+				//we output the tempPath so that the caller can clean it up later
 				tempPath = leakMe.Path;
 
 				//Note, Image.FromFile(some 8 bit or 48 bit png) will always give you a 32 bit image.
