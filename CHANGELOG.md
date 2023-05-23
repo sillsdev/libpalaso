@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- [SIL.Windows.Forms] Make `PalasoImage.FromFile(Robustly)` methods more robust
 - [SIL.Core] Fixed `BulkObservableList.MoveRange` method when moving a single item forward.
 
 ## [12.0.0] - 2023-02-14
