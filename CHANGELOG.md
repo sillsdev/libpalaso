@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - [SIL.Windows.Forms] Make `PalasoImage.FromFile(Robustly)` methods more robust
+- [SIL.Windows.Forms] Update dll to `libdl.so.2` to make compatible with Ubuntu 22.x.  Affects multiple projects.
 - [SIL.Core] Fixed `BulkObservableList.MoveRange` method when moving a single item forward.
 
 ## [12.0.0] - 2023-02-14
