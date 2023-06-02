@@ -408,6 +408,8 @@ namespace SIL.Windows.Forms.ClearShare
 		}
 
 		/// <summary>Returns if the format of the image file supports metadata</summary>
+		/// <exception cref="CorruptFileException"/>
+		/// <exception cref="UnsupportedFormatException"/>
 		public bool FileFormatSupportsMetadata(string path)
 		{
 			var file = TagLib.File.Create(path) as TagLib.Image.File;

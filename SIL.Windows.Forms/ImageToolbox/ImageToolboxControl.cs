@@ -350,7 +350,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private void OnEditMetadataLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			//http://jira.palaso.org/issues/browse/BL-282 hada null in here somewhere
+			// https://issues.bloomlibrary.org/youtrack/issue/BL-282 had a null in here somewhere
 			Guard.AgainstNull(_imageInfo, "_imageInfo");
 			Guard.AgainstNull(_imageInfo.Metadata, "_imageInfo.Metadata");
 
