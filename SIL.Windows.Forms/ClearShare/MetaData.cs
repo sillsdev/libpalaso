@@ -410,8 +410,17 @@ namespace SIL.Windows.Forms.ClearShare
 		/// <summary>Returns if the format of the image file supports metadata</summary>
 		public bool FileFormatSupportsMetadata(string path)
 		{
-			var file = TagLib.File.Create(path) as TagLib.Image.File;
-			return file != null && !file.GetType().FullName.Contains("NoMetadata");
+			try
+			{
+				var file = TagLib.File.Create(path) as TagLib.Image.File;
+				return !file!.GetType().FullName!.Contains("NoMetadata");
+			}
+			catch
+			{
+				// I had a file that was created with MS Paint that caused TagLib.File.Create(path) to throw;
+				// it obviously didn't support TagLib adding metadata.
+				return false;
+			}
 		}
 
 		/// <summary>

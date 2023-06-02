@@ -350,7 +350,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private void OnEditMetadataLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			//http://jira.palaso.org/issues/browse/BL-282 hada null in here somewhere
+			//http://jira.palaso.org/issues/browse/BL-282 had a null in here somewhere
 			Guard.AgainstNull(_imageInfo, "_imageInfo");
 			Guard.AgainstNull(_imageInfo.Metadata, "_imageInfo.Metadata");
 
@@ -379,7 +379,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		{
 			_imageInfo.Metadata = newMetadata;
 			SetupMetaDataControls(_imageInfo.Metadata);
-			//Not doing this anymore, too risky. See https://jira.sil.org/browse/BL-1001 _imageInfo.SaveUpdatedMetadataIfItMakesSense();
+			//Not doing this anymore, too risky. See https://issues.bloomlibrary.org/youtrack/issue/BL-1001 _imageInfo.SaveUpdatedMetadataIfItMakesSense();
 			_imageInfo.Metadata.StoreAsExemplar(Metadata.FileCategory.Image);
 		}
 
