@@ -184,6 +184,14 @@ namespace SIL.Windows.Forms.ImageToolbox
 			}
 		}
 
+		/// <summary>
+		/// A new image was selected, or the image was cropped. Sender will be the IImageToolboxControl that changed the image
+		/// </summary>
+		public event EventHandler ImageChanged;
+
+		/// <summary>Metadata (copyright info) changed</summary>
+		public event EventHandler MetadataChanged;
+
 		private void SetupMetaDataControls(Metadata metaData)
 		{
 			Guard.AgainstNull(_imageInfo, "_imageInfo");
@@ -323,6 +331,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 		void imageToolboxControl_ImageChanged(object sender, EventArgs e)
 		{
 			GetImageFromCurrentControl();
+			// Use the original sender, not this, because clients would like to know who originally sent the event
+			ImageChanged?.Invoke(sender, e);
 		}
 
 		public void Closing()
@@ -350,7 +360,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private void OnEditMetadataLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			//http://jira.palaso.org/issues/browse/BL-282 hada null in here somewhere
+			// https://issues.bloomlibrary.org/youtrack/issue/BL-282 had a null in here somewhere
 			Guard.AgainstNull(_imageInfo, "_imageInfo");
 			Guard.AgainstNull(_imageInfo.Metadata, "_imageInfo.Metadata");
 
@@ -379,8 +389,9 @@ namespace SIL.Windows.Forms.ImageToolbox
 		{
 			_imageInfo.Metadata = newMetadata;
 			SetupMetaDataControls(_imageInfo.Metadata);
-			//Not doing this anymore, too risky. See https://jira.sil.org/browse/BL-1001 _imageInfo.SaveUpdatedMetadataIfItMakesSense();
+			// Too risky (see https://issues.bloomlibrary.org/youtrack/issue/BL-1001): _imageInfo.SaveUpdatedMetadataIfItMakesSense();
 			_imageInfo.Metadata.StoreAsExemplar(Metadata.FileCategory.Image);
+			MetadataChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		private void OnLoad(object sender, EventArgs e)
@@ -426,7 +437,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 		{
 			_imageInfo.Metadata.LoadFromStoredExemplar(Metadata.FileCategory.Image);
 			SetupMetaDataControls(ImageInfo.Metadata);
-			//Not doing this anymore, too risky. See https://jira.sil.org/browse/BL-1001  _imageInfo.SaveUpdatedMetadataIfItMakesSense();
+			MetadataChanged?.Invoke(this, EventArgs.Empty);
+			// Too risky (see https://issues.bloomlibrary.org/youtrack/issue/BL-1001): _imageInfo.SaveUpdatedMetadataIfItMakesSense();
 		}
 	}
 
