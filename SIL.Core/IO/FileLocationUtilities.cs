@@ -168,7 +168,7 @@ namespace SIL.IO
 			if (Directory.Exists(path))
 				return path;
 
-			var thisDirectory = GetProjectDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+			var thisDirectory = GetProjectDirectory(Path.GetDirectoryName(typeof(FileLocationUtilities).Assembly.Location));
 			if (thisDirectory != DirectoryOfApplicationOrSolution)
 			{
 				path = GetDirectoryDistributedWithApplication(thisDirectory, subPath);
