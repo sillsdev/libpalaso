@@ -45,6 +45,11 @@
       <Pack>true</Pack>
       <PackagePath>build</PackagePath>
     </None>
+    <None Include="../lib/Interop.WIA.64.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
+    </None>
     <Content Include="SIL.Windows.Forms.targets">
       <Pack>true</Pack>
       <PackagePath>build</PackagePath>
