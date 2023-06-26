@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -45,7 +45,7 @@ namespace SIL.Code
 				}
 				catch (Exception e)
 				{
-					if (exceptionTypesToRetry.Contains(e.GetType()))
+					if (TypesIncludes(exceptionTypesToRetry, e.GetType()))
 					{
 						if (attempt == maxRetryAttempts)
 						{
@@ -59,6 +59,19 @@ namespace SIL.Code
 				}
 			}
 			return default(T);
+		}
+
+		internal static bool TypesIncludes(ISet<Type> types, Type typeToTest)
+		{
+			if (types.Contains(typeToTest)) // fast check for root types
+				return true;
+			foreach (var type in types)
+			{
+				if (typeToTest.IsSubclassOf(type))
+					return true;
+			}
+
+			return false;
 		}
 	}
 }
