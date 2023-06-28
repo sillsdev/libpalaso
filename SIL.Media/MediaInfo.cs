@@ -256,7 +256,7 @@ namespace SIL.Media
 				Debug.Assert(primaryVideo != null);
 				Duration = primaryVideo.Duration;
 				Encoding = primaryVideo.CodecName;
-				FrameRate = primaryVideo.FrameRate;
+				FrameRate = primaryVideo.AvgFrameRate;
 				Resolution = $"{primaryVideo.Width}x{primaryVideo.Height}";
 			}
 
@@ -268,7 +268,10 @@ namespace SIL.Media
 			[PublicAPI]
 			public TimeSpan Duration { get; }
 			// For backward compatibility, we want to support FramesPerSecond as an integer value,
-			// but in case clients want the real rate, we supply that as well.
+			// but in case clients want the real rate, we supply that as well. Note that while
+			// this is the average frame rate, the detailed analysis data can be used to access the
+			// time base, real (tbr), aka, the target frame rate (which can be slightly different
+			// from the actual average).
 			// See https://www.hdhead.com/?p=108
 			[PublicAPI]
 			public double FrameRate { get; }
