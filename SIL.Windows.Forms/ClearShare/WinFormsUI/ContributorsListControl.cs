@@ -133,7 +133,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		void HandleNewContributionListAvailable(object sender, EventArgs e)
+		private void HandleNewContributionListAvailable(object sender, EventArgs e)
 		{
 			Guard.AgainstNull(_model.Contributions, "Contributions");
 
@@ -152,7 +152,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		void HandleGridMouseClick(object sender, MouseEventArgs e)
+		private void HandleGridMouseClick(object sender, MouseEventArgs e)
 		{
 			var hi = _grid.HitTest(e.X, e.Y);
 
@@ -211,7 +211,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		void HandleGridLeave(object sender, EventArgs e)
+		private void HandleGridLeave(object sender, EventArgs e)
 		{
 			_grid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
@@ -256,13 +256,13 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		void HandleGridRowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+		private void HandleGridRowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
 		{
 			SaveContributions();
 		}
 
 		/// ------------------------------------------------------------------------------------
-		void HandleGridRowValidated(object sender, DataGridViewCellEventArgs e)
+		private void HandleGridRowValidated(object sender, DataGridViewCellEventArgs e)
 		{
 			SaveContributions();
 		}
@@ -327,13 +327,13 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		void HandleRoleValueChanged(object sender, EventArgs e)
+		private void HandleRoleValueChanged(object sender, EventArgs e)
 		{
 			_msgWindow?.Close();
 		}
 
 		/// ------------------------------------------------------------------------------------
-		void HandleGridCellEndEdit(object sender, DataGridViewCellEventArgs e)
+		private void HandleGridCellEndEdit(object sender, DataGridViewCellEventArgs e)
 		{
 			var ctrl = _grid.Tag as Control;
 
