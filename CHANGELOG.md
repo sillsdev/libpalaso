@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] `ImageToolboxControl.ImageChanged` (selected or cropped) and `ImageToolboxControl.MetadataChanged` events
 - [SIL.Scripture] Made static methods TryGetVerseNum, ParseVerseNumberRange, and ParseVerseNumber public
 
+### Changed
+
+- [SIL.Media] Changed the FrameRate reported in VideoInfo from FrameRate to AvgFrameRate.
+
 ### Fixed
 
 - [SIL.Core] Make RetryUtility retry for exceptions that are subclasses of the ones listed to try. For example, by default (IOException) it will now retry for FileNotFoundException.
