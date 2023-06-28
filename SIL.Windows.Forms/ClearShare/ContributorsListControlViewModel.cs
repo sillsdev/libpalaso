@@ -42,10 +42,9 @@ namespace SIL.Windows.Forms.ClearShare
 		/// ------------------------------------------------------------------------------------
 		public void SetContributionList(ContributionCollection list)
 		{
-			Contributions = (list ?? new ContributionCollection());
+			Contributions = list ?? new ContributionCollection();
 
-			if (NewContributionListAvailable != null)
-				NewContributionListAvailable(this, EventArgs.Empty);
+			NewContributionListAvailable?.Invoke(this, EventArgs.Empty);
 		}
 
 		/// ------------------------------------------------------------------------------------
