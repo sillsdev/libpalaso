@@ -305,7 +305,7 @@ namespace SIL.Scripture
 		/// <returns><c>true</c> if the entire string could be parsed as a single,
 		/// simple verse number (1-999); <c>false</c> if the verse string represented
 		/// a verse bridge, contained segment letters, or was invalid</returns>
-		static bool TryGetVerseNum(string verseStr, bool romanOnly , out short vNum)
+		public static bool TryGetVerseNum(string verseStr, bool romanOnly , out short vNum)
 		{
 			if (string.IsNullOrEmpty(verseStr))
 			{
@@ -1377,9 +1377,8 @@ namespace SIL.Scripture
 		// Examples:
 		//   1 -> 1, "", 1, ""
 		//   1a-2  ->  1, "a", 2, ""
-		static void ParseVerseNumberRange(string vNum,
-										  out int number1, out string segment1,
-										  out int number2, out string segment2)
+		public static void ParseVerseNumberRange(string vNum, out int number1, out string segment1,
+			out int number2, out string segment2)
 		{
 			string[] parts = vNum.Split(verseRangeSeparator, '\u2013', '\u2014');
 			if (parts.Length == 1)
@@ -1398,7 +1397,7 @@ namespace SIL.Scripture
 		// Examples:
 		//	1  ->  1, ""
 		//	1a ->  1, "a"
-		static void ParseVerseNumber(string vNum, out int number, out string segment)
+		public static void ParseVerseNumber(string vNum, out int number, out string segment)
 		{
 			int j;
 			for (j = 0; j < vNum.Length && char.IsDigit(vNum[j]); ++j)
@@ -1576,7 +1575,7 @@ namespace SIL.Scripture
 		/// Tries to parse the specified string into a verse reference
 		/// </summary>
 		/// <param name="str">The string to attempt to parse</param>
-		/// <param name="vref">The result of the parse if successful, or null if it failed</param>
+		/// <param name="vref">The result of the parse if successful, or default if it failed</param>
 		/// <returns>True if the specified string was successfully parsed, false otherwise</returns>
 		[PublicAPI]
 		public static bool TryParse(string str, out VerseRef vref)
@@ -1588,7 +1587,7 @@ namespace SIL.Scripture
 			}
 			catch (VerseRefException)
 			{
-				vref = new VerseRef();
+				vref = default;
 				return false;
 			}
 		}
