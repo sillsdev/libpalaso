@@ -167,7 +167,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			// try to clean up behind ourselves
 			try
 			{
-				File.Delete(testPath);
+				RobustFile.Delete(testPath);
 			}
 			catch (Exception)
 			{
