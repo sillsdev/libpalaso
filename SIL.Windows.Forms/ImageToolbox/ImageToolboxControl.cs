@@ -9,7 +9,6 @@ using SIL.Reporting;
 using SIL.Windows.Forms.ClearShare;
 using SIL.Windows.Forms.ClearShare.WinFormsUI;
 using SIL.Windows.Forms.ImageToolbox.Cropping;
-using SIL.Windows.Forms.Miscellaneous;
 
 namespace SIL.Windows.Forms.ImageToolbox
 {
