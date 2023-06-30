@@ -37,7 +37,9 @@ namespace SIL.Windows.Forms.Miscellaneous
 		}
 		/// <summary>
 		/// Returns 'true' unless we find we can't write to all the specified folders, in which
-		/// case it performs the specified report action.
+		/// case it performs the specified report action. Note that the action will never be
+		/// performed more than once, since this method does not keep checking additional folders
+		/// once it finds one that is not writable.
 		/// In Oct of 2017, a Windows update to Defender on some machines set Protections on
 		/// certain basic folders, like MyDocuments! This resulted in throwing an exception any
 		/// time Bloom tried to write out CollectionSettings files! More recently (especially on
@@ -45,7 +47,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		/// ransomware checking.
 		/// </summary>
 		/// <param name="report">Action to perform if a folder is found which is not writable (or
-		/// null to jst return false)
+		/// null to just return false)
 		/// </param>
 		/// <param name="foldersToCheck">The folders to test for write access.</param>
 		[PublicAPI]

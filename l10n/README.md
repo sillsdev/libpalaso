@@ -2,7 +2,7 @@
 
 ### Using localizations in a project
 
-We are using .xlf with Crowdin so if you are using L10nSharp with TMX you will need to switch to XLF to make use of the Crowdin translations.
+Do the following:
 
 1. Add a Nuget dependency on libpalaso.l10ns to the project where you initialize the L10nSharp `LocalizationManager`
 2. Add a build step to copy the Palaso.%langcode%.xlf files to the correct folder in your project
