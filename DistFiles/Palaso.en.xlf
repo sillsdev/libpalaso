@@ -348,7 +348,7 @@
         <note>ID: Errors.DefenderFolderProtectionHeading</note>
       </trans-unit>
       <trans-unit id="Errors.DefenderFolderProtection">
-        <source xml:lang="en">This might be caused by Windows Defender \"Controlled Folder Access\" or some other virus or malware protection. You can search online or contact a local support person for help with configuring Windows Defender (and other antivirus software) to allow this program to work.</source>
+        <source xml:lang="en">This might be caused by Windows Defender "Controlled Folder Access" or some other virus or malware protection. You can search online or contact a local support person for help with configuring Windows Defender (and other antivirus software) to allow this program to work.</source>
         <note>ID: Errors.DefenderFolderProtection</note>
       </trans-unit>
       <trans-unit id="ExceptionReportingDialog.ContinueButtonLabel">
