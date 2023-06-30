@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns:sil="http://sil.org/software/XLiff" version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="en" product-version="9.0.0" original="Palaso.dll" datatype="plaintext">
+  <file source-language="en" product-version="12.0.1" original="Palaso.dll" datatype="plaintext">
     <body>
       <trans-unit id="AboutDialog.BuiltOnDate">
         <source xml:lang="en">Built on {0}</source>
@@ -342,6 +342,14 @@
       <trans-unit id="DialogBoxes.SelectProjectDlg.ResourceBundleFileTypeLabel">
         <source xml:lang="en">Text Resource Bundle files</source>
         <note>ID: DialogBoxes.SelectProjectDlg.ResourceBundleFileTypeLabel</note>
+      </trans-unit>
+      <trans-unit id="Errors.DefenderFolderProtectionHeading">
+        <source xml:lang="en">{0} cannot write to the folder {1}.</source>
+        <note>ID: Errors.DefenderFolderProtectionHeading</note>
+      </trans-unit>
+      <trans-unit id="Errors.DefenderFolderProtection">
+        <source xml:lang="en">This might be caused by Windows Defender "Controlled Folder Access" or some other virus or malware protection. You can search online or contact a local support person for help with configuring Windows Defender (and other antivirus software) to allow this program to work.</source>
+        <note>ID: Errors.DefenderFolderProtection</note>
       </trans-unit>
       <trans-unit id="ExceptionReportingDialog.ContinueButtonLabel">
         <source xml:lang="en">Continue</source>
