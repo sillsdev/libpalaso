@@ -10,7 +10,7 @@ namespace SIL.Windows.Forms.DblBundle
 	{
 		private OpenFileDialog m_fileDialog;
 		private string m_defaultDir;
-		private bool m_allowProjectFiles;
+		private readonly bool m_allowProjectFiles;
 
 		protected abstract string DefaultBundleDirectory { get; set; }
 		protected abstract string ProjectFileExtension { get; }
