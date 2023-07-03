@@ -26,10 +26,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - [SIL.Media] Changed the FrameRate reported in VideoInfo from FrameRate to AvgFrameRate.
+- [SIL.Windows.Forms] Fixed spelling error in ImageGalleryControl, renaming SetIntialSearchTerm to SetInitialSearchTerm.
 
 ### Fixed
 
 - [SIL.Core] Make RetryUtility retry for exceptions that are subclasses of the ones listed to try. For example, by default (IOException) it will now retry for FileNotFoundException.
+
+### Removed
+- [SIL.Windows.Forms] ImageGalleryControl.InSomeoneElesesDesignMode (seemingly unused and misspelled)
 
 ## [12.0.1] - 2023-05-26
 

@@ -19,7 +19,6 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 	{
 		private ImageCollectionManager _imageCollectionManager;
 		private PalasoImage _previousImage;
-		public bool InSomeoneElesesDesignMode;
 
 		public ImageGalleryControl()
 		{
@@ -55,9 +54,19 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 		/// use if the calling app already has some notion of what the user might be looking for (e.g. the definition in a dictionary program)
 		/// </summary>
 		/// <param name="searchTerm"></param>
-		public void SetIntialSearchTerm(string searchTerm)
+		public void SetInitialSearchTerm(string searchTerm)
 		{
 			_searchTermsBox.Text = searchTerm;
+		}
+
+		/// <summary>
+		/// use if the calling app already has some notion of what the user might be looking for (e.g. the definition in a dictionary program)
+		/// </summary>
+		/// <param name="searchTerm"></param>
+		[Obsolete("Use SetInitialSearchTerm (spelling corrected)")]
+		public void SetIntialSearchTerm(string searchTerm)
+		{
+			SetInitialSearchTerm(searchTerm);
 		}
 
 		/// <summary>
@@ -99,9 +108,19 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 						_messageLabel.Visible = false;
 						_downloadInstallerLink.Visible = false;
 						_thumbnailViewer.LoadItems(results);
-						var fmt = "Found {0} images".Localize("ImageToolbox.MatchingImages", "The {0} will be replaced by the number of matching images");
+						var fmt = results.Count == 1 ?
+							"Found 1 image".Localize("ImageToolbox.MatchingImageSingle") :
+							"Found {0} images".Localize("ImageToolbox.MatchingImages", "The {0} will be replaced by the number of matching images");
 						if (!foundExactMatches)
-							fmt = "Found {0} images with names close to \u201C{1}\u201D".Localize("ImageToolbox.AlmostMatchingImages", "The {0} will be replaced by the number of images found.  The {1} will be replaced with the search string.");
+						{
+							fmt = results.Count == 1 ?
+								"Found 1 image with a name close to \u201C{1}\u201D".Localize("ImageToolbox.AlmostMatchingImageSingle",
+									"The {1} will be replaced with the search string.") :
+								"Found {0} images with names close to \u201C{1}\u201D".Localize(
+								"ImageToolbox.AlmostMatchingImages",
+								"The {0} will be replaced by the number of images found. The {1} will be replaced with the search string.");
+						}
+
 						_searchResultStats.Text = string.Format(fmt, results.Count, _searchTermsBox.Text);
 						_searchResultStats.ForeColor = foundExactMatches ? Color.Black : Color.FromArgb(0x34, 0x65, 0xA4); //#3465A4
 						_searchResultStats.Font = new Font("Segoe UI", 9F, foundExactMatches ? FontStyle.Regular : FontStyle.Bold);
@@ -226,7 +245,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 					_collectionDropDown.Visible = true;
 					_collectionDropDown.Text =
 						"Galleries".Localize("ImageToolbox.Galleries");
-					if(ImageToolboxSettings.Default.DisabledImageCollections == null)
+					if (ImageToolboxSettings.Default.DisabledImageCollections == null)
 					{
 						ImageToolboxSettings.Default.DisabledImageCollections = new StringCollection();
 					}
