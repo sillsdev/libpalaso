@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2017 SIL International
+// Copyright (c) 2016-2023 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -43,7 +43,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			_versionNumber.Text = useFullVersionNumber ? Application.ProductVersion :
 				GetShortVersionInfo();
 			_buildDate.Text = GetBuiltOnDate();
-			Text = GetWindowTitle();
+			Text = string.Format(Text, GetApplicationTitle());
 		}
 
 		protected override void OnLoad(EventArgs e)
@@ -86,13 +86,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			}
 		}
 
-		public string AssemblyVersion
-		{
-			get
-			{
-				return Assembly.GetExecutingAssembly().GetName().Version.ToString();
-			}
-		}
+		public string AssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
 		public string AssemblyDescription
 		{
@@ -145,17 +139,6 @@ namespace SIL.Windows.Forms.Miscellaneous
 		}
 		#endregion
 
-		private string GetWindowTitle()
-		{
-			// The window title was originally "About " with the application title appended.
-			// There was also the L10N id "AboutDialog.AboutDialogWindowTitle" which wasn't actually being displayed but
-			// which was based on the English "About" (and probably was translated in many apps).
-			// I considered trying to repurpose this id, but realized its presence in existing files would
-			// prevent translators from seeing that it needed to have the {0} added.
-			// Therefore, I've simply used a new id which corrects the string.
-			return string.Format(LocalizationManager.GetString("AboutDialog.WindowTitle", "About {0}", "{0} is the application name"), GetApplicationTitle());
-		}
-
 		private string GetBuiltOnDate()
 		{
 			var file = PathHelper.StripFilePrefix(_assembly.CodeBase);
@@ -174,24 +157,20 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 		private string GetCopyright()
 		{
-			foreach (object attribute in _assembly.GetCustomAttributes(false))
+			foreach (var attribute in _assembly.GetCustomAttributes(false))
 			{
-				if (attribute.GetType() == typeof(System.Reflection.AssemblyCopyrightAttribute))
-				{
-					return ((AssemblyCopyrightAttribute) attribute).Copyright;
-				}
+				if (attribute is AssemblyCopyrightAttribute copyrightAttribute)
+					return copyrightAttribute.Copyright;
 			}
 			return string.Empty;
 		}
 
 		private string GetApplicationTitle()
 		{
-			foreach (object attribute in _assembly.GetCustomAttributes(false))
+			foreach (var attribute in _assembly.GetCustomAttributes(false))
 			{
-				if (attribute.GetType() == typeof(System.Reflection.AssemblyTitleAttribute))
-				{
-					return ((AssemblyTitleAttribute) attribute).Title;
-				}
+				if (attribute is AssemblyTitleAttribute titleAttribute)
+					return titleAttribute.Title;
 			}
 			return string.Empty;
 		}

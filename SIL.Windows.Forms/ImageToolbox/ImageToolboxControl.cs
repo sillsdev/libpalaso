@@ -142,8 +142,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 		{
 			_toolTip.SetToolTip(_currentImageBox, "");
 
-			//enchance: this only uses the "originalpath" version, which may be a lot larger than what we
-			//currently have, if we cropped, for example. But I'm loath to save it to disk just to get an accurate size.
+			// ENHANCE: this only uses the "originalpath" version, which may be a lot larger than what we
+			// currently have, if we cropped, for example. But I'm loath to save it to disk just to get an accurate size.
 			if (image!=null && !string.IsNullOrEmpty(image.OriginalFilePath) && File.Exists(image.OriginalFilePath))
 			{
 				try
@@ -214,7 +214,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			_copyExemplarMetadata.Visible = Metadata.HaveStoredExemplar(Metadata.FileCategory.Image);
 			if (_invitationToMetadataPanel.Visible && _copyExemplarMetadata.Visible)
 			{
-				var s = LocalizationManager.GetString("ImageToolbox.CopyExemplarMetadata", "Use {0}", "Used to copy a previous metadata set to the current image. The  {0} will be replaced with the name of the exemplar image.");
+				var s = LocalizationManager.GetString("ImageToolbox.CopyExemplarMetadata", "Use {0}", "Used to copy a previous metadata set to the current image. The {0} will be replaced with the name of the exemplar image.");
 				_copyExemplarMetadata.Text = string.Format(s, Metadata.GetStoredExemplarSummaryString(Metadata.FileCategory.Image));
 			}
 

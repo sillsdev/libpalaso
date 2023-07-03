@@ -501,7 +501,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._linkToPublicDomainCC0.ForeColor = System.Drawing.Color.Blue;
 			this._linkToPublicDomainCC0.IsTextSelectable = true;
 			this._L10NSharpExtender.SetLocalizableToolTip(this._linkToPublicDomainCC0, null);
-			this._L10NSharpExtender.SetLocalizationComment(this._linkToPublicDomainCC0, "{0} is replaced by an untranslatable abbreviation functioning as an adjective");
+			this._L10NSharpExtender.SetLocalizationComment(this._linkToPublicDomainCC0, "{0} is replaced by an untranslatable abbreviation functioning as an adjective (\"CC0\")");
 			this._L10NSharpExtender.SetLocalizingId(this._linkToPublicDomainCC0, "MetadataEditor.linkToPublicDomainCC0");
 			this._linkToPublicDomainCC0.Location = new System.Drawing.Point(285, 416);
 			this._linkToPublicDomainCC0.Multiline = true;
