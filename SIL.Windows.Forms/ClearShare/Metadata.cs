@@ -170,7 +170,7 @@ namespace SIL.Windows.Forms.ClearShare
 			}
 			destinationMetadata.License = LicenseInfo.FromXmp(licenseProperties);
 
-			//NB: we're loosing non-ascii somewhere... the copyright symbol is just the most obvious
+			//NB: we're losing non-ascii somewhere... the copyright symbol is just the most obvious
 			if (!string.IsNullOrEmpty(destinationMetadata.CopyrightNotice))
 			{
 				destinationMetadata.CopyrightNotice = destinationMetadata.CopyrightNotice.Replace("Copyright �", "Copyright ©");
@@ -706,7 +706,7 @@ namespace SIL.Windows.Forms.ClearShare
 		/// <summary>
 		/// Loads all metadata found in the XMP file.
 		/// </summary>
-		/// <example>LoadXmplFile("c:\dir\metadata.xmp")</example>
+		/// <example>LoadXmpFile("c:\dir\metadata.xmp")</example>
 		public void LoadXmpFile(string path)
 		{
 			if(!File.Exists(path))
