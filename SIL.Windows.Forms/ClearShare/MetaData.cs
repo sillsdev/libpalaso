@@ -1,4 +1,4 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2018-2023 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
@@ -323,7 +323,7 @@ namespace SIL.Windows.Forms.ClearShare
 			}
 		}
 
-		private class MetadataAssignement
+		private class MetadataAssignment
 		{
 			public Func<Metadata, string> GetStringFunction { get; set; }
 			public Func<Metadata, bool> ShouldSetValue { get; set; }
@@ -331,12 +331,12 @@ namespace SIL.Windows.Forms.ClearShare
 			public string ResultLabel;
 			public Action<Metadata, string> AssignmentAction;
 
-			public MetadataAssignement(string Switch, string resultLabel, Action<Metadata, string> assignmentAction, Func<Metadata, string> stringProvider)
+			public MetadataAssignment(string Switch, string resultLabel, Action<Metadata, string> assignmentAction, Func<Metadata, string> stringProvider)
 				: this(Switch, resultLabel, assignmentAction, stringProvider, p => !String.IsNullOrEmpty(stringProvider(p)))
 			{
 			}
 
-			public MetadataAssignement(string @switch, string resultLabel, Action<Metadata, string> assignmentAction, Func<Metadata, string> stringProvider, Func<Metadata, bool> shouldSetValueFunction)
+			public MetadataAssignment(string @switch, string resultLabel, Action<Metadata, string> assignmentAction, Func<Metadata, string> stringProvider, Func<Metadata, bool> shouldSetValueFunction)
 			{
 				GetStringFunction = stringProvider;
 				ShouldSetValue = shouldSetValueFunction;
@@ -346,22 +346,22 @@ namespace SIL.Windows.Forms.ClearShare
 			}
 		}
 
-		private static List<MetadataAssignement> MetadataAssignments
+		private static List<MetadataAssignment> MetadataAssignments
 		{
 			get
 			{
-				var assignments = new List<MetadataAssignement>();
-				assignments.Add(new MetadataAssignement("-copyright", "copyright", (p, value) => p.CopyrightNotice = value, p => p.CopyrightNotice));
+				var assignments = new List<MetadataAssignment>();
+				assignments.Add(new MetadataAssignment("-copyright", "copyright", (p, value) => p.CopyrightNotice = value, p => p.CopyrightNotice));
 
-				assignments.Add(new MetadataAssignement("-Author", "Author", (p, value) => p.Creator = value, p => p.Creator));
-				assignments.Add(new MetadataAssignement("-XMP:CollectionURI", "Collection URI", (p, value) => p.CollectionUri = value, p => p.CollectionUri));
-				assignments.Add(new MetadataAssignement("-XMP:CollectionName", "Collection Name", (p, value) => p.CollectionName = value, p => p.CollectionName));
-				assignments.Add(new MetadataAssignement("-XMP-cc:AttributionURL", "Attribution URL", (p, value) => p.AttributionUrl = value, p => p.AttributionUrl));
-				assignments.Add(new MetadataAssignement("-XMP-cc:License", "license",
+				assignments.Add(new MetadataAssignment("-Author", "Author", (p, value) => p.Creator = value, p => p.Creator));
+				assignments.Add(new MetadataAssignment("-XMP:CollectionURI", "Collection URI", (p, value) => p.CollectionUri = value, p => p.CollectionUri));
+				assignments.Add(new MetadataAssignment("-XMP:CollectionName", "Collection Name", (p, value) => p.CollectionName = value, p => p.CollectionName));
+				assignments.Add(new MetadataAssignment("-XMP-cc:AttributionURL", "Attribution URL", (p, value) => p.AttributionUrl = value, p => p.AttributionUrl));
+				assignments.Add(new MetadataAssignment("-XMP-cc:License", "license",
 													   (p, value) => { },//p.License=LicenseInfo.FromUrl(value), //we need to use for all the properties to set up the license
 													   p => p.License.Url, p => p.License !=null));
 				//NB: CC also has a custom one, for adding rights beyond the normal. THat's not what this is (at least right now). This is for custom licenses.
-				assignments.Add(new MetadataAssignement("-XMP-dc:Rights-en", "Rights (en)",
+				assignments.Add(new MetadataAssignment("-XMP-dc:Rights-en", "Rights (en)",
 													   (p, value) => { },//p.License=LicenseInfo.FromUrl(value), //we need to use for all the properties to set up the license
 													   p => p.License.RightsStatement, p => p.License != null));
 
@@ -399,8 +399,37 @@ namespace SIL.Windows.Forms.ClearShare
 			}
 		}
 
+		/// <inheritdoc/>
+		public override string ToString()
+		{
+			if (IsEmpty)
+			{
+				return "<No Copyright Info>";
+			}
+			var infos = new List<string>();
+
+			if (!string.IsNullOrEmpty(Creator))
+			{
+				infos.Add(Creator);
+			}
+			if (!string.IsNullOrEmpty(CopyrightNotice))
+			{
+				infos.Add(ShortCopyrightNotice);
+			}
+			if (License != null)
+			{
+				// NullLicense.ToString() returns an empty string; both others return Token or something similar.
+				infos.Add(License.Token);
+			}
+
+			if (infos.Count == 0)
+			{
+				return string.IsNullOrEmpty(AttributionUrl) ? "<Sparse Copyright Info>" : AttributionUrl;
+			}
+			return string.Join(", ", infos);
+		}
+
 		private string _path;
-		private static Encoding _commandLineEncoding = Encoding.UTF8;
 
 		public void Write()
 		{
