@@ -400,34 +400,7 @@ namespace SIL.Windows.Forms.ClearShare
 		}
 
 		/// <inheritdoc/>
-		public override string ToString()
-		{
-			if (IsEmpty)
-			{
-				return "<No Copyright Info>";
-			}
-			var infos = new List<string>();
-
-			if (!string.IsNullOrEmpty(Creator))
-			{
-				infos.Add(Creator);
-			}
-			if (!string.IsNullOrEmpty(CopyrightNotice))
-			{
-				infos.Add(ShortCopyrightNotice);
-			}
-			if (License != null)
-			{
-				// NullLicense.ToString() returns an empty string; both others return Token or something similar.
-				infos.Add(License.Token);
-			}
-
-			if (infos.Count == 0)
-			{
-				return string.IsNullOrEmpty(AttributionUrl) ? "<Sparse Copyright Info>" : AttributionUrl;
-			}
-			return string.Join(", ", infos);
-		}
+		public override string ToString() => MinimalCredits(new[] { "en" }, out _);
 
 		private string _path;
 
