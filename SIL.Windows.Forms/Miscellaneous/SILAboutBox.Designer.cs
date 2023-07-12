@@ -183,8 +183,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			this.ClientSize = new System.Drawing.Size(585, 459);
 			this.Controls.Add(this.tableLayoutPanelMain);
 			this._L10NSharpExtender.SetLocalizableToolTip(this, null);
-			this._L10NSharpExtender.SetLocalizationComment(this, null);
-			this._L10NSharpExtender.SetLocalizationPriority(this, L10NSharp.LocalizationPriority.MediumLow);
+			this._L10NSharpExtender.SetLocalizationComment(this, "{0} is the application name");
 			this._L10NSharpExtender.SetLocalizingId(this, "AboutDialog.WindowTitle");
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;

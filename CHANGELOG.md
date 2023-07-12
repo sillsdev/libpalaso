@@ -19,15 +19,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - [SIL.Windows.Forms] `ImageToolboxControl.ImageChanged` (selected or cropped) and `ImageToolboxControl.MetadataChanged` events
+- [SIL.Windows.Forms] Interop.WIA.dll for MSIL (doesn't seem to work with 32-bit apps, so the existing dll remains unchanged)
 - [SIL.Scripture] Made static methods TryGetVerseNum, ParseVerseNumberRange, and ParseVerseNumber public
+- [SIL.Core] `CanWriteToDirectories` and `CanWriteToDirectory`
+- [SIL.Windows.Forms] `CanWriteToDirectories`, `CanWriteToDirectory` and `ReportDefenderProblem`
 
 ### Changed
 
 - [SIL.Media] Changed the FrameRate reported in VideoInfo from FrameRate to AvgFrameRate.
+- [SIL.Windows.Forms] Fixed spelling error in ImageGalleryControl, renaming SetIntialSearchTerm to SetInitialSearchTerm.
 
 ### Fixed
 
 - [SIL.Core] Make RetryUtility retry for exceptions that are subclasses of the ones listed to try. For example, by default (IOException) it will now retry for FileNotFoundException.
+
+### Removed
+- [SIL.Windows.Forms] ImageGalleryControl.InSomeoneElesesDesignMode (seemingly unused and misspelled)
 
 ## [12.0.1] - 2023-05-26
 

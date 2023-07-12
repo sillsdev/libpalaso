@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using SIL.Code;
 using SIL.IO.FileLock;
@@ -62,7 +62,7 @@ namespace SIL.Windows.Forms.UniqueToken
 			string waitingMsg = applicationName == null ?
 				L10NSharp.LocalizationManager.GetString("Application.WaitingFinish.General", "Waiting for other application to finish...") :
 				String.Format(
-					L10NSharp.LocalizationManager.GetString("Application.WaitingFinish.Specific", "Waiting for other {0} to finish...", "{0} is the application name"),
+					L10NSharp.LocalizationManager.GetString("Application.WaitingFinish.Specific", "Waiting for {0} to finish...", "{0} is the application name"),
 					applicationName);
 			using (var dlg = new SimpleMessageDialog(waitingMsg, applicationName))
 			{

@@ -30,10 +30,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			_licenseImage.Dispose();
 			_licenseImage = betterPictureBox;
 
-			_linkToPublicDomainCC0.Text = string.Format(
-				L10NSharp.LocalizationManager.GetString("MetadataEditor.linkToPublicDomainCC0",
-					"about {0} Public Domain", "{0} is replaced by an untranslatable abbreviation functioning as an adjective (\"CC0\")"),
-				"CC0");
+			_linkToPublicDomainCC0.Text = string.Format(_linkToPublicDomainCC0.Text, "CC0");
 		}
 
 		protected override void OnParentChanged(EventArgs e)

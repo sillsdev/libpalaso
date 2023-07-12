@@ -39,6 +39,14 @@ namespace SIL.DblBundle
 
 			return tempPath;
 		}
+
+		internal static void ThrowExceptionForMissingRequiredFile(string filename, string pathToZippedBundle)
+		{
+			throw new ApplicationException(
+				string.Format(Localizer.GetString("DblBundle.FileMissingFromBundle",
+					"Required {0} file not found. File is not a valid Text Release Bundle:"), filename) +
+				Environment.NewLine + pathToZippedBundle);
+		}
 	}
 
 	/// <summary>
@@ -166,10 +174,7 @@ namespace SIL.DblBundle
 						Environment.NewLine + _pathToZippedBundle);
 
 				}
-				throw new ApplicationException(
-					string.Format(Localizer.GetString("DblBundle.FileMissingFromBundle",
-						"Required {0} file not found. File is not a valid Text Release Bundle:"), filename) +
-					Environment.NewLine + _pathToZippedBundle);
+				DblBundleFileUtils.ThrowExceptionForMissingRequiredFile(filename, _pathToZippedBundle);
 			}
 
 			TM metadataData;
