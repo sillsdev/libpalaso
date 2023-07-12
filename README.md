@@ -28,7 +28,7 @@ To get the source code, you'll need Git. Then from a command line, give this com
 
 #### Windows
 
-- Building libpalaso requires .NET 5. You might want to
+- Building libpalaso requires .NET 5 or later. You might want to
   install Visual Studio 2019 >= 16.8, or JetBrains Rider.
 
 #### Ubuntu Linux
@@ -36,23 +36,27 @@ To get the source code, you'll need Git. Then from a command line, give this com
 - Add access to packages.microsoft.com repo for dotnet sdk:
 
   ```bash
-  cd $(mktemp -d) &&
-  curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg &&
-  sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/ &&
-  (source /etc/os-release && wget -q https://packages.microsoft.com/config/${ID}/${VERSION_ID}/prod.list -O prod.list) &&
-  sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list &&
-  sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.gpg /etc/apt/sources.list.d/microsoft-prod.list &&
-  sudo chmod 644 /etc/apt/trusted.gpg.d/microsoft.gpg /etc/apt/sources.list.d/microsoft-prod.list
+  wget https://packages.microsoft.com/config/ubuntu/$(lsb_release -s -r)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+  sudo dpkg -i packages-microsoft-prod.deb
+  rm packages-microsoft-prod.deb
   ```
 
-- Add access to download.mono-project.com for mono 6 by following instructions at <https://www.mono-project.com/download/stable>.
+- Add access to download.mono-project.com for mono 6 by following
+  instructions at <https://www.mono-project.com/download/stable>.
 
-- Install package dependencies:
+- To get unit tests to pass, you have to install libcanberra-gtk-module
+
+- Install the dependencies with:
 
   ```bash
   sudo apt update
-  sudo apt install libicu-dev dotnet-sdk-5 mono-complete
+  sudo apt install libicu-dev dotnet-sdk-6.0 mono-complete mono-devel msbuild libcanberra-gtk-module
   ```
+
+**Note:** Newer Ubuntu versions have .NET 6+ and Mono 6 in their package
+repos. However, those packages are missing some required files so that
+building libpalaso won't succeed. Therefore it's recommended to install
+.NET 6+ and Mono from Microsoft's/Mono's package repos.
 
 ### Develop
 
