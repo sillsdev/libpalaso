@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
@@ -33,9 +34,15 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			_linkToPublicDomainCC0.Text = string.Format(_linkToPublicDomainCC0.Text, "CC0");
 		}
 
+		protected override void OnLoad(EventArgs e)
+		{
+			ActiveControl = _copyrightBy;
+		}
+
 		protected override void OnParentChanged(EventArgs e)
 		{
 			base.OnParentChanged(e);
+			// ReSharper disable once PossibleNullReferenceException
 			ParentForm.Shown += (sender, ee) => UpdateDisplay();
 		}
 
@@ -62,7 +69,6 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				if(_metadata.License!=null)
 					_licenseImage.Image = _metadata.License.GetImage();
 
-				_useIGOLicenseVersion.Enabled = false;
 
 				if (_metadata.License is CreativeCommonsLicense)
 				{
@@ -76,8 +82,6 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 						_commercial.Checked = cc.CommercialUseAllowed;
 						_nonCommercial.Checked = !cc.CommercialUseAllowed;
 						_customRightsStatement.Text = _metadata.License.RightsStatement;
-						_useIGOLicenseVersion.Enabled = true;
-						_useIGOLicenseVersion.Checked = cc.IntergovernmentalOriganizationQualifier;
 					}
 					else
 					{
@@ -207,7 +211,6 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			_customRightsStatement.Enabled = _customLicense.Checked || CreativeCommonsStyleLicenseIsChecked();
 			_linkToRefinedCreativeCommonsWarning.Visible = CreativeCommonsStyleLicenseIsChecked() && !string.IsNullOrWhiteSpace(_customRightsStatement.Text);
 			_additionalRequestsLabel.Visible = CreativeCommonsStyleLicenseIsChecked();
-			_useIGOLicenseVersion.Enabled = _creativeCommons.Checked;
 
 			if (CreativeCommonsStyleLicenseIsChecked())
 			{
@@ -259,12 +262,6 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			if (_settingUp)
 				return;
 			_metadata.SetCopyrightNotice(_copyrightYear.Text, _copyrightBy.Text);
-		}
-
-		private void _useIGOLicenseVersion_CheckedChanged(object sender, EventArgs e)
-		{
-			//NB: we know it is CC because this checkbox will be disabled otherwise
-			((CreativeCommonsLicense) _metadata.License).IntergovernmentalOriganizationQualifier = _useIGOLicenseVersion.Checked;
 		}
 	}
 	public class BetterPictureBox : PictureBox
