@@ -33,8 +33,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 			var toolTip = new ToolTip { ShowAlways = true, AutoPopDelay = 0 };
 			var attributionToolTip = LocalizationManager.GetString("MetadataEditorControl.AttributionUrlToolTip",
-				"If this content came from the Internet, enter the web address used to download it.",
-				"Explain the requirement at https://creativecommons.org/licenses/by/4.0/legalcode#s3a1Av");
+				"If this content came from the Internet, enter the web address used to download it.");
 			toolTip.SetToolTip(_attributionUrlLabel, attributionToolTip);
 			toolTip.SetToolTip(_attributionUrl, attributionToolTip);
 			_linkToPublicDomainCC0.Text = string.Format(_linkToPublicDomainCC0.Text, "CC0");
