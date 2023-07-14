@@ -161,7 +161,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 					cc.AttributionRequired = true;
 					cc.CommercialUseAllowed = true;
 					cc.DerivativeRule = CreativeCommonsLicense.DerivativeRules.Derivatives;
-					cc.IntergovernmentalOriganizationQualifier = false;
+					cc.IntergovernmentalOrganizationQualifier = false;
 					_commercial.Checked = true;
 					_derivatives.Checked = true;
 				}
@@ -173,7 +173,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				cc0.AttributionRequired = false;
 				cc0.CommercialUseAllowed = true;
 				cc0.DerivativeRule = CreativeCommonsLicense.DerivativeRules.Derivatives;
-				cc0.IntergovernmentalOriganizationQualifier = false;
+				cc0.IntergovernmentalOrganizationQualifier = false;
 				cc0.Version = "";
 				_licenseImage.Image = cc0.GetImage();
 				// Keep custom statement only if previous license was CC0.

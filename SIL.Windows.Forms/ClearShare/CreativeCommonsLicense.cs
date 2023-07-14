@@ -268,7 +268,7 @@ namespace SIL.Windows.Forms.ClearShare
 			}
 
 			var additionalRights = (RightsStatement != null ? ". " + RightsStatement : "");
-			return (form + " " + (IntergovernmentalOriganizationQualifier ? "IGO " : "") + Version + additionalRights).Trim();
+			return (form + " " + (IntergovernmentalOrganizationQualifier ? "IGO " : "") + Version + additionalRights).Trim();
 		}
 
 		/// <summary>
@@ -363,10 +363,17 @@ namespace SIL.Windows.Forms.ClearShare
 
 		// For information on this qualifier, see https://wiki.creativecommons.org/wiki/Intergovernmental_Organizations
 		private string _qualifier = null;
-		[Obsolete("Spelled incorrectly and not an option in the newer licenses")]
+
+		[Obsolete("Use IntergovernmentalOrganizationQualifier")]
 		public bool IntergovernmentalOriganizationQualifier
 		{
-			get { return _qualifier == "igo"; }
+			get => IntergovernmentalOrganizationQualifier;
+			set => IntergovernmentalOrganizationQualifier = value;
+		}
+
+		public bool IntergovernmentalOrganizationQualifier
+		{
+			get => _qualifier == "igo";
 			set
 			{
 				var newValue = value ? "igo" : null;
