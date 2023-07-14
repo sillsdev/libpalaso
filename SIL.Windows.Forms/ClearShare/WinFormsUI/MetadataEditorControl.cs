@@ -1,7 +1,7 @@
 using System;
-using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using L10NSharp;
 
 namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 {
@@ -16,8 +16,8 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 			_settingUp = true;
 			//set some defaults in case they turn on CC
-			_shareAlike.Checked = true;
-			_nonCommercial.Checked = true;
+			_derivatives.Checked = true;
+			_commercial.Checked = true;
 
 			//the system PictureBox makes the CC licenses look awful, so we are using one with a custom OnPaint()
 			var betterPictureBox = new BetterPictureBox()
@@ -31,6 +31,12 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			_licenseImage.Dispose();
 			_licenseImage = betterPictureBox;
 
+			var toolTip = new ToolTip { ShowAlways = true, AutoPopDelay = 0 };
+			var attributionToolTip = LocalizationManager.GetString("MetadataEditorControl.AttributionUrlToolTip",
+				"If this content came from the Internet, enter the web address used to download it.",
+				"Explain the requirement at https://creativecommons.org/licenses/by/4.0/legalcode#s3a1Av");
+			toolTip.SetToolTip(_attributionUrlLabel, attributionToolTip);
+			toolTip.SetToolTip(_attributionUrl, attributionToolTip);
 			_linkToPublicDomainCC0.Text = string.Format(_linkToPublicDomainCC0.Text, "CC0");
 		}
 
@@ -69,6 +75,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				if(_metadata.License!=null)
 					_licenseImage.Image = _metadata.License.GetImage();
 
+				_attributionUrl.Text = _metadata.AttributionUrl;
 
 				if (_metadata.License is CreativeCommonsLicense)
 				{
@@ -116,7 +123,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			set { _illustrator.Visible = _illustratorLabel.Visible = value; }
 		}
 
-		private void OnLicenseComponentChanged(object sender, System.EventArgs e)
+		private void OnLicenseComponentChanged(object sender, EventArgs e)
 		{
 			if(_settingUp)
 				return;
@@ -262,6 +269,13 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			if (_settingUp)
 				return;
 			_metadata.SetCopyrightNotice(_copyrightYear.Text, _copyrightBy.Text);
+		}
+
+		private void _attributionUrl_TextChanged(object sender, EventArgs e)
+		{
+			if (_settingUp)
+				return;
+			_metadata.AttributionUrl = _attributionUrl.Text;
 		}
 	}
 	public class BetterPictureBox : PictureBox

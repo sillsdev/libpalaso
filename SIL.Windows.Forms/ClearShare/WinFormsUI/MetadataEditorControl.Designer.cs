@@ -59,7 +59,9 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this.betterLabel2 = new SIL.Windows.Forms.Widgets.BetterLabel();
 			this._linkToDefinitionOfNonCommercial = new SIL.Windows.Forms.Widgets.BetterLinkLabel();
 			this._linkToPublicDomainCC0 = new SIL.Windows.Forms.Widgets.BetterLinkLabel();
+			this._attributionUrlLabel = new System.Windows.Forms.Label();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this._attributionUrl = new System.Windows.Forms.TextBox();
 			this.panel1.SuspendLayout();
 			this.panel2.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._licenseImage)).BeginInit();
@@ -88,7 +90,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizableToolTip(this.label3, null);
 			this._L10NSharpExtender.SetLocalizationComment(this.label3, null);
 			this._L10NSharpExtender.SetLocalizingId(this.label3, "MetadataEditor.License");
-			this.label3.Location = new System.Drawing.Point(17, 128);
+			this.label3.Location = new System.Drawing.Point(17, 157);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(46, 15);
 			this.label3.TabIndex = 9;
@@ -101,7 +103,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this.panel1.Controls.Add(this._shareAlike);
 			this.panel1.Controls.Add(this._noDerivates);
 			this.panel1.Controls.Add(this._derivatives);
-			this.panel1.Location = new System.Drawing.Point(70, 266);
+			this.panel1.Location = new System.Drawing.Point(70, 295);
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(413, 67);
 			this.panel1.TabIndex = 3;
@@ -161,7 +163,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this.panel2.Controls.Add(this.betterLabel1);
 			this.panel2.Controls.Add(this._nonCommercial);
 			this.panel2.Controls.Add(this._commercial);
-			this.panel2.Location = new System.Drawing.Point(70, 169);
+			this.panel2.Location = new System.Drawing.Point(70, 198);
 			this.panel2.Name = "panel2";
 			this.panel2.Size = new System.Drawing.Size(413, 65);
 			this.panel2.TabIndex = 20;
@@ -225,7 +227,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizationComment(this._licenseImage, null);
 			this._L10NSharpExtender.SetLocalizationPriority(this._licenseImage, L10NSharp.LocalizationPriority.NotLocalizable);
 			this._L10NSharpExtender.SetLocalizingId(this._licenseImage, "MetadataEditor.MetadataEditorControl._licenseImage");
-			this._licenseImage.Location = new System.Drawing.Point(67, 341);
+			this._licenseImage.Location = new System.Drawing.Point(67, 370);
 			this._licenseImage.Name = "_licenseImage";
 			this._licenseImage.Size = new System.Drawing.Size(124, 40);
 			this._licenseImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -239,7 +241,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizableToolTip(this._creativeCommons, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._creativeCommons, null);
 			this._L10NSharpExtender.SetLocalizingId(this._creativeCommons, "MetadataEditor.CreativeCommons");
-			this._creativeCommons.Location = new System.Drawing.Point(53, 147);
+			this._creativeCommons.Location = new System.Drawing.Point(53, 176);
 			this._creativeCommons.Name = "_creativeCommons";
 			this._creativeCommons.Size = new System.Drawing.Size(127, 19);
 			this._creativeCommons.TabIndex = 0;
@@ -256,7 +258,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizableToolTip(this._unknownLicense, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._unknownLicense, null);
 			this._L10NSharpExtender.SetLocalizingId(this._unknownLicense, "MetadataEditor.UnknownLicense");
-			this._unknownLicense.Location = new System.Drawing.Point(53, 426);
+			this._unknownLicense.Location = new System.Drawing.Point(53, 455);
 			this._unknownLicense.Name = "_unknownLicense";
 			this._unknownLicense.Size = new System.Drawing.Size(407, 35);
 			this._unknownLicense.TabIndex = 3;
@@ -273,7 +275,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizableToolTip(this._customLicense, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._customLicense, null);
 			this._L10NSharpExtender.SetLocalizingId(this._customLicense, "MetadataEditor.CustomLicense");
-			this._customLicense.Location = new System.Drawing.Point(53, 461);
+			this._customLicense.Location = new System.Drawing.Point(53, 490);
 			this._customLicense.Name = "_customLicense";
 			this._customLicense.Size = new System.Drawing.Size(67, 19);
 			this._customLicense.TabIndex = 4;
@@ -291,7 +293,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizationComment(this._customRightsStatement, null);
 			this._L10NSharpExtender.SetLocalizationPriority(this._customRightsStatement, L10NSharp.LocalizationPriority.NotLocalizable);
 			this._L10NSharpExtender.SetLocalizingId(this._customRightsStatement, "MetadataEditor.MetadataEditorControl._customRightsStatement");
-			this._customRightsStatement.Location = new System.Drawing.Point(74, 508);
+			this._customRightsStatement.Location = new System.Drawing.Point(74, 537);
 			this._customRightsStatement.Multiline = true;
 			this._customRightsStatement.Name = "_customRightsStatement";
 			this._customRightsStatement.Size = new System.Drawing.Size(389, 54);
@@ -358,7 +360,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._copyrightBy.Location = new System.Drawing.Point(108, 61);
 			this._copyrightBy.Multiline = true;
 			this._copyrightBy.Name = "_copyrightBy";
-			this._copyrightBy.Size = new System.Drawing.Size(338, 45);
+			this._copyrightBy.Size = new System.Drawing.Size(338, 44);
 			this._copyrightBy.TabIndex = 2;
 			this._copyrightBy.TextChanged += new System.EventHandler(this._copyrightBy_TextChanged);
 			// 
@@ -371,7 +373,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizingId(this._copyrightHolderLabel, "MetadataEditor.CopyrightHolder");
 			this._copyrightHolderLabel.Location = new System.Drawing.Point(3, 58);
 			this._copyrightHolderLabel.Name = "_copyrightHolderLabel";
-			this._copyrightHolderLabel.Size = new System.Drawing.Size(99, 51);
+			this._copyrightHolderLabel.Size = new System.Drawing.Size(99, 50);
 			this._copyrightHolderLabel.TabIndex = 28;
 			this._copyrightHolderLabel.Text = "Copyright Holder";
 			// 
@@ -383,7 +385,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizableToolTip(this._publicDomainCC0, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._publicDomainCC0, null);
 			this._L10NSharpExtender.SetLocalizingId(this._publicDomainCC0, "MetadataEditor.PublicDomain");
-			this._publicDomainCC0.Location = new System.Drawing.Point(53, 391);
+			this._publicDomainCC0.Location = new System.Drawing.Point(53, 420);
 			this._publicDomainCC0.Name = "_publicDomainCC0";
 			this._publicDomainCC0.Size = new System.Drawing.Size(226, 35);
 			this._publicDomainCC0.TabIndex = 30;
@@ -404,7 +406,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizationComment(this._additionalRequestsLabel, "When you choose a Creative Commons License, this label shows over the text box at" +
         " the bottom.");
 			this._L10NSharpExtender.SetLocalizingId(this._additionalRequestsLabel, "MetadataEditor.additionalRequestsLabel");
-			this._additionalRequestsLabel.Location = new System.Drawing.Point(53, 490);
+			this._additionalRequestsLabel.Location = new System.Drawing.Point(53, 519);
 			this._additionalRequestsLabel.Multiline = true;
 			this._additionalRequestsLabel.Name = "_additionalRequestsLabel";
 			this._additionalRequestsLabel.ReadOnly = true;
@@ -424,7 +426,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizableToolTip(this._linkToRefinedCreativeCommonsWarning, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._linkToRefinedCreativeCommonsWarning, resources.GetString("_linkToRefinedCreativeCommonsWarning.LocalizationComment"));
 			this._L10NSharpExtender.SetLocalizingId(this._linkToRefinedCreativeCommonsWarning, "MetadataEditor.linkToWarningAboutRefiningCreativeCommons");
-			this._linkToRefinedCreativeCommonsWarning.Location = new System.Drawing.Point(226, 486);
+			this._linkToRefinedCreativeCommonsWarning.Location = new System.Drawing.Point(226, 515);
 			this._linkToRefinedCreativeCommonsWarning.Multiline = true;
 			this._linkToRefinedCreativeCommonsWarning.Name = "_linkToRefinedCreativeCommonsWarning";
 			this._linkToRefinedCreativeCommonsWarning.Size = new System.Drawing.Size(237, 13);
@@ -432,7 +434,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._linkToRefinedCreativeCommonsWarning.TabStop = false;
 			this._linkToRefinedCreativeCommonsWarning.Text = "Not Enforceable";
 			this._linkToRefinedCreativeCommonsWarning.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this._linkToRefinedCreativeCommonsWarning.URL = "http://creativecommons.org/licenses/by/4.0/legalcode#s7a";
+			this._linkToRefinedCreativeCommonsWarning.URL = "http://creativecommons.org/licenses/by-nc/4.0/legalcode#s7a";
 			// 
 			// betterLabel2
 			// 
@@ -446,7 +448,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizableToolTip(this.betterLabel2, null);
 			this._L10NSharpExtender.SetLocalizationComment(this.betterLabel2, null);
 			this._L10NSharpExtender.SetLocalizingId(this.betterLabel2, "MetadataEditor.AllowDerivatives");
-			this.betterLabel2.Location = new System.Drawing.Point(69, 246);
+			this.betterLabel2.Location = new System.Drawing.Point(69, 275);
 			this.betterLabel2.Multiline = true;
 			this.betterLabel2.Name = "betterLabel2";
 			this.betterLabel2.ReadOnly = true;
@@ -467,7 +469,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizationComment(this._linkToDefinitionOfNonCommercial, "The meaning of  \"non-commercial\" is vague but important. This hyperlink takes you" +
         " somewhere that defines it.");
 			this._L10NSharpExtender.SetLocalizingId(this._linkToDefinitionOfNonCommercial, "MetadataEditor.betterLinkLabel1");
-			this._linkToDefinitionOfNonCommercial.Location = new System.Drawing.Point(256, 147);
+			this._linkToDefinitionOfNonCommercial.Location = new System.Drawing.Point(256, 176);
 			this._linkToDefinitionOfNonCommercial.Multiline = true;
 			this._linkToDefinitionOfNonCommercial.Name = "_linkToDefinitionOfNonCommercial";
 			this._linkToDefinitionOfNonCommercial.Size = new System.Drawing.Size(207, 13);
@@ -489,7 +491,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizationComment(this._linkToPublicDomainCC0, "{0} is replaced by an untranslatable abbreviation functioning as an adjective (\"C" +
         "C0\")");
 			this._L10NSharpExtender.SetLocalizingId(this._linkToPublicDomainCC0, "MetadataEditor.linkToPublicDomainCC0");
-			this._linkToPublicDomainCC0.Location = new System.Drawing.Point(285, 394);
+			this._linkToPublicDomainCC0.Location = new System.Drawing.Point(285, 423);
 			this._linkToPublicDomainCC0.Multiline = true;
 			this._linkToPublicDomainCC0.Name = "_linkToPublicDomainCC0";
 			this._linkToPublicDomainCC0.Size = new System.Drawing.Size(175, 13);
@@ -498,6 +500,18 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._linkToPublicDomainCC0.Text = "about {0} Public Domain";
 			this._linkToPublicDomainCC0.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this._linkToPublicDomainCC0.URL = "https://creativecommons.org/publicdomain/zero/1.0/";
+			// 
+			// _attributionUrlLabel
+			// 
+			this._attributionUrlLabel.AutoSize = true;
+			this._L10NSharpExtender.SetLocalizableToolTip(this._attributionUrlLabel, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._attributionUrlLabel, null);
+			this._L10NSharpExtender.SetLocalizingId(this._attributionUrlLabel, "MetadataEditor.attributionUrl");
+			this._attributionUrlLabel.Location = new System.Drawing.Point(3, 108);
+			this._attributionUrlLabel.Name = "_attributionUrlLabel";
+			this._attributionUrlLabel.Size = new System.Drawing.Size(66, 13);
+			this._attributionUrlLabel.TabIndex = 29;
+			this._attributionUrlLabel.Text = "Source URL";
 			// 
 			// tableLayoutPanel1
 			// 
@@ -512,14 +526,32 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this.tableLayoutPanel1.Controls.Add(this._copyrightYear, 1, 1);
 			this.tableLayoutPanel1.Controls.Add(this._copyrightBy, 1, 2);
 			this.tableLayoutPanel1.Controls.Add(this._copyrightHolderLabel, 0, 2);
+			this.tableLayoutPanel1.Controls.Add(this._attributionUrlLabel, 0, 3);
+			this.tableLayoutPanel1.Controls.Add(this._attributionUrl, 1, 3);
 			this.tableLayoutPanel1.Location = new System.Drawing.Point(14, 16);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-			this.tableLayoutPanel1.RowCount = 3;
+			this.tableLayoutPanel1.RowCount = 4;
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-			this.tableLayoutPanel1.Size = new System.Drawing.Size(449, 109);
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(449, 138);
 			this.tableLayoutPanel1.TabIndex = 27;
+			// 
+			// _attributionUrl
+			// 
+			this._attributionUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this._attributionUrl.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._L10NSharpExtender.SetLocalizableToolTip(this._attributionUrl, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._attributionUrl, null);
+			this._L10NSharpExtender.SetLocalizationPriority(this._attributionUrl, L10NSharp.LocalizationPriority.NotLocalizable);
+			this._L10NSharpExtender.SetLocalizingId(this._attributionUrl, "MetadataEditor._attributionUrl");
+			this._attributionUrl.Location = new System.Drawing.Point(108, 111);
+			this._attributionUrl.Name = "_attributionUrl";
+			this._attributionUrl.Size = new System.Drawing.Size(338, 23);
+			this._attributionUrl.TabIndex = 3;
+			this._attributionUrl.TextChanged += new System.EventHandler(this._attributionUrl_TextChanged);
 			// 
 			// MetadataEditorControl
 			// 
@@ -544,7 +576,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizationComment(this, null);
 			this._L10NSharpExtender.SetLocalizingId(this, "MetadataEditor.MetadataEditorControl.MetadataEditorControl");
 			this.Name = "MetadataEditorControl";
-			this.Size = new System.Drawing.Size(486, 578);
+			this.Size = new System.Drawing.Size(486, 607);
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();
 			this.panel2.ResumeLayout(false);
@@ -588,5 +620,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.RadioButton _publicDomainCC0;
 		private BetterLinkLabel _linkToPublicDomainCC0;
+		private System.Windows.Forms.Label _attributionUrlLabel;
+		private System.Windows.Forms.TextBox _attributionUrl;
 	}
 }
