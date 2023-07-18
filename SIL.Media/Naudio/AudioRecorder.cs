@@ -216,6 +216,19 @@ namespace SIL.Media.Naudio
 		}
 
 		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Same as BeginMonitoring method above but without catching exceptions
+		/// ------------------------------------------------------------------------------------
+		public void BeginMonitoringWithThrow()
+		{
+			bool monitoringStarted = false;
+			monitoringStarted = BeginMonitoringIfNeeded();
+			if (!monitoringStarted)
+				throw new InvalidOperationException("Only call this once for a new WaveIn device" +
+					" (i.e., when RecordingState is NotYetStarted or Stopped.");
+		}
+
+		/// ------------------------------------------------------------------------------------
 		/// <summary>Begins monitoring if in the correct state to do so</summary>
 		/// <returns><c>true</c> if monitoring was started; <c>false</c> if not in a state where
 		/// monitoring could be started (e.g., already monitoring or recording, or stopped
