@@ -174,6 +174,19 @@ namespace SIL.Media.Naudio
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
+		/// For the IAudioRecorder interface. See BeginMonitoring(bool catchAndReportException)
+		/// </summary>
+		/// <remarks>
+		/// Methods in this class should not call this method (i.e., from inside code that has
+		/// a lock on this). Instead use the private internal version.</remarks>
+		/// ------------------------------------------------------------------------------------
+		public virtual void BeginMonitoring()
+		{
+			BeginMonitoring(true);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
 		/// Begins monitoring incoming data from the selected device but not
 		/// processing it for the purpose of recording to a file.
 		/// </summary>
@@ -190,13 +203,14 @@ namespace SIL.Media.Naudio
 		/// into a <see cref="SIL.Media.RecordingState.Monitoring"/> state.
 		/// <see cref="BeginRecording(string)"/> also begins monitoring, so if that is called
 		/// directly, this method should not be called.</exception>
-		/// <remarks>Other than the documented exceptions, any otherwise unhandled exception
-		/// thrown as a result of this call will be reported via
-		/// <see cref="ErrorReport.NotifyUserOfProblem(string,object[])"/>.
-		/// Methods in this class should not call this method (i.e., from inside code that has
-		/// a lock on this). Instead use the private internal version.</remarks>
+		/// <param name="catchAndReportExceptions"> If true, any unhandled exception
+		/// thrown as a result of this call (besides the documented exception) will be caught
+		/// and reported via <see cref="ErrorReport.NotifyUserOfProblem(string,object[])"/>.
+		/// </param>
+		/// <remarks> Methods in this class should not call this method (i.e., from inside
+		/// code that has a lock on this). Instead use the private internal version.</remarks>
 		/// ------------------------------------------------------------------------------------
-		public virtual void BeginMonitoring()
+		public virtual void BeginMonitoring(bool catchAndReportExceptions)
 		{
 			bool monitoringStarted = false;
 			try
@@ -205,24 +219,17 @@ namespace SIL.Media.Naudio
 			}
 			catch (Exception e)
 			{
-				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(),
-					e, "There was a problem starting up volume monitoring.");
-				return;
+				if (catchAndReportExceptions)
+				{
+					ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(),
+						e, "There was a problem starting up volume monitoring.");
+					return;	
+				}
+				else
+				{
+					throw;
+				}
 			}
-			if (!monitoringStarted)
-				throw new InvalidOperationException("Only call this once for a new WaveIn device" +
-					" (i.e., when RecordingState is NotYetStarted or Stopped.");
-
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Same as BeginMonitoring method above but without catching exceptions
-		/// ------------------------------------------------------------------------------------
-		public void BeginMonitoringWithThrow()
-		{
-			bool monitoringStarted = false;
-			monitoringStarted = BeginMonitoringIfNeeded();
 			if (!monitoringStarted)
 				throw new InvalidOperationException("Only call this once for a new WaveIn device" +
 					" (i.e., when RecordingState is NotYetStarted or Stopped.");
