@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Scripture] Made static methods TryGetVerseNum, ParseVerseNumberRange, and ParseVerseNumber public
 - [SIL.Core] `CanWriteToDirectories` and `CanWriteToDirectory`
 - [SIL.Windows.Forms] `CanWriteToDirectories`, `CanWriteToDirectory` and `ReportDefenderProblem`
+- [SIL.Media.NAudio] added an overload to `BeginMonitoring` with `catchAndReportExceptions` parameter
 
 ### Changed
 
