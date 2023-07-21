@@ -13,13 +13,7 @@ namespace SIL.Windows.Forms.Reporting
 		// see comment on ExceptionReportingDialog.s_reportDataStack
 		internal static Control ControlOnUIThread { get; private set; }
 
-		internal static bool InvokeRequired
-		{
-			get
-			{
-				return !ControlOnUIThread.IsDisposed && ControlOnUIThread.InvokeRequired;
-			}
-		}
+		internal static bool InvokeRequired => ControlOnUIThread is { IsDisposed: false, InvokeRequired: true };
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
