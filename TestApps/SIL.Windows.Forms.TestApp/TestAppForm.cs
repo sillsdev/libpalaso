@@ -26,6 +26,7 @@ using SIL.Windows.Forms.WritingSystems;
 using SIL.WritingSystems;
 using SIL.Media;
 using SIL.Windows.Forms.Extensions;
+using SIL.Windows.Forms.FileSystem;
 using SIL.Windows.Forms.LocalizationIncompleteDlg;
 
 namespace SIL.Windows.Forms.TestApp
@@ -487,6 +488,24 @@ and displays it as HTML.
 					{
 						MessageBox.Show(exception.Message);
 					}
+				}
+			}
+		}
+
+		private void btnShowFileOverwriteDlg_Click(object sender, EventArgs e)
+		{
+			var filenames = new List<string>
+			{
+				@"c:\folder\file.txt",
+				@"My Documents\another.doc",
+				@"LastOne.png"
+			};
+			foreach (var file in filenames)
+			{
+				using (var dlg = new ConfirmFileOverwriteDlg(file))
+				{
+					if (dlg.ShowDialog(this) == DialogResult.No && dlg.ApplyToAll)
+						break;
 				}
 			}
 		}
