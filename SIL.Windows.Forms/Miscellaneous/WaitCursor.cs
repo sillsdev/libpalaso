@@ -255,7 +255,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 			foreach (var frm in Application.OpenForms.Cast<Form>().ToList())
 			{
-				Form form = frm; // Avoid Resharper message about accessing foreach variable in closure.
+				Form form = frm; // Avoid ReSharper message about accessing foreach variable in closure.
 				try
 				{
 					if (form.InvokeRequired)
