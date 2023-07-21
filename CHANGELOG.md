@@ -23,11 +23,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Scripture] Made static methods TryGetVerseNum, ParseVerseNumberRange, and ParseVerseNumber public
 - [SIL.Core] `CanWriteToDirectories` and `CanWriteToDirectory`
 - [SIL.Windows.Forms] `CanWriteToDirectories`, `CanWriteToDirectory` and `ReportDefenderProblem`
+- [SIL.Core] `StrLengthComparer`, IEnumerable<T>.ToString extension methods, IList<T>.ContainsSequence<T> extension method
+- [SIL.Windows.Forms] `ConfirmFileOverwriteDlg`
+- [SIL.Windows.Forms] several constructors and `Restore` method to `WaitCursor`
 
 ### Changed
 
 - [SIL.Media] Changed the FrameRate reported in VideoInfo from FrameRate to AvgFrameRate.
 - [SIL.Windows.Forms] Fixed spelling error in ImageGalleryControl, renaming SetIntialSearchTerm to SetInitialSearchTerm.
+- [SIL.Windows.Forms] Made `WaitCursor` class (which used to contain only static methods) implement IDisposable
 
 ### Fixed
 
