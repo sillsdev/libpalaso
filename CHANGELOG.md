@@ -36,9 +36,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - [SIL.Core] Make RetryUtility retry for exceptions that are subclasses of the ones listed to try. For example, by default (IOException) it will now retry for FileNotFoundException.
+- [SIL.Windows.Forms] Spelling of `CreativeCommonsLicense.IntergovernmentalOrganizationQualifier`
 
 ### Removed
 - [SIL.Windows.Forms] ImageGalleryControl.InSomeoneElesesDesignMode (seemingly unused and misspelled)
+- [SIL.Windows.Forms] Checkbox for `IntergovernmentalOrganizationQualifier` from `MetadataEditorControl`
 
 ## [12.0.1] - 2023-05-26
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
+using NDesk.DBus.Introspection;
 
 namespace SIL.Windows.Forms.ClearShare
 {
@@ -267,7 +268,7 @@ namespace SIL.Windows.Forms.ClearShare
 			}
 
 			var additionalRights = (RightsStatement != null ? ". " + RightsStatement : "");
-			return (form + " " + (IntergovernmentalOriganizationQualifier ? "IGO " : "") + Version + additionalRights).Trim();
+			return (form + " " + (IntergovernmentalOrganizationQualifier ? "IGO " : "") + Version + additionalRights).Trim();
 		}
 
 		/// <summary>
@@ -346,11 +347,6 @@ namespace SIL.Windows.Forms.ClearShare
 			return LicenseLogos.cc0;
 		}
 
-		public override bool EditingAllowed
-		{
-			get { return false; }
-		}
-
 		private string _version;
 		public string Version
 		{
@@ -365,11 +361,25 @@ namespace SIL.Windows.Forms.ClearShare
 			}
 		}
 
-		// For information on this qualifier, see https://wiki.creativecommons.org/wiki/Intergovernmental_Organizations
 		private string _qualifier = null;
+
+		[Obsolete("Use IntergovernmentalOrganizationQualifier")]
 		public bool IntergovernmentalOriganizationQualifier
 		{
-			get { return _qualifier == "igo"; }
+			get => IntergovernmentalOrganizationQualifier;
+			set => IntergovernmentalOrganizationQualifier = value;
+		}
+
+		/// <remarks>
+		/// CC 3.0 licenses were ported to better serve the needs of Intergovernmental Organizations (IGOs).
+		/// CC 4.0 does not include a separate IGO suite (at least 2016-2023); presumably, stock CC 4.0 licenses should serve IGOs well as is.
+		/// Because existing works may have been published under CC 3.0 licenses for IGOs, we keep this property to support those works.
+		/// Bloom specifically reads and displays this license information.
+		/// For information on this qualifier, see https://wiki.creativecommons.org/wiki/Intergovernmental_Organizations
+		/// </remarks>>
+		public bool IntergovernmentalOrganizationQualifier
+		{
+			get => _qualifier == "igo";
 			set
 			{
 				var newValue = value ? "igo" : null;
@@ -384,7 +394,7 @@ namespace SIL.Windows.Forms.ClearShare
 				_qualifier = newValue;
 				if(value)
 				{
-					_version = "3.0";// as of November 2016, igo only had a 3.0 version, while normal cc licenses were up to 4.0
+					_version = "3.0";// as of November 2016 and July 2023, igo only had a 3.0 version, while normal cc licenses were up to 4.0
 				}
 			}
 		}
