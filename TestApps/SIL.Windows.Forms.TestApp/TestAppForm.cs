@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using SIL.Extensions;
 using SIL.IO;
 using SIL.Lexicon;
 using SIL.PlatformUtilities;
@@ -500,14 +501,42 @@ and displays it as HTML.
 				@"My Documents\another.doc",
 				@"LastOne.png"
 			};
+			var filesOverwritten = new List<string>();
+			var filesSkipped = new List<string>();
+			bool? overwriteAll = null;
+
 			foreach (var file in filenames)
 			{
-				using (var dlg = new ConfirmFileOverwriteDlg(file))
+				if (overwriteAll == null)
 				{
-					if (dlg.ShowDialog(this) == DialogResult.No && dlg.ApplyToAll)
-						break;
+					using (var dlg = new ConfirmFileOverwriteDlg(file))
+					{
+						if (dlg.ShowDialog(this) == DialogResult.No)
+						{
+							filesSkipped.Add(file);
+							if (dlg.ApplyToAll)
+								overwriteAll = false;
+						}
+						else
+						{
+							filesOverwritten.Add(file);
+							if (dlg.ApplyToAll)
+								overwriteAll = true;
+						}
+					}
+				}
+				else if ((bool)overwriteAll)
+				{
+					filesOverwritten.Add(file);
+				}
+				else
+				{
+					filesSkipped.Add(file);
 				}
 			}
+
+			MessageBox.Show(
+				$"Files overwritten:\r\t{filesOverwritten.ToString("\r\t")}\rFiles skipped:\r\t{filesSkipped.ToString("\r\t")}", "Results");
 		}
 	}
 }
