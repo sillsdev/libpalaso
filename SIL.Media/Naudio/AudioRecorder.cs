@@ -175,9 +175,6 @@ namespace SIL.Media.Naudio
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// For the IAudioRecorder interface. <see cref="BeginMonitoring(bool)"/> </summary>
-		/// <remarks>
-		/// Methods in this class should not call this method (i.e., from inside code that has
-		/// a lock on this). Instead use <see cref="BeginMonitoringIfNeeded()"/>. </remarks>
 		/// ------------------------------------------------------------------------------------
 		public virtual void BeginMonitoring()
 		{
@@ -206,9 +203,6 @@ namespace SIL.Media.Naudio
 		/// thrown as a result of this call (besides the documented exception) will be caught
 		/// and reported via <see cref="ErrorReport.NotifyUserOfProblem(string,object[])"/>.
 		/// </param>
-		/// <remarks> Methods in this class should not call this method (i.e., from inside
-		/// code that has a lock on this). Instead use <see cref="BeginMonitoringIfNeeded()"/>.
-		/// </remarks>
 		/// ------------------------------------------------------------------------------------
 		public virtual void BeginMonitoring(bool catchAndReportExceptions)
 		{
