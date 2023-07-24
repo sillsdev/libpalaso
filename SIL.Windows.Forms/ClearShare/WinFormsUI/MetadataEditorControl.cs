@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using L10NSharp;
@@ -277,6 +278,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			_metadata.AttributionUrl = _attributionUrl.Text;
 		}
 	}
+
 	public class BetterPictureBox : PictureBox
 	{
 		protected override void OnPaint(PaintEventArgs paintEventArgs)

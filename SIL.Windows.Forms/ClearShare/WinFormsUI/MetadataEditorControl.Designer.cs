@@ -434,7 +434,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._linkToRefinedCreativeCommonsWarning.TabStop = false;
 			this._linkToRefinedCreativeCommonsWarning.Text = "Not Enforceable";
 			this._linkToRefinedCreativeCommonsWarning.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-			this._linkToRefinedCreativeCommonsWarning.URL = "http://creativecommons.org/licenses/by-nc/4.0/legalcode#s7a";
+			this._linkToRefinedCreativeCommonsWarning.URL = "http://creativecommons.org/licenses/by/4.0/legalcode#s7a";
 			// 
 			// betterLabel2
 			// 

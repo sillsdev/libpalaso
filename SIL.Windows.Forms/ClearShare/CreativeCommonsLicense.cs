@@ -361,7 +361,6 @@ namespace SIL.Windows.Forms.ClearShare
 			}
 		}
 
-		// For information on this qualifier, see https://wiki.creativecommons.org/wiki/Intergovernmental_Organizations
 		private string _qualifier = null;
 
 		[Obsolete("Use IntergovernmentalOrganizationQualifier")]
@@ -371,6 +370,13 @@ namespace SIL.Windows.Forms.ClearShare
 			set => IntergovernmentalOrganizationQualifier = value;
 		}
 
+		/// <remarks>
+		/// CC 3.0 licenses were ported to better serve the needs of Intergovernmental Organizations (IGOs).
+		/// CC 4.0 does not include a separate IGO suite (at least 2016-2023); presumably, stock CC 4.0 licenses should serve IGOs well as is.
+		/// Because existing works may have been published under CC 3.0 licenses for IGOs, we keep this property to support those works.
+		/// Bloom specifically reads and displays this license information.
+		/// For information on this qualifier, see https://wiki.creativecommons.org/wiki/Intergovernmental_Organizations
+		/// </remarks>>
 		public bool IntergovernmentalOrganizationQualifier
 		{
 			get => _qualifier == "igo";
