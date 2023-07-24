@@ -66,7 +66,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this.panel1.Controls.Add(this.cancelButton);
 			this.panel1.Controls.Add(this._okButton);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panel1.Location = new System.Drawing.Point(0, 568);
+			this.panel1.Location = new System.Drawing.Point(0, 597);
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(472, 50);
 			this.panel1.TabIndex = 0;
@@ -109,7 +109,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancelButton;
-			this.ClientSize = new System.Drawing.Size(472, 618);
+			this.ClientSize = new System.Drawing.Size(472, 647);
 			this.ControlBox = false;
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this._metadataEditorControl);
