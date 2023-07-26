@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] `StrLengthComparer`, IEnumerable<T>.ToString extension methods, IList<T>.ContainsSequence<T> extension method
 - [SIL.Windows.Forms] `ConfirmFileOverwriteDlg`
 - [SIL.Windows.Forms] several constructors and `Restore` method to `WaitCursor`
+- [SIL.Media.NAudio] added an overload to `BeginMonitoring` with `catchAndReportExceptions` parameter
 
 ### Changed
 
