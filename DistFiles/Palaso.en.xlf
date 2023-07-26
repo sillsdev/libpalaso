@@ -570,10 +570,6 @@
         <source xml:lang="en">Creative Commons</source>
         <note>ID: MetadataEditor.CreativeCommons</note>
       </trans-unit>
-      <trans-unit id="MetadataEditor.CreativeCommons.Intergovernmental">
-        <source xml:lang="en">Intergovernmental Version</source>
-        <note>ID: MetadataEditor.CreativeCommons.Intergovernmental</note>
-      </trans-unit>
       <trans-unit id="MetadataEditor.CreatorLabel">
         <source xml:lang="en">Creator</source>
         <note>ID: MetadataEditor.CreatorLabel</note>

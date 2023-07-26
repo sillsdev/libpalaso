@@ -5,9 +5,7 @@ using L10NSharp;
 
 namespace SIL.Windows.Forms.ClearShare
 {
-	/// <summary>
-	/// !!!!!!!!!!!!!! To keep from losing edits (having the owning metaccess not know that changes should be saved) these need to be immutable
-	/// </summary>
+	/// <summary/>
 	public abstract class LicenseInfo
 	{
 		public static LicenseInfo FromXmp(Dictionary<string, string> properties)
@@ -49,18 +47,17 @@ namespace SIL.Windows.Forms.ClearShare
 			}
 		}
 
-		virtual public Image GetImage()
+		public virtual Image GetImage()
 		{
 			return null;
 		}
 
 		/// <summary>
 		/// It doesn't make sense to let the user edit the description of a well-known license, even if the meta data is unlocked.
+		/// REVIEW: How do we know whether this is a well-known license? Presently, only <see cref="CreativeCommonsLicense"/> is always well-known.
+		/// REVIEW (Hasso) 2023.07: This is never used (internally, at least) and all overriding implementations return false, too.
 		/// </summary>
-		public virtual bool EditingAllowed
-		{
-			get { return false; }//we don't konw
-		}
+		public virtual bool EditingAllowed => false;
 
 		public abstract string Url { get; set; }
 
@@ -193,11 +190,6 @@ namespace SIL.Windows.Forms.ClearShare
 		public override Image GetImage()
 		{
 			return null;
-		}
-
-		public override bool EditingAllowed
-		{
-			get { return false; } //it may be ok, but we can't read the description.
 		}
 
 		public override string Url { get; set; }

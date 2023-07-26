@@ -352,7 +352,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// <summary>
 		/// If set, this action will be used instead of the default (launching <see cref="MetadataEditorDialog"/>).
 		/// For example, the client may want to use a different UI to edit the `Metadata`.
-		/// The `Action<Metadata>` callback saves the modified `Metadata` to the image.
+		/// The `Action&lt;Metadata&gt;` callback saves the modified `Metadata` to the image.
 		/// <see cref="SetNewImageMetadata(Metadata)"/>
 		/// </summary>
 		public Action<Metadata, Action<Metadata>> EditMetadataActionOverride { get; set; }
@@ -366,7 +366,14 @@ namespace SIL.Windows.Forms.ImageToolbox
 			//it's not clear at the moment where the following belongs... but we want
 			//to encourage Creative Commons Licensing, so if there is no license, we'll start
 			//the following dialog out with a reasonable default.
-			_imageInfo.Metadata.SetupReasonableLicenseDefaultBeforeEditing();
+			var isSuggesting = false;
+			var hadChanges = false;
+			if (_imageInfo.Metadata.IsLicenseNotSet)
+			{
+				isSuggesting = true;
+				hadChanges = _imageInfo.Metadata.HasChanges;
+				_imageInfo.Metadata.SetupReasonableLicenseDefaultBeforeEditing();
+			}
 
 			if (EditMetadataActionOverride != null)
 			{
@@ -374,13 +381,16 @@ namespace SIL.Windows.Forms.ImageToolbox
 				return;
 			}
 
-			using(var dlg = new MetadataEditorDialog(_imageInfo.Metadata))
+			using var dlg = new MetadataEditorDialog(_imageInfo.Metadata);
+			if (DialogResult.OK == dlg.ShowDialog())
 			{
-				if(DialogResult.OK == dlg.ShowDialog())
-				{
-					Guard.AgainstNull(dlg.Metadata, " dlg.Metadata");
-					SetNewImageMetadata(dlg.Metadata);
-				}
+				Guard.AgainstNull(dlg.Metadata, " dlg.Metadata");
+				SetNewImageMetadata(dlg.Metadata);
+			}
+			else if (isSuggesting)
+			{
+				_imageInfo.Metadata.License = new NullLicense();
+				_imageInfo.Metadata.HasChanges = hadChanges;
 			}
 		}
 

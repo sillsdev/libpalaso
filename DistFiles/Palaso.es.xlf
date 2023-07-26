@@ -847,11 +847,6 @@
         <target xml:lang="es-ES" state="final">Creative Commons</target>
         <note>ID: MetadataEditor.CreativeCommons</note>
       </trans-unit>
-      <trans-unit id="MetadataEditor.CreativeCommons.Intergovernmental" approved="yes">
-        <source xml:lang="en">Intergovernmental Version</source>
-        <target xml:lang="es-ES" state="final">Versión Intergubernamental</target>
-        <note>ID: MetadataEditor.CreativeCommons.Intergovernmental</note>
-      </trans-unit>
       <trans-unit id="MetadataEditor.CreatorLabel" approved="yes">
         <source xml:lang="en">Creator</source>
         <target xml:lang="es-ES" state="final">Creador</target>
