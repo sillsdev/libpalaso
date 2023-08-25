@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - [SIL.Windows.Forms] `ImageToolboxControl.ImageChanged` (selected or cropped) and `ImageToolboxControl.MetadataChanged` events
+- [SIL.Windows.Forms] Text box to edit `AttributionUrl` in `MetadataEditorControl`
 - [SIL.Windows.Forms] Interop.WIA.dll for MSIL (doesn't seem to work with 32-bit apps, so the existing dll remains unchanged)
 - [SIL.Scripture] Made static methods TryGetVerseNum, ParseVerseNumberRange, and ParseVerseNumber public
 - [SIL.Core] `CanWriteToDirectories` and `CanWriteToDirectory`
@@ -26,6 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] `StrLengthComparer`, IEnumerable<T>.ToString extension methods, IList<T>.ContainsSequence<T> extension method
 - [SIL.Windows.Forms] `ConfirmFileOverwriteDlg`
 - [SIL.Windows.Forms] several constructors and `Restore` method to `WaitCursor`
+- [SIL.Media.NAudio] added an overload to `BeginMonitoring` with `catchAndReportExceptions` parameter
 
 ### Changed
 
@@ -36,9 +38,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - [SIL.Core] Make RetryUtility retry for exceptions that are subclasses of the ones listed to try. For example, by default (IOException) it will now retry for FileNotFoundException.
+- [SIL.Windows.Forms] Spelling of `CreativeCommonsLicense.IntergovernmentalOrganizationQualifier`
 
 ### Removed
 - [SIL.Windows.Forms] ImageGalleryControl.InSomeoneElesesDesignMode (seemingly unused and misspelled)
+- [SIL.Windows.Forms] Checkbox for `IntergovernmentalOrganizationQualifier` from `MetadataEditorControl`
 
 ## [12.0.1] - 2023-05-26
 
