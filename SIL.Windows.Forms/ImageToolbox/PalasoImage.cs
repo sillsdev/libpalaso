@@ -308,7 +308,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 			{
 				var leakMe = TempFile.WithExtension(GetCorrectImageExtension(path));
 				RobustFile.Copy(path, leakMe.Path, true);
-
 				//we output the tempPath so that the caller can clean it up later
 				tempPath = leakMe.Path;
 
@@ -327,8 +326,9 @@ namespace SIL.Windows.Forms.ImageToolbox
 					// assume it's a better indication of the problem.
 					var metadata = Metadata.FromFile(path);
 					if (metadata.IsOutOfMemoryPlausible(e))
+						// ReSharper disable once PossibleIntendedRethrow
 						throw e; // Deliberately NOT just "throw", that loses the extra information IsOutOfMemoryPlausible added to the exception.
-					throw new TagLib.CorruptFileException("File could not be read and is possible corrupted");
+					throw new TagLib.CorruptFileException("File could not be read and is possible corrupted", e);
 				}
 			}
 		}

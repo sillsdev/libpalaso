@@ -9,7 +9,6 @@ using SIL.Reporting;
 using SIL.Windows.Forms.ClearShare;
 using SIL.Windows.Forms.ClearShare.WinFormsUI;
 using SIL.Windows.Forms.ImageToolbox.Cropping;
-using SIL.Windows.Forms.Miscellaneous;
 
 namespace SIL.Windows.Forms.ImageToolbox
 {
@@ -143,8 +142,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 		{
 			_toolTip.SetToolTip(_currentImageBox, "");
 
-			//enchance: this only uses the "originalpath" version, which may be a lot larger than what we
-			//currently have, if we cropped, for example. But I'm loath to save it to disk just to get an accurate size.
+			// ENHANCE: this only uses the "originalpath" version, which may be a lot larger than what we
+			// currently have, if we cropped, for example. But I'm loath to save it to disk just to get an accurate size.
 			if (image!=null && !string.IsNullOrEmpty(image.OriginalFilePath) && File.Exists(image.OriginalFilePath))
 			{
 				try
@@ -215,7 +214,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			_copyExemplarMetadata.Visible = Metadata.HaveStoredExemplar(Metadata.FileCategory.Image);
 			if (_invitationToMetadataPanel.Visible && _copyExemplarMetadata.Visible)
 			{
-				var s = LocalizationManager.GetString("ImageToolbox.CopyExemplarMetadata", "Use {0}", "Used to copy a previous metadata set to the current image. The  {0} will be replaced with the name of the exemplar image.");
+				var s = LocalizationManager.GetString("ImageToolbox.CopyExemplarMetadata", "Use {0}", "Used to copy a previous metadata set to the current image. The {0} will be replaced with the name of the exemplar image.");
 				_copyExemplarMetadata.Text = string.Format(s, Metadata.GetStoredExemplarSummaryString(Metadata.FileCategory.Image));
 			}
 
@@ -353,7 +352,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// <summary>
 		/// If set, this action will be used instead of the default (launching <see cref="MetadataEditorDialog"/>).
 		/// For example, the client may want to use a different UI to edit the `Metadata`.
-		/// The `Action<Metadata>` callback saves the modified `Metadata` to the image.
+		/// The `Action&lt;Metadata&gt;` callback saves the modified `Metadata` to the image.
 		/// <see cref="SetNewImageMetadata(Metadata)"/>
 		/// </summary>
 		public Action<Metadata, Action<Metadata>> EditMetadataActionOverride { get; set; }
@@ -367,7 +366,14 @@ namespace SIL.Windows.Forms.ImageToolbox
 			//it's not clear at the moment where the following belongs... but we want
 			//to encourage Creative Commons Licensing, so if there is no license, we'll start
 			//the following dialog out with a reasonable default.
-			_imageInfo.Metadata.SetupReasonableLicenseDefaultBeforeEditing();
+			var isSuggesting = false;
+			var hadChanges = false;
+			if (_imageInfo.Metadata.IsLicenseNotSet)
+			{
+				isSuggesting = true;
+				hadChanges = _imageInfo.Metadata.HasChanges;
+				_imageInfo.Metadata.SetupReasonableLicenseDefaultBeforeEditing();
+			}
 
 			if (EditMetadataActionOverride != null)
 			{
@@ -375,13 +381,16 @@ namespace SIL.Windows.Forms.ImageToolbox
 				return;
 			}
 
-			using(var dlg = new MetadataEditorDialog(_imageInfo.Metadata))
+			using var dlg = new MetadataEditorDialog(_imageInfo.Metadata);
+			if (DialogResult.OK == dlg.ShowDialog())
 			{
-				if(DialogResult.OK == dlg.ShowDialog())
-				{
-					Guard.AgainstNull(dlg.Metadata, " dlg.Metadata");
-					SetNewImageMetadata(dlg.Metadata);
-				}
+				Guard.AgainstNull(dlg.Metadata, " dlg.Metadata");
+				SetNewImageMetadata(dlg.Metadata);
+			}
+			else if (isSuggesting)
+			{
+				_imageInfo.Metadata.License = new NullLicense();
+				_imageInfo.Metadata.HasChanges = hadChanges;
 			}
 		}
 

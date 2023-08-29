@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SIL.Data;
@@ -14,6 +14,8 @@ namespace SIL.DictionaryServices.Processors
 	/// </summary>
 	public class HomographMerger
 	{
+		// REVIEW: This file outputs progress messages which are not localizable, but look as
+		// though they should be.
 
 		/// <summary>
 		/// Merge homographs.
@@ -41,7 +43,7 @@ namespace SIL.DictionaryServices.Processors
 				//at this point we have entries which match along a single ws axis. We may or may not be able to merge them...
 
 				var lexicalForm = entry.LexicalForm.GetExactAlternative(writingSystemForMatching.LanguageTag);
-				if (matches.Count > 1) //>1 becuase each will match itself
+				if (matches.Count > 1) //>1 because each will match itself
 				{
 					progress.WriteMessageWithColor("gray", "Found {0} homograph(s) for {1}", matches.Count, lexicalForm);
 				}
@@ -82,7 +84,7 @@ namespace SIL.DictionaryServices.Processors
 		}
 
 		/// <summary>
-		/// it can happen that within a single entry, you can have mergable senses.
+		/// it can happen that within a single entry, you can have mergeable senses.
 		/// </summary>
 		private static void MergeSensesWithinEntries(LiftLexEntryRepository repo, string[] traitsWithMultiplicity, IProgress progress)
 		{
@@ -174,8 +176,6 @@ namespace SIL.DictionaryServices.Processors
 
 			return z.Value.Id;
 		}
-
-
 
 		public override string ToString()
 		{

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns:sil="http://sil.org/software/XLiff" version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="en" product-version="9.0.0" original="Palaso.dll" datatype="plaintext">
+  <file source-language="en" product-version="12.0.1" original="Palaso.dll" datatype="plaintext">
     <body>
       <trans-unit id="AboutDialog.BuiltOnDate">
         <source xml:lang="en">Built on {0}</source>
@@ -10,19 +10,6 @@
       <trans-unit id="AboutDialog.NoUpdates">
         <source xml:lang="en">No Updates</source>
         <note>ID: AboutDialog.NoUpdates</note>
-      </trans-unit>
-      <trans-unit id="AboutDialog.WindowTitle">
-        <source xml:lang="en">About {0}</source>
-        <note>ID: AboutDialog.WindowTitle</note>
-        <note>{0} is the application name</note>
-      </trans-unit>
-      <trans-unit id="AboutDialog._checkForUpdates">
-        <source xml:lang="en">Check For Updates</source>
-        <note>ID: AboutDialog._checkForUpdates</note>
-      </trans-unit>
-      <trans-unit id="AboutDialog._releaseNotesLabel">
-        <source xml:lang="en">Release Notes</source>
-        <note>ID: AboutDialog._releaseNotesLabel</note>
       </trans-unit>
       <trans-unit id="Application.AlreadyRunning.General">
         <source xml:lang="en">Another copy of the application is already running. If you cannot find it, restart your computer.</source>
@@ -47,33 +34,17 @@
         <note>ID: Application.WaitingFinish.General</note>
       </trans-unit>
       <trans-unit id="Application.WaitingFinish.Specific">
-        <source xml:lang="en">Waiting for other {0} to finish...</source>
+        <source xml:lang="en">Waiting for {0} to finish...</source>
         <note>ID: Application.WaitingFinish.Specific</note>
         <note>{0} is the application name</note>
-      </trans-unit>
-      <trans-unit id="ArchivingDlg._chkMetadataOnly">
-        <source xml:lang="en">Metadata only</source>
-        <note>ID: ArchivingDlg._chkMetadataOnly</note>
-      </trans-unit>
-      <trans-unit id="ArchivingDlg._chkMetadataOnly_ToolTip_">
-        <source xml:lang="en">Select this to prevent copying actual data files into archive</source>
-        <note>ID: ArchivingDlg._chkMetadataOnly_ToolTip_</note>
       </trans-unit>
       <trans-unit id="Common.AbortButton">
         <source xml:lang="en">&amp;Abort</source>
         <note>ID: Common.AbortButton</note>
       </trans-unit>
-      <trans-unit id="Common.CancelButton">
-        <source xml:lang="en">&amp;Cancel</source>
-        <note>ID: Common.CancelButton</note>
-      </trans-unit>
       <trans-unit id="Common.IgnoreButton">
         <source xml:lang="en">&amp;Ignore</source>
         <note>ID: Common.IgnoreButton</note>
-      </trans-unit>
-      <trans-unit id="Common.No">
-        <source xml:lang="en">No</source>
-        <note>ID: Common.No</note>
       </trans-unit>
       <trans-unit id="Common.NoButton">
         <source xml:lang="en">&amp;No</source>
@@ -86,10 +57,6 @@
       <trans-unit id="Common.RetryButton">
         <source xml:lang="en">&amp;Retry</source>
         <note>ID: Common.RetryButton</note>
-      </trans-unit>
-      <trans-unit id="Common.Yes">
-        <source xml:lang="en">Yes</source>
-        <note>ID: Common.Yes</note>
       </trans-unit>
       <trans-unit id="Common.YesButton">
         <source xml:lang="en">&amp;Yes</source>
@@ -105,42 +72,6 @@
         <note>ID: CustomIdentifierView.linkLabel1</note>
         <note>text used in the link to a webpage that describes the language identifiers</note>
       </trans-unit>
-      <trans-unit id="DblBundle.FileMissingFromBundle">
-        <source xml:lang="en">Required {0} file not found. File is not a valid Text Release Bundle:</source>
-        <note>ID: DblBundle.FileMissingFromBundle</note>
-      </trans-unit>
-      <trans-unit id="DblBundle.MetadataInvalid">
-        <source xml:lang="en">Unable to read metadata. File is not a valid Text Release Bundle:</source>
-        <note>ID: DblBundle.MetadataInvalid</note>
-      </trans-unit>
-      <trans-unit id="DblBundle.MetadataInvalidVersion">
-        <source xml:lang="en">Unable to read metadata. Type: {0}. Version: {1}. File is not a valid Text Release Bundle:</source>
-        <note>ID: DblBundle.MetadataInvalidVersion</note>
-      </trans-unit>
-      <trans-unit id="DblBundle.NotTextReleaseBundle">
-        <source xml:lang="en">This metadata in this bundle indicates that it is of type "{0}". Only Text Release Bundles are currently supported.</source>
-        <note>ID: DblBundle.NotTextReleaseBundle</note>
-      </trans-unit>
-      <trans-unit id="DblBundle.SourceReleaseBundle">
-        <source xml:lang="en">This bundle appears to be a source bundle. Only Text Release Bundles are currently supported.</source>
-        <note>ID: DblBundle.SourceReleaseBundle</note>
-      </trans-unit>
-      <trans-unit id="DblBundle.StylesheetInvalid">
-        <source xml:lang="en">Unable to read stylesheet. File is not a valid Text Release Bundle:</source>
-        <note>ID: DblBundle.StylesheetInvalid</note>
-      </trans-unit>
-      <trans-unit id="DblBundle.UnableToExtractBundle">
-        <source xml:lang="en">Unable to read contents of Text Release Bundle:</source>
-        <note>ID: DblBundle.UnableToExtractBundle</note>
-      </trans-unit>
-      <trans-unit id="DblBundle.UnableToLoadAnyBooks">
-        <source xml:lang="en">Unable to load any books. File may not be a valid Text Release Bundle or it may contain a problem:</source>
-        <note>ID: DblBundle.UnableToLoadAnyBooks</note>
-      </trans-unit>
-      <trans-unit id="DblBundle.UnknownLanguageName">
-        <source xml:lang="en">Unknown</source>
-        <note>ID: DblBundle.UnknownLanguageName</note>
-      </trans-unit>
       <trans-unit id="DialogBoxes.ArchivingDlg.AllFilesLabel">
         <source xml:lang="en">All Files</source>
         <note>ID: DialogBoxes.ArchivingDlg.AllFilesLabel</note>
@@ -154,8 +85,9 @@
         <note>ID: DialogBoxes.ArchivingDlg.CopyingFilesMsg</note>
       </trans-unit>
       <trans-unit id="DialogBoxes.ArchivingDlg.CreatingArchiveErrorMsg">
-        <source xml:lang="en">There was an error attempting to create the RAMP file.</source>
+        <source xml:lang="en">There was an error attempting to create the {0} package.</source>
         <note>ID: DialogBoxes.ArchivingDlg.CreatingArchiveErrorMsg</note>
+        <note>Parameter is the type of archive (e.g., IMDI)</note>
       </trans-unit>
       <trans-unit id="DialogBoxes.ArchivingDlg.CreatingIMDIPackageErrorMsg">
         <source xml:lang="en">There was a problem starting process to create IMDI package.</source>
@@ -164,6 +96,10 @@
       <trans-unit id="DialogBoxes.ArchivingDlg.CreatingInternalReapMetsFileErrorMsg">
         <source xml:lang="en">There was an error attempting to create the RAMP/REAP mets file.</source>
         <note>ID: DialogBoxes.ArchivingDlg.CreatingInternalReapMetsFileErrorMsg</note>
+      </trans-unit>
+      <trans-unit id="DialogBoxes.ArchivingDlg.CreatingRAMPFileErrorMsg">
+        <source xml:lang="en">There was an error attempting to create the RAMP file.</source>
+        <note>ID: DialogBoxes.ArchivingDlg.CreatingRAMPFileErrorMsg</note>
       </trans-unit>
       <trans-unit id="DialogBoxes.ArchivingDlg.CreatingZipFileErrorMsg">
         <source xml:lang="en">There was a problem starting process to create zip file.</source>
@@ -236,7 +172,7 @@
       <trans-unit id="DialogBoxes.ArchivingDlg.RAMPOverviewText">
         <source xml:lang="en">{0} is a utility for entering metadata and uploading submissions to SIL's internal archive, REAP. If you have access to this archive, this tool will help you use {0} to archive your {1} data. {2} When the {0} package has been created, you can  launch {0} and enter any additional information before doing the actual submission.</source>
         <note>ID: DialogBoxes.ArchivingDlg.RAMPOverviewText</note>
-        <note>Parameter 0  is the word 'RAMP' (the first one will be turned into a hyperlink); Parameter 1 is the name of the calling (host) program (SayMore, FLEx, etc.); Parameter 2 is additional app-specifc information.</note>
+        <note>Parameter 0  is the word 'RAMP' (the first one will be turned into a hyperlink); Parameter 1 is the name of the calling (host) program (SayMore, FLEx, etc.); Parameter 2 is additional app-specific information.</note>
       </trans-unit>
       <trans-unit id="DialogBoxes.ArchivingDlg.RampNotFoundMsg">
         <source xml:lang="en">The RAMP program cannot be found!</source>
@@ -267,44 +203,10 @@
         <source xml:lang="en">There was an error attempting to open the archive package in {0}.</source>
         <note>ID: DialogBoxes.ArchivingDlg.StartingRampErrorMsg</note>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.WindowTitle">
-        <source xml:lang="en">{0}: Archive using {1}</source>
-        <note>ID: DialogBoxes.ArchivingDlg.WindowTitle</note>
-        <note>Parameter is application name</note>
-      </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg._buttonCancel">
-        <source xml:lang="en">Cancel</source>
-        <note>ID: DialogBoxes.ArchivingDlg._buttonCancel</note>
-      </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg._buttonCreatePackage">
-        <source xml:lang="en">&amp;1) Create Package</source>
-        <note>ID: DialogBoxes.ArchivingDlg._buttonCreatePackage</note>
-      </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg._buttonLaunchRamp">
-        <source xml:lang="en">&amp;2) Launch {0}</source>
-        <note>ID: DialogBoxes.ArchivingDlg._buttonLaunchRamp</note>
-      </trans-unit>
       <trans-unit id="DialogBoxes.ConfirmRecycleDialog.MessageForMultipleItems">
         <source xml:lang="en">{0} will be moved to the Recycle Bin.</source>
         <note>ID: DialogBoxes.ConfirmRecycleDialog.MessageForMultipleItems</note>
         <note>Param {0} is a description of the things being deleted (e.g., "The selected files")</note>
-      </trans-unit>
-      <trans-unit id="DialogBoxes.ConfirmRecycleDialog.MessageForSingleItem">
-        <source xml:lang="en">{0} will be moved to the Recycle Bin.</source>
-        <note>ID: DialogBoxes.ConfirmRecycleDialog.MessageForSingleItem</note>
-        <note>Param {0} is a file name</note>
-      </trans-unit>
-      <trans-unit id="DialogBoxes.ConfirmRecycleDialog.WindowTitle">
-        <source xml:lang="en">Confirm Delete</source>
-        <note>ID: DialogBoxes.ConfirmRecycleDialog.WindowTitle</note>
-      </trans-unit>
-      <trans-unit id="DialogBoxes.ConfirmRecycleDialog.cancelBtn">
-        <source xml:lang="en">&amp;Cancel</source>
-        <note>ID: DialogBoxes.ConfirmRecycleDialog.cancelBtn</note>
-      </trans-unit>
-      <trans-unit id="DialogBoxes.ConfirmRecycleDialog.deleteBtn">
-        <source xml:lang="en">&amp;Delete</source>
-        <note>ID: DialogBoxes.ConfirmRecycleDialog.deleteBtn</note>
       </trans-unit>
       <trans-unit id="DialogBoxes.FileDlg.AllFilesLabel">
         <source xml:lang="en">All Files</source>
@@ -342,6 +244,14 @@
       <trans-unit id="DialogBoxes.SelectProjectDlg.ResourceBundleFileTypeLabel">
         <source xml:lang="en">Text Resource Bundle files</source>
         <note>ID: DialogBoxes.SelectProjectDlg.ResourceBundleFileTypeLabel</note>
+      </trans-unit>
+      <trans-unit id="Errors.DefenderFolderProtectionHeading">
+        <source xml:lang="en">{0} cannot write to the folder {1}.</source>
+        <note>ID: Errors.DefenderFolderProtectionHeading</note>
+      </trans-unit>
+      <trans-unit id="Errors.DefenderFolderProtection">
+        <source xml:lang="en">This might be caused by Windows Defender "Controlled Folder Access" or some other virus or malware protection. You can search online or contact a local support person for help with configuring Windows Defender (and other antivirus software) to allow this program to work.</source>
+        <note>ID: Errors.DefenderFolderProtection</note>
       </trans-unit>
       <trans-unit id="ExceptionReportingDialog.ContinueButtonLabel">
         <source xml:lang="en">Continue</source>
@@ -434,14 +344,15 @@
         <note>ID: ImageToolbox.AlmostMatchingImages</note>
         <note>The {0} will be replaced by the number of images found.  The {1} will be replaced with the search string.</note>
       </trans-unit>
-      <trans-unit id="ImageToolbox.Camera">
-        <source xml:lang="en">Camera</source>
-        <note>ID: ImageToolbox.Camera</note>
+      <trans-unit id="ImageToolbox.AlmostMatchingImageSingle">
+        <source xml:lang="en">Found 1 image with a name close to “{1}”</source>
+        <note>ID: ImageToolbox.AlmostMatchingImageSingle</note>
+        <note>The {1} will be replaced with the search string.</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.CopyExemplarMetadata">
         <source xml:lang="en">Use {0}</source>
         <note>ID: ImageToolbox.CopyExemplarMetadata</note>
-        <note>Used to copy a previous metadata set to the current image. The  {0} will be replaced with the name of the exemplar image.</note>
+        <note>Used to copy a previous metadata set to the current image. The {0} will be replaced with the name of the exemplar image.</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.Crop">
         <source xml:lang="en">Crop</source>
@@ -451,17 +362,9 @@
         <source xml:lang="en">Download Art Of Reading Installer</source>
         <note>ID: ImageToolbox.DownloadArtOfReading</note>
       </trans-unit>
-      <trans-unit id="ImageToolbox.EditMetadataLink">
-        <source xml:lang="en">Edit...</source>
-        <note>ID: ImageToolbox.EditMetadataLink</note>
-      </trans-unit>
       <trans-unit id="ImageToolbox.EnterSearchTerms">
         <source xml:lang="en">In the box above, type what you are searching for, then press ENTER.</source>
         <note>ID: ImageToolbox.EnterSearchTerms</note>
-      </trans-unit>
-      <trans-unit id="ImageToolbox.FileButton">
-        <source xml:lang="en">File</source>
-        <note>ID: ImageToolbox.FileButton</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.FileChooserTitle">
         <source xml:lang="en">Choose Picture File</source>
@@ -500,6 +403,10 @@
         <source xml:lang="en">Found {0} images</source>
         <note>ID: ImageToolbox.MatchingImages</note>
         <note>The {0} will be replaced by the number of matching images</note>
+      </trans-unit>
+      <trans-unit id="ImageToolbox.MatchingImageSingle">
+        <source xml:lang="en">Found 1 image</source>
+        <note>ID: ImageToolbox.MatchingImageSingle</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.NewMultilingual">
         <source xml:lang="en">Did you know that there is a new version of this collection which lets you search in Arabic, Bengali, Chinese, English, French, Indonesian, Hindi, Portuguese, Spanish, Thai, or Swahili?  It is free and available for downloading.</source>
@@ -547,8 +454,9 @@
         <note>ID: ImageToolbox.TwainDriverNotSupported</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.WindowsXpMissingWiaV2Dll">
-        <source xml:lang="en">http://vbnet.mvps.org/files/updates/wiaautsdk.zip</source>
+        <source xml:lang="en">Windows XP does not come with a crucial DLL that lets you use a WIA scanner with this program. Get a technical person to download and follow the directions at {0}</source>
         <note>ID: ImageToolbox.WindowsXpMissingWiaV2Dll</note>
+        <note>Param 0: URL to download a zip file</note>
       </trans-unit>
       <trans-unit id="IpaIdentifierView.betterLabel1">
         <source xml:lang="en">Purpose:</source>
@@ -661,10 +569,6 @@
       <trans-unit id="MetadataEditor.CreativeCommons">
         <source xml:lang="en">Creative Commons</source>
         <note>ID: MetadataEditor.CreativeCommons</note>
-      </trans-unit>
-      <trans-unit id="MetadataEditor.CreativeCommons.Intergovernmental">
-        <source xml:lang="en">Intergovernmental Version</source>
-        <note>ID: MetadataEditor.CreativeCommons.Intergovernmental</note>
       </trans-unit>
       <trans-unit id="MetadataEditor.CreatorLabel">
         <source xml:lang="en">Creator</source>

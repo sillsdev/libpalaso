@@ -114,15 +114,9 @@ namespace SIL.DblBundle.Text
 			string stylesheetPath = Path.Combine(PathToUnzippedBundleInnards, filename);
 
 			if (!File.Exists(stylesheetPath))
-			{
-				throw new ApplicationException(
-					string.Format(Localizer.GetString("DblBundle.FileMissingFromBundle",
-						"Required {0} file not found. File is not a valid Text Release Bundle:"), filename) +
-					Environment.NewLine + _pathToZippedBundle);
-			}
+				DblBundleFileUtils.ThrowExceptionForMissingRequiredFile(filename, _pathToZippedBundle);
 
-			Exception exception;
-			var stylesheet = Stylesheet.Load(stylesheetPath, out exception);
+			var stylesheet = Stylesheet.Load(stylesheetPath, out var exception);
 			if (exception != null)
 			{
 				throw new ApplicationException(Localizer.GetString("DblBundle.StylesheetInvalid",

@@ -1,10 +1,13 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2023 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
 using System;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using SIL.PlatformUtilities;
+using static System.Environment;
+using static System.Environment.SpecialFolder;
+using static System.IO.Path;
 
 namespace SIL.IO
 {
@@ -18,15 +21,15 @@ namespace SIL.IO
 			// Copy all the files.
 			foreach (var filepath in Directory.GetFiles(sourcePath))
 			{
-				var filename = Path.GetFileName(filepath);
-				File.Copy(filepath, Path.Combine(destinationPath, filename), overwrite);
+				var filename = GetFileName(filepath);
+				File.Copy(filepath, Combine(destinationPath, filename), overwrite);
 			}
 
 			// Copy all the sub directories.
-			foreach (var directorypath in Directory.GetDirectories(sourcePath))
+			foreach (var directoryPath in Directory.GetDirectories(sourcePath))
 			{
-				var directoryname = Path.GetFileName(directorypath);
-				Copy(directorypath, Path.Combine(destinationPath, directoryname), overwrite);
+				var directoryName = GetFileName(directoryPath);
+				Copy(directoryPath, Combine(destinationPath, directoryName), overwrite);
 			}
 		}
 
@@ -46,6 +49,7 @@ namespace SIL.IO
 				Directory.Move(sourcePath, destinationPath);
 				return;
 			}
+
 			if (Directory.Exists(sourcePath))
 			{
 				Copy(sourcePath, destinationPath);
@@ -62,7 +66,7 @@ namespace SIL.IO
 			else
 			{
 				throw new DirectoryNotFoundException(
-					string.Format("Could not find a part of the path '{0}'", sourcePath));
+					$"Could not find a part of the path '{sourcePath}'");
 			}
 		}
 
@@ -74,9 +78,14 @@ namespace SIL.IO
 		// Gleaned from http://stackoverflow.com/questions/2281531/how-can-i-compare-directory-paths-in-c
 		public static bool AreEquivalent(DirectoryInfo dirInfo1, DirectoryInfo dirInfo2)
 		{
-			var comparison = Platform.IsWindows ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
-			var backslash = new char[] { '\\', '/' }; // added this step because mono does not implicitly convert from char to char[]
-			return string.Compare(dirInfo1.FullName.TrimEnd(backslash), dirInfo2.FullName.TrimEnd(backslash), comparison) == 0;
+			var comparison = Platform.IsWindows ? StringComparison.InvariantCultureIgnoreCase
+				: StringComparison.InvariantCulture;
+			var backslash = new[]
+			{
+				'\\', '/'
+			}; // added this step because mono does not implicitly convert from char to char[]
+			return string.Compare(dirInfo1.FullName.TrimEnd(backslash),
+				dirInfo2.FullName.TrimEnd(backslash), comparison) == 0;
 		}
 
 		/// <summary>
@@ -108,10 +117,114 @@ namespace SIL.IO
 		public static string[] GetSafeDirectories(string path)
 		{
 			return (from directoryName in Directory.GetDirectories(path)
-					let dirInfo = new DirectoryInfo(directoryName)
-					where (dirInfo.Attributes & FileAttributes.System) != FileAttributes.System
-					where (dirInfo.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden
-					select directoryName).ToArray();
+				let dirInfo = new DirectoryInfo(directoryName)
+				where (dirInfo.Attributes & FileAttributes.System) != FileAttributes.System
+				where (dirInfo.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden
+				select directoryName).ToArray();
 		}
+
+		#region Utilities that are specific to the Windows OS.
+		/// <summary>
+		/// Returns 'true' unless we find we can't write to all the specified folders, in which
+		/// case it performs the specified report action. Note that the action will never be
+		/// performed more than once, since this method does not keep checking additional folders
+		/// once it finds one that is not writable.
+		/// In Oct of 2017, a Windows update to Defender on some machines set Protections on
+		/// certain basic folders, like MyDocuments! This resulted in throwing an exception any
+		/// time Bloom tried to write out CollectionSettings files! More recently (especially on
+		/// Windows 11), some other apps have been having similar failures due to enhanced anti-
+		/// ransomware checking.
+		/// </summary>
+		/// <param name="report">Action to perform if a folder is found which is not writable (or
+		/// null to just return false)
+		/// </param>
+		/// <param name="foldersToCheck">The folders to test for write access.</param>
+		[PublicAPI]
+		public static bool CanWriteToDirectories(Action<Exception, string> report,
+			params string[] foldersToCheck)
+		{
+			foreach (var folder in foldersToCheck)
+			{
+				if (!CanWriteToDirectory(report, folder))
+					return false;
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Returns 'true' unless we find we can't write to the specified folder, in which
+		/// case it performs the specified report action.
+		/// In Oct of 2017, a Windows update to Defender on some machines set Protections on
+		/// certain basic folders, like MyDocuments! This resulted in throwing an exception any
+		/// time Bloom tried to write out CollectionSettings files! More recently (especially on
+		/// Windows 11), some other apps have been having similar failures due to enhanced anti-
+		/// ransomware checking.
+		/// </summary>
+		/// <param name="report">Action to perform if a folder is found which is not writable
+		/// </param>
+		/// <param name="folderToCheck">An optional folder to test for write access.</param>
+		[PublicAPI]
+		public static bool CanWriteToDirectory(Action<Exception, string> report,
+			string folderToCheck = null)
+		{
+			if (!Platform.IsWindows)
+				return true;
+
+			if (string.IsNullOrEmpty(folderToCheck))
+				folderToCheck = GetFolderPath(MyDocuments);
+			else
+			{
+				if (!Directory.Exists(folderToCheck))
+					throw new ArgumentException(
+						"Folder provided should be an existing directory.",
+						nameof(folderToCheck));
+			}
+
+			string testPath = GetTestFileName(folderToCheck);
+
+			try
+			{
+				RobustFile.WriteAllText(testPath, "test contents");
+			}
+			catch (Exception exc)
+			{
+				// Creating a previously non-existent file under these conditions just gives a WinIOError, "could not find file".
+				report?.Invoke(exc, GetDirectoryName(testPath));
+				return false;
+			}
+			finally
+			{
+				Cleanup(testPath);
+			}
+
+			return true;
+		}
+
+		private static string GetTestFileName(string folderToCheck)
+		{
+			while (true)
+			{
+				var testPath = Combine(folderToCheck,
+					GetFileName(TempFile.CreateAndGetPathButDontMakeTheFile().Path));
+				// Really unlikely that the temp file name would exist, but let's check to be sure.
+				if (!File.Exists(testPath) && !Directory.Exists(testPath))
+					return testPath;
+			}
+		}
+
+		private static void Cleanup(string testPath)
+		{
+			// try to clean up behind ourselves
+			try
+			{
+				RobustFile.Delete(testPath);
+			}
+			catch (Exception)
+			{
+				// but don't try too hard
+			}
+		}
+		#endregion
 	}
 }

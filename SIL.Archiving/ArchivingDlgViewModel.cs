@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using L10NSharp;
 using SIL.Archiving.Generic;
 using SIL.Code;
@@ -43,8 +44,8 @@ namespace SIL.Archiving
 		protected readonly string _id; // ID/Name of the top-level element being archived (can be either a session or a project)
 		protected readonly string _appSpecificArchivalProcessInfo;
 		protected readonly Dictionary<string, string> _titles = new Dictionary<string, string>(); //Titles of elements being archived (keyed by element id)
-		private Dictionary<string, MetadataProperties> _propertiesSet = new Dictionary<string, MetadataProperties>(); // Metadata properties that have been set (keyed by element id)
-		private Action<ArchivingDlgViewModel> _setFilesToArchive;
+		private readonly Dictionary<string, MetadataProperties> _propertiesSet = new Dictionary<string, MetadataProperties>(); // Metadata properties that have been set (keyed by element id)
+		private readonly Action<ArchivingDlgViewModel> _setFilesToArchive;
 
 		protected bool _cancelProcess;
 		protected readonly Dictionary<string, string> _progressMessages = new Dictionary<string, string>();
@@ -130,7 +131,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Implement ArchiveInfoHyperlinkText to define text (first occurrence only) in the
-		/// InformativeText that will be makred as a hyperlink to ArchiveInfoUrl.
+		/// InformativeText that will be marked as a hyperlink to ArchiveInfoUrl.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public abstract string ArchiveInfoHyperlinkText { get; }
@@ -314,8 +315,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		protected void PreventDuplicateMetadataProperty(string elementId, MetadataProperties property)
 		{
-			MetadataProperties propertiesSet;
-			if (_propertiesSet.TryGetValue(elementId, out propertiesSet))
+			if (_propertiesSet.TryGetValue(elementId, out var propertiesSet))
 			{
 				if (propertiesSet.HasFlag(property))
 					throw new InvalidOperationException(string.Format("{0} has already been set", property.ToString()));
@@ -344,8 +344,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		protected bool IsMetadataPropertySet(string elementId, MetadataProperties property)
 		{
-			MetadataProperties propertiesSet;
-			if (!_propertiesSet.TryGetValue(elementId, out propertiesSet))
+			if (!_propertiesSet.TryGetValue(elementId, out var propertiesSet))
 				return false;
 			return propertiesSet.HasFlag(property);
 		}
@@ -431,6 +430,7 @@ namespace SIL.Archiving
 		}
 
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public abstract string GetMetadata();
 
 		/// ------------------------------------------------------------------------------------
@@ -456,8 +456,10 @@ namespace SIL.Archiving
 					HandleInvalidOperation();
 				else
 				{
-					ReportError(e, string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.StartingRampErrorMsg",
-						"There was an error attempting to open the archive package in {0}."), PathToProgramToLaunch));
+					ReportError(e, string.Format(LocalizationManager.GetString(
+							"DialogBoxes.ArchivingDlg.StartingRampErrorMsg",
+							"There was an error attempting to open the archive package in {0}."),
+						PathToProgramToLaunch));
 				}
 			}
 		}
@@ -530,21 +532,39 @@ namespace SIL.Archiving
 				HandleNonFatalError(e, msg);
 		}
 
+		protected string PreparingFilesMsg => LocalizationManager.GetString(
+			"DialogBoxes.ArchivingDlg.PreparingFilesMsg", "Analyzing component files");
+
+		protected string GetSavingFilesMsg(string type)
+		{
+			return string.Format(LocalizationManager.GetString(
+				"DialogBoxes.ArchivingDlg.SavingFilesInPackageMsg",
+				"Saving files in {0} package",
+				"Parameter is the type of archive (e.g., RAMP/IMDI)"), type);
+		}
+
+		protected string GetFileExcludedMsg(string type, string file)
+		{
+			return string.Format(LocalizationManager.GetString(
+				"DialogBoxes.ArchivingDlg.FileExcludedFromPackage",
+				"File excluded from {0} package: ",
+				"Parameter is the type of archive (e.g., RAMP/IMDI)"), type) + file;
+		}
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// The file locations are different on Linux than on Windows
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static bool IsMono
-		{
-			get { return (Type.GetType("Mono.Runtime") != null); }
-		}
+		public static bool IsMono => (Type.GetType("Mono.Runtime") != null);
 
 		/// <summary></summary>
 		/// <param name="sessionId"></param>
+		[PublicAPI]
 		public abstract IArchivingSession AddSession(string sessionId);
 
 		/// <summary></summary>
+		[PublicAPI]
 		public abstract IArchivingPackage ArchivingPackage { get; }
 
 		/// <remarks/>

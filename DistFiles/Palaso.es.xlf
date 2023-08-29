@@ -1,1063 +1,1141 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns:sil="http://sil.org/software/XLiff" xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
-  <file source-language="en" product-version="6.0.0" original="Palaso.dll" datatype="plaintext" target-language="es-ES">
+  <file source-language="en" product-version="12.1.0" original="Palaso.dll" datatype="plaintext" target-language="es-ES">
     <body>
       <trans-unit id="AboutDialog.BuiltOnDate" approved="yes">
         <source xml:lang="en">Built on {0}</source>
-        <note>ID: AboutDialog.BuiltOnDate</note>
-        <note>{0} is the date the application was built</note>
         <target xml:lang="es-ES" state="final">Compilado en {0}</target>
+        <note>ID: AboutDialog.BuiltOnDate</note>
       </trans-unit>
       <trans-unit id="AboutDialog.NoUpdates" approved="yes">
         <source xml:lang="en">No Updates</source>
-        <note>ID: AboutDialog.NoUpdates</note>
         <target xml:lang="es-ES" state="final">No hay actualizaciones</target>
+        <note>ID: AboutDialog.NoUpdates</note>
       </trans-unit>
       <trans-unit id="AboutDialog.WindowTitle" approved="yes">
         <source xml:lang="en">About {0}</source>
-        <note>ID: AboutDialog.WindowTitle</note>
-        <note>{0} is the application name</note>
         <target xml:lang="es-ES" state="final">Acerca de {0}</target>
+        <note>ID: AboutDialog.WindowTitle</note>
       </trans-unit>
       <trans-unit id="AboutDialog._checkForUpdates" approved="yes">
         <source xml:lang="en">Check For Updates</source>
-        <note>ID: AboutDialog._checkForUpdates</note>
         <target xml:lang="es-ES" state="final">Buscar actualizaciones</target>
+        <note>ID: AboutDialog._checkForUpdates</note>
       </trans-unit>
       <trans-unit id="AboutDialog._releaseNotesLabel" approved="yes">
         <source xml:lang="en">Release Notes</source>
-        <note>ID: AboutDialog._releaseNotesLabel</note>
         <target xml:lang="es-ES" state="final">Notas de la versión</target>
+        <note>ID: AboutDialog._releaseNotesLabel</note>
       </trans-unit>
       <trans-unit id="Application.AlreadyRunning.General" approved="yes">
         <source xml:lang="en">Another copy of the application is already running. If you cannot find it, restart your computer.</source>
+        <target xml:lang="es-ES" state="final">Otra copia del programa ya se está ejecutando. Si no lo encuentra, reinicie el equipo.</target>
         <note>ID: Application.AlreadyRunning.General</note>
-        <target xml:lang="es-ES" state="final">Ya se está ejecutando otra copia del programa. Si no la encuentra, reinicie su computadora.</target>
       </trans-unit>
       <trans-unit id="Application.AlreadyRunning.Specific" approved="yes">
         <source xml:lang="en">Another copy of {0} is already running. If you cannot find that copy of {0}, restart your computer.</source>
+        <target xml:lang="es-ES" state="final">Otra copia de {0} ya se está ejecutando. Si no lo encuentra, reinicie el equipo.</target>
         <note>ID: Application.AlreadyRunning.Specific</note>
-        <note>{0} is the application name</note>
-        <target xml:lang="es-ES" state="final">Ya se está ejecutando otra copia de {0}. Si no la encuentra, reinicie su computadora.</target>
       </trans-unit>
       <trans-unit id="Application.ProblemStarting.General" approved="yes">
         <source xml:lang="en">There was a problem starting the application which might require that you restart your computer.</source>
-        <note>ID: Application.ProblemStarting.General</note>
         <target xml:lang="es-ES" state="final">Hubo un problema al iniciar el programa. Posiblemente tendrá que reiniciar su computadora.</target>
+        <note>ID: Application.ProblemStarting.General</note>
       </trans-unit>
       <trans-unit id="Application.ProblemStarting.Specific" approved="yes">
         <source xml:lang="en">There was a problem starting {0} which might require that you restart your computer.</source>
-        <note>ID: Application.ProblemStarting.Specific</note>
-        <note>{0} is the application name</note>
         <target xml:lang="es-ES" state="final">Hubo un problema al iniciar {0}. Posiblemente tendrá que reiniciar su computadora.</target>
+        <note>ID: Application.ProblemStarting.Specific</note>
       </trans-unit>
       <trans-unit id="Application.WaitingFinish.General" approved="yes">
         <source xml:lang="en">Waiting for other application to finish...</source>
-        <note>ID: Application.WaitingFinish.General</note>
         <target xml:lang="es-ES" state="final">Esperando que otra aplicación termine...</target>
+        <note>ID: Application.WaitingFinish.General</note>
       </trans-unit>
       <trans-unit id="Application.WaitingFinish.Specific" approved="yes">
-        <source xml:lang="en">Waiting for other {0} to finish...</source>
-        <note>ID: Application.WaitingFinish.Specific</note>
-        <note>{0} is the application name</note>
+        <source xml:lang="en">Waiting for {0} to finish...</source>
         <target xml:lang="es-ES" state="final">Esperando que {0} termine...</target>
+        <note>ID: Application.WaitingFinish.Specific</note>
       </trans-unit>
-      <trans-unit id="ArchivingDlg._chkMetadataOnly">
+      <trans-unit id="ArchivingDlg._chkMetadataOnly" approved="yes">
         <source xml:lang="en">Metadata only</source>
+        <target xml:lang="es-ES" state="final">Sólo metadatos</target>
         <note>ID: ArchivingDlg._chkMetadataOnly</note>
-        <target xml:lang="es-ES" state="translated">Sólo metadatos</target>
       </trans-unit>
-      <trans-unit id="ArchivingDlg._chkMetadataOnly_ToolTip_">
+      <trans-unit id="ArchivingDlg._chkMetadataOnly_ToolTip_" approved="yes">
         <source xml:lang="en">Select this to prevent copying actual data files into archive</source>
+        <target xml:lang="es-ES" state="final">Seleccione esta opción para evitar que se copien los ficheros de datos reales al archivo.</target>
         <note>ID: ArchivingDlg._chkMetadataOnly_ToolTip_</note>
-        <target xml:lang="es-ES" state="needs-translation">Select this to prevent copying actual data files into archive</target>
       </trans-unit>
       <trans-unit id="Common.AbortButton" approved="yes">
         <source xml:lang="en">&amp;Abort</source>
+        <target xml:lang="es-ES" state="final">&amp;Abortar</target>
         <note>ID: Common.AbortButton</note>
-        <target xml:lang="es-ES" state="final">&amp;Cancelar</target>
       </trans-unit>
       <trans-unit id="Common.CancelButton" approved="yes">
         <source xml:lang="en">&amp;Cancel</source>
-        <note>ID: Common.CancelButton</note>
         <target xml:lang="es-ES" state="final">&amp;Cancelar</target>
+        <note>ID: Common.CancelButton</note>
       </trans-unit>
       <trans-unit id="Common.IgnoreButton" approved="yes">
         <source xml:lang="en">&amp;Ignore</source>
-        <note>ID: Common.IgnoreButton</note>
         <target xml:lang="es-ES" state="final">&amp;Ignorar</target>
+        <note>ID: Common.IgnoreButton</note>
       </trans-unit>
-      <trans-unit id="Common.No">
+      <trans-unit id="Common.No" approved="yes">
         <source xml:lang="en">No</source>
+        <target xml:lang="es-ES" state="final">No</target>
         <note>ID: Common.No</note>
-        <target xml:lang="es-ES" state="translated">No</target>
       </trans-unit>
-      <trans-unit id="Common.NoButton">
+      <trans-unit id="Common.NoButton" approved="yes">
         <source xml:lang="en">&amp;No</source>
+        <target xml:lang="es-ES" state="final">&amp;No</target>
         <note>ID: Common.NoButton</note>
-        <target xml:lang="es-ES" state="translated">&amp;No</target>
       </trans-unit>
       <trans-unit id="Common.OKButton" approved="yes">
         <source xml:lang="en">&amp;OK</source>
-        <note>ID: Common.OKButton</note>
         <target xml:lang="es-ES" state="final">&amp;Aceptar</target>
+        <note>ID: Common.OKButton</note>
       </trans-unit>
       <trans-unit id="Common.RetryButton" approved="yes">
         <source xml:lang="en">&amp;Retry</source>
+        <target xml:lang="es-ES" state="final">&amp;Reintentar</target>
         <note>ID: Common.RetryButton</note>
-        <target xml:lang="es-ES" state="final">&amp;Volver a intentar</target>
       </trans-unit>
       <trans-unit id="Common.Yes" approved="yes">
         <source xml:lang="en">Yes</source>
-        <note>ID: Common.Yes</note>
         <target xml:lang="es-ES" state="final">Si</target>
+        <note>ID: Common.Yes</note>
       </trans-unit>
       <trans-unit id="Common.YesButton" approved="yes">
         <source xml:lang="en">&amp;Yes</source>
-        <note>ID: Common.YesButton</note>
         <target xml:lang="es-ES" state="final">&amp;Sí</target>
+        <note>ID: Common.YesButton</note>
       </trans-unit>
       <trans-unit id="CustomIdentifierView.betterLabel1" approved="yes">
         <source xml:lang="en">RFC5646 code:</source>
-        <note>ID: CustomIdentifierView.betterLabel1</note>
-        <note>label describes the code for a custom identifier. Translate only 'code'</note>
         <target xml:lang="es-ES" state="final">Código RFC5646:</target>
+        <note>ID: CustomIdentifierView.betterLabel1</note>
       </trans-unit>
       <trans-unit id="CustomIdentifierView.linkLabel1" approved="yes">
         <source xml:lang="en">Read about language identifiers on the web</source>
-        <note>ID: CustomIdentifierView.linkLabel1</note>
-        <note>text used in the link to a webpage that describes the language identifiers</note>
         <target xml:lang="es-ES" state="final">Lee acerca de los identificadores de idiomas en la web</target>
+        <note>ID: CustomIdentifierView.linkLabel1</note>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.AllFilesLabel">
+      <trans-unit id="DblBundle.FileMissingFromBundle" approved="yes">
+        <source xml:lang="en">Required {0} file not found. File is not a valid Text Release Bundle:</source>
+        <target xml:lang="es-ES" state="final">Archivo requerido {0} no encontrado. El archivo no es un paquete de texto liberado válido:</target>
+        <note>ID: DblBundle.FileMissingFromBundle</note>
+      </trans-unit>
+      <trans-unit id="DblBundle.MetadataInvalid" approved="yes">
+        <source xml:lang="en">Unable to read metadata. File is not a valid Text Release Bundle:</source>
+        <target xml:lang="es-ES" state="final">No se pueden leer los metadatos. El archivo no es un paquete de liberación de texto válido:</target>
+        <note>ID: DblBundle.MetadataInvalid</note>
+      </trans-unit>
+      <trans-unit id="DblBundle.MetadataInvalidVersion" approved="yes">
+        <source xml:lang="en">Unable to read metadata. Type: {0}. Version: {1}. File is not a valid Text Release Bundle:</source>
+        <target xml:lang="es-ES" state="final">No se pueden leer los metadatos. Tipo: {0}. Versión: {1}. El archivo no es un paquete de liberación de texto válido:</target>
+        <note>ID: DblBundle.MetadataInvalidVersion</note>
+      </trans-unit>
+      <trans-unit id="DblBundle.NotTextReleaseBundle" approved="yes">
+        <source xml:lang="en">This metadata in this bundle indicates that it is of type "{0}". Only Text Release Bundles are currently supported.</source>
+        <target xml:lang="es-ES" state="final">Los metadatos de este paquete indican que es del tipo "{0}". Actualmente sólo se admiten los paquetes de texto liberado.</target>
+        <note>ID: DblBundle.NotTextReleaseBundle</note>
+      </trans-unit>
+      <trans-unit id="DblBundle.SourceReleaseBundle" approved="yes">
+        <source xml:lang="en">This bundle appears to be a source bundle. Only Text Release Bundles are currently supported.</source>
+        <target xml:lang="es-ES" state="final">Este paquete parece ser un paquete de archivos de origen (de Paratext). Actualmente solo se admiten paquetes de texto liberado.</target>
+        <note>ID: DblBundle.SourceReleaseBundle</note>
+      </trans-unit>
+      <trans-unit id="DblBundle.StylesheetInvalid" approved="yes">
+        <source xml:lang="en">Unable to read stylesheet. File is not a valid Text Release Bundle:</source>
+        <target xml:lang="es-ES" state="final">No se puede leer la hoja de estilos. El archivo no es un paquete de liberación de texto válido:</target>
+        <note>ID: DblBundle.StylesheetInvalid</note>
+      </trans-unit>
+      <trans-unit id="DblBundle.UnableToExtractBundle" approved="yes">
+        <source xml:lang="en">Unable to read contents of Text Release Bundle:</source>
+        <target xml:lang="es-ES" state="final">No se puede leer el contenido del paquete de liberación de texto:</target>
+        <note>ID: DblBundle.UnableToExtractBundle</note>
+      </trans-unit>
+      <trans-unit id="DblBundle.UnableToLoadAnyBooks" approved="yes">
+        <source xml:lang="en">Unable to load any books. File may not be a valid Text Release Bundle or it may contain a problem:</source>
+        <target xml:lang="es-ES" state="final">No se puede cargar ningún libro. Es posible que el archivo no sea un paquete de liberación de texto válido o que contenga algún problema:</target>
+        <note>ID: DblBundle.UnableToLoadAnyBooks</note>
+      </trans-unit>
+      <trans-unit id="DblBundle.UnknownLanguageName" approved="yes">
+        <source xml:lang="en">Unknown</source>
+        <target xml:lang="es-ES" state="final">Desconocido</target>
+        <note>ID: DblBundle.UnknownLanguageName</note>
+      </trans-unit>
+      <trans-unit id="DialogBoxes.ArchivingDlg.AllFilesLabel" approved="yes">
         <source xml:lang="en">All Files</source>
+        <target xml:lang="es-ES" state="final">Todos los archivos</target>
         <note>ID: DialogBoxes.ArchivingDlg.AllFilesLabel</note>
-        <target xml:lang="es-ES" state="translated">Todos los archivos</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.CancellingMsg">
+      <trans-unit id="DialogBoxes.ArchivingDlg.CancellingMsg" approved="yes">
         <source xml:lang="en">Canceling...</source>
+        <target xml:lang="es-ES" state="final">Cancelando...</target>
         <note>ID: DialogBoxes.ArchivingDlg.CancellingMsg</note>
-        <target xml:lang="es-ES" state="translated">Cancelando...</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.CopyingFilesMsg">
+      <trans-unit id="DialogBoxes.ArchivingDlg.CopyingFilesMsg" approved="yes">
         <source xml:lang="en">Copying files</source>
+        <target xml:lang="es-ES" state="final">Copiando archivos</target>
         <note>ID: DialogBoxes.ArchivingDlg.CopyingFilesMsg</note>
-        <target xml:lang="es-ES" state="translated">Copiando archivos</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.CreatingArchiveErrorMsg">
-        <source xml:lang="en">There was an error attempting to create the RAMP file.</source>
+      <trans-unit id="DialogBoxes.ArchivingDlg.CreatingArchiveErrorMsg" approved="yes">
+        <source xml:lang="en">There was an error attempting to create the {0} package.</source>
+        <target xml:lang="es-ES" state="final">Hubo un error al intentar crear el paquete {0}.</target>
         <note>ID: DialogBoxes.ArchivingDlg.CreatingArchiveErrorMsg</note>
-        <target xml:lang="es-ES" state="needs-translation">There was an error attempting to create the RAMP file.</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.CreatingIMDIPackageErrorMsg">
+      <trans-unit id="DialogBoxes.ArchivingDlg.CreatingIMDIPackageErrorMsg" approved="yes">
         <source xml:lang="en">There was a problem starting process to create IMDI package.</source>
+        <target xml:lang="es-ES" state="final">Hubo un problema al iniciar el proceso para crear el paquete IMDI.</target>
         <note>ID: DialogBoxes.ArchivingDlg.CreatingIMDIPackageErrorMsg</note>
-        <target xml:lang="es-ES" state="needs-translation">There was a problem starting process to create IMDI package.</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.CreatingInternalReapMetsFileErrorMsg">
+      <trans-unit id="DialogBoxes.ArchivingDlg.CreatingInternalReapMetsFileErrorMsg" approved="yes">
         <source xml:lang="en">There was an error attempting to create the RAMP/REAP mets file.</source>
+        <target xml:lang="es-ES" state="final">Hubo un error al intentar crear el archivo “mets” para RAMP/REAP.</target>
         <note>ID: DialogBoxes.ArchivingDlg.CreatingInternalReapMetsFileErrorMsg</note>
-        <target xml:lang="es-ES" state="needs-translation">There was an error attempting to create the RAMP/REAP mets file.</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.CreatingZipFileErrorMsg">
+      <trans-unit id="DialogBoxes.ArchivingDlg.CreatingRAMPFileErrorMsg" approved="yes">
+        <source xml:lang="en">There was an error attempting to create the RAMP file.</source>
+        <target xml:lang="es-ES" state="final">Hubo un error al intentar crear el archivo RAMP.</target>
+        <note>ID: DialogBoxes.ArchivingDlg.CreatingRAMPFileErrorMsg</note>
+      </trans-unit>
+      <trans-unit id="DialogBoxes.ArchivingDlg.CreatingZipFileErrorMsg" approved="yes">
         <source xml:lang="en">There was a problem starting process to create zip file.</source>
+        <target xml:lang="es-ES" state="final">Hubo un problema al iniciar el proceso para crear el archivo zip.</target>
         <note>ID: DialogBoxes.ArchivingDlg.CreatingZipFileErrorMsg</note>
-        <target xml:lang="es-ES" state="needs-translation">There was a problem starting process to create zip file.</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.FileExcludedFromPackage">
+      <trans-unit id="DialogBoxes.ArchivingDlg.FileExcludedFromPackage" approved="yes">
         <source xml:lang="en">File excluded from {0} package: </source>
+        <target xml:lang="es-ES" state="final">Archivo excluido del paquete {0}: </target>
         <note>ID: DialogBoxes.ArchivingDlg.FileExcludedFromPackage</note>
-        <note>Parameter is the type of archive (e.g., RAMP/IMDI)</note>
-        <target xml:lang="es-ES" state="translated">Archivo excluido del paquete {0}: </target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.IMDIActorsGroup">
+      <trans-unit id="DialogBoxes.ArchivingDlg.IMDIActorsGroup" approved="yes">
         <source xml:lang="en">Actors</source>
+        <target xml:lang="es-ES" state="final">Actores</target>
         <note>ID: DialogBoxes.ArchivingDlg.IMDIActorsGroup</note>
-        <note>This is the heading displayed in the Archive Using IMDI dialog box for the files for the actors/participants</note>
-        <target xml:lang="es-ES" state="translated">Actores</target>
       </trans-unit>
       <trans-unit id="DialogBoxes.ArchivingDlg.IMDIArchiveType">
         <source xml:lang="en">IMDI</source>
-        <note>ID: DialogBoxes.ArchivingDlg.IMDIArchiveType</note>
-        <note>This is the abbreviation for Isle Metadata Initiative (http://www.mpi.nl/imdi/). Typically this probably does not need to be localized.</note>
         <target xml:lang="es-ES" state="needs-translation">IMDI</target>
+        <note>ID: DialogBoxes.ArchivingDlg.IMDIArchiveType</note>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.IMDIOverviewText">
+      <trans-unit id="DialogBoxes.ArchivingDlg.IMDIOverviewText" approved="yes">
         <source xml:lang="en">{0} ({1}) is a metadata standard to describe multi-media and multi-modal language resources. The standard provides interoperability for browsable and searchable corpus structures and resource descriptions.</source>
+        <target xml:lang="es-ES" state="final">{0} ({1}) es un estándar de metadatos para describir recursos lingüísticos multimedia y multimodales. El estándar proporciona interoperabilidad para estructuras de corpus y descripciones de recursos navegables y buscables.</target>
         <note>ID: DialogBoxes.ArchivingDlg.IMDIOverviewText</note>
-        <note>Parameter 0  is 'Isle Metadata Initiative' (the first occurrence will be turned into a hyperlink); Parameter 1 is 'IMDI'</note>
-        <target xml:lang="es-ES" state="needs-translation">{0} ({1}) is a metadata standard to describe multi-media and multi-modal language resources. The standard provides interoperability for browsable and searchable corpus structures and resource descriptions.</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.IMDIProgramInfoText">
+      <trans-unit id="DialogBoxes.ArchivingDlg.IMDIProgramInfoText" approved="yes">
         <source xml:lang="en">This tool will help you use {0} to archive your {1} data. When the {1} package has been created, you can launch {0} and enter any additional information before doing the actual submission.</source>
+        <target xml:lang="es-ES" state="final">Esta herramienta le ayudará a utilizar {0} para archivar sus datos de {1}. Cuando se haya creado el paquete {1}, puede lanzar {0} e introducir cualquier información adicional antes de someter el paquete.</target>
         <note>ID: DialogBoxes.ArchivingDlg.IMDIProgramInfoText</note>
-        <note>Parameter 0 is the name of the program that will be launched to further prepare the IMDI data for submission; Parameter 1 is the name of the calling (host) program (SayMore, FLEx, etc.)</note>
-        <target xml:lang="es-ES" state="needs-translation">This tool will help you use {0} to archive your {1} data. When the {1} package has been created, you can launch {0} and enter any additional information before doing the actual submission.</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.ISO3CodeRequired">
+      <trans-unit id="DialogBoxes.ArchivingDlg.ISO3CodeRequired" approved="yes">
         <source xml:lang="en">ISO 639-3 3-letter language code required.</source>
+        <target xml:lang="es-ES" state="final">Se requiere un identificador de tres letras del estándar ISO 639-3.</target>
         <note>ID: DialogBoxes.ArchivingDlg.ISO3CodeRequired</note>
-        <note>Message displayed when an invalid language code is given.</note>
-        <target xml:lang="es-ES" state="needs-translation">ISO 639-3 3-letter language code required.</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.InvalidLanguageCode">
+      <trans-unit id="DialogBoxes.ArchivingDlg.InvalidLanguageCode" approved="yes">
         <source xml:lang="en">Invalid ISO 639-3 code: {0}</source>
+        <target xml:lang="es-ES" state="final">Código ISO 639-3 no válido: {0}</target>
         <note>ID: DialogBoxes.ArchivingDlg.InvalidLanguageCode</note>
-        <target xml:lang="es-ES" state="translated">Código ISO 639-3 no válido: {0}</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.IsleMetadataInitiative">
+      <trans-unit id="DialogBoxes.ArchivingDlg.IsleMetadataInitiative" approved="yes">
         <source xml:lang="en">Isle Metadata Initiative</source>
+        <target xml:lang="es-ES" state="final">Iniciativa de Metadatos ISLE</target>
         <note>ID: DialogBoxes.ArchivingDlg.IsleMetadataInitiative</note>
-        <note>Typically this probably does not need to be localized.</note>
-        <target xml:lang="es-ES" state="needs-translation">Isle Metadata Initiative</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.NoIMDIProgramInfoText">
+      <trans-unit id="DialogBoxes.ArchivingDlg.NoIMDIProgramInfoText" approved="yes">
         <source xml:lang="en">The {0} package will be created in {1}.</source>
+        <target xml:lang="es-ES" state="final">El paquete {0} se creará en {1}.</target>
         <note>ID: DialogBoxes.ArchivingDlg.NoIMDIProgramInfoText</note>
-        <note>Parameter 0 is 'IMDI'; Parameter 1 is the path where the package is created.</note>
-        <target xml:lang="es-ES" state="translated">El paquete {0} se creará en {1}.</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.PathNotWritableMsg">
+      <trans-unit id="DialogBoxes.ArchivingDlg.PathNotWritableMsg" approved="yes">
         <source xml:lang="en">The path is not writable: {0}</source>
+        <target xml:lang="es-ES" state="final">No se pudo escribir a la ruta: {0}</target>
         <note>ID: DialogBoxes.ArchivingDlg.PathNotWritableMsg</note>
-        <target xml:lang="es-ES" state="needs-translation">The path is not writable: {0}</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.PrearchivingStatusMsg">
+      <trans-unit id="DialogBoxes.ArchivingDlg.PrearchivingStatusMsg" approved="yes">
         <source xml:lang="en">The following files will be added to the archive:</source>
+        <target xml:lang="es-ES" state="final">Los siguientes ficheros se añadirán al archivo:</target>
         <note>ID: DialogBoxes.ArchivingDlg.PrearchivingStatusMsg</note>
-        <target xml:lang="es-ES" state="translated">Los siguientes archivos se añadirán al almacén:</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.PreparingFilesMsg">
+      <trans-unit id="DialogBoxes.ArchivingDlg.PreparingFilesMsg" approved="yes">
         <source xml:lang="en">Analyzing component files</source>
+        <target xml:lang="es-ES" state="final">Analizando los archivos de componentes</target>
         <note>ID: DialogBoxes.ArchivingDlg.PreparingFilesMsg</note>
-        <target xml:lang="es-ES" state="needs-translation">Analyzing component files</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.ProgramsFileTypeLabel">
+      <trans-unit id="DialogBoxes.ArchivingDlg.ProgramsFileTypeLabel" approved="yes">
         <source xml:lang="en">Programs</source>
+        <target xml:lang="es-ES" state="final">Programas</target>
         <note>ID: DialogBoxes.ArchivingDlg.ProgramsFileTypeLabel</note>
-        <target xml:lang="es-ES" state="translated">Programas</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.RAMPArchiveType">
+      <trans-unit id="DialogBoxes.ArchivingDlg.RAMPArchiveType" approved="yes">
         <source xml:lang="en">RAMP (SIL Only)</source>
+        <target xml:lang="es-ES" state="final">RAMP (sólo SIL)</target>
         <note>ID: DialogBoxes.ArchivingDlg.RAMPArchiveType</note>
-        <target xml:lang="es-ES" state="translated">RAMP (sólo SIL)</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.RAMPOverviewText">
+      <trans-unit id="DialogBoxes.ArchivingDlg.RAMPOverviewText" approved="yes">
         <source xml:lang="en">{0} is a utility for entering metadata and uploading submissions to SIL's internal archive, REAP. If you have access to this archive, this tool will help you use {0} to archive your {1} data. {2} When the {0} package has been created, you can  launch {0} and enter any additional information before doing the actual submission.</source>
+        <target xml:lang="es-ES" state="final">{0} es una utilidad para introducir metadatos y subir envíos al archivo interno del SIL, llamado REAP. Si tiene acceso a este archivo, esta herramienta le ayudará a utilizar {0} para archivar sus datos {1}. {2} Cuando el paquete {0} haya sido creado, puede lanzar {0} e introducir cualquier información adicional antes de subir el paquete a REAP.</target>
         <note>ID: DialogBoxes.ArchivingDlg.RAMPOverviewText</note>
-        <note>Parameter 0  is the word 'RAMP' (the first one will be turned into a hyperlink); Parameter 1 is the name of the calling (host) program (SayMore, FLEx, etc.); Parameter 2 is additional app-specifc information.</note>
-        <target xml:lang="es-ES" state="needs-translation">{0} is a utility for entering metadata and uploading submissions to SIL's internal archive, REAP. If you have access to this archive, this tool will help you use {0} to archive your {1} data. {2} When the {0} package has been created, you can  launch {0} and enter any additional information before doing the actual submission.</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.RampNotFoundMsg">
+      <trans-unit id="DialogBoxes.ArchivingDlg.RampNotFoundMsg" approved="yes">
         <source xml:lang="en">The RAMP program cannot be found!</source>
+        <target xml:lang="es-ES" state="final">¡El programa RAMP no se encuentra!</target>
         <note>ID: DialogBoxes.ArchivingDlg.RampNotFoundMsg</note>
-        <target xml:lang="es-ES" state="translated">¡El programa RAMP no se encuentra!</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.ReadyToCallIMDIMsg">
+      <trans-unit id="DialogBoxes.ArchivingDlg.ReadyToCallIMDIMsg" approved="yes">
         <source xml:lang="en">Exported to {0}. This path is now on your clipboard. If you are using Arbil, go to File, Import, then paste this path in.</source>
+        <target xml:lang="es-ES" state="final">Exportado a {0}. Esta ruta está ahora en su portapapeles. Para abrirlo en Arbil, en el menu Archivo haga clic en Importar, y luego pegue esta ruta.</target>
         <note>ID: DialogBoxes.ArchivingDlg.ReadyToCallIMDIMsg</note>
-        <target xml:lang="es-ES" state="needs-translation">Exported to {0}. This path is now on your clipboard. If you are using Arbil, go to File, Import, then paste this path in.</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.ReadyToCallRampMsg">
+      <trans-unit id="DialogBoxes.ArchivingDlg.ReadyToCallRampMsg" approved="yes">
         <source xml:lang="en">Ready to hand the package to RAMP</source>
+        <target xml:lang="es-ES" state="final">Listo para entregar el paquete a RAMP</target>
         <note>ID: DialogBoxes.ArchivingDlg.ReadyToCallRampMsg</note>
-        <target xml:lang="es-ES" state="needs-translation">Ready to hand the package to RAMP</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.SavingFilesInPackageMsg">
+      <trans-unit id="DialogBoxes.ArchivingDlg.SavingFilesInPackageMsg" approved="yes">
         <source xml:lang="en">Saving files in {0} package</source>
+        <target xml:lang="es-ES" state="final">Guardando los archivos en el paquete {0}</target>
         <note>ID: DialogBoxes.ArchivingDlg.SavingFilesInPackageMsg</note>
-        <note>Parameter is the type of archive (e.g., RAMP/IMDI)</note>
-        <target xml:lang="es-ES" state="translated">Guardando los archivos en el paquete {0}</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.SearchingForRampMsg">
+      <trans-unit id="DialogBoxes.ArchivingDlg.SearchingForRampMsg" approved="yes">
         <source xml:lang="en">Searching for the RAMP program...</source>
+        <target xml:lang="es-ES" state="final">Buscando el programa RAMP...</target>
         <note>ID: DialogBoxes.ArchivingDlg.SearchingForRampMsg</note>
-        <target xml:lang="es-ES" state="needs-translation">Searching for the RAMP program...</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.StartingIMDIErrorMsg">
+      <trans-unit id="DialogBoxes.ArchivingDlg.StartingIMDIErrorMsg" approved="yes">
         <source xml:lang="en">There was an error attempting to open the archive package in {0}.</source>
+        <target xml:lang="es-ES" state="final">Hubo un error al intentar abrir el paquete de archivo en {0}.</target>
         <note>ID: DialogBoxes.ArchivingDlg.StartingIMDIErrorMsg</note>
-        <target xml:lang="es-ES" state="needs-translation">There was an error attempting to open the archive package in {0}.</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.StartingRampErrorMsg">
+      <trans-unit id="DialogBoxes.ArchivingDlg.StartingRampErrorMsg" approved="yes">
         <source xml:lang="en">There was an error attempting to open the archive package in {0}.</source>
+        <target xml:lang="es-ES" state="final">Hubo un error al intentar abrir el paquete de archivo en {0}.</target>
         <note>ID: DialogBoxes.ArchivingDlg.StartingRampErrorMsg</note>
-        <target xml:lang="es-ES" state="needs-translation">There was an error attempting to open the archive package in {0}.</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg.WindowTitle">
+      <trans-unit id="DialogBoxes.ArchivingDlg.WindowTitle" approved="yes">
         <source xml:lang="en">{0}: Archive using {1}</source>
+        <target xml:lang="es-ES" state="final">{0}: Almacenar con {1}</target>
         <note>ID: DialogBoxes.ArchivingDlg.WindowTitle</note>
-        <note>Parameter is application name</note>
-        <target xml:lang="es-ES" state="translated">{0}: Almacenar con {1}</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg._buttonCancel">
+      <trans-unit id="DialogBoxes.ArchivingDlg._buttonCancel" approved="yes">
         <source xml:lang="en">Cancel</source>
+        <target xml:lang="es-ES" state="final">Cancelar</target>
         <note>ID: DialogBoxes.ArchivingDlg._buttonCancel</note>
-        <target xml:lang="es-ES" state="translated">Cancelar</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg._buttonCreatePackage">
+      <trans-unit id="DialogBoxes.ArchivingDlg._buttonCreatePackage" approved="yes">
         <source xml:lang="en">&amp;1) Create Package</source>
+        <target xml:lang="es-ES" state="final">&amp;1) Crear paquete</target>
         <note>ID: DialogBoxes.ArchivingDlg._buttonCreatePackage</note>
-        <target xml:lang="es-ES" state="needs-translation">&amp;1) Create Package</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.ArchivingDlg._buttonLaunchRamp">
+      <trans-unit id="DialogBoxes.ArchivingDlg._buttonLaunchRamp" approved="yes">
         <source xml:lang="en">&amp;2) Launch {0}</source>
+        <target xml:lang="es-ES" state="final">&amp;2) Lanzar {0}</target>
         <note>ID: DialogBoxes.ArchivingDlg._buttonLaunchRamp</note>
-        <target xml:lang="es-ES" state="translated">&amp;2) Lanzar {0}</target>
       </trans-unit>
       <trans-unit id="DialogBoxes.ConfirmRecycleDialog.MessageForMultipleItems" approved="yes">
         <source xml:lang="en">{0} will be moved to the Recycle Bin.</source>
+        <target xml:lang="es-ES" state="final">{0} se moverán a la papelera de reciclaje.</target>
         <note>ID: DialogBoxes.ConfirmRecycleDialog.MessageForMultipleItems</note>
-        <note>Param {0} is a description of the things being deleted (e.g., "The selected files")</note>
-        <target xml:lang="es-ES" state="final">{0} se moverá a la papelera de reciclaje.</target>
       </trans-unit>
       <trans-unit id="DialogBoxes.ConfirmRecycleDialog.MessageForSingleItem" approved="yes">
         <source xml:lang="en">{0} will be moved to the Recycle Bin.</source>
-        <note>ID: DialogBoxes.ConfirmRecycleDialog.MessageForSingleItem</note>
-        <note>Param {0} is a file name</note>
         <target xml:lang="es-ES" state="final">{0} se moverá a la papelera de reciclaje.</target>
+        <note>ID: DialogBoxes.ConfirmRecycleDialog.MessageForSingleItem</note>
       </trans-unit>
       <trans-unit id="DialogBoxes.ConfirmRecycleDialog.WindowTitle" approved="yes">
         <source xml:lang="en">Confirm Delete</source>
-        <note>ID: DialogBoxes.ConfirmRecycleDialog.WindowTitle</note>
         <target xml:lang="es-ES" state="final">Confirmar eliminación</target>
+        <note>ID: DialogBoxes.ConfirmRecycleDialog.WindowTitle</note>
       </trans-unit>
       <trans-unit id="DialogBoxes.ConfirmRecycleDialog.cancelBtn" approved="yes">
         <source xml:lang="en">&amp;Cancel</source>
-        <note>ID: DialogBoxes.ConfirmRecycleDialog.cancelBtn</note>
         <target xml:lang="es-ES" state="final">&amp;Cancelar</target>
+        <note>ID: DialogBoxes.ConfirmRecycleDialog.cancelBtn</note>
       </trans-unit>
       <trans-unit id="DialogBoxes.ConfirmRecycleDialog.deleteBtn" approved="yes">
         <source xml:lang="en">&amp;Delete</source>
-        <note>ID: DialogBoxes.ConfirmRecycleDialog.deleteBtn</note>
         <target xml:lang="es-ES" state="final">&amp;Eliminar</target>
+        <note>ID: DialogBoxes.ConfirmRecycleDialog.deleteBtn</note>
       </trans-unit>
-      <trans-unit id="DialogBoxes.FileDlg.AllFilesLabel">
+      <trans-unit id="DialogBoxes.FileDlg.AllFilesLabel" approved="yes">
         <source xml:lang="en">All Files</source>
+        <target xml:lang="es-ES" state="final">Todos los archivos</target>
         <note>ID: DialogBoxes.FileDlg.AllFilesLabel</note>
-        <target xml:lang="es-ES" state="translated">Todos los archivos</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.IMDIArchivingDlg.ArchivingIMDILocationDescription">
+      <trans-unit id="DialogBoxes.IMDIArchivingDlg.ArchivingIMDILocationDescription" approved="yes">
         <source xml:lang="en">Select a base folder where the IMDI directory structure should be created.</source>
+        <target xml:lang="es-ES" state="final">Seleccione una carpeta base en la que se creará la estructura de carpetas para grabar los archivos y metadatos en formato IMDI.</target>
         <note>ID: DialogBoxes.IMDIArchivingDlg.ArchivingIMDILocationDescription</note>
-        <target xml:lang="es-ES" state="needs-translation">Select a base folder where the IMDI directory structure should be created.</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.IMDIArchivingDlg.ChangeDestinationFolder">
+      <trans-unit id="DialogBoxes.IMDIArchivingDlg.ChangeDestinationFolder" approved="yes">
         <source xml:lang="en">Change Folder</source>
+        <target xml:lang="es-ES" state="final">Cambiar carpeta de destino</target>
         <note>ID: DialogBoxes.IMDIArchivingDlg.ChangeDestinationFolder</note>
-        <target xml:lang="es-ES" state="translated">Cambiar carpeta de destino</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.IMDIArchivingDlg.ChangeProgramToLaunch">
+      <trans-unit id="DialogBoxes.IMDIArchivingDlg.ChangeProgramToLaunch" approved="yes">
         <source xml:lang="en">Change Program to Launch</source>
+        <target xml:lang="es-ES" state="final">Cambiar el programa de lanzamiento</target>
         <note>ID: DialogBoxes.IMDIArchivingDlg.ChangeProgramToLaunch</note>
-        <target xml:lang="es-ES" state="needs-translation">Change Program to Launch</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.IMDIArchivingDlg.CloseButtonLabel">
+      <trans-unit id="DialogBoxes.IMDIArchivingDlg.CloseButtonLabel" approved="yes">
         <source xml:lang="en">Close</source>
+        <target xml:lang="es-ES" state="final">Cerrar</target>
         <note>ID: DialogBoxes.IMDIArchivingDlg.CloseButtonLabel</note>
-        <target xml:lang="es-ES" state="translated">Cerrar</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.IMDIArchivingDlg.CreatePackageButtonLabel">
+      <trans-unit id="DialogBoxes.IMDIArchivingDlg.CreatePackageButtonLabel" approved="yes">
         <source xml:lang="en">Create Package</source>
+        <target xml:lang="es-ES" state="final">Crear paquete</target>
         <note>ID: DialogBoxes.IMDIArchivingDlg.CreatePackageButtonLabel</note>
-        <target xml:lang="es-ES" state="translated">Crear paquete</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.IMDIArchivingDlg.SelectIMDIProgram">
+      <trans-unit id="DialogBoxes.IMDIArchivingDlg.SelectIMDIProgram" approved="yes">
         <source xml:lang="en">Select the program to launch after IMDI package is created</source>
+        <target xml:lang="es-ES" state="final">Seleccione el programa que se lanzará después de crear el paquete IMDI</target>
         <note>ID: DialogBoxes.IMDIArchivingDlg.SelectIMDIProgram</note>
-        <target xml:lang="es-ES" state="needs-translation">Select the program to launch after IMDI package is created</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.SelectProjectDlg.ProjectFilesLabel">
+      <trans-unit id="DialogBoxes.LocalizationIncompleteDlg._btnCopy_ToolTip_" approved="yes">
+        <source xml:lang="en">Copy email address to clipboard</source>
+        <target xml:lang="es-ES" state="final">Copiar la dirección de correo electrónico al portapapeles</target>
+        <note>ID: DialogBoxes.LocalizationIncompleteDlg._btnCopy_ToolTip_</note>
+      </trans-unit>
+      <trans-unit id="DialogBoxes.LocalizationIncompleteDlg._lblEmailAddress" approved="yes">
+        <source xml:lang="en">Email address:</source>
+        <target xml:lang="es-ES" state="final">Dirección de correo electrónico:</target>
+        <note>ID: DialogBoxes.LocalizationIncompleteDlg._lblEmailAddress</note>
+      </trans-unit>
+      <trans-unit id="DialogBoxes.LocalizationIncompleteDlg._lblLocalizationIncomplete" approved="yes">
+        <source xml:lang="en">The localization of {0} in {1} is very incomplete. With the exception  of a few common buttons, menu items and dialog boxes, you will not see the text displayed in {1}. However, we are tracking requests for localization. If we can contact you about your need, please provide your email address.</source>
+        <target xml:lang="es-ES" state="final">La localización de {0} en {1} está muy incompleta. A excepción de algunos botones, elementos de menú y cuadros de diálogo comunes, no se verá el texto del programa en {1}. Sin embargo, estamos rastreando las solicitudes de localización. Si nos permite ponernos en contacto con usted para conocer en más detalle su necesidad, facilite su dirección de correo electrónico.</target>
+        <note>ID: DialogBoxes.LocalizationIncompleteDlg._lblLocalizationIncomplete</note>
+      </trans-unit>
+      <trans-unit id="DialogBoxes.LocalizationIncompleteDlg._lblMoreInformationEmail" approved="yes">
+        <source xml:lang="en">For more information, email {0}</source>
+        <target xml:lang="es-ES" state="final">Para más información, envíe un correo electrónico a {0}</target>
+        <note>ID: DialogBoxes.LocalizationIncompleteDlg._lblMoreInformationEmail</note>
+      </trans-unit>
+      <trans-unit id="DialogBoxes.LocalizationIncompleteDlg._lblUsers" approved="yes">
+        <source xml:lang="en">Approximately how many users or teams do you know of who would benefit from having this software localized into {0}?</source>
+        <target xml:lang="es-ES" state="final">Aproximadamente, ¿cuántos usuarios o equipos conoces que se beneficiarían de tener este programa localizado en {0}?</target>
+        <note>ID: DialogBoxes.LocalizationIncompleteDlg._lblUsers</note>
+      </trans-unit>
+      <trans-unit id="DialogBoxes.LocalizationIncompleteDlg._linkCrowdinAndEmailInstructions" approved="yes">
+        <source xml:lang="en">Help with localization, or see progress.</source>
+        <target xml:lang="es-ES" state="final">Ayudar con la localización, o ver el progreso.</target>
+        <note>ID: DialogBoxes.LocalizationIncompleteDlg._linkCrowdinAndEmailInstructions</note>
+      </trans-unit>
+      <trans-unit id="DialogBoxes.LocalizationIncompleteDlg.checkBox1" approved="yes">
+        <source xml:lang="en">I am able to help with localization of {0} into {1}, or I can help  find someone who can.</source>
+        <target xml:lang="es-ES" state="final">Puedo ayudar con la localización de {0} en {1}, o puedo ayudar a encontrar a alguien que pueda.</target>
+        <note>ID: DialogBoxes.LocalizationIncompleteDlg.checkBox1</note>
+      </trans-unit>
+      <trans-unit id="DialogBoxes.SelectProjectDlg.ProjectFilesLabel" approved="yes">
         <source xml:lang="en">{0} Project Files</source>
+        <target xml:lang="es-ES" state="final">Archivos de proyecto de {0}</target>
         <note>ID: DialogBoxes.SelectProjectDlg.ProjectFilesLabel</note>
-        <note>{0} is the product name</note>
-        <target xml:lang="es-ES" state="translated">Archivos de proyecto de {0}</target>
       </trans-unit>
-      <trans-unit id="DialogBoxes.SelectProjectDlg.ResourceBundleFileTypeLabel">
+      <trans-unit id="DialogBoxes.SelectProjectDlg.ResourceBundleFileTypeLabel" approved="yes">
         <source xml:lang="en">Text Resource Bundle files</source>
+        <target xml:lang="es-ES" state="final">Paquetes de descarga de texto</target>
         <note>ID: DialogBoxes.SelectProjectDlg.ResourceBundleFileTypeLabel</note>
-        <target xml:lang="es-ES" state="translated">Paquetes de descarga de texto</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog.ContinueButtonLabel">
+      <trans-unit id="Errors.DefenderFolderProtection" approved="yes">
+        <source xml:lang="en">This might be caused by Windows Defender "Controlled Folder Access" or some other virus or malware protection. You can search online or contact a local support person for help with configuring Windows Defender (and other antivirus software) to allow this program to work.</source>
+        <target xml:lang="es-ES" state="final">Esto puede deberse al "Acceso controlado a carpetas" de Windows Defender o a alguna otra protección contra virus o malware. Puede buscar en Internet o ponerse en contacto con un técnico local para que le ayude a configurar Windows Defender (y otro software antivirus) para que este programa funcione.</target>
+        <note>ID: Errors.DefenderFolderProtection</note>
+      </trans-unit>
+      <trans-unit id="Errors.DefenderFolderProtectionHeading" approved="yes">
+        <source xml:lang="en">{0} cannot write to the folder {1}.</source>
+        <target xml:lang="es-ES" state="final">{0} no puede escribir en la carpeta {1}.</target>
+        <note>ID: Errors.DefenderFolderProtectionHeading</note>
+      </trans-unit>
+      <trans-unit id="ExceptionReportingDialog.ContinueButtonLabel" approved="yes">
         <source xml:lang="en">Continue</source>
+        <target xml:lang="es-ES" state="final">Continuar</target>
         <note>ID: ExceptionReportingDialog.ContinueButtonLabel</note>
-        <target xml:lang="es-ES" state="translated">Continuar</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog.EmailInstructions">
+      <trans-unit id="ExceptionReportingDialog.EmailInstructions" approved="yes">
         <source xml:lang="en">(Please e-mail this to)</source>
+        <target xml:lang="es-ES" state="final">(Por favor, envíelo por correo electrónico a)</target>
         <note>ID: ExceptionReportingDialog.EmailInstructions</note>
-        <target xml:lang="es-ES" state="translated">(Por favor envíe esto por correo electrónico a)</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog.NotificationTextLethal">
+      <trans-unit id="ExceptionReportingDialog.NotificationTextLethal" approved="yes">
         <source xml:lang="en">Well, this is embarrassing.</source>
+        <target xml:lang="es-ES" state="final">¡Ay! ¡Qué vergonzoso!</target>
         <note>ID: ExceptionReportingDialog.NotificationTextLethal</note>
-        <note>For more formal cultures, something less cheeky might be better. In most cases, this will be replaced by a more useful message, but there are situations where a user could see this.</note>
-        <target xml:lang="es-ES" state="translated">Disculpenos por este error.</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog.NotificationTextNonLethal">
-        <source xml:lang="en">No se preocupe. Problema no fatal.</source>
+      <trans-unit id="ExceptionReportingDialog.NotificationTextNonLethal" approved="yes">
+        <source xml:lang="en">Take Courage. It'll work out.</source>
+        <target xml:lang="es-ES" state="final">Ocurrió un problema no fatal.</target>
         <note>ID: ExceptionReportingDialog.NotificationTextNonLethal</note>
-        <note>For more formal cultures, something less cheeky might be better. In most cases, this will be replaced by a more useful message, but there are situations where a user could see this.</note>
-        <target xml:lang="es-ES" state="translated"></target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog.Privacy.Para1">
+      <trans-unit id="ExceptionReportingDialog.Privacy.Para1" approved="yes">
         <source xml:lang="en">If you don't care who reads your bug report, you can disregard this notice.</source>
+        <target xml:lang="es-ES" state="final">Si no le preocupa quién lee su informe de error, puede ignorar este aviso.</target>
         <note>ID: ExceptionReportingDialog.Privacy.Para1</note>
-        <target xml:lang="es-ES" state="translated">Si no le preocupa quién lea su informe de error, puede ignorar este aviso.</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog.Privacy.Para2">
+      <trans-unit id="ExceptionReportingDialog.Privacy.Para2" approved="yes">
         <source xml:lang="en">When you submit a crash report or other issue, it goes into our issue tracking system, "Jira", which is available via the web at https://jira.sil.org/issues.(This is a normal way to handle issues in an open-source project.)</source>
+        <target xml:lang="es-ES" state="final">Cuando se envía un informe de fallo o cualquier otro problema, va a nuestro sistema de seguimiento de problemas, "Jira", que está disponible a través de la web en https://jira.sil.org/issues. (Esta es una forma normal de manejar los problemas en un proyecto de código abierto.)</target>
         <note>ID: ExceptionReportingDialog.Privacy.Para2</note>
-        <target xml:lang="es-ES" state="translated">Los informes de fallas u otros problemas se ingresan a nuestro sistema de seguimiento de problemas, "Jira", que está disponible a través de la web en https://jira.sil.org/issues. (Esta es una forma normal de manejar problemas en un proyecto de código abierto.)</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog.Privacy.Para3">
+      <trans-unit id="ExceptionReportingDialog.Privacy.Para3" approved="yes">
         <source xml:lang="en">Our issue-tracking system is not searchable by those without an account. Therefore, search engines (like Google) will not find your bug reports.</source>
+        <target xml:lang="es-ES" state="final">Nuestro sistema de seguimiento de incidencias no es consultable por quienes no tienen una cuenta. Por lo tanto, los motores de búsqueda (como Google) no encontrarán los informes de errores reportados.</target>
         <note>ID: ExceptionReportingDialog.Privacy.Para3</note>
-        <target xml:lang="es-ES" state="translated">Nuestro sistema de seguimiento de problemas no puede ser buscado por aquellos que no tienen una cuenta. Por lo tanto, los motores de búsqueda (como Google) no encontrarán sus informes de errores.</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog.Privacy.Para4">
+      <trans-unit id="ExceptionReportingDialog.Privacy.Para4" approved="yes">
         <source xml:lang="en">However, anyone can make an account and then read your report. So if you have something private to say, please send it to one of the developers privately with a note that you don't want the issue in our issue tracking system. If necessary, we can make a place-holder for your issue without the private information so the issue can still be tracked and not get lost.</source>
+        <target xml:lang="es-ES" state="final">Sin embargo, cualquiera puede crear una cuenta y leer los informes. Así que si tiene algo privado que decir, favor de enviarlo a uno de los desarrolladores de este programa de forma privada con una nota en la que se indique que no debe aparecer un informe con infromación que le identifique a usted o a su proyecto en el sistema de seguimiento de problemas. Si es necesario, podemos hacer un marcador de posición para su problema sin la información privada para que el problema pueda seguir siendo rastreado y no se pierda.</target>
         <note>ID: ExceptionReportingDialog.Privacy.Para4</note>
-        <target xml:lang="es-ES" state="translated">Sin embargo, cualquiera puede crear una cuenta y luego leer su informe. Entonces, si su informe contiene algo privado, envíelo mejor en privado directamente a uno de los desarrolladores con una nota de que no desea que el problema aparezca en nuestro sistema de seguimiento de problemas. Si es necesario, podemos crear un marcador de posición para su problema sin la información privada para que aún se pueda rastrear el problema y no perderse.</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog.PrivacyNoticeCaption">
+      <trans-unit id="ExceptionReportingDialog.PrivacyNoticeCaption" approved="yes">
         <source xml:lang="en">Privacy Notice</source>
+        <target xml:lang="es-ES" state="final">Aviso de privacidad</target>
         <note>ID: ExceptionReportingDialog.PrivacyNoticeCaption</note>
-        <target xml:lang="es-ES" state="translated">Aviso de privacidad</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog.ReportingMethod.CopyCloseButtonLabel">
+      <trans-unit id="ExceptionReportingDialog.ReportingMethod.CopyCloseButtonLabel" approved="yes">
         <source xml:lang="en">&amp;Copy</source>
+        <target xml:lang="es-ES" state="final">&amp;Copiar</target>
         <note>ID: ExceptionReportingDialog.ReportingMethod.CopyCloseButtonLabel</note>
-        <note>Ampersand is optional, to indicate accelerator key</note>
-        <target xml:lang="es-ES" state="translated">&amp;Copiar</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog.ReportingMethod.CopyCloseButtonLabelLethal">
+      <trans-unit id="ExceptionReportingDialog.ReportingMethod.CopyCloseButtonLabelLethal" approved="yes">
         <source xml:lang="en">&amp;Copy and Exit</source>
+        <target xml:lang="es-ES" state="final">&amp;Copiar y salir</target>
         <note>ID: ExceptionReportingDialog.ReportingMethod.CopyCloseButtonLabelLethal</note>
-        <note>Ampersand is optional, to indicate accelerator key</note>
-        <target xml:lang="es-ES" state="translated">&amp;Copiar y salir</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog.ReportingMethod.CopyToClipboard">
+      <trans-unit id="ExceptionReportingDialog.ReportingMethod.CopyToClipboard" approved="yes">
         <source xml:lang="en">Copy to clipboard</source>
+        <target xml:lang="es-ES" state="final">Copiar al portapapeles</target>
         <note>ID: ExceptionReportingDialog.ReportingMethod.CopyToClipboard</note>
-        <target xml:lang="es-ES" state="translated">Copiar al portapapeles</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog.ReportingMethod.Email">
+      <trans-unit id="ExceptionReportingDialog.ReportingMethod.Email" approved="yes">
         <source xml:lang="en">Send using my email program</source>
+        <target xml:lang="es-ES" state="final">Enviar con mi programa de correo electrónico</target>
         <note>ID: ExceptionReportingDialog.ReportingMethod.Email</note>
-        <target xml:lang="es-ES" state="translated">Enviar mensaje desde mi correo electrónico</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog.ReportingMethod.EmailCloseButtonLabel">
+      <trans-unit id="ExceptionReportingDialog.ReportingMethod.EmailCloseButtonLabel" approved="yes">
         <source xml:lang="en">&amp;Email</source>
+        <target xml:lang="es-ES" state="final">&amp;Enviar por correo electrónico</target>
         <note>ID: ExceptionReportingDialog.ReportingMethod.EmailCloseButtonLabel</note>
-        <note>Ampersand is optional, to indicate accelerator key</note>
-        <target xml:lang="es-ES" state="translated">&amp;Enviar mensaje</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog.ReportingMethod.EmailCloseButtonLabelLethal">
+      <trans-unit id="ExceptionReportingDialog.ReportingMethod.EmailCloseButtonLabelLethal" approved="yes">
         <source xml:lang="en">&amp;Email and Exit</source>
+        <target xml:lang="es-ES" state="final">&amp;Enviar por correo electrónico y salir</target>
         <note>ID: ExceptionReportingDialog.ReportingMethod.EmailCloseButtonLabelLethal</note>
-        <note>Ampersand is optional, to indicate accelerator key</note>
-        <target xml:lang="es-ES" state="translated">&amp;Enviar mensaje y salir</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog.WindowTitle">
+      <trans-unit id="ExceptionReportingDialog.WindowTitle" approved="yes">
         <source xml:lang="en">Error</source>
+        <target xml:lang="es-ES" state="final">Error</target>
         <note>ID: ExceptionReportingDialog.WindowTitle</note>
-        <target xml:lang="es-ES" state="translated">Error</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog._detailsForDevelopers">
+      <trans-unit id="ExceptionReportingDialog._detailsForDevelopers" approved="yes">
         <source xml:lang="en">Details for the developers:</source>
+        <target xml:lang="es-ES" state="final">Detalles para los desarrolladores:</target>
         <note>ID: ExceptionReportingDialog._detailsForDevelopers</note>
-        <target xml:lang="es-ES" state="translated">Detalles para los desarrolladores:</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog._lblPleaseHelp">
+      <trans-unit id="ExceptionReportingDialog._lblPleaseHelp" approved="yes">
         <source xml:lang="en">To help us fix the problem, we need to gather information on what went wrong.</source>
+        <target xml:lang="es-ES" state="final">Para ayudarnos a solucionar el problema, tenemos que reunir información sobre lo que ha fallado.</target>
         <note>ID: ExceptionReportingDialog._lblPleaseHelp</note>
-        <target xml:lang="es-ES" state="translated">Para ayudarnos a solucionar el problema, necesitamos recopilar información sobre lo que salió mal.</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog._lblStepsToReproduce">
+      <trans-unit id="ExceptionReportingDialog._lblStepsToReproduce" approved="yes">
         <source xml:lang="en">Can you list the steps to take to make this happen again, or tell us anything that might be helpful?</source>
+        <target xml:lang="es-ES" state="final">¿Puede enumerar los pasos a seguir para que esto se repita, o indicar algo que nos sea útil en la investigación sobre el problema?</target>
         <note>ID: ExceptionReportingDialog._lblStepsToReproduce</note>
-        <target xml:lang="es-ES" state="translated">¿Puede enumerar los pasos a seguir para que esto vuelva a suceder o indicar algo sobre el escenario que precedió a este problema?</target>
       </trans-unit>
-      <trans-unit id="ExceptionReportingDialog._privacyNoticeButton">
+      <trans-unit id="ExceptionReportingDialog._privacyNoticeButton" approved="yes">
         <source xml:lang="en">Privacy Notice...</source>
+        <target xml:lang="es-ES" state="final">Aviso de privacidad...</target>
         <note>ID: ExceptionReportingDialog._privacyNoticeButton</note>
-        <target xml:lang="es-ES" state="translated">Aviso de privacidad...</target>
+      </trans-unit>
+      <trans-unit id="FFprobeMissing" approved="yes">
+        <source xml:lang="en">Could not locate {0}</source>
+        <target xml:lang="es-ES" state="final">No se pudo encontrar {0}</target>
+        <note>ID: FFprobeMissing</note>
+      </trans-unit>
+      <trans-unit id="ImageToolbox.AlmostMatchingImageSingle" approved="yes">
+        <source xml:lang="en">Found 1 image with a name close to “{1}”</source>
+        <target xml:lang="es-ES" state="final">Se encontró un imágen con nombre parecido a {1}</target>
+        <note>ID: ImageToolbox.AlmostMatchingImageSingle</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.AlmostMatchingImages" approved="yes">
         <source xml:lang="en">Found {0} images with names close to “{1}”</source>
+        <target xml:lang="es-ES" state="final">Se encontraron {0} imágenes con nombres parecidos a {1}</target>
         <note>ID: ImageToolbox.AlmostMatchingImages</note>
-        <note>The {0} will be replaced by the number of images found.  The {1} will be replaced with the search string.</note>
-        <target xml:lang="es-ES" state="final">Encontró {0} imágenes con nombres parecidos a {1}</target>
       </trans-unit>
       <trans-unit id="ImageToolbox.Camera" approved="yes">
         <source xml:lang="en">Camera</source>
-        <note>ID: ImageToolbox.Camera</note>
         <target xml:lang="es-ES" state="final">Cámara</target>
+        <note>ID: ImageToolbox.Camera</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.CopyExemplarMetadata" approved="yes">
         <source xml:lang="en">Use {0}</source>
+        <target xml:lang="es-ES" state="final">Usar {0}</target>
         <note>ID: ImageToolbox.CopyExemplarMetadata</note>
-        <note>Used to copy a previous metadata set to the current image. The  {0} will be replaced with the name of the exemplar image.</note>
-        <target xml:lang="es-ES" state="final">Utilizar {0}</target>
       </trans-unit>
       <trans-unit id="ImageToolbox.Crop" approved="yes">
         <source xml:lang="en">Crop</source>
-        <note>ID: ImageToolbox.Crop</note>
         <target xml:lang="es-ES" state="final">Recortar</target>
+        <note>ID: ImageToolbox.Crop</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.DownloadArtOfReading" approved="yes">
         <source xml:lang="en">Download Art Of Reading Installer</source>
-        <note>ID: ImageToolbox.DownloadArtOfReading</note>
         <target xml:lang="es-ES" state="final">Descargar el instalador de Arte de la Lectura (Art of Reading)</target>
+        <note>ID: ImageToolbox.DownloadArtOfReading</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.EditMetadataLink" approved="yes">
         <source xml:lang="en">Edit...</source>
-        <note>ID: ImageToolbox.EditMetadataLink</note>
         <target xml:lang="es-ES" state="final">Editar...</target>
+        <note>ID: ImageToolbox.EditMetadataLink</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.EnterSearchTerms" approved="yes">
         <source xml:lang="en">In the box above, type what you are searching for, then press ENTER.</source>
+        <target xml:lang="es-ES" state="final">En el cuadro superior, escriba lo que está buscando. A continuación pulse INTRO.</target>
         <note>ID: ImageToolbox.EnterSearchTerms</note>
-        <target xml:lang="es-ES" state="final">En el cuadro superior, escriba lo que está buscando. A continuación pulse ENTRAR.</target>
       </trans-unit>
       <trans-unit id="ImageToolbox.FileButton" approved="yes">
         <source xml:lang="en">File</source>
-        <note>ID: ImageToolbox.FileButton</note>
         <target xml:lang="es-ES" state="final">Archivo</target>
+        <note>ID: ImageToolbox.FileButton</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.FileChooserTitle" approved="yes">
         <source xml:lang="en">Choose Picture File</source>
-        <note>ID: ImageToolbox.FileChooserTitle</note>
-        <note>Title shown for a file chooser dialog brought up by the ImageToolbox</note>
         <target xml:lang="es-ES" state="final">Elija archivo de imagen</target>
+        <note>ID: ImageToolbox.FileChooserTitle</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.Galleries" approved="yes">
         <source xml:lang="en">Galleries</source>
-        <note>ID: ImageToolbox.Galleries</note>
         <target xml:lang="es-ES" state="final">Galerías</target>
+        <note>ID: ImageToolbox.Galleries</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.GenericGettingImageProblem" approved="yes">
         <source xml:lang="en">Sorry, something went wrong while getting the image.</source>
+        <target xml:lang="es-ES" state="final">Lastimosamente, algo salió mal al tratar de obtener la ilustración.</target>
         <note>ID: ImageToolbox.GenericGettingImageProblem</note>
-        <target xml:lang="es-ES" state="final">Lo sentimos, algo falló al tratar de obtener la imagen.</target>
       </trans-unit>
       <trans-unit id="ImageToolbox.GenericProblem" approved="yes">
         <source xml:lang="en">Sorry, something went wrong with the ImageToolbox</source>
+        <target xml:lang="es-ES" state="final">Lastimosamente, algo salió mal con el cuadro de herramientas de ilustraciones</target>
         <note>ID: ImageToolbox.GenericProblem</note>
-        <target xml:lang="es-ES" state="final">Lo sentimos, algo falló con la Caja de Herramientas de Imágenes (ImageToolbox)</target>
       </trans-unit>
       <trans-unit id="ImageToolbox.GetPicture" approved="yes">
         <source xml:lang="en">Get Picture</source>
+        <target xml:lang="es-ES" state="final">Obtener ilustración</target>
         <note>ID: ImageToolbox.GetPicture</note>
-        <target xml:lang="es-ES" state="final">Obtener imagen</target>
       </trans-unit>
       <trans-unit id="ImageToolbox.ImageGalleries" approved="yes">
         <source xml:lang="en">Image Galleries</source>
-        <note>ID: ImageToolbox.ImageGalleries</note>
         <target xml:lang="es-ES" state="final">Galerías de Imagenes</target>
+        <note>ID: ImageToolbox.ImageGalleries</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.ImageToolboxWindowTitle" approved="yes">
         <source xml:lang="en">Image Toolbox</source>
-        <note>ID: ImageToolbox.ImageToolboxWindowTitle</note>
         <target xml:lang="es-ES" state="final">Caja de Herramientas de Imágenes (Image Toolbox)</target>
+        <note>ID: ImageToolbox.ImageToolboxWindowTitle</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.InstallArtOfReading" approved="yes">
         <source xml:lang="en">Install the Art Of Reading package (this may be very slow)</source>
+        <target xml:lang="es-ES" state="final">Instalar el paquete de Arte de la Lectura (Art of Reading). (Esto puede tardarse.)</target>
         <note>ID: ImageToolbox.InstallArtOfReading</note>
-        <target xml:lang="es-ES" state="final">Instalar el paquete de Arte de la Lectura (Art of Reading), (esto puede tardar)</target>
+      </trans-unit>
+      <trans-unit id="ImageToolbox.MatchingImageSingle" approved="yes">
+        <source xml:lang="en">Found 1 image</source>
+        <target xml:lang="es-ES" state="final">Se encontró 1 imágen</target>
+        <note>ID: ImageToolbox.MatchingImageSingle</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.MatchingImages" approved="yes">
         <source xml:lang="en">Found {0} images</source>
+        <target xml:lang="es-ES" state="final">Se encontraron {0} imágenes</target>
         <note>ID: ImageToolbox.MatchingImages</note>
-        <note>The {0} will be replaced by the number of matching images</note>
-        <target xml:lang="es-ES" state="final">Encontró {0} imágenes</target>
       </trans-unit>
       <trans-unit id="ImageToolbox.NewMultilingual" approved="yes">
         <source xml:lang="en">Did you know that there is a new version of this collection which lets you search in Arabic, Bengali, Chinese, English, French, Indonesian, Hindi, Portuguese, Spanish, Thai, or Swahili?  It is free and available for downloading.</source>
+        <target xml:lang="es-ES" state="final">¿Sabía que hay una nueva versión de esta colección que le permite buscar en árabe, bengalí, chino, inglés, francés, indonesio, hindi, portugués, español, tailandés, o suajili? Es gratuita y está disponible para ser descargada.</target>
         <note>ID: ImageToolbox.NewMultilingual</note>
-        <target xml:lang="es-ES" state="final">¿Sabía que hay una nueva versión de esta colección que le permite buscar en arábe, bengalí, chino, inglés, francés, indonesio, hindi, portugués, español, tailandés, o suajili? Es gratuita y está disponible para ser descargada.</target>
       </trans-unit>
       <trans-unit id="ImageToolbox.NoGalleries" approved="yes">
         <source xml:lang="en">This computer doesn't appear to have any galleries installed yet.</source>
-        <note>ID: ImageToolbox.NoGalleries</note>
         <target xml:lang="es-ES" state="final">Parece que esta computadora todavía no tiene galerías instaladas.</target>
+        <note>ID: ImageToolbox.NoGalleries</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.NoMatchingImages" approved="yes">
         <source xml:lang="en">Found no matching images</source>
-        <note>ID: ImageToolbox.NoMatchingImages</note>
         <target xml:lang="es-ES" state="final">No se encontraron imágenes que coincidan</target>
+        <note>ID: ImageToolbox.NoMatchingImages</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.PictureFiles" approved="yes">
         <source xml:lang="en">picture files</source>
+        <target xml:lang="es-ES" state="final">archivos de ilustraciones</target>
         <note>ID: ImageToolbox.PictureFiles</note>
-        <note>Shown in the file-picking dialog to describe what kind of files the dialog is filtering for</note>
-        <target xml:lang="es-ES" state="final">archivos de imágenes</target>
+      </trans-unit>
+      <trans-unit id="ImageToolbox.ProblemGettingImageFromDevice" approved="yes">
+        <source xml:lang="en">Problem Getting Image</source>
+        <target xml:lang="es-ES" state="final">Problema obteniendo la ilustración</target>
+        <note>ID: ImageToolbox.ProblemGettingImageFromDevice</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.ProblemLoadingImage" approved="yes">
         <source xml:lang="en">Sorry, there was a problem loading that image.</source>
+        <target xml:lang="es-ES" state="final">Lastimosamente, hubo un problema al intentar cargar esa imagen.</target>
         <note>ID: ImageToolbox.ProblemLoadingImage</note>
-        <target xml:lang="es-ES" state="final">Lastimosamente, no se pudo cargar esa imagen.</target>
       </trans-unit>
       <trans-unit id="ImageToolbox.PromptForMissingMetadata" approved="yes">
         <source xml:lang="en">This image does not know:\n\nWho created it?\nWho can use it?</source>
-        <note>ID: ImageToolbox.PromptForMissingMetadata</note>
         <target xml:lang="es-ES" state="final">Esta imagen no sabe:\n\n¿Quién la creó?\n¿Quién puede utilizarla?</target>
+        <note>ID: ImageToolbox.PromptForMissingMetadata</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.Scanner" approved="yes">
         <source xml:lang="en">Scanner</source>
-        <note>ID: ImageToolbox.Scanner</note>
         <target xml:lang="es-ES" state="final">Escáner</target>
+        <note>ID: ImageToolbox.Scanner</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.SearchLanguage" approved="yes">
         <source xml:lang="en">The search box is currently set to {0}</source>
-        <note>ID: ImageToolbox.SearchLanguage</note>
         <target xml:lang="es-ES" state="final">Actualmente el cuadro de búsqueda está en {0}</target>
+        <note>ID: ImageToolbox.SearchLanguage</note>
       </trans-unit>
       <trans-unit id="ImageToolbox.SetUpMetadataLink" approved="yes">
         <source xml:lang="en">Set up metadata...</source>
-        <note>ID: ImageToolbox.SetUpMetadataLink</note>
         <target xml:lang="es-ES" state="final">Configurar metadatos...</target>
+        <note>ID: ImageToolbox.SetUpMetadataLink</note>
+      </trans-unit>
+      <trans-unit id="ImageToolbox.TwainDriverNotSupported" approved="yes">
+        <source xml:lang="en">'TWAIN' driver</source>
+        <target xml:lang="es-ES" state="final">Controlador "TWAIN</target>
+        <note>ID: ImageToolbox.TwainDriverNotSupported</note>
+      </trans-unit>
+      <trans-unit id="ImageToolbox.WindowsXpMissingWiaV2Dll" approved="yes">
+        <source xml:lang="en">Windows XP does not come with a crucial DLL that lets you use a WIA scanner with this program. Get a technical person to download and follow the directions at {0}</source>
+        <target xml:lang="es-ES" state="final">Windows XP no trae una DLL crucial que le permite utilizar un escáner WIA con este programa. Favor de pedir la ayuda de un técnico para descargar y seguir las instrucciones en {0}</target>
+        <note>ID: ImageToolbox.WindowsXpMissingWiaV2Dll</note>
       </trans-unit>
       <trans-unit id="IpaIdentifierView.betterLabel1" approved="yes">
         <source xml:lang="en">Purpose:</source>
-        <note>ID: IpaIdentifierView.betterLabel1</note>
-        <note>In writing system setup when IPA special option is selected: Label for the purpose combo box</note>
         <target xml:lang="es-ES" state="final">Propósito:</target>
+        <note>ID: IpaIdentifierView.betterLabel1</note>
       </trans-unit>
       <trans-unit id="IpaIdentifierView.linkLabel1" approved="yes">
         <source xml:lang="en">Read about IPA transcription on the web</source>
-        <note>ID: IpaIdentifierView.linkLabel1</note>
-        <note>In writing system setup when IPA special option is selected: text used in link to a webpage describing IPA transcription</note>
         <target xml:lang="es-ES" state="final">Lee sobre la transcripción en AFI (Alfabeto Fonético Internacional) en la web</target>
+        <note>ID: IpaIdentifierView.linkLabel1</note>
       </trans-unit>
       <trans-unit id="LanguageLookup.CannotFindMyLanguage.LanguageLookup.CannotFindMyLanguageExplanation2" approved="yes">
         <source xml:lang="en">This list should include all the ISO-639 languages, including all the alternative names known to ethnologue.com.\n\nIf necessary, use the "Unlisted Language" option, which will be selected for you now.</source>
-        <note>ID: LanguageLookup.CannotFindMyLanguage.LanguageLookup.CannotFindMyLanguageExplanation2</note>
         <target xml:lang="es-ES" state="final">Esta lista debe incluir todos los idiomas de ISO-639, incluidos todos los nombres alternativos conocidos por ethnologue.com.\n\nSi es necesario, utilice la opción "Idioma no enlistado", esta opción será seleccionada ahora.</target>
+        <note>ID: LanguageLookup.CannotFindMyLanguage.LanguageLookup.CannotFindMyLanguageExplanation2</note>
       </trans-unit>
-      <trans-unit id="LanguageLookup.CannotFindMyLanguage.LinkToEthnologue">
+      <trans-unit id="LanguageLookup.CannotFindMyLanguage.LinkToEthnologue" approved="yes">
         <source xml:lang="en">Ethnologue.com</source>
+        <target xml:lang="es-ES" state="final">Ethnologue.com</target>
         <note>ID: LanguageLookup.CannotFindMyLanguage.LinkToEthnologue</note>
-        <note>It's ok to change what this shows; the underlying destination will remain ethnologue.com</note>
-        <target xml:lang="es-ES" state="translated">Ethnologue.com</target>
       </trans-unit>
       <trans-unit id="LanguageLookup.CannotFindMyLanguage.LinkToSILInformationAboutLanguageCodes" approved="yes">
         <source xml:lang="en">About Language 639-3 Codes &amp; How To Apply For New Ones</source>
-        <note>ID: LanguageLookup.CannotFindMyLanguage.LinkToSILInformationAboutLanguageCodes</note>
         <target xml:lang="es-ES" state="final">Acerca de Códigos de Idioma 639-3 y Cómo solicitar nuevos</target>
+        <note>ID: LanguageLookup.CannotFindMyLanguage.LinkToSILInformationAboutLanguageCodes</note>
       </trans-unit>
       <trans-unit id="LanguageLookup.CannotFindMyLanguageWindowTitle" approved="yes">
         <source xml:lang="en">About The ISO Language Registry</source>
-        <note>ID: LanguageLookup.CannotFindMyLanguageWindowTitle</note>
         <target xml:lang="es-ES" state="final">Acerca del Registro ISO de Idiomas</target>
+        <note>ID: LanguageLookup.CannotFindMyLanguageWindowTitle</note>
       </trans-unit>
       <trans-unit id="LanguageLookup.CodeHeader" approved="yes">
         <source xml:lang="en">Code</source>
-        <note>ID: LanguageLookup.CodeHeader</note>
         <target xml:lang="es-ES" state="final">Código</target>
+        <note>ID: LanguageLookup.CodeHeader</note>
       </trans-unit>
       <trans-unit id="LanguageLookup.CountryCount" approved="yes">
         <source xml:lang="en">{0} Countries</source>
+        <target xml:lang="es-ES" state="final">{0} Países</target>
         <note>ID: LanguageLookup.CountryCount</note>
-        <note>Shown when there are multiple countries and it is just confusing to list them all. {0} is a count of countries.</note>
-        <target xml:lang="es-ES" state="final">{0} países</target>
       </trans-unit>
       <trans-unit id="LanguageLookup.CountryHeader" approved="yes">
         <source xml:lang="en">Country</source>
-        <note>ID: LanguageLookup.CountryHeader</note>
         <target xml:lang="es-ES" state="final">País</target>
+        <note>ID: LanguageLookup.CountryHeader</note>
       </trans-unit>
       <trans-unit id="LanguageLookup.DesiredLanguageDisplayNameLabel" approved="yes">
         <source xml:lang="en">You can change how the language name will be displayed here:</source>
-        <note>ID: LanguageLookup.DesiredLanguageDisplayNameLabel</note>
         <target xml:lang="es-ES" state="final">Aquí puede cambiar cómo se mostrará el nombre del idioma:</target>
+        <note>ID: LanguageLookup.DesiredLanguageDisplayNameLabel</note>
       </trans-unit>
       <trans-unit id="LanguageLookup.LanguageLookupDialogWindowTitle" approved="yes">
-        <source xml:lang="en">Lookup Language Code...</source>
-        <note>ID: LanguageLookup.LanguageLookupDialogWindowTitle</note>
+        <source xml:lang="en">Look up Language Code</source>
         <target xml:lang="es-ES" state="final">Buscar el Código del Idioma...</target>
+        <note>ID: LanguageLookup.LanguageLookupDialogWindowTitle</note>
       </trans-unit>
       <trans-unit id="LanguageLookup.PrimaryNameHeader" approved="yes">
         <source xml:lang="en">Name</source>
-        <note>ID: LanguageLookup.PrimaryNameHeader</note>
         <target xml:lang="es-ES" state="final">Nombre</target>
+        <note>ID: LanguageLookup.PrimaryNameHeader</note>
       </trans-unit>
       <trans-unit id="LanguageLookup.ShowRegionalDialectsLabel" approved="yes">
         <source xml:lang="en">Show regional dialects</source>
-        <note>ID: LanguageLookup.ShowRegionalDialectsLabel</note>
         <target xml:lang="es-ES" state="final">Mostrar dialectos regionales</target>
+        <note>ID: LanguageLookup.ShowRegionalDialectsLabel</note>
       </trans-unit>
       <trans-unit id="LanguageLookup.UnlistedLanguage" approved="yes">
         <source xml:lang="en">Unlisted Language</source>
+        <target xml:lang="es-ES" state="final">Idioma no listada</target>
         <note>ID: LanguageLookup.UnlistedLanguage</note>
-        <target xml:lang="es-ES" state="final">Idioma no enlistado</target>
       </trans-unit>
       <trans-unit id="LanguageLookup._cannotFindLanguageLink" approved="yes">
         <source xml:lang="en">Can't find your language?</source>
-        <note>ID: LanguageLookup._cannotFindLanguageLink</note>
         <target xml:lang="es-ES" state="final">¿No encuentra su idioma?</target>
+        <note>ID: LanguageLookup._cannotFindLanguageLink</note>
       </trans-unit>
       <trans-unit id="LanguageLookup._scriptsAndVariantsLabel" approved="yes">
         <source xml:lang="en">my script variant label</source>
-        <note>ID: LanguageLookup._scriptsAndVariantsLabel</note>
         <target xml:lang="es-ES" state="final">mi etiqueta variante de escritura</target>
+        <note>ID: LanguageLookup._scriptsAndVariantsLabel</note>
       </trans-unit>
       <trans-unit id="LanguageLookup._scriptsAndVariantsLink" approved="yes">
         <source xml:lang="en">Script and Variant</source>
-        <note>ID: LanguageLookup._scriptsAndVariantsLink</note>
         <target xml:lang="es-ES" state="final">Escritura y variante</target>
+        <note>ID: LanguageLookup._scriptsAndVariantsLink</note>
       </trans-unit>
       <trans-unit id="MemoryWarning" approved="yes">
         <source xml:lang="en">Unfortunately, {0} is starting to get short of memory, and may soon slow down or experience other problems. We recommend that you quit and restart it when convenient.</source>
+        <target xml:lang="es-ES" state="final">Desafortunadamente, {0} no tiene memoria suficiente y pronto puede ralentizar o experimentar otros problemas. Le recomendamos que lo cierre y reinicie cuando sea conveniente.</target>
         <note>ID: MemoryWarning</note>
-        <target xml:lang="es-ES" state="final">Desafortunadamente, {0} no tiene memoria suficiente y podrá desacelerarse o experimentar otros problemas. Recomendamos que cierre y reinicie cuando sea conveniente.</target>
       </trans-unit>
       <trans-unit id="MetadataDisplay.Creator" approved="yes">
         <source xml:lang="en">Creator: {0}</source>
-        <note>ID: MetadataDisplay.Creator</note>
         <target xml:lang="es-ES" state="final">Creador: {0}</target>
+        <note>ID: MetadataDisplay.Creator</note>
       </trans-unit>
       <trans-unit id="MetadataDisplay.CreatorLabel" approved="yes">
         <source xml:lang="en">Creator</source>
-        <note>ID: MetadataDisplay.CreatorLabel</note>
         <target xml:lang="es-ES" state="final">Creador</target>
+        <note>ID: MetadataDisplay.CreatorLabel</note>
       </trans-unit>
       <trans-unit id="MetadataDisplay.LicenseInfo" approved="yes">
         <source xml:lang="en">License Info</source>
-        <note>ID: MetadataDisplay.LicenseInfo</note>
         <target xml:lang="es-ES" state="final">Información de la licencia</target>
+        <note>ID: MetadataDisplay.LicenseInfo</note>
       </trans-unit>
       <trans-unit id="MetadataDisplay.NoLicense" approved="yes">
         <source xml:lang="en">No license specified</source>
-        <note>ID: MetadataDisplay.NoLicense</note>
         <target xml:lang="es-ES" state="final">Ninguna licencia especificada</target>
+        <note>ID: MetadataDisplay.NoLicense</note>
       </trans-unit>
       <trans-unit id="MetadataEditor.AllowCommercialUse" approved="yes">
         <source xml:lang="en">Allow commercial uses of your work?</source>
-        <note>ID: MetadataEditor.AllowCommercialUse</note>
         <target xml:lang="es-ES" state="final">¿Permite hacer uso comercial de su trabajo?</target>
+        <note>ID: MetadataEditor.AllowCommercialUse</note>
       </trans-unit>
       <trans-unit id="MetadataEditor.AllowDerivatives" approved="yes">
         <source xml:lang="en">Allow modifications of your work?</source>
-        <note>ID: MetadataEditor.AllowDerivatives</note>
         <target xml:lang="es-ES" state="final">¿Permite hacer modificaciones a su trabajo?</target>
+        <note>ID: MetadataEditor.AllowDerivatives</note>
       </trans-unit>
       <trans-unit id="MetadataEditor.CopyrightHolder" approved="yes">
         <source xml:lang="en">Copyright Holder</source>
-        <note>ID: MetadataEditor.CopyrightHolder</note>
         <target xml:lang="es-ES" state="final">Titular de los derechos de autor</target>
+        <note>ID: MetadataEditor.CopyrightHolder</note>
       </trans-unit>
       <trans-unit id="MetadataEditor.CopyrightYear" approved="yes">
         <source xml:lang="en">Copyright Year</source>
-        <note>ID: MetadataEditor.CopyrightYear</note>
         <target xml:lang="es-ES" state="final">Año de los derechos de autor</target>
+        <note>ID: MetadataEditor.CopyrightYear</note>
       </trans-unit>
-      <trans-unit id="MetadataEditor.CreativeCommons">
+      <trans-unit id="MetadataEditor.CreativeCommons" approved="yes">
         <source xml:lang="en">Creative Commons</source>
+        <target xml:lang="es-ES" state="final">Creative Commons</target>
         <note>ID: MetadataEditor.CreativeCommons</note>
-        <target xml:lang="es-ES" state="translated">Creative Commons</target>
-      </trans-unit>
-      <trans-unit id="MetadataEditor.CreativeCommons.Intergovernmental" approved="yes">
-        <source xml:lang="en">Intergovernmental Version</source>
-        <note>ID: MetadataEditor.CreativeCommons.Intergovernmental</note>
-        <target xml:lang="es-ES" state="final">Versión Intergubernamental</target>
       </trans-unit>
       <trans-unit id="MetadataEditor.CreatorLabel" approved="yes">
         <source xml:lang="en">Creator</source>
-        <note>ID: MetadataEditor.CreatorLabel</note>
         <target xml:lang="es-ES" state="final">Creador</target>
+        <note>ID: MetadataEditor.CreatorLabel</note>
       </trans-unit>
       <trans-unit id="MetadataEditor.CustomLicense" approved="yes">
         <source xml:lang="en">Custom</source>
-        <note>ID: MetadataEditor.CustomLicense</note>
         <target xml:lang="es-ES" state="final">Personalizado</target>
+        <note>ID: MetadataEditor.CustomLicense</note>
       </trans-unit>
       <trans-unit id="MetadataEditor.License" approved="yes">
         <source xml:lang="en">License</source>
-        <note>ID: MetadataEditor.License</note>
         <target xml:lang="es-ES" state="final">Licencia</target>
+        <note>ID: MetadataEditor.License</note>
       </trans-unit>
       <trans-unit id="MetadataEditor.PublicDomain" approved="yes">
         <source xml:lang="en">The copyright holder waives all rights</source>
-        <note>ID: MetadataEditor.PublicDomain</note>
         <target xml:lang="es-ES" state="final">El títular de derchos de autor renuncia todos sus derechos</target>
+        <note>ID: MetadataEditor.PublicDomain</note>
       </trans-unit>
       <trans-unit id="MetadataEditor.TitleNoCredit" approved="yes">
         <source xml:lang="en">Copyright and License</source>
-        <note>ID: MetadataEditor.TitleNoCredit</note>
         <target xml:lang="es-ES" state="final">Derechos de autor y licencia</target>
+        <note>ID: MetadataEditor.TitleNoCredit</note>
       </trans-unit>
       <trans-unit id="MetadataEditor.TitleWithCredit" approved="yes">
         <source xml:lang="en">Credit, Copyright, and License</source>
-        <note>ID: MetadataEditor.TitleWithCredit</note>
         <target xml:lang="es-ES" state="final">Crédito, derechos de autor y licencia</target>
+        <note>ID: MetadataEditor.TitleWithCredit</note>
       </trans-unit>
       <trans-unit id="MetadataEditor.UnknownLicense" approved="yes">
         <source xml:lang="en">Contact the copyright holder for any permissions</source>
-        <note>ID: MetadataEditor.UnknownLicense</note>
         <target xml:lang="es-ES" state="final">Comuníquese con el titular de los derechos de autor para solicitar permisos</target>
+        <note>ID: MetadataEditor.UnknownLicense</note>
       </trans-unit>
       <trans-unit id="MetadataEditor.YesShareAlike" approved="yes">
         <source xml:lang="en">Yes, as long as others share alike</source>
-        <note>ID: MetadataEditor.YesShareAlike</note>
         <target xml:lang="es-ES" state="final">Sí, mientras que otros compartan igualmente</target>
+        <note>ID: MetadataEditor.YesShareAlike</note>
       </trans-unit>
       <trans-unit id="MetadataEditor.additionalRequestsLabel" approved="yes">
         <source xml:lang="en">Additional Requests</source>
-        <note>ID: MetadataEditor.additionalRequestsLabel</note>
-        <note>When you choose a Creative Commons License, this label shows over the text box at the bottom.</note>
         <target xml:lang="es-ES" state="final">Solicitudes adicionales</target>
+        <note>ID: MetadataEditor.additionalRequestsLabel</note>
       </trans-unit>
       <trans-unit id="MetadataEditor.betterLinkLabel1" approved="yes">
         <source xml:lang="en">more info</source>
-        <note>ID: MetadataEditor.betterLinkLabel1</note>
-        <note>The meaning of  "non-commercial" is vague but important. This hyperlink takes you somewhere that defines it.</note>
         <target xml:lang="es-ES" state="final">más información</target>
+        <note>ID: MetadataEditor.betterLinkLabel1</note>
       </trans-unit>
       <trans-unit id="MetadataEditor.linkToPublicDomainCC0" approved="yes">
         <source xml:lang="en">about {0} Public Domain</source>
-        <note>ID: MetadataEditor.linkToPublicDomainCC0</note>
-        <note>{0} is replaced by an untranslatable abbreviation functioning as an adjective ("CC0")</note>
         <target xml:lang="es-ES" state="final">acerca del dominio público {0}</target>
+        <note>ID: MetadataEditor.linkToPublicDomainCC0</note>
       </trans-unit>
       <trans-unit id="MetadataEditor.linkToWarningAboutRefiningCreativeCommons" approved="yes">
         <source xml:lang="en">Not Enforceable</source>
-        <note>ID: MetadataEditor.linkToWarningAboutRefiningCreativeCommons</note>
         <target xml:lang="es-ES" state="final">No aplicable</target>
+        <note>ID: MetadataEditor.linkToWarningAboutRefiningCreativeCommons</note>
       </trans-unit>
-      <trans-unit id="ProblemNotificationDialog.Caption">
+      <trans-unit id="ProblemNotificationDialog.Caption" approved="yes">
         <source xml:lang="en">Problem</source>
+        <target xml:lang="es-ES" state="final">Problemas</target>
         <note>ID: ProblemNotificationDialog.Caption</note>
-		<target xml:lang="es-ES" state="translated">Problema</target>
       </trans-unit>
-      <trans-unit id="Project.CannotRemove">
+      <trans-unit id="Project.CannotRemove" approved="yes">
         <source xml:lang="en">Cannot remove the selected project because it is currently open</source>
+        <target xml:lang="es-ES" state="final">No se puede eliminar el proyecto seleccionado porque está actualmente abierto.</target>
         <note>ID: Project.CannotRemove</note>
-        <target xml:lang="es-ES" state="translated">No se puede eliminar el proyecto seleccionado porque está actualmente abierto.</target>
       </trans-unit>
-      <trans-unit id="Project.CannotRemoveCaption">
+      <trans-unit id="Project.CannotRemoveCaption" approved="yes">
         <source xml:lang="en">Cannot Remove from List</source>
+        <target xml:lang="es-ES" state="final">No se puede eliminar de la lista.</target>
         <note>ID: Project.CannotRemoveCaption</note>
-        <target xml:lang="es-ES" state="translated">No se puede eliminar de la lista.</target>
       </trans-unit>
-      <trans-unit id="ProjectsList.Language">
+      <trans-unit id="ProjectsList.Language" approved="yes">
         <source xml:lang="en">Language</source>
+        <target xml:lang="es-ES" state="final">Idioma</target>
         <note>ID: ProjectsList.Language</note>
-        <target xml:lang="es-ES" state="translated">Idioma</target>
       </trans-unit>
-      <trans-unit id="ProjectsList.RecordingProject">
+      <trans-unit id="ProjectsList.RecordingProject" approved="yes">
         <source xml:lang="en">Recording Project</source>
+        <target xml:lang="es-ES" state="final">Proyecto de grabación</target>
         <note>ID: ProjectsList.RecordingProject</note>
-        <target xml:lang="es-ES" state="translated">Proyecto de grabación</target>
       </trans-unit>
       <trans-unit id="ScriptsAndVariants.ScriptsAndVariantsDialog._cancelButton" approved="yes">
         <source xml:lang="en">Cancel</source>
-        <note>ID: ScriptsAndVariants.ScriptsAndVariantsDialog._cancelButton</note>
         <target xml:lang="es-ES" state="final">Cancelar</target>
+        <note>ID: ScriptsAndVariants.ScriptsAndVariantsDialog._cancelButton</note>
       </trans-unit>
       <trans-unit id="ScriptsAndVariants.ScriptsAndVariantsDialog._okButton" approved="yes">
         <source xml:lang="en">OK</source>
-        <note>ID: ScriptsAndVariants.ScriptsAndVariantsDialog._okButton</note>
         <target xml:lang="es-ES" state="final">Aceptar</target>
+        <note>ID: ScriptsAndVariants.ScriptsAndVariantsDialog._okButton</note>
       </trans-unit>
       <trans-unit id="ScriptsAndVariantsDialog.ScriptsAndVariants" approved="yes">
         <source xml:lang="en">Script and Variant</source>
-        <note>ID: ScriptsAndVariantsDialog.ScriptsAndVariants</note>
         <target xml:lang="es-ES" state="final">Escritura y variante</target>
+        <note>ID: ScriptsAndVariantsDialog.ScriptsAndVariants</note>
       </trans-unit>
       <trans-unit id="SettingsProtection.AlsoHideOthersNotice" approved="yes">
         <source xml:lang="en">This may also hide other buttons which are not needed by the non-advanced user.</source>
-        <note>ID: SettingsProtection.AlsoHideOthersNotice</note>
         <target xml:lang="es-ES" state="final">Esto también puede ocultar otros botones que no son necesarios para el usuario no avanzado.</target>
+        <note>ID: SettingsProtection.AlsoHideOthersNotice</note>
       </trans-unit>
       <trans-unit id="SettingsProtection.CtrlShiftHint" approved="yes">
         <source xml:lang="en">The button will show up when you hold down the Ctrl and Shift keys together.</source>
-        <note>ID: SettingsProtection.CtrlShiftHint</note>
         <target xml:lang="es-ES" state="final">El botón se mostrará cuando se mantengan presionadas juntas las teclas Ctrl y Mayús.</target>
+        <note>ID: SettingsProtection.CtrlShiftHint</note>
+      </trans-unit>
+      <trans-unit id="SettingsProtection.CtrlShiftHint.MenuItem" approved="yes">
+        <source xml:lang="en">The menu item will show up when you hold down the Ctrl and Shift keys together.</source>
+        <target xml:lang="es-ES" state="final">La opción de menú aparecerá al mantener pulsadas las teclas Ctrl y Mayús a la vez.</target>
+        <note>ID: SettingsProtection.CtrlShiftHint.MenuItem</note>
       </trans-unit>
       <trans-unit id="SettingsProtection.LauncherButtonLabel" approved="yes">
         <source xml:lang="en">Settings...</source>
-        <note>ID: SettingsProtection.LauncherButtonLabel</note>
         <target xml:lang="es-ES" state="final">Protección de configuraciones...</target>
+        <note>ID: SettingsProtection.LauncherButtonLabel</note>
       </trans-unit>
       <trans-unit id="SettingsProtection.NormallyHiddenCheckbox" approved="yes">
         <source xml:lang="en">Hide the button that opens settings.</source>
-        <note>ID: SettingsProtection.NormallyHiddenCheckbox</note>
         <target xml:lang="es-ES" state="final">Ocultar el botón que abre la configuración.</target>
+        <note>ID: SettingsProtection.NormallyHiddenCheckbox</note>
+      </trans-unit>
+      <trans-unit id="SettingsProtection.NormallyHiddenCheckbox.MenuItem" approved="yes">
+        <source xml:lang="en">Hide the menu item that opens settings.</source>
+        <target xml:lang="es-ES" state="final">Ocultar la opción de menú que abre la configuración.</target>
+        <note>ID: SettingsProtection.NormallyHiddenCheckbox.MenuItem</note>
       </trans-unit>
       <trans-unit id="SettingsProtection.PasswordDialog.FactoryPassword" approved="yes">
         <source xml:lang="en">Factory Password</source>
-        <note>ID: SettingsProtection.PasswordDialog.FactoryPassword</note>
         <target xml:lang="es-ES" state="final">Contraseña de fábrica</target>
+        <note>ID: SettingsProtection.PasswordDialog.FactoryPassword</note>
       </trans-unit>
       <trans-unit id="SettingsProtection.PasswordDialog.Password.Explanation" approved="yes">
-        <source xml:lang="en">To prevent accidental changes which could cause this tool to stop working for you, these settings have been locked.</source>
-        <note>ID: SettingsProtection.PasswordDialog.Password.Explanation</note>
+        <source xml:lang="en">To prevent accidental changes which could cause this program to stop working for you, these settings have been locked.</source>
         <target xml:lang="es-ES" state="final">Estas configuraciones han sido bloquedas para prevenir cambios accidentales que podrían impedir el funcionamiento de esta herramienta.</target>
+        <note>ID: SettingsProtection.PasswordDialog.Password.Explanation</note>
       </trans-unit>
       <trans-unit id="SettingsProtection.PasswordDialog.SettingsPasswordWindowTitle" approved="yes">
         <source xml:lang="en">Settings Protection Password</source>
-        <note>ID: SettingsProtection.PasswordDialog.SettingsPasswordWindowTitle</note>
         <target xml:lang="es-ES" state="final">Contraseña para proteger la configuración</target>
-      </trans-unit>
-      <trans-unit id="SettingsProtection.PasswordDialog.ShowCharactersCheckbox" approved="yes">
-        <source xml:lang="en">Show Characters</source>
-        <note>ID: SettingsProtection.PasswordDialog.ShowCharactersCheckbox</note>
-        <target xml:lang="es-ES" state="final">Mostrar caracteres</target>
+        <note>ID: SettingsProtection.PasswordDialog.SettingsPasswordWindowTitle</note>
       </trans-unit>
       <trans-unit id="SettingsProtection.PasswordNotice" approved="yes">
         <source xml:lang="en">Factory password for these settings is "{0}". If you forget it, you can always visit the {1} support page.</source>
-        <note>ID: SettingsProtection.PasswordNotice</note>
-        <note>The localization for this should be kept in sync with "SettingsProtection.PasswordNoticeWithSupportUrl". Param 0: Factory password; Param 1: product name</note>
         <target xml:lang="es-ES" state="final">La contraseña de fábrica para estas configuraciones es "{0}". Si la olvida, siempre puede visitar la página de apoyo de {1}.</target>
+        <note>ID: SettingsProtection.PasswordNotice</note>
       </trans-unit>
       <trans-unit id="SettingsProtection.PasswordNoticeWithSupportUrl" approved="yes">
         <source xml:lang="en">Factory password for these settings is "{0}". If you forget it, you can always visit the {1} support page: {2}</source>
-        <note>ID: SettingsProtection.PasswordNoticeWithSupportUrl</note>
-        <note>The localization for this should be kept in sync with "SettingsProtection.PasswordNotice". Param 0: Factory password; Param 1: product name; Param 2: URL of support page</note>
         <target xml:lang="es-ES" state="final">La contraseña de fábrica para estas configuraciones es "{0}". Si la olvida, siempre puede visitar la página de apoyo {1} en: {2}</target>
+        <note>ID: SettingsProtection.PasswordNoticeWithSupportUrl</note>
       </trans-unit>
       <trans-unit id="SettingsProtection.RequirePasswordCheckBox" approved="yes">
         <source xml:lang="en">Require the factory password to get into settings.</source>
-        <note>ID: SettingsProtection.RequirePasswordCheckBox</note>
         <target xml:lang="es-ES" state="final">Se requiere la contraseña de fábrica para entrar en la configuración.</target>
+        <note>ID: SettingsProtection.RequirePasswordCheckBox</note>
       </trans-unit>
       <trans-unit id="SettingsProtection.SettingProtectionDialogTitle" approved="yes">
         <source xml:lang="en">Settings Protection</source>
-        <note>ID: SettingsProtection.SettingProtectionDialogTitle</note>
         <target xml:lang="es-ES" state="final">Protección de configuración</target>
+        <note>ID: SettingsProtection.SettingProtectionDialogTitle</note>
       </trans-unit>
       <trans-unit id="ShowReleaseNotesDialog.WindowTitle" approved="yes">
         <source xml:lang="en">Release Notes</source>
-        <note>ID: ShowReleaseNotesDialog.WindowTitle</note>
         <target xml:lang="es-ES" state="final">Notas de la versión</target>
+        <note>ID: ShowReleaseNotesDialog.WindowTitle</note>
       </trans-unit>
       <trans-unit id="VoiceIdentifierView.betterLabel1" approved="yes">
         <source xml:lang="en">In applications which support this option, fields with this input system will be able to play and record voice.</source>
-        <note>ID: VoiceIdentifierView.betterLabel1</note>
-        <note>Displayed if a user selects the voice special option in writing system setup</note>
         <target xml:lang="es-ES" state="final">En las aplicaciones que soportan esta opción, los campos con esta sistema de ingreso podrán grabar y reproducir la voz.</target>
+        <note>ID: VoiceIdentifierView.betterLabel1</note>
       </trans-unit>
       <trans-unit id="WSFontControl.Font" approved="yes">
         <source xml:lang="en">&amp;Font:</source>
-        <note>ID: WSFontControl.Font</note>
         <target xml:lang="es-ES" state="final">&amp;Fuente:</target>
+        <note>ID: WSFontControl.Font</note>
       </trans-unit>
       <trans-unit id="WSFontControl.FontNotAvailable" approved="yes">
         <source xml:lang="en">(The selected font is not available on this machine. Using default.)</source>
-        <note>ID: WSFontControl.FontNotAvailable</note>
         <target xml:lang="es-ES" state="final">(La fuente seleccionada no está disponible en esta computadora. Se usará la fuente predeterminada.)</target>
+        <note>ID: WSFontControl.FontNotAvailable</note>
       </trans-unit>
       <trans-unit id="WSFontControl.RightToLeftWS" approved="yes">
-        <source xml:lang="en">This is a &amp;right to left writing system.</source>
-        <note>ID: WSFontControl.RightToLeftWS</note>
+        <source xml:lang="en">This is a &amp;right-to-left writing system.</source>
         <target xml:lang="es-ES" state="final">Esto es una &amp;escritura de derecha a izquierda.</target>
+        <note>ID: WSFontControl.RightToLeftWS</note>
       </trans-unit>
       <trans-unit id="WSFontControl.Size" approved="yes">
         <source xml:lang="en">&amp;Size:</source>
-        <note>ID: WSFontControl.Size</note>
         <target xml:lang="es-ES" state="final">&amp;Tamaño:</target>
+        <note>ID: WSFontControl.Size</note>
       </trans-unit>
       <trans-unit id="WSFontControl.TestArea" approved="yes">
         <source xml:lang="en">&amp;Test Area:</source>
-        <note>ID: WSFontControl.TestArea</note>
         <target xml:lang="es-ES" state="final">&amp;Área de prueba:</target>
+        <note>ID: WSFontControl.TestArea</note>
       </trans-unit>
       <trans-unit id="WSIdentifierView.betterLabel4" approved="yes">
         <source xml:lang="en">Abbreviation:</source>
-        <note>ID: WSIdentifierView.betterLabel4</note>
-        <note>In writing system setup general tab: label before abbreviation text box</note>
         <target xml:lang="es-ES" state="final">Abreviatura</target>
+        <note>ID: WSIdentifierView.betterLabel4</note>
       </trans-unit>
       <trans-unit id="WSIdentifierView.betterLabel5" approved="yes">
         <source xml:lang="en">Special:</source>
-        <note>ID: WSIdentifierView.betterLabel5</note>
-        <note>In writing system setup general tab:  Label before combo box with 'Special' choices</note>
         <target xml:lang="es-ES" state="final">Especial:</target>
+        <note>ID: WSIdentifierView.betterLabel5</note>
       </trans-unit>
       <trans-unit id="WSIdentifiers.IpaIdentifierView.Default" approved="yes">
         <source xml:lang="en">Default</source>
+        <target xml:lang="es-ES" state="final">Predeterminado</target>
         <note>ID: WSIdentifiers.IpaIdentifierView.Default</note>
-        <note>Choice for most users</note>
-        <target xml:lang="es-ES" state="final">Predetermindado</target>
       </trans-unit>
       <trans-unit id="WSIdentifiers.IpaIdentifierView.Emic" approved="yes">
         <source xml:lang="en">Emic (uses phonology of the language)</source>
-        <note>ID: WSIdentifiers.IpaIdentifierView.Emic</note>
-        <note>Only translate text inside of the parentheses ()</note>
         <target xml:lang="es-ES" state="final">Emic (utiliza la fonología del idioma)</target>
+        <note>ID: WSIdentifiers.IpaIdentifierView.Emic</note>
       </trans-unit>
       <trans-unit id="WSIdentifiers.IpaIdentifierView.Etic" approved="yes">
         <source xml:lang="en">Etic (raw phonetic transcription)</source>
-        <note>ID: WSIdentifiers.IpaIdentifierView.Etic</note>
-        <note>Only translate text inside of the parentheses ()</note>
         <target xml:lang="es-ES" state="final">Etic (transcripción fonética automática)</target>
+        <note>ID: WSIdentifiers.IpaIdentifierView.Etic</note>
       </trans-unit>
       <trans-unit id="WSKeyboardControl.KeyboardNotListed" approved="yes">
         <source xml:lang="en">If the keyboard you need is not listed, click the appropriate link below to set it up</source>
-        <note>ID: WSKeyboardControl.KeyboardNotListed</note>
         <target xml:lang="es-ES" state="final">Si el teclado que necesita no está en la lista, haga clic en el enlace apropiado abajo para configurarlo</target>
+        <note>ID: WSKeyboardControl.KeyboardNotListed</note>
       </trans-unit>
       <trans-unit id="WSKeyboardControl.KeyboardSettingsLink" approved="yes">
         <source xml:lang="en">Windows keyboard settings</source>
-        <note>ID: WSKeyboardControl.KeyboardSettingsLink</note>
         <target xml:lang="es-ES" state="final">Configuración del teclado de Windows</target>
+        <note>ID: WSKeyboardControl.KeyboardSettingsLink</note>
       </trans-unit>
       <trans-unit id="WSKeyboardControl.KeyboardsAvailable" approved="yes">
         <source xml:lang="en">Available keyboards</source>
-        <note>ID: WSKeyboardControl.KeyboardsAvailable</note>
         <target xml:lang="es-ES" state="final">Teclados disponibles</target>
+        <note>ID: WSKeyboardControl.KeyboardsAvailable</note>
       </trans-unit>
       <trans-unit id="WSKeyboardControl.KeyboardsPreviouslyUsed" approved="yes">
         <source xml:lang="en">Previously used keyboards</source>
+        <target xml:lang="es-ES" state="final">Teclados utilizado anteriormente</target>
         <note>ID: WSKeyboardControl.KeyboardsPreviouslyUsed</note>
-        <target xml:lang="es-ES" state="final">Teclados utilizados anteriormente</target>
       </trans-unit>
       <trans-unit id="WSKeyboardControl.KeymanConfigurationLink" approved="yes">
         <source xml:lang="en">Keyman Configuration</source>
-        <note>ID: WSKeyboardControl.KeymanConfigurationLink</note>
         <target xml:lang="es-ES" state="final">Configuración de Keyman</target>
+        <note>ID: WSKeyboardControl.KeymanConfigurationLink</note>
       </trans-unit>
       <trans-unit id="WSKeyboardControl.KeymanNotInstalled" approved="yes">
         <source xml:lang="en">Keyman 5.0 or later is not Installed.</source>
+        <target xml:lang="es-ES" state="final">Keyman 5.0 o posterior no está instalado.</target>
         <note>ID: WSKeyboardControl.KeymanNotInstalled</note>
-        <target xml:lang="es-ES" state="final">Keyman 5.0 o más reciente no está instalado.</target>
       </trans-unit>
       <trans-unit id="WSKeyboardControl.SelectKeyboardLabel" approved="yes">
         <source xml:lang="en">Select the &amp;keyboard with which to type {0} text</source>
-        <note>ID: WSKeyboardControl.SelectKeyboardLabel</note>
         <target xml:lang="es-ES" state="final">Seleccione el &amp;teclado con el cual desea ingresar texto {0}</target>
+        <note>ID: WSKeyboardControl.SelectKeyboardLabel</note>
       </trans-unit>
       <trans-unit id="WSKeyboardControl.SetupKeyboards" approved="yes">
         <source xml:lang="en">Set up keyboards</source>
-        <note>ID: WSKeyboardControl.SetupKeyboards</note>
         <target xml:lang="es-ES" state="final">Configurar teclados</target>
+        <note>ID: WSKeyboardControl.SetupKeyboards</note>
       </trans-unit>
       <trans-unit id="WSKeyboardControl.TestAreaCaption" approved="yes">
         <source xml:lang="en">&amp;Test Area (Use this area to type something to test out your keyboard.)</source>
-        <note>ID: WSKeyboardControl.TestAreaCaption</note>
         <target xml:lang="es-ES" state="final">&amp;Área de prueba (Utilice esta zona para escribir algo para probar el teclado.)</target>
+        <note>ID: WSKeyboardControl.TestAreaCaption</note>
       </trans-unit>
       <trans-unit id="Warning" approved="yes">
         <source xml:lang="en">Warning</source>
+        <target xml:lang="es-ES" state="final">ADVERTENCIA</target>
         <note>ID: Warning</note>
-        <target xml:lang="es-ES" state="final">Advertencia</target>
       </trans-unit>
       <trans-unit id="WritingSystemSetupView.UnableToConnectToSldrCaption" approved="yes">
         <source xml:lang="en">Unable to connect to SLDR</source>
-        <note>ID: WritingSystemSetupView.UnableToConnectToSldrCaption</note>
         <target xml:lang="es-ES" state="final">No se puede conectar al SLDR</target>
+        <note>ID: WritingSystemSetupView.UnableToConnectToSldrCaption</note>
       </trans-unit>
       <trans-unit id="WritingSystemSetupView.UnableToConnectToSldrText" approved="yes">
         <source xml:lang="en">The application is unable to connect to the SIL Locale Data Repository to retrieve the latest information about this language. If you create this writing system, the default settings might be incorrect or out of date. Are you sure you want to create a new writing system?</source>
+        <target xml:lang="es-ES" state="final">La aplicación no puede conectarse con la base datos de SIL para obtener la información más reciente acerca de este idioma. Si usted crea este sistema de escritura, la configuración predeterminada podría ser incorrecta u obsoleta. ¿Realmente desea crear un nuevo sistema de escritura?</target>
         <note>ID: WritingSystemSetupView.UnableToConnectToSldrText</note>
-        <target xml:lang="es-ES" state="final">La aplicación no puede conectarse con la base datos de SIL para obtener la información más reciente acerca de este idioma. Si usted crea este sistema escritura, la configuración predeterminada podría ser incorrecta u obsoleta. ¿Realmente desea crear un nuevo sistema de escritura?</target>
       </trans-unit>
       <trans-unit id="XkbKeyboardAdaptor.MissingKeyboard" approved="yes">
         <source xml:lang="en">[Missing] {0} ({1})</source>
-        <note>ID: XkbKeyboardAdaptor.MissingKeyboard</note>
         <target xml:lang="es-ES" state="final">[Faltante] {0} ({1})</target>
+        <note>ID: XkbKeyboardAdaptor.MissingKeyboard</note>
       </trans-unit>
     </body>
   </file>
