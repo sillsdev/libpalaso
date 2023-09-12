@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -24,7 +25,7 @@ namespace SIL.IO
 				{
 					Type.GetType("System.IO.IOException"),
 					Type.GetType("System.Runtime.InteropServices.ExternalException")
-				});
+				}, memo: $"SaveImage {fileName}");
 		}
 
 		public static void SaveImage(Image image, string fileName, ImageFormat format)
@@ -36,7 +37,7 @@ namespace SIL.IO
 				{
 					Type.GetType("System.IO.IOException"),
 					Type.GetType("System.Runtime.InteropServices.ExternalException")
-				});
+				}, memo: $"SaveImage {fileName}");
 		}
 
 		public static void SaveImage(Image image, Stream stream, ImageFormat format)
@@ -48,7 +49,7 @@ namespace SIL.IO
 				{
 					Type.GetType("System.IO.IOException"),
 					Type.GetType("System.Runtime.InteropServices.ExternalException")
-				});
+				}, memo: $"SaveImage <stream>");
 		}
 
 		public static void SaveImage(Image image, string fileName, ImageCodecInfo jpgEncoder, EncoderParameters parameters)
@@ -60,7 +61,42 @@ namespace SIL.IO
 				{
 					Type.GetType("System.IO.IOException"),
 					Type.GetType("System.Runtime.InteropServices.ExternalException")
-				});
+				}, memo: $"SaveImage {fileName}");
+		}
+
+		/// <summary>
+		/// Read a bitmap image from a file.  The file must be known to exist before calling this method.
+		/// </summary>
+		/// <remarks>
+		/// Creating an Image from a file (even using a FileStream) locks that file until the image is
+		/// disposed of.  Therefore, we copy the image and dispose of the original.  On Windows, using
+		/// Image.FromFile leaks file handles, so we load using a FileStream instead.  For details, see
+		/// the last answer to https://stackoverflow.com/questions/16055667/graphics-drawimage-out-of-memory-exception
+		/// </remarks>
+		public static Image GetImageFromFile(string path)
+		{
+			Debug.Assert(RobustFile.Exists(path), String.Format("{0} does not exist for RobustImageIO.GetImageFromFile()?!", path));
+			return RetryUtility.Retry(() =>
+				GetImageFromFileInternal(path),
+				RetryUtility.kDefaultMaxRetryAttempts,
+				RetryUtility.kDefaultRetryDelay,
+				new HashSet<Type>
+				{
+					Type.GetType("System.IO.IOException"),
+					Type.GetType("System.Runtime.InteropServices.ExternalException")
+				},
+				memo: $"GetImageFromFile {path}");
+		}
+
+		private static Image GetImageFromFileInternal(string path)
+		{
+			using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+			{
+				using (var image = new Bitmap(stream))
+				{
+					return new Bitmap(image);
+				}
+			}
 		}
 	}
 }
