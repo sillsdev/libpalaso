@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
 
-  build:
+  package-l10n:
     strategy:
       fail-fast: false
     runs-on: windows-2019

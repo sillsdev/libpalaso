@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
 
-  build:
+  extract-and-upload-strings:
     strategy:
       fail-fast: false
     runs-on: windows-2019
