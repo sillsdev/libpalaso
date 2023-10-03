@@ -114,6 +114,10 @@ Further instructions at https://github.com/sillsdev/libpalaso/wiki/Developing-wi
 
 - Send a pull request (<https://help.github.com/articles/using-pull-requests>). Specify destination branch if not `master`.
 
+### Localization
+
+Palaso is localized with [L10NSharp](https://github.com/sillsdev/l10nsharp). Palaso-specific documentation is under `l10n/README.md`.
+
 ## API Policy
 
 The palaso library follows semantic versioning. For APIs this means:
