@@ -1,4 +1,4 @@
-﻿using SIL.Windows.Forms.Widgets;
+using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.SettingProtection
 {
@@ -72,7 +72,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			this.betterLinkLabel1.ForeColor = System.Drawing.Color.Blue;
 			this.l10NSharpExtender1.SetLocalizableToolTip(this.betterLinkLabel1, null);
 			this.l10NSharpExtender1.SetLocalizationComment(this.betterLinkLabel1, null);
-			this.l10NSharpExtender1.SetLocalizingId(this.betterLinkLabel1, "SettingsProtection.LauncherButtonLabel");
+			this.l10NSharpExtender1.SetLocalizingId(this.betterLinkLabel1, "SettingsLauncherButton.LauncherButtonLabel");
 			this.betterLinkLabel1.Location = new System.Drawing.Point(23, 3);
 			this.betterLinkLabel1.Multiline = true;
 			this.betterLinkLabel1.Name = "betterLinkLabel1";
@@ -91,7 +91,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			this.Controls.Add(this._image);
 			this.l10NSharpExtender1.SetLocalizableToolTip(this, null);
 			this.l10NSharpExtender1.SetLocalizationComment(this, null);
-			this.l10NSharpExtender1.SetLocalizingId(this, "SettingsLauncherButton.SettingsLauncherButton");
+			this.l10NSharpExtender1.SetLocalizingId(this, "SettingsLauncherButton");
 			this.Margin = new System.Windows.Forms.Padding(0);
 			this.Name = "SettingsLauncherButton";
 			this.Size = new System.Drawing.Size(194, 22);

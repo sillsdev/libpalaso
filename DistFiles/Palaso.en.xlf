@@ -653,6 +653,10 @@
         <source xml:lang="en">Script and Variant</source>
         <note>ID: ScriptsAndVariantsDialog.ScriptsAndVariants</note>
       </trans-unit>
+      <trans-unit id="SettingsLauncherButton.LauncherButtonLabel">
+        <source xml:lang="en">Settings...</source>
+        <note>ID: SettingsLauncherButton.LauncherButtonLabel</note>
+      </trans-unit>
       <trans-unit id="SettingsProtection.AlsoHideOthersNotice">
         <source xml:lang="en">This may also hide other buttons which are not needed by the non-advanced user.</source>
         <note>ID: SettingsProtection.AlsoHideOthersNotice</note>
@@ -666,7 +670,7 @@
         <note>ID: SettingsProtection.CtrlShiftHint.MenuItem</note>
       </trans-unit>
       <trans-unit id="SettingsProtection.LauncherButtonLabel">
-        <source xml:lang="en">Settings...</source>
+        <source xml:lang="en">Settings Protection...</source>
         <note>ID: SettingsProtection.LauncherButtonLabel</note>
       </trans-unit>
       <trans-unit id="SettingsProtection.NormallyHiddenCheckbox">
