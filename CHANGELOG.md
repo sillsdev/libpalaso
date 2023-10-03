@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [SIL.Core] Make RetryUtility retry for exceptions that are subclasses of the ones listed to try. For example, by default (IOException) it will now retry for FileNotFoundException.
 - [SIL.Windows.Forms] Spelling of `CreativeCommonsLicense.IntergovernmentalOrganizationQualifier`
+- [SIL.Windows.Forms] Fixed internationalization problem: SettingsProtection.LauncherButtonLabel was used as ID for two different strings.
 
 ### Removed
 - [SIL.Windows.Forms] ImageGalleryControl.InSomeoneElesesDesignMode (seemingly unused and misspelled)
