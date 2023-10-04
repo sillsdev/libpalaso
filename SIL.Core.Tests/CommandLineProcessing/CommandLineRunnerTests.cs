@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text;
 using NUnit.Framework;
 using SIL.CommandLineProcessing;
 using SIL.Progress;
@@ -52,12 +53,13 @@ namespace SIL.Tests.CommandLineProcessing
 		{
 			var progress = new StringBuilderProgress();
 			int linesReceivedAsynchronously = 0;
+			var bldr = new StringBuilder();
 			CommandLineRunner.Run(App, "CommandLineRunnerTest", null, string.Empty, 100,
-				progress, s => ++linesReceivedAsynchronously, null, true);
+				progress, s => { ++linesReceivedAsynchronously; bldr.AppendLine(s); }, null, true);
 			// The test fails on Linux because progress gets called 10x for StdOutput plus
 			// 1x for StdError (probably on the closing of the stream), so linesReceivedAsync is 11.
 			// It also fails about 4% of the time on TC Windows agents
-			Assert.AreEqual(10, linesReceivedAsynchronously);
+			Assert.AreEqual(10, linesReceivedAsynchronously, bldr.ToString());
 		}
 
 		[Test]
