@@ -48,7 +48,6 @@ namespace SIL.Tests.CommandLineProcessing
 		// Note: this test was formerly categorized as "ByHand", but since it usually works (on Windows) and since
 		// we don't exclude the "ByHand" category on TeamCity for libpalaso tests anyway, I removed that category.
 		[Test]
-		[Platform(Exclude = "Linux", Reason = "See comment in test")]
 		public void CommandWith10Line_CallbackOption_Get10LinesAsynchronously()
 		{
 			var progress = new StringBuilderProgress();
