@@ -947,6 +947,11 @@
         <target xml:lang="es-ES" state="final">Escritura y variante</target>
         <note>ID: ScriptsAndVariantsDialog.ScriptsAndVariants</note>
       </trans-unit>
+      <trans-unit id="SettingsLauncherButton.LauncherButtonLabel">
+        <source xml:lang="en">Settings...</source>
+        <target xml:lang="es-ES" state="final">Configuraciones...</target>
+        <note>ID: SettingsLauncherButton.LauncherButtonLabel</note>
+      </trans-unit>
       <trans-unit id="SettingsProtection.AlsoHideOthersNotice" approved="yes">
         <source xml:lang="en">This may also hide other buttons which are not needed by the non-advanced user.</source>
         <target xml:lang="es-ES" state="final">Esto también puede ocultar otros botones que no son necesarios para el usuario no avanzado.</target>
@@ -963,7 +968,7 @@
         <note>ID: SettingsProtection.CtrlShiftHint.MenuItem</note>
       </trans-unit>
       <trans-unit id="SettingsProtection.LauncherButtonLabel" approved="yes">
-        <source xml:lang="en">Settings...</source>
+        <source xml:lang="en">Settings Protection...</source>
         <target xml:lang="es-ES" state="final">Protección de configuraciones...</target>
         <note>ID: SettingsProtection.LauncherButtonLabel</note>
       </trans-unit>
