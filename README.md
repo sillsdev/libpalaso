@@ -57,7 +57,7 @@ These libraries cannot currently be built on Linux releases later than Focal wit
 
   ```bash
   sudo apt update
-  sudo apt install libicu-dev dotnet-sdk-6.0 mono-complete mono-devel msbuild libcanberra-gtk-module
+  sudo apt install libicu-dev dotnet-sdk-6.0 mono-devel msbuild libcanberra-gtk-module
   ```
 
 **Note:** Newer Ubuntu versions have .NET 6+ and Mono 6 in their package
