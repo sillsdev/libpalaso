@@ -45,10 +45,7 @@ namespace SIL.Tests.CommandLineProcessing
 			Assert.That(result.StandardError, Contains.Substring("Timed Out after waiting 3 seconds."));
 		}
 
-		// Note: this test was formerly categorized as "ByHand", but since it usually works (on Windows) and since
-		// we don't exclude the "ByHand" category on TeamCity for libpalaso tests anyway, I removed that category.
 		[Test]
-		[Platform(Exclude = "Linux", Reason = "See comment in test")]
 		public void CommandWith10Line_CallbackOption_Get10LinesAsynchronously()
 		{
 			var progress = new StringBuilderProgress();
@@ -56,9 +53,6 @@ namespace SIL.Tests.CommandLineProcessing
 			var bldr = new StringBuilder();
 			CommandLineRunner.Run(App, "CommandLineRunnerTest", null, string.Empty, 100,
 				progress, s => bldr.AppendLine($"{++linesReceivedAsynchronously}: '{s}'"), null, true);
-			// The test fails on Linux because progress gets called 10x for StdOutput plus
-			// 1x for StdError (probably on the closing of the stream), so linesReceivedAsync is 11.
-			// It also fails about 4% of the time on TC Windows agents
 			Assert.AreEqual(10, linesReceivedAsynchronously, bldr.ToString());
 		}
 
