@@ -29,7 +29,6 @@ namespace SIL.Windows.Forms.TestApp
 			Sldr.Initialize();
 			Icu.Wrapper.Init();
 
-			var testCommandLineRunner = false;
 			var preferredUILocale = "fr";
 			if (args.Length > 0)
 			{
@@ -39,7 +38,13 @@ namespace SIL.Windows.Forms.TestApp
 				}
 				else
 				{
-					testCommandLineRunner = true;
+					// Test command-line runner's ability to read console output and time out.
+					for (var i = 0; i < 10; i++)
+					{
+						Console.WriteLine(i);
+						Thread.Sleep(1000);
+					}
+					return;
 				}
 			}
 
@@ -47,16 +52,6 @@ namespace SIL.Windows.Forms.TestApp
 				FileLocationUtilities.GetFileDistributedWithApplication($"Palaso.{preferredUILocale}.xlf"));
 			PrimaryL10NManager = LocalizationManager.Create(TranslationMemory.XLiff, preferredUILocale, "Palaso", "Palaso",
 				"1.0.0", localizationFolder, "SIL/Palaso", null, "testapp@sil.org");
-
-			if (testCommandLineRunner)
-			{
-				for (int i = 0; i < 10; i++)
-				{
-					Console.WriteLine(i);
-					Thread.Sleep(1000);
-				}
-				return;
-			}
 
 			Application.Run(new TestAppForm());
 
