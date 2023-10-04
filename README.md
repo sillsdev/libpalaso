@@ -33,6 +33,13 @@ To get the source code, you'll need Git. Then from a command line, give this com
 
 #### Ubuntu Linux
 
+These libraries cannot currently be built on Linux releases later than Focal without some additional steps/dependencies (because dotnet-sdk-5.0 is no longer supported and does not have a package installer for more recent versions and ).
+##### To build on Ubuntu 22.04 (Jammy), you have to:
+- Use mono-devel from Focal
+- Use dotnet-sdk-6.0
+- To get unit tests to pass, you have to install libcanberra-gtk-module (libcanberra-gtk-module/jammy,now 0.30-10ubuntu1 amd64). Not sure what is the correct way to get that dependency installed.
+
+##### The rest of the stuff:
 - Add access to packages.microsoft.com repo for dotnet sdk:
 
   ```bash
@@ -50,7 +57,7 @@ To get the source code, you'll need Git. Then from a command line, give this com
 
   ```bash
   sudo apt update
-  sudo apt install libicu-dev dotnet-sdk-6.0 mono-complete mono-devel msbuild libcanberra-gtk-module
+  sudo apt install libicu-dev dotnet-sdk-6.0 mono-devel msbuild libcanberra-gtk-module
   ```
 
 **Note:** Newer Ubuntu versions have .NET 6+ and Mono 6 in their package
