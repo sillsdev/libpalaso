@@ -11,7 +11,7 @@ using static System.StringComparison;
 
 namespace SIL.Windows.Forms.TestApp
 {
-	public static class Program
+	internal static class Program
 	{
 		internal static ILocalizationManager PrimaryL10NManager;
 
@@ -19,7 +19,7 @@ namespace SIL.Windows.Forms.TestApp
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		public static void Main(string[] args)
+		private static void Main(string[] args)
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
