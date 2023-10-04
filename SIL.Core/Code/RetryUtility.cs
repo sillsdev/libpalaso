@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
 namespace SIL.Code
@@ -21,16 +22,16 @@ namespace SIL.Code
 		public const int kDefaultRetryDelay = 200;
 		private static readonly ISet<Type> kDefaultExceptionTypesToRetry = new HashSet<Type> { Type.GetType("System.IO.IOException") };
 
-		public static void Retry(Action action, int maxRetryAttempts = kDefaultMaxRetryAttempts, int retryDelay = kDefaultRetryDelay, ISet<Type> exceptionTypesToRetry = null)
+		public static void Retry(Action action, int maxRetryAttempts = kDefaultMaxRetryAttempts, int retryDelay = kDefaultRetryDelay, ISet<Type> exceptionTypesToRetry = null, string memo = "")
 		{
 			Retry<object>(() =>
 			{
 				action();
 				return null;
-			}, maxRetryAttempts, retryDelay, exceptionTypesToRetry);
+			}, maxRetryAttempts, retryDelay, exceptionTypesToRetry, memo);
 		}
 
-		public static T Retry<T>(Func<T> action, int maxRetryAttempts = kDefaultMaxRetryAttempts, int retryDelay = kDefaultRetryDelay, ISet<Type> exceptionTypesToRetry = null)
+		public static T Retry<T>(Func<T> action, int maxRetryAttempts = kDefaultMaxRetryAttempts, int retryDelay = kDefaultRetryDelay, ISet<Type> exceptionTypesToRetry = null, string memo = "")
 		{
 			if (exceptionTypesToRetry == null)
 				exceptionTypesToRetry = kDefaultExceptionTypesToRetry;
@@ -45,20 +46,35 @@ namespace SIL.Code
 				}
 				catch (Exception e)
 				{
-					if (exceptionTypesToRetry.Contains(e.GetType()))
+					if (TypesIncludes(exceptionTypesToRetry, e.GetType()))
 					{
+						Debug.WriteLine($"Retry<{nameof(T)}> attempt {attempt}/{maxRetryAttempts}: {e.GetType().Name}   {memo}");
 						if (attempt == maxRetryAttempts)
 						{
-							//Debug.WriteLine("Failed after {0} attempts", attempt);
+							Debug.WriteLine($"Retry<{nameof(T)}> exceeded max attempts ({maxRetryAttempts}): {e.GetType().Name}   {memo}");
 							throw;
 						}
 						Thread.Sleep(retryDelay);
 						continue;
 					}
+					Debug.WriteLine($"Retry<{nameof(T)}> attempt {attempt}: Not retrying for this exception type {e.GetType().Name}   {memo}");
 					throw;
 				}
 			}
 			return default(T);
+		}
+
+		internal static bool TypesIncludes(ISet<Type> types, Type typeToTest)
+		{
+			if (types.Contains(typeToTest)) // fast check for root types
+				return true;
+			foreach (var type in types)
+			{
+				if (typeToTest.IsSubclassOf(type))
+					return true;
+			}
+
+			return false;
 		}
 	}
 }

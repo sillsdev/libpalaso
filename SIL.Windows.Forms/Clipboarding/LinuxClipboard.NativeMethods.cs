@@ -22,7 +22,7 @@ namespace SIL.Windows.Forms.Clipboarding
 
 		private const int RTLD_NOW = 2;
 
-		private const string LIBDL_NAME   = "libdl.so";
+		private const string LIBDL_NAME   = "libdl.so.2";
 		private const string LIBGLIB_NAME = "libglib-2.0.so.0";
 
 		[DllImport(LIBDL_NAME, SetLastError = true)]

@@ -1,13 +1,15 @@
-// Copyright (c) 2013-2022 SIL International
+// Copyright (c) 2013-2023 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using SIL.Extensions;
 using SIL.IO;
 using SIL.Lexicon;
 using SIL.PlatformUtilities;
@@ -25,6 +27,7 @@ using SIL.Windows.Forms.WritingSystems;
 using SIL.WritingSystems;
 using SIL.Media;
 using SIL.Windows.Forms.Extensions;
+using SIL.Windows.Forms.FileSystem;
 using SIL.Windows.Forms.LocalizationIncompleteDlg;
 
 namespace SIL.Windows.Forms.TestApp
@@ -380,6 +383,160 @@ and displays it as HTML.
 		private void btnThrowException_Click(object sender, EventArgs e)
 		{
 			throw new Exception("This is a test of the error reporting window!");
+		}
+
+		private string GetExtensionsStr(StringCollection extensions)
+		{
+			var prepend = "*";
+			var sb = new StringBuilder();
+			foreach (string ext in extensions)
+			{
+				sb.Append(prepend);
+				sb.Append(ext);
+				prepend = ";*";
+			}
+
+			return sb.ToString();
+		}
+
+		private void btnMediaFileInfo_Click(object sender, EventArgs e)
+		{
+			using (var dlg = new OpenFileDialog())
+			{
+				dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+				dlg.RestoreDirectory = true;
+				dlg.CheckFileExists = true;
+				dlg.CheckPathExists = true;
+				dlg.Filter = string.Format("{0} ({1})|{1}|{2} ({3})|{3}|{4} ({5})|{5}",
+					"Audio Files",
+					GetExtensionsStr(FileUtils.AudioFileExtensions),
+					"Video Files",
+					GetExtensionsStr(FileUtils.VideoFileExtensions),
+					"All Files",
+					"*.*");
+				dlg.FilterIndex = 0;
+				dlg.Multiselect = false;
+				dlg.Title = "Select a media file";
+				dlg.ValidateNames = true;
+				if (dlg.ShowDialog(this) == DialogResult.OK && File.Exists(dlg.FileName))
+				{
+					try
+					{
+						var info = MediaInfo.GetInfo(dlg.FileName);
+						var sb = new StringBuilder("File: ");
+						sb.Append(Path.GetFileName(dlg.FileName));
+						if (info.Audio != null)
+						{
+							sb.Append(Environment.NewLine);
+							sb.Append("Audio Info:");
+							sb.Append(Environment.NewLine);
+							sb.Append("  ChannelCount: ");
+							sb.Append(info.Audio.ChannelCount);
+							sb.Append(Environment.NewLine);
+							sb.Append("  Duration: ");
+							sb.Append(info.Audio.Duration);
+							sb.Append(Environment.NewLine);
+							sb.Append("  Encoding: ");
+							sb.Append(info.Audio.Encoding);
+							sb.Append(Environment.NewLine);
+							sb.Append("  SamplesPerSecond: ");
+							sb.Append(info.Audio.SamplesPerSecond);
+							if (info.Audio.BitDepth > 0)
+							{
+								sb.Append(Environment.NewLine);
+								sb.Append("  BitDepth: ");
+								sb.Append(info.Audio.BitDepth);
+							}
+							if (info.AnalysisData.AudioStreams.Count > 1)
+							{
+								sb.Append(Environment.NewLine);
+								sb.Append("  Total number of audio streams:");
+								sb.Append(info.AnalysisData.AudioStreams.Count);
+							}
+						}
+						if (info.Video != null)
+						{
+							sb.Append(Environment.NewLine);
+							sb.Append("Video Info:");
+							sb.Append(Environment.NewLine);
+							sb.Append("  Resolution: ");
+							sb.Append(info.Video.Resolution);
+							sb.Append(Environment.NewLine);
+							sb.Append("  Duration: ");
+							sb.Append(info.Video.Duration);
+							sb.Append(Environment.NewLine);
+							sb.Append("  Encoding: ");
+							sb.Append(info.Video.Encoding);
+							sb.Append(Environment.NewLine);
+							sb.Append("  FrameRate: ");
+							sb.Append(info.Video.FrameRate);
+							if (info.AnalysisData.VideoStreams.Count > 1)
+							{
+								sb.Append(Environment.NewLine);
+								sb.Append("  Total number of video streams:");
+								sb.Append(info.AnalysisData.VideoStreams.Count);
+							}
+						}
+						if (info.Audio == null && info.Video == null)
+						{
+							sb.Append(Environment.NewLine);
+							sb.Append("Not a valid media file!");
+						}
+
+						MessageBox.Show(this, sb.ToString(), "Media information");
+					}
+					catch (Exception exception)
+					{
+						MessageBox.Show(exception.Message);
+					}
+				}
+			}
+		}
+
+		private void btnShowFileOverwriteDlg_Click(object sender, EventArgs e)
+		{
+			var filenames = new List<string>
+			{
+				@"c:\folder\file.txt",
+				@"My Documents\another.doc",
+				@"LastOne.png"
+			};
+			var filesOverwritten = new List<string>();
+			var filesSkipped = new List<string>();
+			bool? overwriteAll = null;
+
+			foreach (var file in filenames)
+			{
+				if (overwriteAll == null)
+				{
+					using (var dlg = new ConfirmFileOverwriteDlg(file))
+					{
+						if (dlg.ShowDialog(this) == DialogResult.No)
+						{
+							filesSkipped.Add(file);
+							if (dlg.ApplyToAll)
+								overwriteAll = false;
+						}
+						else
+						{
+							filesOverwritten.Add(file);
+							if (dlg.ApplyToAll)
+								overwriteAll = true;
+						}
+					}
+				}
+				else if ((bool)overwriteAll)
+				{
+					filesOverwritten.Add(file);
+				}
+				else
+				{
+					filesSkipped.Add(file);
+				}
+			}
+
+			MessageBox.Show(
+				$"Files overwritten:\r\t{filesOverwritten.ToString("\r\t")}\rFiles skipped:\r\t{filesSkipped.ToString("\r\t")}", "Results");
 		}
 	}
 }

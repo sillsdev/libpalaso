@@ -174,16 +174,11 @@ namespace SIL.Archiving
 
 		#region properties
 		/// ------------------------------------------------------------------------------------
-		internal override string ArchiveType
-		{
-			get { return LocalizationManager.GetString("DialogBoxes.ArchivingDlg.RAMPArchiveType", "RAMP (SIL Only)"); }
-		}
+		internal override string ArchiveType => LocalizationManager.GetString(
+			"DialogBoxes.ArchivingDlg.RAMPArchiveType", "RAMP (SIL Only)");
 
 		/// ------------------------------------------------------------------------------------
-		public override string NameOfProgramToLaunch
-		{
-			get { return kRampProcessName; }
-		}
+		public override string NameOfProgramToLaunch => kRampProcessName;
 
 		/// ------------------------------------------------------------------------------------
 		public override string InformativeText
@@ -197,22 +192,16 @@ namespace SIL.Archiving
 					"additional information before doing the actual submission.",
 					"Parameter 0  is the word 'RAMP' (the first one will be turned into a hyperlink); " +
 					"Parameter 1 is the name of the calling (host) program (SayMore, FLEx, etc.); " +
-					"Parameter 2 is additional app-specifc information."), NameOfProgramToLaunch, AppName,
+					"Parameter 2 is additional app-specific information."), NameOfProgramToLaunch, AppName,
 					_appSpecificArchivalProcessInfo);
 			}
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public override string ArchiveInfoHyperlinkText
-		{
-			get { return NameOfProgramToLaunch; }
-		}
+		public override string ArchiveInfoHyperlinkText => NameOfProgramToLaunch;
 
 		/// ------------------------------------------------------------------------------------
-		public override string ArchiveInfoUrl
-		{
-			get { return Properties.Settings.Default.RampWebSite; }
-		}
+		public override string ArchiveInfoUrl => Properties.Settings.Default.RampWebSite;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -371,7 +360,7 @@ namespace SIL.Archiving
 		}
 
 		/// ------------------------------------------------------------------------------------
-		override protected bool DoArchiveSpecificInitialization()
+		protected override bool DoArchiveSpecificInitialization()
 		{
 			DisplayMessage(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.SearchingForRampMsg",
 				"Searching for the RAMP program..."), MessageType.Volatile);
@@ -1679,8 +1668,7 @@ namespace SIL.Archiving
 				// the files as needed to comply with REAP guidelines.
 				// REVIEW: Are multiple periods and/or non-Roman script really a problem?
 
-				_worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.PreparingFilesMsg",
-					"Analyzing component files"));
+				_worker.ReportProgress(0, PreparingFilesMsg);
 
 				var filesToCopyAndZip = new Dictionary<string, string>();
 				foreach (var list in _fileLists)
@@ -1719,9 +1707,7 @@ namespace SIL.Archiving
 						}
 						catch (Exception error)
 						{
-							var msg = string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.FileExcludedFromPackage",
-								"File excluded from {0} package: ", "Parameter is the type of archive (e.g., RAMP/IMDI)"), NameOfProgramToLaunch) +
-								fileToCopy.Value;
+							var msg = GetFileExcludedMsg(NameOfProgramToLaunch, fileToCopy.Value);
 							ReportError(error, msg);
 						}
 					}
@@ -1729,12 +1715,12 @@ namespace SIL.Archiving
 					CopyFile(fileToCopy.Key, fileToCopy.Value);
 				}
 
-				_worker.ReportProgress(0, string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.SavingFilesInPackageMsg",
-					"Saving files in {0} package", "Parameter is the type of archive (e.g., RAMP/IMDI)"), NameOfProgramToLaunch));
+				_worker.ReportProgress(0, GetSavingFilesMsg(NameOfProgramToLaunch));
 
 				using (var zip = new ZipFile())
 				{
 					// RAMP packages must not be compressed or RAMP can't read them.
+					zip.UseZip64WhenSaving = Zip64Option.AsNecessary; // See SP-2291
 					zip.CompressionLevel = Ionic.Zlib.CompressionLevel.None;
 					zip.AddFiles(filesToCopyAndZip.Values, @"\");
 					zip.AddFile(_metsFilePath, string.Empty);
@@ -1748,7 +1734,7 @@ namespace SIL.Archiving
 			catch (Exception exception)
 			{
 				_worker.ReportProgress(0, new KeyValuePair<Exception, string>(exception,
-					LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CreatingArchiveErrorMsg",
+					LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CreatingRAMPFileErrorMsg",
 						"There was an error attempting to create the RAMP file.")));
 
 				_workerException = true;

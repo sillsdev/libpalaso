@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using SIL.ObjectModel;
 
 namespace SIL.Extensions
@@ -40,6 +41,112 @@ namespace SIL.Extensions
 				while (iterator1.MoveNext() && iterator2.MoveNext() && iterator3.MoveNext())
 					yield return Tuple.Create(iterator1.Current, iterator2.Current, iterator3.Current);
 			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Returns the enumeration, formatted as a string that contains the items, separated
+		/// by the specified separator.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="list">The enumeration.</param>
+		/// <param name="separator">The separator.</param>
+		/// ------------------------------------------------------------------------------------
+		public static string ToString<T>(this IEnumerable<T> list, string separator)
+		{
+			return list.ToString(separator, item => item.ToString());
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Returns the enumeration, formatted as a string that contains the items, separated
+		/// by the specified separator.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="list">The enumeration.</param>
+		/// <param name="ignoreEmptyItems">True to ignore any items in the list that are empty
+		/// or null, false to include them in the returned string.</param>
+		/// <param name="separator">The separator.</param>
+		/// ------------------------------------------------------------------------------------
+		public static string ToString<T>(this IEnumerable<T> list, bool ignoreEmptyItems,
+			string separator)
+		{
+			return list.ToString(ignoreEmptyItems, separator, item => item == null ? string.Empty : item.ToString());
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Returns the enumeration, formatted as a string that contains the items, separated
+		/// by the specified separator.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="list">The enumeration.</param>
+		/// <param name="separator">The separator.</param>
+		/// <param name="itemToStringFunction">A function that is applied to each item to turn
+		/// it into a string.</param>
+		/// ------------------------------------------------------------------------------------
+		public static string ToString<T>(this IEnumerable<T> list, string separator,
+			Func<T, string> itemToStringFunction)
+		{
+			return list.ToString(true, separator, itemToStringFunction);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Returns the enumeration, formatted as a string that contains the items, separated
+		/// by the specified separator.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="list">The enumeration.</param>
+		/// <param name="ignoreEmptyItems">True to ignore any items in the list that are empty
+		/// or null, false to include them in the returned string.</param>
+		/// <param name="separator">The separator.</param>
+		/// <param name="itemToStringFunction">A function that is applied to each item to turn
+		/// it into a string.</param>
+		/// ------------------------------------------------------------------------------------
+		public static string ToString<T>(this IEnumerable<T> list, bool ignoreEmptyItems,
+			string separator, Func<T, string> itemToStringFunction)
+		{
+			var bldr = new StringBuilder();
+			bool fFirstTime = true;
+			foreach (T item in list)
+			{
+				if (!ignoreEmptyItems || item != null)
+				{
+					string sItem = itemToStringFunction(item);
+					if (!fFirstTime && (!string.IsNullOrEmpty(sItem) || !ignoreEmptyItems))
+						bldr.Append(separator);
+					bldr.Append(sItem);
+				}
+				fFirstTime = ignoreEmptyItems && bldr.Length == 0;
+			}
+			return bldr.ToString();
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Returns the enumeration, formatted as a string that contains the items, separated
+		/// by the specified separator.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="list">The enumeration.</param>
+		/// <param name="separator">The separator.</param>
+		/// <param name="addToBuilderDelegate">Delegate to add the item to the string builder.</param>
+		/// ------------------------------------------------------------------------------------
+		public static string ToString<T>(this IEnumerable<T> list, string separator,
+			Action<T, StringBuilder> addToBuilderDelegate)
+		{
+			var bldr = new StringBuilder();
+			foreach (T item in list)
+			{
+				if (item == null)
+					continue;
+				int cchBefore = bldr.Length;
+				addToBuilderDelegate(item, bldr);
+				if (cchBefore > 0 && bldr.Length > cchBefore)
+					bldr.Insert(cchBefore, separator);
+			}
+			return bldr.ToString();
 		}
 
 		public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
@@ -276,6 +383,32 @@ namespace SIL.Extensions
 			ArrayList.Adapter((IList)list).Sort(new ComparerComparer<T>(comparer));
 		}
 
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Determines whether a list contains the sequence represented by another list.
+		/// </summary>
+		/// <typeparam name="T">The type of item contained in the lists</typeparam>
+		/// <param name="list1">The potential super-sequence.</param>
+		/// <param name="list2">The potential sub-sequence.</param>
+		/// ------------------------------------------------------------------------------------
+		public static bool ContainsSequence<T>(this IList<T> list1, IList<T> list2)
+		{
+			for (int i1 = 0; i1 <= list1.Count - list2.Count; i1++)
+			{
+				bool foundAtThisPos = true;
+				for (int i2 = 0; i2 < list2.Count; i2++)
+				{
+					if (!EqualityComparer<T>.Default.Equals(list1[i1 + i2], list2[i2])) // See http://stackoverflow.com/questions/390900/cant-operator-be-applied-to-generic-types-in-c/390974#390974
+					{
+						foundAtThisPos = false;
+						break;
+					}
+				}
+				if (foundAtThisPos)
+					return true;
+			}
+			return false;
+		}
 		#endregion
 
 		#region IList private helper classes

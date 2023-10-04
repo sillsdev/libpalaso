@@ -55,10 +55,10 @@ namespace SIL.Windows.Forms.TestApp
 		private void InitializeComponent()
 		{
             this.components = new System.ComponentModel.Container();
-            SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper superToolTipInfoWrapper1 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper();
-            SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo superToolTipInfo1 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo();
-            SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper superToolTipInfoWrapper2 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper();
-            SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo superToolTipInfo2 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo();
+            SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper superToolTipInfoWrapper3 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper();
+            SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo superToolTipInfo3 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo();
+            SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper superToolTipInfoWrapper4 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper();
+            SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo superToolTipInfo4 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TestAppForm));
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this._uiLanguageMenu = new System.Windows.Forms.ToolStripDropDownButton();
@@ -81,6 +81,8 @@ namespace SIL.Windows.Forms.TestApp
             this.btnFolderBrowserControl = new System.Windows.Forms.Button();
             this.superToolTip1 = new SIL.Windows.Forms.SuperToolTip.SuperToolTip(this.components);
             this.superToolTip2 = new SIL.Windows.Forms.SuperToolTip.SuperToolTip(this.components);
+            this.btnMediaFileInfo = new System.Windows.Forms.Button();
+            this.btnShowFileOverwriteDlg = new System.Windows.Forms.Button();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -178,23 +180,23 @@ namespace SIL.Windows.Forms.TestApp
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 475);
+            this.label1.Location = new System.Drawing.Point(12, 533);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(149, 13);
-            superToolTipInfo1.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            superToolTipInfo1.BackgroundGradientEnd = System.Drawing.Color.Blue;
-            superToolTipInfo1.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
-            superToolTipInfo1.BodyText = "This is the body text";
-            superToolTipInfo1.FooterForeColor = System.Drawing.Color.Lime;
-            superToolTipInfo1.FooterText = "And this is the footer";
-            superToolTipInfo1.HeaderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            superToolTipInfo1.HeaderText = "The header can serve as a title";
-            superToolTipInfo1.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
-            superToolTipInfo1.ShowFooter = true;
-            superToolTipInfo1.ShowFooterSeparator = true;
-            superToolTipInfoWrapper1.SuperToolTipInfo = superToolTipInfo1;
-            superToolTipInfoWrapper1.UseSuperToolTip = true;
-            this.superToolTip1.SetSuperStuff(this.label1, superToolTipInfoWrapper1);
+            superToolTipInfo3.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            superToolTipInfo3.BackgroundGradientEnd = System.Drawing.Color.Blue;
+            superToolTipInfo3.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
+            superToolTipInfo3.BodyText = "This is the body text";
+            superToolTipInfo3.FooterForeColor = System.Drawing.Color.Lime;
+            superToolTipInfo3.FooterText = "And this is the footer";
+            superToolTipInfo3.HeaderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            superToolTipInfo3.HeaderText = "The header can serve as a title";
+            superToolTipInfo3.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
+            superToolTipInfo3.ShowFooter = true;
+            superToolTipInfo3.ShowFooterSeparator = true;
+            superToolTipInfoWrapper3.SuperToolTipInfo = superToolTipInfo3;
+            superToolTipInfoWrapper3.UseSuperToolTip = true;
+            this.superToolTip1.SetSuperStuff(this.label1, superToolTipInfoWrapper3);
             this.label1.TabIndex = 1;
             this.label1.Text = "Hover over me to see a tooltip";
             // 
@@ -202,18 +204,18 @@ namespace SIL.Windows.Forms.TestApp
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 495);
+            this.label2.Location = new System.Drawing.Point(12, 553);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(140, 13);
-            superToolTipInfo2.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            superToolTipInfo2.BackgroundGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(202)))), ((int)(((byte)(218)))), ((int)(((byte)(239)))));
-            superToolTipInfo2.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
-            superToolTipInfo2.BodyText = resources.GetString("superToolTipInfo2.BodyText");
-            superToolTipInfo2.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
-            superToolTipInfo2.ShowHeader = false;
-            superToolTipInfoWrapper2.SuperToolTipInfo = superToolTipInfo2;
-            superToolTipInfoWrapper2.UseSuperToolTip = true;
-            this.superToolTip2.SetSuperStuff(this.label2, superToolTipInfoWrapper2);
+            superToolTipInfo4.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            superToolTipInfo4.BackgroundGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(202)))), ((int)(((byte)(218)))), ((int)(((byte)(239)))));
+            superToolTipInfo4.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
+            superToolTipInfo4.BodyText = resources.GetString("superToolTipInfo4.BodyText");
+            superToolTipInfo4.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
+            superToolTipInfo4.ShowHeader = false;
+            superToolTipInfoWrapper4.SuperToolTipInfo = superToolTipInfo4;
+            superToolTipInfoWrapper4.UseSuperToolTip = true;
+            this.superToolTip2.SetSuperStuff(this.label2, superToolTipInfoWrapper4);
             this.label2.TabIndex = 1;
             this.label2.Text = "Hover for simple, long tooltip";
             // 
@@ -305,11 +307,35 @@ namespace SIL.Windows.Forms.TestApp
             // 
             this.superToolTip2.FadingInterval = 10;
             // 
+            // btnMediaFileInfo
+            // 
+            this.btnMediaFileInfo.Location = new System.Drawing.Point(12, 468);
+            this.btnMediaFileInfo.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnMediaFileInfo.Name = "btnMediaFileInfo";
+            this.btnMediaFileInfo.Size = new System.Drawing.Size(157, 23);
+            this.btnMediaFileInfo.TabIndex = 10;
+            this.btnMediaFileInfo.Text = "Get Media File Info";
+            this.btnMediaFileInfo.UseVisualStyleBackColor = true;
+            this.btnMediaFileInfo.Click += new System.EventHandler(this.btnMediaFileInfo_Click);
+            // 
+            // btnShowFileOverwriteDlg
+            // 
+            this.btnShowFileOverwriteDlg.Location = new System.Drawing.Point(12, 496);
+            this.btnShowFileOverwriteDlg.Margin = new System.Windows.Forms.Padding(2);
+            this.btnShowFileOverwriteDlg.Name = "btnShowFileOverwriteDlg";
+            this.btnShowFileOverwriteDlg.Size = new System.Drawing.Size(157, 23);
+            this.btnShowFileOverwriteDlg.TabIndex = 11;
+            this.btnShowFileOverwriteDlg.Text = "Show File Overwrite Dialog";
+            this.btnShowFileOverwriteDlg.UseVisualStyleBackColor = true;
+            this.btnShowFileOverwriteDlg.Click += new System.EventHandler(this.btnShowFileOverwriteDlg_Click);
+            // 
             // TestAppForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(187, 519);
+            this.ClientSize = new System.Drawing.Size(187, 577);
+            this.Controls.Add(this.btnShowFileOverwriteDlg);
+            this.Controls.Add(this.btnMediaFileInfo);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label2);
@@ -360,5 +386,7 @@ namespace SIL.Windows.Forms.TestApp
 		private System.Windows.Forms.Button btnThrowException;
 		private System.Windows.Forms.ToolStrip toolStrip1;
 		private System.Windows.Forms.ToolStripDropDownButton _uiLanguageMenu;
+		private System.Windows.Forms.Button btnMediaFileInfo;
+		private System.Windows.Forms.Button btnShowFileOverwriteDlg;
 	}
 }

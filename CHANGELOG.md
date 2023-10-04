@@ -17,6 +17,72 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
+- [SIL.Core] `RobustFile.Open`, `RobustFile.AppendAllText`, `RobustFile.WriteAllLines`, `RobustFile.GetAccessControl`, `RobustIO.EnumerateFilesInDirectory`, `RobustIO.EnumerateDirectoriesInDirectory`, `RobustIO.EnumerateEntriesInDirectory`, `RobustIO.RequireThatDirectoryExists`, `RobustIO.GetFileStream`, `RobustIO.ReadAllTextFromFileWhichMightGetWrittenTo`, and `RobustIO.IsFileLocked` methods
+- [SIL.Core.Desktop] `RobustImageIO.GetImageFromFile` method
+- [SIL.Windows.Forms] `ImageToolboxControl.ImageChanged` (selected or cropped) and `ImageToolboxControl.MetadataChanged` events
+- [SIL.Windows.Forms] Text box to edit `AttributionUrl` in `MetadataEditorControl`
+- [SIL.Windows.Forms] Interop.WIA.dll for MSIL (doesn't seem to work with 32-bit apps, so the existing dll remains unchanged)
+- [SIL.Scripture] Made static methods TryGetVerseNum, ParseVerseNumberRange, and ParseVerseNumber public
+- [SIL.Core] `CanWriteToDirectories` and `CanWriteToDirectory`
+- [SIL.Windows.Forms] `CanWriteToDirectories`, `CanWriteToDirectory` and `ReportDefenderProblem`
+- [SIL.Core] `StrLengthComparer`, IEnumerable<T>.ToString extension methods, IList<T>.ContainsSequence<T> extension method
+- [SIL.Windows.Forms] `ConfirmFileOverwriteDlg`
+- [SIL.Windows.Forms] several constructors and `Restore` method to `WaitCursor`
+- [SIL.Media.NAudio] added an overload to `BeginMonitoring` with `catchAndReportExceptions` parameter
+
+### Changed
+
+- [SIL.Core] Enhanced RetryUtility.Retry methods to optionally improve debugging messages, and fixed existing RobustFile and RobustIO methods to use the new optional debugging parameter
+- [SIL.Media] Changed the FrameRate reported in VideoInfo from FrameRate to AvgFrameRate.
+- [SIL.Windows.Forms] Fixed spelling error in ImageGalleryControl, renaming SetIntialSearchTerm to SetInitialSearchTerm.
+- [SIL.Windows.Forms] Made `WaitCursor` class (which used to contain only static methods) implement IDisposable
+
+### Fixed
+
+- [SIL.Core] Make RetryUtility retry for exceptions that are subclasses of the ones listed to try. For example, by default (IOException) it will now retry for FileNotFoundException.
+- [SIL.Windows.Forms] Spelling of `CreativeCommonsLicense.IntergovernmentalOrganizationQualifier`
+- [SIL.Windows.Forms] Fixed internationalization problem: SettingsProtection.LauncherButtonLabel was used as ID for two different strings.
+
+### Removed
+- [SIL.Windows.Forms] ImageGalleryControl.InSomeoneElesesDesignMode (seemingly unused and misspelled)
+- [SIL.Windows.Forms] Checkbox for `IntergovernmentalOrganizationQualifier` from `MetadataEditorControl`
+
+## [12.0.1] - 2023-05-26
+
+### Fixed
+
+- [SIL.Windows.Forms] Make `PalasoImage.FromFile(Robustly)` methods more robust
+- [SIL.Windows.Forms] Update dll to `libdl.so.2` to make compatible with Ubuntu 22.x.  Affects multiple projects.
+- [SIL.Core] Fixed `BulkObservableList.MoveRange` method when moving a single item forward.
+
+## [12.0.0] - 2023-02-14
+
+### Added
+
+- [SIL.Core.Desktop] Added aiff, m4a, voc, and amr formats to AudioFileExtensions
+- [SIL.Core.Desktop] Added webm and mkv formats to VideoFileExtensions
+- [SIL.Media] MediaInfo.AnalysisData property
+- [SIL.Media] MediaInfo.FFprobeFolder
+
+### Changed
+
+- [SIL.Core.Desktop] Fixed typo in list of AudioFileExtensions: "acc" changed to "aac"
+- [SIL.Media] FFmpegRunner will now also look for and use a version of FFmpeg installed using chocolatey
+- [SIL.Media] MediaInfo now used FFprobe instead of FFmpeg to get media information. Depends on FFMpegCore library.
+
+### Removed
+
+- [SIL.Media] MediaInfo.RawData property (replaced by AnalysisData)
+
+## [11.0.1] - 2023-01-27
+
+### Fixed
+
+- [SIL.Windows.Forms] Prevent changing row in ContributorsListControl if the row is dirty and is not in a valid state to commit edit (SP-2297)
+
+## [11.0.0] - 2023-01-19
+
+### Added
 
 - [SIL.Core] Added `SIL.Reporting.FontAnalytics` class.
 - [SIL.Core] Added `ObjectModel.ObservableISet` as a parent class to the existing `ObservableHashSet`
@@ -32,6 +98,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle] Attempting to construct a UsxNode based on an invalid XmlNode now throws an exception in the constructor in most cases rather than later when properties are accessed.
 - [SIL.DblBundle] Accessing UsxChapter.ChapterNumber on a chapter end node returns the chapter number (from the eid attribute) instead of throwing an exception.
 - [SIL.WritingSystems] Prevent (and clean up) duplicate URLs in LDML files for Fonts, Keyboards, and Spell Check Dictionaries.
+- [SIL.Archiving] Set UseZip64WhenSaving to Zip64Option.AsNecessary to prevent crash with large archives
 
 ### Changed
 
@@ -277,8 +344,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
   projects
 
-[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v10.1.0...master
+[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v12.0.1...master
 
+[12.0.1]: https://github.com/sillsdev/libpalaso/compare/v12.0.0...v12.0.1
+[12.0.0]: https://github.com/sillsdev/libpalaso/compare/v11.0.1...v12.0.0
+[11.0.1]: https://github.com/sillsdev/libpalaso/compare/v11.0.0...v11.0.1
+[11.0.0]: https://github.com/sillsdev/libpalaso/compare/v10.1.0...v11.0.0
 [10.1.0]: https://github.com/sillsdev/libpalaso/compare/v10.0.0...v10.1.0
 [10.0.0]: https://github.com/sillsdev/libpalaso/compare/v9.0.0...v10.0.0
 [9.0.0]: https://github.com/sillsdev/libpalaso/compare/v8.0.0...v9.0.0

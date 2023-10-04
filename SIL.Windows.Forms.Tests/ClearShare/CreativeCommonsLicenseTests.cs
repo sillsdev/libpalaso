@@ -49,9 +49,9 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void RoundTrip_BY_IGO()
 		{
 			var original = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
-			original.IntergovernmentalOriganizationQualifier = true;
+			original.IntergovernmentalOrganizationQualifier = true;
 			var copy = CreativeCommonsLicense.FromLicenseUrl(original.Url);
-			Assert.IsTrue(copy.IntergovernmentalOriganizationQualifier);
+			Assert.IsTrue(copy.IntergovernmentalOrganizationQualifier);
 		}
 
 		[Test]
@@ -81,7 +81,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			var original = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
 			original.Version = "3.0";
-			original.IntergovernmentalOriganizationQualifier = true;
+			original.IntergovernmentalOrganizationQualifier = true;
 			Assert.AreEqual("http://creativecommons.org/licenses/by/3.0/igo/", original.Url);
 		}
 
@@ -102,9 +102,9 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void FromLicenseUrl_IGO_IGORead()
 		{
 			var license = CreativeCommonsLicense.FromLicenseUrl("http://creativecommons.org/licenses/by/3.0/");
-			Assert.IsFalse(license.IntergovernmentalOriganizationQualifier);
+			Assert.IsFalse(license.IntergovernmentalOrganizationQualifier);
 			license = CreativeCommonsLicense.FromLicenseUrl("http://creativecommons.org/licenses/by/3.0/IGO");
-			Assert.IsTrue(license.IntergovernmentalOriganizationQualifier);
+			Assert.IsTrue(license.IntergovernmentalOrganizationQualifier);
 		}
 
 		[Test]
@@ -136,7 +136,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives)
 			{
 				HasChanges = false,
-				IntergovernmentalOriganizationQualifier = true
+				IntergovernmentalOrganizationQualifier = true
 			};
 			Assert.IsTrue(l.HasChanges);
 		}
@@ -146,7 +146,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives)
 			{
-				IntergovernmentalOriganizationQualifier = true
+				IntergovernmentalOrganizationQualifier = true
 			};
 			Assert.AreEqual("3.0", l.Version, "The igo version of CC did not have a version beyond 3.0 as of Nov 2016");
 		}
@@ -156,11 +156,11 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives)
 			{
-				IntergovernmentalOriganizationQualifier = true,
+				IntergovernmentalOrganizationQualifier = true,
 				Version = "3.0"
 			};
 			// SUT
-			l.IntergovernmentalOriganizationQualifier = false;
+			l.IntergovernmentalOrganizationQualifier = false;
 			Assert.AreEqual(CreativeCommonsLicense.kDefaultVersion, l.Version,
 				"Setting igo to false when it was true should change version to the current default version.");
 		}
@@ -170,11 +170,11 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives)
 			{
-				IntergovernmentalOriganizationQualifier = false,
+				IntergovernmentalOrganizationQualifier = false,
 				Version = "3.0"
 			};
 			// SUT
-			l.IntergovernmentalOriganizationQualifier = false;
+			l.IntergovernmentalOrganizationQualifier = false;
 			Assert.AreEqual("3.0", l.Version,
 				"Setting igo to false when it was already false should not change an older version.");
 		}

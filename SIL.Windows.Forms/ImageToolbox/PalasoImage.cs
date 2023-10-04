@@ -307,10 +307,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 			//if(Path.GetExtension(path)==".jpg")
 			{
 				var leakMe = TempFile.WithExtension(GetCorrectImageExtension(path));
-				File.Delete(leakMe.Path);
-				File.Copy(path, leakMe.Path);
-
-				//we output the tempath so that the caller can clean it up later
+				RobustFile.Copy(path, leakMe.Path, true);
+				//we output the tempPath so that the caller can clean it up later
 				tempPath = leakMe.Path;
 
 				//Note, Image.FromFile(some 8 bit or 48 bit png) will always give you a 32 bit image.
@@ -328,8 +326,9 @@ namespace SIL.Windows.Forms.ImageToolbox
 					// assume it's a better indication of the problem.
 					var metadata = Metadata.FromFile(path);
 					if (metadata.IsOutOfMemoryPlausible(e))
+						// ReSharper disable once PossibleIntendedRethrow
 						throw e; // Deliberately NOT just "throw", that loses the extra information IsOutOfMemoryPlausible added to the exception.
-					throw new TagLib.CorruptFileException("File could not be read and is possible corrupted");
+					throw new TagLib.CorruptFileException("File could not be read and is possible corrupted", e);
 				}
 			}
 		}
@@ -359,17 +358,33 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// </remarks>
 		public static PalasoImage FromFileRobustly(string path)
 		{
-			return RetryUtility.Retry(() => PalasoImage.FromFile(path),
-				RetryUtility.kDefaultMaxRetryAttempts,
-				RetryUtility.kDefaultRetryDelay,
-				new HashSet<Type>
-				{
-					Type.GetType("System.IO.IOException"),
-					// Odd type to catch... but it seems that Image.FromFile (which is called in the bowels of PalasoImage.FromFile)
-					// throws OutOfMemoryException when the file is inaccessible.
-					// See http://stackoverflow.com/questions/2610416/is-there-a-reason-image-fromfile-throws-an-outofmemoryexception-for-an-invalid-i
-					Type.GetType("System.OutOfMemoryException")
-				});
+			try
+			{
+				return RetryUtility.Retry(() => PalasoImage.FromFile(path),
+					RetryUtility.kDefaultMaxRetryAttempts,
+					RetryUtility.kDefaultRetryDelay,
+					new HashSet<Type>
+					{
+						typeof(System.IO.IOException),
+						// Odd type to catch... but it seems that Image.FromFile (which is called in the bowels of PalasoImage.FromFile)
+						// throws OutOfMemoryException when the file is inaccessible.
+						// See http://stackoverflow.com/questions/2610416/is-there-a-reason-image-fromfile-throws-an-outofmemoryexception-for-an-invalid-i
+						typeof(System.OutOfMemoryException),
+						// Again you'd expect that if it's corrupt, it would stay that way, but
+						// experimentally, it seems we can get this if the file can't be read because it is (temporarily?) locked.
+						// (The text of the message reads, "File could not be read and is possible corrupted", which
+						// suggests they are using this to cover any case of not being able to read the file."
+						typeof(TagLib.CorruptFileException)
+					});
+			}
+			catch (Exception e)
+			{
+				// In case something else goes wrong, at least some errors we've seen from here
+				// (including TagLib.CorruptFileException) don't tell us WHICH FILE has the
+				// problem, so wrap in another layer that does.
+				throw new ApplicationException(
+					"Could not make PalasoImage from " + path + " because " + e.Message, e);
+			}
 		}
 
 		/// <summary>

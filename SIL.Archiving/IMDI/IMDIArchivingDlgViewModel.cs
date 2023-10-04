@@ -100,10 +100,7 @@ namespace SIL.Archiving.IMDI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public override string ArchiveInfoUrl
-		{
-			get { return Properties.Settings.Default.IMDIWebSite; }
-		}
+		public override string ArchiveInfoUrl => Properties.Settings.Default.IMDIWebSite;
 
 		public bool MetadataOnly { get; set; }
 		#endregion
@@ -342,7 +339,6 @@ namespace SIL.Archiving.IMDI
 		}
 
 		private void CreateIMDIPackageInWorkerThread(object sender, DoWorkEventArgs e)
-
 		{
 			try
 			{
@@ -351,8 +347,7 @@ namespace SIL.Archiving.IMDI
 				if (Thread.CurrentThread.Name == null)
 					Thread.CurrentThread.Name = "CreateIMDIPackageInWorkerThread";
 
-				_worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.PreparingFilesMsg",
-					"Analyzing component files"));
+				_worker.ReportProgress(0, PreparingFilesMsg);
 
 				var filesToCopy = new Dictionary<string, string>();
 
@@ -412,9 +407,7 @@ namespace SIL.Archiving.IMDI
 						}
 						catch (Exception error)
 						{
-							var msg = string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.FileExcludedFromPackage",
-								"File excluded from {0} package: ", "Parameter is the type of archive (e.g., RAMP/IMDI)"), ArchiveType) +
-								fileToCopy.Value;
+							var msg = GetFileExcludedMsg(ArchiveType, fileToCopy.Value);
 							ReportError(error, msg);
 						}
 					}
@@ -422,8 +415,7 @@ namespace SIL.Archiving.IMDI
 					CopyFile(fileToCopy.Key, fileToCopy.Value);
 				}
 
-				_worker.ReportProgress(0, string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.SavingFilesInPackageMsg",
-					"Saving files in {0} package", "Parameter is the type of archive (e.g., RAMP/IMDI)"), ArchiveType));
+				_worker.ReportProgress(0, GetSavingFilesMsg(ArchiveType));
 			}
 			catch (Exception exception)
 			{

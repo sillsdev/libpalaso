@@ -830,11 +830,6 @@
         <note>ID: MetadataEditor.CreativeCommons</note>
         <target xml:lang="fr" state="needs-translation">Creative Commons</target>
       </trans-unit>
-      <trans-unit id="MetadataEditor.CreativeCommons.Intergovernmental" approved="yes">
-        <source xml:lang="en">Intergovernmental Version</source>
-        <note>ID: MetadataEditor.CreativeCommons.Intergovernmental</note>
-        <target xml:lang="fr" state="final">Version intergouvernementale</target>
-      </trans-unit>
       <trans-unit id="MetadataEditor.CreatorLabel" approved="yes">
         <source xml:lang="en">Creator</source>
         <note>ID: MetadataEditor.CreatorLabel</note>
@@ -938,6 +933,11 @@
         <note>ID: ScriptsAndVariantsDialog.ScriptsAndVariants</note>
         <target xml:lang="fr" state="translated">Écriture et variante</target>
       </trans-unit>
+      <trans-unit id="SettingsLauncherButton.LauncherButtonLabel" approved="yes">
+        <source xml:lang="en">Settings...</source>
+        <note>ID: SettingsLauncherButton.LauncherButtonLabel</note>
+        <target xml:lang="fr" state="final">Paramètres...</target>
+      </trans-unit>
       <trans-unit id="SettingsProtection.AlsoHideOthersNotice" approved="yes">
         <source xml:lang="en">This may also hide other buttons which are not needed by the non-advanced user.</source>
         <note>ID: SettingsProtection.AlsoHideOthersNotice</note>
@@ -954,7 +954,7 @@
         <target xml:lang="fr" state="needs-translation">The menu item will show up when you hold down the Ctrl and Shift keys together.</target>
       </trans-unit>
       <trans-unit id="SettingsProtection.LauncherButtonLabel" approved="yes">
-        <source xml:lang="en">Settings...</source>
+        <source xml:lang="en">Settings Protection...</source>
         <note>ID: SettingsProtection.LauncherButtonLabel</note>
         <target xml:lang="fr" state="final">Protection des paramètres...</target>
       </trans-unit>
