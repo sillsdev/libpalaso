@@ -11,7 +11,7 @@ using static System.StringComparison;
 
 namespace SIL.Windows.Forms.TestApp
 {
-	static class Program
+	public static class Program
 	{
 		internal static ILocalizationManager PrimaryL10NManager;
 
@@ -19,7 +19,7 @@ namespace SIL.Windows.Forms.TestApp
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
-		static void Main(string[] args)
+		public static void Main(string[] args)
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
@@ -30,8 +30,6 @@ namespace SIL.Windows.Forms.TestApp
 			Icu.Wrapper.Init();
 
 			var testCommandLineRunner = false;
-			var distFilesEnglishStrings = "Palaso.en.xlf";
-			var localizationType = TranslationMemory.XLiff;
 			var preferredUILocale = "fr";
 			if (args.Length > 0)
 			{
@@ -46,8 +44,8 @@ namespace SIL.Windows.Forms.TestApp
 			}
 
 			var localizationFolder = Path.GetDirectoryName(
-				FileLocationUtilities.GetFileDistributedWithApplication(distFilesEnglishStrings));
-			PrimaryL10NManager = LocalizationManager.Create(localizationType, preferredUILocale, "Palaso", "Palaso",
+				FileLocationUtilities.GetFileDistributedWithApplication($"Palaso.{preferredUILocale}.xlf"));
+			PrimaryL10NManager = LocalizationManager.Create(TranslationMemory.XLiff, preferredUILocale, "Palaso", "Palaso",
 				"1.0.0", localizationFolder, "SIL/Palaso", null, "testapp@sil.org");
 
 			if (testCommandLineRunner)
