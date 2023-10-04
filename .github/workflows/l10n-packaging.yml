@@ -10,26 +10,26 @@ concurrency:
 
 jobs:
 
-  build:
+  package-l10n:
     strategy:
       fail-fast: false
     runs-on: windows-2019
 
     steps:
     - name: Checkout
-      uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f
+      uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
       with:
         fetch-depth: 0
 
     # Install the .NET Core workload
     - name: Install .NET Core
-      uses: actions/setup-dotnet@51f68377c181a79065c61bd492bd49be4575c439
+      uses: actions/setup-dotnet@3447fd6a9f9e57506b15f895c5b76d3b197dc7c2 # v3.2.0
       with:
         dotnet-version: 5.0.x
 
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe (Windows OS)
-      uses: microsoft/setup-msbuild@ab534842b4bdf384b8aaf93765dc6f721d9f5fab
+      uses: microsoft/setup-msbuild@1ff57057b5cfdc39105cd07a01d78e9b0ea0c14c # v1.3.1
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true # So the PATH can be set by this step
 
