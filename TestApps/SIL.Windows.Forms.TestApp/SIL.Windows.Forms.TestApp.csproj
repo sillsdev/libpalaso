@@ -22,6 +22,7 @@
     <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
     <PackageReference Include="Icu4c.Win.Min" Version="56.1.82" />
     <PackageReference Include="L10NSharp" Version="6.0.0" />
+    <PackageReference Include="SIL.libpalaso.l10ns" Version="13.*-*" GeneratePathProperty="true" />
   </ItemGroup>
 
   <ItemGroup>
@@ -77,6 +78,18 @@
     </ItemGroup>
     <Message Text="Copying Gecko Files" />
     <Copy SourceFiles="@(Firefox)" DestinationFolder="$(OutputPath)/Firefox" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="CopyL10NFiles" AfterTargets="CopyFilesToOutputDirectory">
+    <PropertyGroup>
+      <!-- NOTE: when building with mono 5 GeneratePathProperty doesn't work -->
+      <!-- <PkgSIL_libpalaso_l10ns Condition="'$(PkgSIL_libpalaso_l10ns)'==''">$(HOME)/.nuget/packages/TODO</PkgSIL_libpalaso_l10ns> -->
+    </PropertyGroup>
+	<Error Condition="'$(PkgSIL_libpalaso_l10ns)'==''" Text="No path set for SIL.libpalaso.l10ns!"/>
+    <ItemGroup>
+	  <L10ns Include="$(PkgSIL_libpalaso_l10ns)/content/*/*.xlf"/>
+	</ItemGroup>
+	<Copy SourceFiles="@(L10ns)" DestinationFolder="../../DistFiles"/>
   </Target>
 
 </Project>

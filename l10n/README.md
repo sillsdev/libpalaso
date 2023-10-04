@@ -21,7 +21,7 @@ crowdin upload sources -i CROWDIN_PROJECT_ID -T CROWDIN_ACCESS_TOKEN
 
 ### Building a NuGet package with the latest translations
 
-This process is run manually from a github action whenever a package with updated translations is needed
+This process is run by a github action whenever a version tag is pushed and manually as needed
 (See `../.github/workflows/l10n-packaging.yml`)
 
 It can also be run manually on a developer machine as follows:
