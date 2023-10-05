@@ -22,6 +22,7 @@
     <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
     <PackageReference Include="Icu4c.Win.Min" Version="56.1.82" />
     <PackageReference Include="L10NSharp" Version="6.0.0" />
+    <PackageReference Include="SIL.libpalaso.l10ns" Version="13.*-*" GeneratePathProperty="true" />
   </ItemGroup>
 
   <ItemGroup>
@@ -61,11 +62,6 @@
 
   <Target Name="CopyGeckoFxSupportFiles" AfterTargets="CopyFilesToOutputDirectory">
     <!-- This copy is necessary because the Geckofx45.targets uses a deprecated method of copying files -->
-    <PropertyGroup>
-      <!-- NOTE: when building with mono 5 GeneratePathProperty doesn't work -->
-      <PkgGeckofx45_32_Linux Condition="'$(PkgGeckofx45_32_Linux)'==''">$(HOME)/.nuget/packages/geckofx45.32.linux/45.0.37</PkgGeckofx45_32_Linux>
-      <PkgGeckofx45_64_Linux Condition="'$(PkgGeckofx45_64_Linux)'==''">$(HOME)/.nuget/packages/geckofx45.64.linux/45.0.37</PkgGeckofx45_64_Linux>
-    </PropertyGroup>
     <!-- NOTE: we can't use "$(Platform)!='x64'" because Platform is AnyCPU! -->
     <ItemGroup Condition="'$(OS)'!='Unix'">
       <Firefox Include="$(PkgGeckofx45)/content/Firefox/*.*" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'!='X64'" />
@@ -77,6 +73,14 @@
     </ItemGroup>
     <Message Text="Copying Gecko Files" />
     <Copy SourceFiles="@(Firefox)" DestinationFolder="$(OutputPath)/Firefox" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="CopyL10NFiles" AfterTargets="CopyFilesToOutputDirectory">
+    <!-- This copy is necessary because SIL.libpalaso.l10ns has no target to copy files -->
+    <ItemGroup>
+	  <L10ns Include="$(PkgSIL_libpalaso_l10ns)/content/*/*.xlf"/>
+	</ItemGroup>
+	<Copy SourceFiles="@(L10ns)" DestinationFolder="../../DistFiles"/>
   </Target>
 
 </Project>

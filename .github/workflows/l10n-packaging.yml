@@ -2,6 +2,8 @@
 name: Package latest l10ns
 
 on:
+  push:
+    tags: [ v* ]
   workflow_dispatch:
 
 concurrency: 
