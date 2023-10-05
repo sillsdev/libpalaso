@@ -14,7 +14,7 @@ namespace SIL.Tests.CommandLineProcessing
 		[OneTimeSetUp]
 		public void TestFixtureSetup()
 		{
-			const string kTestApp = "SIL.Windows.Forms.TestApp.exe";
+			const string kTestApp = "SIL.CommandLineProcessing.TestApp.exe";
 
 			var testAssemblyFolder =
 				Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29409.12
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Core.Tests", "SIL.Core.Tests\SIL.Core.Tests.csproj", "{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -108,15 +108,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		CHANGELOG.md = CHANGELOG.md
-		GitVersion.yml = GitVersion.yml
-		README.md = README.md
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
+		GitVersion.yml = GitVersion.yml
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.TestUtilities.Tests", "SIL.TestUtilities.Tests\SIL.TestUtilities.Tests.csproj", "{CCB5E6CC-8CC1-4248-924E-D4F36CBEF37D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClipboardTestApp", "TestApps\ClipboardTestApp\ClipboardTestApp.csproj", "{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClipboardTestApp", "TestApps\ClipboardTestApp\ClipboardTestApp.csproj", "{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLineRunnerTestApp", "TestApps\CommandLineRunnerTestApp\CommandLineRunnerTestApp.csproj", "{6407C2F9-F62D-4568-B694-7A79C72582C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -296,6 +298,10 @@ Global
 		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6407C2F9-F62D-4568-B694-7A79C72582C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6407C2F9-F62D-4568-B694-7A79C72582C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6407C2F9-F62D-4568-B694-7A79C72582C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6407C2F9-F62D-4568-B694-7A79C72582C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -307,6 +313,7 @@ Global
 		{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
 		{CA8F3657-3D85-4C97-81A6-5C212627B2F6} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
 		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
+		{6407C2F9-F62D-4568-B694-7A79C72582C9} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0915B762-D4AE-4892-BF4F-AC428A687B02}
