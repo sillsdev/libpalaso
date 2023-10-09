@@ -16,6 +16,7 @@
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="L10NSharp.ExtractXliff" Version="7.0.0-beta0011" GeneratePathProperty="true" />
+    <PackageReference Include="MSBuild.Extension.Pack" Version="1.9.1" GeneratePathProperty="true" />
     <PackageReference Include="NuGet.CommandLine" Version="6.1.0" GeneratePathProperty="true" />
     <PackageReference Include="SIL.BuildTasks" Version="2.3.0-beta.14" GeneratePathProperty="true" />
   </ItemGroup>
@@ -33,6 +34,10 @@
   </Target>
 	
   <Target Name="UpdateCrowdinInternal" DependsOnTargets="GetVersion">
+	<!-- Remove "not found" messages that are appended each run (Can't MatchWholeLine because leading spaces are trimmed from Lines) -->
+	<MSBuild.ExtensionPack.FileSystem.File TaskAction="RemoveLines" Files="Palaso.en.xlf" AvoidRegex="true"
+	  Lines="        &lt;note xml:lang=&quot;en&quot;&gt;Not found in static scan of compiled code (version 0.0.0)&lt;/note&gt;"/>
+	<!-- Build and extract strings -->
 	<MSBuild Projects="..\build\Palaso.proj" Targets="Build" Properties="Configuration=Release" />
 	<Exec Command="&quot;$(PkgL10NSharp_ExtractXliff)\tools\ExtractXliff.exe&quot; -n SIL -o Palaso.dll -b Palaso.en.xlf -x Palaso.en.xlf -p $(GitVersion_NuGetVersion) -m SIL.Localizer.GetString -m SIL.Localizer.Localize -g ../Output/Release/net461/SIL.*.dll" />
   </Target>
