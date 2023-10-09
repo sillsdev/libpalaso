@@ -38,13 +38,17 @@ jobs:
     - name: Restore packages
       run: msbuild l10n/l10n.proj /t:restore /p:Configuration=Release /p:Platform="Any CPU"
 
+    - name: Install Crowdin cli
+      run: npm i -g @crowdin/cli
+
+    - name: Download Palaso.en.xlf source file # new strings will be merged into the existing file
+      working-directory: ./l10n
+      run: crowdin download sources -T ${{ secrets.CROWDIN_PAT }} -i ${{ secrets.CROWDIN_PROJECT_ID }}
+
     - name: Update l10n strings
       env:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true # So gitversion can set environment vars during the build
       run: msbuild l10n/l10n.proj /t:UpdateCrowdin /p:Configuration=Release /p:Platform="Any CPU"
-
-    - name: Install Crowdin cli
-      run: npm i -g @crowdin/cli
 
     - name: Upload Palaso.en.xlf source file
       working-directory: ./l10n

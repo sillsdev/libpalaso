@@ -1,12 +1,6 @@
-#
-# Your crowdin's credentials
-#
 base_path : "."
 preserve_hierarchy: true
 
-#
-# Files configuration
-#
 files: [
  {
   "source" : "Palaso.en.xlf",
