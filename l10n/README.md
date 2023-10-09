@@ -2,7 +2,7 @@
 
 ### Using localizations in a project
 
-1. Add a Nuget dependency on libpalaso.l10ns to the project where you initialize the L10nSharp `LocalizationManager`
+1. Add a Nuget dependency on SIL.libpalaso.l10ns to the project where you initialize the L10nSharp `LocalizationManager`
 2. Add a build step to copy the Palaso.%langcode%.xlf files to the correct folder in your project
 
 ### Updating Crowdin with source string changes (automatic)
