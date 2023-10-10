@@ -43,7 +43,7 @@ jobs:
 
     - name: Download Palaso.en.xlf source file # new strings will be merged into the existing file
       working-directory: ./l10n
-      run: crowdin download sources -T ${{ secrets.CROWDIN_PAT }} -i ${{ secrets.CROWDIN_PROJECT_ID }}
+      run: crowdin download sources -T ${{ secrets.CROWDIN_PAT }}
 
     - name: Update l10n strings
       env:
@@ -52,4 +52,4 @@ jobs:
 
     - name: Upload Palaso.en.xlf source file
       working-directory: ./l10n
-      run: crowdin upload sources -T ${{ secrets.CROWDIN_PAT }} -i ${{ secrets.CROWDIN_PROJECT_ID }}
+      run: crowdin upload sources -T ${{ secrets.CROWDIN_PAT }}
