@@ -7,8 +7,12 @@
     <Version>$(GitVersion_NuGetVersion)</Version>
     <Authors>Jason Naylor</Authors>
     <Company>SIL International</Company>
-	<RestartBuild Condition="'$(PkgL10NSharp_ExtractXliff)' == '' OR $(PkgGitVersion_GitVersion_MsBuild) == ''">true</RestartBuild>
-	<RestartBuild Condition="'$(PkgL10NSharp_ExtractXliff)' != '' AND $(PkgGitVersion_GitVersion_MsBuild) != ''">false</RestartBuild>
+	<RestartBuild Condition="'$(PkgGitVersion_GitVersion_MsBuild)' == ''
+	  OR '$(PkgL10NSharp_ExtractXliff)' == ''
+	  OR '$(PkgMSBuild_Extension_Pack)' == ''
+	  OR '$(PkgNuGet_CommandLine)' == ''
+	  OR '$(PkgSIL_BuildTasks)' == ''">true</RestartBuild>
+	<RestartBuild Condition="'$(RestartBuild)' == ''">false</RestartBuild>
   </PropertyGroup>
   
   <ItemGroup>
