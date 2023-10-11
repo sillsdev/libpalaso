@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- [SIL.Core] Enhanced ErrorReport.GetOperatingSystemLabel method to report Windows 11+ and list the version as well.
 - [SIL.Core] Enhanced RetryUtility.Retry methods to optionally improve debugging messages, and fixed existing RobustFile and RobustIO methods to use the new optional debugging parameter
 - [SIL.Media] Changed the FrameRate reported in VideoInfo from FrameRate to AvgFrameRate.
 - [SIL.Windows.Forms] Fixed spelling error in ImageGalleryControl, renaming SetIntialSearchTerm to SetInitialSearchTerm.
