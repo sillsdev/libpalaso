@@ -460,7 +460,14 @@ namespace SIL.Reporting
 				foreach (var version in list)
 				{
 					if (version.Match(Environment.OSVersion))
-						return version.Label + " " + Environment.OSVersion.ServicePack;
+					{
+						// From: https://stackoverflow.com/questions/69038560/detect-windows-11-with-net-framework-or-windows-api
+						if (version.Label == "Windows 10" && Environment.OSVersion.Version.Build >= 22000)
+						{
+							return "Windows 11+" + " (" + Environment.OSVersion.VersionString + ")";
+						}
+						return version.Label + " (" + Environment.OSVersion.VersionString + ")";
+					}
 				}
 
 				// Handle any as yet unrecognized (possibly unmanifested) versions, or anything that reported its self as Windows 8.
