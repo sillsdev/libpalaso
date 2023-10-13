@@ -248,10 +248,12 @@ namespace SIL.Windows.Forms.ImageToolbox
 		private static string GetCorrectImageExtension(string path)
 		{
 			byte[] bytes = new byte[10];
-			using (var file = File.OpenRead(path))
-			{
-				file.Read(bytes, 0, 10);
-			}
+			RetryUtility.Retry(() => {
+				using (var file = File.OpenRead(path))
+				{
+					file.Read(bytes, 0, 10);
+				}
+			}, memo:$"PalasoImage.GetCorrectImageExtension({path})");
 			// see http://www.mikekunz.com/image_file_header.html  
 				var bmp = Encoding.ASCII.GetBytes("BM");     // BMP
 				var gif = Encoding.ASCII.GetBytes("GIF");    // GIF

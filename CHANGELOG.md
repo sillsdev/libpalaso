@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
+
 - [SIL.Core] `RobustFile.Open`, `RobustFile.AppendAllText`, `RobustFile.WriteAllLines`, `RobustFile.GetAccessControl`, `RobustIO.EnumerateFilesInDirectory`, `RobustIO.EnumerateDirectoriesInDirectory`, `RobustIO.EnumerateEntriesInDirectory`, `RobustIO.RequireThatDirectoryExists`, `RobustIO.GetFileStream`, `RobustIO.ReadAllTextFromFileWhichMightGetWrittenTo`, and `RobustIO.IsFileLocked` methods
 - [SIL.Core.Desktop] `RobustImageIO.GetImageFromFile` method
 - [SIL.Windows.Forms] `ImageToolboxControl.ImageChanged` (selected or cropped) and `ImageToolboxControl.MetadataChanged` events
@@ -43,8 +44,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Make RetryUtility retry for exceptions that are subclasses of the ones listed to try. For example, by default (IOException) it will now retry for FileNotFoundException.
 - [SIL.Windows.Forms] Spelling of `CreativeCommonsLicense.IntergovernmentalOrganizationQualifier`
 - [SIL.Windows.Forms] Fixed internationalization problem: SettingsProtection.LauncherButtonLabel was used as ID for two different strings.
+- [SIL.Windows.Forms] Fix 4 img metadata methods that could fail due to cloud or scanning interference
 
 ### Removed
+
 - [SIL.Windows.Forms] ImageGalleryControl.InSomeoneElesesDesignMode (seemingly unused and misspelled)
 - [SIL.Windows.Forms] Checkbox for `IntergovernmentalOrganizationQualifier` from `MetadataEditorControl`
 
@@ -53,7 +56,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - [SIL.Windows.Forms] Make `PalasoImage.FromFile(Robustly)` methods more robust
-- [SIL.Windows.Forms] Update dll to `libdl.so.2` to make compatible with Ubuntu 22.x.  Affects multiple projects.
+- [SIL.Windows.Forms] Update dll to `libdl.so.2` to make compatible with Ubuntu 22.x. Affects multiple projects.
 - [SIL.Core] Fixed `BulkObservableList.MoveRange` method when moving a single item forward.
 
 ## [12.0.0] - 2023-02-14
@@ -161,6 +164,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core.Desktop] Added Testing channel to UpdateSettings.
 
 ### Fixed
+
 - [SIL.Archiving] Fixed formatting of DateTimes
 - [SIL.Core] Fixed SIL.IO.PathUtilities.DeleteToRecycleBin and .GetDefaultFileManager to work in a flatpak environment.
 - [SIL.Lexicon] Fixed crash caused by incorrect processing of keyboard data
@@ -171,6 +175,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [10.0.0] - 2022-08-04
 
 ### Added
+
 - [SIL.Windows.Forms] Added extension method InitializeWithAvailableUILocales.
 - [SIL.Windows.Forms] Added LocalizationIncompleteDlg and LocalizationIncompleteViewModel classes
 - [SIL.Windows.Forms] Added property SummaryDisplayMember to CheckedComboBox.
@@ -181,17 +186,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Scripture] Added event InvalidReferencePasted to VerseControl, which is fired whenever an attempt to paste an invalid scripture reference is made.
 
 ### Changed
+
 - [SIL.Windows.Forms.WritingSystems] Moved (internal) extension method InitializeWithAvailableUILocales to SIL.Windows.Forms.
 - [SIL.Windows.Forms.WritingSystems] Added additional optional localizationIncompleteViewModel parameter to ToolStripExtensions.InitializeWithAvailableUILocales.
 - [SIL.Core] If NotifyUserOfProblem is called with a null exception, it will no longer call UsageReporter.ReportException
 - Replace deprecated `Mono.Posix` dependency with `Mono.Unix` (#1186)
 
 ### Removed
+
 - Removed the "new" DisplayMember property from CheckedComboBox (which overrode the base class member). I don't believe this is a breaking change.
 
 ## [9.0.0] - 2022-06-03
 
 ### Added
+
 - [SIL.Core] NamePrefix setting and CleanupTempFolder method added to TempFile
 - [SIL.Core] Utility methods to remove XML namespaces
 - [SIL.Core.Desktop] Serializable class `UpdateSettings` (settings for getting updates)
@@ -346,7 +354,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   projects
 
 [Unreleased]: https://github.com/sillsdev/libpalaso/compare/v12.0.1...master
-
 [12.0.1]: https://github.com/sillsdev/libpalaso/compare/v12.0.0...v12.0.1
 [12.0.0]: https://github.com/sillsdev/libpalaso/compare/v11.0.1...v12.0.0
 [11.0.1]: https://github.com/sillsdev/libpalaso/compare/v11.0.0...v11.0.1
