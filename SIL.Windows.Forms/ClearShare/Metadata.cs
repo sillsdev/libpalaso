@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using L10NSharp;
+using SIL.Code;
 using SIL.Extensions;
 using TagLib;
 using TagLib.IFD;
@@ -108,7 +109,9 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 			try
 			{
-				destinationMetadata._originalTaglibMetadata = TagLib.File.Create(path) as TagLib.Image.File;
+				destinationMetadata._originalTaglibMetadata = RetryUtility.Retry(() =>
+				  TagLib.File.Create(path) as TagLib.Image.File,
+				  memo:$"LoadProperties({path})");
 			}
 			catch (TagLib.UnsupportedFormatException)
 			{
@@ -412,7 +415,9 @@ namespace SIL.Windows.Forms.ClearShare
 		/// <summary>Returns if the format of the image file supports metadata</summary>
 		public bool FileFormatSupportsMetadata(string path)
 		{
-			var file = TagLib.File.Create(path) as TagLib.Image.File;
+			var file = RetryUtility.Retry(() =>
+				 TagLib.File.Create(path) as TagLib.Image.File,
+				memo:$"FileFormatSupportsMetadata({path})");
 			return file != null && !file.GetType().FullName.Contains("NoMetadata");
 		}
 
@@ -445,7 +450,9 @@ namespace SIL.Windows.Forms.ClearShare
 			if (!FileFormatSupportsMetadata(path))
 				throw new NotSupportedException(String.Format("The image file {0} is in a format that does not support metadata.", Path.GetFileName(path)));
 
-			var file = TagLib.File.Create(path) as TagLib.Image.File;
+			var file = RetryUtility.Retry(() =>
+				TagLib.File.Create(path) as TagLib.Image.File,
+				memo:$"Write({path})");
 
 			file.GetTag(TagTypes.XMP, true); // The Xmp tag, at least, must exist so we can store properties into it.
 			// This does nothing if the file is not allowed to have PNG tags, that is, if it's not a PNG file.
