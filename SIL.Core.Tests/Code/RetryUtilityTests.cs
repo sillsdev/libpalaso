@@ -1,17 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using SIL.Code;
 
 namespace SIL.Tests.Code
 {
-	/// <summary>
-	/// This is a work in progress. At this point it only has a test for one recently-added bit of functionality.
-	/// </summary>
 	public class RetryUtilityTests
 	{
 		[Test]
@@ -22,6 +16,68 @@ namespace SIL.Tests.Code
 			Assert.That(RetryUtility.TypesIncludes(types, typeof(IOException)), Is.True);
 			Assert.That(RetryUtility.TypesIncludes(types, typeof(FileNotFoundException)), Is.True);
 			Assert.That(RetryUtility.TypesIncludes(types, typeof(SystemException)), Is.False);
+		}
+
+		[Test]
+		public void Retry_WorksOnFirstAttempt()
+		{
+			var n = 0;
+			RetryUtility.Retry(() => { n++; }, 3, 1);
+			Assert.That(n, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void Retry_WorksOnSecondAttempt()
+		{
+			var n = 0;
+			RetryUtility.Retry(() => {
+				n++;
+				if (n == 1)
+					throw new ApplicationException();
+			}, 3, 1, new HashSet<Type> (new[] { typeof(Exception) }));
+			Assert.That(n, Is.EqualTo(2));
+		}
+
+		[Test]
+		public void Retry_StopsAfter3Attempts()
+		{
+			var n = 0;
+			Assert.That(() => RetryUtility.Retry(() => {
+				n++;
+				throw new ApplicationException();
+			}, 3, 1, new HashSet<Type> (new[] { typeof(Exception) })), Throws.Exception.TypeOf<ApplicationException>());
+			Assert.That(n, Is.EqualTo(3));
+		}
+
+		[Test]
+		public void Retry_NoWorkFor0Attempts()
+		{
+			var n = 0;
+			RetryUtility.Retry(() => { n++; }, 0, 1);
+			Assert.That(n, Is.EqualTo(0));
+		}
+
+		[Test]
+		public void Retry_NoRetriesWithoutExceptionType()
+		{
+			var n = 0;
+			Assert.That(() => RetryUtility.Retry(() => {
+				n++;
+				throw new ApplicationException();
+			}, 3, 1, null), Throws.Exception.TypeOf<ApplicationException>());
+			Assert.That(n, Is.EqualTo(1));
+		}
+
+		[Test]
+		public void Retry_CatchesSpecifiedExceptionsOnly()
+		{
+			var n = 0;
+			Assert.That(() => RetryUtility.Retry(() => {
+				n++;
+				throw new Exception();
+			}, 3, 1, new HashSet<Type> (new[] { typeof(ApplicationException) })),
+				Throws.Exception.TypeOf<Exception>());
+			Assert.That(n, Is.EqualTo(1));
 		}
 	}
 }
