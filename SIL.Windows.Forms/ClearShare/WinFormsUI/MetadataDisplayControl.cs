@@ -69,7 +69,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 					if (licenseImage != null)
 					{
 						pictureBox = new PictureBox();
-						pictureBox.Size = new System.Drawing.Size(124, 40);
+						pictureBox.Size = new System.Drawing.Size(124, 140);
 						pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
 						pictureBox.Image = licenseImage;
 						_table.Controls.Add(pictureBox);
@@ -81,7 +81,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 					if (!string.IsNullOrEmpty(metaData.License.Url))
 					{
 						//AddHyperLink(LocalizationManager.GetString("License Info", metaData.License.Url, 1);
-						AddHyperLink("License Info".Localize("MetadataDisplay.LicenseInfo"), metaData.License.Url, 1);
+						AddHyperLink("Hi! License Info".Localize("MetadataDisplay.LicenseInfo"), metaData.License.Url, 1);
 					}
 					else if(pictureBox!=null)
 					{
