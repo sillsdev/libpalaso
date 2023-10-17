@@ -69,6 +69,17 @@ namespace SIL.Tests.Code
 		}
 
 		[Test]
+		public void Retry_DefaultsToIOException()
+		{
+			var n = 0;
+			Assert.That(() => RetryUtility.Retry(() => {
+				n++;
+				throw new IOException();
+			}, 3, 1, null), Throws.Exception.TypeOf<IOException>());
+			Assert.That(n, Is.EqualTo(3));
+		}
+
+		[Test]
 		public void Retry_CatchesSpecifiedExceptionsOnly()
 		{
 			var n = 0;

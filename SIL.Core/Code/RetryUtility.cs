@@ -31,6 +31,21 @@ namespace SIL.Code
 			}, maxRetryAttempts, retryDelay, exceptionTypesToRetry, memo);
 		}
 
+		/// <summary>
+		/// Retry <paramref name="action"/> up to <paramref name="maxRetryAttempts"/> times if it
+		/// throws one of the exceptions in <paramref name="exceptionTypesToRetry"/> or a subclassed
+		/// exception. The default value for <paramref name="exceptionTypesToRetry"/> is null which
+		/// will catch <c>IOException</c>s.
+		/// </summary>
+		/// <param name="action">The action to run</param>
+		/// <param name="maxRetryAttempts">Number of attempts to run <paramref name="action"/></param>
+		/// <param name="retryDelay">Delay in milliseconds between attempts</param>
+		/// <param name="exceptionTypesToRetry">Exceptions to catch and retry. Not listed exceptions
+		/// are thrown.</param>
+		/// <param name="memo">Text to append to the debug message in case of
+		/// <paramref name="action"/> throwing an exception.</param>
+		/// <typeparam name="T">Type that <paramref name="action"/> returns</typeparam>
+		/// <returns>Return value of <paramref name="action"/></returns>
 		public static T Retry<T>(Func<T> action, int maxRetryAttempts = kDefaultMaxRetryAttempts, int retryDelay = kDefaultRetryDelay, ISet<Type> exceptionTypesToRetry = null, string memo = "")
 		{
 			if (exceptionTypesToRetry == null)
