@@ -40,7 +40,7 @@ jobs:
 
     - name: Download localizations
       working-directory: ./l10n
-      run: crowdin download --all -T ${{ secrets.CROWDIN_PAT }} -i ${{ secrets.CROWDIN_PROJECT_ID }}
+      run: crowdin download --all -T ${{ secrets.CROWDIN_PAT }}
 
     - name: Restore packages
       run: msbuild l10n/l10n.proj /t:restore /p:Configuration=Release /p:Platform="Any CPU"
