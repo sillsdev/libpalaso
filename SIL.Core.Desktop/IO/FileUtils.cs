@@ -139,7 +139,7 @@ namespace SIL.IO
 						||
 						!PathHelper.AreOnSameVolume(sourcePath, destinationPath)
 						||
-						!File.Exists(destinationPath)
+						!RobustFile.Exists(destinationPath)
 						)
 					{
 						//can't use File.Replace or File.Move across volumes (sigh)
@@ -154,7 +154,7 @@ namespace SIL.IO
 							theProblem = null;
 							try
 							{
-								File.Replace(sourcePath, destinationPath, backupPath);
+								RobustFile.Replace(sourcePath, destinationPath, backupPath);
 							}
 							catch (UnauthorizedAccessException uae)
 							{
