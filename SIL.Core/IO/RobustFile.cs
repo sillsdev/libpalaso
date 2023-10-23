@@ -246,12 +246,12 @@ namespace SIL.IO
 
 		public static void ReplaceByCopyDelete(string sourcePath, string destinationPath, string backupPath)
 		{
-			if (!string.IsNullOrEmpty(backupPath) && File.Exists(destinationPath))
+			if (!string.IsNullOrEmpty(backupPath) && RobustFile.Exists(destinationPath))
 			{
-				File.Copy(destinationPath, backupPath, true);
+				RobustFile.Copy(destinationPath, backupPath, true);
 			}
-			File.Copy(sourcePath, destinationPath, true);
-			File.Delete(sourcePath);
+			RobustFile.Copy(sourcePath, destinationPath, true);
+			RobustFile.Delete(sourcePath);
 		}
 
 		public static void SetAttributes(string path, FileAttributes fileAttributes)
