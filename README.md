@@ -111,6 +111,10 @@ building libpalaso won't succeed. Therefore it's recommended to install
 
 Further instructions at https://github.com/sillsdev/libpalaso/wiki/Developing-with-locally-modified-nuget-packages
 
+- Updating langtags.json and ianaSubtagRegistry.txt:
+  * Instructions for updating the langtags.json and ianaSubtagRegistry.txt files are in [SIL.WritingSystems/Readme.md](SIL.WritingSystems/Readme.md)
+
+
 ### Contribute
 
 - Commit. Push:

@@ -272,7 +272,8 @@ namespace SIL.WritingSystems.Tests
 			Assert.True(languages.Any(l => l.Names.Contains("Deg Xinag")));
 			Assert.True(languages.Any(l => l.Names.Contains("Deg Xit’an")));
 			Assert.True(languages.Any(l => l.Names.Contains("Degexit'an")));
-			Assert.AreEqual(4, languages[0].Names.Count, "2 of the 6 names are pejorative and should not be listed");
+			Assert.True(languages.Any(l => l.Names.Contains("Deg Hit’an")));
+			Assert.AreEqual(5, languages[0].Names.Count, "2 of the 7 names are pejorative and should not be listed");
 		}
 
 		/// <summary>
@@ -351,9 +352,7 @@ namespace SIL.WritingSystems.Tests
 		public void SuggestLanguages_DoesNotSuggestDeprecatedTags()
 		{
 			var lookup = new LanguageLookup();
-			var languages = lookup.SuggestLanguages("dzd").ToArray();
-			Assert.False(languages.Any(l => l.LanguageTag == "dzd"));
-			languages = lookup.SuggestLanguages("yiy").ToArray();
+			var languages = lookup.SuggestLanguages("yiy").ToArray();
 			Assert.False(languages.Any(l => l.LanguageTag == "yiy"));
 			languages = lookup.SuggestLanguages("jeg").ToArray();
 			Assert.False(languages.Any(l => l.LanguageTag == "jeg"));
