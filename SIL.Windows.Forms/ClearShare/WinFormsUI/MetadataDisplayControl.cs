@@ -97,9 +97,11 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			using (var g = this.CreateGraphics())
 			{
 				var w = this.Width - 10;
-				// UserControl does not have UseCompatibleTextRendering.
-				var h = TextRenderer.MeasureText(g, label, this.Font, new System.Drawing.Size(w, Int32.MaxValue), TextFormatFlags.WordBreak).Height;
-				var linkLabel = new LinkLabel() {Text = label, Width = this.Width - 10, Height = (int) (h + 5)};
+				var linkLabel = new LinkLabel() { Padding = Padding.Empty, Text = label };
+
+				// Have link label automatically determine its height, capping width at w.
+				linkLabel.MaximumSize = new System.Drawing.Size(w, 0);
+				linkLabel.AutoSize = true;
 
 				linkLabel.Click += new EventHandler((x, y) => SIL.Program.Process.SafeStart(url));
 				_table.Controls.Add(linkLabel);
