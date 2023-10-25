@@ -10,3 +10,8 @@ To update langtags.json to the latest follow the following steps:
 1. Replace `Resources\langtags.json` with the content from https://ldml.api.sil.org/langtags.json
 1. Run the unit test suite by hand and fix any tests that relied on old langtags data
 1. Commit the changes
+
+### Updating ianaSubtagRegistry.txt
+To update ianaSubtagRegistry.txt to the latest, replace `Resources\ianaSubtagRegistry.txt` with
+the content from https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+
