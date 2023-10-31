@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- [SIL.Windows.Forms.ClearShare] Make Metadata.Write (and a few other methods) more robust
 - [SIL.Core.Desktop] Make FileUtils.ReplaceFileWithUserInteractionIfNeeded robust
 - [SIL.Core] Make RobustFile.ReplaceByCopyDelete truly robust
 - [SIL.Core] Make RetryUtility retry for exceptions that are subclasses of the ones listed to try. For example, by default (IOException) it will now retry for FileNotFoundException.
