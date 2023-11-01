@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using L10NSharp;
 using SIL.Code;
 using SIL.Extensions;
+using SIL.IO;
 using TagLib;
 using TagLib.IFD;
 using TagLib.Image;
@@ -452,7 +453,7 @@ namespace SIL.Windows.Forms.ClearShare
 
 			var file = RetryUtility.Retry(() =>
 				TagLib.File.Create(path) as TagLib.Image.File,
-				memo:$"Write({path})");
+				memo:$"Metadata.Write({path}) - creating TagLib.Image.File");
 
 			file.GetTag(TagTypes.XMP, true); // The Xmp tag, at least, must exist so we can store properties into it.
 			// This does nothing if the file is not allowed to have PNG tags, that is, if it's not a PNG file.
@@ -465,7 +466,7 @@ namespace SIL.Windows.Forms.ClearShare
 				file.CopyFrom(_originalTaglibMetadata);
 			}
 			SaveInImageTag(file.ImageTag);
-			file.Save();
+			RetryUtility.Retry(() => file.Save(), memo: $"Metadata.Write({path}) - saving TagLib.Image.File");
 			//as of right now, we are clean with respect to what is on disk, no need to save.
 			HasChanges = false;
 		}
@@ -707,7 +708,7 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 			var tag = new XmpTag();
 			SaveInImageTag(tag);
-			File.WriteAllText(path, tag.Render(), Encoding.UTF8);
+			RobustFile.WriteAllText(path, tag.Render(), Encoding.UTF8);
 		}
 
 		/// <summary>
@@ -716,10 +717,10 @@ namespace SIL.Windows.Forms.ClearShare
 		/// <example>LoadXmpFile("c:\dir\metadata.xmp")</example>
 		public void LoadXmpFile(string path)
 		{
-			if(!File.Exists(path))
+			if(!RobustFile.Exists(path))
 				throw new FileNotFoundException(path);
 
-			var xmp = new XmpTag(File.ReadAllText(path, Encoding.UTF8), null);
+			var xmp = new XmpTag(RobustFile.ReadAllText(path, Encoding.UTF8), null);
 			LoadProperties(xmp, this);
 		}
 
@@ -750,7 +751,7 @@ namespace SIL.Windows.Forms.ClearShare
 		/// <param name="category">e.g. "image", "document"</param>
 		public static bool HaveStoredExemplar(FileCategory category)
 		{
-			return File.Exists(GetExemplarPath(category));
+			return RobustFile.Exists(GetExemplarPath(category));
 		}
 
 		/// <summary>
@@ -760,8 +761,8 @@ namespace SIL.Windows.Forms.ClearShare
 		public static void DeleteStoredExemplar(FileCategory category)
 		{
 			var path = GetExemplarPath(category);
-			if (File.Exists(path))
-				File.Delete(path);
+			if (RobustFile.Exists(path))
+				RobustFile.Delete(path);
 		}
 
 		/// <summary>
