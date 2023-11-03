@@ -8,7 +8,6 @@ using SIL.PlatformUtilities;
 using SIL.Reporting;
 using System.Drawing.Imaging;
 using SIL.IO;
-using SIL.Windows.Forms.Extensions;
 using WIA;
 
 namespace SIL.Windows.Forms.ImageToolbox
@@ -35,7 +34,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 			}
 
 			_galleryControl.ImageChanged += _galleryControl_ImageChanged;
-			toolStrip1.Renderer = new NoBorderToolStripRenderer();
 		}
 
 		void _galleryControl_ImageChanged(object sender, EventArgs e)
