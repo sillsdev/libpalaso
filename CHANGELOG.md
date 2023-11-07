@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- [SIL.Windows.Forms.WritingSystem.WSIdentifiers] Changed ComboBox controls in WSIdentifierView and ScriptRegionVariantView to DropDownList style to prevent accidental editing that shouldn't happen
 - [SIL.Windows.Forms.ClearShare] Make Metadata.Write (and a few other methods) more robust
 - [SIL.Core.Desktop] Make FileUtils.ReplaceFileWithUserInteractionIfNeeded robust
 - [SIL.Core] Make RobustFile.ReplaceByCopyDelete truly robust
