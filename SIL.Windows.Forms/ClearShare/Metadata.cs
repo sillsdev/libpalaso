@@ -101,6 +101,8 @@ namespace SIL.Windows.Forms.ClearShare
 			return false;
 		}
 
+		public Exception ExceptionLoading;
+
 		/// <summary>
 		/// NB: this is used in 2 places; one is loading from the image we are linked to, the other from a sample image we are copying metadata from
 		/// </summary>
@@ -110,6 +112,7 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 			try
 			{
+				destinationMetadata.ExceptionLoading = null;
 				destinationMetadata._originalTaglibMetadata = RetryUtility.Retry(() =>
 				  TagLib.File.Create(path) as TagLib.Image.File,
 				  memo:$"LoadProperties({path})");
@@ -130,6 +133,18 @@ namespace SIL.Windows.Forms.ClearShare
 				// problem, but have other limitations.
 				// See https://issues.bloomlibrary.org/youtrack/issue/BL-8706 for a user complaint.
 				System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
+				destinationMetadata.ExceptionLoading = ex;
+				return;
+			}
+			catch (ArgumentOutOfRangeException ex)
+			{
+				// TagLib can throw this if it can't read some part of the metadata.  This
+				// prevents us from even looking at images that have such metadata, which
+				// seems unreasonable.  (TagLib doesn't fully understand IPTC profiles, for
+				// example, which can lead to this exception.)
+				// See https://issues.bloomlibrary.org/youtrack/issue/BL-11933 for a user complaint.
+				System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
+				destinationMetadata.ExceptionLoading = ex;
 				return;
 			}
 			LoadProperties(destinationMetadata._originalTaglibMetadata.ImageTag, destinationMetadata);
