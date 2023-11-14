@@ -43,6 +43,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- [SIL.Windows.Forms.ClearShare] Fixed Metadata.LoadProperties to catch the ArgumentOutOfRangeException thrown by TagLib.File.Create when unknown data is found in the IPTC profile segment.  The rest of the metadata (Exif / XMP) is likely to be okay, but won't be available until TagLib is fixed to allow this.  Not having the metadata available shouldn't prevent using the image.  Note that clients can now read the exception caught while loading if so desired.
+- [SIL.Windows.Forms.WritingSystem.WSIdentifiers] Changed ComboBox controls in WSIdentifierView and ScriptRegionVariantView to DropDownList style to prevent accidental editing that shouldn't happen
 - [SIL.Windows.Forms.ClearShare] Make Metadata.Write (and a few other methods) more robust
 - [SIL.Core.Desktop] Make FileUtils.ReplaceFileWithUserInteractionIfNeeded robust
 - [SIL.Core] Make RobustFile.ReplaceByCopyDelete truly robust
