@@ -52,6 +52,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Spelling of `CreativeCommonsLicense.IntergovernmentalOrganizationQualifier`
 - [SIL.Windows.Forms] Fixed internationalization problem: SettingsProtection.LauncherButtonLabel was used as ID for two different strings.
 - [SIL.Windows.Forms] Fix 4 img metadata methods that could fail due to cloud or scanning interference
+- [SIL.Windows.Forms] Fixed error in BetterGrid.OnCellContentClick to make it so the delete button works correctly if there is no "new row."
 
 ### Removed
 
