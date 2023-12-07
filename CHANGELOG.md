@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [13.0.0] - 2023-12-07
+
 ### Added
 
 - [SIL.Core] `RobustFile.Open`, `RobustFile.AppendAllText`, `RobustFile.WriteAllLines`, `RobustFile.GetAccessControl`, `RobustIO.EnumerateFilesInDirectory`, `RobustIO.EnumerateDirectoriesInDirectory`, `RobustIO.EnumerateEntriesInDirectory`, `RobustIO.RequireThatDirectoryExists`, `RobustIO.GetFileStream`, `RobustIO.ReadAllTextFromFileWhichMightGetWrittenTo`, and `RobustIO.IsFileLocked` methods
@@ -360,7 +362,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
   projects
 
-[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v12.0.1...master
+[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v13.0.0...master
+[13.0.0]: https://github.com/sillsdev/libpalaso/compare/v12.0.1...v13.0.0
 [12.0.1]: https://github.com/sillsdev/libpalaso/compare/v12.0.0...v12.0.1
 [12.0.0]: https://github.com/sillsdev/libpalaso/compare/v11.0.1...v12.0.0
 [11.0.1]: https://github.com/sillsdev/libpalaso/compare/v11.0.0...v11.0.1
