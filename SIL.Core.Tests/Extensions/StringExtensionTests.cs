@@ -587,6 +587,21 @@ namespace SIL.Tests.Extensions
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
+		/// Test the GetLongestUsefulCommonSubstring method. This test ensures that we don't get
+		/// an index-out-of-range exception.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void GetLongestUsefulCommonSubstring_StringEndsWithORC_NoIndexOutOfRangeError()
+		{
+			var s1 = "Cuándo pelearon el " + kObjReplacementChar + " y " + kObjReplacementChar;
+			var s2 = "Qué hicieron el " + kObjReplacementChar + " y " + kObjReplacementChar;
+			Assert.AreEqual("el", s1.GetLongestUsefulCommonSubstring(s2, out var fWholeWord));
+			Assert.IsTrue(fWholeWord);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
 		/// Test the GetLongestUsefulCommonSubstring method. This test tests that leading punctuation is
 		/// included in the match.
 		/// </summary>

@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- [SIL.Core] Fixed bug in extension method GetLongestUsefulCommonSubstring when string ends with an Object replacement character
+
 ## [13.0.0] - 2023-12-07
 
 ### Added
