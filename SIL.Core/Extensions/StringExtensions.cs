@@ -460,7 +460,7 @@ namespace SIL.Extensions
 				int ichOrc = s1.IndexOf(kszObject, ich, cchMatch, StringComparison.Ordinal);
 				if (ichOrc >= 0)
 				{
-					ich += ichOrc;
+					ich = ichOrc;
 					continue;
 				}
 
