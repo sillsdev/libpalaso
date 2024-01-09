@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [13.0.1] - 2024-01-09
+
 ### Fixed
 
 - [SIL.Core] Fixed bug in extension method GetLongestUsefulCommonSubstring when string ends with an Object replacement character
@@ -368,6 +370,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   projects
 
 [Unreleased]: https://github.com/sillsdev/libpalaso/compare/v13.0.0...master
+[13.0.1]: https://github.com/sillsdev/libpalaso/compare/v13.0.0...v13.0.1
 [13.0.0]: https://github.com/sillsdev/libpalaso/compare/v12.0.1...v13.0.0
 [12.0.1]: https://github.com/sillsdev/libpalaso/compare/v12.0.0...v12.0.1
 [12.0.0]: https://github.com/sillsdev/libpalaso/compare/v11.0.1...v12.0.0
