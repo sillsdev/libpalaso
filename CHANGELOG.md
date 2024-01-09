@@ -369,7 +369,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
   projects
 
-[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v13.0.0...master
+[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v13.0.1...master
 [13.0.1]: https://github.com/sillsdev/libpalaso/compare/v13.0.0...v13.0.1
 [13.0.0]: https://github.com/sillsdev/libpalaso/compare/v12.0.1...v13.0.0
 [12.0.1]: https://github.com/sillsdev/libpalaso/compare/v12.0.0...v12.0.1
