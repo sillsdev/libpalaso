@@ -32,8 +32,8 @@ namespace SIL.Windows.Forms.TestApp
 
 			var localizationFolder = Path.GetDirectoryName(
 				FileLocationUtilities.GetFileDistributedWithApplication($"Palaso.{preferredUILocale}.xlf"));
-			PrimaryL10NManager = LocalizationManager.Create(TranslationMemory.XLiff, preferredUILocale, "Palaso", "Palaso",
-				"1.0.0", localizationFolder, "SIL/Palaso", null, "testapp@sil.org");
+			PrimaryL10NManager = LocalizationManager.Create(preferredUILocale, "Palaso", "Palaso",
+				"1.0.0", localizationFolder, "SIL/Palaso", null, "testapp@sil.org", new [] {"SIL."});
 
 			Application.Run(new TestAppForm());
 

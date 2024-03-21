@@ -21,7 +21,7 @@
     <PackageReference Include="Geckofx45.64.Linux" Version="45.0.37" Condition="'$(OS)'=='Unix' And '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'=='X64'" GeneratePathProperty="true" />
     <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
     <PackageReference Include="Icu4c.Win.Min" Version="56.1.82" />
-    <PackageReference Include="L10NSharp" Version="6.0.0" />
+    <PackageReference Include="L10NSharp" Version="7.0.0" />
     <PackageReference Include="SIL.libpalaso.l10ns" Version="13.*-*" GeneratePathProperty="true" />
   </ItemGroup>
 
@@ -78,9 +78,9 @@
   <Target Name="CopyL10NFiles" AfterTargets="CopyFilesToOutputDirectory">
     <!-- This copy is necessary because SIL.libpalaso.l10ns has no target to copy files -->
     <ItemGroup>
-	  <L10ns Include="$(PkgSIL_libpalaso_l10ns)/content/*/*.xlf"/>
+	  <L10ns Include="$(PkgSIL_libpalaso_l10ns)/content/*/*.xlf" />
 	</ItemGroup>
-	<Copy SourceFiles="@(L10ns)" DestinationFolder="../../DistFiles"/>
+	<Copy SourceFiles="@(L10ns)" DestinationFolder="../../DistFiles" />
   </Target>
 
 </Project>

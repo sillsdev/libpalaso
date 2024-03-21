@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- [SIL.Archiving] Upgraded to L10nSharp 7.0.0
+- [SIL.Windows.Forms] Upgraded to L10nSharp 7.0.0
+- [SIL.Windows.Forms.DblBundle] Upgraded to L10nSharp 7.0.0
+- [SIL.Windows.Forms.Keyboarding] Upgraded to L10nSharp 7.0.0
+- [SIL.Windows.Forms.WritingSystems] Upgraded to L10nSharp 7.0.0
+
 ## [13.0.1] - 2024-01-09
 
 ### Fixed
