@@ -32,6 +32,57 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 		}
 
 		[Test]
+		[Category("SkipOnTeamCity")]
+		public void WriteError_Disposed_IgnoreRequestsToWriteMessages()
+		{
+			Console.WriteLine("Showing LogBox");
+			using (var e = new LogBoxFormForTest())
+			{
+				progress = e.progress;
+				progress.WriteMessage("Hi, Mom!");
+				progress.Dispose();
+				progress.WriteError("Ignore this.");
+				Assert.IsTrue(progress.ErrorEncountered);
+				Assert.IsFalse(progress.Rtf.Contains("Ignore this."));
+				Assert.IsTrue(progress.Rtf.Contains("Hi, Mom!"));
+			}
+		}
+
+		[Test]
+		[Category("SkipOnTeamCity")]
+		public void WriteMessage_CancelRequested_IgnoreRequestsToWriteMessages()
+		{
+			Console.WriteLine("Showing LogBox");
+			using (var e = new LogBoxFormForTest())
+			{
+				progress = e.progress;
+				progress.WriteMessage("Hi, Mom!");
+				progress.CancelRequested = true;
+				progress.WriteMessage("Ignore this.");
+				Assert.IsFalse(progress.ErrorEncountered);
+				Assert.IsFalse(progress.Rtf.Contains("Ignore this."));
+				Assert.IsTrue(progress.Rtf.Contains("Hi, Mom!"));
+			}
+		}
+
+		[Test]
+		[Category("SkipOnTeamCity")]
+		public void WriteError_CancelRequested_IgnoreRequestsToWriteMessages()
+		{
+			Console.WriteLine("Showing LogBox");
+			using (var e = new LogBoxFormForTest())
+			{
+				progress = e.progress;
+				progress.WriteMessage("Hi, Mom!");
+				progress.CancelRequested = true;
+				progress.WriteError("User cancelled operation.");
+				Assert.IsTrue(progress.ErrorEncountered);
+				Assert.IsFalse(progress.Rtf.Contains("User cancelled operation."));
+				Assert.IsTrue(progress.Rtf.Contains("Hi, Mom!"));
+			}
+		}
+
+		[Test]
 		[Explicit]
 		[Category("LongRunning")]
 		[Category("SkipOnTeamCity")]

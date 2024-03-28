@@ -286,6 +286,8 @@ namespace SIL.Windows.Forms.Progress
 		/// </summary>
 		private void SafeInvoke(Control box, Action action)
 		{
+			if (box.IsDisposed || box.Disposing || CancelRequested)
+				return;
 			box.SafeInvoke(action, errorHandling:ControlExtensions.ErrorHandlingAction.IgnoreAll);
 		}
 
@@ -418,15 +420,11 @@ namespace SIL.Windows.Forms.Progress
 		{
 			Write(Color.Red, _box.Font.Style, message, args);
 
-			// There is no Invoke method on ToolStripItems (which the _reportLink is)
-			// and setting it to visible from another thread seems to work okay.
-			_reportLink.Visible = true;
-
-			menuStrip1.Invoke(new Action(() =>
+			SafeInvoke(menuStrip1, () =>
 			{
+				_reportLink.Visible = true;
 				menuStrip1.Visible = true;
-			}));
-
+			});
 			ErrorEncountered = true;
 		}
 

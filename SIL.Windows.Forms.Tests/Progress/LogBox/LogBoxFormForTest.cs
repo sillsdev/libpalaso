@@ -6,25 +6,19 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 	public class LogBoxFormForTest : IDisposable
 	{
 		private Form _window;
-		private Windows.Forms.Progress.LogBox _box;
+		private Forms.Progress.LogBox _box;
 
 		public LogBoxFormForTest ()
 		{
 			CreateWindow();
 		}
 
-		public Windows.Forms.Progress.LogBox progress
-		{
-			get
-			{
-				return _box;
-			}
-		}
+		public Forms.Progress.LogBox progress => _box;
 
 		private void CreateWindow()
 		{
 			_window = new Form();
-			_box = new Windows.Forms.Progress.LogBox();
+			_box = new Forms.Progress.LogBox();
 			_box.Dock = DockStyle.Fill;
 			_window.Controls.Add(_box);
 

@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - [SIL.Core] Fixed bug in extension method GetLongestUsefulCommonSubstring when string ends with an Object replacement character
+- [SIL.Core] LogBox: Checked for disposed log box or caller-requested cancel in SafeInvoke so we don't try to write messages or scroll.
 
 ## [13.0.0] - 2023-12-07
 
