@@ -50,7 +50,7 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 
 		[Test]
 		[Category("SkipOnTeamCity")]
-		public void WriteMessage_CancelRequested_IgnoreRequestsToWriteMessages()
+		public void WriteMessage_CancelRequested_HandleRequestsToWriteMessages()
 		{
 			Console.WriteLine("Showing LogBox");
 			using (var e = new LogBoxFormForTest())
@@ -58,16 +58,16 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 				progress = e.progress;
 				progress.WriteMessage("Hi, Mom!");
 				progress.CancelRequested = true;
-				progress.WriteMessage("Ignore this.");
+				progress.WriteMessage("Do not ignore this.");
 				Assert.IsFalse(progress.ErrorEncountered);
-				Assert.IsFalse(progress.Rtf.Contains("Ignore this."));
+				Assert.IsTrue(progress.Rtf.Contains("Do not ignore this."));
 				Assert.IsTrue(progress.Rtf.Contains("Hi, Mom!"));
 			}
 		}
 
 		[Test]
 		[Category("SkipOnTeamCity")]
-		public void WriteError_CancelRequested_IgnoreRequestsToWriteMessages()
+		public void WriteError_CancelRequested_HandleRequestsToWriteMessages()
 		{
 			Console.WriteLine("Showing LogBox");
 			using (var e = new LogBoxFormForTest())
@@ -77,8 +77,8 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 				progress.CancelRequested = true;
 				progress.WriteError("User cancelled operation.");
 				Assert.IsTrue(progress.ErrorEncountered);
-				Assert.IsFalse(progress.Rtf.Contains("User cancelled operation."));
 				Assert.IsTrue(progress.Rtf.Contains("Hi, Mom!"));
+				Assert.IsTrue(progress.Rtf.Contains("User cancelled operation."));
 			}
 		}
 

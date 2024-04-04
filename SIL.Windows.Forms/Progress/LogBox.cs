@@ -286,8 +286,6 @@ namespace SIL.Windows.Forms.Progress
 		/// </summary>
 		private void SafeInvoke(Control box, Action action)
 		{
-			if (box.IsDisposed || box.Disposing || CancelRequested)
-				return;
 			box.SafeInvoke(action, errorHandling:ControlExtensions.ErrorHandlingAction.IgnoreAll);
 		}
 

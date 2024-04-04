@@ -16,11 +16,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
 - [SIL.Archiving] Upgraded to L10nSharp 7.0.0
 - [SIL.Windows.Forms] Upgraded to L10nSharp 7.0.0
 - [SIL.Windows.Forms.DblBundle] Upgraded to L10nSharp 7.0.0
 - [SIL.Windows.Forms.Keyboarding] Upgraded to L10nSharp 7.0.0
 - [SIL.Windows.Forms.WritingSystems] Upgraded to L10nSharp 7.0.0
+- [SIL.Core] `RaiseExceptionIfFailed` no longer throws an exception if user cancelled
 
 ## [13.0.1] - 2024-01-09
 
