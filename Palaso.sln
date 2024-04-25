@@ -25,9 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reporting.TestApp", "TestAp
 		{DB44F49C-D8C6-434F-81ED-28EA5C9E8195} = {DB44F49C-D8C6-434F-81ED-28EA5C9E8195}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Archiving", "SIL.Archiving\SIL.Archiving.csproj", "{BCE1F124-5479-4B23-90B1-B7A4EBE44FA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms.Archiving", "SIL.Windows.Forms.Archiving\SIL.Windows.Forms.Archiving.csproj", "{BCE1F124-5479-4B23-90B1-B7A4EBE44FA3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Archiving.Tests", "SIL.Archiving.Tests\SIL.Archiving.Tests.csproj", "{892C7F20-FBBB-4AB3-BAC2-E40A135567B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms.Archiving.Tests", "SIL.Windows.Forms.Archiving.Tests\SIL.Windows.Forms.Archiving.Tests.csproj", "{892C7F20-FBBB-4AB3-BAC2-E40A135567B6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Scripture", "SIL.Scripture\SIL.Scripture.csproj", "{F71BA7B9-D9DC-4F8C-A307-87B503D0E05B}"
 EndProject
