@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- [SIL.Windows.Forms] Fixed backwards logic for LocalizationIncompleteViewModel.ShouldShowDialog (Technically this is a breaking contractual change, since effectively the behavior is the opposite of the original implementation, but the name so clearly indicates the desired behavior that it seems unlikely any subclass implementation would have implemented the logic according to the previously expected backwards behavior.)
+
 ## [14.0.0] - 2024-04-09
 
 ### Changed
