@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- [SIL.Windows.Forms.Archiving] Renamed SIL.Archiving to SIL.Windows.Forms.Archiving
+
 ## [14.0.0] - 2024-04-09
 
 ### Changed
