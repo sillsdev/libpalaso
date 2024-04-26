@@ -16,11 +16,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- [SIL.Windows.Forms.Archiving] Renamed SIL.Archiving to SIL.Windows.Forms.Archiving
+
 ## [14.0.0] - 2024-04-09
 
 ### Changed
 
-- [SIL.Windows.Forms.Archiving] Upgraded to L10nSharp 7.0.0
+- [SIL.Archiving] Upgraded to L10nSharp 7.0.0
 - [SIL.Windows.Forms] Upgraded to L10nSharp 7.0.0
 - [SIL.Windows.Forms.DblBundle] Upgraded to L10nSharp 7.0.0
 - [SIL.Windows.Forms.Keyboarding] Upgraded to L10nSharp 7.0.0
@@ -130,14 +134,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle] Attempting to construct a UsxNode based on an invalid XmlNode now throws an exception in the constructor in most cases rather than later when properties are accessed.
 - [SIL.DblBundle] Accessing UsxChapter.ChapterNumber on a chapter end node returns the chapter number (from the eid attribute) instead of throwing an exception.
 - [SIL.WritingSystems] Prevent (and clean up) duplicate URLs in LDML files for Fonts, Keyboards, and Spell Check Dictionaries.
-- [SIL.Windows.Forms.Archiving] Set UseZip64WhenSaving to Zip64Option.AsNecessary to prevent crash with large archives
+- [SIL.Archiving] Set UseZip64WhenSaving to Zip64Option.AsNecessary to prevent crash with large archives
 
 ### Changed
 
-- [SIL.Windows.Forms.Archiving] Changed REAP access protocol label from "Insite users" to "REAP users"
-- [SIL.Windows.Forms.Archiving] Fixed typo in name of ArchiveAccessProtocol.GetDocumentationUri methods
-- [SIL.Windows.Forms.Archiving] Changed ArchiveAccessProtocol.GetDocumentationUri methods
-- [SIL.Windows.Forms.Archiving] Changed ArchiveAccessProtocol.SetChoicesFromCsv to thow ArgumentNullException instead of NullReferenceException. Also made it discard duplicate choices if the list contains duplicates.
+- [SIL.Archiving] Changed REAP access protocol label from "Insite users" to "REAP users"
+- [SIL.Archiving] Fixed typo in name of ArchiveAccessProtocol.GetDocumentationUri methods
+- [SIL.Archiving] Changed ArchiveAccessProtocol.GetDocumentationUri methods
+- [SIL.Archiving] Changed ArchiveAccessProtocol.SetChoicesFromCsv to thow ArgumentNullException instead of NullReferenceException. Also made it discard duplicate choices if the list contains duplicates.
 - [SIL.Core] `FileLocationUtilities.GetDirectoryDistributedWithApplication` checks not only in
   `DistFiles`, `common`, and `src` subdirectories, but also directly in the application or solution directory.
 - [SIL.Core] Store URLs in Sets instead of Lists in `IKeyboardDefinition` (to prevent duplicates)
@@ -193,7 +197,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- [SIL.Windows.Forms.Archiving] Fixed formatting of DateTimes
+- [SIL.Archiving] Fixed formatting of DateTimes
 - [SIL.Core] Fixed SIL.IO.PathUtilities.DeleteToRecycleBin and .GetDefaultFileManager to work in a flatpak environment.
 - [SIL.Lexicon] Fixed crash caused by incorrect processing of keyboard data
 - [SIL.Scripture] Fixed SIL.Scripture.MultilingScrBooks.VerseRefRegex to make punctuation more specific
