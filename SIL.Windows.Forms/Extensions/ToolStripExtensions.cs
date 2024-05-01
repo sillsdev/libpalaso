@@ -134,7 +134,7 @@ namespace SIL.Windows.Forms.Extensions
 						return;
 
 					if (localizationIncompleteViewModel != null &&
-					    !localizationIncompleteViewModel.ShouldShowDialog(languageId))
+					    localizationIncompleteViewModel.ShouldShowDialog(languageId))
 					{
 						using (var dlg = new LocalizationIncompleteDlg.LocalizationIncompleteDlg(localizationIncompleteViewModel))
 							if (dlg.ShowDialog(item.GetCurrentParent().FindForm()) == DialogResult.Cancel)
