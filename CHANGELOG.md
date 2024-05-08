@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- [SIL.Windows.Forms] Added static SilResources class with property SilLogo101x113.
+
 ### Fixed
 
 - [SIL.Windows.Forms] Fixed backwards logic for LocalizationIncompleteViewModel.ShouldShowDialog (Technically this is a breaking contractual change, since effectively the behavior is the opposite of the original implementation, but the name so clearly indicates the desired behavior that it seems unlikely any subclass implementation would have implemented the logic according to the previously expected backwards behavior.)

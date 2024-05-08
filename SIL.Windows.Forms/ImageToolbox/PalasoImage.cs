@@ -48,11 +48,11 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// the nature of the palaso image system is to deliver images, not file paths, to documents
 		/// (we don't believe in "linking" to files somewhere on the disk which is just asking for problems
 		/// as the document is shared).
-		/// But in one circumumstance, we do care: when the user chooses from disk (as opposed to from camera or scanner)
+		/// But in one circumstance, we do care: when the user chooses from disk (as opposed to from camera or scanner)
 		/// and enters metadata, we want to store that metadata in the original.  
 		/// However, there is one circumstance (currently) in which this is not the original path:
 		/// If we attempt to save metadata and can't (e.g. file is readonly), we create a temp file and 
-		/// store the metadata there, then serve the temp file to the requestor.  That's why we store this path.
+		/// store the metadata there, then serve the temp file to the requester. That's why we store this path.
 		/// </summary>
 		private string _pathForSavingMetadataChanges;
 
@@ -70,8 +70,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 			Metadata = new Metadata();
 		}
 
-
-
 		public static PalasoImage FromImage(Image image)
 		{
 			Guard.AgainstNull(image, "image");
@@ -80,7 +78,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 				Image = image
 			};
 		}
-
 
 		private Image _image;
 
