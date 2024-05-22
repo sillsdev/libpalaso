@@ -538,5 +538,12 @@ and displays it as HTML.
 			MessageBox.Show(
 				$"Files overwritten:\r\t{filesOverwritten.ToString("\r\t")}\rFiles skipped:\r\t{filesSkipped.ToString("\r\t")}", "Results");
 		}
+
+		private void btnOpenProject_Click(object sender, EventArgs e)
+		{
+			using var dlg = new ChooseProject();
+			if (dlg.ShowDialog(this) == DialogResult.OK)
+				MessageBox.Show("Got " + dlg.SelectedProject);
+		}
 	}
 }
