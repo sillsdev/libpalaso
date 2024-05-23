@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [14.1.1] - 2024-05-23
+
+### Fixed
+
+- [SIL.Windows.Forms.DblBundle] Fixed bug in ProjectsListBase that made it impossible to select a project after double-clicking a column header. (See HT-475)
+
 ## [14.1.0] - 2024-05-13
 
 ### Added
@@ -391,7 +397,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
   projects
 
-[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v14.1.0...master
+[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v14.1.1...master
+[14.1.1]: https://github.com/sillsdev/libpalaso/compare/v14.1.0...v14.1.1
 [14.1.0]: https://github.com/sillsdev/libpalaso/compare/v14.0.0...v14.1.0
 [14.0.0]: https://github.com/sillsdev/libpalaso/compare/v13.0.1...v14.0.0
 [13.0.1]: https://github.com/sillsdev/libpalaso/compare/v13.0.0...v13.0.1
