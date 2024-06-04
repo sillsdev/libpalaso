@@ -285,7 +285,7 @@
        d="m -406.39995,184.79101 c -3.31866,0 -6.04811,2.83136 -5.99261,5.38232 0.028,1.27849 0.22062,2.28748 0.44123,3.07533 0.0165,0.0844 0.034,0.16875 0.0627,0.25369 l 0.42748,1.2647 c 0.31337,0.92506 1.24404,1.49248 2.08641,1.27205 0.84241,-0.22045 1.26835,-1.14293 0.95497,-2.06801 l -0.42748,-1.2647 c -0.30417,-0.89793 -1.18979,-1.45255 -2.0119,-1.28308 -0.0508,-0.64347 -0.051,-1.13234 -0.051,-1.13234 0,-2.23297 2.01471,-4.05879 4.51015,-4.0588 2.49544,0 4.51779,1.80763 4.51014,4.11762 -0.006,0.40168 -0.0215,0.73901 -0.0529,1.05697 -0.78766,-0.0966 -1.60442,0.44408 -1.89429,1.29963 l -0.42748,1.2647 c -0.31338,0.92508 0.11261,1.84756 0.95497,2.06801 0.84241,0.22043 1.77109,-0.34699 2.08451,-1.27205 l 0.005,-0.009 0.87652,0.29783 -0.0315,1.64704 c -0.005,0.50075 -0.13641,0.81666 -0.31372,1 -0.17731,0.18331 -0.40348,0.2647 -0.7216,0.2647 h -3.81405 c -0.0524,-0.008 -0.1,-0.0294 -0.15491,-0.0294 h -1.94524 c -0.5475,0 -0.98833,0.4132 -0.98833,0.92646 0,0.51326 0.44083,0.92647 0.98833,0.92647 h 1.94524 c 0.53084,0 0.95273,-0.39095 0.97853,-0.88235 h 2.99043 c 0.54974,0 1.09703,-0.19785 1.47461,-0.58823 0.37758,-0.39037 0.55819,-0.94966 0.56474,-1.61763 l 0.0315,-1.97058 v -0.32352 l -0.31377,-0.11766 -1.26085,-0.43565 0.11961,-0.35294 c 0.008,-0.0227 0.009,-0.0453 0.0155,-0.0681 0.22892,-0.75417 0.43529,-1.77255 0.43529,-3.17278 0,-2.66332 -2.73666,-5.47055 -6.05531,-5.47055 z"
        id="Headset"
        inkscape:connector-curvature="0"
-       inkscape:export-filename="X:\dev\libpalaso\SIL.Media\Resources\Headset.png"
+       inkscape:export-filename="X:\dev\libpalaso\SIL.Windows.Forms.Media\Resources\Headset.png"
        inkscape:export-xdpi="89.999886"
        inkscape:export-ydpi="89.999886"
        inkscape:label="#path10296" />
@@ -950,7 +950,7 @@ AElFTkSuQmCC
            y="-31.142786"
            style="font-family:sans-serif" /></flowRegion><flowPara
          id="flowPara5335"
-         style="font-size:11.25px;line-height:1.25;font-family:sans-serif">These can be re-exported in Inkscape, by selecting them all and then using the PNG Export command with the &quot;Batch export&quot; option ticked. That will use the ID of each object as a file name. Each of these icons has an ID that matches the file name expected by SIL.Media.Resources, and is already sized to by 16 px high.</flowPara><flowPara
+         style="font-size:11.25px;line-height:1.25;font-family:sans-serif">These can be re-exported in Inkscape, by selecting them all and then using the PNG Export command with the &quot;Batch export&quot; option ticked. That will use the ID of each object as a file name. Each of these icons has an ID that matches the file name expected by SIL.Windows.Forms.Media.Resources, and is already sized to by 16 px high.</flowPara><flowPara
          style="font-size:11.25px;line-height:1.25;font-family:sans-serif"
          id="flowPara4580" /><flowPara
          style="font-size:11.25px;line-height:1.25;font-family:sans-serif"

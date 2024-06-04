@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>SIL.Windows.Forms.Media</RootNamespace>
+    <AssemblyTitle>SIL.Windows.Forms.Media</AssemblyTitle>
+    <Description>SIL.Windows.Forms.Media contains Windows Forms UI elements and classes for processing audio on Windows and Linux.</Description>
+    <!-- We can't sign this assembly because it depends on irrKlang.NET4.dll which is a
+    mixed-mode assembly (contains both managed code and native code for a particular
+    processor architecture) -->
+    <SignAssembly>false</SignAssembly>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+    <UseWindowsForms>true</UseWindowsForms>
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FFMpegCore" Version="5.0.0" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
+    <PackageReference Include="JetBrains.Annotations" Version="2022.3.1">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <PackageReference Include="NAudio" Version="1.10.0" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
+    <PackageReference Include="System.Resources.Extensions" Version="6.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="irrKlang.NET4">
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lib/win-x64/*.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build/lib/win-x64</PackagePath>
+    </None>
+    <None Include="lib/win-x86/*.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build/lib/win-x86</PackagePath>
+    </None>
+    <Content Include="SIL.Windows.Forms.Media.targets">
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
+    </Content>
+    <None Include="app.config" Pack="true" PackagePath="contentFiles\any\any\$(AssemblyTitle).dll.config" />
+  </ItemGroup>
+</Project>

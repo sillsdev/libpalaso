@@ -25,7 +25,7 @@ using SIL.Windows.Forms.ReleaseNotes;
 using SIL.Windows.Forms.SettingProtection;
 using SIL.Windows.Forms.WritingSystems;
 using SIL.WritingSystems;
-using SIL.Media;
+using SIL.Windows.Forms.Media;
 using SIL.Windows.Forms.Extensions;
 using SIL.Windows.Forms.FileSystem;
 using SIL.Windows.Forms.LocalizationIncompleteDlg;
