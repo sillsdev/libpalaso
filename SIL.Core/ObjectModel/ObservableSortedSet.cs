@@ -12,6 +12,6 @@ namespace SIL.ObjectModel
 
 		protected override IEqualityComparer<T> Comparer => EqualityComparer<T>.Default;
 
-		protected SortedSet<T> Items => (SortedSet<T>) _set;
+		protected SortedSet<T> Items => (SortedSet<T>) Set;
 	}
 }

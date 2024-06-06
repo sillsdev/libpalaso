@@ -18,6 +18,6 @@ namespace SIL.ObjectModel
 
 		protected override IEqualityComparer<T> Comparer => Items.Comparer;
 
-		protected HashSet<T> Items => (HashSet<T>) _set;
+		protected HashSet<T> Items => (HashSet<T>) Set;
 	}
 }

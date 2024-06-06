@@ -10,6 +10,7 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 	/// </summary>
 	public class LocalizationIncompleteViewModel
 	{
+		[CLSCompliant(false)]
 		public ILocalizationManager PrimaryLocalizationManager { get; }
 
 		public string EmailAddressForLocalizationRequests =>
@@ -48,6 +49,7 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 		/// <param name="issueRequestForLocalization">An action to handle issuing a localization
 		/// request (typically by passing the <see cref="StandardAnalyticsInfo"/> to
 		/// DesktopAnalytics.Track</param>
+		[CLSCompliant(false)]
 		public LocalizationIncompleteViewModel(ILocalizationManager appLm,
 			string crowdinProjectName, Action issueRequestForLocalization)
 		{
