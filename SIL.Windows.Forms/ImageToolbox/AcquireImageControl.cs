@@ -284,7 +284,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// <param name="searchTerm"></param>
 		public void SetInitialSearchString(string searchTerm)
 		{
-			_galleryControl.SetIntialSearchTerm(searchTerm);
+			_galleryControl.SetInitialSearchTerm(searchTerm);
 		}
 
 		/// <summary>

@@ -20,21 +20,21 @@ namespace SIL.ObjectModel
 		protected virtual event PropertyChangedEventHandler PropertyChanged;
 
 		private readonly SimpleMonitor _reentrancyMonitor = new SimpleMonitor();
-		protected readonly ISet<T> _set;
+		protected readonly ISet<T> Set;
 
 		public ObservableISet(ISet<T> set)
 		{
-			_set = set;
+			Set = set;
 		}
 
 		IEnumerator<T> IEnumerable<T>.GetEnumerator()
 		{
-			return _set.GetEnumerator();
+			return Set.GetEnumerator();
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return _set.GetEnumerator();
+			return Set.GetEnumerator();
 		}
 
 		void ICollection<T>.Add(T item)
@@ -47,8 +47,8 @@ namespace SIL.ObjectModel
 		public virtual void UnionWith(IEnumerable<T> other)
 		{
 			CheckReentrancy();
-			 T[] addedItems = other.Where(x => !_set.Contains(x)).ToArray();
-			_set.UnionWith(addedItems);
+			 T[] addedItems = other.Where(x => !Set.Contains(x)).ToArray();
+			Set.UnionWith(addedItems);
 			if (addedItems.Length > 0)
 			{
 				OnPropertyChanged(new PropertyChangedEventArgs("Count"));
@@ -59,8 +59,8 @@ namespace SIL.ObjectModel
 		public virtual void IntersectWith(IEnumerable<T> other)
 		{
 			CheckReentrancy();
-			T[] removedItems = _set.Where(x => !other.Contains(x)).ToArray();
-			_set.ExceptWith(removedItems);
+			T[] removedItems = Set.Where(x => !other.Contains(x)).ToArray();
+			Set.ExceptWith(removedItems);
 			if (removedItems.Length > 0)
 			{
 				OnPropertyChanged(new PropertyChangedEventArgs("Count"));
@@ -71,8 +71,8 @@ namespace SIL.ObjectModel
 		public virtual void ExceptWith(IEnumerable<T> other)
 		{
 			CheckReentrancy();
-			T[] removedItems = other.Where(x => _set.Contains(x)).ToArray();
-			_set.ExceptWith(removedItems);
+			T[] removedItems = other.Where(x => Set.Contains(x)).ToArray();
+			Set.ExceptWith(removedItems);
 			if (removedItems.Length > 0)
 			{
 				OnPropertyChanged(new PropertyChangedEventArgs("Count"));
@@ -87,14 +87,14 @@ namespace SIL.ObjectModel
 			var removedItems = new List<T>();
 			foreach (T item in other.Distinct(Comparer))
 			{
-				if (_set.Contains(item))
+				if (Set.Contains(item))
 					removedItems.Add(item);
 				else
 					addedItems.Add(item);
 			}
 
-			_set.UnionWith(addedItems);
-			_set.ExceptWith(removedItems);
+			Set.UnionWith(addedItems);
+			Set.ExceptWith(removedItems);
 
 			if (addedItems.Count > 0 || removedItems.Count > 0)
 				OnPropertyChanged(new PropertyChangedEventArgs("Count"));
@@ -106,38 +106,38 @@ namespace SIL.ObjectModel
 
 		public bool IsSubsetOf(IEnumerable<T> other)
 		{
-			return _set.IsSubsetOf(other);
+			return Set.IsSubsetOf(other);
 		}
 
 		public bool IsSupersetOf(IEnumerable<T> other)
 		{
-			return _set.IsSupersetOf(other);
+			return Set.IsSupersetOf(other);
 		}
 
 		public bool IsProperSupersetOf(IEnumerable<T> other)
 		{
-			return _set.IsProperSupersetOf(other);
+			return Set.IsProperSupersetOf(other);
 		}
 
 		public bool IsProperSubsetOf(IEnumerable<T> other)
 		{
-			return _set.IsProperSubsetOf(other);
+			return Set.IsProperSubsetOf(other);
 		}
 
 		public bool Overlaps(IEnumerable<T> other)
 		{
-			return _set.Overlaps(other);
+			return Set.Overlaps(other);
 		}
 
 		public bool SetEquals(IEnumerable<T> other)
 		{
-			return _set.SetEquals(other);
+			return Set.SetEquals(other);
 		}
 
 		public virtual bool Add(T item)
 		{
 			CheckReentrancy();
-			if (_set.Add(item))
+			if (Set.Add(item))
 			{
 				OnPropertyChanged(new PropertyChangedEventArgs("Count"));
 				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
@@ -149,8 +149,8 @@ namespace SIL.ObjectModel
 		public virtual void Clear()
 		{
 			CheckReentrancy();
-			int origCount = _set.Count;
-			_set.Clear();
+			int origCount = Set.Count;
+			Set.Clear();
 			if (origCount > 0)
 			{
 				OnPropertyChanged(new PropertyChangedEventArgs("Count"));
@@ -160,18 +160,18 @@ namespace SIL.ObjectModel
 
 		public bool Contains(T item)
 		{
-			return _set.Contains(item);
+			return Set.Contains(item);
 		}
 
 		public void CopyTo(T[] array, int arrayIndex)
 		{
-			_set.CopyTo(array, arrayIndex);
+			Set.CopyTo(array, arrayIndex);
 		}
 
 		public virtual bool Remove(T item)
 		{
 			CheckReentrancy();
-			if (_set.Remove(item))
+			if (Set.Remove(item))
 			{
 				OnPropertyChanged(new PropertyChangedEventArgs("Count"));
 				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
@@ -182,7 +182,7 @@ namespace SIL.ObjectModel
 
 		public int Count
 		{
-			get { return _set.Count; }
+			get { return Set.Count; }
 		}
 
 		bool ICollection<T>.IsReadOnly
