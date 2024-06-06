@@ -28,10 +28,12 @@ namespace SIL.Threading
 		public GlobalMutex(string name)
 		{
 			_name = name;
-			if (!Platform.IsWindows)
+			if (Platform.IsWindows)
+				_adapter = new WindowsGlobalMutexAdapter(name);
+			else if (Platform.IsLinux)
 				_adapter = new LinuxGlobalMutexAdapter(name);
 			else
-				_adapter = new WindowsGlobalMutexAdapter(name);
+				_adapter = new ExplicitGlobalMutexAdapter(name);
 		}
 
 		/// <summary>
@@ -284,6 +286,20 @@ namespace SIL.Threading
 			{
 				_mutex.Dispose();
 			}
+		}
+
+		/// <summary>
+		/// A .NET native Mutex object works cross-process on all OSes if we prepend its name with "Global\".
+		/// On multi-user systems (e.g., Terminal Server on Windows) this can cause one user to grab the lock that another user
+		/// would like to get. If this is an important scenario, then a login session ID and/or username could be included in
+		/// the name of the Mutex. Without prepending "Global\", though, named Mutexes don't work cross-process on OSes other
+		/// than Windows.
+		/// </summary>
+		private class ExplicitGlobalMutexAdapter: WindowsGlobalMutexAdapter
+		{
+			private const string GLOBAL = "Global\\";
+
+			public ExplicitGlobalMutexAdapter(string name) : base(name.StartsWith(GLOBAL) ? name : $"{GLOBAL}{name}") {}
 		}
 	}
 }
