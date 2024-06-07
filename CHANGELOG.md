@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- [SIL.Windows.Forms.Media] Renamed SIL.Media to SIL.Windows.Forms.Media
+
 ## [14.1.1] - 2024-05-23
 
 ### Fixed
