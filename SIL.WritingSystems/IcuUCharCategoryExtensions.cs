@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using Icu;
 
@@ -5,6 +6,7 @@ namespace SIL.WritingSystems
 {
 	public static class IcuUCharCategoryExtensions
 	{
+		[CLSCompliant(false)]
 		public static UnicodeCategory ToUnicodeCategory(this Character.UCharCategory category)
 		{
 			switch (category)

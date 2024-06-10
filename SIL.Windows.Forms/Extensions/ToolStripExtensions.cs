@@ -92,6 +92,7 @@ namespace SIL.Windows.Forms.Extensions
 		/// the WinForms DLL will be able to have access to SIL.WritingSystems, and then this method
 		/// could be moved into L10nSharp.Windows.Forms.</remarks>
 		[PublicAPI]
+		[CLSCompliant(false)]
 		public static void InitializeWithAvailableUILocales(this ToolStripDropDownItem menu,
 			Func<string, bool> localeSelectedAction = null, ILocalizationManager lm = null,
 			LocalizationIncompleteViewModel localizationIncompleteViewModel = null,
