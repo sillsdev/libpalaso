@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- [SIL.Core] Added macOS support for `GlobalMutex`
+
 ## [14.1.1] - 2024-05-23
 
 ### Fixed
