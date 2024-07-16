@@ -100,6 +100,15 @@ namespace SIL.Windows.Forms.Archiving.IMDI.Lists
 		}
 
 		/// ---------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets a language list based on the Ethnologue
+		/// </summary>
+		/// <remarks>Even though this ostensibly claims to use the MPI Languages, this file is
+		/// woefully incomplete (only ~345 languages, less than 5% of the total). A comment inside
+		/// it even says "When a language name and identifier that you need is not in this list,
+		/// please look it up under www.ethnologue.com/web.asp.". So we use the information from
+		/// SIL.WritingSystems, which is based on the complete Ethnologue data.</remarks>
+		/// ---------------------------------------------------------------------------------------
 		protected LanguageList() : base(ListType.MPILanguages, false)
 		{
 		}
@@ -152,7 +161,12 @@ namespace SIL.Windows.Forms.Archiving.IMDI.Lists
 		}
 
 		/// -------------------------------------------------------------------------------------------
-		///  This finds either English name or localised name
+		/// <summary>
+		/// Finds information about the language, given its English name (or possibly the localised
+		/// name or some other variant).
+		/// </summary>
+		/// <remarks>Given its actual behavior, this is kind of poorly named.</remarks>
+		/// -------------------------------------------------------------------------------------------
 		public static LanguageItem FindByEnglishName(string englishName)
 		{
 			if (string.IsNullOrEmpty(englishName))
@@ -161,10 +175,8 @@ namespace SIL.Windows.Forms.Archiving.IMDI.Lists
 			var item = GetList().FindByText(englishName);
 
 			// if not on list, return "und"
-			if (item == null)
-				return new LanguageItem(englishName, "ISO639-3:und", englishName);
-
-			return (LanguageItem)(GetList().FindByText(englishName));
+			return item == null ? new LanguageItem(englishName, "ISO639-3:und", englishName)
+				: (LanguageItem)item;
 		}
 
 		/// -------------------------------------------------------------------------------------------
