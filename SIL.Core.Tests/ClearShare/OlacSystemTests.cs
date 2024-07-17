@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using NUnit.Framework;
-using SIL.Windows.Forms.ClearShare;
+using SIL.Core.ClearShare;
 
-namespace SIL.Windows.Forms.Tests.ClearShare
+namespace SIL.Tests.ClearShare
 {
 	[TestFixture]
 	public class OlacSystemTests

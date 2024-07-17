@@ -17,8 +17,8 @@ using SIL.Windows.Forms.Archiving.Properties;
 using SIL.Extensions;
 using SIL.IO;
 using SIL.PlatformUtilities;
-using SIL.Windows.Forms.ClearShare;
 using Timer = System.Threading.Timer;
+using SIL.Core.ClearShare;
 
 namespace SIL.Windows.Forms.Archiving
 {

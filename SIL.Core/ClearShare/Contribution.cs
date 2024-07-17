@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace SIL.Windows.Forms.ClearShare
+namespace SIL.Core.ClearShare
 {
 	/// <summary>
 	/// Records a single contribution of a single individual to a single "work".

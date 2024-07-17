@@ -23,6 +23,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - [SIL.Windows.Forms.Archiving] Renamed SIL.Archiving to SIL.Windows.Forms.Archiving
+- [SIL.Windows.Forms] Split ClearShare code, moving non-Winforms portions to SIL.Core (SIL.Core.ClearShare namespace)
+- [SIL.Core] Added optional parameter to OlacSystem.GetRoles to allow caller to provide its own XML with role definitions.
+- [SIL.Windows.Forms] Split License into a base class called License and a derived LicenseWithLogo, so that License could be in SIL.Core.
+
+### Removed
+
+- [SIL.Windows.Forms] Removed previously deprecated CreativeCommonsLicense.IntergovernmentalOriganizationQualifier
+
 ## [14.1.1] - 2024-05-23
 
 ### Fixed

@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using SIL.Code;
-using SIL.Windows.Forms.Properties;
 
-namespace SIL.Windows.Forms.ClearShare
+namespace SIL.Core.ClearShare
 {
 	///-----------------------------------------------------------------------------------------
 	/// <summary>
@@ -18,7 +18,7 @@ namespace SIL.Windows.Forms.ClearShare
 	///-----------------------------------------------------------------------------------------
 	public class OlacSystem
 	{
-		private IEnumerable<Role> _roles;
+		private List<Role> _roles;
 		private static readonly XNamespace s_nsOlac = "http://www.language-archives.org/OLAC/1.1/";
 		private static readonly XNamespace s_nsDc = "http://purl.org/dc/elements/1.1/";
 
@@ -96,23 +96,52 @@ namespace SIL.Windows.Forms.ClearShare
 		/// Get all the roles in the system's controlled vocabulary
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public IEnumerable<Role> GetRoles()
+		public IEnumerable<Role> GetRoles(string customRolesXmlFilename = null)
 		{
+			List<Role> ReadRoles(Stream stream)
+			{
+				List<Role> roles;
+				using (var xmlReader = XmlReader.Create(stream))
+				{
+					var doc = XDocument.Load(xmlReader);
+
+					// This is a bit confusing because the role heading node is at the same level
+					// (i.e. a sibling of) as all the associated term nodes. Therefore, the first
+					// thing to do is get the heading nodes that are children of section nodes.
+					// Then find the one heading node whose content is "Role". Then backup to the
+					// section containing that heading node and take all "term" child nodes of
+					// that section (i.e. that are siblings of the role heading node).
+					roles = doc.Descendants("body").Descendants("section")
+						.Elements("heading")
+						.Where(n => n.Value == "Role").Ancestors("section").First()
+						.Descendants("term")
+						.Select(n => new Role(n.Element("code").Value,
+							n.Element("name").Value, n.Element("definition").Value)).ToList();
+					xmlReader.Close();
+				}
+
+				stream.Close();
+				stream.Dispose();
+
+				return roles;
+			}
+
 			if (_roles == null)
 			{
-				// TODO: Provide a way for user-specified roles to be read from a roles.xml
-				// file in a folder somewhere related to the application.
-				var doc = XDocument.Parse(Resources.OlacRoles);
+				if (customRolesXmlFilename != null)
+				{
+					try
+					{
+						_roles = ReadRoles(new FileStream(customRolesXmlFilename, FileMode.Open));
+					}
+					catch (Exception e)
+					{
+						Console.WriteLine(e);
+					}
+				}
 
-				// This is a bit confusing because the role heading node is at the same level
-				// (i.e. a sibling of) as all the associated term nodes. Therefore, the first
-				// thing to do is get the heading nodes that are children of section nodes.
-				// Then find the one heading node whose content is "Role". Then backup to the
-				// section containing that heading node and take all "term" child nodes of
-				// that section (i.e. that are siblings of the role heading node).
-				_roles = doc.Descendants("body").Descendants("section").Elements("heading")
-						.Where(n => n.Value == "Role").Ancestors("section").First().Descendants("term")
-						.Select(n => new Role(n.Element("code").Value, n.Element("name").Value, n.Element("definition").Value));
+				_roles ??= ReadRoles(Assembly.GetExecutingAssembly()
+					.GetManifestResourceStream("SIL.Core.ClearShare.OlacRoles.xml"));
 			}
 
 			return _roles;
@@ -140,7 +169,7 @@ namespace SIL.Windows.Forms.ClearShare
 
 			if (role == null)
 			{
-				var msg = string.Format("This version of OLAC does not contain a role with code '{0}'.", code);
+				var msg = $"This version of OLAC does not contain a role with code '{code}'.";
 				throw new ArgumentOutOfRangeException(msg);
 			}
 

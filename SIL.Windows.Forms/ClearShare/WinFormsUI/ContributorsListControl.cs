@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using JetBrains.Annotations;
 using L10NSharp.UI;
 using SIL.Code;
+using SIL.Core.ClearShare;
 using SIL.Windows.Forms.Widgets.BetterGrid;
 
 namespace SIL.Windows.Forms.ClearShare.WinFormsUI
