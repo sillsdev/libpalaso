@@ -56,10 +56,20 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 			_issueRequestForLocalization = issueRequestForLocalization;
 		}
 
+		/// <summary>
+		/// Gets a value to determine whether the Localization Incomplete dialog box should be
+		/// shown to the user. The default implementation simply checks to see whether the
+		/// requested locale is supported by the primary localization manager, but subclasses
+		/// can override this to provide more nuanced logic.
+		/// </summary>
+		/// <param name="languageId">The IETF language tag to evaluate. Note that if a client
+		/// supports variants of the general code for some purpose but the primary localization
+		/// manager contains only the general code, the client should override this method (and
+		/// call the base implementation, if appropriate, passing in the general code).</param>
 		public virtual bool ShouldShowDialog(string languageId)
 		{
 			RequestedLanguageId = languageId;
-			return PrimaryLocalizationManager != null && PrimaryLocalizationManager
+			return PrimaryLocalizationManager == null || !PrimaryLocalizationManager
 				.GetAvailableUILanguageTags().Contains(RequestedLanguageId);
 		}
 
