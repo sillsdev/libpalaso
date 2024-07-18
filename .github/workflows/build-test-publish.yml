@@ -21,6 +21,16 @@ jobs:
         echo GitVersion_NoNormalizeEnabled=true >> $GITHUB_ENV
         echo IGNORE_NORMALISATION_GIT_HEAD_MOVE=1 >> $GITHUB_ENV
 
+    - name: Install Chocolatey
+      run: |
+        Set-ExecutionPolicy Bypass -Scope Process -Force; `
+        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; `
+        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+    - name: Install Visual Studio Build Tools
+      run: |
+        choco install visualstudio2019buildtools --version 16.11.2 -y --package-parameters "--add Microsoft.VisualStudio.Workload.MSBuildTools --includeRecommended --includeOptional"
+
     # - name: Install GitVersion
     #   run: choco install gitversion.portable --version 5.11.1 -y
 
