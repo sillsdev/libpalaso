@@ -1,0 +1,34 @@
+name: build-test-publish
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # - name: Set environment variables
+    #   run: |
+    #     echo GITVERSION_BUILD_NUMBER=${{ github.run_number }} >> $GITHUB_ENV
+    #     echo GitVersion_NoNormalizeEnabled=true >> $GITHUB_ENV
+    #     echo IGNORE_NORMALISATION_GIT_HEAD_MOVE=1 >> $GITHUB_ENV
+
+    - name: Build project
+      run: dotnet build
+
+    # - name: Test project
+    #   run: dotnet test
+
+    # - name: Publish artifact
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: nuget
+    #     path: output/*.nupkg
