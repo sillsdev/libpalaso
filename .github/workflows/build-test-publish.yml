@@ -1,0 +1,49 @@
+name: build-test-publish
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set environment variables
+      run: |
+        echo GITVERSION_BUILD_NUMBER=${{ github.run_number }} >> $GITHUB_ENV
+        echo GitVersion_NoNormalizeEnabled=true >> $GITHUB_ENV
+        echo IGNORE_NORMALISATION_GIT_HEAD_MOVE=1 >> $GITHUB_ENV
+
+    # - name: Install GitVersion
+    #   run: choco install gitversion.portable --version 5.11.1 -y
+
+    # - name: Set branch for pull request
+    #   if: github.event_name == 'pull_request'
+    #   run: git checkout -B PR-${{ github.event.pull_request.number }}
+
+    # - name: Set branch for push
+    #   if: github.event_name == 'push'
+    #   run: git checkout -B ${{ github.ref_name }}
+
+    # - name: Run GitVersion
+    #   run: gitversion /l console /output buildserver /nonormalize
+
+    - name: Build project
+      run: msbuild build/Palaso.proj /p:Configuration=Release /verbosity:minimal
+
+    # - name: Test project
+    #   run: |
+    #     vstest.console.exe /Logger:trx
+
+    # - name: Publish artifact
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: nuget
+    #     path: output/*.nupkg
