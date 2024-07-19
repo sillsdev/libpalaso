@@ -24,7 +24,7 @@ jobs:
     #     echo IGNORE_NORMALISATION_GIT_HEAD_MOVE=1 >> $GITHUB_ENV
 
     - name: Build project
-      run: dotnet build
+      run: dotnet build --configuration Release
 
     - name: Test project (Framework 4.6.1)
       run: dotnet test output/Release/net461/*Tests.dll --filter "TestCategory != SkipOnTeamCity"
