@@ -27,7 +27,7 @@ jobs:
       run: dotnet build
 
     - name: Test project (Framework 4.6.1)
-      run: dotnet test output/net461/*Tests.dll --filter "TestCategory != SkipOnTeamCity"
+      run: dotnet test output/Release/net461/*Tests.dll --filter "TestCategory != SkipOnTeamCity"
 
     # - name: Test project (others)
     #   run: dotnet test --filter "TestCategory != SkipOnTeamCity"
