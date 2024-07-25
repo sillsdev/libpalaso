@@ -27,10 +27,20 @@ jobs:
       run: dotnet build --configuration Release
 
     - name: Test project (Framework 4.6.1)
-      run: dotnet test output/Release/net461/*Tests.dll --filter "TestCategory != SkipOnTeamCity"
+      continue-on-error: true
+      run: dotnet test output/Release/net461/*Tests.dll --filter "TestCategory != SkipOnTeamCity" --logger:"trx" --results-directory ./test-results/net461
 
-    # - name: Test project (others)
-    #   run: dotnet test --filter "TestCategory != SkipOnTeamCity"
+    - name: Test project (Framework 4.8)
+      continue-on-error: true
+      run: dotnet test output/Release/net48/*Tests.dll --filter "TestCategory != SkipOnTeamCity" --logger:"trx" --results-directory ./test-results/net48
+
+    - name: Publish test results
+      uses: EnricoMi/publish-unit-test-result-action@8885e273a4343cd7b48eaa72428dea0c3067ea98 # v2.14.0
+      with:
+        check_name: LibPalaso Tests
+        files: ./test-results/**/*.trx
+        action_fail: true
+        action_fail_on_inconclusive: true
 
     # - name: Publish artifact
     #   uses: actions/upload-artifact@v3
