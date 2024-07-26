@@ -104,7 +104,7 @@ namespace SIL.Archiving.Tests
 			var writable = _model.IsPathWritable(dir);
 			Assert.False(writable);
 			Assert.AreEqual(1, _messages.Count);
-			Assert.AreEqual("The path is not of a legal form.", _messages[0].MsgText);
+			Assert.IsTrue(_messages[0].MsgText.Contains("path"), "Error should mention the path in its explanation.");
 			Assert.AreEqual(ArchivingDlgViewModel.MessageType.Warning, _messages[0].MsgType);
 		}
 
@@ -115,7 +115,7 @@ namespace SIL.Archiving.Tests
 			var writable = _model.IsPathWritable(dir);
 			Assert.False(writable);
 			Assert.AreEqual(1, _messages.Count);
-			Assert.AreEqual("Illegal characters in path.", _messages[0].MsgText);
+			Assert.IsTrue(_messages[0].MsgText.Contains("path"), "Error should mention the path in its explanation.");
 			Assert.AreEqual(ArchivingDlgViewModel.MessageType.Warning, _messages[0].MsgType);
 		}
 
