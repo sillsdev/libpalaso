@@ -4,6 +4,9 @@
     <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
     <Description>Unit tests for SIL.WritingSystems</Description>
   </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <RuntimeHostConfigurationOption Include="System.Globalization.UseNls" Value="true"/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
