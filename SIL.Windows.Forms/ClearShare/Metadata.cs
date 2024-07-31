@@ -1,4 +1,4 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2018-2023 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,9 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using L10NSharp;
+using SIL.Code;
 using SIL.Extensions;
+using SIL.IO;
 using TagLib;
 using TagLib.IFD;
 using TagLib.Image;
@@ -99,6 +101,8 @@ namespace SIL.Windows.Forms.ClearShare
 			return false;
 		}
 
+		public Exception ExceptionCaughtWhileLoading;
+
 		/// <summary>
 		/// NB: this is used in 2 places; one is loading from the image we are linked to, the other from a sample image we are copying metadata from
 		/// </summary>
@@ -108,14 +112,18 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 			try
 			{
-				destinationMetadata._originalTaglibMetadata = TagLib.File.Create(path) as TagLib.Image.File;
+				destinationMetadata.ExceptionCaughtWhileLoading = null;
+				destinationMetadata._originalTaglibMetadata = RetryUtility.Retry(() =>
+				  TagLib.File.Create(path) as TagLib.Image.File,
+				  memo:$"LoadProperties({path})");
 			}
-			catch (TagLib.UnsupportedFormatException)
+			catch (TagLib.UnsupportedFormatException ex)
 			{
 				// TagLib throws this exception when the file doesn't have any metadata, sigh.
 				// So since I don't see a way to differentiate between that case and the case
 				// where something really is wrong, we're just gonna have to swallow this,
 				// even in DEBUG mode, because else a lot of simple image tests fail
+				destinationMetadata.ExceptionCaughtWhileLoading = ex;
 				return;
 			}
 			catch (NotImplementedException ex)
@@ -126,6 +134,18 @@ namespace SIL.Windows.Forms.ClearShare
 				// problem, but have other limitations.
 				// See https://issues.bloomlibrary.org/youtrack/issue/BL-8706 for a user complaint.
 				System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
+				destinationMetadata.ExceptionCaughtWhileLoading = ex;
+				return;
+			}
+			catch (ArgumentOutOfRangeException ex)
+			{
+				// TagLib can throw this if it can't read some part of the metadata.  This
+				// prevents us from even looking at images that have such metadata, which
+				// seems unreasonable.  (TagLib doesn't fully understand IPTC profiles, for
+				// example, which can lead to this exception.)
+				// See https://issues.bloomlibrary.org/youtrack/issue/BL-11933 for a user complaint.
+				System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
+				destinationMetadata.ExceptionCaughtWhileLoading = ex;
 				return;
 			}
 			LoadProperties(destinationMetadata._originalTaglibMetadata.ImageTag, destinationMetadata);
@@ -170,7 +190,7 @@ namespace SIL.Windows.Forms.ClearShare
 			}
 			destinationMetadata.License = LicenseInfo.FromXmp(licenseProperties);
 
-			//NB: we're loosing non-ascii somewhere... the copyright symbol is just the most obvious
+			//NB: we're losing non-ascii somewhere... the copyright symbol is just the most obvious
 			if (!string.IsNullOrEmpty(destinationMetadata.CopyrightNotice))
 			{
 				destinationMetadata.CopyrightNotice = destinationMetadata.CopyrightNotice.Replace("Copyright �", "Copyright ©");
@@ -323,7 +343,7 @@ namespace SIL.Windows.Forms.ClearShare
 			}
 		}
 
-		private class MetadataAssignement
+		private class MetadataAssignment
 		{
 			public Func<Metadata, string> GetStringFunction { get; set; }
 			public Func<Metadata, bool> ShouldSetValue { get; set; }
@@ -331,12 +351,12 @@ namespace SIL.Windows.Forms.ClearShare
 			public string ResultLabel;
 			public Action<Metadata, string> AssignmentAction;
 
-			public MetadataAssignement(string Switch, string resultLabel, Action<Metadata, string> assignmentAction, Func<Metadata, string> stringProvider)
+			public MetadataAssignment(string Switch, string resultLabel, Action<Metadata, string> assignmentAction, Func<Metadata, string> stringProvider)
 				: this(Switch, resultLabel, assignmentAction, stringProvider, p => !String.IsNullOrEmpty(stringProvider(p)))
 			{
 			}
 
-			public MetadataAssignement(string @switch, string resultLabel, Action<Metadata, string> assignmentAction, Func<Metadata, string> stringProvider, Func<Metadata, bool> shouldSetValueFunction)
+			public MetadataAssignment(string @switch, string resultLabel, Action<Metadata, string> assignmentAction, Func<Metadata, string> stringProvider, Func<Metadata, bool> shouldSetValueFunction)
 			{
 				GetStringFunction = stringProvider;
 				ShouldSetValue = shouldSetValueFunction;
@@ -346,22 +366,22 @@ namespace SIL.Windows.Forms.ClearShare
 			}
 		}
 
-		private static List<MetadataAssignement> MetadataAssignments
+		private static List<MetadataAssignment> MetadataAssignments
 		{
 			get
 			{
-				var assignments = new List<MetadataAssignement>();
-				assignments.Add(new MetadataAssignement("-copyright", "copyright", (p, value) => p.CopyrightNotice = value, p => p.CopyrightNotice));
+				var assignments = new List<MetadataAssignment>();
+				assignments.Add(new MetadataAssignment("-copyright", "copyright", (p, value) => p.CopyrightNotice = value, p => p.CopyrightNotice));
 
-				assignments.Add(new MetadataAssignement("-Author", "Author", (p, value) => p.Creator = value, p => p.Creator));
-				assignments.Add(new MetadataAssignement("-XMP:CollectionURI", "Collection URI", (p, value) => p.CollectionUri = value, p => p.CollectionUri));
-				assignments.Add(new MetadataAssignement("-XMP:CollectionName", "Collection Name", (p, value) => p.CollectionName = value, p => p.CollectionName));
-				assignments.Add(new MetadataAssignement("-XMP-cc:AttributionURL", "Attribution URL", (p, value) => p.AttributionUrl = value, p => p.AttributionUrl));
-				assignments.Add(new MetadataAssignement("-XMP-cc:License", "license",
+				assignments.Add(new MetadataAssignment("-Author", "Author", (p, value) => p.Creator = value, p => p.Creator));
+				assignments.Add(new MetadataAssignment("-XMP:CollectionURI", "Collection URI", (p, value) => p.CollectionUri = value, p => p.CollectionUri));
+				assignments.Add(new MetadataAssignment("-XMP:CollectionName", "Collection Name", (p, value) => p.CollectionName = value, p => p.CollectionName));
+				assignments.Add(new MetadataAssignment("-XMP-cc:AttributionURL", "Attribution URL", (p, value) => p.AttributionUrl = value, p => p.AttributionUrl));
+				assignments.Add(new MetadataAssignment("-XMP-cc:License", "license",
 													   (p, value) => { },//p.License=LicenseInfo.FromUrl(value), //we need to use for all the properties to set up the license
 													   p => p.License.Url, p => p.License !=null));
 				//NB: CC also has a custom one, for adding rights beyond the normal. THat's not what this is (at least right now). This is for custom licenses.
-				assignments.Add(new MetadataAssignement("-XMP-dc:Rights-en", "Rights (en)",
+				assignments.Add(new MetadataAssignment("-XMP-dc:Rights-en", "Rights (en)",
 													   (p, value) => { },//p.License=LicenseInfo.FromUrl(value), //we need to use for all the properties to set up the license
 													   p => p.License.RightsStatement, p => p.License != null));
 
@@ -399,8 +419,10 @@ namespace SIL.Windows.Forms.ClearShare
 			}
 		}
 
+		/// <inheritdoc/>
+		public override string ToString() => MinimalCredits(new[] { "en" }, out _);
+
 		private string _path;
-		private static Encoding _commandLineEncoding = Encoding.UTF8;
 
 		public void Write()
 		{
@@ -410,7 +432,9 @@ namespace SIL.Windows.Forms.ClearShare
 		/// <summary>Returns if the format of the image file supports metadata</summary>
 		public bool FileFormatSupportsMetadata(string path)
 		{
-			var file = TagLib.File.Create(path) as TagLib.Image.File;
+			var file = RetryUtility.Retry(() =>
+				 TagLib.File.Create(path) as TagLib.Image.File,
+				memo:$"FileFormatSupportsMetadata({path})");
 			return file != null && !file.GetType().FullName.Contains("NoMetadata");
 		}
 
@@ -443,7 +467,9 @@ namespace SIL.Windows.Forms.ClearShare
 			if (!FileFormatSupportsMetadata(path))
 				throw new NotSupportedException(String.Format("The image file {0} is in a format that does not support metadata.", Path.GetFileName(path)));
 
-			var file = TagLib.File.Create(path) as TagLib.Image.File;
+			var file = RetryUtility.Retry(() =>
+				TagLib.File.Create(path) as TagLib.Image.File,
+				memo:$"Metadata.Write({path}) - creating TagLib.Image.File");
 
 			file.GetTag(TagTypes.XMP, true); // The Xmp tag, at least, must exist so we can store properties into it.
 			// This does nothing if the file is not allowed to have PNG tags, that is, if it's not a PNG file.
@@ -456,7 +482,7 @@ namespace SIL.Windows.Forms.ClearShare
 				file.CopyFrom(_originalTaglibMetadata);
 			}
 			SaveInImageTag(file.ImageTag);
-			file.Save();
+			RetryUtility.Retry(() => file.Save(), memo: $"Metadata.Write({path}) - saving TagLib.Image.File");
 			//as of right now, we are clean with respect to what is on disk, no need to save.
 			HasChanges = false;
 		}
@@ -698,19 +724,19 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 			var tag = new XmpTag();
 			SaveInImageTag(tag);
-			File.WriteAllText(path, tag.Render(), Encoding.UTF8);
+			RobustFile.WriteAllText(path, tag.Render(), Encoding.UTF8);
 		}
 
 		/// <summary>
 		/// Loads all metadata found in the XMP file.
 		/// </summary>
-		/// <example>LoadXmplFile("c:\dir\metadata.xmp")</example>
+		/// <example>LoadXmpFile("c:\dir\metadata.xmp")</example>
 		public void LoadXmpFile(string path)
 		{
-			if(!File.Exists(path))
+			if(!RobustFile.Exists(path))
 				throw new FileNotFoundException(path);
 
-			var xmp = new XmpTag(File.ReadAllText(path, Encoding.UTF8), null);
+			var xmp = new XmpTag(RobustFile.ReadAllText(path, Encoding.UTF8), null);
 			LoadProperties(xmp, this);
 		}
 
@@ -741,7 +767,7 @@ namespace SIL.Windows.Forms.ClearShare
 		/// <param name="category">e.g. "image", "document"</param>
 		public static bool HaveStoredExemplar(FileCategory category)
 		{
-			return File.Exists(GetExemplarPath(category));
+			return RobustFile.Exists(GetExemplarPath(category));
 		}
 
 		/// <summary>
@@ -751,8 +777,8 @@ namespace SIL.Windows.Forms.ClearShare
 		public static void DeleteStoredExemplar(FileCategory category)
 		{
 			var path = GetExemplarPath(category);
-			if (File.Exists(path))
-				File.Delete(path);
+			if (RobustFile.Exists(path))
+				RobustFile.Delete(path);
 		}
 
 		/// <summary>

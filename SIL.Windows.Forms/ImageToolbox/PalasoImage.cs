@@ -48,11 +48,11 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// the nature of the palaso image system is to deliver images, not file paths, to documents
 		/// (we don't believe in "linking" to files somewhere on the disk which is just asking for problems
 		/// as the document is shared).
-		/// But in one circumumstance, we do care: when the user chooses from disk (as opposed to from camera or scanner)
+		/// But in one circumstance, we do care: when the user chooses from disk (as opposed to from camera or scanner)
 		/// and enters metadata, we want to store that metadata in the original.  
 		/// However, there is one circumstance (currently) in which this is not the original path:
 		/// If we attempt to save metadata and can't (e.g. file is readonly), we create a temp file and 
-		/// store the metadata there, then serve the temp file to the requestor.  That's why we store this path.
+		/// store the metadata there, then serve the temp file to the requester. That's why we store this path.
 		/// </summary>
 		private string _pathForSavingMetadataChanges;
 
@@ -70,8 +70,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 			Metadata = new Metadata();
 		}
 
-
-
 		public static PalasoImage FromImage(Image image)
 		{
 			Guard.AgainstNull(image, "image");
@@ -80,7 +78,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 				Image = image
 			};
 		}
-
 
 		private Image _image;
 
@@ -248,10 +245,12 @@ namespace SIL.Windows.Forms.ImageToolbox
 		private static string GetCorrectImageExtension(string path)
 		{
 			byte[] bytes = new byte[10];
-			using (var file = File.OpenRead(path))
-			{
-				file.Read(bytes, 0, 10);
-			}
+			RetryUtility.Retry(() => {
+				using (var file = File.OpenRead(path))
+				{
+					file.Read(bytes, 0, 10);
+				}
+			}, memo:$"PalasoImage.GetCorrectImageExtension({path})");
 			// see http://www.mikekunz.com/image_file_header.html  
 				var bmp = Encoding.ASCII.GetBytes("BM");     // BMP
 				var gif = Encoding.ASCII.GetBytes("GIF");    // GIF
@@ -308,7 +307,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 			{
 				var leakMe = TempFile.WithExtension(GetCorrectImageExtension(path));
 				RobustFile.Copy(path, leakMe.Path, true);
-
 				//we output the tempPath so that the caller can clean it up later
 				tempPath = leakMe.Path;
 
@@ -327,8 +325,9 @@ namespace SIL.Windows.Forms.ImageToolbox
 					// assume it's a better indication of the problem.
 					var metadata = Metadata.FromFile(path);
 					if (metadata.IsOutOfMemoryPlausible(e))
+						// ReSharper disable once PossibleIntendedRethrow
 						throw e; // Deliberately NOT just "throw", that loses the extra information IsOutOfMemoryPlausible added to the exception.
-					throw new TagLib.CorruptFileException("File could not be read and is possible corrupted");
+					throw new TagLib.CorruptFileException("File could not be read and is possible corrupted", e);
 				}
 			}
 		}

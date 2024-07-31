@@ -2,6 +2,7 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using SIL.Code;
@@ -67,7 +68,7 @@ namespace SIL.IO
 				}
 				// original
 				//File.Copy(sourceFileName, destFileName, overwrite);
-			});
+			}, memo:$"Copy to {destFileName}");
 		}
 
 		/// <summary>
@@ -137,7 +138,7 @@ namespace SIL.IO
 
 		public static void Delete(string path)
 		{
-			RetryUtility.Retry(() => File.Delete(path));
+			RetryUtility.Retry(() => File.Delete(path), memo:$"Delete {path}");
 		}
 
 		public static bool Exists(string path)
@@ -148,7 +149,7 @@ namespace SIL.IO
 
 		public static FileAttributes GetAttributes(string path)
 		{
-			return RetryUtility.Retry(() => File.GetAttributes(path));
+			return RetryUtility.Retry(() => File.GetAttributes(path), memo:$"GetAttributes {path}");
 		}
 
 		public static DateTime GetLastWriteTime(string path)
@@ -165,7 +166,7 @@ namespace SIL.IO
 
 		public static void Move(string sourceFileName, string destFileName)
 		{
-			RetryUtility.Retry(() => File.Move(sourceFileName, destFileName));
+			RetryUtility.Retry(() => File.Move(sourceFileName, destFileName), memo:$"Move to {destFileName}");
 		}
 
 		// TODO: Look at the myriad places where the above method is used that could be
@@ -179,37 +180,37 @@ namespace SIL.IO
 
 		public static FileStream OpenRead(string path)
 		{
-			return RetryUtility.Retry(() => File.OpenRead(path));
+			return RetryUtility.Retry(() => File.OpenRead(path), memo:$"OpenRead {path}");
 		}
 
 		public static StreamReader OpenText(string path)
 		{
-			return RetryUtility.Retry(() => File.OpenText(path));
+			return RetryUtility.Retry(() => File.OpenText(path), memo:$"OpenText {path}");
 		}
 
 		public static byte[] ReadAllBytes(string path)
 		{
-			return RetryUtility.Retry(() => File.ReadAllBytes(path));
+			return RetryUtility.Retry(() => File.ReadAllBytes(path), memo:$"ReadAllBytes {path}");
 		}
 
 		public static string[] ReadAllLines(string path)
 		{
-			return RetryUtility.Retry(() => File.ReadAllLines(path));
+			return RetryUtility.Retry(() => File.ReadAllLines(path), memo:$"ReadAllLines {path}");
 		}
 
 		public static string[] ReadAllLines(string path, Encoding encoding)
 		{
-			return RetryUtility.Retry(() => File.ReadAllLines(path, encoding));
+			return RetryUtility.Retry(() => File.ReadAllLines(path, encoding), memo:$"ReaderAllLines {path},{encoding}");
 		}
 
 		public static string ReadAllText(string path)
 		{
-			return RetryUtility.Retry(() => File.ReadAllText(path));
+			return RetryUtility.Retry(() => File.ReadAllText(path), memo:$"ReadAllText {path}");
 		}
 
 		public static string ReadAllText(string path, Encoding encoding)
 		{
-			return RetryUtility.Retry(() => File.ReadAllText(path, encoding));
+			return RetryUtility.Retry(() => File.ReadAllText(path, encoding), memo:$"ReadAllText {path},{encoding}");
 		}
 
 		public static void Replace(string sourceFileName, string destinationFileName, string destinationBackupFileName)
@@ -240,22 +241,22 @@ namespace SIL.IO
 						throw uae;
 					}
 				}
-			});
+			}, memo:$"Replace {destinationFileName}");
 		}
 
 		public static void ReplaceByCopyDelete(string sourcePath, string destinationPath, string backupPath)
 		{
-			if (!string.IsNullOrEmpty(backupPath) && File.Exists(destinationPath))
+			if (!string.IsNullOrEmpty(backupPath) && RobustFile.Exists(destinationPath))
 			{
-				File.Copy(destinationPath, backupPath, true);
+				RobustFile.Copy(destinationPath, backupPath, true);
 			}
-			File.Copy(sourcePath, destinationPath, true);
-			File.Delete(sourcePath);
+			RobustFile.Copy(sourcePath, destinationPath, true);
+			RobustFile.Delete(sourcePath);
 		}
 
 		public static void SetAttributes(string path, FileAttributes fileAttributes)
 		{
-			RetryUtility.Retry(() => File.SetAttributes(path, fileAttributes));
+			RetryUtility.Retry(() => File.SetAttributes(path, fileAttributes), memo:$"SetAttributes {path}");
 		}
 
 		public static void WriteAllBytes(string path, byte[] bytes)
@@ -268,7 +269,7 @@ namespace SIL.IO
 					f.Write(bytes, 0, bytes.Length);
 					f.Close();
 				}
-			});
+			}, memo:$"WriteAllBytes {path}");
 		}
 
 		public static void WriteAllText(string path, string contents)
@@ -310,7 +311,38 @@ namespace SIL.IO
 					f.Write(content, 0, content.Length);
 					f.Close();
 				}
-			});
+			}, memo:$"WriteAllText {path}");
 		}
+
+		public static FileStream Open(string filePath, FileMode mode)
+		{
+			FileStream stream = null;
+			RetryUtility.Retry(() => { stream = File.Open(filePath, mode); }, memo:$"Open {filePath}, {mode}");
+			return stream;
+		}
+		public static FileStream Open(string filePath, FileMode mode, FileAccess access, FileShare share)
+		{
+			FileStream stream = null;
+			RetryUtility.Retry(() => { stream = File.Open(filePath, mode, access, share); }, memo:$"Open {filePath}");
+			return stream;
+		}
+
+		public static void AppendAllText(string path, string contents)
+		{
+			RetryUtility.Retry(() => File.AppendAllText(path, contents), memo:$"AppendAllText {path}");
+		}
+
+		public static void WriteAllLines(string path, IEnumerable<string> contents)
+		{
+			// Note: this doesn't block until the data is really safely on disk.
+			RetryUtility.Retry(() => File.WriteAllLines(path, contents), memo:$"WriteAllLines {path}");
+		}
+
+#if NET461
+		public static System.Security.AccessControl.FileSecurity GetAccessControl(string filePath)
+		{
+			return RetryUtility.Retry(() => File.GetAccessControl(filePath), memo: $"GetAccessControl {filePath}");
+		}
+#endif
 	}
 }

@@ -16,12 +16,95 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- [SIL.Core] Added macOS support for `GlobalMutex`
+
+## [14.1.1] - 2024-05-23
+
+### Fixed
+
+- [SIL.Windows.Forms.DblBundle] Fixed bug in ProjectsListBase that made it impossible to select a project after double-clicking a column header. (See HT-475)
+
+## [14.1.0] - 2024-05-13
+
+### Added
+
+- [SIL.Windows.Forms] Added static SilResources class with property SilLogo101x113.
+
+### Fixed
+
+- [SIL.Windows.Forms] Fixed backwards logic for LocalizationIncompleteViewModel.ShouldShowDialog (Technically this is a breaking contractual change, since effectively the behavior is the opposite of the original implementation, but the name so clearly indicates the desired behavior that it seems unlikely any subclass implementation would have implemented the logic according to the previously expected backwards behavior.)
+
+## [14.0.0] - 2024-04-09
+
+### Changed
+
+- [SIL.Archiving] Upgraded to L10nSharp 7.0.0
+- [SIL.Windows.Forms] Upgraded to L10nSharp 7.0.0
+- [SIL.Windows.Forms.DblBundle] Upgraded to L10nSharp 7.0.0
+- [SIL.Windows.Forms.Keyboarding] Upgraded to L10nSharp 7.0.0
+- [SIL.Windows.Forms.WritingSystems] Upgraded to L10nSharp 7.0.0
+- [SIL.Core] `RaiseExceptionIfFailed` no longer throws an exception if user cancelled
+
+## [13.0.1] - 2024-01-09
+
+### Fixed
+
+- [SIL.Core] Fixed bug in extension method GetLongestUsefulCommonSubstring when string ends with an Object replacement character
+- [SIL.Core] LogBox: Checked for disposed log box or caller-requested cancel in SafeInvoke so we don't try to write messages or scroll.
+
+## [13.0.0] - 2023-12-07
+
+### Added
+
+- [SIL.Core] `RobustFile.Open`, `RobustFile.AppendAllText`, `RobustFile.WriteAllLines`, `RobustFile.GetAccessControl`, `RobustIO.EnumerateFilesInDirectory`, `RobustIO.EnumerateDirectoriesInDirectory`, `RobustIO.EnumerateEntriesInDirectory`, `RobustIO.RequireThatDirectoryExists`, `RobustIO.GetFileStream`, `RobustIO.ReadAllTextFromFileWhichMightGetWrittenTo`, and `RobustIO.IsFileLocked` methods
+- [SIL.Core.Desktop] `RobustImageIO.GetImageFromFile` method
+- [SIL.Windows.Forms] `ImageToolboxControl.ImageChanged` (selected or cropped) and `ImageToolboxControl.MetadataChanged` events
+- [SIL.Windows.Forms] Text box to edit `AttributionUrl` in `MetadataEditorControl`
+- [SIL.Windows.Forms] Interop.WIA.dll for MSIL (doesn't seem to work with 32-bit apps, so the existing dll remains unchanged)
+- [SIL.Scripture] Made static methods TryGetVerseNum, ParseVerseNumberRange, and ParseVerseNumber public
+- [SIL.Core] `CanWriteToDirectories` and `CanWriteToDirectory`
+- [SIL.Windows.Forms] `CanWriteToDirectories`, `CanWriteToDirectory` and `ReportDefenderProblem`
+- [SIL.Core] `StrLengthComparer`, IEnumerable<T>.ToString extension methods, IList<T>.ContainsSequence<T> extension method
+- [SIL.Windows.Forms] `ConfirmFileOverwriteDlg`
+- [SIL.Windows.Forms] several constructors and `Restore` method to `WaitCursor`
+- [SIL.Media.NAudio] added an overload to `BeginMonitoring` with `catchAndReportExceptions` parameter
+
+### Changed
+
+- [SIL.DictionaryServices] Renamed parameter of LiftWriter.WriteHeader from headerConentsNotIncludingHeaderElement to headerContentsNotIncludingHeaderElement
+- [SIL.WritingSystems] Updated langtags.json and ianaSubtagRegistry.txt
+- [SIL.Core] Enhanced ErrorReport.GetOperatingSystemLabel method to report Windows 11+ and list the version as well.
+- [SIL.Core] Enhanced RetryUtility.Retry methods to optionally improve debugging messages, and fixed existing RobustFile and RobustIO methods to use the new optional debugging parameter
+- [SIL.Media] Changed the FrameRate reported in VideoInfo from FrameRate to AvgFrameRate.
+- [SIL.Windows.Forms] Fixed spelling error in ImageGalleryControl, renaming SetIntialSearchTerm to SetInitialSearchTerm.
+- [SIL.Windows.Forms] Made `WaitCursor` class (which used to contain only static methods) implement IDisposable
+
+### Fixed
+
+- [SIL.Windows.Forms.ClearShare] Fixed Metadata.LoadProperties to catch the ArgumentOutOfRangeException thrown by TagLib.File.Create when unknown data is found in the IPTC profile segment.  The rest of the metadata (Exif / XMP) is likely to be okay, but won't be available until TagLib is fixed to allow this.  Not having the metadata available shouldn't prevent using the image.  Note that clients can now read the exception caught while loading if so desired.
+- [SIL.Windows.Forms.WritingSystem.WSIdentifiers] Changed ComboBox controls in WSIdentifierView and ScriptRegionVariantView to DropDownList style to prevent accidental editing that shouldn't happen
+- [SIL.Windows.Forms.ClearShare] Make Metadata.Write (and a few other methods) more robust
+- [SIL.Core.Desktop] Make FileUtils.ReplaceFileWithUserInteractionIfNeeded robust
+- [SIL.Core] Make RobustFile.ReplaceByCopyDelete truly robust
+- [SIL.Core] Make RetryUtility retry for exceptions that are subclasses of the ones listed to try. For example, by default (IOException) it will now retry for FileNotFoundException.
+- [SIL.Windows.Forms] Spelling of `CreativeCommonsLicense.IntergovernmentalOrganizationQualifier`
+- [SIL.Windows.Forms] Fixed internationalization problem: SettingsProtection.LauncherButtonLabel was used as ID for two different strings.
+- [SIL.Windows.Forms] Fix 4 img metadata methods that could fail due to cloud or scanning interference
+- [SIL.Windows.Forms] Fixed error in BetterGrid.OnCellContentClick to make it so the delete button works correctly if there is no "new row."
+
+### Removed
+
+- [SIL.Windows.Forms] ImageGalleryControl.InSomeoneElesesDesignMode (seemingly unused and misspelled)
+- [SIL.Windows.Forms] Checkbox for `IntergovernmentalOrganizationQualifier` from `MetadataEditorControl`
+
 ## [12.0.1] - 2023-05-26
 
 ### Fixed
 
 - [SIL.Windows.Forms] Make `PalasoImage.FromFile(Robustly)` methods more robust
-- [SIL.Windows.Forms] Update dll to `libdl.so.2` to make compatible with Ubuntu 22.x.  Affects multiple projects.
+- [SIL.Windows.Forms] Update dll to `libdl.so.2` to make compatible with Ubuntu 22.x. Affects multiple projects.
 - [SIL.Core] Fixed `BulkObservableList.MoveRange` method when moving a single item forward.
 
 ## [12.0.0] - 2023-02-14
@@ -129,6 +212,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core.Desktop] Added Testing channel to UpdateSettings.
 
 ### Fixed
+
 - [SIL.Archiving] Fixed formatting of DateTimes
 - [SIL.Core] Fixed SIL.IO.PathUtilities.DeleteToRecycleBin and .GetDefaultFileManager to work in a flatpak environment.
 - [SIL.Lexicon] Fixed crash caused by incorrect processing of keyboard data
@@ -139,6 +223,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [10.0.0] - 2022-08-04
 
 ### Added
+
 - [SIL.Windows.Forms] Added extension method InitializeWithAvailableUILocales.
 - [SIL.Windows.Forms] Added LocalizationIncompleteDlg and LocalizationIncompleteViewModel classes
 - [SIL.Windows.Forms] Added property SummaryDisplayMember to CheckedComboBox.
@@ -149,17 +234,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Scripture] Added event InvalidReferencePasted to VerseControl, which is fired whenever an attempt to paste an invalid scripture reference is made.
 
 ### Changed
+
 - [SIL.Windows.Forms.WritingSystems] Moved (internal) extension method InitializeWithAvailableUILocales to SIL.Windows.Forms.
 - [SIL.Windows.Forms.WritingSystems] Added additional optional localizationIncompleteViewModel parameter to ToolStripExtensions.InitializeWithAvailableUILocales.
 - [SIL.Core] If NotifyUserOfProblem is called with a null exception, it will no longer call UsageReporter.ReportException
 - Replace deprecated `Mono.Posix` dependency with `Mono.Unix` (#1186)
 
 ### Removed
+
 - Removed the "new" DisplayMember property from CheckedComboBox (which overrode the base class member). I don't believe this is a breaking change.
 
 ## [9.0.0] - 2022-06-03
 
 ### Added
+
 - [SIL.Core] NamePrefix setting and CleanupTempFolder method added to TempFile
 - [SIL.Core] Utility methods to remove XML namespaces
 - [SIL.Core.Desktop] Serializable class `UpdateSettings` (settings for getting updates)
@@ -313,8 +401,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
   projects
 
-[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v12.0.1...master
-
+[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v14.1.1...master
+[14.1.1]: https://github.com/sillsdev/libpalaso/compare/v14.1.0...v14.1.1
+[14.1.0]: https://github.com/sillsdev/libpalaso/compare/v14.0.0...v14.1.0
+[14.0.0]: https://github.com/sillsdev/libpalaso/compare/v13.0.1...v14.0.0
+[13.0.1]: https://github.com/sillsdev/libpalaso/compare/v13.0.0...v13.0.1
+[13.0.0]: https://github.com/sillsdev/libpalaso/compare/v12.0.1...v13.0.0
 [12.0.1]: https://github.com/sillsdev/libpalaso/compare/v12.0.0...v12.0.1
 [12.0.0]: https://github.com/sillsdev/libpalaso/compare/v11.0.1...v12.0.0
 [11.0.1]: https://github.com/sillsdev/libpalaso/compare/v11.0.0...v11.0.1

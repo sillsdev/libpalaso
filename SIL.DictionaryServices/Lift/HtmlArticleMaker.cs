@@ -16,7 +16,7 @@ namespace Palaso.DictionaryServices.Lift
 	public class HtmlArticleMaker
 	{
 		private readonly XslCompiledTransform _transformer;
-		private readonly XsltArgumentList _tranformArguments;
+		private readonly XsltArgumentList _transformArguments;
 
 		public HtmlArticleMaker(string pathToWritingSystemPrefs, string pathToPartsOfSpeech)
 		{
@@ -33,11 +33,11 @@ namespace Palaso.DictionaryServices.Lift
 				stream.Close();
 			}
 
-			_tranformArguments = new XsltArgumentList();
-			_tranformArguments.AddParam("writing-system-info-file",
+			_transformArguments = new XsltArgumentList();
+			_transformArguments.AddParam("writing-system-info-file",
 										string.Empty,
 										pathToWritingSystemPrefs);
-			_tranformArguments.AddParam("grammatical-info-optionslist-file",
+			_transformArguments.AddParam("grammatical-info-optionslist-file",
 										string.Empty,
 										pathToPartsOfSpeech);
 		}
@@ -58,7 +58,7 @@ namespace Palaso.DictionaryServices.Lift
 					StringBuilder builder = new StringBuilder();
 					using (XmlWriter writer = XmlWriter.Create(builder)) // Don't forget to use CanonicalXmlSettings CP 2011-01
 					{
-						_transformer.Transform(reader, _tranformArguments, writer);
+						_transformer.Transform(reader, _transformArguments, writer);
 						return builder.ToString();
 					}
 				}

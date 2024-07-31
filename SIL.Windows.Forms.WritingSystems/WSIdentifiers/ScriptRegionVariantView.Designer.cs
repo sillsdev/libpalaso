@@ -1,4 +1,4 @@
-﻿using SIL.Windows.Forms.Widgets;
+using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 {
@@ -62,6 +62,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			this._scriptCombo.Name = "_scriptCombo";
 			this._scriptCombo.Size = new System.Drawing.Size(161, 21);
 			this._scriptCombo.TabIndex = 6;
+			this._scriptCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this._scriptCombo.SelectedIndexChanged += new System.EventHandler(this.ScriptCombo_OnSelectedIndexChanged);
 			// 
 			// _variant
@@ -137,6 +138,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			this._regionCombo.Name = "_regionCombo";
 			this._regionCombo.Size = new System.Drawing.Size(161, 21);
 			this._regionCombo.TabIndex = 9;
+			this._regionCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this._regionCombo.SelectedIndexChanged += new System.EventHandler(this.RegionCombo_OnSelectedIndexChanged);
 			// 
 			// _warningLabel

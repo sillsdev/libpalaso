@@ -1,4 +1,4 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2024 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -6,9 +6,11 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using JetBrains.Annotations;
 using SIL.IO;
 using SIL.PlatformUtilities;
 using SIL.Progress;
+using static System.String;
 
 namespace SIL.CommandLineProcessing
 {
@@ -23,7 +25,7 @@ namespace SIL.CommandLineProcessing
 		private Process _process;
 
 		/// <summary>
-		/// This one doesn't attemtp to influence the encoding used
+		/// This one doesn't attempt to influence the encoding used
 		/// </summary>
 		public static ExecutionResult Run(string exePath, string arguments, string fromDirectory, int secondsBeforeTimeOut, IProgress progress)
 		{
@@ -102,9 +104,11 @@ namespace SIL.CommandLineProcessing
 				exePath = "mono";
 			}
 			progress.WriteVerbose("running '{0} {1}' from '{2}'", exePath, arguments, fromDirectory);
-			ExecutionResult result = new ExecutionResult();
-			result.Arguments = arguments;
-			result.ExePath = exePath;
+			ExecutionResult result = new ExecutionResult
+			{
+				Arguments = arguments,
+				ExePath = exePath
+			};
 
 			using (_process = new Process())
 			{
@@ -191,19 +195,24 @@ namespace SIL.CommandLineProcessing
 		}
 
 		/// <summary>
-		/// On Windows, We can't get unicode over the command-line barrier, so
-		/// instead create 8.3 filename, which, happily, will have no non-english characters
-		/// for any part of the path. This is safe to call from Linux, too
+		/// On Windows, We can't get Unicode over the command-line barrier, so
+		/// instead create 8.3 filename, which, happily, will have no non-English characters
+		/// for any part of the path. This is safe to call from Linux, too.
 		/// </summary>
+		[PublicAPI]
 		public static string MakePathToFileSafeFromEncodingProblems(string path)
 		{
 			if (Directory.Exists(path))
-				throw new ArgumentException(string.Format("MakePathToFileSafeFromEncodingProblems() is only for files, but {0} is a directory.", path));
+			{
+				throw new ArgumentException(
+					$"MakePathToFileSafeFromEncodingProblems() is only for files, but {path} is a directory.");
+			}
 
 			var safe = "";
 
-			//if the filename doesn't exist yet, we can't get the 8.3 name. So we make it, get the name, then delete it.
-			//NB: this will not yet deal with the problem of creating a directory
+			// If the filename doesn't exist yet, we can't get the 8.3 name. So we make it, get
+			// the name, then delete it.
+			// NB: this will not yet deal with the problem of creating a directory
 			if (!File.Exists(path))
 			{
 				File.WriteAllText(path, "");
@@ -223,11 +232,12 @@ namespace SIL.CommandLineProcessing
 		/// instead create 8.3 filename, which, happily, will have no non-english characters
 		/// for any part of the path. This is safe to call from Linux, too
 		/// </summary>
+		[PublicAPI]
 		public static string MakePathToDirectorySafeFromEncodingProblems(string path)
 		{
 			if (File.Exists(path))
 				throw new ArgumentException(
-					string.Format(
+					Format(
 						"MakePathToDirectorySafeFromEncodingProblems() is only for directories, but {0} is a file.",
 						path));
 
@@ -251,9 +261,10 @@ namespace SIL.CommandLineProcessing
 
 
 		/// <summary>
-		/// Some command line applications (e.g. exiftool) can handle html-encoded characters in their command arguments
+		/// Some command line applications (e.g. exiftool) can handle HTML-encoded characters in their command arguments
 		/// </summary>
 		/// <remarks>From Rick Strahl at http://www.west-wind.com/weblog/posts/2009/Feb/05/Html-and-Uri-String-Encoding-without-SystemWeb</remarks>
+		[PublicAPI]
 		public static string HtmlEncodeNonAsciiCharacters(string text)
 		{
 			if (text == null)
@@ -289,17 +300,23 @@ namespace SIL.CommandLineProcessing
 		public string StandardOutput;
 		public string ExePath;
 		public string Arguments;
-		public bool DidTimeOut { get { return ExitCode == kTimedOut; } }
-		public bool UserCancelled { get { return ExitCode == kCancelled; } }
+		public bool DidTimeOut => ExitCode == kTimedOut;
+		public bool UserCancelled => ExitCode == kCancelled;
 
+		[PublicAPI]
 		public void RaiseExceptionIfFailed(string contextDescription, params object[] originalPath)
 		{
-			if (ExitCode == 0)
+			// REVIEW: This method used to raise a regular ApplicationException in the case of
+			// UserCancelled. If anything, I assume we would want it to raise a
+			// UserCancelledException, but since the method name says "IfFailed" and the caller
+			// should always already know if the user cancelled, not sure there is any need to
+			// raise an exception in this case.
+			if (ExitCode == 0 || UserCancelled)
 				return;
 
 			var builder = new StringBuilder();
-			builder.AppendLine(string.Format("{0} {1} failed.", ExePath, Arguments));
-			builder.AppendLine("In the context of " + string.Format(contextDescription, originalPath));
+			builder.AppendLine($"{ExePath} {Arguments} failed.");
+			builder.AppendLine("In the context of " + Format(contextDescription, originalPath));
 			builder.AppendLine("StandardError: " + StandardError);
 			builder.AppendLine("StandardOutput: " + StandardOutput);
 			if (DidTimeOut)
@@ -308,7 +325,7 @@ namespace SIL.CommandLineProcessing
 		}
 	}
 
-
+	[PublicAPI]
 	public class UserCancelledException : ApplicationException
 	{
 		public UserCancelledException()

@@ -28,65 +28,72 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Windows.Forms.Button cancelButton;
-			System.Windows.Forms.Timer minimallyCompleteCheckTimer;
-			System.Windows.Forms.Panel panel1;
-
 			this.components = new System.ComponentModel.Container();
+			this.cancelButton = new System.Windows.Forms.Button();
+			this.minimallyCompleteCheckTimer = new System.Windows.Forms.Timer(this.components);
+			this.panel1 = new System.Windows.Forms.Panel();
 			this._okButton = new System.Windows.Forms.Button();
-			cancelButton = new System.Windows.Forms.Button();
-			minimallyCompleteCheckTimer = new System.Windows.Forms.Timer(this.components);
-			panel1 = new System.Windows.Forms.Panel();
-			panel1.SuspendLayout();
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
-			this._metadataEditorControl = new MetadataEditorControl();
+			this._metadataEditorControl = new SIL.Windows.Forms.ClearShare.WinFormsUI.MetadataEditorControl();
+			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
 			this.SuspendLayout();
-			//
+			// 
+			// cancelButton
+			// 
+			this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this._L10NSharpExtender.SetLocalizableToolTip(this.cancelButton, null);
+			this._L10NSharpExtender.SetLocalizationComment(this.cancelButton, null);
+			this._L10NSharpExtender.SetLocalizationPriority(this.cancelButton, L10NSharp.LocalizationPriority.High);
+			this._L10NSharpExtender.SetLocalizingId(this.cancelButton, "Common.CancelButton");
+			this.cancelButton.Location = new System.Drawing.Point(380, 10);
+			this.cancelButton.Name = "cancelButton";
+			this.cancelButton.Size = new System.Drawing.Size(75, 30);
+			this.cancelButton.TabIndex = 3;
+			this.cancelButton.Text = "&Cancel";
+			this.cancelButton.UseVisualStyleBackColor = true;
+			this.cancelButton.Click += new System.EventHandler(this._cancelButton_Click);
+			// 
+			// minimallyCompleteCheckTimer
+			// 
+			this.minimallyCompleteCheckTimer.Enabled = true;
+			this.minimallyCompleteCheckTimer.Interval = 500;
+			this.minimallyCompleteCheckTimer.Tick += new System.EventHandler(this._minimallyCompleteCheckTimer_Tick);
+			// 
+			// panel1
+			// 
+			this.panel1.Controls.Add(this.cancelButton);
+			this.panel1.Controls.Add(this._okButton);
+			this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.panel1.Location = new System.Drawing.Point(0, 597);
+			this.panel1.Name = "panel1";
+			this.panel1.Size = new System.Drawing.Size(472, 50);
+			this.panel1.TabIndex = 0;
+			// 
 			// _okButton
-			//
+			// 
 			this._okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this._L10NSharpExtender.SetLocalizableToolTip(this._okButton, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._okButton, null);
 			this._L10NSharpExtender.SetLocalizationPriority(this._okButton, L10NSharp.LocalizationPriority.High);
 			this._L10NSharpExtender.SetLocalizingId(this._okButton, "Common.OKButton");
-			this._okButton.Location = new System.Drawing.Point(164, 10);
+			this._okButton.Location = new System.Drawing.Point(289, 10);
 			this._okButton.Name = "_okButton";
 			this._okButton.Size = new System.Drawing.Size(75, 30);
 			this._okButton.TabIndex = 2;
 			this._okButton.Text = "&OK";
 			this._okButton.UseVisualStyleBackColor = true;
 			this._okButton.Click += new System.EventHandler(this._okButton_Click);
-			//
-			// _cancelButton
-			//
-			cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this._L10NSharpExtender.SetLocalizableToolTip(cancelButton, null);
-			this._L10NSharpExtender.SetLocalizationComment(cancelButton, null);
-			this._L10NSharpExtender.SetLocalizationPriority(cancelButton, L10NSharp.LocalizationPriority.High);
-			this._L10NSharpExtender.SetLocalizingId(cancelButton, "Common.CancelButton");
-			cancelButton.Location = new System.Drawing.Point(255, 10);
-			cancelButton.Name = "_cancelButton";
-			cancelButton.Size = new System.Drawing.Size(75, 30);
-			cancelButton.TabIndex = 3;
-			cancelButton.Text = "&Cancel";
-			cancelButton.UseVisualStyleBackColor = true;
-			cancelButton.Click += new System.EventHandler(_cancelButton_Click);
-			//
-			// _minimallyCompleteCheckTimer
-			//
-			minimallyCompleteCheckTimer.Enabled = true;
-			minimallyCompleteCheckTimer.Interval = 500;
-			minimallyCompleteCheckTimer.Tick += new System.EventHandler(_minimallyCompleteCheckTimer_Tick);
-			//
+			// 
 			// _L10NSharpExtender
-			//
+			// 
 			this._L10NSharpExtender.LocalizationManagerId = "Palaso";
 			this._L10NSharpExtender.PrefixForNewItems = "MetadataEditor";
-			//
+			// 
 			// _metadataEditorControl
-			//
+			// 
+			this._metadataEditorControl.Dock = System.Windows.Forms.DockStyle.Fill;
 			this._L10NSharpExtender.SetLocalizableToolTip(this._metadataEditorControl, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._metadataEditorControl, null);
 			this._L10NSharpExtender.SetLocalizingId(this._metadataEditorControl, "MetadataEditor.MetadataEditorDialog.MetadataEditorControl");
@@ -96,23 +103,15 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._metadataEditorControl.ShowCreator = false;
 			this._metadataEditorControl.Size = new System.Drawing.Size(338, 590);
 			this._metadataEditorControl.TabIndex = 0;
-			this._metadataEditorControl.Dock = System.Windows.Forms.DockStyle.Fill;
-			//
-			// panel1
-			//
-			panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			panel1.ClientSize = new System.Drawing.Size(347, 50);
-			panel1.Controls.Add(cancelButton);
-			panel1.Controls.Add(this._okButton);
-			//
+			// 
 			// MetadataEditorDialog
-			//
+			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.CancelButton = cancelButton;
-			this.ClientSize = new System.Drawing.Size(472, 640);
+			this.CancelButton = this.cancelButton;
+			this.ClientSize = new System.Drawing.Size(472, 647);
 			this.ControlBox = false;
-			this.Controls.Add(panel1);
+			this.Controls.Add(this.panel1);
 			this.Controls.Add(this._metadataEditorControl);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this._L10NSharpExtender.SetLocalizableToolTip(this, null);
@@ -122,9 +121,8 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this.Name = "MetadataEditorDialog";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Done at runtime";
+			this.panel1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).EndInit();
-			panel1.ResumeLayout(false);
-			panel1.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -134,5 +132,8 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		private MetadataEditorControl _metadataEditorControl;
 		private System.Windows.Forms.Button _okButton;
 		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
+		private System.Windows.Forms.Button cancelButton;
+		private System.Windows.Forms.Timer minimallyCompleteCheckTimer;
+		private System.Windows.Forms.Panel panel1;
 	}
 }

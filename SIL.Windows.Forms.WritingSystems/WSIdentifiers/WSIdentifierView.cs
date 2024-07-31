@@ -58,6 +58,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			_specialTypeComboBox.DisplayMember = "ChoiceName";
 			_specialTypeComboBox.SelectedIndex = 0;
 			UpdateFromModel();
+			_specialTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
 			_specialTypeComboBox.SelectedIndexChanged += specialTypeComboBox_SelectedIndexChanged;
 			if (_model.IsSpecialComboLocked)
 			{

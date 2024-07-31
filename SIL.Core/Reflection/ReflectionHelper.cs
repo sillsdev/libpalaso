@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Mono.Unix.Native;
 
 namespace SIL.Reflection
 {
@@ -465,11 +466,8 @@ namespace SIL.Reflection
 		private static readonly bool RunningFromUnitTest = AppDomain.CurrentDomain.GetAssemblies()
 			.Any(assem =>
 				assem.FullName.StartsWith("nunit.framework", StringComparison.OrdinalIgnoreCase)
-				|| assem.FullName.StartsWith(
-					"Microsoft.VisualStudio.QualityTools.UnitTestFramework",
-					StringComparison.OrdinalIgnoreCase)
-				|| assem.FullName.StartsWith("Microsoft.VisualStudio.TestPlatform.TestFramework",
-					StringComparison.OrdinalIgnoreCase)
+				|| assem.FullName.StartsWith("Microsoft.VisualStudio.QualityTools.UnitTestFramework", StringComparison.OrdinalIgnoreCase)
+				|| assem.FullName.StartsWith("Microsoft.VisualStudio.TestPlatform.TestFramework", StringComparison.OrdinalIgnoreCase)
 				|| assem.FullName.StartsWith("xunit.core", StringComparison.OrdinalIgnoreCase)
 			);
 
@@ -478,8 +476,8 @@ namespace SIL.Reflection
 			get
 			{
 				string path;
-				bool unitTesting = Assembly.GetEntryAssembly() == null;
-				if (RunningFromUnitTest || unitTesting)
+				// checking for assembly == null is for backwards compatibility with old code that may unintentionally take the unit test path
+				if (RunningFromUnitTest || Assembly.GetEntryAssembly() == null)
 				{
 					path = new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath;
 					path = Uri.UnescapeDataString(path);

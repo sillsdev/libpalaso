@@ -28,31 +28,42 @@ To get the source code, you'll need Git. Then from a command line, give this com
 
 #### Windows
 
-- Building libpalaso requires .NET 5. You might want to
+- Building libpalaso requires .NET 5 or later. You might want to
   install Visual Studio 2019 >= 16.8, or JetBrains Rider.
 
 #### Ubuntu Linux
 
+These libraries cannot currently be built on Linux releases later than Focal without some additional steps/dependencies (because dotnet-sdk-5.0 is no longer supported and does not have a package installer for more recent versions and ).
+##### To build on Ubuntu 22.04 (Jammy), you have to:
+- Use mono-devel from Focal
+- Use dotnet-sdk-6.0
+- To get unit tests to pass, you have to install libcanberra-gtk-module (libcanberra-gtk-module/jammy,now 0.30-10ubuntu1 amd64). Not sure what is the correct way to get that dependency installed.
+
+##### The rest of the stuff:
 - Add access to packages.microsoft.com repo for dotnet sdk:
 
   ```bash
-  cd $(mktemp -d) &&
-  curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg &&
-  sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/ &&
-  (source /etc/os-release && wget -q https://packages.microsoft.com/config/${ID}/${VERSION_ID}/prod.list -O prod.list) &&
-  sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list &&
-  sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.gpg /etc/apt/sources.list.d/microsoft-prod.list &&
-  sudo chmod 644 /etc/apt/trusted.gpg.d/microsoft.gpg /etc/apt/sources.list.d/microsoft-prod.list
+  wget https://packages.microsoft.com/config/ubuntu/$(lsb_release -s -r)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+  sudo dpkg -i packages-microsoft-prod.deb
+  rm packages-microsoft-prod.deb
   ```
 
-- Add access to download.mono-project.com for mono 6 by following instructions at <https://www.mono-project.com/download/stable>.
+- Add access to download.mono-project.com for mono 6 by following
+  instructions at <https://www.mono-project.com/download/stable>.
 
-- Install package dependencies:
+- To get unit tests to pass, you have to install libcanberra-gtk-module
+
+- Install the dependencies with:
 
   ```bash
   sudo apt update
-  sudo apt install libicu-dev dotnet-sdk-5 mono-complete
+  sudo apt install libicu-dev dotnet-sdk-6.0 mono-devel msbuild libcanberra-gtk-module
   ```
+
+**Note:** Newer Ubuntu versions have .NET 6+ and Mono 6 in their package
+repos. However, those packages are missing some required files so that
+building libpalaso won't succeed. Therefore it's recommended to install
+.NET 6+ and Mono from Microsoft's/Mono's package repos.
 
 ### Develop
 
@@ -100,6 +111,10 @@ To get the source code, you'll need Git. Then from a command line, give this com
 
 Further instructions at https://github.com/sillsdev/libpalaso/wiki/Developing-with-locally-modified-nuget-packages
 
+- Updating langtags.json and ianaSubtagRegistry.txt:
+  * Instructions for updating the langtags.json and ianaSubtagRegistry.txt files are in [SIL.WritingSystems/Readme.md](SIL.WritingSystems/Readme.md)
+
+
 ### Contribute
 
 - Commit. Push:
@@ -109,6 +124,10 @@ Further instructions at https://github.com/sillsdev/libpalaso/wiki/Developing-wi
   ```
 
 - Send a pull request (<https://help.github.com/articles/using-pull-requests>). Specify destination branch if not `master`.
+
+### Localization
+
+Palaso is localized with [L10NSharp](https://github.com/sillsdev/l10nsharp). Palaso-specific documentation is under `l10n/README.md`.
 
 ## API Policy
 

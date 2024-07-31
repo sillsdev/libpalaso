@@ -473,7 +473,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 				CollectionName = "My Collection",
 				License = new CreativeCommonsLicense(true,true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike)
 				{
-					IntergovernmentalOriganizationQualifier = true
+					IntergovernmentalOrganizationQualifier = true
 				}
 			};
 
@@ -489,7 +489,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 				CopyrightNotice = "Copyright © 2014 SIL",
 				License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike)
 				{
-					IntergovernmentalOriganizationQualifier = true,
+					IntergovernmentalOrganizationQualifier = true,
 					RightsStatement = "Only people named Fred can use this."
 				}
 			};

@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using L10NSharp;
 using SIL.DblBundle;
 using SIL.DblBundle.Text;
@@ -36,7 +37,7 @@ namespace SIL.Windows.Forms.DblBundle
 		private bool m_projectSelected;  // The value of this boolean is only reliable if m_sorting is true.
 		private bool m_sorting;
 
-		public ProjectsListBase()
+		protected ProjectsListBase()
 		{
 			InitializeComponent();
 		}
@@ -44,7 +45,7 @@ namespace SIL.Windows.Forms.DblBundle
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public string SelectedProject
 		{
-			get { return m_selectedProject; }
+			get => m_selectedProject;
 			set
 			{
 				m_selectedProject = value;
@@ -61,6 +62,7 @@ namespace SIL.Windows.Forms.DblBundle
 			}
 		}
 
+		[PublicAPI]
 		public void AddReadOnlyProject(string projectFilePath)
 		{
 			m_readOnlyProjects.Add(projectFilePath);
@@ -68,7 +70,7 @@ namespace SIL.Windows.Forms.DblBundle
 
 		public virtual bool IncludeHiddenProjects
 		{
-			get { return m_includeHiddenProjects; }
+			get => m_includeHiddenProjects;
 			set
 			{
 				m_includeHiddenProjects = value;
@@ -76,23 +78,23 @@ namespace SIL.Windows.Forms.DblBundle
 			}
 		}
 
-		protected virtual DataGridViewColumn InactiveColumn { get { return null; } }
+		protected virtual DataGridViewColumn InactiveColumn => null;
 
+		[PublicAPI]
 		protected void OverrideColumnHeaderText(int columnIndex, string displayName)
 		{
 			m_list.Columns[columnIndex].HeaderText = displayName;
 		}
 
+		[PublicAPI]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		public bool HiddenProjectsExist
-		{
-			get { return m_hiddenProjectsExist; }
-		}
+		public bool HiddenProjectsExist => m_hiddenProjectsExist;
 
+		[PublicAPI]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public GridSettings GridSettings
 		{
-			get { return GridSettings.Create(m_list); }
+			get => GridSettings.Create(m_list);
 			set
 			{
 				if (value == null)
@@ -134,15 +136,18 @@ namespace SIL.Windows.Forms.DblBundle
 					// don't change the AutoSizeMode of the fill column
 					if (m_list.Columns[i] == FillColumn)
 						continue;
-					int colw = m_list.Columns[i].Width;
+					int colWidth = m_list.Columns[i].Width;
 					m_list.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-					m_list.Columns[i].Width = colw;
+					m_list.Columns[i].Width = colWidth;
 				}
 			}
 		}
 
-		protected virtual DataGridViewColumn FillColumn { get { return colRecordingProjectName; } }
+		protected virtual DataGridViewColumn FillColumn => colRecordingProjectName;
 
+		/// <summary>
+		/// Enumeration of folders where existing project files are stored
+		/// </summary>
 		protected abstract IEnumerable<string> AllProjectFolders { get; }
 
 		protected abstract string ProjectFileExtension { get; }
@@ -167,8 +172,7 @@ namespace SIL.Windows.Forms.DblBundle
 
 		protected virtual IProjectInfo GetProjectInfo(string path)
 		{
-			Exception exception;
-			var metadata = DblMetadataBase<TL>.Load<TM>(path, out exception);
+			var metadata = DblMetadataBase<TL>.Load<TM>(path, out var exception);
 			return exception == null ? metadata : null;
 		}
 
@@ -215,10 +219,12 @@ namespace SIL.Windows.Forms.DblBundle
 					(m_filterBundleId != null && m_filterBundleId != project.Item2.Id))
 					continue;
 
-				List<object> rowData = new List<object>();
-				rowData.Add(project.Item1);
-				rowData.Add(project.Item2.Language);
-				rowData.Add(GetRecordingProjectName(project));
+				List<object> rowData = new List<object>
+				{
+					project.Item1,
+					project.Item2.Language,
+					GetRecordingProjectName(project)
+				};
 				rowData.AddRange(GetAdditionalRowData(project.Item2));
 				int iRow = m_list.Rows.Add(rowData.ToArray());
 
@@ -240,8 +246,7 @@ namespace SIL.Windows.Forms.DblBundle
 				if (SelectedProject != null)
 				{
 					SelectedProject = null;
-					if (SelectedProjectChanged != null)
-						SelectedProjectChanged(this, new EventArgs());
+					SelectedProjectChanged?.Invoke(this, EventArgs.Empty);
 				}
 			}
 			else
@@ -251,8 +256,7 @@ namespace SIL.Windows.Forms.DblBundle
 			m_list.CellValueChanged += HandleCellValueChanged;
 			m_list.CellValidating += HandleCellValidating;
 
-			if (ListLoaded != null)
-				ListLoaded(this, new EventArgs());
+			ListLoaded?.Invoke(this, EventArgs.Empty);
 		}
 
 		public void SetFilter(string icuLocale, string bundleId)
@@ -274,16 +278,15 @@ namespace SIL.Windows.Forms.DblBundle
 			if (DesignMode || m_list.SelectedRows.Count < 1 || m_list.SelectedRows[0].Index < 0)
 				SelectedProject = null;
 			else
-				SelectedProject = m_list.SelectedRows[0].Cells[colProjectPathOrId.Index].Value as String;
+				SelectedProject = m_list.SelectedRows[0].Cells[colProjectPathOrId.Index].Value as string;
 
-			if (SelectedProjectChanged != null)
-				SelectedProjectChanged(this, new EventArgs());
+			SelectedProjectChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		/// <summary>
 		/// See https://stackoverflow.com/questions/1407195/prevent-datagridview-selecting-a-row-when-sorted-if-none-was-previously-selected/1407261#1407261
 		/// </summary>
-		void HandleProjectListSorted(object sender, EventArgs e)
+		private void HandleProjectListSorted(object sender, EventArgs e)
 		{
 			if (m_sorting)
 			{
@@ -301,18 +304,21 @@ namespace SIL.Windows.Forms.DblBundle
 		private void HandleCellDoubleClick(object sender, DataGridViewCellEventArgs e)
 		{
 			// ignore double-click of header cells
-			if (e.RowIndex < 0) return;
-			OnDoubleClick(new EventArgs());
+			if (e.RowIndex < 0)
+			{
+				m_sorting = false;
+				return;
+			}
+
+			OnDoubleClick(EventArgs.Empty);
 		}
 
 		private void HandleListCellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
 		{
 			// clicking on the header row
 			// also make sure we're not already set for sorting -- can happen if header is double-clicked
-			if ((e.Button == MouseButtons.Left) && (e.RowIndex == -1) && !m_sorting)
-			{
+			if (e.Button == MouseButtons.Left && e.RowIndex == -1 && !m_sorting)
 				PrepareToSort();
-			}
 		}
 
 		protected virtual void SetHiddenFlag(bool inactive)
@@ -348,14 +354,12 @@ namespace SIL.Windows.Forms.DblBundle
 
 		private void HandleColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
 		{
-			if (ColumnWidthChanged != null)
-				ColumnWidthChanged(this, e);
+			ColumnWidthChanged?.Invoke(this, e);
 		}
 
 		private void HandleColumnDisplayIndexChanged(object sender, DataGridViewColumnEventArgs e)
 		{
-			if (ColumnDisplayIndexChanged != null)
-				ColumnDisplayIndexChanged(this, e);
+			ColumnDisplayIndexChanged?.Invoke(this, e);
 		}
 	}
 }

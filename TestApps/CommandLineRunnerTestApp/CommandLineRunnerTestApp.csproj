@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>SIL.CommandLineProcessing.TestApp</RootNamespace>
+    <AssemblyName>SIL.CommandLineProcessing.TestApp</AssemblyName>
+    <Description>SIL.CommandLineProcessing test app</Description>
+    <OutputPath>../../output/$(Configuration)</OutputPath>
+    <IsPackable>false</IsPackable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+</Project>

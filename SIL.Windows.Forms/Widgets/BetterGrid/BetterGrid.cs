@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -600,7 +600,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 				CommitEdit(DataGridViewDataErrorContexts.Commit);
 				EndEdit();
 			}
-			else if (e.RowIndex < NewRowIndex && RemoveRowAction != null && IsRemoveRowColumn(e.ColumnIndex))
+			else if (e.RowIndex < RowCountLessNewRow && RemoveRowAction != null && IsRemoveRowColumn(e.ColumnIndex))
 			{
 				RemoveRowAction(e.RowIndex);
 				if (VirtualMode)

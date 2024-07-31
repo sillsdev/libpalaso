@@ -2,31 +2,35 @@
 
 ### Using localizations in a project
 
-We are using .xlf with Crowdin so if you are using L10nSharp with TMX you will need to switch to XLF to make use of the Crowdin translations.
-
-1. Add a Nuget dependency on libpalaso.l10ns to the project where you initialize the L10nSharp `LocalizationManager`
+1. Add a Nuget dependency on SIL.libpalaso.l10ns to the project where you initialize the L10nSharp `LocalizationManager`
 2. Add a build step to copy the Palaso.%langcode%.xlf files to the correct folder in your project
 
-### Updating Crowdin with source string changes - UPLOAD TO CROWDIN NOT YET ENABLED
+### Updating Crowdin with source string changes (automatic)
 
-All the strings that are internationalized in all of the libpalaso projects are uploaded to Crowdin in Palaso.en.xlf
+On each commit to `master`, a GitHub Action runs to
+- Download the current `Palaso.en.xlf` from Crowdin.
+  (L10NSharp.ExtractXliff version 7.0.0-beta0011 fails to extract all strings, as not all are internationalized.
+  Merging into the existing file is easier than fixing 128 uninternationalized strings.)
+- Extract all internationalized strings from all libpalaso projects to `Palaso.en.xlf`
+- Upload Palaso.en.xlf to [Crowdin](https://crowdin.com/project/sil-common-libraries)
 
-A Github action runs when commits are merged into master which uses the L10nSharp tool ExtractXliff to get any updates to the source strings resulting in a new Palaso.en.xlf file.
+See `../.github/workflows/l10n-source.yml`
 
-Then the Crowdin cli is used to update that file in Crowdin based on the crowdin.yml file.
-
-It can also be run manually as follows:
+It can also be run manually as follows (requires the [Crowdin CLI](https://crowdin.github.io/crowdin-cli/)):
 ```
+crowdin download sources -T CROWDIN_ACCESS_TOKEN
 msbuild l10n.proj /t:UpdateCrowdin
-crowdin upload sources -i CROWDIN_PROJECT_ID -T CROWDIN_ACCESS_TOKEN
+crowdin upload sources -T CROWDIN_ACCESS_TOKEN
 ```
 
-### Building Nuget package with the latest translations
-This process is run manually from a github action whenever a package with updated translations is needed
+### Building a NuGet package with the latest translations
 
-It can also be run manually on a developer machine as follows:
+This process is run by a github action whenever a version tag is pushed and manually as needed
+(See `../.github/workflows/l10n-packaging.yml`)
+
+It can also be run manually as follows (requires the [Crowdin CLI](https://crowdin.github.io/crowdin-cli/)):
 ```
-crowdin download --all -i CROWDIN_PROJECT_ID -T CROWDIN_ACCESS_TOKEN
+crowdin download --all -T CROWDIN_ACCESS_TOKEN
 msbuild l10n.proj /t:PackageL10ns
 nuget push -ApiKey TheSilNugetApiKey SIL.libpalaso.l10n.nupkg
 ```

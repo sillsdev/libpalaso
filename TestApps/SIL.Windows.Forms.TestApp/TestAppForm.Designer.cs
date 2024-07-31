@@ -82,6 +82,8 @@ namespace SIL.Windows.Forms.TestApp
             this.superToolTip1 = new SIL.Windows.Forms.SuperToolTip.SuperToolTip(this.components);
             this.superToolTip2 = new SIL.Windows.Forms.SuperToolTip.SuperToolTip(this.components);
             this.btnMediaFileInfo = new System.Windows.Forms.Button();
+            this.btnShowFileOverwriteDlg = new System.Windows.Forms.Button();
+            this.btnOpenProject = new System.Windows.Forms.Button();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -91,7 +93,7 @@ namespace SIL.Windows.Forms.TestApp
             this._uiLanguageMenu});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(249, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(187, 25);
             this.toolStrip1.TabIndex = 9;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -106,10 +108,9 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnThrowException
             // 
-            this.btnThrowException.Location = new System.Drawing.Point(16, 542);
-            this.btnThrowException.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnThrowException.Location = new System.Drawing.Point(12, 440);
             this.btnThrowException.Name = "btnThrowException";
-            this.btnThrowException.Size = new System.Drawing.Size(209, 28);
+            this.btnThrowException.Size = new System.Drawing.Size(157, 23);
             this.btnThrowException.TabIndex = 8;
             this.btnThrowException.Text = "Throw Unhandled Exception";
             this.btnThrowException.UseVisualStyleBackColor = true;
@@ -117,10 +118,9 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnShowFormWithModalChild
             // 
-            this.btnShowFormWithModalChild.Location = new System.Drawing.Point(16, 506);
-            this.btnShowFormWithModalChild.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnShowFormWithModalChild.Location = new System.Drawing.Point(12, 411);
             this.btnShowFormWithModalChild.Name = "btnShowFormWithModalChild";
-            this.btnShowFormWithModalChild.Size = new System.Drawing.Size(209, 28);
+            this.btnShowFormWithModalChild.Size = new System.Drawing.Size(157, 23);
             this.btnShowFormWithModalChild.TabIndex = 7;
             this.btnShowFormWithModalChild.Text = "Form w/ Modal Child...";
             this.btnShowFormWithModalChild.UseVisualStyleBackColor = true;
@@ -128,10 +128,9 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnTestContributorsList
             // 
-            this.btnTestContributorsList.Location = new System.Drawing.Point(16, 470);
-            this.btnTestContributorsList.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnTestContributorsList.Location = new System.Drawing.Point(12, 382);
             this.btnTestContributorsList.Name = "btnTestContributorsList";
-            this.btnTestContributorsList.Size = new System.Drawing.Size(209, 28);
+            this.btnTestContributorsList.Size = new System.Drawing.Size(157, 23);
             this.btnTestContributorsList.TabIndex = 6;
             this.btnTestContributorsList.Text = "Test Contributors List...";
             this.btnTestContributorsList.UseVisualStyleBackColor = true;
@@ -139,10 +138,9 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // recordPlayButton
             // 
-            this.recordPlayButton.Location = new System.Drawing.Point(16, 434);
-            this.recordPlayButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.recordPlayButton.Location = new System.Drawing.Point(12, 353);
             this.recordPlayButton.Name = "recordPlayButton";
-            this.recordPlayButton.Size = new System.Drawing.Size(209, 28);
+            this.recordPlayButton.Size = new System.Drawing.Size(157, 23);
             this.recordPlayButton.TabIndex = 5;
             this.recordPlayButton.Text = "Record and play back sound";
             this.recordPlayButton.UseVisualStyleBackColor = true;
@@ -151,10 +149,9 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnFlexibleMessageBox
             // 
-            this.btnFlexibleMessageBox.Location = new System.Drawing.Point(16, 399);
-            this.btnFlexibleMessageBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnFlexibleMessageBox.Location = new System.Drawing.Point(12, 324);
             this.btnFlexibleMessageBox.Name = "btnFlexibleMessageBox";
-            this.btnFlexibleMessageBox.Size = new System.Drawing.Size(209, 28);
+            this.btnFlexibleMessageBox.Size = new System.Drawing.Size(157, 23);
             this.btnFlexibleMessageBox.TabIndex = 4;
             this.btnFlexibleMessageBox.Text = "Flexible Message Box";
             this.btnFlexibleMessageBox.UseVisualStyleBackColor = true;
@@ -162,10 +159,9 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnSettingProtectionDialog
             // 
-            this.btnSettingProtectionDialog.Location = new System.Drawing.Point(16, 362);
-            this.btnSettingProtectionDialog.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSettingProtectionDialog.Location = new System.Drawing.Point(12, 294);
             this.btnSettingProtectionDialog.Name = "btnSettingProtectionDialog";
-            this.btnSettingProtectionDialog.Size = new System.Drawing.Size(209, 28);
+            this.btnSettingProtectionDialog.Size = new System.Drawing.Size(157, 23);
             this.btnSettingProtectionDialog.TabIndex = 3;
             this.btnSettingProtectionDialog.Text = "SettingProtectionDialog";
             this.btnSettingProtectionDialog.UseVisualStyleBackColor = true;
@@ -173,10 +169,9 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // _silAboutBoxGecko
             // 
-            this._silAboutBoxGecko.Location = new System.Drawing.Point(16, 220);
-            this._silAboutBoxGecko.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this._silAboutBoxGecko.Location = new System.Drawing.Point(12, 179);
             this._silAboutBoxGecko.Name = "_silAboutBoxGecko";
-            this._silAboutBoxGecko.Size = new System.Drawing.Size(209, 28);
+            this._silAboutBoxGecko.Size = new System.Drawing.Size(157, 23);
             this._silAboutBoxGecko.TabIndex = 2;
             this._silAboutBoxGecko.Text = "SIL AboutBox (Gecko)";
             this._silAboutBoxGecko.UseVisualStyleBackColor = true;
@@ -186,10 +181,9 @@ namespace SIL.Windows.Forms.TestApp
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(16, 617);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Location = new System.Drawing.Point(12, 569);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(186, 16);
+            this.label1.Size = new System.Drawing.Size(149, 13);
             superToolTipInfo1.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             superToolTipInfo1.BackgroundGradientEnd = System.Drawing.Color.Blue;
             superToolTipInfo1.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
@@ -211,10 +205,9 @@ namespace SIL.Windows.Forms.TestApp
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(16, 641);
-            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label2.Location = new System.Drawing.Point(12, 589);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(176, 16);
+            this.label2.Size = new System.Drawing.Size(140, 13);
             superToolTipInfo2.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
             superToolTipInfo2.BackgroundGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(202)))), ((int)(((byte)(218)))), ((int)(((byte)(239)))));
             superToolTipInfo2.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
@@ -229,10 +222,9 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnSelectFile
             // 
-            this.btnSelectFile.Location = new System.Drawing.Point(16, 326);
-            this.btnSelectFile.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSelectFile.Location = new System.Drawing.Point(12, 265);
             this.btnSelectFile.Name = "btnSelectFile";
-            this.btnSelectFile.Size = new System.Drawing.Size(209, 28);
+            this.btnSelectFile.Size = new System.Drawing.Size(157, 23);
             this.btnSelectFile.TabIndex = 0;
             this.btnSelectFile.Text = "Select File";
             this.btnSelectFile.UseVisualStyleBackColor = true;
@@ -240,10 +232,9 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnMetaDataEditor
             // 
-            this.btnMetaDataEditor.Location = new System.Drawing.Point(16, 290);
-            this.btnMetaDataEditor.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnMetaDataEditor.Location = new System.Drawing.Point(12, 236);
             this.btnMetaDataEditor.Name = "btnMetaDataEditor";
-            this.btnMetaDataEditor.Size = new System.Drawing.Size(209, 28);
+            this.btnMetaDataEditor.Size = new System.Drawing.Size(157, 23);
             this.btnMetaDataEditor.TabIndex = 0;
             this.btnMetaDataEditor.Text = "Meta Data Editor";
             this.btnMetaDataEditor.UseVisualStyleBackColor = true;
@@ -251,10 +242,9 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnShowReleaseNotes
             // 
-            this.btnShowReleaseNotes.Location = new System.Drawing.Point(16, 255);
-            this.btnShowReleaseNotes.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnShowReleaseNotes.Location = new System.Drawing.Point(12, 207);
             this.btnShowReleaseNotes.Name = "btnShowReleaseNotes";
-            this.btnShowReleaseNotes.Size = new System.Drawing.Size(209, 28);
+            this.btnShowReleaseNotes.Size = new System.Drawing.Size(157, 23);
             this.btnShowReleaseNotes.TabIndex = 0;
             this.btnShowReleaseNotes.Text = "Show Release Notes";
             this.btnShowReleaseNotes.UseVisualStyleBackColor = true;
@@ -262,10 +252,9 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnSilAboutBox
             // 
-            this.btnSilAboutBox.Location = new System.Drawing.Point(16, 185);
-            this.btnSilAboutBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSilAboutBox.Location = new System.Drawing.Point(12, 150);
             this.btnSilAboutBox.Name = "btnSilAboutBox";
-            this.btnSilAboutBox.Size = new System.Drawing.Size(209, 28);
+            this.btnSilAboutBox.Size = new System.Drawing.Size(157, 23);
             this.btnSilAboutBox.TabIndex = 0;
             this.btnSilAboutBox.Text = "SIL AboutBox";
             this.btnSilAboutBox.UseVisualStyleBackColor = true;
@@ -273,10 +262,9 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnImageToolbox
             // 
-            this.btnImageToolbox.Location = new System.Drawing.Point(16, 149);
-            this.btnImageToolbox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnImageToolbox.Location = new System.Drawing.Point(12, 121);
             this.btnImageToolbox.Name = "btnImageToolbox";
-            this.btnImageToolbox.Size = new System.Drawing.Size(209, 28);
+            this.btnImageToolbox.Size = new System.Drawing.Size(157, 23);
             this.btnImageToolbox.TabIndex = 0;
             this.btnImageToolbox.Text = "Image Toolbox";
             this.btnImageToolbox.UseVisualStyleBackColor = true;
@@ -284,10 +272,9 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnWritingSystemSetupDialog
             // 
-            this.btnWritingSystemSetupDialog.Location = new System.Drawing.Point(16, 113);
-            this.btnWritingSystemSetupDialog.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnWritingSystemSetupDialog.Location = new System.Drawing.Point(12, 92);
             this.btnWritingSystemSetupDialog.Name = "btnWritingSystemSetupDialog";
-            this.btnWritingSystemSetupDialog.Size = new System.Drawing.Size(209, 28);
+            this.btnWritingSystemSetupDialog.Size = new System.Drawing.Size(157, 23);
             this.btnWritingSystemSetupDialog.TabIndex = 0;
             this.btnWritingSystemSetupDialog.Text = "WritingSystemSetupDialog";
             this.btnWritingSystemSetupDialog.UseVisualStyleBackColor = true;
@@ -295,10 +282,9 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnLookupISOCodeDialog
             // 
-            this.btnLookupISOCodeDialog.Location = new System.Drawing.Point(16, 78);
-            this.btnLookupISOCodeDialog.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnLookupISOCodeDialog.Location = new System.Drawing.Point(12, 63);
             this.btnLookupISOCodeDialog.Name = "btnLookupISOCodeDialog";
-            this.btnLookupISOCodeDialog.Size = new System.Drawing.Size(209, 28);
+            this.btnLookupISOCodeDialog.Size = new System.Drawing.Size(157, 23);
             this.btnLookupISOCodeDialog.TabIndex = 0;
             this.btnLookupISOCodeDialog.Text = "LanguageLookupDialog";
             this.btnLookupISOCodeDialog.UseVisualStyleBackColor = true;
@@ -306,10 +292,9 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnFolderBrowserControl
             // 
-            this.btnFolderBrowserControl.Location = new System.Drawing.Point(16, 42);
-            this.btnFolderBrowserControl.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnFolderBrowserControl.Location = new System.Drawing.Point(12, 34);
             this.btnFolderBrowserControl.Name = "btnFolderBrowserControl";
-            this.btnFolderBrowserControl.Size = new System.Drawing.Size(209, 28);
+            this.btnFolderBrowserControl.Size = new System.Drawing.Size(157, 23);
             this.btnFolderBrowserControl.TabIndex = 0;
             this.btnFolderBrowserControl.Text = "FolderBrowserControl";
             this.btnFolderBrowserControl.UseVisualStyleBackColor = true;
@@ -325,19 +310,44 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnMediaFileInfo
             // 
-            this.btnMediaFileInfo.Location = new System.Drawing.Point(19, 577);
+            this.btnMediaFileInfo.Location = new System.Drawing.Point(12, 468);
+            this.btnMediaFileInfo.Margin = new System.Windows.Forms.Padding(2);
             this.btnMediaFileInfo.Name = "btnMediaFileInfo";
-            this.btnMediaFileInfo.Size = new System.Drawing.Size(206, 28);
+            this.btnMediaFileInfo.Size = new System.Drawing.Size(157, 23);
             this.btnMediaFileInfo.TabIndex = 10;
             this.btnMediaFileInfo.Text = "Get Media File Info";
             this.btnMediaFileInfo.UseVisualStyleBackColor = true;
             this.btnMediaFileInfo.Click += new System.EventHandler(this.btnMediaFileInfo_Click);
             // 
+            // btnShowFileOverwriteDlg
+            // 
+            this.btnShowFileOverwriteDlg.Location = new System.Drawing.Point(12, 496);
+            this.btnShowFileOverwriteDlg.Margin = new System.Windows.Forms.Padding(2);
+            this.btnShowFileOverwriteDlg.Name = "btnShowFileOverwriteDlg";
+            this.btnShowFileOverwriteDlg.Size = new System.Drawing.Size(157, 23);
+            this.btnShowFileOverwriteDlg.TabIndex = 11;
+            this.btnShowFileOverwriteDlg.Text = "Show File Overwrite Dialog";
+            this.btnShowFileOverwriteDlg.UseVisualStyleBackColor = true;
+            this.btnShowFileOverwriteDlg.Click += new System.EventHandler(this.btnShowFileOverwriteDlg_Click);
+            // 
+            // btnOpenProject
+            // 
+            this.btnOpenProject.Location = new System.Drawing.Point(12, 523);
+            this.btnOpenProject.Margin = new System.Windows.Forms.Padding(2);
+            this.btnOpenProject.Name = "btnOpenProject";
+            this.btnOpenProject.Size = new System.Drawing.Size(157, 23);
+            this.btnOpenProject.TabIndex = 12;
+            this.btnOpenProject.Text = "Open Project";
+            this.btnOpenProject.UseVisualStyleBackColor = true;
+            this.btnOpenProject.Click += new System.EventHandler(this.btnOpenProject_Click);
+            // 
             // TestAppForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(249, 671);
+            this.ClientSize = new System.Drawing.Size(187, 613);
+            this.Controls.Add(this.btnOpenProject);
+            this.Controls.Add(this.btnShowFileOverwriteDlg);
             this.Controls.Add(this.btnMediaFileInfo);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.label1);
@@ -357,7 +367,6 @@ namespace SIL.Windows.Forms.TestApp
             this.Controls.Add(this.btnWritingSystemSetupDialog);
             this.Controls.Add(this.btnLookupISOCodeDialog);
             this.Controls.Add(this.btnFolderBrowserControl);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "TestAppForm";
             this.Text = "SIL.Windows.Forms.TestApp";
             this.toolStrip1.ResumeLayout(false);
@@ -391,5 +400,7 @@ namespace SIL.Windows.Forms.TestApp
 		private System.Windows.Forms.ToolStrip toolStrip1;
 		private System.Windows.Forms.ToolStripDropDownButton _uiLanguageMenu;
 		private System.Windows.Forms.Button btnMediaFileInfo;
+		private System.Windows.Forms.Button btnShowFileOverwriteDlg;
+		private System.Windows.Forms.Button btnOpenProject;
 	}
 }

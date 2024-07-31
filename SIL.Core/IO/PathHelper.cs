@@ -122,8 +122,10 @@ namespace SIL.IO
 		   uint cchBuffer);
 
 		/// <summary>
-		/// When calling external exe's on Windows any non-ascii characters can get converted to '?'. This
-		/// will convert them to 8.3 format which is all ascii (and do nothing on Linux).
+		/// When calling external executables on Windows any non-ASCII characters can get converted to '?'. This
+		/// will convert them to 8.3 format which is all ascii (and do nothing on Linux). Note that this
+		/// is dependent on the drive being able to generate 8.3 filenames, so this is not guaranteed to produce
+		/// a short name.
 		/// </summary>
 		public static string MakePathSafeFromEncodingProblems(string path)
 		{

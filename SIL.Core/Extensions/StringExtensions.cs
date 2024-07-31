@@ -56,8 +56,7 @@ namespace SIL.Extensions
 				string[] pieces = str.Split(',');
 				foreach (string piece in pieces)
 				{
-					int i;
-					if (int.TryParse(piece, out i))
+					if (int.TryParse(piece, out var i))
 						array.Add(i);
 				}
 			}
@@ -84,7 +83,7 @@ namespace SIL.Extensions
 					argList = argList + arg + ",";
 				}
 
-				argList = argList.Trim(new char[] { ',' });
+				argList = argList.Trim(',');
 				return "FormatWithErrorStringInsteadOfException(" + format + "," + argList +
 					") Exception: " + e.Message;
 			}
@@ -112,7 +111,7 @@ namespace SIL.Extensions
 			return text.Normalize(NormalizationForm.FormC);
 		}
 
-		private static object _lockUsedForEscaping = new object();
+		private static readonly object _lockUsedForEscaping = new object();
 		private static StringBuilder _bldrUsedForEscaping;
 		private static XmlWriterSettings _settingsUsedForEscaping;
 		private static XmlWriter _writerUsedForEscaping;
@@ -458,18 +457,14 @@ namespace SIL.Extensions
 					cchMatch += IsSurrogate(s1[ich + cchMatch]) ? 2: 1;
 				} while (s1.IsLikelyWordForming(ich + cchMatch));
 
-				//if (cchMatch > maxLength)
-				//{
-				//    ich += cchMatch;
-				//    continue;
-				//}
-				string candidate = s1.Substring(ich, cchMatch);
-				int ichOrc = candidate.IndexOf(kszObject, StringComparison.Ordinal);
+				int ichOrc = s1.IndexOf(kszObject, ich, cchMatch, StringComparison.Ordinal);
 				if (ichOrc >= 0)
 				{
-					ich += ichOrc;
+					ich = ichOrc;
 					continue;
 				}
+
+				string candidate = s1.Substring(ich, cchMatch);
 
 				int ichMatch = 0;
 				do
@@ -489,8 +484,6 @@ namespace SIL.Extensions
 						else if (!IsWhiteSpace(ch))
 							candidate = s1.Substring(ich, cchMatch + 1); // include punctuation
 						cchMatch += incr;
-						//if (cchMatch > maxLength)
-						//    break;
 					}
 					else
 					{
@@ -499,8 +492,6 @@ namespace SIL.Extensions
 							cchMatch += IsSurrogate(s1[ich + cchMatch]) ? 2: 1;
 						} while (s1.IsLikelyWordForming(ich + cchMatch));
 
-						//if (cchMatch > maxLength)
-						//    break;
 						candidate = s1.Substring(ich, cchMatch);
 					}
 				} while (true);
