@@ -1350,7 +1350,7 @@ namespace SIL.WritingSystems
 				}
 				if (IsNullOrWhiteSpace(langName))
 					langName = ci.EnglishName;
-				if (!ci.EnglishName.StartsWith("Unknown Language"))	// Windows .Net behavior
+				if (!ci.IsUnknownCulture())
 				{
 					MapIsoCodesToLanguageName.Add(key, langName);
 					return langName;
@@ -1435,7 +1435,7 @@ namespace SIL.WritingSystems
 						englishNameSuffix = englishNameSuffix.Substring(0, idxCountry) + "))";
 				}
 				langName = nativeName + englishNameSuffix;
-				if (!ci.EnglishName.StartsWith("Unknown Language"))	// Windows .Net behavior
+				if (!ci.IsUnknownCulture())
 				{
 					MapIsoCodeToSubtitledLanguageName.Add(code, langName);
 					return langName;
