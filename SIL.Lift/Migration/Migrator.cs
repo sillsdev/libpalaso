@@ -56,12 +56,15 @@ namespace SIL.Lift.Migration
 
 		private static void DoOneMigrationStep(string xslName, string migrationSourcePath, string migrationTargetPath)
 		{
-			Stream xslstream = Assembly.GetExecutingAssembly().GetManifestResourceStream(xslName);
-			if (xslstream != null)
+			using (var xslstream =
+			       Assembly.GetExecutingAssembly().GetManifestResourceStream(xslName))
 			{
-				XslCompiledTransform xsl = new XslCompiledTransform();
-				xsl.Load(new XmlTextReader(xslstream));
-				xsl.Transform(migrationSourcePath, migrationTargetPath);
+				if (xslstream != null)
+				{
+					XslCompiledTransform xsl = new XslCompiledTransform();
+					xsl.Load(new XmlTextReader(xslstream));
+					xsl.Transform(migrationSourcePath, migrationTargetPath);
+				}
 			}
 		}
 
