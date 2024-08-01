@@ -32,6 +32,8 @@ namespace SIL.Media
 		/// <exception cref="DirectoryNotFoundException">Folder does not exist</exception>
 		/// <exception cref="FileNotFoundException">Folder does not contain the ffprobe
 		/// executable</exception>
+		/// <exception cref="ArgumentException">FFMpegCore failed to set the requested
+		/// FFprobe folder.</exception>
 		/// <remarks>If set to <see cref="Empty"/>, indicates to this library that
 		/// FFprobe is not installed, and therefore methods to retrieve media info will
 		/// fail unconditionally (i.e. they will throw an exception)</remarks>
@@ -51,6 +53,16 @@ namespace SIL.Media
 						throw new FileNotFoundException(
 							"Path is not a folder containing FFprobe.exe: " + value);
 					}
+
+					GlobalFFOptions.Configure(new FFOptions { BinaryFolder = value });
+					var testResult = Path.GetDirectoryName(GlobalFFOptions.GetFFProbeBinaryPath());
+					// Although we would generally be safe to check that the testResult folder is
+					// equal to the passed-in value, there are several edge cases where that might
+					// not be quite true, but if it couldn't find FFprobe in the requested folder,
+					// GetFFProbeBinaryPath just returns the filename with no folder (meaning that
+					// it expects to find it somewhere on the system path).
+					if (testResult == null)
+						throw new ArgumentException("FFMpegCore failed to set the requested FFprobe folder.");
 				}
 
 				s_ffProbeFolder = value;
@@ -103,16 +115,9 @@ namespace SIL.Media
 						GetFileDistributedWithApplication(true, "ffmpeg", FFprobeExe) ??
 						GetFileDistributedWithApplication(true, "ffprobe", FFprobeExe);
 
-					folder = !IsNullOrEmpty(withApplicationDirectory) ?
+					folder = (!IsNullOrEmpty(withApplicationDirectory) ?
 						Path.GetDirectoryName(withApplicationDirectory) :
-						GetFFmpegFolderFromChocoInstall(FFprobeExe);
-
-					if (folder != null)
-					{
-						GlobalFFOptions.Configure(new FFOptions { BinaryFolder = folder });
-					}
-					else
-						folder = Empty;
+						GetFFmpegFolderFromChocoInstall(FFprobeExe)) ?? Empty;
 				}
 			}
 
