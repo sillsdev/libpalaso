@@ -27,7 +27,9 @@ namespace SIL.Media
 
 		/// <summary>
 		/// The folder where FFprobe should be found. An application can use this to set
-		/// the location before making any calls.
+		/// the location before making calls to obtain media info. Note that this sets a global
+		/// setting in FFmpegCore. If the application uses FFmpegCore to call FFprobe or FFmpeg
+		/// for other purposes, this folder will also be used for those calls.
 		/// </summary>
 		/// <exception cref="DirectoryNotFoundException">Folder does not exist</exception>
 		/// <exception cref="FileNotFoundException">Folder does not contain the ffprobe
@@ -54,13 +56,13 @@ namespace SIL.Media
 							"Path is not a folder containing FFprobe.exe: " + value);
 					}
 
+					// Configure tells FFMpegCore to remember the folder where it should find
+					// FFprobe (and also FFmpeg).
 					GlobalFFOptions.Configure(new FFOptions { BinaryFolder = value });
 					var testResult = Path.GetDirectoryName(GlobalFFOptions.GetFFProbeBinaryPath());
-					// Although we would generally be safe to check that the testResult folder is
-					// equal to the passed-in value, there are several edge cases where that might
-					// not be quite true, but if it couldn't find FFprobe in the requested folder,
-					// GetFFProbeBinaryPath just returns the filename with no folder (meaning that
-					// it expects to find it somewhere on the system path).
+					// If it couldn't find FFprobe in the requested folder, GetFFProbeBinaryPath
+					// returns the filename with no folder (meaning that it hopes to find it
+					// somewhere on the system path).
 					if (testResult == null)
 						throw new ArgumentException("FFMpegCore failed to set the requested FFprobe folder.");
 				}
