@@ -19,17 +19,62 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - [SIL.Core] Added macOS support for `GlobalMutex`
+- [SIL.Archiving] Added ArchivingDlgViewModel.Standard and ArchivingDlgViewModel.StringId emumerations.
+- [SIL.Archiving] Added public delegate ArchivingDlgViewModel.ExceptionHandler and event ArchivingDlgViewModel.OnExceptionDuringLaunch.
+- [SIL.Archiving] Added IArchivingProgressDisplay interface.
+- [SIL.Archiving] Added overload of ArchivingDlgViewModel.DisplayMessage to take format parameters.
+- [SIL.Archiving] Added public overload of ArchivingDlgViewModel.LaunchArchivingProgram.
+- [SIL.Archiving] Added protected methods to ArchivingDlgViewModel: ReportMajorProgressPoint, ReportProgress, CleanUp
+- [SIL.Windows.Forms.Archiving] Added protected virtual properties ArchiveTypeForTitleBar and InformativeText to ArchivingDlg.
+- [SIL.Windows.Forms.Archiving] Added public virtual method GetMessage to ArchivingDlg.
+- [SIL.Windows.Forms.Archiving] Added public virtual property ArchiveTypeName to ArchivingDlg.
+- [SIL.Windows.Forms.Archiving] Added protected methods DisplayMessage and Initialize (async) to ArchivingDlg.
+- [SIL.Windows.Forms.Archiving] Added protected virtual method PackageCreationComplete to ArchivingDlg.
+- [SIL.Windows.Forms.Archiving] Added (public) override of property ArchiveTypeName to IMDIArchivingDlg.
+- [SIL.Windows.Forms.Archiving] Added (protected) override of property InformativeText to IMDIArchivingDlg.
+- [SIL.Windows.Forms.Archiving] Added (protected) override of method PackageCreationComplete to IMDIArchivingDlg.
+- [SIL.Windows.Forms.Archiving] Added (public) override of method GetMessage to IMDIArchivingDlg.
+- [SIL.Windows.Forms.Archiving] Added public extensions class LinkLabelExtensions with some methods that were formerly in Extensions class (now in SIL.Archiving).
 
 ### Changed
 
-- [SIL.Windows.Forms.Archiving] Renamed SIL.Archiving to SIL.Windows.Forms.Archiving
+- [SIL.Windows.Forms.Archiving] Split SIL.Archiving, moving Winforms portions (including dependency on L10nSharp) to SIL.Windows.Forms.Archiving.
+- [SIL.Archiving] Required ArchivingDlgViewModel implementations to implement IDisposable.
+- [SIL.Archiving] Made protected members in ArchivingDlgViewModel private, adding protected accessors as needed.
+- [SIL.Archiving] In ArchivingDlgViewModel, renamed DisplayMessageEventHandler to MessageEventHandler, OnDisplayMessage to OnReportMessage, DisplayErrorEventHandler to ErrorEventHandler, and OnDisplayError to OnError.
+- [SIL.Archiving] Changed signature of ArchivingDlgViewModel.OverrideDisplayInitialSummary to include a CancellationToken.
+- [SIL.Archiving] Made ArchivingDlgViewModel.ArchiveType property public and changed it from a string to Standard (new enum).
+- [SIL.Archiving] Changed signature of setFilesToArchive delegate in ArchivingDlgViewModel's protected constructor.
+- [SIL.Archiving] Changed return type of ArchivingDlgViewModel.Initialize (to make it async) and added two parameters.
+- [SIL.Archiving] Changed ArchivingDlgViewModel.DisplayMessage from public to protected.
+- [SIL.Archiving] Changed the signature of protected methods in ArchivingDlgViewModel: LaunchArchivingProgram, GetFileExcludedMsg.
+- [SIL.Archiving] Changed the signature of the public method ArchivingDlgViewModel.CreatePackage.
+- [SIL.Archiving] Changed underlying type of public enums VernacularMaterialsType and SilDomain from ulong to long.
+- [SIL.Archiving] Replaced protected _keys field (now private) in abstract class ArchivingPackage with protected accessor property Keys.
+- [SIL.Archiving] IMDIArchivingDlgViewModel (subclass of ArchivingDlgViewModel) affected by many of the changes to the base class.
+- [SIL.Archiving] IMDIArchivingDlgViewModel and RampArchivingDlgViewModel (subclasses of ArchivingDlgViewModel) affected by many of the changes to the base class.
+- [SIL.Archiving] IMDIArchivingDlgViewModel constructor signature changed.
+- [SIL.Archiving] RampArchivingDlgViewModel constructor signature changed.
+- [SIL.Windows.Forms.Archiving] Made ArchivingDlg implement IArchivingProgressDisplay.
+- [SIL.Windows.Forms.Archiving] ArchivingDlg constructor signature changed: removed localizationManagerId; added optional archiveInfoHyperlinkText.
+- [SIL.Windows.Forms.Archiving] IMDIArchivingDlg constructor signature changed: added appSpecificArchivalProcessInfo.
 - [SIL.Windows.Forms] Split ClearShare code, moving non-Winforms portions to SIL.Core (SIL.Core.ClearShare namespace)
 - [SIL.Core] Added optional parameter to OlacSystem.GetRoles to allow caller to provide its own XML with role definitions.
 - [SIL.Windows.Forms] Split License into a base class called License and a derived LicenseWithLogo, so that License could be in SIL.Core.
 
+### Fixed
+- [SIL.Archiving] Fixed typo in RampArchivingDlgViewModel for Ethnomusicology performance collection.
+- [SIL.Archiving] Changed URLs that used http: to https: in resource EmptyMets.xml.
+
 ### Removed
 
 - [SIL.Windows.Forms] Removed previously deprecated CreativeCommonsLicense.IntergovernmentalOriganizationQualifier
+- [SIL.Archiving] Removed abstract properties from ArchivingDlgViewModel: InformativeText and ArchiveInfoHyperlinkText.
+- [SIL.Archiving] Removed public method ArchivingDlgViewModel.Cancel. (Now handled via cancellation tokens.)
+- [SIL.Archiving] Removed protected methods from ArchivingDlgViewModel: PreparingFilesMsg, GetSavingFilesMsg
+- [SIL.Archiving] Removed protected fields (renamed and made private) from ArchivingLanguage: _iso3Code, _englishName
+- [SIL.Archiving] Removed protected fields (made private) from ArchivingFile: _fullName, _fileName, _fileSize, _mimeType, _descriptions, _accessProtocol
+- [SIL.Archiving] Removed public methods CreateMetsFile and CreateRampPackage from RampArchivingDlgViewModel (made internal).
 
 ## [14.1.1] - 2024-05-23
 
@@ -282,7 +327,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core, SIL.Windows.Forms] `IErrorReporter` interface added a simpler overload of NotifyUserOfProblem method, which must be implemented by IErrorReporters.
   (It is acceptable for implementers to just fill some parameters then call the original method)
   `ConsoleErrorReporter` and `WinFormsErrorReporter` implement `IErrorReporter`'s new interface method
-- [SIL.Core] Added override of SerializeToFileWithWriteThrough to simplify error handling.
+- [SIL.Core] Added overload of SerializeToFileWithWriteThrough to simplify error handling.
 - [SIL.Windows.Forms] Added a CheckedComboBox control
 - [SIL.WritingSystems] Added several methods to IetfLanguageTag class to support getting language names.
 - [SIL.Windows.Forms.WritingSystems] Added extension method InitializeWithAvailableUILocales

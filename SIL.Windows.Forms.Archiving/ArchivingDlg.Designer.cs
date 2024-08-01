@@ -1,4 +1,4 @@
-﻿using SIL.Windows.Forms.Progress;
+using SIL.Windows.Forms.Progress;
 
 namespace SIL.Windows.Forms.Archiving
 {
@@ -178,6 +178,7 @@ namespace SIL.Windows.Forms.Archiving
 			this._buttonCancel.TabIndex = 2;
 			this._buttonCancel.Text = "Cancel";
 			this._buttonCancel.UseVisualStyleBackColor = true;
+			this._buttonCancel.Click +=  new System.EventHandler(this.HandleButtonCancelClick);
 			// 
 			// _flowLayoutExtra
 			// 

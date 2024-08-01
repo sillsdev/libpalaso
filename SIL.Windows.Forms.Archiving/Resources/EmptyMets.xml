@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?><mets ID="sort-mets_mets" OBJID="sword-mets" LABEL="DSpace SWORD Item" PROFILE="DSpace SIL SIP Profile 1.0" xmlns="http://www.loc.gov/METS/" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd">
-  <metsHdr/>
-  <dmdSec ID="ramp-mets-dmd-2" GROUPID="ramp-mets-dmd-2_group-1">
-	<mdWrap LABEL="RAMP Metadata" MDTYPE="OTHER" OTHERMDTYPE="SIL.RAMP" MIMETYPE="text/json">
-	  <binData></binData>
-	</mdWrap>
-  </dmdSec>
-</mets>

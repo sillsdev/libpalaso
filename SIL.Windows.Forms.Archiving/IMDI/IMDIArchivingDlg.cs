@@ -3,12 +3,17 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using L10NSharp;
+using SIL.Archiving;
+using SIL.Archiving.IMDI;
 using SIL.Windows.Forms.PortableSettingsProvider;
+// ReSharper disable InconsistentNaming
 
 namespace SIL.Windows.Forms.Archiving.IMDI
 {
 	/// <summary />
+	[PublicAPI]
 	public class IMDIArchivingDlg : ArchivingDlg
 	{
 		private TableLayoutPanel _destinationFolderTable;
@@ -19,9 +24,25 @@ namespace SIL.Windows.Forms.Archiving.IMDI
 		private LinkLabel _browseIMDIProgram;
 		private ComboBox _selectIMDIPreset;
 
-		/// <summary />
-		public IMDIArchivingDlg(ArchivingDlgViewModel model, string localizationManagerId, Font programDialogFont, FormSettings settings) 
-			: base(model, localizationManagerId, programDialogFont, settings)
+		/// ------------------------------------------------------------------------------------
+		/// <param name="model">View model</param>
+		/// <param name="appSpecificArchivalProcessInfo">Application can use this to pass
+		/// additional information that will be displayed to the user in the dialog to explain
+		/// any application-specific details about the archival process.</param>
+		/// <param name="localizationManagerId">The ID of the localization manager for the
+		/// calling application.</param>
+		/// <param name="programDialogFont">Application can set this to ensure a consistent look
+		/// in the UI (especially useful for when a localization requires a particular font).</param>
+		/// <param name="settings">Location, size, and state where the client would like the
+		/// dialog box to appear (can be null)</param>
+		/// ------------------------------------------------------------------------------------
+		public IMDIArchivingDlg(IMDIArchivingDlgViewModel model,
+			string appSpecificArchivalProcessInfo, string localizationManagerId,
+			Font programDialogFont, FormSettings settings)
+			: base(model, appSpecificArchivalProcessInfo, localizationManagerId,
+				programDialogFont, settings, LocalizationManager.GetString(
+					"DialogBoxes.ArchivingDlg.IsleMetadataInitiative", "Isle Metadata Initiative",
+					"Typically this probably does not need to be localized."))
 		{
 			// DO NOT SHOW THE LAUNCH OPTION AT THIS TIME
 			model.PathToProgramToLaunch = null;
@@ -29,7 +50,7 @@ namespace SIL.Windows.Forms.Archiving.IMDI
 			InitializeNewControls();
 
 			// get the saved IMDI program value
-			GetSavedValues();
+			model.GetSavedValues();
 
 			// set control properties
 			SetControlProperties();
@@ -80,10 +101,82 @@ namespace SIL.Windows.Forms.Archiving.IMDI
 			_flowLayoutExtra.Controls.Add(_destinationFolderTable);
 		}
 
+		public override string ArchiveTypeName =>
+			LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IMDIArchiveType", "IMDI",
+				"This is the abbreviation for Isle Metadata Initiative (https://www.mpi.nl/imdi/). " +
+				"Typically this probably does not need to be localized.");
+
+		/// ------------------------------------------------------------------------------------
+		protected override string InformativeText
+		{
+			get
+			{
+				string programInfo = string.IsNullOrEmpty(_viewModel.NameOfProgramToLaunch) ?
+					string.Format(LocalizationManager.GetString(
+							"DialogBoxes.ArchivingDlg.NoIMDIProgramInfoText",
+							"The {0} package will be created in {1}.",
+							"Parameter 0 is 'IMDI'; " +
+							"Parameter 1 is the path where the package is created."),
+						_viewModel.ArchiveType, _viewModel.PackagePath)
+					:
+					string.Format(LocalizationManager.GetString(
+							"DialogBoxes.ArchivingDlg.IMDIProgramInfoText",
+							"This tool will help you use {0} to archive your {1} data. When the {1} package has been " +
+							"created, you can launch {0} and enter any additional information before doing the actual submission.",
+							"Parameter 0 is the name of the program that will be launched to further prepare the IMDI data for submission; " +
+							"Parameter 1 is the name of the calling (host) program (SayMore, FLEx, etc.)"),
+						_viewModel.NameOfProgramToLaunch, _viewModel.AppName);
+				return string.Format(LocalizationManager.GetString(
+							"DialogBoxes.ArchivingDlg.IMDIOverviewText",
+							"{0} ({1}) is a metadata standard to describe multi-media and multi-modal language " +
+							"resources. The standard provides interoperability for browsable and searchable " +
+							"corpus structures and resource descriptions.",
+							"Parameter 0  is 'Isle Metadata Initiative' (the first occurrence will be turned into a hyperlink); " +
+							"Parameter 1 is 'IMDI'"),
+						_archiveInfoHyperlinkText, _viewModel.ArchiveType) +
+					" " + _appSpecificArchivalProcessInfo +
+					" " + programInfo;
+			}
+		}
+
 		protected override void DisableControlsDuringPackageCreation()
 		{
 			base.DisableControlsDuringPackageCreation();
 			_destinationFolderTable.Visible = false;
+		}
+
+		protected override void PackageCreationComplete(string result)
+		{
+			base.PackageCreationComplete(result);
+
+			var mainExportFile = result;
+
+			if (mainExportFile != null)
+			{
+				// copy the path to the imdi file to the clipboard
+
+				// SP-818: Crash in IMDI export when dialog tries to put string on clipboard
+				//   18 FEB 2014, Phil Hopper: I found this possible solution using retries on StackOverflow
+				//   https://stackoverflow.com/questions/5707990/requested-clipboard-operation-did-not-succeed
+				//Clipboard.SetData(DataFormats.Text, _imdiData.MainExportFile);
+				Clipboard.SetDataObject(mainExportFile, true, 3, 500);
+
+				var successMsg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.ReadyToCallIMDIMsg",
+					"Exported to {0}. This path is now on your clipboard. If you are using Arbil, go to File, Import, then paste this path in.");
+				DisplayMessage(string.Format(successMsg, mainExportFile), ArchivingDlgViewModel.MessageType.Success);
+			}
+		}
+
+		public override string GetMessage(ArchivingDlgViewModel.StringId msgId)
+		{
+			switch (msgId)
+			{
+				case ArchivingDlgViewModel.StringId.IMDIActorsGroup:
+					return LocalizationManager.GetString(
+						"DialogBoxes.ArchivingDlg.IMDIActorsGroup", "Actors",
+						"This is the heading displayed in the Archive Using IMDI dialog box for the files for the actors/participants");
+				default: return base.GetMessage(msgId);
+			}
 		}
 
 		void SetDestinationLabelText()

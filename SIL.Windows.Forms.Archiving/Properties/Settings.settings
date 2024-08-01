@@ -1,15 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SIL.Windows.Forms.Archiving.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
   <Profiles />
-  <Settings>
-	<Setting Name="RampWebSite" Type="System.String" Scope="Application">
-	  <Value Profile="(Default)">https://gateway.sil.org/display/RH/RAMP+Users%27+Manual</Value>
-	</Setting>
-	<Setting Name="RampContributorRoles" Type="System.String" Scope="Application">
-	  <Value Profile="(Default)">author;compiler;consultant;developer;editor;facilitator;illustrator;interviewer;photographer;recorder;researcher;signer;speaker;transcriber;translator</Value>
-	</Setting>
-	<Setting Name="IMDIWebSite" Type="System.String" Scope="Application">
-	  <Value Profile="(Default)">http://www.mpi.nl/imdi/</Value>
-	</Setting>
-  </Settings>
+  <Settings />
 </SettingsFile>
