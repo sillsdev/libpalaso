@@ -1,0 +1,34 @@
+name: build-test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    timeout-minutes: 30
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: '0'
+
+    - name: Build project
+      run: dotnet build --configuration Release
+
+    - name: Test project
+      continue-on-error: true
+      run: dotnet test output/Release/net461/*Tests.dll --filter "TestCategory != SkipOnTeamCity" --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
+
+    - name: Publish test results
+      uses: EnricoMi/publish-unit-test-result-action/windows@v2
+      with:
+        check_name: LibPalaso Tests
+        files: ./test-results/**/*.trx
+        action_fail: true
+        action_fail_on_inconclusive: true
