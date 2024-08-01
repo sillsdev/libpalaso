@@ -16,9 +16,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- [SIL.Core] Added macOS support for `GlobalMutex`
+
 ### Changed
 
 - [SIL.Windows.Forms.Media] Renamed SIL.Media to SIL.Windows.Forms.Media
+
+### Fixed
+
+- [SIL.Window.Forms] When choosing a file in the ImageToolbox.AcquireImageControl, a FileOk handler is simulated that verifies the selected file passes the given filter.  Users can defeat the filter mechanism by pasting or typing the file name.  While the returned filename does not pass the filter, the dialog is reopened until the user either chooses a proper filename or cancels the dialog.  The native FileOk handler can prevent the dialog from closing: we can't achieve that.  (See BL-13552.)
 
 ## [14.1.1] - 2024-05-23
 
