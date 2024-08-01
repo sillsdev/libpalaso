@@ -9,10 +9,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
     <PackageReference Include="Icu4c.Win.Min" Version="56.1.82" IncludeAssets="build" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0"/>
     <PackageReference Include="NDesk.DBus" Version="0.15.0" />
     <PackageReference Include="NUnit" Version="3.13.3" />
 <!--    this reference is required to exhibit an issue where the icu.net version for net8.0 conflicts with the version used by SIL.WritingSystems-->
