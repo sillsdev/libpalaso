@@ -81,59 +81,120 @@ namespace SIL.Windows.Forms.ImageToolbox
 		{
 			try
 			{
+				// Used to simulate having a FileOk event handler that can cancel the OK button click.
+				bool invalidFileChosen;
 				SetMode(Modes.SingleImage);
-				// The primary thing that OpenFileDialogWithViews buys us is the ability to default to large icons.
-				// OpenFileDialogWithViews still doesn't let us read (and thus remember) the selected view.
-				using (var dlg = new OpenFileDialogWithViews(OpenFileDialogWithViews.DialogViewTypes.Large_Icons))
+				do
 				{
-					if (string.IsNullOrEmpty(ImageToolboxSettings.Default.LastImageFolder))
+					invalidFileChosen = false;
+					// The primary thing that OpenFileDialogWithViews buys us is the ability to default to large icons.
+					// OpenFileDialogWithViews still doesn't let us read (and thus remember) the selected view.
+					using (var dlg = new OpenFileDialogWithViews(OpenFileDialogWithViews.DialogViewTypes.Large_Icons))
 					{
-						dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-					}
-					else
-					{
-						dlg.InitialDirectory = ImageToolboxSettings.Default.LastImageFolder; ;
-					}
-
-					dlg.Title = "Choose Picture File".Localize("ImageToolbox.FileChooserTitle", "Title shown for a file chooser dialog brought up by the ImageToolbox");
-
-					//NB: disallowed gif because of a .net crash:  http://jira.palaso.org/issues/browse/BL-85
-					dlg.Filter = "picture files".Localize("ImageToolbox.PictureFiles", "Shown in the file-picking dialog to describe what kind of files the dialog is filtering for") + "(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
-
-					if (DialogResult.OK == dlg.ShowDialog(this.ParentForm))
-					{
-						ImageToolboxSettings.Default.LastImageFolder = Path.GetDirectoryName(dlg.FileName);
-						ImageToolboxSettings.Default.Save();
-
-						try
+						if (string.IsNullOrEmpty(ImageToolboxSettings.Default.LastImageFolder))
 						{
-							_currentImage = PalasoImage.FromFile(dlg.FileName);
+							dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 						}
-						catch (Exception err) //for example, http://jira.palaso.org/issues/browse/BL-199
+						else
 						{
-							var msg = "Sorry, there was a problem loading that image.".Localize(
-								"ImageToolbox.ProblemLoadingImage");
-							if (ImageLoadingExceptionReporter!= null)
-							{
-								ImageLoadingExceptionReporter(dlg.FileName, err, msg);
-							}
-							else
-							{
-								ErrorReport.NotifyUserOfProblem(err, msg);
-							}
-
-							return;
+							dlg.InitialDirectory = ImageToolboxSettings.Default.LastImageFolder; ;
 						}
-						_pictureBox.Image = _currentImage.Image;
-						if (ImageChanged != null)
-							ImageChanged.Invoke(this, null);
+
+						dlg.Title = "Choose Picture File".Localize("ImageToolbox.FileChooserTitle", "Title shown for a file chooser dialog brought up by the ImageToolbox");
+
+						//NB: disallowed gif because of a .net crash:  http://jira.palaso.org/issues/browse/BL-85
+						dlg.Filter = "picture files".Localize("ImageToolbox.PictureFiles", "Shown in the file-picking dialog to describe what kind of files the dialog is filtering for") + "(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
+
+						if (DialogResult.OK == dlg.ShowDialog(this.ParentForm))
+						{
+							// Simulate having a FileOk event handler that can cancel the OK button click.
+							if (!DoubleCheckFileFilter(dlg.Filter, dlg.FileName))
+							{
+								invalidFileChosen = true;
+								continue;
+							}
+							ImageToolboxSettings.Default.LastImageFolder = Path.GetDirectoryName(dlg.FileName);
+							ImageToolboxSettings.Default.Save();
+
+							try
+							{
+								_currentImage = PalasoImage.FromFile(dlg.FileName);
+							}
+							catch (Exception err) //for example, http://jira.palaso.org/issues/browse/BL-199
+							{
+								var msg = "Sorry, there was a problem loading that image.".Localize(
+									"ImageToolbox.ProblemLoadingImage");
+								if (ImageLoadingExceptionReporter!= null)
+								{
+									ImageLoadingExceptionReporter(dlg.FileName, err, msg);
+								}
+								else
+								{
+									ErrorReport.NotifyUserOfProblem(err, msg);
+								}
+
+								return;
+							}
+							_pictureBox.Image = _currentImage.Image;
+							if (ImageChanged != null)
+								ImageChanged.Invoke(this, null);
+						}
 					}
-				}
+				} while (invalidFileChosen);
 			}
 			finally
 			{
 				_actModal = false;
 			}
+		}
+
+		/// <summary>
+		/// Return true if the filePath truly passes the filtering of the filterString.
+		/// People can defeat the filtering by typing or pasting a file path into the file path box.
+		/// </summary>
+		/// <param name="filterString">filter string like those used in file dialogs</param>
+		/// <param name="filePath">file path returned by a file dialog</param>
+		internal static bool DoubleCheckFileFilter(string filterString, string filePath)
+		{
+			if (string.IsNullOrEmpty(filterString))
+				return true; // no filter, so everything passes
+			if (string.IsNullOrEmpty(filePath))
+				return false; // no file, so nothing passes
+			var filterSections = filterString.Split('|');
+			if (filterSections.Length < 2)
+				return true; // no filter, so everything passes
+			var fileName = Path.GetFileName(filePath);
+			for (int i = 1; i < filterSections.Length; i += 2)
+			{
+				if (PassesFilter(filterSections[i], fileName))
+					return true;
+			}
+			return false;
+		}
+		private static bool PassesFilter(string filterList, string fileName)
+		{
+			var parts = filterList.Split(';');
+			foreach (var part in parts)
+			{
+				if (part == "*.*" || part == "*")
+					return true;
+				var filter = part.Trim();
+				if (filter.StartsWith("*"))
+				{
+					filter = filter.Substring(1);
+					if (fileName.EndsWith(filter, StringComparison.InvariantCultureIgnoreCase))
+						return true;
+				}
+				else if (filter.EndsWith("*"))
+				{
+					filter = filter.Substring(0, filter.Length - 1);
+					if (fileName.StartsWith(filter, StringComparison.InvariantCultureIgnoreCase))
+						return true;
+				}
+				else if (fileName.Equals(filter, StringComparison.InvariantCultureIgnoreCase))
+					return true;
+			}
+			return false;
 		}
 
 		private void OpenFileFromDrag(string path)

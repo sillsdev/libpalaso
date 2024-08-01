@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- [SIL.Window.Forms] When choosing a file in the ImageToolbox.AcquireImageControl, a FileOk handler is simulated that verifies the selected file passes the given filter.  Users can defeat the filter mechanism by pasting or typing the file name.  While the returned filename does not pass the filter, the dialog is reopened until the user either chooses a proper filename or cancels the dialog.  The native FileOk handler can prevent the dialog from closing: we can't achieve that.  (See BL-13552.)
 - [SIL.Windows.Forms.DblBundle] Fixed bug in ProjectsListBase that made it impossible to select a project after double-clicking a column header. (See HT-475)
 
 ## [14.1.0] - 2024-05-13
