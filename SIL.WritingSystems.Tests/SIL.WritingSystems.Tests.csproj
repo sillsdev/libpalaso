@@ -16,7 +16,7 @@
     <PackageReference Include="NDesk.DBus" Version="0.15.0" />
     <PackageReference Include="NUnit" Version="3.13.3" />
 <!--    this reference is required to exhibit an issue where the icu.net version for net8.0 conflicts with the version used by SIL.WritingSystems-->
-    <PackageReference Include="icu.net" Version="2.10.0"/>
+    <PackageReference Include="icu.net" Version="3.0.0-beta.296"/>
     <PackageReference Include="NUnit3TestAdapter" Version="4.3.2" PrivateAssets="All" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
     <PackageReference Include="Spart" Version="1.0.0" />
