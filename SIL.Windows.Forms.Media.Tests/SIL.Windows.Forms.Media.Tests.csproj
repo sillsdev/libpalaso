@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>SIL.Windows.Forms.Media.Tests</RootNamespace>
+    <AssemblyName>SIL.Windows.Forms.Media.Tests</AssemblyName>
+    <Description>Unit tests for SIL.Windows.Forms.Media</Description>
+    <SignAssembly>false</SignAssembly>
+    <IsPackable>false</IsPackable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+    <PackageReference Include="FFMpegCore" Version="5.0.0" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
+    <PackageReference Include="NAudio" Version="1.10.0" />
+    <PackageReference Include="NUnit" Version="3.13.3" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.3.2" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
+    <ProjectReference Include="..\SIL.Windows.Forms.Media\SIL.Windows.Forms.Media.csproj" />
+    <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj" />
+    <ProjectReference Include="..\SIL.Windows.Forms\SIL.Windows.Forms.csproj" />
+  </ItemGroup>
+</Project>

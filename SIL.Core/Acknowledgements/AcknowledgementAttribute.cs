@@ -121,9 +121,9 @@ namespace SIL.Acknowledgements
 		/// This is useful for making Linux copyright files. It can be a list (comma-separated).
 		/// Items may be relative to the client solution (e.g., something dependent on GeckoFx would specify
 		/// "packages/{filenames}", since that’s where Nuget will always put those files)
-		/// or relative to the DLL that has the acknowledgement attributes (e.g., SIL.Media.dll would specify
+		/// or relative to the DLL that has the acknowledgement attributes (e.g., SIL.Windows.Forms.Media.dll would specify
 		/// "./IrrKlang.dll, ./ikpFlac.dll, ./ikpMP3.dll", since we expect these DLLs to be downloaded somehow
-		/// to the same place in the project source tree as SIL.Media.dll itself).
+		/// to the same place in the project source tree as SIL.Windows.Forms.Media.dll itself).
 		/// If Name and/or Copyright are not specified, the code will use this Location field to find suitable substitutes
 		/// in the FileVersionInfo.
 		/// This is an optional field.

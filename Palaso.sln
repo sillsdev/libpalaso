@@ -14,9 +14,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddSortKey", "AddSortKey\Ad
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms.Tests", "SIL.Windows.Forms.Tests\SIL.Windows.Forms.Tests.csproj", "{6E16866F-FF8D-4136-AD67-36AFE3626432}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Media", "SIL.Media\SIL.Media.csproj", "{66B3504A-3B4E-45CB-903A-A9A75B22EF68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms.Media", "SIL.Windows.Forms.Media\SIL.Windows.Forms.Media.csproj", "{66B3504A-3B4E-45CB-903A-A9A75B22EF68}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Media.Tests", "SIL.Media.Tests\SIL.Media.Tests.csproj", "{CD4AF11C-C214-4D90-8F12-6DA97836B800}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms.Media.Tests", "SIL.Windows.Forms.Media.Tests\SIL.Windows.Forms.Media.Tests.csproj", "{CD4AF11C-C214-4D90-8F12-6DA97836B800}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.TestUtilities", "SIL.TestUtilities\SIL.TestUtilities.csproj", "{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}"
 EndProject
