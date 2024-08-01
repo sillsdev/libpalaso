@@ -27,11 +27,15 @@ namespace SIL.Media
 
 		/// <summary>
 		/// The folder where FFprobe should be found. An application can use this to set
-		/// the location before making any calls.
+		/// the location before making calls to obtain media info. Note that this sets a global
+		/// setting in FFmpegCore. If the application uses FFmpegCore to call FFprobe or FFmpeg
+		/// for other purposes, this folder will also be used for those calls.
 		/// </summary>
 		/// <exception cref="DirectoryNotFoundException">Folder does not exist</exception>
 		/// <exception cref="FileNotFoundException">Folder does not contain the ffprobe
 		/// executable</exception>
+		/// <exception cref="ArgumentException">FFMpegCore failed to set the requested
+		/// FFprobe folder.</exception>
 		/// <remarks>If set to <see cref="Empty"/>, indicates to this library that
 		/// FFprobe is not installed, and therefore methods to retrieve media info will
 		/// fail unconditionally (i.e. they will throw an exception)</remarks>
@@ -51,6 +55,16 @@ namespace SIL.Media
 						throw new FileNotFoundException(
 							"Path is not a folder containing FFprobe.exe: " + value);
 					}
+
+					// Configure tells FFMpegCore to remember the folder where it should find
+					// FFprobe (and also FFmpeg).
+					GlobalFFOptions.Configure(new FFOptions { BinaryFolder = value });
+					var testResult = Path.GetDirectoryName(GlobalFFOptions.GetFFProbeBinaryPath());
+					// If it couldn't find FFprobe in the requested folder, GetFFProbeBinaryPath
+					// returns the filename with no folder (meaning that it hopes to find it
+					// somewhere on the system path).
+					if (testResult == null)
+						throw new ArgumentException("FFMpegCore failed to set the requested FFprobe folder.");
 				}
 
 				s_ffProbeFolder = value;
@@ -103,16 +117,9 @@ namespace SIL.Media
 						GetFileDistributedWithApplication(true, "ffmpeg", FFprobeExe) ??
 						GetFileDistributedWithApplication(true, "ffprobe", FFprobeExe);
 
-					folder = !IsNullOrEmpty(withApplicationDirectory) ?
+					folder = (!IsNullOrEmpty(withApplicationDirectory) ?
 						Path.GetDirectoryName(withApplicationDirectory) :
-						GetFFmpegFolderFromChocoInstall(FFprobeExe);
-
-					if (folder != null)
-					{
-						GlobalFFOptions.Configure(new FFOptions { BinaryFolder = folder });
-					}
-					else
-						folder = Empty;
+						GetFFmpegFolderFromChocoInstall(FFprobeExe)) ?? Empty;
 				}
 			}
 
