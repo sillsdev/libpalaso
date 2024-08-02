@@ -82,7 +82,7 @@ namespace SIL.IO
 				: StringComparison.InvariantCulture;
 			var backslash = new[]
 			{
-				'\\', '/'
+				'\\', '/', '.'
 			}; // added this step because mono does not implicitly convert from char to char[]
 			return string.Compare(dirInfo1.FullName.TrimEnd(backslash),
 				dirInfo2.FullName.TrimEnd(backslash), comparison) == 0;
