@@ -293,7 +293,8 @@ namespace SIL.Archiving
 		/// <param name="title">Title of the submission</param>
 		/// <param name="id">Identifier (used as filename) for the package being created</param>
 		/// <param name="setFilesToArchive">Delegate to request client to call methods to set
-		/// which files should be archived (this is deferred to allow display of progress message)</param>
+		/// which files should be archived (this is deferred to allow display of progress message).
+		/// Clients will normally do this by calling AddFileGroup one or more times.</param>
 		/// <param name="getFileDescription">Callback function to get a file description based
 		/// on the file-list key (param 1) and the filename (param 2)</param>
 		/// ------------------------------------------------------------------------------------

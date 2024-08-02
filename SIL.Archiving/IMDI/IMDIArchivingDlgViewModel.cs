@@ -66,12 +66,15 @@ namespace SIL.Archiving.IMDI
 		/// <summary>Constructor</summary>
 		/// <param name="appName">The application name</param>
 		/// <param name="title">Title of the submission.</param>
-		/// <param name="id">Identifier for the package being created. Used as the CORPUS name.</param>
+		/// <param name="id">Identifier for the package being created. Used as the CORPUS name.
+		/// </param>
 		/// <param name="corpus">Indicates whether this is for an entire project corpus or a
 		/// single session</param>
 		/// <param name="setFilesToArchive">Delegate to request client to call methods to set
-		/// which files should be archived (this is deferred to allow display of progress message)</param>
-		/// <param name="outputFolder">Base folder where IMDI file structure is to be created</param>
+		/// which files should be archived (this is deferred to allow display of progress message).
+		/// Clients will normally do this by calling AddFileGroup one or more times.</param>
+		/// <param name="outputFolder">Base folder where IMDI file structure is to be created
+		/// </param>
 		/// ------------------------------------------------------------------------------------
 		public IMDIArchivingDlgViewModel(string appName, string title, string id, bool corpus,
 			Action<ArchivingDlgViewModel, CancellationToken> setFilesToArchive, string outputFolder)

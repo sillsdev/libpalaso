@@ -89,8 +89,8 @@ namespace SIL.Windows.Forms.Archiving
 		/// <see cref="ArchivingDlgViewModel.NameOfProgramToLaunch"/>></param>
 		/// ------------------------------------------------------------------------------------
 		public ArchivingDlg(ArchivingDlgViewModel model, string appSpecificArchivalProcessInfo,
-			string localizationManagerId, Font programDialogFont, FormSettings settings,
-			string archiveInfoHyperlinkText = null)
+			string localizationManagerId = null, Font programDialogFont = null,
+			FormSettings settings = null, string archiveInfoHyperlinkText = null)
 		{
 			_settings = settings ?? FormSettings.Create(this);
 
@@ -555,7 +555,14 @@ namespace SIL.Windows.Forms.Archiving
 			var tgt = e.Link.LinkData as string;
 
 			if (!IsNullOrEmpty(tgt))
-				System.Diagnostics.Process.Start(tgt);
+			{
+				var ps = new ProcessStartInfo(tgt)
+				{ 
+					UseShellExecute = true, 
+					Verb = "open" 
+				};
+				Process.Start(ps);
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------

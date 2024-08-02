@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TargetFrameworks>net8.0-windows</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <StartupObject>ArchivingTestApp.Program</StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="L10NSharp" Version="8.0.0-beta0005" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SIL.Archiving\SIL.Archiving.csproj" />
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
+    <ProjectReference Include="..\SIL.Windows.Forms.Archiving\SIL.Windows.Forms.Archiving.csproj" />
+  </ItemGroup>
+
+</Project>

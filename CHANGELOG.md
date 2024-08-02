@@ -56,7 +56,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] IMDIArchivingDlgViewModel constructor signature changed.
 - [SIL.Archiving] RampArchivingDlgViewModel constructor signature changed.
 - [SIL.Windows.Forms.Archiving] Made ArchivingDlg implement IArchivingProgressDisplay.
-- [SIL.Windows.Forms.Archiving] ArchivingDlg constructor signature changed: removed localizationManagerId; added optional archiveInfoHyperlinkText.
+- [SIL.Windows.Forms.Archiving] ArchivingDlg constructor signature changed: removed localizationManagerId; added optional archiveInfoHyperlinkText; made some other parameters optional.
 - [SIL.Windows.Forms.Archiving] IMDIArchivingDlg constructor signature changed: added appSpecificArchivalProcessInfo.
 - [SIL.Windows.Forms] Split ClearShare code, moving non-Winforms portions to SIL.Core (SIL.Core.ClearShare namespace)
 - [SIL.Core] Added optional parameter to OlacSystem.GetRoles to allow caller to provide its own XML with role definitions.
