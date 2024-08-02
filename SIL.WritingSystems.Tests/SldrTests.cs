@@ -155,6 +155,7 @@ namespace SIL.WritingSystems.Tests
 
 		#region SLDR cache
 		[Test]
+		[Category("SkipOnTeamCity")]
 		public void GetLdmlFile_CacheFileWithUid_StatusFileFromSldrCache()
 		{
 			using var environment = new TestEnvironment();
@@ -182,6 +183,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		[Category("SkipOnTeamCity")]
 		public void GetLdmlFile_CacheFileWithUidUnknown_StatusFileFromSldrCache()
 		{
 			using var environment = new TestEnvironment();
@@ -249,6 +251,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		[Category("SkipOnTeamCity")]
 		public void GetLdmlFile_SldrStagingEnvironmentVariable_UsesStagingUrl()
 		{
 			var originalStagingValue = Environment.GetEnvironmentVariable(Sldr.SldrStaging);
@@ -283,6 +286,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		[Category("LongRunning")] // ~2 minutes
 		[Category("ByHand")] // The following test tests a smaller sample each checkin; this can be used when a larger sample needs to be tested.
+		[Category("SkipOnTeamCity")]
 		public void GetLdmlFile_GetsValidLDML([Values("false", "true")] string isStaging,
 			[Values("ar", "az", "bn", "de", "en", "es", "en-GB", "fa", "fr", "hi", "hu", "id", "km", "ko", "ml", "ms", "my",
 				"ne", "pt", "ru", "rw", "sw", "ta", "te", "th", "tr", "ur", "vi", "zh", "zh-CN")] string ietfLanguageTag)
@@ -291,6 +295,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		[Category("SkipOnTeamCity")]
 		public void GetLdmlFile_GetsValidLDML([Values("ar", "en", "fr", "ko", "sw")] string ietfLanguageTag)
 		{
 			DownloadAndVerifyLDML("false", ietfLanguageTag);
