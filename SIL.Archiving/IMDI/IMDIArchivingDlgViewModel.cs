@@ -25,6 +25,8 @@ namespace SIL.Archiving.IMDI
 		private readonly string _configFileName = Path.Combine(ArchivingFileSystem.SilCommonArchivingDataFolder, "IMDIProgram.config");
 		private string _outputFolder;
 
+		public event EventHandler InitializationFailed; 
+
 		#region Properties
 
 		public override Standard ArchiveType => Standard.IMDI;
@@ -92,8 +94,12 @@ namespace SIL.Archiving.IMDI
 		/// ------------------------------------------------------------------------------------
 		protected override bool DoArchiveSpecificInitialization()
 		{
-			// no-op
-			return true;
+			if (_imdiData.IsValid)
+				return true;
+
+			DisplayMessage(Progress.GetMessage(StringId.IMDIPackageInvalid), MessageType.Error);
+			InitializationFailed?.Invoke(this, EventArgs.Empty);
+			return false;
 		}
 
 		/// ------------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-﻿using SIL.Archiving.Generic;
+using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI.Lists;
 
 namespace SIL.Archiving.IMDI.Schema
@@ -15,8 +15,7 @@ namespace SIL.Archiving.IMDI.Schema
 		{
 			if (value == null) return;
 
-			if (vocabularyType == null)
-				vocabularyType = new VocabularyType();
+			vocabularyType ??= new VocabularyType();
 
 			vocabularyType.Value = value;
 			vocabularyType.Type = isClosedVocabulary

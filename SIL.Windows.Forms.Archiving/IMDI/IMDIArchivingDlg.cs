@@ -37,8 +37,8 @@ namespace SIL.Windows.Forms.Archiving.IMDI
 		/// dialog box to appear (can be null)</param>
 		/// ------------------------------------------------------------------------------------
 		public IMDIArchivingDlg(IMDIArchivingDlgViewModel model,
-			string appSpecificArchivalProcessInfo, string localizationManagerId,
-			Font programDialogFont, FormSettings settings)
+			string appSpecificArchivalProcessInfo, string localizationManagerId = null,
+			Font programDialogFont = null, FormSettings settings = null)
 			: base(model, appSpecificArchivalProcessInfo, localizationManagerId,
 				programDialogFont, settings, LocalizationManager.GetString(
 					"DialogBoxes.ArchivingDlg.IsleMetadataInitiative", "Isle Metadata Initiative",
@@ -46,6 +46,7 @@ namespace SIL.Windows.Forms.Archiving.IMDI
 		{
 			// DO NOT SHOW THE LAUNCH OPTION AT THIS TIME
 			model.PathToProgramToLaunch = null;
+			model.InitializationFailed += Model_InitializationFailed;
 
 			InitializeNewControls();
 
@@ -54,6 +55,11 @@ namespace SIL.Windows.Forms.Archiving.IMDI
 
 			// set control properties
 			SetControlProperties();
+		}
+
+		private void Model_InitializationFailed(object sender, EventArgs e)
+		{
+			_browseDestinationFolder.Enabled = false;
 		}
 
 		private void InitializeNewControls()
@@ -153,13 +159,21 @@ namespace SIL.Windows.Forms.Archiving.IMDI
 
 			if (mainExportFile != null)
 			{
-				// copy the path to the imdi file to the clipboard
+				void PutIMDIPackagePathOnClipboard()
+				{
+					// copy the path to the imdi file to the clipboard
 
-				// SP-818: Crash in IMDI export when dialog tries to put string on clipboard
-				//   18 FEB 2014, Phil Hopper: I found this possible solution using retries on StackOverflow
-				//   https://stackoverflow.com/questions/5707990/requested-clipboard-operation-did-not-succeed
-				//Clipboard.SetData(DataFormats.Text, _imdiData.MainExportFile);
-				Clipboard.SetDataObject(mainExportFile, true, 3, 500);
+					// SP-818: Crash in IMDI export when dialog tries to put string on clipboard
+					//   18 FEB 2014, Phil Hopper: I found this possible solution using retries on StackOverflow
+					//   https://stackoverflow.com/questions/5707990/requested-clipboard-operation-did-not-succeed
+					//Clipboard.SetData(DataFormats.Text, _imdiData.MainExportFile);
+					Clipboard.SetDataObject(mainExportFile, true, 3, 500);
+				}
+
+				if (InvokeRequired)
+					Invoke(new Action(PutIMDIPackagePathOnClipboard));
+				else
+					PutIMDIPackagePathOnClipboard();
 
 				var successMsg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.ReadyToCallIMDIMsg",
 					"Exported to {0}. This path is now on your clipboard. If you are using Arbil, go to File, Import, then paste this path in.");
@@ -171,6 +185,11 @@ namespace SIL.Windows.Forms.Archiving.IMDI
 		{
 			switch (msgId)
 			{
+				case ArchivingDlgViewModel.StringId.IMDIPackageInvalid:
+					return LocalizationManager.GetString(
+						"DialogBoxes.ArchivingDlg.IMDIPackageInvalid", "The IMDI package is invalid.",
+						"This is displayed in the Archive Using IMDI dialog box if the calling " +
+						"program fails to initialize the IMDI package with valid settings.");
 				case ArchivingDlgViewModel.StringId.IMDIActorsGroup:
 					return LocalizationManager.GetString(
 						"DialogBoxes.ArchivingDlg.IMDIActorsGroup", "Actors",
@@ -275,7 +294,6 @@ namespace SIL.Windows.Forms.Archiving.IMDI
 				{
 					((IMDIArchivingDlgViewModel)_viewModel).OtherProgramPath = chooseIMDIProgram.FileName;
 					SetControlProperties();
-					
 				}
 			}
 		}

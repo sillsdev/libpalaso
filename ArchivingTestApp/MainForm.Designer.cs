@@ -50,6 +50,7 @@ namespace ArchivingTestApp
 			m_btnIMDI.TabIndex = 0;
 			m_btnIMDI.Text = "IMDI Archive";
 			m_btnIMDI.UseVisualStyleBackColor = true;
+			m_btnIMDI.Click += m_btnIMDI_Click;
 			// 
 			// m_tableLayoutPanelMain
 			// 

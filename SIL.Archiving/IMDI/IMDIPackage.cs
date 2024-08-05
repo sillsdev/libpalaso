@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -53,6 +52,12 @@ namespace SIL.Archiving.IMDI
 				_packagePath = value;
 			}
 		}
+
+		/// <summary>Generally an IMDI package should have at least one session. (This is not
+		/// strictly required for a corpus package, though it would be strange to want to
+		/// archive a corpus with no sessions.)</summary>
+		public bool IsValid => _corpus || Sessions.Any();
+
 		#endregion
 
 		// **** Corpus Layout ****
@@ -70,6 +75,9 @@ namespace SIL.Archiving.IMDI
 		/// <returns></returns>
 		public bool CreateIMDIPackage()
 		{
+			if (!IsValid)
+				return false;
+
 			_creationStarted = true;
 
 			// list of session files for the corpus

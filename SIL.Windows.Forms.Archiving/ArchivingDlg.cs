@@ -254,8 +254,10 @@ namespace SIL.Windows.Forms.Archiving
 			}
 			finally
 			{
-				_progressBar.Visible = false;
-				WaitCursor.Hide();
+				if (InvokeRequired)
+					Invoke(new Action (ResetUIForUserInteraction));
+				else
+					ResetUIForUserInteraction();
 
 				try
 				{
@@ -267,6 +269,12 @@ namespace SIL.Windows.Forms.Archiving
 				}
 				_cts = null;
 			}
+		}
+
+		private void ResetUIForUserInteraction()
+		{
+			_progressBar.Visible = false;
+			WaitCursor.Hide();
 		}
 
 		private void CompleteCancellation()
@@ -283,7 +291,11 @@ namespace SIL.Windows.Forms.Archiving
 
 		protected virtual void PackageCreationComplete(string result)
 		{
-			_buttonLaunchRamp.Enabled = true;
+			
+			if (InvokeRequired)
+				Invoke(new Action(() => { _buttonLaunchRamp.Enabled = true; }));
+			else
+				_buttonLaunchRamp.Enabled = true;
 		}
 
 		protected virtual void DisableControlsDuringPackageCreation()
@@ -308,7 +320,10 @@ namespace SIL.Windows.Forms.Archiving
 
 		public void IncrementProgress()
 		{
-			_progressBar.Increment(1);
+			if (InvokeRequired)
+				Invoke(new Action(() => { _progressBar.Increment(1); }));
+			else
+				_progressBar.Increment(1);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -487,7 +502,6 @@ namespace SIL.Windows.Forms.Archiving
 			Text = Format(Text, _viewModel.AppName, ArchiveTypeForTitleBar ?? ArchiveTypeName);
 
 			UpdateLaunchButtonText();
-			_buttonLaunchRamp.Enabled = false; //!string.IsNullOrEmpty(model.PathToProgramToLaunch);
 
 			_linkOverview.Text = InformativeText;
 			_linkOverview.Links.Clear();
@@ -508,21 +522,20 @@ namespace SIL.Windows.Forms.Archiving
 		{
 			base.OnShown(e);
 			Initialize();
-			WaitCursor.Show();
-			_buttonCreatePackage.Enabled = false;
 		}
 		
 		/// ------------------------------------------------------------------------------------
 		protected async void Initialize()
 		{
 			_cts = new CancellationTokenSource();
+			WaitCursor.Show();
 
 			try
 			{
-				_buttonCreatePackage.Enabled = await _viewModel.Initialize(this, _cts.Token);
+				_buttonCreatePackage.Enabled = _chkMetadataOnly.Enabled =
+					await _viewModel.Initialize(this, _cts.Token);
 				_logBox.ScrollToTop();
 				_progressBar.Maximum = _viewModel.CalculateMaxProgressBarValue();
-				_buttonCreatePackage.Enabled = true;
 			}
 			catch (OperationCanceledException)
 			{
@@ -535,7 +548,10 @@ namespace SIL.Windows.Forms.Archiving
 			}
 			finally
 			{
-				WaitCursor.Hide();
+				if (InvokeRequired)
+					Invoke(new Action (ResetUIForUserInteraction));
+				else
+					ResetUIForUserInteraction();
 
 				try
 				{

@@ -74,6 +74,7 @@ namespace SIL.Archiving
 			PreArchivingStatus,
 			SearchingForArchiveUploadingProgram,
 			ArchiveUploadingProgramNotFound,
+			IMDIPackageInvalid,
 			ErrorStartingArchivalProgram,
 			PreparingFiles,
 			SavingFilesInPackage,
@@ -597,8 +598,14 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public static bool IsMono => (Type.GetType("Mono.Runtime") != null);
 
-		/// <summary></summary>
-		/// <param name="sessionId"></param>
+		/// ------------------------------------------------------------------------------------
+		/// <summary>Adds a "session" or "resource bundle". This usually corresponds to a
+		/// meaningful unit of analysis, e.g., to a piece of data having the same overall
+		/// content, the same set of actors, and the same location and time (e.g., one
+		/// elicitation session on topic X, or one folktale, or one ‘matching game’, or one
+		/// conversation between several speakers).</summary>
+		/// <param name="sessionId">Unique Identifier for this session.</param>
+		/// ------------------------------------------------------------------------------------
 		[PublicAPI]
 		public abstract IArchivingSession AddSession(string sessionId);
 

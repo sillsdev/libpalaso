@@ -35,6 +35,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Archiving] Added (protected) override of method PackageCreationComplete to IMDIArchivingDlg.
 - [SIL.Windows.Forms.Archiving] Added (public) override of method GetMessage to IMDIArchivingDlg.
 - [SIL.Windows.Forms.Archiving] Added public extensions class LinkLabelExtensions with some methods that were formerly in Extensions class (now in SIL.Archiving).
+- [SIL.Archiving] Added public property isValid to IMDIPackage.
+- [SIL.Archiving] Added public event InitializationFailed to IMDIArchivingDlgViewModel.
 
 ### Changed
 
@@ -61,6 +63,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Split ClearShare code, moving non-Winforms portions to SIL.Core (SIL.Core.ClearShare namespace)
 - [SIL.Core] Added optional parameter to OlacSystem.GetRoles to allow caller to provide its own XML with role definitions.
 - [SIL.Windows.Forms] Split License into a base class called License and a derived LicenseWithLogo, so that License could be in SIL.Core.
+- [SIL.Archiving] Changed IArchivingSession.Files (and Session.Files) into an IReadonlyList.
 
 ### Fixed
 - [SIL.Archiving] Fixed typo in RampArchivingDlgViewModel for Ethnomusicology performance collection.
