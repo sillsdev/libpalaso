@@ -198,7 +198,7 @@ namespace SIL.Archiving.IMDI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		private Task<bool> CreateIMDIPackageAsync(CancellationToken cancellationToken)
+		private async Task<bool> CreateIMDIPackageAsync(CancellationToken cancellationToken)
 		{
 			try
 			{
@@ -241,6 +241,7 @@ namespace SIL.Archiving.IMDI
 				foreach (var fileToCopy in filesToCopy)
 				{
 					ReportProgress(Path.GetFileName(fileToCopy.Key), MessageType.Detail, cancellationToken);
+
 					if (FileCopyOverride != null)
 					{
 						try
@@ -259,21 +260,21 @@ namespace SIL.Archiving.IMDI
 						}
 					}
 					// Don't use File.Copy because it's asynchronous.
-					CopyFile(fileToCopy.Key, fileToCopy.Value);
+					await Task.Run(() => CopyFile(fileToCopy.Key, fileToCopy.Value), cancellationToken);
 				}
 
 				ReportMajorProgressPoint(StringId.SavingFilesInPackage, cancellationToken, false);
 
-				return Task.FromResult(true);
+				return true;
 			}
 			catch (OperationCanceledException)
 			{
-				return Task.FromResult(false);
+				return false;
 			}
 			catch (Exception exception)
 			{
 				ReportError(exception, Progress.GetMessage(StringId.ErrorCreatingArchive));
-				return Task.FromResult(false);
+				return false;
 			}
 		}
 
@@ -322,9 +323,17 @@ namespace SIL.Archiving.IMDI
 			}
 		}
 
-		/// <summary>Adds a new session and returns it</summary>
-		/// <param name="sessionId"></param>
-		public override IArchivingSession AddSession(string sessionId)
+		/// ------------------------------------------------------------------------------------
+		/// <summary>Adds a "session" or "resource bundle". This usually corresponds to a
+		/// meaningful unit of analysis, e.g., to a piece of data having the same overall
+		/// content, the same set of actors, and the same location and time (e.g., one
+		/// elicitation session on topic X, or one folktale, or one ‘matching game’, or one
+		/// conversation between several speakers).</summary>
+		/// <param name="sessionId">Unique Identifier for this session.</param>
+		/// <returns>The added session, or the existing one if a session with the given sessionId
+		/// already exists.</returns>
+		/// ------------------------------------------------------------------------------------
+		public IArchivingSession AddSession(string sessionId)
 		{
 			// look for existing session
 			var session = _imdiData.Sessions.FirstOrDefault(s => s.Name == sessionId);
@@ -340,7 +349,7 @@ namespace SIL.Archiving.IMDI
 			return session;
 		}
 
-		public override IArchivingPackage ArchivingPackage => _imdiData;
+		public IArchivingPackage ArchivingPackage => _imdiData;
 
 		/// <summary></summary>
 		public new string PathToProgramToLaunch

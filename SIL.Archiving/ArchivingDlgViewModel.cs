@@ -259,7 +259,7 @@ namespace SIL.Archiving
 			await Task.Run(() =>
 			{
 				_setFilesToArchive(this, cancellationToken);
-			});
+			}, cancellationToken);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -597,21 +597,6 @@ namespace SIL.Archiving
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static bool IsMono => (Type.GetType("Mono.Runtime") != null);
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>Adds a "session" or "resource bundle". This usually corresponds to a
-		/// meaningful unit of analysis, e.g., to a piece of data having the same overall
-		/// content, the same set of actors, and the same location and time (e.g., one
-		/// elicitation session on topic X, or one folktale, or one ‘matching game’, or one
-		/// conversation between several speakers).</summary>
-		/// <param name="sessionId">Unique Identifier for this session.</param>
-		/// ------------------------------------------------------------------------------------
-		[PublicAPI]
-		public abstract IArchivingSession AddSession(string sessionId);
-
-		/// <summary></summary>
-		[PublicAPI]
-		public abstract IArchivingPackage ArchivingPackage { get; }
 
 		/// <remarks/>
 		public Dictionary<string, MessageType> AdditionalMessages { get; }

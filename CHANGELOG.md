@@ -78,6 +78,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Removed protected fields (renamed and made private) from ArchivingLanguage: _iso3Code, _englishName
 - [SIL.Archiving] Removed protected fields (made private) from ArchivingFile: _fullName, _fileName, _fileSize, _mimeType, _descriptions, _accessProtocol
 - [SIL.Archiving] Removed public methods CreateMetsFile and CreateRampPackage from RampArchivingDlgViewModel (made internal).
+- [SIL.Archiving] Removed ArchivingPackage and AddSession from ArchivingDlgViewModel and RampArchivingDlgViewModel (where they threw NotImplementedExceptions)
 
 ### Fixed
 

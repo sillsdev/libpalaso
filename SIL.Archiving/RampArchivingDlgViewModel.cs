@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Ionic.Zip;
 using JetBrains.Annotations;
-using SIL.Archiving.Generic;
 using SIL.Core.ClearShare;
 using SIL.Extensions;
 using SIL.IO;
@@ -49,6 +48,7 @@ namespace SIL.Archiving
 		public const string kContributor = "dc.contributor";
 		public const string kAbstractDescription = "dc.description.abstract";
 		public const string kStageDescription = "dc.description.stage";
+		[PublicAPI]
 		public const string kTableOfContentsDescription = "dc.description.tableofcontents";
 		public const string kVernacularContent = "dc.subject.vernacularContent";
 
@@ -57,6 +57,7 @@ namespace SIL.Archiving
 		public const string kFlagHasSoftwareOrFontRequirements = "relation.requires.has";
 		public const string kFlagHasGeneralDescription = "description.has";
 		public const string kFlagHasAbstractDescription = "description.abstract.has";
+		[PublicAPI]
 		public const string kFlagHasTableOfContentsDescription = "description.tableofcontents.has";
 		public const string kFlagHasPromotionDescription = "description.promotion.has";
 		public const string kTrue = "Y";
@@ -132,7 +133,9 @@ namespace SIL.Archiving
 		public const string kFileDescription = "description";
 		public const string kFileRelationship = "relationship";
 		public const string kRelationshipSource = "Source";
+		[PublicAPI]
 		public const string kRelationshipPresentation = "Presentation";
+		[PublicAPI]
 		public const string kRelationshipSupporting = "Supporting";
 // ReSharper restore CSharpWarnings::CS1591
 		#endregion
@@ -182,37 +185,50 @@ namespace SIL.Archiving
 		/// <summary>
 		/// Gets the number of image files in the list(s) of files to archive.
 		/// </summary>
-		/// <remarks>Public (and self-populating on-demand) to facilitate testing</remarks>
+		/// <remarks>Public (and self-populating on-demand) to facilitate testing. If this
+		/// property is accessed before initialization is complete, it will return -1.</remarks>
 		/// ------------------------------------------------------------------------------------
 		public int ImageCount
 		{
 			get
 			{
-				if (FileLists != null && _imageCount < 0)
+				if (FileLists.Count > 0 && _imageCount < 0)
 					ExtractInformationFromFiles();
 				return _imageCount;
 			}
 		}
 
 		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets the number of audio files in the list(s) of files to archive.
+		/// </summary>
+		/// <remarks>Public (and self-populating on-demand) to facilitate testing. If this
+		/// property is accessed before initialization is complete, it will return -1.</remarks>
+		/// ------------------------------------------------------------------------------------
 		[PublicAPI]
 		public int AudioCount
 		{
 			get
 			{
-				if (FileLists != null && _audioCount < 0)
+				if (FileLists.Count > 0  && _audioCount < 0)
 					ExtractInformationFromFiles();
 				return _audioCount;
 			}
 		}
 
 		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets the number of video files in the list(s) of files to archive.
+		/// </summary>
+		/// <remarks>Public (and self-populating on-demand) to facilitate testing. If this
+		/// property is accessed before initialization is complete, it will return -1.</remarks>
+		/// ------------------------------------------------------------------------------------
 		[PublicAPI]
 		public int VideoCount
 		{
 			get
 			{
-				if (FileLists != null && _videoCount < 0)
+				if (FileLists.Count > 0 && _videoCount < 0)
 					ExtractInformationFromFiles();
 				return _videoCount;
 			}
@@ -1477,9 +1493,9 @@ namespace SIL.Archiving
 				}
 
 				if (ImageCount > 0)
-					_metsPairs.Add(JSONUtils.MakeKeyValuePair(kImageExtent, Format("{0} image{1}.",
-						_imageCount.ToString(CultureInfo.InvariantCulture),
-						(_imageCount == 1) ? "" : "s")));
+					_metsPairs.Add(JSONUtils.MakeKeyValuePair(kImageExtent,
+						$"{_imageCount.ToString(CultureInfo.InvariantCulture)} " +
+						$"image{(_imageCount == 1 ? "" : "s")}."));
 
 				var avExtent = new StringBuilder();
 				const string delimiter = "; ";
@@ -1487,10 +1503,16 @@ namespace SIL.Archiving
 				if (ShowRecordingCountNotLength)
 				{
 					if (_audioCount > 0)
-						avExtent.AppendLineFormat("{0} audio recording file{1}", new object[] { _audioCount, (_audioCount == 1) ? "" : "s" }, delimiter);
+					{
+						avExtent.AppendLineFormat("{0} audio recording file{1}",
+							new object[] { _audioCount, _audioCount == 1 ? "" : "s" }, delimiter);
+					}
 
 					if (_videoCount > 0)
-						avExtent.AppendLineFormat("{0} video recording file{1}", new object[] { _videoCount, (_videoCount == 1) ? "" : "s" }, delimiter);
+					{
+						avExtent.AppendLineFormat("{0} video recording file{1}",
+							new object[] { _videoCount, _videoCount == 1 ? "" : "s" }, delimiter);
+					}
 
 					SetAudioVideoExtent(avExtent + ".");
 				}
@@ -1509,8 +1531,12 @@ namespace SIL.Archiving
 				ExtractInformationFromFiles();
 
 			if ((_modes == null) ||
-				(IsMetadataPropertySet(MetadataProperties.DatasetExtent) && !_modes.Contains(kModeDataset)))
-				throw new InvalidOperationException("Cannot set dataset extent for a resource which does not contain any \"dataset\" files.");
+			    (IsMetadataPropertySet(MetadataProperties.DatasetExtent) &&
+				    !_modes.Contains(kModeDataset)))
+			{
+				throw new InvalidOperationException(
+					"Cannot set dataset extent for a resource which does not contain any \"dataset\" files.");
+			}
 
 			return JSONUtils.MakeBracketedListFromValues(kFileTypeModeList, _modes);
 		}
@@ -1566,14 +1592,14 @@ namespace SIL.Archiving
 
 		#region Creating RAMP package (zip file) asynchronously.
 		/// ------------------------------------------------------------------------------------
-		internal Task<bool> CreateRampPackage(CancellationToken cancellationToken)
+		internal async Task<bool> CreateRampPackage(CancellationToken cancellationToken)
 		{
 			bool result = false;
 			try
 			{
 				PackagePath = Path.Combine(Path.GetTempPath(), PackageId + kRampFileExtension);
 
-				CreateZipFile(cancellationToken);
+				await Task.Run(() => CreateZipFile(cancellationToken), cancellationToken);
 
 				if (!File.Exists(PackagePath))
 					ReportError(null, Progress.GetMessage(StringId.FailedToMakePackage));
@@ -1588,7 +1614,7 @@ namespace SIL.Archiving
 				ReportError(exception, Progress.GetMessage(StringId.ErrorCreatingArchive));
 			}
 
-			return Task.FromResult(result);
+			return result;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1797,14 +1823,6 @@ namespace SIL.Archiving
 			return langs.ContainsKey(iso3Code) ? langs[iso3Code] : null;
 		}
 		#endregion
-
-		/// ------------------------------------------------------------------------------------
-		public override IArchivingSession AddSession(string sessionId)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override IArchivingPackage ArchivingPackage => throw new NotImplementedException();
 
 		#region Clean-up methods
 		/// ------------------------------------------------------------------------------------

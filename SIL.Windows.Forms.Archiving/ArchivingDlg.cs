@@ -254,11 +254,6 @@ namespace SIL.Windows.Forms.Archiving
 			}
 			finally
 			{
-				if (InvokeRequired)
-					Invoke(new Action (ResetUIForUserInteraction));
-				else
-					ResetUIForUserInteraction();
-
 				try
 				{
 					_cts.Dispose();
@@ -267,7 +262,13 @@ namespace SIL.Windows.Forms.Archiving
 				{
 					Logger.WriteError(e);
 				}
+
 				_cts = null;
+
+				if (InvokeRequired)
+					Invoke(new Action (ResetUIForUserInteraction));
+				else
+					ResetUIForUserInteraction();
 			}
 		}
 
