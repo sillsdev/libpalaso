@@ -23,7 +23,7 @@ jobs:
 
     - name: Test project
       continue-on-error: true
-      run: dotnet test --filter "TestCategory != SkipOnTeamCity" --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
+      run: dotnet test --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 100s --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
 
     - name: Publish test results
       uses: EnricoMi/publish-unit-test-result-action/windows@v2
