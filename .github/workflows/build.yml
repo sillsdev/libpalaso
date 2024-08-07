@@ -21,11 +21,14 @@ jobs:
     - name: Build project
       run: dotnet build --configuration Release
 
+    # there are cases where this will fail and we want to know about it
+    # so we don't use continue-on-error, but we still want to publish the results
     - name: Test project
-      continue-on-error: true
-      run: dotnet test --filter "TestCategory != SkipOnTeamCity" --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
+      id: test
+      run: dotnet test --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
 
     - name: Publish test results
+      if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
       uses: EnricoMi/publish-unit-test-result-action/windows@v2
       with:
         check_name: LibPalaso Tests
