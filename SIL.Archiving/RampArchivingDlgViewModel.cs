@@ -149,7 +149,6 @@ namespace SIL.Archiving
 		private Timer _timer;
 		private Dictionary<string, string> _languageList;
 		private readonly Func<string, string, string> _getFileDescription; // first param is file list key, second param is filename
-		private readonly Action<ArchivingDlgViewModel, CancellationToken> _setFilesToArchive;
 
 		private int _imageCount = -1;
 		private int _audioCount = -1;
@@ -317,10 +316,9 @@ namespace SIL.Archiving
 		public RampArchivingDlgViewModel(string appName, string title, string id,
 			Action<ArchivingDlgViewModel, CancellationToken> setFilesToArchive,
 			Func<string, string, string> getFileDescription) : base(appName, title, id,
-			(m, c) => { ((RampArchivingDlgViewModel)m).SetFilesToArchive(c); })
+			setFilesToArchive)
 		{
 			_getFileDescription = getFileDescription ?? throw new ArgumentNullException(nameof(getFileDescription));
-			_setFilesToArchive = setFilesToArchive;
 
 			ShowRecordingCountNotLength = false;
 			ImagesArePhotographs = true;
@@ -335,11 +333,13 @@ namespace SIL.Archiving
 			}
 		}
 
-		private void SetFilesToArchive(CancellationToken cancellationToken)
+		protected override async Task SetFilesToArchive(CancellationToken cancellationToken)
 		{
-			_setFilesToArchive(this, cancellationToken);
+			await base.SetFilesToArchive(cancellationToken);
+
 			if (cancellationToken.IsCancellationRequested)
 				throw new OperationCanceledException();
+
 			foreach (var fileList in FileLists.Where(fileList => fileList.Value.Item1.Any()))
 			{
 				var normalizedName = NormalizeFilename(fileList.Key,

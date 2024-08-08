@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI.Lists;
 using SIL.Code;
 using SIL.EventsAndDelegates;
@@ -254,7 +253,7 @@ namespace SIL.Archiving
 			return true;
 		}
 
-		private async Task SetFilesToArchive(CancellationToken cancellationToken)
+		protected virtual async Task SetFilesToArchive(CancellationToken cancellationToken)
 		{
 			await Task.Run(() =>
 			{
