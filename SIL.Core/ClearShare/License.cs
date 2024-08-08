@@ -1,9 +1,7 @@
-﻿using System.Drawing;
-
-namespace SIL.Windows.Forms.ClearShare
+namespace SIL.Core.ClearShare
 {
 	/// <summary>
-	/// describes a single license, under which many works can be licensed for use
+	/// Describes a single license, under which many works can be licensed for use
 	/// </summary>
 	public class License
 	{
@@ -14,35 +12,23 @@ namespace SIL.Windows.Forms.ClearShare
 
 		public string Name { get; private set; }
 
-		public Image Logo { get; private set; }
-
 		//TODO: support the full six options at http://creativecommons.org/licenses/, plus public domain
 
 		/// ------------------------------------------------------------------------------------
-		public static License CreativeCommons_Attribution_ShareAlike
-		{
-			get
+		public static License CreativeCommons_Attribution_ShareAlike =>
+			new License
 			{
-				return new License
-				{
-					Name = "Creative Commons. Attribution-ShareAlike 3.0",
-					Url = "http://creativecommons.org/licenses/by-sa/3.0/"
-				};
-			}
-		}
+				Name = "Creative Commons. Attribution-ShareAlike 3.0",
+				Url = "http://creativecommons.org/licenses/by-sa/3.0/"
+			};
 
 		/// ------------------------------------------------------------------------------------
-		public static License CreativeCommons_Attribution
-		{
-			get
+		public static License CreativeCommons_Attribution =>
+			new License
 			{
-				return new License
-				{
-					Name = "Creative Commons. Attribution 3.0",
-					Url = "http://creativecommons.org/licenses/by/3.0/"
-				};
-			}
-		}
+				Name = "Creative Commons. Attribution 3.0",
+				Url = "http://creativecommons.org/licenses/by/3.0/"
+			};
 
 		/// ------------------------------------------------------------------------------------
 		public override int GetHashCode()
@@ -51,7 +37,6 @@ namespace SIL.Windows.Forms.ClearShare
 			{
 				int result = (Url != null ? Url.GetHashCode() : 0);
 				result = (result * 397) ^ (Name != null ? Name.GetHashCode() : 0);
-				result = (result * 397) ^ (Logo != null ? Logo.GetHashCode() : 0);
 				return result;
 			}
 		}
@@ -79,7 +64,6 @@ namespace SIL.Windows.Forms.ClearShare
 		/// ------------------------------------------------------------------------------------
 		public bool AreContentsEqual(License other)
 		{
-			// TODO: compare logo images.
 			return (other != null && Name.Equals(other.Name) && Url.Equals(other.Url));
 		}
 	}

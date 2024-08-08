@@ -538,7 +538,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		private void VerifyMetadataUnchangedSavingToTag(Metadata oldMetadata, XmpTag tag, string header)
 		{
 			// XmpTag objects are wretched to work with, so load it into another Metadata object for testing.
-			// This way we test both SaveInImageTag and LoadProperties for roundtripping.
+			// This way we test both SaveInImageTag and LoadProperties for round-tripping.
 			oldMetadata.SaveInImageTag(tag);
 			var newMetadata = new Metadata();
 			Metadata.LoadProperties(tag, newMetadata);

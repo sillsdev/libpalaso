@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using SIL.Core.ClearShare;
 using SIL.Reporting;
 using SIL.Windows.Forms.ClearShare;
 

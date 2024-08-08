@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
-namespace SIL.Windows.Forms.ClearShare
+namespace SIL.Core.ClearShare
 {
 	/// <summary>
 	/// The word "work" in isolation doesn't suggest the right sense, here. Think of "derived-work" or "work of fiction".

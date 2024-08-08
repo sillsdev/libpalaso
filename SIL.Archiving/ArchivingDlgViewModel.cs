@@ -1,22 +1,31 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
+using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
-using L10NSharp;
-using SIL.Archiving.Generic;
+using SIL.Archiving.IMDI.Lists;
 using SIL.Code;
+using SIL.EventsAndDelegates;
 using SIL.IO;
+using static System.String;
+// ReSharper disable InconsistentNaming
 
 namespace SIL.Archiving
 {
 	/// ------------------------------------------------------------------------------------
-	public abstract class ArchivingDlgViewModel
+	public abstract class ArchivingDlgViewModel : IDisposable
 	{
+		public enum Standard
+		{
+			REAP,
+			IMDI,
+			Other,
+		}
+
 		[Flags]
 		protected enum MetadataProperties
 		{
@@ -41,14 +50,12 @@ namespace SIL.Archiving
 		}
 
 		#region Data members
-		protected readonly string _id; // ID/Name of the top-level element being archived (can be either a session or a project)
-		protected readonly string _appSpecificArchivalProcessInfo;
-		protected readonly Dictionary<string, string> _titles = new Dictionary<string, string>(); //Titles of elements being archived (keyed by element id)
+		private readonly string _id; // ID/Name of the top-level element being archived (can be either a session or a project)
+		private readonly Dictionary<string, string> _titles = new Dictionary<string, string>(); //Titles of elements being archived (keyed by element id)
 		private readonly Dictionary<string, MetadataProperties> _propertiesSet = new Dictionary<string, MetadataProperties>(); // Metadata properties that have been set (keyed by element id)
-		private readonly Action<ArchivingDlgViewModel> _setFilesToArchive;
+		private readonly Action<ArchivingDlgViewModel, CancellationToken> _setFilesToArchive;
+		private readonly Dictionary<string, Tuple<IEnumerable<string>, string>> _fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 
-		protected bool _cancelProcess;
-		protected readonly Dictionary<string, string> _progressMessages = new Dictionary<string, string>();
 		/// <summary>
 		/// Keyed and grouped according to whatever logical grouping makes sense in the
 		/// calling application. The key for each group will be supplied back to the calling app
@@ -56,11 +63,31 @@ namespace SIL.Archiving
 		/// enumerable list of files to include, and Item2 contains a progress message to be
 		/// displayed when that group of files is being processed.
 		/// </summary>
-		protected IDictionary<string, Tuple<IEnumerable<string>, string>> _fileLists = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
-		protected BackgroundWorker _worker;
+		protected IDictionary<string, Tuple<IEnumerable<string>, string>> FileLists => _fileLists;
 		#endregion
 
 		#region Delegates and Events
+		/// ------------------------------------------------------------------------------------
+		public enum StringId
+		{
+			PreArchivingStatus,
+			SearchingForArchiveUploadingProgram,
+			ArchiveUploadingProgramNotFound,
+			IMDIPackageInvalid,
+			ErrorStartingArchivalProgram,
+			PreparingFiles,
+			SavingFilesInPackage,
+			FileExcludedFromPackage,
+			PathNotWritable,
+			ReadyToCallRampMsg,
+			ErrorCreatingArchive,
+			IMDIActorsGroup,
+			CopyingFiles,
+			FailedToMakePackage,
+			ErrorCreatingMetsFile,
+			RampPackageRemoved
+		}
+
 		/// ------------------------------------------------------------------------------------
 		public enum MessageType
 		{
@@ -84,40 +111,48 @@ namespace SIL.Archiving
 			Volatile,
 		}
 
-		/// <summary>Delegate for OnDisplayMessage event</summary>
+		/// <summary>Delegate for <see cref="OnReportMessage"/> event</summary>
 		/// <param name="msg">Message to display</param>
-		/// <param name="type">Type of message (which handler can use to determine appropriate color, style, indentation, etc.</param>
-		public delegate void DisplayMessageEventHandler(string msg, MessageType type);
+		/// <param name="type">Type of message (which handler can use to determine appropriate
+		/// presentation formatting to use).</param>
+		public delegate void MessageEventHandler(string msg, MessageType type);
 
 		/// <summary>
-		/// Notifiers subscribers of a message to display.
+		/// Notifies subscribers of a message to display.
 		/// </summary>
-		public event DisplayMessageEventHandler OnDisplayMessage;
+		public event MessageEventHandler OnReportMessage;
 
-		/// <summary>Delegate for DisplayError event</summary>
-		/// <param name="msg">Message to display</param>
+		/// <summary>Delegate for <see cref="OnError"/> event</summary>
+		/// <param name="msg">Error message to display</param>
 		/// <param name="packageTitle">Title of package being created</param>
 		/// <param name="e">Exception (can be null)</param>
-		public delegate void DisplayErrorEventHandler(string msg, string packageTitle, Exception e);
+		public delegate void ErrorEventHandler(string msg, string packageTitle, Exception e);
 
 		/// <summary>
 		/// Notifiers subscribers of an error message to report.
 		/// </summary>
-		public event DisplayErrorEventHandler OnDisplayError;
+		public event ErrorEventHandler OnError;
 
-		/// <summary>Action raised when progress happens</summary>
-		public Action IncrementProgressBarAction { protected get; set; }
+		/// <summary>Delegate for <see cref="OnExceptionDuringLaunch"/> event</summary>
+		/// <param name="args">Event args that hold the exception that occurred</param>
+		public delegate void ExceptionHandler(EventArgs<Exception> args);
+
+		/// <summary>
+		/// Notifies subscribers of an exception thrown during launch of archive uploader program.
+		/// </summary>
+		public event ExceptionHandler OnExceptionDuringLaunch;
+
+		protected IArchivingProgressDisplay Progress { get; private set; }
 		#endregion
 
 		#region properties
 
+		protected string PackageId => _id;
+		protected string PackageTitle => _titles[_id];
+
 		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Short name/description of the archiving program or standard used for this type of
-		/// archiving. (Should fit in the frame "Archive using ___".)
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		internal abstract string ArchiveType { get; }
+		public abstract Standard ArchiveType { get; }
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Short name of the archiving program to launch once package is created.
@@ -125,16 +160,6 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public abstract string NameOfProgramToLaunch { get; }
 
-		/// ------------------------------------------------------------------------------------
-		public abstract string InformativeText { get; }
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Implement ArchiveInfoHyperlinkText to define text (first occurrence only) in the
-		/// InformativeText that will be marked as a hyperlink to ArchiveInfoUrl.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public abstract string ArchiveInfoHyperlinkText { get; }
 		/// ------------------------------------------------------------------------------------
 		public abstract string ArchiveInfoUrl { get; }
 
@@ -145,11 +170,12 @@ namespace SIL.Archiving
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>Path to the generated package</summary>
+		/// <remarks>This is also returned by CreatePackage if successful.</remarks>
 		/// ------------------------------------------------------------------------------------
 		public string PackagePath { get; protected set; }
 
 		/// ------------------------------------------------------------------------------------
-		public string AppName { get; private set; }
+		public string AppName { get; }
 
 		/// ------------------------------------------------------------------------------------
 		public bool IsBusy { get; protected set; }
@@ -188,7 +214,7 @@ namespace SIL.Archiving
 		/// the application implements this, then the default summary display will be suppressed.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public Action<IDictionary<string, Tuple<IEnumerable<string>, string>>> OverrideDisplayInitialSummary { private get; set; }
+		public Action<IDictionary<string, Tuple<IEnumerable<string>, string>>, CancellationToken> OverrideDisplayInitialSummary { private get; set; }
 		#endregion
 
 		#region construction and initialization
@@ -197,54 +223,42 @@ namespace SIL.Archiving
 		/// <param name="appName">The application name</param>
 		/// <param name="title">Title of the submission</param>
 		/// <param name="id">Identifier (used as filename) for the package being created</param>
-		/// <param name="appSpecificArchivalProcessInfo">Application can use this to pass
-		/// additional information that will be displayed to the user in the dialog to explain
-		/// any application-specific details about the archival process.</param>
 		/// <param name="setFilesToArchive">Delegate to request client to call methods to set
-		/// which files should be archived (this is deferred to allow display of progress message)</param>
+		/// which files should be archived (this is deferred to allow display of progress
+		/// message). Clients will normally do this by calling AddFileGroup one or more times.
+		/// </param>
 		/// ------------------------------------------------------------------------------------
 		protected ArchivingDlgViewModel(string appName, string title, string id,
-			string appSpecificArchivalProcessInfo, Action<ArchivingDlgViewModel> setFilesToArchive)
+			Action<ArchivingDlgViewModel, CancellationToken> setFilesToArchive)
 		{
-			if (appName == null)
-				throw new ArgumentNullException("appName");
-			AppName = appName;
-			if (title == null)
-				throw new ArgumentNullException("title");
-			if (id == null)
-				throw new ArgumentNullException("id");
-			_id = id;
-			_appSpecificArchivalProcessInfo = appSpecificArchivalProcessInfo;
+			AppName = appName ?? throw new ArgumentNullException(nameof(appName));
+			_id = id ?? throw new ArgumentNullException(nameof(id));
 			_setFilesToArchive = setFilesToArchive;
-			_titles[id] = title;
+			_titles[id] = title ?? throw new ArgumentNullException(nameof(title));
 			_propertiesSet[id] = MetadataProperties.Title;
 			AdditionalMessages = new Dictionary<string, MessageType>();
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public bool Initialize()
+		public async Task<bool> Initialize(IArchivingProgressDisplay progress, CancellationToken cancellationToken)
 		{
-			IsBusy = true;
+			Progress = progress ?? throw new ArgumentNullException(nameof(progress));
+			
+			if (!DoArchiveSpecificInitialization())
+				return false;
 
-			try
+			await SetFilesToArchive(cancellationToken);
+			DisplayInitialSummary(cancellationToken);
+
+			return true;
+		}
+
+		protected virtual async Task SetFilesToArchive(CancellationToken cancellationToken)
+		{
+			await Task.Run(() =>
 			{
-				if (!DoArchiveSpecificInitialization())
-					return false;
-
-				_setFilesToArchive(this);
-				foreach (var fileList in _fileLists.Where(fileList => fileList.Value.Item1.Any()))
-				{
-					string normalizedName = NormalizeFilename(fileList.Key, Path.GetFileName(fileList.Value.Item1.First()));
-					_progressMessages[normalizedName] = fileList.Value.Item2;
-				}
-				DisplayInitialSummary();
-
-				return true;
-			}
-			finally
-			{
-				IsBusy = false;
-			}
+				_setFilesToArchive(this, cancellationToken);
+			}, cancellationToken);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -257,29 +271,31 @@ namespace SIL.Archiving
 		public virtual void AddFileGroup(string groupId, IEnumerable<string> files, string progressMessage)
 		{
 			Guard.AgainstNull(groupId, nameof(groupId));
-			if (_fileLists.ContainsKey(groupId))
+			if (FileLists.ContainsKey(groupId))
 				throw new ArgumentException("Duplicate file group ID: " + groupId, nameof(groupId));
-			_fileLists[groupId] = Tuple.Create(files, progressMessage);
+			FileLists[groupId] = Tuple.Create(files, progressMessage);
 		}
 
 		/// ------------------------------------------------------------------------------------
-		private void DisplayInitialSummary()
+		private void DisplayInitialSummary(CancellationToken cancellationToken)
 		{
 			if (OverrideDisplayInitialSummary != null)
-				OverrideDisplayInitialSummary(_fileLists);
-			else if (OnDisplayMessage != null)
+				OverrideDisplayInitialSummary(FileLists, cancellationToken);
+			else
 			{
-				OnDisplayMessage(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.PrearchivingStatusMsg",
-						"The following files will be added to the archive:"), MessageType.Normal);
+				ReportProgress(Progress.GetMessage(StringId.PreArchivingStatus), MessageType.Normal, cancellationToken);
 
-				foreach (var kvp in _fileLists)
+				if (OnReportMessage != null)
 				{
-					string msg = FileGroupDisplayMessage(kvp.Key);
-					if (msg != string.Empty)
-						OnDisplayMessage(msg, MessageType.Indented);
+					foreach (var kvp in FileLists)
+					{
+						string msg = FileGroupDisplayMessage(kvp.Key);
+						if (msg != Empty)
+							OnReportMessage(msg, MessageType.Indented);
 
-					foreach (var file in kvp.Value.Item1)
-						OnDisplayMessage(Path.GetFileName(file), MessageType.Bullet);
+						foreach (var file in kvp.Value.Item1)
+							OnReportMessage(Path.GetFileName(file), MessageType.Bullet);
+					}
 				}
 			}
 		}
@@ -318,7 +334,7 @@ namespace SIL.Archiving
 			if (_propertiesSet.TryGetValue(elementId, out var propertiesSet))
 			{
 				if (propertiesSet.HasFlag(property))
-					throw new InvalidOperationException(string.Format("{0} has already been set", property.ToString()));
+					throw new InvalidOperationException($"{property} has already been set");
 				_propertiesSet[elementId] |= property;
 			}
 			else
@@ -400,15 +416,16 @@ namespace SIL.Archiving
 		public void SetAbstract(IDictionary<string, string> descriptions)
 		{
 			if (descriptions == null)
-				throw new ArgumentNullException("descriptions");
+				throw new ArgumentNullException(nameof(descriptions));
 
 			if (descriptions.Count == 0)
 				return;
 
 			if (descriptions.Count > 1)
 			{
-				if (descriptions.Keys.Any(k => k.Length != 3))
-					throw new ArgumentException();
+				var invalidLanguageCode = descriptions.Keys.FirstOrDefault(k => k.Length != 3);
+				if (invalidLanguageCode != null)
+					throw new InvalidLanguageCodeException(invalidLanguageCode);
 			}
 			PreventDuplicateMetadataProperty(MetadataProperties.AbstractDescription);
 			SetAbstract_Impl(descriptions);
@@ -423,10 +440,22 @@ namespace SIL.Archiving
 		#endregion
 
 		/// ------------------------------------------------------------------------------------
-		public void DisplayMessage(string msg, MessageType type)
+		protected void DisplayMessage(StringId msgId, MessageType type, params object[] fmtParams)
 		{
-			if (OnDisplayMessage != null)
-				OnDisplayMessage(msg, type);
+			if (OnReportMessage != null)
+			{
+				var msg = Progress.GetMessage(msgId);
+				if (fmtParams?.Length > 0)
+					msg = Format(msg, fmtParams);
+				if (msg != null)
+					OnReportMessage(msg, type);
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		protected void DisplayMessage(string msg, MessageType type)
+		{
+			OnReportMessage?.Invoke(msg, type);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -434,38 +463,84 @@ namespace SIL.Archiving
 		public abstract string GetMetadata();
 
 		/// ------------------------------------------------------------------------------------
-		internal abstract void LaunchArchivingProgram();
-
-		/// ------------------------------------------------------------------------------------
-		protected void LaunchArchivingProgram(Action HandleInvalidOperation)
+		public virtual void LaunchArchivingProgram()
 		{
-			if (string.IsNullOrEmpty(PathToProgramToLaunch) || !File.Exists(PathToProgramToLaunch))
+			if (IsNullOrEmpty(PathToProgramToLaunch) || !File.Exists(PathToProgramToLaunch))
 				return;
 
+			var prs = new Process();
+			prs.StartInfo.FileName = PathToProgramToLaunch;
+			if (!IsNullOrEmpty(PackagePath))
+				prs.StartInfo.Arguments = "\"" + PackagePath + "\"";
+			LaunchArchivingProgram(prs);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		protected void LaunchArchivingProgram(Process prs)
+		{
 			try
 			{
-				var prs = new Process();
-				prs.StartInfo.FileName = PathToProgramToLaunch;
-				if (!string.IsNullOrEmpty(PackagePath))
-					prs.StartInfo.Arguments = "\"" + PackagePath + "\"";
 				prs.Start();
 			}
 			catch (Exception e)
 			{
-				if (e is InvalidOperationException && HandleInvalidOperation != null)
-					HandleInvalidOperation();
-				else
-				{
-					ReportError(e, string.Format(LocalizationManager.GetString(
-							"DialogBoxes.ArchivingDlg.StartingRampErrorMsg",
-							"There was an error attempting to open the archive package in {0}."),
-						PathToProgramToLaunch));
-				}
+				OnExceptionDuringLaunch?.Invoke(new EventArgs<Exception>(e));
+
+				ReportError(e, Progress.GetMessage(StringId.ErrorStartingArchivalProgram));
 			}
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public abstract bool CreatePackage();
+		/// <summary>Creates the archiving package asynchronously</summary>
+		/// <returns>A task, which when completed, provides the "result" (typically a file path);
+		/// or null if package creation failed.
+		/// </returns>
+		/// ------------------------------------------------------------------------------------
+		public abstract Task<string> CreatePackage(CancellationToken cancellationToken);
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>Report archiving progress at a major (success) point and check to see if
+		/// user has requested cancellation</summary>
+		/// ------------------------------------------------------------------------------------
+		protected void ReportMajorProgressPoint(StringId id, CancellationToken cancellationToken,
+			bool isAtCancelablePoint = true)
+		{
+			ReportProgress(Progress.GetMessage(id), MessageType.Success, cancellationToken,
+				isAtCancelablePoint);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>Report archiving progress and check to see if user has requested
+		/// cancellation</summary>
+		/// ------------------------------------------------------------------------------------
+		protected void ReportProgress(string message, MessageType type,
+			CancellationToken cancellationToken, bool isAtCancelablePoint = true)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				if (!isAtCancelablePoint)
+					return;
+				CleanUp();
+				throw new OperationCanceledException();
+			}
+
+			DisplayMessage(message, type);
+			Progress.IncrementProgress();
+		}
+
+		public virtual void Dispose()
+		{
+			CleanUp();
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>Performs any needed clean-up after creating a package or when creation is
+		/// canceled</summary>
+		/// ------------------------------------------------------------------------------------
+		protected internal virtual void CleanUp()
+		{
+			// delete temp files, etc.
+		}
 
 		/// ------------------------------------------------------------------------------------
 		protected virtual StringBuilder DoArchiveSpecificFilenameNormalization(string key, string fileName)
@@ -483,7 +558,7 @@ namespace SIL.Archiving
 		}
 
 		/// ------------------------------------------------------------------------------------
-		const int CopyBufferSize = 64 * 1024;
+		private const int kCopyBufferSize = 64 * 1024;
 		/// ------------------------------------------------------------------------------------
 		protected static void CopyFile(string src, string dest)
 		{
@@ -491,9 +566,9 @@ namespace SIL.Archiving
 			{
 				using (var inputFile = File.OpenRead(src))
 				{
-					var buffer = new byte[CopyBufferSize];
+					var buffer = new byte[kCopyBufferSize];
 					int bytesRead;
-					while ((bytesRead = inputFile.Read(buffer, 0, CopyBufferSize)) != 0)
+					while ((bytesRead = inputFile.Read(buffer, 0, kCopyBufferSize)) != 0)
 					{
 						outputFile.Write(buffer, 0, bytesRead);
 					}
@@ -502,54 +577,18 @@ namespace SIL.Archiving
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public virtual void Cancel()
-		{
-			if (_cancelProcess)
-				return;
-
-			_cancelProcess = true;
-
-			if (_worker != null)
-			{
-				DisplayMessage(Environment.NewLine + LocalizationManager.GetString(
-						"DialogBoxes.ArchivingDlg.CancellingMsg", "Canceling..."), MessageType.Error);
-
-				_worker.CancelAsync();
-				while (_worker.IsBusy)
-					Application.DoEvents();
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
 		protected void ReportError(Exception e, string msg)
 		{
-			if (OnDisplayError != null)
-				OnDisplayError(msg, _titles[_id], e);
+			if (OnError != null)
+				OnError(msg, _titles[_id], e);
 			else if (e != null)
 				throw e;
 
-			if (HandleNonFatalError != null)
-				HandleNonFatalError(e, msg);
+			HandleNonFatalError?.Invoke(e, msg);
 		}
 
-		protected string PreparingFilesMsg => LocalizationManager.GetString(
-			"DialogBoxes.ArchivingDlg.PreparingFilesMsg", "Analyzing component files");
-
-		protected string GetSavingFilesMsg(string type)
-		{
-			return string.Format(LocalizationManager.GetString(
-				"DialogBoxes.ArchivingDlg.SavingFilesInPackageMsg",
-				"Saving files in {0} package",
-				"Parameter is the type of archive (e.g., RAMP/IMDI)"), type);
-		}
-
-		protected string GetFileExcludedMsg(string type, string file)
-		{
-			return string.Format(LocalizationManager.GetString(
-				"DialogBoxes.ArchivingDlg.FileExcludedFromPackage",
-				"File excluded from {0} package: ",
-				"Parameter is the type of archive (e.g., RAMP/IMDI)"), type) + file;
-		}
+		protected string GetFileExcludedMsg(string file) =>
+			Progress.GetMessage(StringId.FileExcludedFromPackage) + file;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -558,17 +597,8 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public static bool IsMono => (Type.GetType("Mono.Runtime") != null);
 
-		/// <summary></summary>
-		/// <param name="sessionId"></param>
-		[PublicAPI]
-		public abstract IArchivingSession AddSession(string sessionId);
-
-		/// <summary></summary>
-		[PublicAPI]
-		public abstract IArchivingPackage ArchivingPackage { get; }
-
 		/// <remarks/>
-		public Dictionary<string, MessageType> AdditionalMessages { get; private set; }
+		public Dictionary<string, MessageType> AdditionalMessages { get; }
 
 		public bool IsPathWritable(string directory)
 		{
@@ -579,15 +609,11 @@ namespace SIL.Archiving
 			}
 			catch (Exception e)
 			{
-				DisplayMessage(e.Message, MessageType.Warning);
+				OnReportMessage?.Invoke(e.Message, MessageType.Warning);
 				return false;
 			}
 
-			var msg = LocalizationManager.GetString(
-				"DialogBoxes.ArchivingDlg.PathNotWritableMsg",
-				"The path is not writable: {0}");
-
-			DisplayMessage(string.Format(msg, directory), MessageType.Warning);
+			DisplayMessage(StringId.PathNotWritable, MessageType.Warning, directory);
 
 			return false;
 		}

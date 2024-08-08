@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace SIL.Archiving.IMDI.Lists
@@ -34,7 +34,8 @@ namespace SIL.Archiving.IMDI.Lists
 		/// <param name="localize">Delegate to use for getting localized versions of the Text and
 		/// Definition of list items. The parameters are: 1) the list name; 2) list item value;
 		/// 3) "Definition" or "Text"; 4) default (English) value.</param>
-		public static IMDIItemList GetList(string listName, bool uppercaseFirstCharacter, Func<string, string, string, string, string> localize)
+		public static IMDIItemList GetList(string listName, bool uppercaseFirstCharacter,
+			Func<string, string, string, string, string> localize)
 		{
 			return GetList(listName, uppercaseFirstCharacter, localize, RemoveUnknown.RemoveNone);
 		}
@@ -57,9 +58,7 @@ namespace SIL.Archiving.IMDI.Lists
 			listName = ListNameWithXmlExtension(listName);
 			var listKey = listName + removeUnknown;
 
-			IMDIItemList list;
-
-			if (!_loadedLists.TryGetValue(listKey, out list))
+			if (!_loadedLists.TryGetValue(listKey, out var list))
 			{
 				list = new IMDIItemList(listName, uppercaseFirstCharacter, removeUnknown);
 

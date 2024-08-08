@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text;
 
-namespace SIL.Windows.Forms.ClearShare
+namespace SIL.Core.ClearShare
 {	/// ----------------------------------------------------------------------------------------
 	public interface IAutoCompleteValueProviderWeird
 	{

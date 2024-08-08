@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -118,31 +118,4 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="AccessProtocols" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\AccessProtocols.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="ailca" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ailca.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="ailla" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ailla.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="anla" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\anla.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="CustomAccessProtocols" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\CustomAccessProtocols.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="elar" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\elar.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="EmptyMets" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\EmptyMets.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="reap" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\reap.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="tla" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\tla.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
 </root>

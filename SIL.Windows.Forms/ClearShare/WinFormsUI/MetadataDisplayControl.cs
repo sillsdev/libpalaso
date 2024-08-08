@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Windows.Forms;
 using L10NSharp;
+using SIL.Core.ClearShare;
 using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.ClearShare.WinFormsUI

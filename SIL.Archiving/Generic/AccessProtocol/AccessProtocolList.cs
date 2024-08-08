@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +6,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using JetBrains.Annotations;
-using SIL.Archiving.Properties;
+using static SIL.Archiving.Resources.Resources;
 
 namespace SIL.Archiving.Generic.AccessProtocol
 {
@@ -35,13 +34,13 @@ namespace SIL.Archiving.Generic.AccessProtocol
 
 		/// <summary />
 		public static AccessProtocols Load(string programDirectory) =>
-			_instance ??= LoadFromFile(kProtocolFileName, Resources.AccessProtocols, programDirectory);
+			_instance ??= LoadFromFile(kProtocolFileName, GetResource(Name.AccessProtocols_json), programDirectory);
 
 		/// <summary />
 		public static AccessProtocols LoadCustom()
 		{
 			return _customInstance ??=
-				LoadFromFile(kCustomProtocolFileName, Resources.CustomAccessProtocols, null);
+				LoadFromFile(kCustomProtocolFileName, GetResource(Name.CustomAccessProtocols_json), null);
 		}
 
 		private static AccessProtocols LoadFromFile(string protocolFileName, string resourceName, string programDirectory)
@@ -206,8 +205,8 @@ namespace SIL.Archiving.Generic.AccessProtocol
 			if (!File.Exists(fileName))
 			{
 				var pos = DocumentationFile.LastIndexOf('.');
-				var resourceName = (pos > -1) ? DocumentationFile.Substring(0, pos) : DocumentationFile;
-				var resourceString = Resources.ResourceManager.GetString(resourceName);
+				var resourceName = pos > -1 ? DocumentationFile.Substring(0, pos) : DocumentationFile;
+				var resourceString = GetResource(resourceName);
 				if (!string.IsNullOrEmpty(resourceString))
 					File.WriteAllText(fileName, resourceString);
 			}

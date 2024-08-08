@@ -1,12 +1,13 @@
-// Copyright (c) 2018-2023 SIL International
+// Copyright (c) 2018-2024 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using L10NSharp;
+using JetBrains.Annotations;
 using SIL.Code;
 using SIL.Extensions;
 using SIL.IO;
@@ -14,7 +15,6 @@ using TagLib;
 using TagLib.IFD;
 using TagLib.Image;
 using TagLib.Xmp;
-using File = System.IO.File;
 
 namespace SIL.Windows.Forms.ClearShare
 {
@@ -774,6 +774,7 @@ namespace SIL.Windows.Forms.ClearShare
 		/// Deletes the stored exemplar (if it exists).  This can be useful if a program
 		/// wants to establish "CC BY" as the default license for a new product.
 		/// </summary>
+		[PublicAPI]
 		public static void DeleteStoredExemplar(FileCategory category)
 		{
 			var path = GetExemplarPath(category);
@@ -788,11 +789,12 @@ namespace SIL.Windows.Forms.ClearShare
 		/// <param name="languagePriorityIds">The summary will be in the first language available.</param>
 		/// <param name="idOfLanguageUsed"></param>
 		/// <returns></returns>
-		public string GetSummaryParagraph(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
+		[PublicAPI]
+		public string GetSummaryParagraph(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed, string localizedCreatorLabel = "Creator")
 		{
 			var b = new StringBuilder();
-			string creatorLabel = LocalizationManager.GetString("MetadataDisplay.CreatorLabel", "Creator");
-			b.AppendLine(creatorLabel+": " + Creator);
+			b.Append(localizedCreatorLabel).Append(": ").AppendLine(Creator);
+			b.AppendLine($"{localizedCreatorLabel}: {Creator}");
 			b.AppendLine(CopyrightNotice);
 			if(!string.IsNullOrEmpty(CollectionName))
 				b.AppendLine(CollectionName);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using SIL.Archiving.Generic.AccessProtocol;
 
@@ -7,12 +7,12 @@ namespace SIL.Archiving.Generic
 	/// <summary>A file to add to the archive</summary>
 	public class ArchivingFile
 	{
-		protected readonly string _fullName;
-		protected string _fileName;
-		protected string _fileSize; // in KB
-		protected string _mimeType;
-		protected LanguageStringCollection _descriptions;
-		protected ArchiveAccessProtocol _accessProtocol;
+		private readonly string _fullName;
+		private string _fileName;
+		private string _fileSize; // in KB
+		private string _mimeType;
+		private LanguageStringCollection _descriptions;
+		private ArchiveAccessProtocol _accessProtocol;
 
 		/// <summary>If this file contains information about another file, put the name of the other file here</summary>
 		public string DescribesAnotherFile;

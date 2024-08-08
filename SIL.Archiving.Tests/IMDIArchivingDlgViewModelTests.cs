@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using NUnit.Framework;
 using SIL.Archiving.IMDI;
@@ -14,7 +16,7 @@ namespace SIL.Archiving.Tests
 	{
 		private class MessageData
 		{
-			public string MsgText;
+			public readonly string MsgText;
 			public ArchivingDlgViewModel.MessageType MsgType;
 
 			public MessageData(string msg, ArchivingDlgViewModel.MessageType type)
@@ -25,8 +27,9 @@ namespace SIL.Archiving.Tests
 		}
 
 		private IMDIArchivingDlgViewModel _model;
-		private TemporaryFolder _tmpFolder;
-		private List<MessageData> _messages;
+		private TestProgress m_progress;
+		private TemporaryFolder m_tmpFolder;
+		private List<MessageData> m_messages;
 		private const string kAppName = "Tèst App Náme";
 		private const string kTitle = "Tèst Title";
 		private const string kArchiveId = "Tèst Corpus Náme"; // include some invalid characters for testing
@@ -35,13 +38,17 @@ namespace SIL.Archiving.Tests
 
 		/// ------------------------------------------------------------------------------------
 		[SetUp]
-		public void Setup()
+		public async Task Setup()
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
-			_tmpFolder = new TemporaryFolder("IMDIArchiveHelperTestFolder");
-			_model = new IMDIArchivingDlgViewModel(kAppName, kTitle, kArchiveId, null, true, dummyAction => { }, _tmpFolder.Path);
-			_messages = new List<MessageData>();
-			_model.OnDisplayMessage += (msg, type) => { _messages.Add(new MessageData(msg, type)); };
+			m_tmpFolder = new TemporaryFolder("IMDIArchiveHelperTestFolder");
+			_model = new IMDIArchivingDlgViewModel(kAppName, kTitle, kArchiveId, true, (no, op) => { }, m_tmpFolder.Path);
+			m_progress = new TestProgress("IMDI");
+			var cancel = new CancellationToken();
+			await _model.Initialize(m_progress, cancel);
+			Assert.That(m_progress.Step, Is.EqualTo(1));
+			m_messages = new List<MessageData>();
+			_model.OnReportMessage += (msg, type) => { m_messages.Add(new MessageData(msg, type)); };
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -49,7 +56,7 @@ namespace SIL.Archiving.Tests
 		public void TearDown()
 		{
 			_model.CleanUp();
-			_tmpFolder.Dispose();
+			m_tmpFolder.Dispose();
 		}
 
 		#endregion
@@ -79,10 +86,10 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void PathIsAccessible_WritablePath_True()
 		{
-			var dir = _tmpFolder.Path;
+			var dir = m_tmpFolder.Path;
 			var writable = _model.IsPathWritable(dir);
 			Assert.True(writable);
-			Assert.IsEmpty(_messages);
+			Assert.IsEmpty(m_messages);
 		}
 
 		[Test]
@@ -91,9 +98,9 @@ namespace SIL.Archiving.Tests
 			const string dir = "/one/two";
 			var writable = _model.IsPathWritable(dir);
 			Assert.False(writable);
-			Assert.AreEqual(1, _messages.Count);
-			Assert.AreEqual("The path is not writable: /one/two", _messages[0].MsgText);
-			Assert.AreEqual(ArchivingDlgViewModel.MessageType.Warning, _messages[0].MsgType);
+			Assert.AreEqual(1, m_messages.Count);
+			Assert.AreEqual("Test implementation message for PathNotWritable", m_messages[0].MsgText);
+			Assert.AreEqual(ArchivingDlgViewModel.MessageType.Warning, m_messages[0].MsgType);
 		}
 
 		[Test]
@@ -103,9 +110,9 @@ namespace SIL.Archiving.Tests
 			const string dir = ":?";
 			var writable = _model.IsPathWritable(dir);
 			Assert.False(writable);
-			Assert.AreEqual(1, _messages.Count);
-			Assert.AreEqual("The path is not of a legal form.", _messages[0].MsgText);
-			Assert.AreEqual(ArchivingDlgViewModel.MessageType.Warning, _messages[0].MsgType);
+			Assert.AreEqual(1, m_messages.Count);
+			Assert.AreEqual("The path is not of a legal form.", m_messages[0].MsgText);
+			Assert.AreEqual(ArchivingDlgViewModel.MessageType.Warning, m_messages[0].MsgType);
 		}
 
 		[Test]
@@ -114,9 +121,9 @@ namespace SIL.Archiving.Tests
 			const string dir = "/\0";
 			var writable = _model.IsPathWritable(dir);
 			Assert.False(writable);
-			Assert.AreEqual(1, _messages.Count);
-			Assert.AreEqual("Illegal characters in path.", _messages[0].MsgText);
-			Assert.AreEqual(ArchivingDlgViewModel.MessageType.Warning, _messages[0].MsgType);
+			Assert.AreEqual(1, m_messages.Count);
+			Assert.AreEqual("Illegal characters in path.", m_messages[0].MsgText);
+			Assert.AreEqual(ArchivingDlgViewModel.MessageType.Warning, m_messages[0].MsgType);
 		}
 
 		#endregion
@@ -158,7 +165,6 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void SetAbstract_UnspecifiedLanguage_AddsDescriptionToCorpusImdiFile()
 		{
-			_model.Initialize();
 			_model.SetAbstract("Story about a frog", string.Empty);
 			XmlDocument doc = new XmlDocument();
 			doc.LoadXml(_model.GetMetadata());
@@ -190,7 +196,6 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void SetAbstract_SingleLanguage_AddsDescriptionToCorpusImdiFile()
 		{
-			_model.Initialize();
 			_model.SetAbstract("Story about a frog", "eng");
 			XmlDocument doc = new XmlDocument();
 			doc.LoadXml(_model.GetMetadata());
@@ -217,7 +222,6 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void SetAbstract_MultipleLanguages_AddsDescriptionToCorpusImdiFile()
 		{
-			_model.Initialize();
 			Dictionary<string, string> descriptions = new Dictionary<string, string>();
 			descriptions["eng"] = "Story about a frog";
 			descriptions["deu"] = "Geschichte über einen Frosch";

@@ -12,7 +12,7 @@ namespace SIL.Archiving.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "12.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.9.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -20,6 +20,15 @@ namespace SIL.Archiving.Properties {
         public static Settings Default {
             get {
                 return defaultInstance;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://www.mpi.nl/imdi/")]
+        public string IMDIWebSite {
+            get {
+                return ((string)(this["IMDIWebSite"]));
             }
         }
         
@@ -39,15 +48,6 @@ namespace SIL.Archiving.Properties {
         public string RampContributorRoles {
             get {
                 return ((string)(this["RampContributorRoles"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://www.mpi.nl/imdi/")]
-        public string IMDIWebSite {
-            get {
-                return ((string)(this["IMDIWebSite"]));
             }
         }
     }

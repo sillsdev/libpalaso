@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using SIL.Code;
+using SIL.Core.ClearShare;
 using SIL.IO;
 using SIL.Windows.Forms.ClearShare;
 

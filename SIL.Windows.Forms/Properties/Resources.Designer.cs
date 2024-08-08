@@ -131,27 +131,6 @@ namespace SIL.Windows.Forms.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
-        ///&lt;OLAC_doc&gt;
-        ///  &lt;header&gt;
-        ///	 &lt;status code=&quot;adopted&quot; type=&quot;recommendation&quot;/&gt;
-        ///	 &lt;!-- Promoted to Adopted on 2008-12-19 --&gt;
-        ///	&lt;title&gt;OLAC Role Vocabulary&lt;/title&gt;
-        ///	&lt;baseName&gt;role&lt;/baseName&gt;
-        ///	&lt;issued&gt;20060406&lt;/issued&gt;
-        ///	&lt;previousIssued&gt;20031010&lt;/previousIssued&gt;
-        ///	&lt;abstract&gt;
-        ///	  &lt;p&gt;Role is an attribute of both the Creator and Contributor elements. (Please note that Dublin
-        ///	  Core now discourages the use of the Creator element, recommending that all Role information be
-        ///	  associated with C [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string OlacRoles {
-            get {
-                return ResourceManager.GetString("OlacRoles", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap passwordRevealEye16x16 {
