@@ -10,7 +10,7 @@ using SIL.Lift.Merging;
 using SIL.Lift.Parsing;
 using SIL.Lift.Tests.Properties;
 using SIL.Lift.Validation;
-using SIL.TestUtilities;
+using Unit = NUnit.Framework;
 using Has = NMock2.Has;
 using Is = NMock2.Is;
 
@@ -158,6 +158,23 @@ namespace SIL.Lift.Tests.Parsing
 			Assert.AreEqual(10, subspan.Index);
 			Assert.AreEqual(4, subspan.Length);
 			Assert.AreEqual(0, subspan.Spans.Count);
+		}
+
+		[Test]
+		public void MultiTextWithEmptyNestedSpan()
+		{
+			_doc.LoadXml("<foobar><form lang='x'><text><span lang='y'></span></text></form></foobar>");
+			_parser.ParsingWarning += (sender, args) => { Assert.Fail("Could not parse empty span in an empty multitext.");};
+			var t = _parser.ReadMultiText(_doc.FirstChild);
+			var tx = t["x"];
+			Assert.That(tx, Unit.Is.Not.Null);
+			Assert.That(tx.Text, Unit.Is.Null);
+			Assert.That(tx.Spans.Count, Unit.Is.EqualTo(1));
+			var span = tx.Spans[0];
+			Assert.That(span, Unit.Is.Not.Null);
+			Assert.That(span.Class, Unit.Is.Null);
+			Assert.That(span.Lang, Unit.Is.EqualTo("y"));
+			Assert.That(span.Length, Unit.Is.EqualTo(0));
 		}
 
 		[Test]
