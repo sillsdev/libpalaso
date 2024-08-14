@@ -80,7 +80,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void FindOrphans_OrphanFoundIsValidRfcTag_WritingsystemIsAddedToWritingSystemRepoAndFileUntouched()
+		public void FindOrphans_OrphanFoundIsValidRfcTag_WritingSystemIsAddedToWritingSystemRepoAndFileUntouched()
 		{
 			using (var e = new TestEnvironment("en", "de"))
 			{
