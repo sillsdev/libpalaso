@@ -14,6 +14,7 @@ using SIL.Archiving.Generic.AccessProtocol;
 using SIL.Archiving.IMDI.Lists;
 using SIL.Extensions;
 using static SIL.Archiving.IMDI.Lists.ListType;
+using System.Threading.Tasks;
 
 namespace SIL.Archiving.IMDI.Schema
 {
@@ -133,26 +134,26 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <param name="outputDirectoryName"></param>
 		/// <param name="corpusName"></param>
 		/// <returns>IMDI file name</returns>
-		public string WriteImdiFile(string outputDirectoryName, string corpusName)
+		public async Task<string> WriteImdiFile(string outputDirectoryName, string corpusName)
 		{
 			string corpusDirectoryName = IMDIArchivingDlgViewModel.NormalizeDirectoryName(corpusName);
 
 			switch (Type)
 			{
 				case MetatranscriptValueType.CORPUS:
-					return WriteCorpusImdiFile(outputDirectoryName, corpusDirectoryName);
+					return await WriteCorpusImdiFile(outputDirectoryName, corpusDirectoryName);
 
 				case MetatranscriptValueType.CATALOGUE:
-					return WriteCatalogueImdiFile(outputDirectoryName, corpusDirectoryName);
+					return await WriteCatalogueImdiFile(outputDirectoryName, corpusDirectoryName);
 
 				case MetatranscriptValueType.SESSION:
-					return WriteSessionImdiFile(outputDirectoryName, corpusDirectoryName);
+					return await WriteSessionImdiFile(outputDirectoryName, corpusDirectoryName);
 			}
 
 			return null;
 		}
 
-		private string WriteCorpusImdiFile(string outputDirectoryName, string corpusDirectoryName)
+		private async Task<string> WriteCorpusImdiFile(string outputDirectoryName, string corpusDirectoryName)
 		{
 			// create the corpus directory
 			Directory.CreateDirectory(Path.Combine(outputDirectoryName, corpusDirectoryName));
@@ -164,13 +165,13 @@ namespace SIL.Archiving.IMDI.Schema
 			var imdiFile = Path.Combine(outputDirectoryName, corpusDirectoryName + ".imdi");
 
 			TextWriter writer = new StreamWriter(imdiFile);
-			writer.Write(ToString());
+			await writer.WriteAsync(ToString());
 			writer.Close();
 
 			return imdiFile;
 		}
 
-		private string WriteCatalogueImdiFile(string outputDirectoryName, string corpusDirectoryName)
+		private async Task<string> WriteCatalogueImdiFile(string outputDirectoryName, string corpusDirectoryName)
 		{
 			// create the corpus directory
 			Directory.CreateDirectory(Path.Combine(outputDirectoryName, corpusDirectoryName));
@@ -182,13 +183,13 @@ namespace SIL.Archiving.IMDI.Schema
 			var imdiFile = Path.Combine(outputDirectoryName, corpusDirectoryName, corpusDirectoryName + "_Catalogue.imdi");
 
 			TextWriter writer = new StreamWriter(imdiFile);
-			writer.Write(ToString());
+			await writer.WriteAsync(ToString());
 			writer.Close();
 
 			return Path.Combine(corpusDirectoryName, corpusDirectoryName + "_Catalogue.imdi");
 		}
 
-		private string WriteSessionImdiFile(string outputDirectoryName, string corpusDirectoryName)
+		private async Task<string> WriteSessionImdiFile(string outputDirectoryName, string corpusDirectoryName)
 		{
 			// session object
 			Session s = (Session)Items[0];
@@ -208,7 +209,7 @@ namespace SIL.Archiving.IMDI.Schema
 			var imdiFile = Path.Combine(outputDirectoryName, corpusDirectoryName, sessionDirectoryName + ".imdi");
 
 			TextWriter writer = new StreamWriter(imdiFile);
-			writer.Write(ToString());
+			await writer.WriteAsync(ToString());
 			writer.Close();
 
 			return Path.Combine(corpusDirectoryName, sessionDirectoryName + ".imdi");
