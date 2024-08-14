@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
 using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI.Lists;
 using SIL.Archiving.IMDI.Schema;
@@ -71,12 +73,13 @@ namespace SIL.Archiving.IMDI
 		// Test_Corpus\Test_Session\Files*.* (session files)
 		// Test_Corpus\Contributors\Files*.* (contributor/actor files)
 
-		/// <summary>Creates the corpus directory structure, meta data files, and copies content files</summary>
+		/// <summary>Creates the corpus directory structure, meta data files, and copies content
+		/// files, checking for cancellation before each IO operation.</summary>
 		/// <returns></returns>
-		public bool CreateIMDIPackage()
+		public Task<bool> CreateIMDIPackage(CancellationToken cancellationToken)
 		{
 			if (!IsValid)
-				return false;
+				return Task.FromResult(false);
 
 			_creationStarted = true;
 
@@ -84,9 +87,10 @@ namespace SIL.Archiving.IMDI
 			List<string> sessionFiles = new List<string>();
 
 			// create the session directories
-// ReSharper disable once LoopCanBeConvertedToQuery
 			foreach (var session in Sessions)
 			{
+				cancellationToken.ThrowIfCancellationRequested();
+
 				var sessionImdi = new MetaTranscript {
 					Items = new object[] { session },
 					Type = MetatranscriptValueType.SESSION
@@ -97,7 +101,7 @@ namespace SIL.Archiving.IMDI
 			if (!_corpus)
 			{
 				MainExportFile = Path.Combine(PackagePath, sessionFiles[0]);
-				return true;
+				return Task.FromResult(true);
 			}
 
 			var corpus = (Corpus) BaseMajorObject;
@@ -109,13 +113,17 @@ namespace SIL.Archiving.IMDI
 			foreach (var fileName in sessionFiles)
 				corpus.CorpusLink.Add(new CorpusLinkType { Value = fileName.Replace("\\", "/"), Name = string.Empty });
 
+			cancellationToken.ThrowIfCancellationRequested();
+
 			// create the catalogue
 			corpus.CatalogueLink = CreateCorpusCatalogue();
+
+			cancellationToken.ThrowIfCancellationRequested();
 
 			//  Create the corpus imdi file
 			MainExportFile = BaseImdiFile.WriteImdiFile(PackagePath, Name);
 
-			return true;
+			return Task.FromResult(true);
 		}
 
 		private string CreateCorpusCatalogue()
@@ -218,10 +226,8 @@ namespace SIL.Archiving.IMDI
 			// prevent duplicate description
 			if (_corpus)
 			{
-				foreach (var session in Sessions.Where(sess => sess.Name == sessionId))
-				{
+				foreach (var session in Sessions.Where(s => s.Name == sessionId))
 					session.AddDescription(description);
-				}
 			}
 			else
 			{

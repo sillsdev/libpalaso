@@ -64,6 +64,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Added optional parameter to OlacSystem.GetRoles to allow caller to provide its own XML with role definitions.
 - [SIL.Windows.Forms] Split License into a base class called License and a derived LicenseWithLogo, so that License could be in SIL.Core.
 - [SIL.Archiving] Changed IArchivingSession.Files (and Session.Files) into an IReadonlyList.
+- [SIL.Archiving] Changed signature of IMDIPackage.CreateIMDIPackage to take a CancellationToken parameter and return Task<bool>.
 
 ### Fixed
 - [SIL.Archiving] Fixed typo in RampArchivingDlgViewModel for Ethnomusicology performance collection.

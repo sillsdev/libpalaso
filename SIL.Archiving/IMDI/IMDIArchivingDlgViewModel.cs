@@ -186,7 +186,7 @@ namespace SIL.Archiving.IMDI
 
 			// write the xml files
 			if (success)
-				success = _imdiData.CreateIMDIPackage(); // REVIEW: Should this also be awaited?
+				success = await _imdiData.CreateIMDIPackage(cancellationToken);
 
 			// copy the content files
 			if (success && !MetadataOnly)
