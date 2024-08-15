@@ -1,7 +1,6 @@
-
 using System;
 using System.Linq;
-using L10NSharp;
+using JetBrains.Annotations;
 using SIL.Archiving.IMDI.Schema;
 
 namespace SIL.Archiving.IMDI.Lists
@@ -23,19 +22,14 @@ namespace SIL.Archiving.IMDI.Lists
 		}
 
 		/// <summary>This is provided because the XSD uses the term "LanguageId"</summary>
-		public string Id { get { return Value;  } }
+		public string Id => Value;
 
 		/// <summary></summary>
 		public string OtherName { get; set; }
 
 		/// <summary></summary>
-		public string DisplayName
-		{
-			get
-			{
-				return string.IsNullOrEmpty(OtherName) ? EnglishName : OtherName;
-			}
-		}
+		[PublicAPI]
+		public string DisplayName => string.IsNullOrEmpty(OtherName) ? EnglishName : OtherName;
 
 		/// <summary>Convert to a LanguageType object</summary>
 		public LanguageType ToLanguageType()
@@ -43,7 +37,7 @@ namespace SIL.Archiving.IMDI.Lists
 			var langName = Text;
 
 			// check for "und" code
-			if ((Id.EndsWith("und")) && (!string.IsNullOrEmpty(OtherName)))
+			if (Id.EndsWith("und") && !string.IsNullOrEmpty(OtherName))
 				langName = OtherName;
 
 			return new LanguageType
@@ -76,15 +70,12 @@ namespace SIL.Archiving.IMDI.Lists
 		/// <summary></summary>
 		public string EnglishName
 		{
-			get { return Text; }
-			set { Text = value; }
+			get => Text;
+			set => Text = value;
 		}
 
 		/// <summary></summary>
-		public string Iso3Code
-		{
-			get { return Value.Substring(Value.Length - 3); }
-		}
+		public string Iso3Code => Value.Substring(Value.Length - 3);
 	}
 
 	/// -------------------------------------------------------------------------------------------
@@ -96,9 +87,18 @@ namespace SIL.Archiving.IMDI.Lists
 		/// <returns></returns>
 		private static LanguageList GetList()
 		{
-			return _instance ?? (_instance = new LanguageList());
+			return _instance ??= new LanguageList();
 		}
 
+		/// ---------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets a language list based on the Ethnologue
+		/// </summary>
+		/// <remarks>Even though this ostensibly claims to use the MPI Languages, this file is
+		/// woefully incomplete (only ~345 languages, less than 5% of the total). A comment inside
+		/// it even says "When a language name and identifier that you need is not in this list,
+		/// please look it up under www.ethnologue.com/web.asp.". So we use the information from
+		/// SIL.WritingSystems, which is based on the complete Ethnologue data.</remarks>
 		/// ---------------------------------------------------------------------------------------
 		protected LanguageList() : base(ListType.MPILanguages, false)
 		{
@@ -145,14 +145,16 @@ namespace SIL.Archiving.IMDI.Lists
 			// if not found, and not limited to list, just return the code passed in
 			if (!mustBeInList) return new LanguageItem(string.Empty, "ISO639-3:" + iso3Code.ToLower());
 
-			// if not found, throw exception
-			var msg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.InvalidLanguageCode",
-				"Invalid ISO 639-3 code: {0}");
-			throw new ArgumentException(string.Format(msg, iso3Code), "iso3Code");
+			throw new InvalidLanguageCodeException(iso3Code, nameof(iso3Code));
 		}
 
 		/// -------------------------------------------------------------------------------------------
-		///  This finds either English name or localised name
+		/// <summary>
+		/// Finds information about the language, given its English name (or possibly the localised
+		/// name or some other variant).
+		/// </summary>
+		/// <remarks>Given its actual behavior, this is kind of poorly named.</remarks>
+		/// -------------------------------------------------------------------------------------------
 		public static LanguageItem FindByEnglishName(string englishName)
 		{
 			if (string.IsNullOrEmpty(englishName))
@@ -161,10 +163,8 @@ namespace SIL.Archiving.IMDI.Lists
 			var item = GetList().FindByText(englishName);
 
 			// if not on list, return "und"
-			if (item == null)
-				return new LanguageItem(englishName, "ISO639-3:und", englishName);
-
-			return (LanguageItem)(GetList().FindByText(englishName));
+			return item == null ? new LanguageItem(englishName, "ISO639-3:und", englishName)
+				: (LanguageItem)item;
 		}
 
 		/// -------------------------------------------------------------------------------------------

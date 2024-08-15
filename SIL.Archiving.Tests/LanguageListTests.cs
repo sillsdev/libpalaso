@@ -11,6 +11,7 @@ namespace SIL.Archiving.Tests
 	{
 		[TestCase("fra", "French")]
 		[TestCase("tru", "Turoyo")]
+		[TestCase("eng", "English")]
 		public void FindByISO3Code_ExistingLanguageWithNoOtherName_GetsExpectedNameCodeAndId(string iso3Code, string expectedEnglishName)
 		{
 			var result = LanguageList.FindByISO3Code(iso3Code);
@@ -33,12 +34,14 @@ namespace SIL.Archiving.Tests
 		}
 
 		[TestCase("French", "fra")]
-		[TestCase("français", "fra")] // Not really sure why this works
+		[TestCase("français", "fra")] // This works because even though "French" is the default (English) name associated with "fra", the Ethnologue data also contains "français"
 		[TestCase("Turoyo", "tru")]
-		public void FindByEnglishName_ExistingLanguage_GetsExpectedNameCodeAndId(string name, string expectedIso3Code)
+		[TestCase("English", "eng")]
+		// [TestCase("Eng", "gss", "Greek Sign Language")] // because these tests use the offline Sldr and there is an outdated langtags.json in our resources, "Eng" does not resolve to gss.
+		public void FindByEnglishName_ExistingLanguage_GetsExpectedNameCodeAndId(string name, string expectedIso3Code, string defaultName = null)
 		{
 			var result = LanguageList.FindByEnglishName(name);
-			Assert.AreEqual(name, result.EnglishName);
+			Assert.AreEqual(defaultName ?? name, result.EnglishName);
 			Assert.AreEqual(expectedIso3Code, result.Iso3Code);
 			Assert.That(result.OtherName, Is.Null.Or.Empty);
 			Assert.AreEqual($"ISO639-3:{expectedIso3Code}", result.Id);

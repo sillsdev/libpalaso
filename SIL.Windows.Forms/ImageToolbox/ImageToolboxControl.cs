@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 using L10NSharp;
 using SIL.Code;
+using SIL.Core.ClearShare;
 using SIL.PlatformUtilities;
 using SIL.Reporting;
 using SIL.Windows.Forms.ClearShare;

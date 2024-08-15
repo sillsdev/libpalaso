@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using SIL.Archiving.Generic.AccessProtocol;
 
@@ -47,7 +47,7 @@ namespace SIL.Archiving.Generic
 	/// <summary>Collects the data needed to produce an archive package to upload</summary>
 	public abstract class ArchivingPackage : IArchivingPackage
 	{
-		protected readonly List<KeyValuePair<string, string>> _keys;
+		private readonly List<KeyValuePair<string, string>> _keys;
 
 		public ArchivingLanguageCollection MetadataIso3Languages { get; set; }
 
@@ -70,6 +70,8 @@ namespace SIL.Archiving.Generic
 			Access = new ArchivingAccess();
 
 		}
+
+		protected IEnumerable<KeyValuePair<string, string>> Keys => _keys;
 
 		/// <summary />
 		public string Title { get; set; }

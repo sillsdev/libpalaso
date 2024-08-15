@@ -35,8 +35,8 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void ToLatinOnly_MultiplePeriod_OnePeriod()
 		{
-			var result = "Langauge.wav.meta".ToLatinOnly("_", "+", ".");
-			Assert.AreEqual("Langauge_wav.meta", result);
+			var result = "Language.wav.meta".ToLatinOnly("_", "+", ".");
+			Assert.AreEqual("Language_wav.meta", result);
 		}
 	}
 }

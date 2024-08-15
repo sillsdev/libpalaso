@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 // ReSharper disable CSharpWarnings::CS1591
 // ReSharper disable InconsistentNaming
@@ -48,7 +48,7 @@ namespace SIL.Archiving
 	/// the Scripture Part (specific testaments/books included).
 	/// </summary>
 	[Flags]
-	public enum VernacularMaterialsType : ulong
+	public enum VernacularMaterialsType : long
 	{
 		// First two bits determine the overall vernacular materials type. Only one of these may be set. Remaining
 		// bits indicate specific content.
@@ -225,7 +225,7 @@ namespace SIL.Archiving
 	/// Domains to which a resource relates http://purl.org/net/sword-types/SIL/metadata/dc/subject/silDomain
 	/// </summary>
 	[Flags]
-	public enum SilDomain : ulong
+	public enum SilDomain : long
 	{
 		// Academic domains
 

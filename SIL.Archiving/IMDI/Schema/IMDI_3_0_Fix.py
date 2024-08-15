@@ -79,7 +79,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Schema;
 
-namespace SIL.Archiving.IMDI.Schema
+namespace SIL.Windows.Forms.Archiving.IMDI.Schema
 {
 '''
 

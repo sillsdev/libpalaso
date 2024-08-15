@@ -1,4 +1,5 @@
-﻿using SIL.Windows.Forms.ClearShare;
+using SIL.Core.ClearShare;
+using SIL.Windows.Forms.ClearShare;
 
 namespace SIL.Windows.Forms.ImageToolbox
 {

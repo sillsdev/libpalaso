@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
-using NDesk.DBus.Introspection;
 
 namespace SIL.Windows.Forms.ClearShare
 {
@@ -362,13 +361,6 @@ namespace SIL.Windows.Forms.ClearShare
 		}
 
 		private string _qualifier = null;
-
-		[Obsolete("Use IntergovernmentalOrganizationQualifier")]
-		public bool IntergovernmentalOriganizationQualifier
-		{
-			get => IntergovernmentalOrganizationQualifier;
-			set => IntergovernmentalOrganizationQualifier = value;
-		}
 
 		/// <remarks>
 		/// CC 3.0 licenses were ported to better serve the needs of Intergovernmental Organizations (IGOs).

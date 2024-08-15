@@ -1,6 +1,7 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Xml;
 using NUnit.Framework;
+using SIL.Core.ClearShare;
 using SIL.IO;
 using SIL.Windows.Forms.ClearShare;
 

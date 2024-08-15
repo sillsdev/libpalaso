@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Text;
 
-namespace SIL.Windows.Forms.ClearShare
+namespace SIL.Core.ClearShare
 {
 	public class Role
 	{

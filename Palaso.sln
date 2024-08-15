@@ -25,9 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reporting.TestApp", "TestAp
 		{DB44F49C-D8C6-434F-81ED-28EA5C9E8195} = {DB44F49C-D8C6-434F-81ED-28EA5C9E8195}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Archiving", "SIL.Archiving\SIL.Archiving.csproj", "{BCE1F124-5479-4B23-90B1-B7A4EBE44FA3}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Archiving.Tests", "SIL.Archiving.Tests\SIL.Archiving.Tests.csproj", "{892C7F20-FBBB-4AB3-BAC2-E40A135567B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms.Archiving", "SIL.Windows.Forms.Archiving\SIL.Windows.Forms.Archiving.csproj", "{BCE1F124-5479-4B23-90B1-B7A4EBE44FA3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Scripture", "SIL.Scripture\SIL.Scripture.csproj", "{F71BA7B9-D9DC-4F8C-A307-87B503D0E05B}"
 EndProject
@@ -118,7 +116,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.TestUtilities.Tests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClipboardTestApp", "TestApps\ClipboardTestApp\ClipboardTestApp.csproj", "{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLineRunnerTestApp", "TestApps\CommandLineRunnerTestApp\CommandLineRunnerTestApp.csproj", "{6407C2F9-F62D-4568-B694-7A79C72582C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandLineRunnerTestApp", "TestApps\CommandLineRunnerTestApp\CommandLineRunnerTestApp.csproj", "{6407C2F9-F62D-4568-B694-7A79C72582C9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Archiving", "SIL.Archiving\SIL.Archiving.csproj", "{01B31D97-63A4-4FC6-940F-D7278F4D0F65}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Archiving.Tests", "SIL.Archiving.Tests\SIL.Archiving.Tests.csproj", "{698FDB66-0ACE-46E0-843C-3AB70DC7B055}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchivingTestApp", "TestApps\ArchivingTestApp\ArchivingTestApp.csproj", "{321BB622-8185-4173-8770-742CD620BC18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -162,10 +166,6 @@ Global
 		{BCE1F124-5479-4B23-90B1-B7A4EBE44FA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BCE1F124-5479-4B23-90B1-B7A4EBE44FA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCE1F124-5479-4B23-90B1-B7A4EBE44FA3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{892C7F20-FBBB-4AB3-BAC2-E40A135567B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{892C7F20-FBBB-4AB3-BAC2-E40A135567B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{892C7F20-FBBB-4AB3-BAC2-E40A135567B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{892C7F20-FBBB-4AB3-BAC2-E40A135567B6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F71BA7B9-D9DC-4F8C-A307-87B503D0E05B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F71BA7B9-D9DC-4F8C-A307-87B503D0E05B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F71BA7B9-D9DC-4F8C-A307-87B503D0E05B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -302,6 +302,18 @@ Global
 		{6407C2F9-F62D-4568-B694-7A79C72582C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6407C2F9-F62D-4568-B694-7A79C72582C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6407C2F9-F62D-4568-B694-7A79C72582C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01B31D97-63A4-4FC6-940F-D7278F4D0F65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01B31D97-63A4-4FC6-940F-D7278F4D0F65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01B31D97-63A4-4FC6-940F-D7278F4D0F65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01B31D97-63A4-4FC6-940F-D7278F4D0F65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{698FDB66-0ACE-46E0-843C-3AB70DC7B055}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{698FDB66-0ACE-46E0-843C-3AB70DC7B055}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{698FDB66-0ACE-46E0-843C-3AB70DC7B055}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{698FDB66-0ACE-46E0-843C-3AB70DC7B055}.Release|Any CPU.Build.0 = Release|Any CPU
+		{321BB622-8185-4173-8770-742CD620BC18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{321BB622-8185-4173-8770-742CD620BC18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{321BB622-8185-4173-8770-742CD620BC18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{321BB622-8185-4173-8770-742CD620BC18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -314,6 +326,7 @@ Global
 		{CA8F3657-3D85-4C97-81A6-5C212627B2F6} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
 		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
 		{6407C2F9-F62D-4568-B694-7A79C72582C9} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
+		{321BB622-8185-4173-8770-742CD620BC18} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0915B762-D4AE-4892-BF4F-AC428A687B02}

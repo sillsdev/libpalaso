@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using L10NSharp;
+using SIL.Core.ClearShare;
 
 namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 {

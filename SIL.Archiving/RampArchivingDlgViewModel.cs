@@ -1,48 +1,27 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
+using System.Threading.Tasks;
 using Ionic.Zip;
-using L10NSharp;
-using SIL.Archiving.Generic;
-using SIL.Archiving.Properties;
+using JetBrains.Annotations;
+using SIL.Core.ClearShare;
 using SIL.Extensions;
 using SIL.IO;
 using SIL.PlatformUtilities;
-using SIL.Windows.Forms.ClearShare;
 using Timer = System.Threading.Timer;
+using static System.String;
+using static SIL.Archiving.Resources.Resources;
 
 namespace SIL.Archiving
 {
 	/// ------------------------------------------------------------------------------------
 	public class RampArchivingDlgViewModel: ArchivingDlgViewModel
 	{
-		[DllImport("user32.dll", EntryPoint = "SetWindowPos")]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		private static extern bool SetWindowPosWindows(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
-
-		private static bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx,
-			int cy, uint uFlags)
-		{
-			// on Linux simply return true
-			return !Platform.IsWindows || SetWindowPosWindows(hWnd, hWndInsertAfter, x, y, cx, cy, uFlags);
-		}
-		// ReSharper disable InconsistentNaming
-		private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);    // brings window to top and makes it "always on top"
-		private static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);  // brings window to top but not "always on top"
-		private const UInt32 SWP_NOSIZE = 0x0001;
-		private const UInt32 SWP_NOMOVE = 0x0002;
-		private const UInt32 TOPMOST_FLAGS = SWP_NOMOVE | SWP_NOSIZE;
-		// ReSharper restore InconsistentNaming
-
 		#region RAMP and METS constants
 // ReSharper disable CSharpWarnings::CS1591
 
@@ -69,6 +48,7 @@ namespace SIL.Archiving
 		public const string kContributor = "dc.contributor";
 		public const string kAbstractDescription = "dc.description.abstract";
 		public const string kStageDescription = "dc.description.stage";
+		[PublicAPI]
 		public const string kTableOfContentsDescription = "dc.description.tableofcontents";
 		public const string kVernacularContent = "dc.subject.vernacularContent";
 
@@ -77,6 +57,7 @@ namespace SIL.Archiving
 		public const string kFlagHasSoftwareOrFontRequirements = "relation.requires.has";
 		public const string kFlagHasGeneralDescription = "description.has";
 		public const string kFlagHasAbstractDescription = "description.abstract.has";
+		[PublicAPI]
 		public const string kFlagHasTableOfContentsDescription = "description.tableofcontents.has";
 		public const string kFlagHasPromotionDescription = "description.promotion.has";
 		public const string kTrue = "Y";
@@ -152,20 +133,23 @@ namespace SIL.Archiving
 		public const string kFileDescription = "description";
 		public const string kFileRelationship = "relationship";
 		public const string kRelationshipSource = "Source";
+		[PublicAPI]
 		public const string kRelationshipPresentation = "Presentation";
+		[PublicAPI]
 		public const string kRelationshipSupporting = "Supporting";
 // ReSharper restore CSharpWarnings::CS1591
 		#endregion
 
 		#region Data members
+		private readonly Dictionary<string, string> _progressMessages = new Dictionary<string, string>();
 		private readonly List<string> _metsPairs;
 		private AudienceType _metsAudienceType;
 		private string _metsFilePath;
 		private string _tempFolder;
 		private Timer _timer;
-		private bool _workerException;
 		private Dictionary<string, string> _languageList;
-		private readonly Func<string, string, string> _getFileDescription; // first param is filelist key, second param is filename
+		private readonly Func<string, string, string> _getFileDescription; // first param is file list key, second param is filename
+
 		private int _imageCount = -1;
 		private int _audioCount = -1;
 		private int _videoCount = -1;
@@ -174,31 +158,10 @@ namespace SIL.Archiving
 
 		#region properties
 		/// ------------------------------------------------------------------------------------
-		internal override string ArchiveType => LocalizationManager.GetString(
-			"DialogBoxes.ArchivingDlg.RAMPArchiveType", "RAMP (SIL Only)");
+		public override Standard ArchiveType => Standard.REAP;
 
 		/// ------------------------------------------------------------------------------------
 		public override string NameOfProgramToLaunch => kRampProcessName;
-
-		/// ------------------------------------------------------------------------------------
-		public override string InformativeText
-		{
-			get
-			{
-				return string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.RAMPOverviewText",
-					"{0} is a utility for entering metadata and uploading submissions to SIL's internal archive, " +
-					"REAP. If you have access to this archive, this tool will help you use {0} to archive your " +
-					"{1} data. {2} When the {0} package has been created, you can  launch {0} and enter any " +
-					"additional information before doing the actual submission.",
-					"Parameter 0  is the word 'RAMP' (the first one will be turned into a hyperlink); " +
-					"Parameter 1 is the name of the calling (host) program (SayMore, FLEx, etc.); " +
-					"Parameter 2 is additional app-specific information."), NameOfProgramToLaunch, AppName,
-					_appSpecificArchivalProcessInfo);
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
-		public override string ArchiveInfoHyperlinkText => NameOfProgramToLaunch;
 
 		/// ------------------------------------------------------------------------------------
 		public override string ArchiveInfoUrl => Properties.Settings.Default.RampWebSite;
@@ -221,35 +184,50 @@ namespace SIL.Archiving
 		/// <summary>
 		/// Gets the number of image files in the list(s) of files to archive.
 		/// </summary>
-		/// <remarks>Public (and self-populating on-demand) to facilitate testing</remarks>
+		/// <remarks>Public (and self-populating on-demand) to facilitate testing. If this
+		/// property is accessed before initialization is complete, it will return -1.</remarks>
 		/// ------------------------------------------------------------------------------------
 		public int ImageCount
 		{
 			get
 			{
-				if (_fileLists != null && _imageCount < 0)
+				if (FileLists.Count > 0 && _imageCount < 0)
 					ExtractInformationFromFiles();
 				return _imageCount;
 			}
 		}
 
 		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets the number of audio files in the list(s) of files to archive.
+		/// </summary>
+		/// <remarks>Public (and self-populating on-demand) to facilitate testing. If this
+		/// property is accessed before initialization is complete, it will return -1.</remarks>
+		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public int AudioCount
 		{
 			get
 			{
-				if (_fileLists != null && _audioCount < 0)
+				if (FileLists.Count > 0  && _audioCount < 0)
 					ExtractInformationFromFiles();
 				return _audioCount;
 			}
 		}
 
 		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets the number of video files in the list(s) of files to archive.
+		/// </summary>
+		/// <remarks>Public (and self-populating on-demand) to facilitate testing. If this
+		/// property is accessed before initialization is complete, it will return -1.</remarks>
+		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public int VideoCount
 		{
 			get
 			{
-				if (_fileLists != null && _videoCount < 0)
+				if (FileLists.Count > 0 && _videoCount < 0)
 					ExtractInformationFromFiles();
 				return _videoCount;
 			}
@@ -263,7 +241,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		private void ExtractInformationFromFiles()
 		{
-			ExtractInformationFromFiles(_fileLists.SelectMany(f => f.Value.Item1));
+			ExtractInformationFromFiles(FileLists.SelectMany(f => f.Value.Item1));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -329,27 +307,23 @@ namespace SIL.Archiving
 		/// <param name="appName">The application name</param>
 		/// <param name="title">Title of the submission</param>
 		/// <param name="id">Identifier (used as filename) for the package being created</param>
-		/// <param name="appSpecificArchivalProcessInfo">Application can use this to pass
-		/// additional information that will be displayed to the user in the dialog to explain
-		/// any application-specific details about the archival process.</param>
 		/// <param name="setFilesToArchive">Delegate to request client to call methods to set
-		/// which files should be archived (this is deferred to allow display of progress message)</param>
+		/// which files should be archived (this is deferred to allow display of progress message).
+		/// Clients will normally do this by calling AddFileGroup one or more times.</param>
 		/// <param name="getFileDescription">Callback function to get a file description based
 		/// on the file-list key (param 1) and the filename (param 2)</param>
 		/// ------------------------------------------------------------------------------------
 		public RampArchivingDlgViewModel(string appName, string title, string id,
-			string appSpecificArchivalProcessInfo, Action<ArchivingDlgViewModel> setFilesToArchive,
+			Action<ArchivingDlgViewModel, CancellationToken> setFilesToArchive,
 			Func<string, string, string> getFileDescription) : base(appName, title, id,
-			appSpecificArchivalProcessInfo, setFilesToArchive)
+			setFilesToArchive)
 		{
-			if (getFileDescription == null)
-				throw new ArgumentNullException("getFileDescription");
-			_getFileDescription = getFileDescription;
+			_getFileDescription = getFileDescription ?? throw new ArgumentNullException(nameof(getFileDescription));
 
 			ShowRecordingCountNotLength = false;
 			ImagesArePhotographs = true;
 
-			_metsPairs = new List<string>(new [] {JSONUtils.MakeKeyValuePair(kPackageTitle, _titles[_id])});
+			_metsPairs = new List<string>(new [] {JSONUtils.MakeKeyValuePair(kPackageTitle, PackageTitle)});
 
 			foreach (var orphanedRampPackage in Directory.GetFiles(Path.GetTempPath(), "*" + kRampFileExtension))
 			{
@@ -359,19 +333,33 @@ namespace SIL.Archiving
 			}
 		}
 
+		protected override async Task SetFilesToArchive(CancellationToken cancellationToken)
+		{
+			await base.SetFilesToArchive(cancellationToken);
+
+			if (cancellationToken.IsCancellationRequested)
+				throw new OperationCanceledException();
+
+			foreach (var fileList in FileLists.Where(fileList => fileList.Value.Item1.Any()))
+			{
+				var normalizedName = NormalizeFilename(fileList.Key,
+					Path.GetFileName(fileList.Value.Item1.First()));
+				_progressMessages[normalizedName] = fileList.Value.Item2;
+			}
+		}
+
 		/// ------------------------------------------------------------------------------------
 		protected override bool DoArchiveSpecificInitialization()
 		{
-			DisplayMessage(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.SearchingForRampMsg",
-				"Searching for the RAMP program..."), MessageType.Volatile);
+			DisplayMessage(Progress.GetMessage(StringId.SearchingForArchiveUploadingProgram),
+				MessageType.Volatile);
 
-			Application.DoEvents();
 			PathToProgramToLaunch = GetExeFileLocation();
 
 			if (PathToProgramToLaunch == null)
 			{
-				DisplayMessage(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.RampNotFoundMsg",
-					"The RAMP program cannot be found!"), MessageType.Error);
+				DisplayMessage(Progress.GetMessage(StringId.ArchiveUploadingProgramNotFound),
+					MessageType.Error);
 				return false;
 			}
 
@@ -383,24 +371,29 @@ namespace SIL.Archiving
 		{
 			// One for analyzing each list, one for copying each file, one for adding each file
 			// to the zip file and one for the mets.xml file.
-			return _fileLists.Count + 2 * _fileLists.SelectMany(kvp => kvp.Value.Item1).Count() + 1;
+			return FileLists.Count + 2 * FileLists.SelectMany(kvp => kvp.Value.Item1).Count() + 1;
 		}
 		#endregion
 
 		#region Methods to add app-specific METS pairs
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Sets the "Broad Type", the audience for which the resource being archived is
 		/// primarily intended. This is set automatically as a side-effect of setting the
 		/// stage or type.
 		/// </summary>
+		/// <exception cref="InvalidOperationException">Audience has already been set and
+		/// cannot be changed to a different value.</exception>
+		/// <exception cref="NotImplementedException">The audience type is not one that is
+		/// currently handled.</exception>
 		/// ------------------------------------------------------------------------------------
 		public void SetAudience(AudienceType audienceType)
 		{
 			if (IsMetadataPropertySet(MetadataProperties.Audience))
 			{
 				if (_metsAudienceType != audienceType)
-					throw new InvalidOperationException(string.Format("Audience has already been set and cannot be changed to a different value."));
+					throw new InvalidOperationException("Audience has already been set and cannot be changed to a different value.");
 				return; // Already added
 			}
 
@@ -577,7 +570,10 @@ namespace SIL.Archiving
 		/// (for published textbooks call SetScholarlyWorkType instead as these are generally for
 		/// a wider audience).
 		/// </summary>
+		/// <exception cref="NotImplementedException"The trainingResourceType is not one that is
+		/// currently handled></exception>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetTrainingResourceType(TrainingResourceType trainingResourceType)
 		{
 			SetAudience(AudienceType.Training);
@@ -605,6 +601,7 @@ namespace SIL.Archiving
 		/// a wider audience).
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetInternalWorkType(InternalWorkType internalWorkType)
 		{
 			SetAudience(AudienceType.Internal);
@@ -629,7 +626,10 @@ namespace SIL.Archiving
 		/// <summary>
 		/// Sets the bibliographic type of the resource being archived (for a "wider audience")
 		/// </summary>
+		/// <exception cref="NotImplementedException">The scholarlyWorkType value is one that is
+		/// not currently handled.</exception>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetScholarlyWorkType(ScholarlyWorkType scholarlyWorkType)
 		{
 			SetAudience(AudienceType.Wider);
@@ -659,6 +659,7 @@ namespace SIL.Archiving
 		/// pay attention to the comments for each work stage to avoid pairing it with an
 		/// invalid audience type.</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetStage(WorkStage stage)
 		{
 			PreventDuplicateMetadataProperty(MetadataProperties.Stage);
@@ -710,7 +711,7 @@ namespace SIL.Archiving
 		{
 			if ((invalidAudience != null) && (invalidAudience.HasFlag(_metsAudienceType)))
 			{
-				throw new InvalidOperationException(string.Format(
+				throw new InvalidOperationException(Format(
 					"Resources with an audience of \"{0}\" cannot have a work stage of {1}",
 					_metsAudienceType, stage));
 			}
@@ -731,6 +732,7 @@ namespace SIL.Archiving
 		/// necessary to OR the sub-domains with their corresponding domains, since the
 		/// subdomains already have the correct domain bits set.</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetDomains(SilDomain domains)
 		{
 			PreventDuplicateMetadataProperty(MetadataProperties.Domains);
@@ -759,7 +761,7 @@ namespace SIL.Archiving
 				if (domains.HasFlag(SilDomain.Emus_ArtisticCommunicationProfile))
 					AddSubDomain(kEthnomusicologyAbbrev, "artistic communication profile");
 				if (domains.HasFlag(SilDomain.Emus_PerformanceCollection))
-					AddSubDomain(kEthnomusicologyAbbrev, "aperformance collection");
+					AddSubDomain(kEthnomusicologyAbbrev, "performance collection");
 				if (domains.HasFlag(SilDomain.Emus_SongCollection))
 					AddSubDomain(kEthnomusicologyAbbrev, "song collection");
 				if (domains.HasFlag(SilDomain.Emus_SummaryArtisticEventFormAnalysis))
@@ -895,15 +897,16 @@ namespace SIL.Archiving
 		{
 			// if a mets pair already exists for domains, add this domain to the existing list.
 			var existingValue = _metsPairs.Find(s => s.Contains(kSilDomain));
-			if (!string.IsNullOrEmpty(existingValue))
+			if (!IsNullOrEmpty(existingValue))
 			{
 				int pos = existingValue.IndexOf(']');
-				string newValue = existingValue.Insert(pos, string.Format(",\"{0}:{1}\"", domainAbbrev, domainName));
+				string newValue = existingValue.Insert(pos, $",\"{domainAbbrev}:{domainName}\"");
 				_metsPairs[_metsPairs.IndexOf(existingValue)] = newValue;
 			}
 			else
 			{
-				_metsPairs.Add(JSONUtils.MakeKeyValuePair(kSilDomain, string.Format("{0}:{1}", domainAbbrev, domainName), true));
+				_metsPairs.Add(JSONUtils.MakeKeyValuePair(kSilDomain,
+					$"{domainAbbrev}:{domainName}", true));
 			}
 		}
 
@@ -916,19 +919,19 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		private void AddSubDomain(string domainAbbrev, string subDomain)
 		{
-			// if a mets pair already exists for this domain, add this subdomain to the existing list.
-			var key = string.Format(kFmtDomainSubtype, domainAbbrev);
+			// if a mets pair already exists for this domain, add this sub-domain to the existing list.
+			var key = Format(kFmtDomainSubtype, domainAbbrev);
 			var existingValue = _metsPairs.Find(s => s.Contains(key));
-			if (!string.IsNullOrEmpty(existingValue))
+			if (!IsNullOrEmpty(existingValue))
 			{
 				int pos = existingValue.IndexOf(']');
-				string newValue = existingValue.Insert(pos, string.Format(",\"{0} ({1})\"", subDomain, domainAbbrev));
+				string newValue = existingValue.Insert(pos, $",\"{subDomain} ({domainAbbrev})\"");
 				_metsPairs[_metsPairs.IndexOf(existingValue)] = newValue;
 			}
 			else
 			{
 				_metsPairs.Add(JSONUtils.MakeKeyValuePair(key,
-					string.Format("{0} ({1})", subDomain, domainAbbrev), true));
+					$"{subDomain} ({domainAbbrev})", true));
 			}
 		}
 
@@ -937,6 +940,7 @@ namespace SIL.Archiving
 		/// Adds a METS pair for the Date this resource was initially created
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetCreationDate(DateTime date)
 		{
 			SetCreationDate(date.ToISO8601TimeFormatDateOnlyString());
@@ -948,6 +952,7 @@ namespace SIL.Archiving
 		/// was collected or work was being done on this resource
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetCreationDate(int startYear, int endYear)
 		{
 			if (endYear < startYear)
@@ -960,7 +965,7 @@ namespace SIL.Archiving
 			if (startYear < 0)
 				endYr += (endYear < 0) ? " BCE" : " CE";
 
-			SetCreationDate(string.Format("{0}-{1}", startYr, endYr));
+			SetCreationDate($"{startYr}-{endYr}");
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -969,10 +974,11 @@ namespace SIL.Archiving
 		/// was collected or work was being done on this resource
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetCreationDate(string date)
 		{
-			if (string.IsNullOrEmpty(date))
-				throw new ArgumentNullException("date");
+			if (IsNullOrEmpty(date))
+				throw new ArgumentNullException(nameof(date));
 
 			PreventDuplicateMetadataProperty(MetadataProperties.CreationDate);
 
@@ -984,6 +990,7 @@ namespace SIL.Archiving
 		/// Adds a METS pair for the Date this resource was last updated
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetModifiedDate(DateTime date)
 		{
 			PreventDuplicateMetadataProperty(MetadataProperties.ModifiedDate);
@@ -999,6 +1006,7 @@ namespace SIL.Archiving
 		/// <param name="iso3Code">The 3-letter ISO 639-2 code for the language</param>
 		/// <param name="languageName">The English name of the language</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetSubjectLanguage(string iso3Code, string languageName)
 		{
 			PreventDuplicateMetadataProperty(MetadataProperties.SubjectLanguage);
@@ -1012,7 +1020,7 @@ namespace SIL.Archiving
 		/// <summary>
 		/// Sets the given METS flag (typically appears as a checkbox in RAMP) to true/yes ("Y")
 		/// </summary>
-		/// <param name="flagKey">One of the kFlag... contants</param>
+		/// <param name="flagKey">One of the kFlag... constants</param>
 		/// ------------------------------------------------------------------------------------
 		private void SetFlag(string flagKey)
 		{
@@ -1027,6 +1035,7 @@ namespace SIL.Archiving
 		/// <param name="requirements">Be as specific a possible, indicating version number(s)
 		/// where appropriate</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetSoftwareRequirements(params string[] requirements)
 		{
 			SetSoftwareRequirements((IEnumerable<string>)requirements);
@@ -1040,12 +1049,12 @@ namespace SIL.Archiving
 		/// <param name="requirements">Be as specific a possible, indicating version number(s)
 		/// where appropriate</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetSoftwareRequirements(IEnumerable<string> requirements)
 		{
-			requirements = requirements.Where(r => !string.IsNullOrEmpty(r));
+			requirements = requirements.Where(r => !IsNullOrEmpty(r)).ToList();
 
-			HashSet<string> softwareKeyValuePairs = new HashSet<string>();
-// ReSharper disable PossibleMultipleEnumeration
+			var softwareKeyValuePairs = new HashSet<string>();
 			if (requirements.Any())
 			{
 				PreventDuplicateMetadataProperty(MetadataProperties.SoftwareRequirements);
@@ -1057,7 +1066,6 @@ namespace SIL.Archiving
 
 				_metsPairs.Add(JSONUtils.MakeArrayFromValues(kSoftwareOrFontRequirements, softwareKeyValuePairs));
 			}
-// ReSharper restore PossibleMultipleEnumeration
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1070,13 +1078,14 @@ namespace SIL.Archiving
 		/// </summary>
 		/// <param name="iso3Codes">The 3-letter ISO 639-2 codes for the languages</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetContentLanguages(params string[] iso3Codes)
 		{
 			var languages = new List<ArchivingLanguage>();
 
 			foreach (var iso3Code in iso3Codes)
 			{
-				if (!string.IsNullOrEmpty(iso3Code))
+				if (!IsNullOrEmpty(iso3Code))
 					languages.Add(new ArchivingLanguage(iso3Code));
 			}
 
@@ -1094,20 +1103,22 @@ namespace SIL.Archiving
 		/// <param name="languages">The 3-letter ISO 639-2 codes for the languages, as well as
 		/// the English name, dialect and writing system script</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetContentLanguages(IEnumerable<ArchivingLanguage> languages)
 		{
 			var languageValues = new HashSet<string>();
 			var scripts = new HashSet<string>();
 
-			foreach (var lang in languages.Where(r => !string.IsNullOrEmpty(r.Iso3Code)))
+			foreach (var lang in languages.Where(r => !IsNullOrEmpty(r.Iso3Code)))
 			{
-				var langPair = JSONUtils.MakeKeyValuePair(kDefaultKey, string.Format("{0}:{1}", lang.Iso3Code, GetLanguageName(lang.Iso3Code)));
-				if (!string.IsNullOrEmpty(lang.Dialect))
+				var langPair = JSONUtils.MakeKeyValuePair(kDefaultKey,
+					$"{lang.Iso3Code}:{GetLanguageName(lang.Iso3Code)}");
+				if (!IsNullOrEmpty(lang.Dialect))
 					langPair += "," + JSONUtils.MakeKeyValuePair("dialect", lang.Dialect);
 
 				languageValues.Add(langPair);
 
-				if (!string.IsNullOrEmpty(lang.Script))
+				if (!IsNullOrEmpty(lang.Script))
 					scripts.Add(JSONUtils.MakeKeyValuePair(kDefaultKey, lang.Script));
 			}
 
@@ -1120,18 +1131,17 @@ namespace SIL.Archiving
 				if (scripts.Any())
 					_metsPairs.Add(JSONUtils.MakeArrayFromValues(kContentLanguageScripts, scripts));
 			}
-
-
 		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Sets the schema(s) to which this resource -- or the file(s) it contains -- conforms.
 		/// </summary>
-		/// <param name="schemaDescriptor">Known schema name (typically, but not nescessarily,
+		/// <param name="schemaDescriptor">Known schema name (typically, but not necessarily,
 		/// for XML files). RAMP doesn't say what to do if the resource contains files conforming to
 		/// multiple standards, but I would say just make a comma-separated list.</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetSchemaConformance(string schemaDescriptor)
 		{
 			PreventDuplicateMetadataProperty(MetadataProperties.SchemaConformance);
@@ -1145,10 +1155,11 @@ namespace SIL.Archiving
 		/// </summary>
 		/// <param name="extent">For example, "2505 entries"</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetDatasetExtent(string extent)
 		{
-			if (string.IsNullOrEmpty(extent))
-				throw new ArgumentNullException("extent");
+			if (IsNullOrEmpty(extent))
+				throw new ArgumentNullException(nameof(extent));
 
 			PreventDuplicateMetadataProperty(MetadataProperties.DatasetExtent);
 
@@ -1160,6 +1171,7 @@ namespace SIL.Archiving
 		/// Sets the total duration of all audio and/or video recording in this resource.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetAudioVideoExtent(TimeSpan totalDuration)
 		{
 			SetAudioVideoExtent(totalDuration.ToString());
@@ -1170,6 +1182,7 @@ namespace SIL.Archiving
 		/// Sets the total duration of all audio and/or video recording in this resource.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetAudioVideoExtent(string totalDuration)
 		{
 			PreventDuplicateMetadataProperty(MetadataProperties.RecordingExtent);
@@ -1182,10 +1195,11 @@ namespace SIL.Archiving
 		/// Sets the collection of contributors (and their roles) to this resource.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetContributors(ContributionCollection contributions)
 		{
 			if (contributions == null)
-				throw new ArgumentNullException("contributions");
+				throw new ArgumentNullException(nameof(contributions));
 
 			if (contributions.Count == 0)
 				return;
@@ -1197,11 +1211,11 @@ namespace SIL.Archiving
 		}
 
 		/// ------------------------------------------------------------------------------------
-		private string GetContributorsMetsPairs(Contribution contribution)
+		private static string GetContributorsMetsPairs(Contribution contribution)
 		{
-			var roleCode = (contribution.Role != null &&
+			var roleCode = contribution.Role != null &&
 				Properties.Settings.Default.RampContributorRoles.Contains(contribution.Role.Code) ?
-				contribution.Role.Code : string.Empty);
+				contribution.Role.Code : Empty;
 
 			return JSONUtils.MakeKeyValuePair(kDefaultKey, contribution.ContributorName) +
 				kSeparator + JSONUtils.MakeKeyValuePair(kRole, roleCode);
@@ -1216,6 +1230,7 @@ namespace SIL.Archiving
 		/// 20 major LWCs. Not sure what happens if an unrecognized code gets passed to this.
 		/// Feel free to try it and find out.</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetDescription(string description, string language)
 		{
 			SetGeneralDescription(new[] { GetKvpsForLanguageSpecificString(language, description) });
@@ -1230,10 +1245,11 @@ namespace SIL.Archiving
 		/// what happens if an unrecognized code gets passed to this. Feel free to try it and
 		/// find out.</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetDescription(IDictionary<string, string> descriptions)
 		{
 			if (descriptions == null)
-				throw new ArgumentNullException("descriptions");
+				throw new ArgumentNullException(nameof(descriptions));
 
 			if (descriptions.Count == 0)
 				return;
@@ -1274,7 +1290,7 @@ namespace SIL.Archiving
 
 			IEnumerable<string> metsDescriptions;
 
-			if (descriptions.Count == 1 && string.IsNullOrEmpty(descriptions.Keys.ElementAt(0)))
+			if (descriptions.Count == 1 && IsNullOrEmpty(descriptions.Keys.ElementAt(0)))
 				metsDescriptions = new [] {JSONUtils.MakeKeyValuePair(kDefaultKey, descriptions.Values.ElementAt(0))};
 			else
 				metsDescriptions = descriptions.Select(desc => GetKvpsForLanguageSpecificString(desc.Key, desc.Value));
@@ -1291,6 +1307,7 @@ namespace SIL.Archiving
 		/// 20 major LWCs. Not sure what happens if an unrecognized code gets passed to this.
 		/// Feel free to try it and find out.</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetPromotion(string text, string language)
 		{
 			SetPromotion(new[] { GetKvpsForLanguageSpecificString(language, text) });
@@ -1305,10 +1322,11 @@ namespace SIL.Archiving
 		/// happens if an unrecognized code gets passed to this. Feel free to try it and find
 		/// out.</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetPromotion(IDictionary<string, string> descriptions)
 		{
 			if (descriptions == null)
-				throw new ArgumentNullException("descriptions");
+				throw new ArgumentNullException(nameof(descriptions));
 
 			if (descriptions.Count == 0)
 				return;
@@ -1353,75 +1371,28 @@ namespace SIL.Archiving
 
 		#region RAMP calling methods
 		/// ------------------------------------------------------------------------------------
-		internal override void LaunchArchivingProgram()
+		public override void LaunchArchivingProgram()
 		{
 			if (!File.Exists(PackagePath))
 			{
-				ReportError(null, string.Format("RAMP package prematurely removed: {0}", PackagePath));
+				ReportError(null, Progress.GetMessage(StringId.RampPackageRemoved));
 				return;
 			}
 
-			LaunchArchivingProgram(EnsureRampHasFocusAndWaitForPackageToUnlock);
+			try
+			{
+				base.LaunchArchivingProgram();
+			}
+			catch (InvalidOperationException)
+			{
+				// Every 4 seconds we'll check to see if the RAMP package is locked. When
+				// it gets unlocked by RAMP, then we'll delete it.
+				_timer = new Timer(CheckIfPackageFileIsLocked, PackagePath, 2000, 4000);
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
-		private void EnsureRampHasFocusAndWaitForPackageToUnlock()
-		{
-			if (IsMono)
-			{
-				BringToFrontMono();
-			}
-			else
-			{
-				BringToFrontWindows();
-			}
-
-			// Every 4 seconds we'll check to see if the RAMP package is locked. When
-			// it gets unlocked by RAMP, then we'll delete it.
-			_timer = new Timer(CheckIfPackageFileIsLocked, PackagePath, 2000, 4000);
-		}
-
-		private static void BringToFrontWindows()
-		{
-			var processes = Process.GetProcessesByName(kRampProcessName);
-			if (processes.Length < 1) return;
-
-			// First, make the window topmost: this puts it in front of all other windows
-			// and sets it as "always on top."
-			SetWindowPos(processes[0].MainWindowHandle, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
-
-			// Second, make the window notopmost: this removes the "always on top" behavior
-			// and positions the window on top of all other "not always on top" windows.
-			SetWindowPos(processes[0].MainWindowHandle, HWND_NOTOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS);
-		}
-
-		private static void BringToFrontMono()
-		{
-			// On mono this requires xdotool or wmctrl
-			string args = null;
-			if (!string.IsNullOrEmpty(FileLocationUtilities.LocateInProgramFiles("xdotool", true)))      /* try to find xdotool first */
-				args = "-c \"for pid in `xdotool search --name RAMP`; do xdotool windowactivate $pid; done\"";
-			else if (!string.IsNullOrEmpty(FileLocationUtilities.LocateInProgramFiles("wmctrl", true)))  /* if xdotool is not installed, look for wmctrl */
-				args = "-c \"wmctrl -a RAMP\"";
-
-			if (string.IsNullOrEmpty(args)) return;
-
-			var prs = new Process
-			{
-				StartInfo =
-				{
-					FileName = "bash",
-					Arguments = args,
-					UseShellExecute = false,
-					RedirectStandardError = true
-				}
-			};
-
-			prs.Start();
-		}
-
-		/// ------------------------------------------------------------------------------------
-		private void CheckIfPackageFileIsLocked(Object packageFile)
+		private void CheckIfPackageFileIsLocked(object packageFile)
 		{
 			if (!FileHelper.IsLocked(packageFile as string))
 				CleanUpTempRampPackage();
@@ -1432,25 +1403,22 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		/// <remarks>Public to facilitate testing</remarks>
 		/// ------------------------------------------------------------------------------------
-		public override bool CreatePackage()
+		public override async Task<string> CreatePackage(CancellationToken cancellationToken)
 		{
 			IsBusy = true;
 
 			var	success = CreateMetsFile() != null;
 
 			if (success)
-				success = CreateRampPackage();
+				success = await CreateRampPackage(cancellationToken);
 
-			CleanUp();
+			DeleteTempFolder();
 
 			if (success)
-			{
-				DisplayMessage(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.ReadyToCallRampMsg",
-					"Ready to hand the package to RAMP"), MessageType.Success);
-			}
+				DisplayMessage(StringId.ReadyToCallRampMsg, MessageType.Success);
 
 			IsBusy = false;
-			return success;
+			return success? PackagePath : null;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1475,33 +1443,34 @@ namespace SIL.Archiving
 			foreach (var value in _metsPairs)
 				bldr.AppendFormat("{0},", value);
 
-			return string.Format("{{{0}}}", bldr.ToString().TrimEnd(','));
+			return $"{{{bldr.ToString().TrimEnd(',')}}}";
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public string CreateMetsFile()
+		internal string CreateMetsFile()
 		{
 			try
 			{
-				var metsData = Resources.EmptyMets.Replace("<binData>", "<binData>" + JSONUtils.EncodeData(GetMetadata()));
-				_tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-				Directory.CreateDirectory(_tempFolder);
-				_metsFilePath = Path.Combine(_tempFolder, "mets.xml");
-				File.WriteAllText(_metsFilePath, metsData);
+				var metsData = GetResource(Name.EmptyMets_xml).Replace("<binData>",
+						"<binData>" + JSONUtils.EncodeData(GetMetadata()));
+					_tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+					Directory.CreateDirectory(_tempFolder);
+					_metsFilePath = Path.Combine(_tempFolder, "mets.xml");
+					File.WriteAllText(_metsFilePath, metsData);
 			}
 			catch (Exception e)
 			{
-				if ((e is IOException) || (e is UnauthorizedAccessException) || (e is SecurityException))
+				if (e is IOException || e is UnauthorizedAccessException ||
+				    e is SecurityException)
 				{
-					ReportError(e, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CreatingInternalReapMetsFileErrorMsg",
-						"There was an error attempting to create the RAMP/REAP mets file."));
+					ReportError(e, Progress.GetMessage(StringId.ErrorCreatingMetsFile));
 					return null;
 				}
+
 				throw;
 			}
 
-			if (IncrementProgressBarAction != null)
-				IncrementProgressBarAction();
+			Progress.IncrementProgress();
 
 			return _metsFilePath;
 		}
@@ -1509,7 +1478,7 @@ namespace SIL.Archiving
 		 /// ------------------------------------------------------------------------------------
 		private void SetMetsPairsForFiles()
 		{
-			if (_fileLists.Any())
+			if (FileLists.Any())
 			{
 				string value = GetMode();
 				if (value != null)
@@ -1519,14 +1488,14 @@ namespace SIL.Archiving
 				{
 					// Return JSON array of files with their descriptions.
 					_metsPairs.Add(JSONUtils.MakeArrayFromValues(kSourceFilesForMets,
-						GetSourceFilesForMetsData(_fileLists)));
+						GetSourceFilesForMetsData(FileLists)));
 					MarkMetadataPropertyAsSet(MetadataProperties.Files);
 				}
 
 				if (ImageCount > 0)
-					_metsPairs.Add(JSONUtils.MakeKeyValuePair(kImageExtent, string.Format("{0} image{1}.",
-						_imageCount.ToString(CultureInfo.InvariantCulture),
-						(_imageCount == 1) ? "" : "s")));
+					_metsPairs.Add(JSONUtils.MakeKeyValuePair(kImageExtent,
+						$"{_imageCount.ToString(CultureInfo.InvariantCulture)} " +
+						$"image{(_imageCount == 1 ? "" : "s")}."));
 
 				var avExtent = new StringBuilder();
 				const string delimiter = "; ";
@@ -1534,10 +1503,16 @@ namespace SIL.Archiving
 				if (ShowRecordingCountNotLength)
 				{
 					if (_audioCount > 0)
-						avExtent.AppendLineFormat("{0} audio recording file{1}", new object[] { _audioCount, (_audioCount == 1) ? "" : "s" }, delimiter);
+					{
+						avExtent.AppendLineFormat("{0} audio recording file{1}",
+							new object[] { _audioCount, _audioCount == 1 ? "" : "s" }, delimiter);
+					}
 
 					if (_videoCount > 0)
-						avExtent.AppendLineFormat("{0} video recording file{1}", new object[] { _videoCount, (_videoCount == 1) ? "" : "s" }, delimiter);
+					{
+						avExtent.AppendLineFormat("{0} video recording file{1}",
+							new object[] { _videoCount, _videoCount == 1 ? "" : "s" }, delimiter);
+					}
 
 					SetAudioVideoExtent(avExtent + ".");
 				}
@@ -1556,8 +1531,12 @@ namespace SIL.Archiving
 				ExtractInformationFromFiles();
 
 			if ((_modes == null) ||
-				(IsMetadataPropertySet(MetadataProperties.DatasetExtent) && !_modes.Contains(kModeDataset)))
-				throw new InvalidOperationException("Cannot set dataset extent for a resource which does not contain any \"dataset\" files.");
+			    (IsMetadataPropertySet(MetadataProperties.DatasetExtent) &&
+				    !_modes.Contains(kModeDataset)))
+			{
+				throw new InvalidOperationException(
+					"Cannot set dataset extent for a resource which does not contain any \"dataset\" files.");
+			}
 
 			return JSONUtils.MakeBracketedListFromValues(kFileTypeModeList, _modes);
 		}
@@ -1599,7 +1578,7 @@ namespace SIL.Archiving
 		}
 
 		/// ------------------------------------------------------------------------------------
-		protected override StringBuilder  DoArchiveSpecificFilenameNormalization(string key, string fileName)
+		protected override StringBuilder DoArchiveSpecificFilenameNormalization(string key, string fileName)
 		{
 			var bldr = new StringBuilder(fileName);
 			for (int i = 0; i < bldr.Length; i++)
@@ -1611,133 +1590,105 @@ namespace SIL.Archiving
 		}
 		#endregion
 
-		#region Creating RAMP package (zip file) in background thread.
+		#region Creating RAMP package (zip file) asynchronously.
 		/// ------------------------------------------------------------------------------------
-		public bool CreateRampPackage()
+		internal async Task<bool> CreateRampPackage(CancellationToken cancellationToken)
 		{
+			bool result = false;
 			try
 			{
-				PackagePath = Path.Combine(Path.GetTempPath(), _id + kRampFileExtension);
+				PackagePath = Path.Combine(Path.GetTempPath(), PackageId + kRampFileExtension);
 
-				using (_worker = new BackgroundWorker())
-				{
-					_cancelProcess = false;
-					_workerException = false;
-					_worker.ProgressChanged += HandleBackgroundWorkerProgressChanged;
-					_worker.WorkerReportsProgress = true;
-					_worker.WorkerSupportsCancellation = true;
-					_worker.DoWork += CreateZipFileInWorkerThread;
-					_worker.RunWorkerAsync();
+				await Task.Run(() => CreateZipFile(cancellationToken), cancellationToken);
 
-					while (_worker.IsBusy)
-						Application.DoEvents();
-				}
+				if (!File.Exists(PackagePath))
+					ReportError(null, Progress.GetMessage(StringId.FailedToMakePackage));
+				else
+					result = true;
 			}
-			catch (Exception e)
+			catch (OperationCanceledException)
 			{
-				ReportError(e, LocalizationManager.GetString(
-					"DialogBoxes.ArchivingDlg.CreatingZipFileErrorMsg",
-					"There was a problem starting process to create zip file."));
-
-				return false;
-			}
-			finally
-			{
-				_worker = null;
-			}
-
-			if (!File.Exists(PackagePath))
-			{
-				ReportError(null, string.Format("Failed to make the RAMP package: {0}", PackagePath));
-				return false;
-			}
-
-			return !_cancelProcess && !_workerException;
-		}
-
-		/// ------------------------------------------------------------------------------------
-		private void CreateZipFileInWorkerThread(object sender, DoWorkEventArgs e)
-		{
-			try
-			{
-				if (Thread.CurrentThread.Name == null)
-					Thread.CurrentThread.Name = "CreateZipFileInWorkerThread";
-
-				// Before adding the files to the RAMP (zip) file, we need to copy all the
-				// files to a temp folder, flattening out the directory structure and renaming
-				// the files as needed to comply with REAP guidelines.
-				// REVIEW: Are multiple periods and/or non-Roman script really a problem?
-
-				_worker.ReportProgress(0, PreparingFilesMsg);
-
-				var filesToCopyAndZip = new Dictionary<string, string>();
-				foreach (var list in _fileLists)
-				{
-					_worker.ReportProgress(1 /* actual value ignored, progress just increments */,
-						string.IsNullOrEmpty(list.Key) ? _id: list.Key);
-					foreach (var file in list.Value.Item1)
-					{
-						string newFileName = Path.GetFileName(file);
-						newFileName = NormalizeFilename(list.Key, newFileName);
-						filesToCopyAndZip[file] = Path.Combine(_tempFolder, newFileName);
-					}
-					if (_cancelProcess)
-						return;
-				}
-
-				_worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CopyingFilesMsg",
-					"Copying files"));
-
-				foreach (var fileToCopy in filesToCopyAndZip)
-				{
-					if (_cancelProcess)
-						return;
-					_worker.ReportProgress(1 /* actual value ignored, progress just increments */,
-						Path.GetFileName(fileToCopy.Key));
-					if (FileCopyOverride != null)
-					{
-						try
-						{
-							if (FileCopyOverride(this, fileToCopy.Key, fileToCopy.Value))
-							{
-								if (!File.Exists(fileToCopy.Value))
-									throw new FileNotFoundException("Calling application claimed to copy file but didn't", fileToCopy.Value);
-								continue;
-							}
-						}
-						catch (Exception error)
-						{
-							var msg = GetFileExcludedMsg(NameOfProgramToLaunch, fileToCopy.Value);
-							ReportError(error, msg);
-						}
-					}
-					// Don't use File.Copy because it's asynchronous.
-					CopyFile(fileToCopy.Key, fileToCopy.Value);
-				}
-
-				_worker.ReportProgress(0, GetSavingFilesMsg(NameOfProgramToLaunch));
-
-				using (var zip = new ZipFile())
-				{
-					// RAMP packages must not be compressed or RAMP can't read them.
-					zip.UseZip64WhenSaving = Zip64Option.AsNecessary; // See SP-2291
-					zip.CompressionLevel = Ionic.Zlib.CompressionLevel.None;
-					zip.AddFiles(filesToCopyAndZip.Values, @"\");
-					zip.AddFile(_metsFilePath, string.Empty);
-					zip.SaveProgress += HandleZipSaveProgress;
-					zip.Save(PackagePath);
-
-					if (!_cancelProcess && IncrementProgressBarAction != null)
-						Thread.Sleep(800);
-				}
 			}
 			catch (Exception exception)
 			{
-				_worker.ReportProgress(0, new KeyValuePair<Exception, string>(exception,
-					LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CreatingRAMPFileErrorMsg",
-						"There was an error attempting to create the RAMP file.")));
+				ReportError(exception, Progress.GetMessage(StringId.ErrorCreatingArchive));
+			}
 
-				_workerException = true;
+			return result;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		private void CreateZipFile(CancellationToken cancellationToken)
+		{
+			// Before adding the files to the RAMP (zip) file, we need to copy all the
+			// files to a temp folder, flattening out the directory structure and renaming
+			// the files as needed to comply with REAP guidelines.
+			// REVIEW: Are multiple periods and/or non-Roman script really a problem?
+
+			ReportProgress(Progress.GetMessage(StringId.PreparingFiles), MessageType.Success,
+				cancellationToken);
+
+			var filesToCopyAndZip = new Dictionary<string, string>();
+			foreach (var list in FileLists)
+			{
+				ReportProgress(IsNullOrEmpty(list.Key) ? PackageId : list.Key, MessageType.Detail,
+					cancellationToken);
+				foreach (var file in list.Value.Item1)
+				{
+					string newFileName = Path.GetFileName(file);
+					newFileName = NormalizeFilename(list.Key, newFileName);
+					filesToCopyAndZip[file] = Path.Combine(_tempFolder, newFileName);
+				}
+			}
+
+			ReportProgress(Progress.GetMessage(StringId.CopyingFiles), MessageType.Success,
+				cancellationToken);
+
+			foreach (var fileToCopy in filesToCopyAndZip)
+			{
+				ReportProgress(Path.GetFileName(fileToCopy.Key), MessageType.Detail,
+					cancellationToken);
+				if (FileCopyOverride != null)
+				{
+					try
+					{
+						if (FileCopyOverride(this, fileToCopy.Key, fileToCopy.Value))
+						{
+							if (!File.Exists(fileToCopy.Value))
+								throw new FileNotFoundException(
+									"Calling application claimed to copy file but didn't",
+									fileToCopy.Value);
+							continue;
+						}
+					}
+					catch (Exception error)
+					{
+						var msg = GetFileExcludedMsg(fileToCopy.Value);
+						ReportError(error, msg);
+					}
+				}
+
+				// Don't use File.Copy because it's asynchronous.
+				CopyFile(fileToCopy.Key, fileToCopy.Value);
+			}
+
+			ReportMajorProgressPoint(StringId.SavingFilesInPackage, cancellationToken);
+
+			using (var zip = new ZipFile())
+			{
+				// RAMP packages must not be compressed or RAMP can't read them.
+				zip.UseZip64WhenSaving = Zip64Option.AsNecessary; // See SP-2291
+				zip.CompressionLevel = Ionic.Zlib.CompressionLevel.None;
+				zip.AddFiles(filesToCopyAndZip.Values, @"\");
+				zip.AddFile(_metsFilePath, Empty);
+				zip.SaveProgress += delegate(object sender, SaveProgressEventArgs args)
+				{
+					HandleZipSaveProgress(args, cancellationToken);
+				};
+				zip.Save(PackagePath);
+
+				if (!cancellationToken.IsCancellationRequested)
+					Thread.Sleep(800);
 			}
 		}
 
@@ -1748,44 +1699,16 @@ namespace SIL.Archiving
 		/// saved to the disk.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		private void HandleZipSaveProgress(object s, SaveProgressEventArgs e)
+		private void HandleZipSaveProgress(SaveProgressEventArgs e,
+			CancellationToken cancellationToken)
 		{
-			if (_cancelProcess || e.EventType != ZipProgressEventType.Saving_BeforeWriteEntry)
+			if (e.EventType != ZipProgressEventType.Saving_BeforeWriteEntry)
 				return;
 
-			string msg;
-			if (_progressMessages.TryGetValue(e.CurrentEntry.FileName, out msg))
+			if (_progressMessages.TryGetValue(e.CurrentEntry.FileName, out var msg))
 				DisplayMessage(msg, MessageType.Progress);
 
-			_worker.ReportProgress(e.EntriesSaved + 1, Path.GetFileName(e.CurrentEntry.FileName));
-		}
-
-		/// ------------------------------------------------------------------------------------
-		void HandleBackgroundWorkerProgressChanged(object sender, ProgressChangedEventArgs e)
-		{
-			if (e.UserState == null || _cancelProcess)
-				return;
-
-			if (e.UserState is KeyValuePair<Exception, string>)
-			{
-				var kvp = (KeyValuePair<Exception, string>)e.UserState;
-				ReportError(kvp.Key, kvp.Value);
-				return;
-			}
-
-			if (!string.IsNullOrEmpty(e.UserState as string))
-			{
-				if (e.ProgressPercentage == 0)
-				{
-					DisplayMessage(e.UserState.ToString(), MessageType.Success);
-					return;
-				}
-
-				DisplayMessage(e.UserState.ToString(), MessageType.Detail);
-			}
-
-			if (IncrementProgressBarAction != null)
-				IncrementProgressBarAction();
+			ReportProgress(Path.GetFileName(e.CurrentEntry.FileName), MessageType.Detail, cancellationToken);
 		}
 
 		#endregion
@@ -1813,7 +1736,7 @@ namespace SIL.Archiving
 				//Ramp 3.0 Package doesn't have languages.yaml
 				if (!Directory.Exists(Path.Combine(dir, "data")))
 				{
-					return string.Empty;
+					return Empty;
 				}
 			}
 			// on Linux the exe and data directory are not in the same directory
@@ -1829,24 +1752,24 @@ namespace SIL.Archiving
 				//Ramp 3.0 Package doesn't have languages.yaml
 				if (!Directory.Exists(Path.Combine(dir, "data")))
 				{
-					return string.Empty;
+					return Empty;
 				}
 			}
 
 			// get the data directory
 			dir = Path.Combine(dir, "data");
 			if (!Directory.Exists(dir))
-				throw new DirectoryNotFoundException(string.Format("The path {0} is not valid.", dir));
+				throw new DirectoryNotFoundException(Format("The path {0} is not valid.", dir));
 
 			// get the options directory
 			dir = Path.Combine(dir, "options");
 			if (!Directory.Exists(dir))
-				throw new DirectoryNotFoundException(string.Format("The path {0} is not valid.", dir));
+				throw new DirectoryNotFoundException(Format("The path {0} is not valid.", dir));
 
 			// get the languages.yaml file
 			var langFile = Path.Combine(dir, "languages.yaml");
 			if (!File.Exists(langFile))
-				throw new FileNotFoundException(string.Format("The file {0} was not found.", langFile));
+				throw new FileNotFoundException(Format("The file {0} was not found.", langFile), langFile);
 
 			return langFile;
 		}
@@ -1901,31 +1824,20 @@ namespace SIL.Archiving
 		}
 		#endregion
 
+		#region Clean-up methods
 		/// ------------------------------------------------------------------------------------
-		public override void Cancel()
+		protected internal override void CleanUp()
 		{
-			base.Cancel();
-
-			CleanUp();
+			base.CleanUp();
+			DeleteTempFolder();
 			CleanUpTempRampPackage();
 		}
 
-		/// ------------------------------------------------------------------------------------
-		public override IArchivingSession AddSession(string sessionId)
+		private void DeleteTempFolder()
 		{
-			throw new NotImplementedException();
-		}
-
-		public override IArchivingPackage ArchivingPackage
-		{
-			get { throw new NotImplementedException(); }
-		}
-
-		#region Clean-up methods
-		/// ------------------------------------------------------------------------------------
-		public void CleanUp()
-		{
-			try { Directory.Delete(_tempFolder, true); }
+			try {
+				Directory.Delete(_tempFolder, true);
+			}
 // ReSharper disable once EmptyGeneralCatchClause
 			catch { }
 		}
@@ -1933,6 +1845,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public void CleanUpTempRampPackage()
 		{
+			// REVIEW: How long is this test supposed to last?
 			// Comment out as a test !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			//try { File.Delete(RampPackagePath); }
 			//catch { }

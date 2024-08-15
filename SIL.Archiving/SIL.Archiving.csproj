@@ -3,9 +3,20 @@
   <PropertyGroup>
     <RootNamespace>SIL.Archiving</RootNamespace>
     <AssemblyTitle>SIL.Archiving</AssemblyTitle>
-    <Description>SIL.Archiving contains Windows Forms UI elements and classes for archiving data to REAP using the RAMP application.</Description>
-    <UseWindowsForms>true</UseWindowsForms>
+    <Description>SIL.Archiving contains classes for archiving data to REAP and IMDI.</Description>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\AccessProtocols.json" />
+    <None Remove="Resources\ailca.html" />
+    <None Remove="Resources\ailla.html" />
+    <None Remove="Resources\anla.html" />
+    <None Remove="Resources\CustomAccessProtocols.json" />
+    <None Remove="Resources\elar.html" />
+    <None Remove="Resources\EmptyMets.xml" />
+    <None Remove="Resources\reap.html" />
+    <None Remove="Resources\tla.html" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DotNetZip" Version="1.16.0" />
@@ -13,7 +24,6 @@
     <PackageReference Include="JetBrains.Annotations" Version="2022.3.1">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="L10NSharp" Version="7.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
@@ -22,25 +32,38 @@
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj" />
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
-    <ProjectReference Include="..\SIL.Windows.Forms\SIL.Windows.Forms.csproj" />
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="IMDI\Schema\IMDI_3_0_Fix.py" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\AccessProtocols.json" />
+    <EmbeddedResource Include="Resources\ailca.html" />
+    <EmbeddedResource Include="Resources\ailla.html" />
+    <EmbeddedResource Include="Resources\anla.html" />
+    <EmbeddedResource Include="Resources\CustomAccessProtocols.json" />
+    <EmbeddedResource Include="Resources\elar.html" />
+    <EmbeddedResource Include="Resources\EmptyMets.xml" />
+    <EmbeddedResource Include="Resources\reap.html" />
+    <EmbeddedResource Include="Resources\tla.html" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Properties\Settings.settings">
+    <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Content Include="IMDI\Schema\IMDI_3_0_Fix.py" />
-    <None Include="app.config" Pack="true" PackagePath="contentFiles\any\any\$(AssemblyTitle).dll.config" />
   </ItemGroup>
 
 </Project>

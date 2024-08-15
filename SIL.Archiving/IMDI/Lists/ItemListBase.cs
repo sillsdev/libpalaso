@@ -19,7 +19,7 @@ namespace SIL.Archiving.IMDI.Lists
 		public string Text { get; protected set; }
 
 		/// <summary>Value suitable for storing in metadata files</summary>
-		public string Value { get; private set; }
+		public string Value { get; }
 
 		/// <summary>Description to the user (often the same as the text)</summary>
 		public string Definition { get; private set; }

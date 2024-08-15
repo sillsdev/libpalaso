@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using L10NSharp;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
 using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI.Schema;
-using System.Windows.Forms;
 using SIL.Extensions;
+using SIL.WritingSystems;
+using static System.String;
 
 namespace SIL.Archiving.IMDI
 {
@@ -19,22 +20,16 @@ namespace SIL.Archiving.IMDI
 	{
 		private readonly IMDIPackage _imdiData;
 		private string _corpusDirectoryName;
-		private bool _workerException;
 		private string _programPreset;
 		private string _otherProgramPath;
 		private readonly string _configFileName = Path.Combine(ArchivingFileSystem.SilCommonArchivingDataFolder, "IMDIProgram.config");
 		private string _outputFolder;
 
+		public event EventHandler InitializationFailed; 
+
 		#region Properties
-		internal override string ArchiveType
-		{
-			get
-			{
-				return LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IMDIArchiveType", "IMDI",
-					"This is the abbreviation for Isle Metadata Initiative (https://www.mpi.nl/imdi/). " +
-						"Typically this probably does not need to be localized.");
-			}
-		}
+
+		public override Standard ArchiveType => Standard.IMDI;
 
 		public override string NameOfProgramToLaunch
 		{
@@ -64,42 +59,6 @@ namespace SIL.Archiving.IMDI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public override string InformativeText
-		{
-			get
-			{
-				string programInfo = string.IsNullOrEmpty(NameOfProgramToLaunch) ?
-					string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.NoIMDIProgramInfoText",
-					"The {0} package will be created in {1}.",
-					"Parameter 0 is 'IMDI'; " +
-					"Parameter 1 is the path where the package is created."),
-					ArchiveType, PackagePath)
-					:
-					string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IMDIProgramInfoText",
-					"This tool will help you use {0} to archive your {1} data. When the {1} package has been " +
-					"created, you can launch {0} and enter any additional information before doing the actual submission.",
-					"Parameter 0 is the name of the program that will be launched to further prepare the IMDI data for submission; " +
-					"Parameter 1 is the name of the calling (host) program (SayMore, FLEx, etc.)"), NameOfProgramToLaunch, AppName);
-				return string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IMDIOverviewText",
-					"{0} ({1}) is a metadata standard to describe multi-media and multi-modal language " +
-					"resources. The standard provides interoperability for browsable and searchable " +
-					"corpus structures and resource descriptions.",
-					"Parameter 0  is 'Isle Metadata Initiative' (the first occurrence will be turned into a hyperlink); " +
-					"Parameter 1 is 'IMDI'"),
-					ArchiveInfoHyperlinkText, ArchiveType) +
-					" " + _appSpecificArchivalProcessInfo +
-					" " + programInfo;
-			}
-		}
-
-		/// <summary></summary>
-		public override string ArchiveInfoHyperlinkText
-		{
-			get { return LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IsleMetadataInitiative",
-				"Isle Metadata Initiative", "Typically this probably does not need to be localized."); }
-		}
-
-		/// ------------------------------------------------------------------------------------
 		public override string ArchiveInfoUrl => Properties.Settings.Default.IMDIWebSite;
 
 		public bool MetadataOnly { get; set; }
@@ -109,50 +68,52 @@ namespace SIL.Archiving.IMDI
 		/// <summary>Constructor</summary>
 		/// <param name="appName">The application name</param>
 		/// <param name="title">Title of the submission.</param>
-		/// <param name="id">Identifier for the package being created. Used as the CORPUS name.</param>
-		/// <param name="appSpecificArchivalProcessInfo">Application can use this to pass
-		/// additional information that will be displayed to the user in the dialog to explain
-		/// any application-specific details about the archival process.</param>
+		/// <param name="id">Identifier for the package being created. Used as the CORPUS name.
+		/// </param>
 		/// <param name="corpus">Indicates whether this is for an entire project corpus or a
 		/// single session</param>
 		/// <param name="setFilesToArchive">Delegate to request client to call methods to set
-		/// which files should be archived (this is deferred to allow display of progress message)</param>
-		/// <param name="outputFolder">Base folder where IMDI file structure is to be created</param>
+		/// which files should be archived (this is deferred to allow display of progress message).
+		/// Clients will normally do this by calling AddFileGroup one or more times.</param>
+		/// <param name="outputFolder">Base folder where IMDI file structure is to be created
+		/// </param>
 		/// ------------------------------------------------------------------------------------
-		public IMDIArchivingDlgViewModel(string appName, string title, string id,
-			string appSpecificArchivalProcessInfo, bool corpus,
-			Action<ArchivingDlgViewModel> setFilesToArchive, string outputFolder)
-			: base(appName, title, id, appSpecificArchivalProcessInfo, setFilesToArchive)
+		public IMDIArchivingDlgViewModel(string appName, string title, string id, bool corpus,
+			Action<ArchivingDlgViewModel, CancellationToken> setFilesToArchive, string outputFolder)
+			: base(appName, title, id, setFilesToArchive)
 		{
 			OutputFolder = outputFolder;
 
 			_imdiData = new IMDIPackage(corpus, PackagePath)
 			{
-				Title = _titles[_id],
-				Name = _id
+				Title = PackageTitle,
+				Name = PackageId
 			};
 		}
 
 		/// ------------------------------------------------------------------------------------
 		protected override bool DoArchiveSpecificInitialization()
 		{
-			// no-op
-			return true;
+			if (_imdiData.IsValid)
+				return true;
+
+			DisplayMessage(Progress.GetMessage(StringId.IMDIPackageInvalid), MessageType.Error);
+			InitializationFailed?.Invoke(this, EventArgs.Empty);
+			return false;
 		}
 
 		/// ------------------------------------------------------------------------------------
 		public override int CalculateMaxProgressBarValue()
 		{
 			// One for processing each list and one for copying each file
-			return _fileLists.Count + _fileLists.SelectMany(kvp => kvp.Value.Item1).Count();
+			return FileLists.Count + FileLists.SelectMany(kvp => kvp.Value.Item1).Count();
 		}
 
 		/// ------------------------------------------------------------------------------------
 		protected override string FileGroupDisplayMessage(string groupKey)
 		{
-			if (groupKey == string.Empty)
-				return LocalizationManager.GetString("DialogBoxes.ArchivingDlg.IMDIActorsGroup", "Actors",
-					"This is the heading displayed in the Archive Using IMDI dialog box for the files for the actors/participants");
+			if (groupKey == Empty)
+				Progress.GetMessage(StringId.IMDIActorsGroup);
 			return base.FileGroupDisplayMessage(groupKey);
 		}
 
@@ -164,33 +125,26 @@ namespace SIL.Archiving.IMDI
 		/// <param name="description">The abstract description</param>
 		/// <param name="iso3LanguageCode">ISO 639-3 3-letter language code</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void SetSessionDescription(string sessionId, string description, string iso3LanguageCode)
 		{
 			if (description == null)
-				throw new ArgumentNullException("description");
-			if (iso3LanguageCode == null)
-				throw new ArgumentNullException("iso3LanguageCode");
-			if (iso3LanguageCode.Length != 3)
-			{
-				var msg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.ISO3CodeRequired",
-					"ISO 639-3 3-letter language code required.",
-					"Message displayed when an invalid language code is given.");
-				throw new ArgumentException(msg, "iso3LanguageCode");
-			}
+				throw new ArgumentNullException(nameof(description));
+			// This will throw an appropriate exception if the language code is not valid:
+			IetfLanguageTag.Create(iso3LanguageCode, null, null, null);
 
 			_imdiData.AddDescription(sessionId, new LanguageString { Value = description, Iso3LanguageId = iso3LanguageCode });
 		}
 
-		/// <summary></summary>
-		/// <param name="descriptions"></param>
+		/// ------------------------------------------------------------------------------------
 		protected override void SetAbstract_Impl(IDictionary<string, string> descriptions)
 		{
 			foreach (var desc in descriptions)
 				_imdiData.AddDescription(new LanguageString(desc.Value, desc.Key));
 		}
 
-		/// <summary></summary>
-		/// <returns></returns>
+
+		/// ------------------------------------------------------------------------------------
 		public override string GetMetadata()
 		{
 			return _imdiData.BaseImdiFile.ToString();
@@ -198,166 +152,66 @@ namespace SIL.Archiving.IMDI
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>Launch Arbil or Lamus or whatever</summary>
-		/// <remarks>need custom launcher here because Arbil is a java program, with no executable on linux</remarks>
+		/// <remarks>Need custom launcher here because Arbil is a java program, with no
+		/// executable on linux</remarks>
 		/// ------------------------------------------------------------------------------------
-		internal override void LaunchArchivingProgram()
+		public override void LaunchArchivingProgram()
 		{
-			if (string.IsNullOrEmpty(PathToProgramToLaunch) || !File.Exists(PathToProgramToLaunch))
+			if (IsNullOrEmpty(PathToProgramToLaunch) || !File.Exists(PathToProgramToLaunch))
 				return;
 
 			// if it is a .jar file, open with java
-			var exePath = (PathToProgramToLaunch.EndsWith(".jar")) ? "java" : PathToProgramToLaunch;
-			var args = string.Empty;
+			var exePath = PathToProgramToLaunch.EndsWith(".jar") ? "java" : PathToProgramToLaunch;
+			var args = Empty;
 			if (exePath == "java")
 			{
 				// are there additional command line parameters for this program?
-				if (PathToProgramToLaunch.ToLower().Contains("arbil"))
-					args = string.Format(ArchivingPrograms.ArbilCommandLineArgs, PathToProgramToLaunch);
-				else
-					args = PathToProgramToLaunch;
+				args = PathToProgramToLaunch.ToLower().Contains("arbil") ?
+					Format(ArchivingPrograms.ArbilCommandLineArgs, PathToProgramToLaunch) :
+					PathToProgramToLaunch;
 			}
 
-			try
-			{
-				var prs = new Process { StartInfo = { FileName = exePath, Arguments = args } };
-				prs.Start();
-			}
-			catch (Exception e)
-			{
-				ReportError(e, string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.StartingIMDIErrorMsg",
-					"There was an error attempting to open the archive package in {0}."), PathToProgramToLaunch));
-			}
+			var prs = new Process { StartInfo = { FileName = exePath, Arguments = args } };
+
+			LaunchArchivingProgram(prs);
 		}
 
-#region Create IMDI package in worker thread
+#region Create IMDI package asynchronously
 
-		/// <summary></summary>
-		public override bool CreatePackage()
+		/// ------------------------------------------------------------------------------------
+		public override async Task<string> CreatePackage(CancellationToken cancellationToken)
 		{
-			IsBusy = true;
-
 			// check for missing data that is required by Arbil
 			var success = _imdiData.SetMissingInformation();
 
 			// write the xml files
 			if (success)
-				success = _imdiData.CreateIMDIPackage();
+				success = await _imdiData.CreateIMDIPackage(cancellationToken);
 
 			// copy the content files
 			if (success && !MetadataOnly)
-				success = CreateIMDIPackage();
+				success = await CreateIMDIPackageAsync(cancellationToken);
 
 			CleanUp();
 
-			if (success)
-			{
-				// copy the path to the imdi file to the clipboard
-
-				// SP-818: Crash in IMDI export when dialog tries to put string on clipboard
-				//   18 FEB 2014, Phil Hopper: I found this possible solution using retries on StackOverflow
-				//   https://stackoverflow.com/questions/5707990/requested-clipboard-operation-did-not-succeed
-				//Clipboard.SetData(DataFormats.Text, _imdiData.MainExportFile);
-				Clipboard.SetDataObject(_imdiData.MainExportFile, true, 3, 500);
-
-				var successMsg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.ReadyToCallIMDIMsg",
-					"Exported to {0}. This path is now on your clipboard. If you are using Arbil, go to File, Import, then paste this path in.");
-				DisplayMessage(string.Format(successMsg, _imdiData.MainExportFile), MessageType.Success);
-			}
-
-			IsBusy = false;
-			return success;
+			return success ? _imdiData.MainExportFile : null;
 		}
 
-		/// <summary></summary>
-		public bool CreateIMDIPackage()
-		{
-			try
-			{
-				using (_worker = new BackgroundWorker())
-				{
-					_cancelProcess = false;
-					_workerException = false;
-					_worker.ProgressChanged += HandleBackgroundWorkerProgressChanged;
-					_worker.WorkerReportsProgress = true;
-					_worker.WorkerSupportsCancellation = true;
-					_worker.DoWork += CreateIMDIPackageInWorkerThread;
-					_worker.RunWorkerAsync();
-
-					while (_worker.IsBusy)
-						Application.DoEvents();
-				}
-			}
-			catch (Exception e)
-			{
-				ReportError(e, LocalizationManager.GetString(
-					"DialogBoxes.ArchivingDlg.CreatingIMDIPackageErrorMsg",
-					"There was a problem starting process to create IMDI package."));
-
-				return false;
-			}
-			finally
-			{
-				_worker = null;
-			}
-
-			return !_cancelProcess && !_workerException;
-		}
-
-		public override void Cancel()
-		{
-			base.Cancel();
-
-			CleanUp();
-		}
-
-		/// <summary></summary>
-		void HandleBackgroundWorkerProgressChanged(object sender, ProgressChangedEventArgs e)
-		{
-			if (e.UserState == null || _cancelProcess)
-				return;
-
-			if (e.UserState is KeyValuePair<Exception, string>)
-			{
-				var kvp = (KeyValuePair<Exception, string>)e.UserState;
-				ReportError(kvp.Key, kvp.Value);
-				return;
-			}
-
-			if (!string.IsNullOrEmpty(e.UserState as string))
-			{
-				if (e.ProgressPercentage == 0)
-				{
-					DisplayMessage(e.UserState.ToString(), MessageType.Success);
-					return;
-				}
-
-				DisplayMessage(e.UserState.ToString(), MessageType.Detail);
-			}
-
-			if (IncrementProgressBarAction != null)
-				IncrementProgressBarAction();
-		}
-
-		private void CreateIMDIPackageInWorkerThread(object sender, DoWorkEventArgs e)
+		/// ------------------------------------------------------------------------------------
+		private async Task<bool> CreateIMDIPackageAsync(CancellationToken cancellationToken)
 		{
 			try
 			{
 				var outputDirectory = Path.Combine(_imdiData.PackagePath, NormalizeDirectoryName(_imdiData.Name));
 
-				if (Thread.CurrentThread.Name == null)
-					Thread.CurrentThread.Name = "CreateIMDIPackageInWorkerThread";
-
-				_worker.ReportProgress(0, PreparingFilesMsg);
+				ReportMajorProgressPoint(StringId.PreparingFiles, cancellationToken);
 
 				var filesToCopy = new Dictionary<string, string>();
 
 				// get files from each session
-				foreach (var sess in _imdiData.Sessions)
+				foreach (var session in _imdiData.Sessions.OfType<Session>())
 				{
-					Session session = (Session) sess;
-
-					_worker.ReportProgress(1 /* actual value ignored, progress just increments */,
-						session.Name);
+					ReportProgress(session.Name, MessageType.Detail, cancellationToken);
 
 					// get files to copy
 					foreach (var file in session.Resources.MediaFile)
@@ -366,7 +220,7 @@ namespace SIL.Archiving.IMDI
 						var fullSessionDirName = Path.Combine(outputDirectory, NormalizeDirectoryName(file.OutputDirectory));
 						Directory.CreateDirectory(fullSessionDirName);
 
-						var newFileName = NormalizeFilename(string.Empty, Path.GetFileName(file.FullPathAndFileName));
+						var newFileName = NormalizeFilename(Empty, Path.GetFileName(file.FullPathAndFileName));
 						filesToCopy[file.FullPathAndFileName] = Path.Combine(fullSessionDirName, newFileName);
 					}
 
@@ -376,24 +230,18 @@ namespace SIL.Archiving.IMDI
 						var fullSessionDirName = Path.Combine(outputDirectory, NormalizeDirectoryName(file.OutputDirectory));
 						Directory.CreateDirectory(fullSessionDirName);
 
-						var newFileName = NormalizeFilename(string.Empty, Path.GetFileName(file.FullPathAndFileName));
+						var newFileName = NormalizeFilename(Empty, Path.GetFileName(file.FullPathAndFileName));
 						filesToCopy[file.FullPathAndFileName] = Path.Combine(fullSessionDirName, newFileName);
 					}
-
-					if (_cancelProcess)
-						return;
 				}
 
-				_worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CopyingFilesMsg",
-					"Copying files"));
+				ReportMajorProgressPoint(StringId.CopyingFiles, cancellationToken);
 
 				// copy the files now
 				foreach (var fileToCopy in filesToCopy)
 				{
-					if (_cancelProcess)
-						return;
-					_worker.ReportProgress(1 /* actual value ignored, progress just increments */,
-						Path.GetFileName(fileToCopy.Key));
+					ReportProgress(Path.GetFileName(fileToCopy.Key), MessageType.Detail, cancellationToken);
+
 					if (FileCopyOverride != null)
 					{
 						try
@@ -407,23 +255,26 @@ namespace SIL.Archiving.IMDI
 						}
 						catch (Exception error)
 						{
-							var msg = GetFileExcludedMsg(ArchiveType, fileToCopy.Value);
+							var msg = GetFileExcludedMsg(fileToCopy.Value);
 							ReportError(error, msg);
 						}
 					}
 					// Don't use File.Copy because it's asynchronous.
-					CopyFile(fileToCopy.Key, fileToCopy.Value);
+					await Task.Run(() => CopyFile(fileToCopy.Key, fileToCopy.Value), cancellationToken);
 				}
 
-				_worker.ReportProgress(0, GetSavingFilesMsg(ArchiveType));
+				ReportMajorProgressPoint(StringId.SavingFilesInPackage, cancellationToken, false);
+
+				return true;
+			}
+			catch (OperationCanceledException)
+			{
+				return false;
 			}
 			catch (Exception exception)
 			{
-				_worker.ReportProgress(0, new KeyValuePair<Exception, string>(exception,
-					string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CreatingArchiveErrorMsg",
-						"There was an error attempting to create the {0} package.", "Parameter is the type of archive (e.g., IMDI)"), ArchiveType)));
-
-				_workerException = true;
+				ReportError(exception, Progress.GetMessage(StringId.ErrorCreatingArchive));
+				return false;
 			}
 		}
 
@@ -447,29 +298,17 @@ namespace SIL.Archiving.IMDI
 			return dirName.ToLatinOnly("_", "_", ".-");
 		}
 
-		/// <summary>Performs clean-up for the class</summary>
-		public void CleanUp()
-		{
-			// delete temp files, etc
-		}
-
 		/// <summary>Returns the normalized name to use for the output corpus folder. A sub-directory of <c>OutputFolder</c></summary>
 		public string CorpusDirectoryName
 		{
 			get
 			{
 				// create the output base directory if it doesn't already exist
-				if (!Directory.Exists(OutputFolder))
-				{
-					Directory.CreateDirectory(OutputFolder);
-
-					if (!Directory.Exists(OutputFolder))
-						throw new DirectoryNotFoundException(string.Format("The path {0} was not found.", OutputFolder));
-				}
+				Directory.CreateDirectory(OutputFolder);
 				
-				if (string.IsNullOrEmpty(_corpusDirectoryName))
+				if (IsNullOrEmpty(_corpusDirectoryName))
 				{
-					var baseName = NormalizeDirectoryName(_titles[_id] + " " + DateTime.Today.ToISO8601TimeFormatDateOnlyString());
+					var baseName = NormalizeDirectoryName(PackageTitle + " " + DateTime.Today.ToISO8601TimeFormatDateOnlyString());
 					var test = baseName;
 					var i = 1;
 
@@ -484,23 +323,33 @@ namespace SIL.Archiving.IMDI
 			}
 		}
 
-		/// <summary>Adds a new session and returns it</summary>
-		/// <param name="sessionId"></param>
-		public override IArchivingSession AddSession(string sessionId)
+		/// ------------------------------------------------------------------------------------
+		/// <summary>Adds a "session" or "resource bundle". This usually corresponds to a
+		/// meaningful unit of analysis, e.g., to a piece of data having the same overall
+		/// content, the same set of actors, and the same location and time (e.g., one
+		/// elicitation session on topic X, or one folktale, or one ‘matching game’, or one
+		/// conversation between several speakers).</summary>
+		/// <param name="sessionId">Unique Identifier for this session.</param>
+		/// <returns>The added session, or the existing one if a session with the given sessionId
+		/// already exists.</returns>
+		/// ------------------------------------------------------------------------------------
+		public IArchivingSession AddSession(string sessionId)
 		{
 			// look for existing session
-			foreach (var sess in _imdiData.Sessions.Where(sess => sess.Name == sessionId))
-				return sess;
+			var session = _imdiData.Sessions.FirstOrDefault(s => s.Name == sessionId);
+
+			if (session != null)
+				return session;
 
 			// if not found, add a new session
-			Session session = new Session {Name = sessionId};
+			session = new Session {Name = sessionId};
 
 			_imdiData.Sessions.Add(session);
 
 			return session;
 		}
 
-		public override IArchivingPackage ArchivingPackage { get { return _imdiData; } }
+		public IArchivingPackage ArchivingPackage => _imdiData;
 
 		/// <summary></summary>
 		public new string PathToProgramToLaunch
@@ -516,11 +365,7 @@ namespace SIL.Archiving.IMDI
 						return OtherProgramPath;
 				}
 			}
-			set
-			{
-				// this is just for compatibility
-				_otherProgramPath = value;
-			}
+			set => _otherProgramPath = value; // this is just for compatibility
 		}
 
 		/// <summary></summary>
@@ -528,7 +373,7 @@ namespace SIL.Archiving.IMDI
 		{
 			get
 			{
-				if (string.IsNullOrEmpty(_programPreset))
+				if (IsNullOrEmpty(_programPreset))
 					GetSavedValues();
 
 				return _programPreset;
@@ -545,7 +390,7 @@ namespace SIL.Archiving.IMDI
 		{
 			get
 			{
-				if (string.IsNullOrEmpty(_programPreset))
+				if (IsNullOrEmpty(_programPreset))
 					GetSavedValues();
 
 				return _otherProgramPath;
@@ -557,7 +402,7 @@ namespace SIL.Archiving.IMDI
 			}
 		}
 
-		private void GetSavedValues()
+		public void GetSavedValues()
 		{
 
 			if (File.Exists(_configFileName))
@@ -584,11 +429,10 @@ namespace SIL.Archiving.IMDI
 			}
 
 			// default to Arbil
-			if (string.IsNullOrEmpty(_programPreset))
+			if (IsNullOrEmpty(_programPreset))
 				_programPreset = "Arbil";
 
-			if (_otherProgramPath == null)
-				_otherProgramPath = string.Empty;
+			_otherProgramPath ??= Empty;
 		}
 
 		private void SaveProgramValues()
@@ -605,11 +449,11 @@ namespace SIL.Archiving.IMDI
 		/// <summary />
 		public string OutputFolder
 		{
-			get { return _outputFolder; }
+			get => _outputFolder;
 			set
 			{
 				_outputFolder = value;
-				PackagePath = !string.IsNullOrEmpty(value)?
+				PackagePath = !IsNullOrEmpty(value)?
 					Path.Combine(value, CorpusDirectoryName):
 					CorpusDirectoryName;
 				if (_imdiData != null)

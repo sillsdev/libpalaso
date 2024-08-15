@@ -1,6 +1,7 @@
 using System;
 using System.Windows.Forms;
 using L10NSharp;
+using SIL.Core.ClearShare;
 
 namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 {
