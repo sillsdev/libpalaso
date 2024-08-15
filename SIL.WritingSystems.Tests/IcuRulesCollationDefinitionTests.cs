@@ -80,5 +80,21 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(collation.Validate(out message), Is.False);
 			Assert.That(message, Is.EqualTo("Unable to import the private collation rules from en-US."));
 		}
+
+		[Test]
+		public void Collation_GetSortKeyWorks()
+		{
+			var ws = new WritingSystemDefinition("en-US");
+			ws.Collations.Add(new IcuRulesCollationDefinition("private")
+				{ IcuRules = "&B<t<<<T<s<<<S<e<<<E\r\n" });
+			var collation = new IcuRulesCollationDefinition("standard")
+			{
+				OwningWritingSystemDefinition = ws,
+				Imports = { new IcuCollationImport("en-US", "private") },
+				IcuRules = "&C<k<<<K<x<<<X<i<<<I\r\n"
+			};
+			var sortKey = collation.Collator.GetSortKey("test");
+			Assert.That(sortKey, Is.Not.Null);
+		}
 	}
 }

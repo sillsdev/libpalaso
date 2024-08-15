@@ -464,7 +464,7 @@ namespace SIL.Reflection
 		}
 
 		private static readonly bool RunningFromUnitTest = AppDomain.CurrentDomain.GetAssemblies()
-			.Any(assem => 
+			.Any(assem =>
 				assem.FullName.StartsWith("nunit.framework", StringComparison.OrdinalIgnoreCase)
 				|| assem.FullName.StartsWith("Microsoft.VisualStudio.QualityTools.UnitTestFramework", StringComparison.OrdinalIgnoreCase)
 				|| assem.FullName.StartsWith("Microsoft.VisualStudio.TestPlatform.TestFramework", StringComparison.OrdinalIgnoreCase)

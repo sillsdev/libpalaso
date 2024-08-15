@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
     <PackageReference Include="ibusdotnet" Version="2.0.3" />
-    <PackageReference Include="icu.net" Version="2.8.1" />
+    <PackageReference Include="icu.net" Version="3.0.0-beta.296"/>
     <PackageReference Include="L10NSharp" Version="7.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Mono.Unix" Version="7.1.0-final.1.21458.1" />
