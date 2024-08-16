@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,15 +21,12 @@ namespace SIL.WritingSystems.Tests
 			{
 				WritingSystemRepository = new TestLdmlInFolderWritingSystemRepository(WritingSystemsPath);
 				_file = _folder.GetNewTempFile(true);
-				File.WriteAllText(_file.Path, String.Format("|{0}||{0}||{1}|", id1, id2));
+				File.WriteAllText(_file.Path, $"|{id1}||{id1}||{id2}|");
 			}
 
-			private string WritingSystemsPath
-			{
-				get { return _folder.Combine("WritingSystems"); }
-			}
+			private string WritingSystemsPath => _folder.Combine("WritingSystems");
 
-			public LdmlInFolderWritingSystemRepository WritingSystemRepository { get; private set; }
+			public LdmlInFolderWritingSystemRepository WritingSystemRepository { get; }
 
 			public void Dispose()
 			{
@@ -56,13 +53,7 @@ namespace SIL.WritingSystems.Tests
 				File.WriteAllText(_file.Path, fileContent);
 			}
 
-			public string FileContent
-			{
-				get
-				{
-					return File.ReadAllText(_file.Path);
-				}
-			}
+			public string FileContent => File.ReadAllText(_file.Path);
 		}
 
 		[Test]
