@@ -4,6 +4,8 @@
     <OutputType>WinExe</OutputType>
     <TargetFrameworks>net8.0-windows</TargetFrameworks>
     <Nullable>enable</Nullable>
+    <SignAssembly>false</SignAssembly>
+    <IsPackable>false</IsPackable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
