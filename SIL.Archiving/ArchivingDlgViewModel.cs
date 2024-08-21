@@ -453,7 +453,8 @@ namespace SIL.Archiving
 		}
 
 		/// ------------------------------------------------------------------------------------
-		protected void DisplayMessage(string msg, MessageType type)
+		[PublicAPI]
+		public void DisplayMessage(string msg, MessageType type)
 		{
 			OnReportMessage?.Invoke(msg, type);
 		}
