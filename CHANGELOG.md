@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Added ability to select which SIL logo(s) to use in SILAboutBox.
 - [SIL.Windows.Forms] Added public enum Widgets.SilLogoVariant
 - [SIL.Windows.Forms] Added to Widgets.SilResources: AllLogoVariants, GetLogo, and SilLogoRandom (to replace SilLogo101x113)
-- [SIL.Core] Added macOS supSilLogoTaiHeritage =port for `GlobalMutex`
+- [SIL.Core] Added macOS support for `GlobalMutex`
 - [SIL.Archiving] Added ArchivingDlgViewModel.Standard and ArchivingDlgViewModel.StringId emumerations.
 - [SIL.Archiving] Added public delegate ArchivingDlgViewModel.ExceptionHandler and event ArchivingDlgViewModel.OnExceptionDuringLaunch.
 - [SIL.Archiving] Added IArchivingProgressDisplay interface.

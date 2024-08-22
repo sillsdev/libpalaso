@@ -40,7 +40,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		/// Passing <c>true</c> is useful if you want to display, for example, the git revision of
 		/// the build. Typically this would be set in the AssemblyInformationalVersion.</param>
 		/// <param name="logoVariant">If specified, allows caller to indicate particular SIL logo
-		/// variant to display. By default, a\ variant is chosen at random.</param>
+		/// variant to display. By default, a variant is chosen at random.</param>
 		public SILAboutBox(string pathToAboutBoxHtml, bool useFullVersionNumber = false,
 			SilLogoVariant logoVariant = SilLogoVariant.Random)
 		{
