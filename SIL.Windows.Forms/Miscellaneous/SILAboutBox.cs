@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2023 SIL International
+// Copyright (c) 2016-2024 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -7,9 +7,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using L10NSharp;
 using SIL.Acknowledgements;
 using SIL.IO;
+using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.Miscellaneous
 {
@@ -29,13 +31,18 @@ namespace SIL.Windows.Forms.Miscellaneous
 		/// for css styling or images in the html file. See some comments in that method for possible future ways around this
 		/// limitation.
 		/// </summary>
-		/// <param name="pathToAboutBoxHtml">For example, use FileLocator.GetFileDistributedWithApplication("distfiles", "aboutBox.htm")</param>
-		/// <param name="useFullVersionNumber"><c>false</c> to only display the first three
+		/// <param name="pathToAboutBoxHtml">For example, use
+		/// <see cref="FileLocationUtilities.GetFileDistributedWithApplication(string[])"/>(
+		/// "DistFiles", "AboutBox.htm")</param>
+		/// <param name="useFullVersionNumber"><c>false</c> to display only the first three
 		/// parts of the version number, i.e. "MajorVersion.MinorVersion.Build",
 		/// <c>true</c> to display the full version number as found in Application.ProductVersion.
-		/// Passing <c>true</c> is useful if you want to display e.g. the git or hg revision of
+		/// Passing <c>true</c> is useful if you want to display, for example, the git revision of
 		/// the build. Typically this would be set in the AssemblyInformationalVersion.</param>
-		public SILAboutBox(string pathToAboutBoxHtml, bool useFullVersionNumber = false)
+		/// <param name="logoVariant">If specified, allows caller to indicate particular SIL logo
+		/// variant to display. By default, a\ variant is chosen at random.</param>
+		public SILAboutBox(string pathToAboutBoxHtml, bool useFullVersionNumber = false,
+			SilLogoVariant logoVariant = SilLogoVariant.Random)
 		{
 			_assembly = Assembly.GetEntryAssembly(); // assembly;
 			_pathToAboutBoxHtml = pathToAboutBoxHtml;
@@ -44,6 +51,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 				GetShortVersionInfo();
 			_buildDate.Text = GetBuiltOnDate();
 			Text = string.Format(Text, GetApplicationTitle());
+			logo.Image = SilResources.GetLogo(logoVariant);
 		}
 
 		protected override void OnLoad(EventArgs e)
@@ -61,6 +69,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 				_releaseNotesLabel.Click += (sender, args) => ReleaseNotesClicked(this, args);
 		}
 
+		[PublicAPI]
 		public void NotifyNoUpdatesAvailable()
 		{
 			_checkForUpdates.Text = LocalizationManager.GetString("AboutDialog.NoUpdates", "No Updates");
@@ -68,7 +77,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		}
 
 		#region Assembly Attribute Accessors
-
+		[PublicAPI]
 		public string AssemblyTitle
 		{
 			get
@@ -86,8 +95,10 @@ namespace SIL.Windows.Forms.Miscellaneous
 			}
 		}
 
+		[PublicAPI]
 		public string AssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
+		[PublicAPI]
 		public string AssemblyDescription
 		{
 			get
@@ -97,6 +108,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			}
 		}
 
+		[PublicAPI]
 		public string AssemblyProduct
 		{
 			get
@@ -106,6 +118,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			}
 		}
 
+		[PublicAPI]
 		public string AssemblyCopyright
 		{
 			get
@@ -115,6 +128,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			}
 		}
 
+		[PublicAPI]
 		public string AssemblyCompany
 		{
 			get
@@ -124,6 +138,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			}
 		}
 
+		[PublicAPI]
 		public AcknowledgementAttribute[] AssemblyAcknowledgements
 		{
 			get
@@ -152,17 +167,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		private string GetShortVersionInfo()
 		{
 			var ver = _assembly.GetName().Version;
-			return string.Format("{0}.{1}.{2}", ver.Major, ver.Minor, ver.Build);
-		}
-
-		private string GetCopyright()
-		{
-			foreach (var attribute in _assembly.GetCustomAttributes(false))
-			{
-				if (attribute is AssemblyCopyrightAttribute copyrightAttribute)
-					return copyrightAttribute.Copyright;
-			}
-			return string.Empty;
+			return $"{ver.Major}.{ver.Minor}.{ver.Build}";
 		}
 
 		private string GetApplicationTitle()
@@ -176,20 +181,23 @@ namespace SIL.Windows.Forms.Miscellaneous
 		}
 
 		/// <summary>
-		/// Put this string in your project's AboutBox.html file. The SILAboutBox will replace it with all the
-		/// dependencies it can collect from your project's dependencies' AssemblyInfo.cs files.
-		/// Each dependency will be embedded in a <li></li> element, so normally you will want <ul></ul> around
-		/// this DependencyMarker. The AcknowledgementsProvider doesn't put out the ul elements, since there may be
+		/// Put this string in your project's AboutBox.html file. The SILAboutBox will replace it
+		/// with all the dependencies it can collect from your project's dependencies'
+		/// AssemblyInfo.cs files. Each dependency will be embedded in a &lt;li&gt;&lt;/li&gt;
+		/// element, so normally you will want &lt;ul&gt;&lt;/ul&gt; around this DependencyMarker.
+		/// The AcknowledgementsProvider doesn't put out the ul elements, since there may be
 		/// other dependencies to be included besides those this tool can find.
 		/// </summary>
 		public const string DependencyMarker = "#DependencyAcknowledgements#";
 
 		private void SILAboutBoxShown(object sender, EventArgs e)
 		{
-			//review: EB had changed from Navigate to this in ab66af23393f74b767ffd78c2182bd1fdc8eb963, presumably to
-			// get around the AllowNavigation=false problem. It may work on Linux, but it didn't on Windows, which would just show a blank browser.
-			//_browser.Url = new Uri(_pathToAboutBoxHtml);
-			// So I've instead modified the browser wrapper to always let the first navigation get through, regardless
+			// REVIEW: EB had changed from Navigate to this in ab66af23393f74b767ffd78c2182bd1fdc8eb963,
+			// presumably to get around the AllowNavigation=false problem. It may work on Linux, but it
+			// didn't on Windows, which would just show a blank browser.
+			// _browser.Url = new Uri(_pathToAboutBoxHtml);
+			// So I've instead modified the browser wrapper to always let the first navigation get
+			// through, regardless.
 			var filePath = AcknowledgementsProvider.GetFullNonUriFileName(_pathToAboutBoxHtml);
 			var aboutBoxHtml = File.ReadAllText(filePath);
 			if (!aboutBoxHtml.Contains(DependencyMarker))

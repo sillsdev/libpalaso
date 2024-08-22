@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2017 SIL International
+// Copyright (c) 2017 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -24,7 +24,7 @@ namespace SIL.Acknowledgements
 			//"nunit.framework.dll", ".Tests.dll", ".Tests.exe"
 		};
 
-		public static Dictionary<string, AcknowledgementAttribute> CollectAcknowledgements()
+		public static Dictionary<string, AcknowledgementAttribute> CollectAcknowledgements(bool includeSystemLibraries = false)
 		{
 			var ackAttrDict = new Dictionary<string, AcknowledgementAttribute>();
 
@@ -37,7 +37,7 @@ namespace SIL.Acknowledgements
 				execAssembly.GetCustomAttributes(typeof(AcknowledgementAttribute), false).Cast<AcknowledgementAttribute>();
 			CollectAcknowledgementsAndRemoveDuplicates(ackAttrDict, myAcknowledgments);
 
-			// Now find all the other .exes and .dlls we want to examine.
+			// Now find all the other .exe and .dll files we want to examine.
 			var entryAssembly = Assembly.GetEntryAssembly(); // This should be the project that is running the SILAboutBox.
 			if (entryAssembly != null) // Can happen in tests
 			{
@@ -46,7 +46,8 @@ namespace SIL.Acknowledgements
 				var components = Directory.EnumerateFiles(codeBase).Where(
 					file => Path.HasExtension(file) &&
 					(Path.GetExtension(file).ToLowerInvariant() == ".exe" || Path.GetExtension(file).ToLowerInvariant() == ".dll") &&
-					file != assemblyName && !Exclusions.Any(ex => file.EndsWith(ex)));
+					file != assemblyName && !Exclusions.Any(file.EndsWith) &&
+					(includeSystemLibraries || !Path.GetFileName(file).StartsWith("System.")));
 
 				foreach (var execFile in components)
 				{
@@ -57,9 +58,12 @@ namespace SIL.Acknowledgements
 							assembly.GetCustomAttributes(typeof(AcknowledgementAttribute), false).Cast<AcknowledgementAttribute>();
 						CollectAcknowledgementsAndRemoveDuplicates(ackAttrDict, acknowledgements);
 					}
-					catch (BadImageFormatException bife)
+					catch (Exception ex)
 					{
-						Debug.WriteLine($"BadImageFormatException on file '{execFile}': {bife.Message}");
+						if (ex is BadImageFormatException || ex is FileLoadException)
+							Debug.WriteLine(
+								$"{ex.GetType().Name} on file '{execFile}': {ex.Message}");
+						else throw;
 					}
 				}
 			}
@@ -78,8 +82,7 @@ namespace SIL.Acknowledgements
 		{
 			foreach (var acknowledgement in ackAttrCollection)
 			{
-				AcknowledgementAttribute ackRetained;
-				if (ackAttrDict.TryGetValue(acknowledgement.Key, out ackRetained))
+				if (ackAttrDict.TryGetValue(acknowledgement.Key, out var ackRetained))
 				{
 					Debug.WriteLine("Duplicate Acknowledgement key skipped. Key="+ acknowledgement.Key + " Html=" + acknowledgement.Html);
 					Debug.WriteLine("  Kept first Acknowledgement Key=" + ackRetained.Key + " Html=" + ackRetained.Html);
