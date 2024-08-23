@@ -4,7 +4,7 @@
     <RootNamespace>SIL.Lexicon</RootNamespace>
     <AssemblyTitle>SIL.Lexicon</AssemblyTitle>
     <Description>SIL.Lexicon contains various lexicon utility classes that can be used across applications. Currently, this assembly contains classes for persisting lexicon settings that can be shared by different lexicon applications.</Description>
-    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>$(TargetFrameworks);netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>

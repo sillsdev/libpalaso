@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <TargetFrameworks>$(TargetFrameworks);netstandard2.0</TargetFrameworks>
     <RootNamespace>SIL.DblBundle</RootNamespace>
     <AssemblyTitle>SIL.DblBundle</AssemblyTitle>
     <Description>SIL.DblBundle provides classes for building a Digital Bible Library (DBL) bundle.</Description>
