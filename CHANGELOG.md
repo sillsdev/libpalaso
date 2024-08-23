@@ -45,6 +45,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [SIL.Windows.Forms] Changed layout of SILAboutBox to accommodate wider SIL logo.
 - [SIL.Windows.Forms.Archiving] Split SIL.Archiving, moving Winforms portions (including dependency on L10nSharp) to SIL.Windows.Forms.Archiving.
+- [SIL.Archiving] Changed IMDIArchivingDlgViewModel.ArchivingPackage to return an IMDIPackage (instead of an IArchivingPackage).
 - [SIL.Archiving] Required ArchivingDlgViewModel implementations to implement IDisposable.
 - [SIL.Archiving] Made protected members in ArchivingDlgViewModel private, adding protected accessors as needed.
 - [SIL.Archiving] In ArchivingDlgViewModel, renamed DisplayMessageEventHandler to MessageEventHandler, OnDisplayMessage to OnReportMessage, DisplayErrorEventHandler to ErrorEventHandler, and OnDisplayError to OnError.
@@ -52,7 +53,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Made ArchivingDlgViewModel.ArchiveType property public and changed it from a string to Standard (new enum).
 - [SIL.Archiving] Changed signature of setFilesToArchive delegate in ArchivingDlgViewModel's protected constructor.
 - [SIL.Archiving] Changed return type of ArchivingDlgViewModel.Initialize (to make it async) and added two parameters.
-- [SIL.Archiving] Changed ArchivingDlgViewModel.DisplayMessage from public to protected.
 - [SIL.Archiving] Changed the signature of protected methods in ArchivingDlgViewModel: LaunchArchivingProgram, GetFileExcludedMsg.
 - [SIL.Archiving] Changed the signature of the public method ArchivingDlgViewModel.CreatePackage.
 - [SIL.Archiving] Changed underlying type of public enums VernacularMaterialsType and SilDomain from ulong to long.

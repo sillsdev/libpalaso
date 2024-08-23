@@ -349,7 +349,7 @@ namespace SIL.Archiving.IMDI
 			return session;
 		}
 
-		public IArchivingPackage ArchivingPackage => _imdiData;
+		public IMDIPackage ArchivingPackage => _imdiData;
 
 		/// <summary></summary>
 		public new string PathToProgramToLaunch
