@@ -4,7 +4,7 @@
     <RootNamespace>SIL.TestUtilities</RootNamespace>
     <AssemblyTitle>SIL.TestUtilities</AssemblyTitle>
     <Description>SIL.TestUtilities contains convenience classes for developing unit tests.</Description>
-    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>$(TargetFrameworks);netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
