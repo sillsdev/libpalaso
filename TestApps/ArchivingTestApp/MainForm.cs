@@ -67,7 +67,7 @@ namespace ArchivingTestApp
 				foreach (var file in (from ListViewItem item in @group.Items select item.Text))
 				{
 					session.AddFile(new ArchivingFile(file));
-					session.AddFileAccess(file, (ArchivingPackage)model.ArchivingPackage);
+					session.AddFileAccess(file, model.ArchivingPackage);
 				}
 
 				session.Genre = "Dance";
