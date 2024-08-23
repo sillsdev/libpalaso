@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="L10NSharp" Version="8.0.0-beta0005" />
+    <PackageReference Include="L10NSharp" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
