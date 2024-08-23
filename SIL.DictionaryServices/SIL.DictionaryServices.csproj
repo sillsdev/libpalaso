@@ -4,7 +4,7 @@
     <RootNamespace>SIL.DictionaryServices</RootNamespace>
     <AssemblyTitle>SIL.DictionaryServices</AssemblyTitle>
     <Description>SIL.DictionaryServices contains classes for defining a simple lexical model that can be used across applications.</Description>
-    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <TargetFrameworks>$(TargetFrameworks);netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>

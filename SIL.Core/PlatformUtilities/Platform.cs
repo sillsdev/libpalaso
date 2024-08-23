@@ -39,7 +39,7 @@ namespace SIL.PlatformUtilities
 
 		public static bool IsPreWindows10 => IsWindows && OperatingSystemDescription != "Windows 10";
 
-#if NETSTANDARD2_0
+#if NETSTANDARD2_0 || NET471_OR_GREATER
 		public static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 		public static bool IsMac => RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
 		public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
