@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <TargetFrameworks>$(TargetFrameworks);netstandard2.0</TargetFrameworks>
     <RootNamespace>SIL.Scripture</RootNamespace>
     <AssemblyTitle>SIL.Scripture</AssemblyTitle>
     <Description>SIL.Scripture provides classes for working with Scripture data such as references and versifications.</Description>
