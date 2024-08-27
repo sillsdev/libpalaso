@@ -160,10 +160,22 @@
   <data name="spy16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\spy16x16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="SILLogoBlue101x113" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\SILLogoBlue101x113.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="copy_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\copy_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SIL Glyph Logo Color - Abbysinica RGB" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SIL Glyph Logo Color - Abbysinica RGB.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SIL Glyph Logo Color - Andika v1 RGB" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SIL Glyph Logo Color - Andika v1 RGB.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SIL Glyph Logo Color - Andika v2 RGB" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SIL Glyph Logo Color - Andika v2 RGB.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SIL Glyph Logo Color - Annapurna RGB" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SIL Glyph Logo Color - Annapurna RGB.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SIL Glyph Logo Color - Tai Heritage Pro RGB" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SIL Glyph Logo Color - Tai Heritage Pro RGB.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

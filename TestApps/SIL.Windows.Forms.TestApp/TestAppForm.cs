@@ -41,7 +41,7 @@ namespace SIL.Windows.Forms.TestApp
 	public partial class TestAppForm : Form
 	{
 		private bool _KeyboardControllerInitialized;
-		private LocalizationIncompleteViewModel _localizationIncompleteViewModel;
+		private readonly LocalizationIncompleteViewModel _localizationIncompleteViewModel;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -160,7 +160,7 @@ namespace SIL.Windows.Forms.TestApp
 			{
 				File.WriteAllText(tempfile.Path,
 					@"<html><head><meta charset='UTF-8' /></head><body>" +
-					@"<h3>Copyright 2014 <a href=""http://sil.org"">SIL International</a></h3>" +
+					@"<h3>Copyright 2024 <a href=""http://sil.org"">SIL International</a></h3>" +
 					@"<p>Testing the <b>about box</b></p><ul>#DependencyAcknowledgements#</ul></body></html>");
 				var uri = new Uri(tempfile.Path);
 				using (var dlg = new SILAboutBox(uri.AbsoluteUri, useFullVersionNumber))
@@ -356,11 +356,11 @@ and displays it as HTML.
 					Application.DoEvents();
 				}
 				session.StopRecordingAndSaveAsWav();
-				if (session is ISimpleAudioWithEvents)
+				if (session is ISimpleAudioWithEvents events)
 				{
-					(session as ISimpleAudioWithEvents).PlaybackStopped += (o, args) =>
+					events.PlaybackStopped += (o, args) =>
 					{
-						this.Invoke((Action) (() => MessageBox.Show("play stopped")));
+						Invoke((Action) (() => MessageBox.Show("play stopped")));
 					};
 				}
 

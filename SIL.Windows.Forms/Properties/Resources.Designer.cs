@@ -203,9 +203,49 @@ namespace SIL.Windows.Forms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap SILLogoBlue101x113 {
+        internal static System.Drawing.Bitmap SIL_Glyph_Logo_Color___Abbysinica_RGB {
             get {
-                object obj = ResourceManager.GetObject("SILLogoBlue101x113", resourceCulture);
+                object obj = ResourceManager.GetObject("SIL Glyph Logo Color - Abbysinica RGB", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap SIL_Glyph_Logo_Color___Andika_v1_RGB {
+            get {
+                object obj = ResourceManager.GetObject("SIL Glyph Logo Color - Andika v1 RGB", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap SIL_Glyph_Logo_Color___Andika_v2_RGB {
+            get {
+                object obj = ResourceManager.GetObject("SIL Glyph Logo Color - Andika v2 RGB", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap SIL_Glyph_Logo_Color___Annapurna_RGB {
+            get {
+                object obj = ResourceManager.GetObject("SIL Glyph Logo Color - Annapurna RGB", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap SIL_Glyph_Logo_Color___Tai_Heritage_Pro_RGB {
+            get {
+                object obj = ResourceManager.GetObject("SIL Glyph Logo Color - Tai Heritage Pro RGB", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

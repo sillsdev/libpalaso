@@ -17,7 +17,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
-
+- [SIL.Core] Added optional parameter, includeSystemLibraries, to AcknowledgementsProvider.CollectAcknowledgements
+- [SIL.Windows.Forms] Added ability to select which SIL logo(s) to use in SILAboutBox.
+- [SIL.Windows.Forms] Added public enum Widgets.SilLogoVariant
+- [SIL.Windows.Forms] Added to Widgets.SilResources: AllLogoVariants, GetLogo, and SilLogoRandom (to replace SilLogo101x113)
 - [SIL.Core] Added macOS support for `GlobalMutex`
 - [SIL.Archiving] Added ArchivingDlgViewModel.Standard and ArchivingDlgViewModel.StringId emumerations.
 - [SIL.Archiving] Added public delegate ArchivingDlgViewModel.ExceptionHandler and event ArchivingDlgViewModel.OnExceptionDuringLaunch.
@@ -40,6 +43,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- [SIL.Windows.Forms] Changed layout of SILAboutBox to accommodate wider SIL logo.
 - [SIL.Windows.Forms.Archiving] Split SIL.Archiving, moving Winforms portions (including dependency on L10nSharp) to SIL.Windows.Forms.Archiving.
 - [SIL.Archiving] Changed IMDIArchivingDlgViewModel.ArchivingPackage to return an IMDIPackage (instead of an IArchivingPackage).
 - [SIL.Archiving] Required ArchivingDlgViewModel implementations to implement IDisposable.
@@ -73,6 +77,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 
+- [SIL.Windows.Forms] Removed SilLogo101x113 from Widgets.SilResources. Use SilLogoRandom or specify desired variant instead.
 - [SIL.Windows.Forms] Removed previously deprecated CreativeCommonsLicense.IntergovernmentalOriganizationQualifier
 - [SIL.Archiving] Removed abstract properties from ArchivingDlgViewModel: InformativeText and ArchiveInfoHyperlinkText.
 - [SIL.Archiving] Removed public method ArchivingDlgViewModel.Cancel. (Now handled via cancellation tokens.)

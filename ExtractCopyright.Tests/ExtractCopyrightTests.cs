@@ -168,7 +168,7 @@ License: MIT
 		{
 			var copyrights = SIL.ExtractCopyright.CopyrightFile.CreateNewCopyrightFile("Program", "steve@wherever.org", "https://github.com/SteveWhomever/Program");
 
-			var ackDict = SIL.Acknowledgements.AcknowledgementsProvider.CollectAcknowledgements();
+			var ackDict = Acknowledgements.AcknowledgementsProvider.CollectAcknowledgements();
 			Assert.IsNotNull(ackDict);
 			Assert.IsNotNull(ackDict.Keys);
 
