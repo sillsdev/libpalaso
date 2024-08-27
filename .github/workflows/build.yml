@@ -19,13 +19,13 @@ jobs:
         fetch-depth: '0'
 
     - name: Build project
-      run: dotnet build --configuration Release
+      run: dotnet build -bl:build.binlog --configuration Release
 
     # there are cases where this will fail and we want to know about it
     # so we don't use continue-on-error, but we still want to publish the results
     - name: Test project
       id: test
-      run: dotnet test --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
+      run: dotnet test -bl:test.binlog --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
 
     - name: Publish test results
       if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
@@ -35,3 +35,12 @@ jobs:
         files: ./test-results/**/*.trx
         action_fail: true
         action_fail_on_inconclusive: true
+
+    - name: Publish logs on failure
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: binary-logs
+        path: |
+          build.binlog
+          test.binlog
