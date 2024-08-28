@@ -64,6 +64,23 @@ namespace SIL.Windows.Forms.Clipboarding
 			var textData = string.Empty;
 			if (dataObject.GetDataPresent(DataFormats.UnicodeText))
 				textData = dataObject.GetData(DataFormats.UnicodeText) as string;
+
+			// The order of operations here is a bit tricky.
+			// We want to maintain transparency in the original image, so we need to use the PNG format.
+			// Clipboard.ContainsImage() and Clipboard.GetImage() use the plain bitmap format which loses
+			// transparency.  So here we explicitly ask for a PNG, and see if we can get it.
+			if (dataObject.GetDataPresent("PNG"))
+			{
+				var o = dataObject.GetData("PNG") as Stream;
+				try
+				{
+					return PalasoImage.FromImage(Image.FromStream(o));
+				}
+				catch (Exception e)
+				{
+					ex = e;
+				}
+			}
 			if (Clipboard.ContainsImage())
 			{
 				PalasoImage plainImage = null;
@@ -89,22 +106,6 @@ namespace SIL.Windows.Forms.Clipboarding
 					if (plainImage != null)
 						return plainImage; // at worst, we should return null; if FromFile() failed, we return an image
 					throw;
-				}
-			}
-			// the ContainsImage() returns false when copying an PNG from MS Word
-			// so here we explicitly ask for a PNG and see if we can convert it.
-			if (dataObject.GetDataPresent("PNG"))
-			{
-				var o = dataObject.GetData("PNG") as Stream;
-				try
-				{
-					return PalasoImage.FromImage(Image.FromStream(o));
-				}
-				catch (Exception e)
-				{
-					// I'm not sure why, but previous versions of this code would continue trying other
-					// options at this point.
-					ex = e;
 				}
 			}
 

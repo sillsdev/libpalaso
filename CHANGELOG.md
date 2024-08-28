@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- [SIL.Windows.Forms] Look for PNG data on clipboard before checking for plain image in WindowsClipboard.GetImageFromClipboard() in order to preserve transparency in copied images.
 - [SIL.Windows.Forms] Changed layout of SILAboutBox to accommodate wider SIL logo.
 - [SIL.Windows.Forms.Archiving] Split SIL.Archiving, moving Winforms portions (including dependency on L10nSharp) to SIL.Windows.Forms.Archiving.
 - [SIL.Archiving] Changed IMDIArchivingDlgViewModel.ArchivingPackage to return an IMDIPackage (instead of an IArchivingPackage).
