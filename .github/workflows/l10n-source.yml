@@ -15,7 +15,7 @@ jobs:
   extract-and-upload-strings:
     strategy:
       fail-fast: false
-    runs-on: windows-2019
+    runs-on: windows-latest
 
     steps:
     - name: Checkout

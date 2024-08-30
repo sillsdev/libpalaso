@@ -15,7 +15,7 @@ jobs:
   package-l10n:
     strategy:
       fail-fast: false
-    runs-on: windows-2019
+    runs-on: windows-latest
 
     steps:
     - name: Checkout
