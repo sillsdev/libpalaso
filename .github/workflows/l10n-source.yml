@@ -2,7 +2,7 @@
 name: Update l10n Source Strings
 
 on:
-  pull_request:
+  push:
     branches: [master]
   workflow_dispatch:
 
