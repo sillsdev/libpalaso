@@ -68,6 +68,13 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		[SetUp]
+		public void Setup()
+		{
+			if (!Sldr.IsInitialized)
+				Sldr.Initialize(true, Sldr.DefaultSldrCachePath);
+		}
+
 		[Test]
 		public void GetLdmlFile_EmptyPath_Throws()
 		{
