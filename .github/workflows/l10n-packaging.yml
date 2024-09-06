@@ -15,7 +15,7 @@ jobs:
   package-l10n:
     strategy:
       fail-fast: false
-    runs-on: windows-2019
+    runs-on: windows-latest
 
     steps:
     - name: Checkout
@@ -26,6 +26,8 @@ jobs:
     # Install the .NET Core workload
     - name: Install .NET Core
       uses: actions/setup-dotnet@6bd8b7f7774af54e05809fcc5431931b3eb1ddee # v4.0.1
+      with:
+        dotnet-version: 8.x
 
     # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
     - name: Setup MSBuild.exe (Windows OS)
