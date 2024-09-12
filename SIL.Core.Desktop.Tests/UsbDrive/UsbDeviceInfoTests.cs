@@ -7,7 +7,9 @@ using System.IO;
 using NUnit.Framework;
 using SIL.PlatformUtilities;
 using SIL.UsbDrive;
+#if !NET
 using SIL.UsbDrive.Linux;
+#endif
 
 namespace SIL.Tests.UsbDrive
 {
@@ -177,6 +179,7 @@ namespace SIL.Tests.UsbDrive
 			Assert.IsFalse(usbDrives[1].IsReady);
 		}
 
+#if !NET
 		[Test]
 		[Category("RequiresUSB")]
 		[Category("SkipOnTeamCity")]
@@ -195,5 +198,6 @@ namespace SIL.Tests.UsbDrive
 					}
 				);
 		}
+#endif
 	}
 }
