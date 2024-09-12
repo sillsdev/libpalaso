@@ -60,8 +60,9 @@ namespace SIL.WritingSystems.Tests
 				Sldr.Cleanup();
 				// clear out SLDR cache
 				var di = new DirectoryInfo(sldrCachePath);
-				foreach (var fi in di.GetFiles())
-					fi.Delete();
+				if (di.Exists)
+					foreach (var fi in di.GetFiles())
+						fi.Delete();
 				// The OfflineSldrAttribute has been assigned to the entire test assembly, so we reinitialize
 				// the SLDR back to what it was
 				Sldr.Initialize(true, sldrCachePath);
