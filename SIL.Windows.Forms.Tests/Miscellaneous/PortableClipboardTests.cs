@@ -23,6 +23,7 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 		}
 
 		[Test]
+		[Category("SkipOnTeamCity")]
 		[Platform(Exclude = "Linux", Reason = "Linux code to copy image to clipboard not yet implemented.")]
 		public void ClipboardRoundTripWorks_Png()
 		{
@@ -41,6 +42,7 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 		}
 
 		[Test]
+		[Category("SkipOnTeamCity")]
 		[Platform(Exclude = "Linux", Reason = "Linux code to copy image to clipboard not yet implemented.")]
 		public void ClipboardRoundTripWorks_Bmp()
 		{
@@ -59,6 +61,7 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 		}
 
 		[Test]
+		[Category("SkipOnTeamCity")]
 		[Platform(Exclude = "Linux", Reason = "Linux code to copy image to clipboard not yet implemented.")]
 		public void ClipboardRoundTripWorks_GetsExistingMetadata()
 		{
@@ -80,6 +83,7 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 		}
 
 		[Test]
+		[Category("SkipOnTeamCity")]
 		[Platform(Exclude = "Linux", Reason = "This requires a GTK message loop to run or something like this")]
 		public void ClipboardRoundTripWorks_Text()
 		{
