@@ -7,9 +7,6 @@ using System.IO;
 using NUnit.Framework;
 using SIL.PlatformUtilities;
 using SIL.UsbDrive;
-#if !NET
-using SIL.UsbDrive.Linux;
-#endif
 
 namespace SIL.Tests.UsbDrive
 {
@@ -188,7 +185,7 @@ namespace SIL.Tests.UsbDrive
 			var usbDrives = UsbDriveInfo.GetDrives();
 			if (usbDrives.Count < 1)
 				Assert.Ignore("Need at least 1 USB drive plugged in");
-			if (Platform.IsWindows || UsbDriveInfoUDisks2.IsUDisks2Available)
+			if (Platform.IsWindows || SIL.UsbDrive.Linux.UsbDriveInfoUDisks2.IsUDisks2Available)
 				Assert.Ignore("On windows, or on linux with udisks2 GetDrives() only returns mounted drives");
 
 			Assert.Throws<ArgumentOutOfRangeException>(
