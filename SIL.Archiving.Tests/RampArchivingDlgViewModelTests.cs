@@ -753,18 +753,33 @@ namespace SIL.Archiving.Tests
 
 			var model = new RampArchivingDlgViewModel("Test App", "Test Title", "tst",
 				(a, b) => { filesToArchiveCalled = true; }, (k, f) => throw new NotImplementedException());
+
+			var progress = new TestProgress("RAMP");
 			var customSummaryShown = 0;
-			model.OverrideDisplayInitialSummary = (d, c) => { customSummaryShown++; };
+
+			model.OverrideDisplayInitialSummary = (d, c) =>
+			{
+				customSummaryShown++;
+				progress.IncrementProgress();
+			};
 			model.GetOverriddenPreArchivingMessages = d => throw new AssertionException(
 				$"{nameof(ArchivingDlgViewModel.GetOverriddenPreArchivingMessages)} should not have been invoked");
 			model.OverrideGetFileGroupDisplayMessage = s => throw new AssertionException(
 				$"{nameof(ArchivingDlgViewModel.OverrideGetFileGroupDisplayMessage)} should not have been invoked");
 
-			await model.Initialize(new TestProgress("RAMP"), new CancellationToken());
+			try
+			{
+				await model.Initialize(progress, new CancellationToken()).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail($"Initialization threw an exception: {ex}");
+			}
 
 			Assert.True(filesToArchiveCalled);
 			Assert.That(customSummaryShown, Is.EqualTo(1));
 			Assert.False(File.Exists(model.PackagePath));
+			Assert.That(progress.Step, Is.EqualTo(1));
 		}
 	}
 
@@ -808,9 +823,15 @@ namespace SIL.Archiving.Tests
 			model.InitialFileGroupDisplayMessageType = Success;
 			model.OverrideGetFileGroupDisplayMessage = s => (s == String.Empty) ? "Frogs" : $"Label: {s}";
 
-
 			var progress = new TestProgress("RAMP");
-			await model.Initialize(progress, new CancellationToken());
+			try
+			{
+				await model.Initialize(progress, new CancellationToken()).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail($"Initialization threw an exception: {ex}");
+			}
 
 			Assert.That(messagesDisplayed.Count, Is.EqualTo(8));
 			Assert.That(messagesDisplayed[0].Item1, Is.EqualTo("Test implementation message for SearchingForArchiveUploadingProgram"));
@@ -829,6 +850,7 @@ namespace SIL.Archiving.Tests
 			Assert.That(messagesDisplayed[7].Item1, Is.EqualTo("blue.toad"));
 			Assert.That(messagesDisplayed[7].Item2, Is.EqualTo(Bullet));
 			Assert.False(File.Exists(model.PackagePath));
+			Assert.That(progress.Step, Is.EqualTo(1));
 		}
 	}
 }

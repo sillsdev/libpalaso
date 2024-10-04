@@ -343,8 +343,17 @@ namespace SIL.Archiving
 
 			if (GetOverriddenPreArchivingMessages != null)
 			{
+				bool firstMsg = true;
 				foreach (var msg in GetOverriddenPreArchivingMessages(FileLists))
-					ReportProgress(msg.Item1, msg.Item2, cancellationToken);
+				{
+					if (firstMsg)
+					{
+						ReportProgress(msg.Item1, msg.Item2, cancellationToken);
+						firstMsg = false;
+					}
+					else
+						DisplayMessage(msg.Item1, msg.Item2);
+				}
 			}
 			else
 				ReportProgress(Progress.GetMessage(StringId.PreArchivingStatus), MessageType.Normal,

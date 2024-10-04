@@ -281,9 +281,15 @@ namespace SIL.Archiving.Tests
 
 			var model = new IMDIArchivingDlgViewModel("Test App", "Test Title", "tst", true,
 				(a, b) => { filesToArchiveCalled = true; }, "whatever");
+
 			var progress = new TestProgress("IMDI");
 			var customSummaryShown = 0;
-			model.OverrideDisplayInitialSummary = (d, c) => { customSummaryShown++; };
+
+			model.OverrideDisplayInitialSummary = (d, c) =>
+			{
+				customSummaryShown++;
+				progress.IncrementProgress();
+			};
 			model.GetOverriddenPreArchivingMessages = d => throw new AssertionException(
 				$"{nameof(ArchivingDlgViewModel.GetOverriddenPreArchivingMessages)} should not have been invoked");
 			model.OverrideGetFileGroupDisplayMessage = s => throw new AssertionException(
@@ -291,10 +297,18 @@ namespace SIL.Archiving.Tests
 
 			model.InitializationFailed += (sender, e) => Assert.Fail("Initialization failed");
 
-			await model.Initialize(progress, new CancellationToken());
+			try
+			{
+				await model.Initialize(progress, new CancellationToken()).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail($"Initialization threw an exception: {ex}");
+			}
 
 			Assert.True(filesToArchiveCalled);
 			Assert.That(customSummaryShown, Is.EqualTo(1));
+			Assert.That(progress.Step, Is.EqualTo(1));
 		}
 	}
 
@@ -337,10 +351,17 @@ namespace SIL.Archiving.Tests
 			model.GetOverriddenPreArchivingMessages = GetMessages;
 			model.InitialFileGroupDisplayMessageType = Success;
 			model.OverrideGetFileGroupDisplayMessage = s => (s == String.Empty) ? "Frogs" : $"Label: {s}";
+			model.InitializationFailed += (sender, e) => Assert.Fail("Initialization failed");
 
-
-			var progress = new TestProgress("RAMP");
-			await model.Initialize(progress, new CancellationToken());
+			var progress = new TestProgress("IMDI");
+			try
+			{
+				await model.Initialize(progress, new CancellationToken()).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail($"Initialization threw an exception: {ex}");
+			}
 
 			Assert.That(messagesDisplayed.Count, Is.EqualTo(7));
 			Assert.That(messagesDisplayed[0].Item1, Is.EqualTo("First pre-archiving message"));
@@ -357,6 +378,7 @@ namespace SIL.Archiving.Tests
 			Assert.That(messagesDisplayed[5].Item2, Is.EqualTo(Bullet));
 			Assert.That(messagesDisplayed[6].Item1, Is.EqualTo("blue.toad"));
 			Assert.That(messagesDisplayed[6].Item2, Is.EqualTo(Bullet));
+			Assert.That(progress.Step, Is.EqualTo(1));
 		}
 	}
 }
