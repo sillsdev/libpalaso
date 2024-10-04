@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using NUnit.Framework;
@@ -15,7 +14,7 @@ namespace SIL.Archiving.Tests
 	[TestFixture]
 	[OfflineSldr]
 	[Category("Archiving")]
-	internal class IMDIArchivingDlgViewModelTests
+	public class IMDIArchivingDlgViewModelTests
 	{
 		private class MessageData
 		{
@@ -70,6 +69,7 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void NormalizeFilename_FileName_NormalizedFileName()
 		{
+			Console.WriteLine($"IMDI Tests TEMP: {nameof(NormalizeFilename_FileName_NormalizedFileName)}");
 			const string fileName = "My# \nFile %\t Name&^%.mp3";
 			var normalized = _model.NormalizeFilename("", fileName);
 			Assert.AreEqual("My+File+Name_.mp3", normalized);
@@ -275,6 +275,8 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public async Task DisplayInitialSummary_OverrideDisplayInitialSummaryIsSet_DefaultBehaviorOmitted()
 		{
+			Console.WriteLine($"IMDI Tests TEMP: {nameof(DisplayInitialSummary_OverrideDisplayInitialSummaryIsSet_DefaultBehaviorOmitted)}");
+
 			ErrorReport.IsOkToInteractWithUser = false;
 
 			bool filesToArchiveCalled = false;
@@ -320,6 +322,8 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public async Task DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides()
 		{
+			Console.WriteLine($"IMDI Tests TEMP: {nameof(DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides)}");
+
 			ErrorReport.IsOkToInteractWithUser = false;
 
 			void SetFilesToArchive(ArchivingDlgViewModel model, CancellationToken cancellationToken)

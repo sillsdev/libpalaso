@@ -759,6 +759,7 @@ namespace SIL.Archiving.Tests
 
 			model.OverrideDisplayInitialSummary = (d, c) =>
 			{
+				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverrideDisplayInitialSummaryIsSet_DefaultBehaviorOmitted)} overriding initial display");
 				customSummaryShown++;
 				progress.IncrementProgress();
 			};
@@ -769,7 +770,9 @@ namespace SIL.Archiving.Tests
 
 			try
 			{
+				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverrideDisplayInitialSummaryIsSet_DefaultBehaviorOmitted)} before SUT");
 				await model.Initialize(progress, new CancellationToken()).ConfigureAwait(false);
+				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverrideDisplayInitialSummaryIsSet_DefaultBehaviorOmitted)} after SUT");
 			}
 			catch (Exception ex)
 			{
@@ -806,6 +809,7 @@ namespace SIL.Archiving.Tests
 
 			void ReportMessage(string msg, ArchivingDlgViewModel.MessageType type)
 			{
+				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides)} reporting {msg}");
 				messagesDisplayed.Add(new Tuple<string, ArchivingDlgViewModel.MessageType>(msg, type));
 			}
 
@@ -813,6 +817,8 @@ namespace SIL.Archiving.Tests
 
 			IEnumerable<Tuple<string, ArchivingDlgViewModel.MessageType>> GetMessages(IDictionary<string, Tuple<IEnumerable<string>, string>> arg)
 			{
+				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides)} getting pre-archiving messages");
+
 				yield return new Tuple<string, ArchivingDlgViewModel.MessageType>(
 					"First pre-archiving message", Warning);
 				yield return new Tuple<string, ArchivingDlgViewModel.MessageType>(
@@ -826,7 +832,9 @@ namespace SIL.Archiving.Tests
 			var progress = new TestProgress("RAMP");
 			try
 			{
+				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides)} before SUT");
 				await model.Initialize(progress, new CancellationToken()).ConfigureAwait(false);
+				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides)} after SUT");
 			}
 			catch (Exception ex)
 			{
