@@ -284,22 +284,36 @@ namespace SIL.Archiving
 		public async Task<bool> Initialize(IArchivingProgressDisplay progress, CancellationToken cancellationToken)
 		{
 			Progress = progress ?? throw new ArgumentNullException(nameof(progress));
-			
+
+			Console.WriteLine($"{ArchiveType} Tests TEMP: {nameof(Initialize)} start");
+
 			if (!DoArchiveSpecificInitialization())
 				return false;
 
+			Console.WriteLine($"{ArchiveType} Tests TEMP: {nameof(Initialize)} archive-specific initialization complete");
+
 			await SetFilesToArchive(cancellationToken);
+
+			Console.WriteLine($"{ArchiveType} Tests TEMP: {nameof(Initialize)} {nameof(SetFilesToArchive)} complete");
+
 			DisplayInitialSummary(cancellationToken);
+
+			Console.WriteLine($"{ArchiveType} Tests TEMP: {nameof(Initialize)} end");
 
 			return true;
 		}
 
 		protected virtual async Task SetFilesToArchive(CancellationToken cancellationToken)
 		{
+			Console.WriteLine($"{ArchiveType} Tests TEMP: {nameof(SetFilesToArchive)} start");
+
 			await Task.Run(() =>
 			{
 				_setFilesToArchive(this, cancellationToken);
+				Console.WriteLine($"{ArchiveType} Tests TEMP: calling _setFilesToArchive finished");
 			}, cancellationToken);
+
+			Console.WriteLine($"{ArchiveType} Tests TEMP: {nameof(SetFilesToArchive)} end");
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -332,7 +346,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		private void DisplayInitialSummary(CancellationToken cancellationToken)
 		{
-			Console.WriteLine($"IMDI Tests TEMP: {nameof(DisplayInitialSummary)} start");
+			Console.WriteLine($"{ArchiveType} Tests TEMP: {nameof(DisplayInitialSummary)} start");
 
 			if (OverrideDisplayInitialSummary != null)
 			{
@@ -340,12 +354,12 @@ namespace SIL.Archiving
 				return;
 			}
 
-			Console.WriteLine($"IMDI Tests TEMP: {nameof(DisplayInitialSummary)} after override");
+			Console.WriteLine($"{ArchiveType} Tests TEMP: {nameof(DisplayInitialSummary)} after override");
 
 			foreach (var message in AdditionalMessages)
 				DisplayMessage(message.Key + "\n", message.Value);
 
-			Console.WriteLine($"IMDI Tests TEMP: {nameof(DisplayInitialSummary)} after additional");
+			Console.WriteLine($"{ArchiveType} Tests TEMP: {nameof(DisplayInitialSummary)} after additional");
 
 			if (GetOverriddenPreArchivingMessages != null)
 			{
@@ -361,14 +375,14 @@ namespace SIL.Archiving
 						DisplayMessage(msg.Item1, msg.Item2);
 				}
 
-				Console.WriteLine($"IMDI Tests TEMP: {nameof(DisplayInitialSummary)} after overridden Pre-Archiving messages");
+				Console.WriteLine($"{ArchiveType} Tests TEMP: {nameof(DisplayInitialSummary)} after overridden Pre-Archiving messages");
 			}
 			else
 			{
 				ReportProgress(Progress.GetMessage(StringId.PreArchivingStatus),
 					MessageType.Normal, cancellationToken);
 
-				Console.WriteLine($"IMDI Tests TEMP: {nameof(DisplayInitialSummary)} after normal Pre-Archiving message");
+				Console.WriteLine($"{ArchiveType} Tests TEMP: {nameof(DisplayInitialSummary)} after normal Pre-Archiving message");
 			}
 
 			foreach (var kvp in FileLists)
@@ -384,7 +398,7 @@ namespace SIL.Archiving
 					DisplayMessage(Path.GetFileName(file), MessageType.Bullet);
 			}
 
-			Console.WriteLine($"IMDI Tests TEMP: {nameof(DisplayInitialSummary)} end");
+			Console.WriteLine($"{ArchiveType} Tests TEMP: {nameof(DisplayInitialSummary)} end");
 		}
 
 		protected virtual string FileGroupDisplayMessage(string groupKey)

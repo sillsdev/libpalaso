@@ -798,8 +798,12 @@ namespace SIL.Archiving.Tests
 
 			void SetFilesToArchive(ArchivingDlgViewModel model, CancellationToken cancellationToken)
 			{
+				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides)} starting to set files to archive");
+
 				model.AddFileGroup(String.Empty, new[] { "green.frog" }, "These messages should not be displayed");
 				model.AddFileGroup("Toads", new[] { "red.toad", "blue.toad" }, "because in this test we do not create a package.");
+
+				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides)} done setting files to archive");
 			}
 
 			var model = new RampArchivingDlgViewModel("Test App", "Test Title", "tst",

@@ -69,7 +69,6 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void NormalizeFilename_FileName_NormalizedFileName()
 		{
-			Console.WriteLine($"IMDI Tests TEMP: {nameof(NormalizeFilename_FileName_NormalizedFileName)}");
 			const string fileName = "My# \nFile %\t Name&^%.mp3";
 			var normalized = _model.NormalizeFilename("", fileName);
 			Assert.AreEqual("My+File+Name_.mp3", normalized);
