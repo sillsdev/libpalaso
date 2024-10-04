@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Archiving] Added public extensions class LinkLabelExtensions with some methods that were formerly in Extensions class (now in SIL.Archiving).
 - [SIL.Archiving] Added public property isValid to IMDIPackage.
 - [SIL.Archiving] Added public event InitializationFailed to IMDIArchivingDlgViewModel.
+- [SIL.Archiving] Added the following properties to ArchivingDlgViewModel as an alternative way to customize the initial summary displayed: GetOverriddenPreArchivingMessages, InitialFileGroupDisplayMessageType, OverrideGetFileGroupDisplayMessage
 
 ### Changed
 
@@ -71,6 +72,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Changed IArchivingSession.Files (and Session.Files) into an IReadonlyList.
 - [SIL.Archiving] Made IMDIPackage.CreateIMDIPackage asynchronous, changing its signature to take a CancellationToken parameter and return Task<bool>.
 - [SIL.Archiving] Made MetaTranscript.WriteCorpusImdiFile asynchronous, changing its signature to return Task<bool>.
+- [SIL.Archiving] Changed the name of the third parameter in ArchivingDlgViewModel.AddFileGroup from progressMessage to addingToArchiveProgressMessage.
 
 ### Fixed
 - [SIL.Archiving] Fixed typo in RampArchivingDlgViewModel for Ethnomusicology performance collection.

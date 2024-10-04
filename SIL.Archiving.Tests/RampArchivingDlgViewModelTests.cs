@@ -11,6 +11,7 @@ using SIL.Core.ClearShare;
 using SIL.IO;
 using SIL.Reporting;
 using SIL.TestUtilities;
+using static SIL.Archiving.ArchivingDlgViewModel.MessageType;
 
 namespace SIL.Archiving.Tests
 {
@@ -736,5 +737,107 @@ namespace SIL.Archiving.Tests
 				Assert.Ignore("This test requires RAMP");
 		}
 		#endregion
+	}
+
+	[TestFixture]
+	[Category("Archiving")]
+	public class RampArchivingDlgViewModelWithOverrideDisplayInitialSummarySetTests
+	{
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public async Task DisplayInitialSummary_OverrideDisplayInitialSummaryIsSet_DefaultBehaviorOmitted()
+		{
+			ErrorReport.IsOkToInteractWithUser = false;
+
+			bool filesToArchiveCalled = false;
+
+			var model = new RampArchivingDlgViewModel("Test App", "Test Title", "tst",
+				(a, b) => { filesToArchiveCalled = true; }, (k, f) => throw new NotImplementedException());
+			var progress = new TestProgress("RAMP");
+			bool customSummaryShown = false;
+			model.OverrideDisplayInitialSummary = (d, c) => { customSummaryShown = true; };
+			bool otherDelegatesCalled = false;
+			model.GetOverriddenPreArchivingMessages = d =>
+			{
+				otherDelegatesCalled = true;
+				return new List<Tuple<string, ArchivingDlgViewModel.MessageType>>(0);
+			};
+
+			model.OverrideGetFileGroupDisplayMessage = s =>
+			{
+				otherDelegatesCalled = true;
+				return "frog lips";
+			};
+			await model.Initialize(progress, new CancellationToken());
+
+			Assert.True(filesToArchiveCalled);
+			Assert.True(customSummaryShown);
+			Assert.False(otherDelegatesCalled);
+			Assert.False(File.Exists(model.PackagePath));
+		}
+	}
+
+	[TestFixture]
+	[Category("Archiving")]
+	public class RampArchivingDlgViewModelWithFineGrainedOverridesForDisplayInitialSummarySetTests
+	{
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public async Task DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides()
+		{
+			ErrorReport.IsOkToInteractWithUser = false;
+
+			void SetFilesToArchive(ArchivingDlgViewModel model, CancellationToken cancellationToken)
+			{
+				model.AddFileGroup(String.Empty, new[] { "green.frog" }, "These messages should not be displayed");
+				model.AddFileGroup("Toads", new[] { "red.toad", "blue.toad" }, "because in this test we do not create a package.");
+			}
+
+			var model = new RampArchivingDlgViewModel("Test App", "Test Title", "tst",
+				SetFilesToArchive, (k, f) => throw new NotImplementedException());
+
+			var messagesDisplayed = new List<Tuple<string, ArchivingDlgViewModel.MessageType>>();
+
+			void ModelOnOnReportMessage(string msg, ArchivingDlgViewModel.MessageType type)
+			{
+				messagesDisplayed.Add(new Tuple<string, ArchivingDlgViewModel.MessageType>(msg, type));
+			}
+
+			model.OnReportMessage += ModelOnOnReportMessage;
+
+			IEnumerable<Tuple<string, ArchivingDlgViewModel.MessageType>> GetMessages(IDictionary<string, Tuple<IEnumerable<string>, string>> arg)
+			{
+				yield return new Tuple<string, ArchivingDlgViewModel.MessageType>(
+					"First pre-archiving message", Warning);
+				yield return new Tuple<string, ArchivingDlgViewModel.MessageType>(
+					"Second pre-archiving message", Indented);
+			}
+
+			model.GetOverriddenPreArchivingMessages = GetMessages;
+			model.InitialFileGroupDisplayMessageType = Success;
+			model.OverrideGetFileGroupDisplayMessage = s => (s == String.Empty) ? "Frogs" : $"Label: {s}";
+
+
+			var progress = new TestProgress("RAMP");
+			await model.Initialize(progress, new CancellationToken());
+
+			Assert.That(messagesDisplayed.Count, Is.EqualTo(8));
+			Assert.That(messagesDisplayed[0].Item1, Is.EqualTo("Test implementation message for SearchingForArchiveUploadingProgram"));
+			Assert.That(messagesDisplayed[1].Item1, Is.EqualTo("First pre-archiving message"));
+			Assert.That(messagesDisplayed[1].Item2, Is.EqualTo(Warning));
+			Assert.That(messagesDisplayed[2].Item1, Is.EqualTo("Second pre-archiving message"));
+			Assert.That(messagesDisplayed[2].Item2, Is.EqualTo(Indented));
+			Assert.That(messagesDisplayed[3].Item1, Is.EqualTo("Frogs"));
+			Assert.That(messagesDisplayed[3].Item2, Is.EqualTo(Success));
+			Assert.That(messagesDisplayed[4].Item1, Is.EqualTo("green.frog"));
+			Assert.That(messagesDisplayed[4].Item2, Is.EqualTo(Bullet));
+			Assert.That(messagesDisplayed[5].Item1, Is.EqualTo("Label: Toads"));
+			Assert.That(messagesDisplayed[5].Item2, Is.EqualTo(Success));
+			Assert.That(messagesDisplayed[6].Item1, Is.EqualTo("red.toad"));
+			Assert.That(messagesDisplayed[6].Item2, Is.EqualTo(Bullet));
+			Assert.That(messagesDisplayed[7].Item1, Is.EqualTo("blue.toad"));
+			Assert.That(messagesDisplayed[7].Item2, Is.EqualTo(Bullet));
+			Assert.False(File.Exists(model.PackagePath));
+		}
 	}
 }
