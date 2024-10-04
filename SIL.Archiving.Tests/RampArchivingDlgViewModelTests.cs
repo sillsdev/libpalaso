@@ -753,26 +753,17 @@ namespace SIL.Archiving.Tests
 
 			var model = new RampArchivingDlgViewModel("Test App", "Test Title", "tst",
 				(a, b) => { filesToArchiveCalled = true; }, (k, f) => throw new NotImplementedException());
-			var progress = new TestProgress("RAMP");
-			bool customSummaryShown = false;
-			model.OverrideDisplayInitialSummary = (d, c) => { customSummaryShown = true; };
-			bool otherDelegatesCalled = false;
-			model.GetOverriddenPreArchivingMessages = d =>
-			{
-				otherDelegatesCalled = true;
-				return new List<Tuple<string, ArchivingDlgViewModel.MessageType>>(0);
-			};
+			var customSummaryShown = 0;
+			model.OverrideDisplayInitialSummary = (d, c) => { customSummaryShown++; };
+			model.GetOverriddenPreArchivingMessages = d => throw new AssertionException(
+				$"{nameof(ArchivingDlgViewModel.GetOverriddenPreArchivingMessages)} should not have been invoked");
+			model.OverrideGetFileGroupDisplayMessage = s => throw new AssertionException(
+				$"{nameof(ArchivingDlgViewModel.OverrideGetFileGroupDisplayMessage)} should not have been invoked");
 
-			model.OverrideGetFileGroupDisplayMessage = s =>
-			{
-				otherDelegatesCalled = true;
-				return "frog lips";
-			};
-			await model.Initialize(progress, new CancellationToken());
+			await model.Initialize(new TestProgress("RAMP"), new CancellationToken());
 
 			Assert.True(filesToArchiveCalled);
-			Assert.True(customSummaryShown);
-			Assert.False(otherDelegatesCalled);
+			Assert.That(customSummaryShown, Is.EqualTo(1));
 			Assert.False(File.Exists(model.PackagePath));
 		}
 	}
@@ -798,12 +789,12 @@ namespace SIL.Archiving.Tests
 
 			var messagesDisplayed = new List<Tuple<string, ArchivingDlgViewModel.MessageType>>();
 
-			void ModelOnOnReportMessage(string msg, ArchivingDlgViewModel.MessageType type)
+			void ReportMessage(string msg, ArchivingDlgViewModel.MessageType type)
 			{
 				messagesDisplayed.Add(new Tuple<string, ArchivingDlgViewModel.MessageType>(msg, type));
 			}
 
-			model.OnReportMessage += ModelOnOnReportMessage;
+			model.OnReportMessage += ReportMessage;
 
 			IEnumerable<Tuple<string, ArchivingDlgViewModel.MessageType>> GetMessages(IDictionary<string, Tuple<IEnumerable<string>, string>> arg)
 			{
