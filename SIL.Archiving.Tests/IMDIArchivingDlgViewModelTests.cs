@@ -274,8 +274,6 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public async Task DisplayInitialSummary_OverrideDisplayInitialSummaryIsSet_DefaultBehaviorOmitted()
 		{
-			Console.WriteLine($"IMDI Tests TEMP: {nameof(DisplayInitialSummary_OverrideDisplayInitialSummaryIsSet_DefaultBehaviorOmitted)}");
-
 			ErrorReport.IsOkToInteractWithUser = false;
 
 			bool filesToArchiveCalled = false;
@@ -321,8 +319,6 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public async Task DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides()
 		{
-			Console.WriteLine($"IMDI Tests TEMP: {nameof(DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides)}");
-
 			ErrorReport.IsOkToInteractWithUser = false;
 
 			void SetFilesToArchive(ArchivingDlgViewModel model, CancellationToken cancellationToken)

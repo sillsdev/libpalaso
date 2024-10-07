@@ -739,6 +739,22 @@ namespace SIL.Archiving.Tests
 		#endregion
 	}
 
+	internal class TestRampArchivingDlgViewModel : RampArchivingDlgViewModel
+	{
+		public TestRampArchivingDlgViewModel(
+			Action<ArchivingDlgViewModel, CancellationToken> setFilesToArchive) :
+			base("Test App", "Test Title", "tst", setFilesToArchive,
+				(k, f) => throw new NotImplementedException())
+		{
+		}
+
+		protected override bool DoArchiveSpecificInitialization()
+		{
+			DisplayMessage("Base implementation overridden", MessageType.Volatile);
+			return true;
+		}
+	}
+
 	[TestFixture]
 	[Category("Archiving")]
 	public class RampArchivingDlgViewModelWithOverrideDisplayInitialSummarySetTests
@@ -751,15 +767,13 @@ namespace SIL.Archiving.Tests
 
 			bool filesToArchiveCalled = false;
 
-			var model = new RampArchivingDlgViewModel("Test App", "Test Title", "tst",
-				(a, b) => { filesToArchiveCalled = true; }, (k, f) => throw new NotImplementedException());
+			var model = new TestRampArchivingDlgViewModel((a, b) => { filesToArchiveCalled = true; });
 
 			var progress = new TestProgress("RAMP");
 			var customSummaryShown = 0;
 
 			model.OverrideDisplayInitialSummary = (d, c) =>
 			{
-				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverrideDisplayInitialSummaryIsSet_DefaultBehaviorOmitted)} overriding initial display");
 				customSummaryShown++;
 				progress.IncrementProgress();
 			};
@@ -770,9 +784,7 @@ namespace SIL.Archiving.Tests
 
 			try
 			{
-				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverrideDisplayInitialSummaryIsSet_DefaultBehaviorOmitted)} before SUT");
 				await model.Initialize(progress, new CancellationToken()).ConfigureAwait(false);
-				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverrideDisplayInitialSummaryIsSet_DefaultBehaviorOmitted)} after SUT");
 			}
 			catch (Exception ex)
 			{
@@ -798,22 +810,17 @@ namespace SIL.Archiving.Tests
 
 			void SetFilesToArchive(ArchivingDlgViewModel model, CancellationToken cancellationToken)
 			{
-				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides)} starting to set files to archive");
-
 				model.AddFileGroup(String.Empty, new[] { "green.frog" }, "These messages should not be displayed");
 				model.AddFileGroup("Toads", new[] { "red.toad", "blue.toad" }, "because in this test we do not create a package.");
 
-				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides)} done setting files to archive");
 			}
 
-			var model = new RampArchivingDlgViewModel("Test App", "Test Title", "tst",
-				SetFilesToArchive, (k, f) => throw new NotImplementedException());
+			var model = new TestRampArchivingDlgViewModel(SetFilesToArchive);
 
 			var messagesDisplayed = new List<Tuple<string, ArchivingDlgViewModel.MessageType>>();
 
 			void ReportMessage(string msg, ArchivingDlgViewModel.MessageType type)
 			{
-				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides)} reporting {msg}");
 				messagesDisplayed.Add(new Tuple<string, ArchivingDlgViewModel.MessageType>(msg, type));
 			}
 
@@ -821,8 +828,6 @@ namespace SIL.Archiving.Tests
 
 			IEnumerable<Tuple<string, ArchivingDlgViewModel.MessageType>> GetMessages(IDictionary<string, Tuple<IEnumerable<string>, string>> arg)
 			{
-				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides)} getting pre-archiving messages");
-
 				yield return new Tuple<string, ArchivingDlgViewModel.MessageType>(
 					"First pre-archiving message", Warning);
 				yield return new Tuple<string, ArchivingDlgViewModel.MessageType>(
@@ -836,9 +841,7 @@ namespace SIL.Archiving.Tests
 			var progress = new TestProgress("RAMP");
 			try
 			{
-				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides)} before SUT");
 				await model.Initialize(progress, new CancellationToken()).ConfigureAwait(false);
-				Console.WriteLine($"RAMP Tests TEMP: {nameof(DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides)} after SUT");
 			}
 			catch (Exception ex)
 			{
@@ -847,7 +850,7 @@ namespace SIL.Archiving.Tests
 
 			Assert.That(messagesDisplayed, Is.EqualTo(new[]
 			{
-				("Test implementation message for SearchingForArchiveUploadingProgram", ArchivingDlgViewModel.MessageType.Volatile).ToTuple(),
+				("Base implementation overridden", ArchivingDlgViewModel.MessageType.Volatile).ToTuple(),
 				("First pre-archiving message", Warning).ToTuple(),
 				("Second pre-archiving message", Indented).ToTuple(),
 				("Frogs", Success).ToTuple(),

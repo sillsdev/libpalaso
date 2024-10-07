@@ -335,11 +335,7 @@ namespace SIL.Archiving
 
 		protected override async Task SetFilesToArchive(CancellationToken cancellationToken)
 		{
-			Console.WriteLine($"{ArchiveType} Tests TEMP: {GetType().Name}.{nameof(SetFilesToArchive)} start");
-
 			await base.SetFilesToArchive(cancellationToken);
-
-			Console.WriteLine($"{ArchiveType} Tests TEMP: {GetType().Name}.{nameof(SetFilesToArchive)} done calling base");
 
 			if (cancellationToken.IsCancellationRequested)
 				throw new OperationCanceledException();
@@ -350,7 +346,6 @@ namespace SIL.Archiving
 					Path.GetFileName(fileList.Value.Item1.First()));
 				_progressMessages[normalizedName] = fileList.Value.Item2;
 			}
-			Console.WriteLine($"{ArchiveType} Tests TEMP: {GetType().Name}.{nameof(SetFilesToArchive)} end");
 		}
 
 		/// ------------------------------------------------------------------------------------
