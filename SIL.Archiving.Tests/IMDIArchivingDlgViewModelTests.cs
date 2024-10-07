@@ -366,21 +366,16 @@ namespace SIL.Archiving.Tests
 				Assert.Fail($"Initialization threw an exception: {ex}");
 			}
 
-			Assert.That(messagesDisplayed.Count, Is.EqualTo(7));
-			Assert.That(messagesDisplayed[0].Item1, Is.EqualTo("First pre-archiving message"));
-			Assert.That(messagesDisplayed[0].Item2, Is.EqualTo(Warning));
-			Assert.That(messagesDisplayed[1].Item1, Is.EqualTo("Second pre-archiving message"));
-			Assert.That(messagesDisplayed[1].Item2, Is.EqualTo(Indented));
-			Assert.That(messagesDisplayed[2].Item1, Is.EqualTo("Frogs"));
-			Assert.That(messagesDisplayed[2].Item2, Is.EqualTo(Success));
-			Assert.That(messagesDisplayed[3].Item1, Is.EqualTo("green.frog"));
-			Assert.That(messagesDisplayed[3].Item2, Is.EqualTo(Bullet));
-			Assert.That(messagesDisplayed[4].Item1, Is.EqualTo("Label: Toads"));
-			Assert.That(messagesDisplayed[4].Item2, Is.EqualTo(Success));
-			Assert.That(messagesDisplayed[5].Item1, Is.EqualTo("red.toad"));
-			Assert.That(messagesDisplayed[5].Item2, Is.EqualTo(Bullet));
-			Assert.That(messagesDisplayed[6].Item1, Is.EqualTo("blue.toad"));
-			Assert.That(messagesDisplayed[6].Item2, Is.EqualTo(Bullet));
+			Assert.That(messagesDisplayed, Is.EqualTo(new[]
+			{
+				("First pre-archiving message", Warning).ToTuple(),
+				("Second pre-archiving message", Indented).ToTuple(),
+				("Frogs", Success).ToTuple(),
+				("green.frog", Bullet).ToTuple(),
+				("Label: Toads", Success).ToTuple(),
+				("red.toad", Bullet).ToTuple(),
+				("blue.toad", Bullet).ToTuple()
+			}));
 			Assert.That(progress.Step, Is.EqualTo(1));
 		}
 	}

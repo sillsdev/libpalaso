@@ -403,7 +403,7 @@ namespace SIL.Archiving
 
 		protected virtual string FileGroupDisplayMessage(string groupKey)
 		{
-			return OverrideGetFileGroupDisplayMessage == null ? groupKey : OverrideGetFileGroupDisplayMessage(groupKey);
+			return OverrideGetFileGroupDisplayMessage?.Invoke(groupKey) ?? groupKey;
 		}
 		#endregion
 
