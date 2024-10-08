@@ -99,7 +99,7 @@ namespace SIL.Archiving
 			Error,
 			/// <summary>Non-bold, indented with tab</summary>
 			Detail,
-			/// <summary>New line</summary>
+			/// <summary>Like Normal, but with preceding new line</summary>
 			Progress,
 			/// <summary>Non-bold, indented 8 spaces, with bullet character (U+00B7)</summary>
 			Bullet,
@@ -210,11 +210,52 @@ namespace SIL.Archiving
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Callback to allow application to handle display of initial summary in log box. If
+		/// Callback to allow application to handle display of initial summary (in log box). If
 		/// the application implements this, then the default summary display will be suppressed.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public Action<IDictionary<string, Tuple<IEnumerable<string>, string>>, CancellationToken> OverrideDisplayInitialSummary { private get; set; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Delegate function that can be set to override the default pre-archiving message
+		/// shown in <see cref="DisplayInitialSummary"/>. By default, only a single message (as
+		/// determined by the <see cref="IArchivingProgressDisplay.GetMessage"/>) is displayed,
+		/// so this override is particularly useful if an application needs to display more than
+		/// one message before the archival creation begins.
+		/// </summary>
+		/// <remarks>This is used only in the normal default implementation of
+		/// <see cref="DisplayInitialSummary"/></remarks>, so if
+		/// <see cref="OverrideDisplayInitialSummary"/> is set, then there is no point in also
+		/// setting this delegate.
+		/// ------------------------------------------------------------------------------------
+		public Func<IDictionary<string, Tuple<IEnumerable<string>, string>>, IEnumerable<Tuple<string, MessageType>>> GetOverriddenPreArchivingMessages { private get; set; }
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// This can be set to override the default <see cref="MessageType"/> used for displaying
+		/// information about each file group in <see cref="DisplayInitialSummary"/>. The default
+		/// type is <see cref="MessageType.Indented"/>.
+		/// </summary>
+		/// <remarks>This is used only in the normal default implementation of
+		/// <see cref="DisplayInitialSummary"/></remarks>, so if
+		/// <see cref="OverrideDisplayInitialSummary"/> is set, then there is no point in also
+		/// setting this property.
+		/// ------------------------------------------------------------------------------------
+		public MessageType InitialFileGroupDisplayMessageType { private get; set; } = MessageType.Indented;
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Delegate function that can be set to override the default "message" displayed for
+		/// file groups in <see cref="DisplayInitialSummary"/>. The default is simply the file
+		/// groupId (as set in <see cref="AddFileGroup"/>.
+		/// </summary>
+		/// <remarks>This is used only in the normal default implementation of
+		/// <see cref="DisplayInitialSummary"/></remarks>, so if
+		/// <see cref="OverrideDisplayInitialSummary"/> is set, then there is no point in also
+		/// setting this delegate.
+		/// ------------------------------------------------------------------------------------
+		public Func<string, string> OverrideGetFileGroupDisplayMessage { private get; set; }
 		#endregion
 
 		#region construction and initialization
@@ -225,8 +266,8 @@ namespace SIL.Archiving
 		/// <param name="id">Identifier (used as filename) for the package being created</param>
 		/// <param name="setFilesToArchive">Delegate to request client to call methods to set
 		/// which files should be archived (this is deferred to allow display of progress
-		/// message). Clients will normally do this by calling AddFileGroup one or more times.
-		/// </param>
+		/// message). Clients will normally do this by calling <see cref="AddFileGroup"/> one or
+		/// more times.</param>
 		/// ------------------------------------------------------------------------------------
 		protected ArchivingDlgViewModel(string appName, string title, string id,
 			Action<ArchivingDlgViewModel, CancellationToken> setFilesToArchive)
@@ -243,11 +284,12 @@ namespace SIL.Archiving
 		public async Task<bool> Initialize(IArchivingProgressDisplay progress, CancellationToken cancellationToken)
 		{
 			Progress = progress ?? throw new ArgumentNullException(nameof(progress));
-			
+
 			if (!DoArchiveSpecificInitialization())
 				return false;
 
 			await SetFilesToArchive(cancellationToken);
+
 			DisplayInitialSummary(cancellationToken);
 
 			return true;
@@ -259,6 +301,7 @@ namespace SIL.Archiving
 			{
 				_setFilesToArchive(this, cancellationToken);
 			}, cancellationToken);
+
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -268,41 +311,75 @@ namespace SIL.Archiving
 		public abstract int CalculateMaxProgressBarValue();
 
 		/// ------------------------------------------------------------------------------------
-		public virtual void AddFileGroup(string groupId, IEnumerable<string> files, string progressMessage)
+		/// <summary>
+		/// Adds a group of related files to be included when creating the archive package.
+		/// </summary>
+		/// <param name="groupId">A string that uniquely identifies the group of files.</param>
+		/// <param name="files">The collection fo files (paths)</param>
+		/// <param name="addingToArchiveProgressMessage">A progress message that would be
+		/// appropriate to display (if relevant to the type of archive package) when the file is
+		/// actually being added.</param>
+		/// <exception cref="ArgumentException">Thrown if a duplicate file group ID is specified
+		/// </exception>
+		/// ------------------------------------------------------------------------------------
+		public virtual void AddFileGroup(string groupId, IEnumerable<string> files,
+			string addingToArchiveProgressMessage)
 		{
 			Guard.AgainstNull(groupId, nameof(groupId));
 			if (FileLists.ContainsKey(groupId))
 				throw new ArgumentException("Duplicate file group ID: " + groupId, nameof(groupId));
-			FileLists[groupId] = Tuple.Create(files, progressMessage);
+			FileLists[groupId] = Tuple.Create(files, addingToArchiveProgressMessage);
 		}
 
 		/// ------------------------------------------------------------------------------------
 		private void DisplayInitialSummary(CancellationToken cancellationToken)
 		{
 			if (OverrideDisplayInitialSummary != null)
+			{
 				OverrideDisplayInitialSummary(FileLists, cancellationToken);
+				return;
+			}
+
+			foreach (var message in AdditionalMessages)
+				DisplayMessage(message.Key + "\n", message.Value);
+
+			if (GetOverriddenPreArchivingMessages != null)
+			{
+				bool firstMsg = true;
+				foreach (var msg in GetOverriddenPreArchivingMessages(FileLists))
+				{
+					if (firstMsg)
+					{
+						ReportProgress(msg.Item1, msg.Item2, cancellationToken);
+						firstMsg = false;
+					}
+					else
+						DisplayMessage(msg.Item1, msg.Item2);
+				}
+			}
 			else
 			{
-				ReportProgress(Progress.GetMessage(StringId.PreArchivingStatus), MessageType.Normal, cancellationToken);
+				ReportProgress(Progress.GetMessage(StringId.PreArchivingStatus),
+					MessageType.Normal, cancellationToken);
+			}
 
-				if (OnReportMessage != null)
-				{
-					foreach (var kvp in FileLists)
-					{
-						string msg = FileGroupDisplayMessage(kvp.Key);
-						if (msg != Empty)
-							OnReportMessage(msg, MessageType.Indented);
+			foreach (var kvp in FileLists)
+			{
+				if (cancellationToken.IsCancellationRequested)
+					throw new OperationCanceledException();
 
-						foreach (var file in kvp.Value.Item1)
-							OnReportMessage(Path.GetFileName(file), MessageType.Bullet);
-					}
-				}
+				string msg = FileGroupDisplayMessage(kvp.Key);
+				if (msg != Empty)
+					DisplayMessage(msg, InitialFileGroupDisplayMessageType);
+
+				foreach (var file in kvp.Value.Item1)
+					DisplayMessage(Path.GetFileName(file), MessageType.Bullet);
 			}
 		}
 
 		protected virtual string FileGroupDisplayMessage(string groupKey)
 		{
-			return groupKey;
+			return OverrideGetFileGroupDisplayMessage?.Invoke(groupKey) ?? groupKey;
 		}
 		#endregion
 
