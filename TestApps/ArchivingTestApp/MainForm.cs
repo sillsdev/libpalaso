@@ -32,8 +32,17 @@ namespace ArchivingTestApp
 			var title = GetTitle();
 			var model = new RampArchivingDlgViewModel(kAppName, title,
 				title.ToLatinOnly("~", "_", ""), SetFilesToArchive, GetFileDescription);
+			if (ModifierKeys == Keys.Shift)
+			{
+				model.OverrideGetFileGroupDisplayMessage = s => $"override: {s}";
+				model.GetOverriddenPreArchivingMessages = d =>
+					new[] {new Tuple<string, ArchivingDlgViewModel.MessageType>($"Count: {d.Count}", ArchivingDlgViewModel.MessageType.Error) };
+				model.InitialFileGroupDisplayMessageType =
+					ArchivingDlgViewModel.MessageType.Warning;
+			}
+
 			using (var rampArchiveDlg = new ArchivingDlg(model, LocalizationManager.GetString(
-				"ArchivingTestApp.MainForm.AdditionalArchiveProcessInfo", "This is just a test.")))
+				       "ArchivingTestApp.MainForm.AdditionalArchiveProcessInfo", "This is just a test.")))
 			{
 				rampArchiveDlg.ShowDialog(this);
 			}

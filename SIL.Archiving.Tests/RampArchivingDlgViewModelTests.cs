@@ -11,6 +11,7 @@ using SIL.Core.ClearShare;
 using SIL.IO;
 using SIL.Reporting;
 using SIL.TestUtilities;
+using static SIL.Archiving.ArchivingDlgViewModel.MessageType;
 
 namespace SIL.Archiving.Tests
 {
@@ -736,5 +737,131 @@ namespace SIL.Archiving.Tests
 				Assert.Ignore("This test requires RAMP");
 		}
 		#endregion
+	}
+
+	internal class TestRampArchivingDlgViewModel : RampArchivingDlgViewModel
+	{
+		public TestRampArchivingDlgViewModel(
+			Action<ArchivingDlgViewModel, CancellationToken> setFilesToArchive) :
+			base("Test App", "Test Title", "tst", setFilesToArchive,
+				(k, f) => throw new NotImplementedException())
+		{
+		}
+
+		protected override bool DoArchiveSpecificInitialization()
+		{
+			DisplayMessage("Base implementation overridden", MessageType.Volatile);
+			return true;
+		}
+	}
+
+	[TestFixture]
+	[Category("Archiving")]
+	public class RampArchivingDlgViewModelWithOverrideDisplayInitialSummarySetTests
+	{
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public async Task DisplayInitialSummary_OverrideDisplayInitialSummaryIsSet_DefaultBehaviorOmitted()
+		{
+			ErrorReport.IsOkToInteractWithUser = false;
+
+			bool filesToArchiveCalled = false;
+
+			var model = new TestRampArchivingDlgViewModel((a, b) => { filesToArchiveCalled = true; });
+
+			var progress = new TestProgress("RAMP");
+			var customSummaryShown = 0;
+
+			model.OverrideDisplayInitialSummary = (d, c) =>
+			{
+				customSummaryShown++;
+				progress.IncrementProgress();
+			};
+			model.GetOverriddenPreArchivingMessages = d => throw new AssertionException(
+				$"{nameof(ArchivingDlgViewModel.GetOverriddenPreArchivingMessages)} should not have been invoked");
+			model.OverrideGetFileGroupDisplayMessage = s => throw new AssertionException(
+				$"{nameof(ArchivingDlgViewModel.OverrideGetFileGroupDisplayMessage)} should not have been invoked");
+
+			try
+			{
+				await model.Initialize(progress, new CancellationToken()).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail($"Initialization threw an exception: {ex}");
+			}
+
+			Assert.True(filesToArchiveCalled);
+			Assert.That(customSummaryShown, Is.EqualTo(1));
+			Assert.False(File.Exists(model.PackagePath));
+			Assert.That(progress.Step, Is.EqualTo(1));
+		}
+	}
+
+	[TestFixture]
+	[Category("Archiving")]
+	public class RampArchivingDlgViewModelWithFineGrainedOverridesForDisplayInitialSummarySetTests
+	{
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public async Task DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides()
+		{
+			ErrorReport.IsOkToInteractWithUser = false;
+
+			void SetFilesToArchive(ArchivingDlgViewModel model, CancellationToken cancellationToken)
+			{
+				model.AddFileGroup(String.Empty, new[] { "green.frog" }, "These messages should not be displayed");
+				model.AddFileGroup("Toads", new[] { "red.toad", "blue.toad" }, "because in this test we do not create a package.");
+
+			}
+
+			var model = new TestRampArchivingDlgViewModel(SetFilesToArchive);
+
+			var messagesDisplayed = new List<Tuple<string, ArchivingDlgViewModel.MessageType>>();
+
+			void ReportMessage(string msg, ArchivingDlgViewModel.MessageType type)
+			{
+				messagesDisplayed.Add(new Tuple<string, ArchivingDlgViewModel.MessageType>(msg, type));
+			}
+
+			model.OnReportMessage += ReportMessage;
+
+			IEnumerable<Tuple<string, ArchivingDlgViewModel.MessageType>> GetMessages(IDictionary<string, Tuple<IEnumerable<string>, string>> arg)
+			{
+				yield return new Tuple<string, ArchivingDlgViewModel.MessageType>(
+					"First pre-archiving message", Warning);
+				yield return new Tuple<string, ArchivingDlgViewModel.MessageType>(
+					"Second pre-archiving message", Indented);
+			}
+
+			model.GetOverriddenPreArchivingMessages = GetMessages;
+			model.InitialFileGroupDisplayMessageType = Success;
+			model.OverrideGetFileGroupDisplayMessage = s => (s == String.Empty) ? "Frogs" : $"Label: {s}";
+
+			var progress = new TestProgress("RAMP");
+			try
+			{
+				await model.Initialize(progress, new CancellationToken()).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail($"Initialization threw an exception: {ex}");
+			}
+
+			Assert.That(messagesDisplayed, Is.EqualTo(new[]
+			{
+				("Base implementation overridden", ArchivingDlgViewModel.MessageType.Volatile).ToTuple(),
+				("First pre-archiving message", Warning).ToTuple(),
+				("Second pre-archiving message", Indented).ToTuple(),
+				("Frogs", Success).ToTuple(),
+				("green.frog", Bullet).ToTuple(),
+				("Label: Toads", Success).ToTuple(),
+				("red.toad", Bullet).ToTuple(),
+				("blue.toad", Bullet).ToTuple()
+			}));
+
+			Assert.False(File.Exists(model.PackagePath));
+			Assert.That(progress.Step, Is.EqualTo(1));
+		}
 	}
 }

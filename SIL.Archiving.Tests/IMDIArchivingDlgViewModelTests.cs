@@ -1,18 +1,20 @@
+using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using NUnit.Framework;
 using SIL.Archiving.IMDI;
 using SIL.Reporting;
 using SIL.TestUtilities;
+using static SIL.Archiving.ArchivingDlgViewModel.MessageType;
+using CancellationToken = System.Threading.CancellationToken;
 
 namespace SIL.Archiving.Tests
 {
 	[TestFixture]
 	[OfflineSldr]
 	[Category("Archiving")]
-	internal class IMDIArchivingDlgViewModelTests
+	public class IMDIArchivingDlgViewModelTests
 	{
 		private class MessageData
 		{
@@ -100,7 +102,7 @@ namespace SIL.Archiving.Tests
 			Assert.False(writable);
 			Assert.AreEqual(1, m_messages.Count);
 			Assert.AreEqual("Test implementation message for PathNotWritable", m_messages[0].MsgText);
-			Assert.AreEqual(ArchivingDlgViewModel.MessageType.Warning, m_messages[0].MsgType);
+			Assert.AreEqual(Warning, m_messages[0].MsgType);
 		}
 
 		[Test]
@@ -112,7 +114,7 @@ namespace SIL.Archiving.Tests
 			Assert.False(writable);
 			Assert.AreEqual(1, m_messages.Count);
 			Assert.IsTrue(m_messages[0].MsgText.Contains("path"), "Error should mention the path in its explanation.");
-			Assert.AreEqual(ArchivingDlgViewModel.MessageType.Warning, m_messages[0].MsgType);
+			Assert.AreEqual(Warning, m_messages[0].MsgType);
 		}
 
 		[Test]
@@ -123,7 +125,7 @@ namespace SIL.Archiving.Tests
 			Assert.False(writable);
 			Assert.AreEqual(1, m_messages.Count);
 			Assert.IsTrue(m_messages[0].MsgText.Contains("path"), "Error should mention the path in its explanation.");
-			Assert.AreEqual(ArchivingDlgViewModel.MessageType.Warning, m_messages[0].MsgType);
+			Assert.AreEqual(Warning, m_messages[0].MsgType);
 		}
 
 		#endregion
@@ -262,5 +264,115 @@ namespace SIL.Archiving.Tests
 		//}
 
 		#endregion
+	}
+
+	[TestFixture]
+	[Category("Archiving")]
+	public class IMDIArchivingDlgViewModelWithOverrideDisplayInitialSummarySetTests
+	{
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public async Task DisplayInitialSummary_OverrideDisplayInitialSummaryIsSet_DefaultBehaviorOmitted()
+		{
+			ErrorReport.IsOkToInteractWithUser = false;
+
+			bool filesToArchiveCalled = false;
+
+			var model = new IMDIArchivingDlgViewModel("Test App", "Test Title", "tst", true,
+				(a, b) => { filesToArchiveCalled = true; }, "whatever");
+
+			var progress = new TestProgress("IMDI");
+			var customSummaryShown = 0;
+
+			model.OverrideDisplayInitialSummary = (d, c) =>
+			{
+				customSummaryShown++;
+				progress.IncrementProgress();
+			};
+			model.GetOverriddenPreArchivingMessages = d => throw new AssertionException(
+				$"{nameof(ArchivingDlgViewModel.GetOverriddenPreArchivingMessages)} should not have been invoked");
+			model.OverrideGetFileGroupDisplayMessage = s => throw new AssertionException(
+				$"{nameof(ArchivingDlgViewModel.OverrideGetFileGroupDisplayMessage)} should not have been invoked");
+
+			model.InitializationFailed += (sender, e) => Assert.Fail("Initialization failed");
+
+			try
+			{
+				await model.Initialize(progress, new CancellationToken()).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail($"Initialization threw an exception: {ex}");
+			}
+
+			Assert.True(filesToArchiveCalled);
+			Assert.That(customSummaryShown, Is.EqualTo(1));
+			Assert.That(progress.Step, Is.EqualTo(1));
+		}
+	}
+
+	[TestFixture]
+	[Category("Archiving")]
+	public class IMDIArchivingDlgViewModelWithFineGrainedOverridesForDisplayInitialSummarySetTests
+	{
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public async Task DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides()
+		{
+			ErrorReport.IsOkToInteractWithUser = false;
+
+			void SetFilesToArchive(ArchivingDlgViewModel model, CancellationToken cancellationToken)
+			{
+				model.AddFileGroup(String.Empty, new[] { "green.frog" }, "These messages should not be displayed");
+				model.AddFileGroup("Toads", new[] { "red.toad", "blue.toad" }, "because in this test we do not create a package.");
+			}
+
+			var model = new IMDIArchivingDlgViewModel("Test App", "Test Title", "tst", true,
+				SetFilesToArchive, "unused");
+
+			var messagesDisplayed = new List<Tuple<string, ArchivingDlgViewModel.MessageType>>();
+
+			void ReportMessage(string msg, ArchivingDlgViewModel.MessageType type)
+			{
+				messagesDisplayed.Add(new Tuple<string, ArchivingDlgViewModel.MessageType>(msg, type));
+			}
+
+			model.OnReportMessage += ReportMessage;
+
+			IEnumerable<Tuple<string, ArchivingDlgViewModel.MessageType>> GetMessages(IDictionary<string, Tuple<IEnumerable<string>, string>> arg)
+			{
+				yield return new Tuple<string, ArchivingDlgViewModel.MessageType>(
+					"First pre-archiving message", Warning);
+				yield return new Tuple<string, ArchivingDlgViewModel.MessageType>(
+					"Second pre-archiving message", Indented);
+			}
+
+			model.GetOverriddenPreArchivingMessages = GetMessages;
+			model.InitialFileGroupDisplayMessageType = Success;
+			model.OverrideGetFileGroupDisplayMessage = s => (s == String.Empty) ? "Frogs" : $"Label: {s}";
+			model.InitializationFailed += (sender, e) => Assert.Fail("Initialization failed");
+
+			var progress = new TestProgress("IMDI");
+			try
+			{
+				await model.Initialize(progress, new CancellationToken()).ConfigureAwait(false);
+			}
+			catch (Exception ex)
+			{
+				Assert.Fail($"Initialization threw an exception: {ex}");
+			}
+
+			Assert.That(messagesDisplayed, Is.EqualTo(new[]
+			{
+				("First pre-archiving message", Warning).ToTuple(),
+				("Second pre-archiving message", Indented).ToTuple(),
+				("Frogs", Success).ToTuple(),
+				("green.frog", Bullet).ToTuple(),
+				("Label: Toads", Success).ToTuple(),
+				("red.toad", Bullet).ToTuple(),
+				("blue.toad", Bullet).ToTuple()
+			}));
+			Assert.That(progress.Step, Is.EqualTo(1));
+		}
 	}
 }
