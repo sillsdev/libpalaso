@@ -11,6 +11,8 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 	class PortableClipboardTests
 	{
 		private const string TestImageDir = "SIL.Windows.Forms.Tests/Miscellaneous/PortableClipboardTestImages";
+
+		// This prevents flakiness (ExternalException) with tests running in parallel with utilizing the clipboard
 		private static readonly object _lock = new object();
 
 		[SetUp]
