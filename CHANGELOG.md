@@ -44,7 +44,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- Changed to target .Net Framework 4.6.2 instead of 4.6.1
+- BREAKING CHANGE: Changed to target .Net Framework 4.6.2 instead of 4.6.1
 - [SIL.Windows.Forms] Look for PNG data on clipboard before checking for plain image in WindowsClipboard.GetImageFromClipboard() in order to preserve transparency in copied images.
 - [SIL.Windows.Forms] Changed layout of SILAboutBox to accommodate wider SIL logo.
 - [SIL.Windows.Forms.Archiving] Split SIL.Archiving, moving Winforms portions (including dependency on L10nSharp) to SIL.Windows.Forms.Archiving.
@@ -81,6 +81,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Removed
 
+- Support for .Net Framework 4.6.1
 - [SIL.Windows.Forms] Removed SilLogo101x113 from Widgets.SilResources. Use SilLogoRandom or specify desired variant instead.
 - [SIL.Windows.Forms] Removed previously deprecated CreativeCommonsLicense.IntergovernmentalOriganizationQualifier
 - [SIL.Archiving] Removed abstract properties from ArchivingDlgViewModel: InformativeText and ArchiveInfoHyperlinkText.
