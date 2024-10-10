@@ -46,7 +46,7 @@
 	  Lines="        &lt;note xml:lang=&quot;en&quot;&gt;Not found in static scan of compiled code (version 0.0.0)&lt;/note&gt;"/>
 	<!-- Build and extract strings -->
 	<MSBuild Projects="..\build\Palaso.proj" Targets="Build" Properties="Configuration=Release" />
-	<Exec Command="&quot;$(PkgL10NSharp_ExtractXliff)\tools\ExtractXliff.exe&quot; -n SIL -o Palaso.dll -b Palaso.en.xlf -x Palaso.en.xlf -p $(GitVersion_NuGetVersion) -m SIL.Localizer.GetString -m SIL.Localizer.Localize -g ../Output/Release/net461/SIL.*.dll" />
+	<Exec Command="&quot;$(PkgL10NSharp_ExtractXliff)\tools\ExtractXliff.exe&quot; -n SIL -o Palaso.dll -b Palaso.en.xlf -x Palaso.en.xlf -p $(GitVersion_NuGetVersion) -m SIL.Localizer.GetString -m SIL.Localizer.Localize -g ../Output/Release/net462/SIL.*.dll" />
   </Target>
   
   <Target Name="PackageL10ns" DependsOnTargets="restore;GetVersion">
