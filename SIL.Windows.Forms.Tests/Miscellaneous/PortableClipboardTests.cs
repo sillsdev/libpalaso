@@ -12,6 +12,9 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 	{
 		private const string TestImageDir = "SIL.Windows.Forms.Tests/Miscellaneous/PortableClipboardTestImages";
 
+		// This prevents flakiness (ExternalException) with tests running in parallel with utilizing the clipboard
+		private static readonly object _lock = new object();
+
 		[SetUp]
 		public void Setup()
 		{
@@ -26,16 +29,19 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 		[Platform(Exclude = "Linux", Reason = "Linux code to copy image to clipboard not yet implemented.")]
 		public void ClipboardRoundTripWorks_Png()
 		{
-			var imagePath = GetPathToImage("LineSpacing.png");
-			using (var image = PalasoImage.FromFileRobustly(imagePath))
+			lock (_lock)
 			{
-				PortableClipboard.CopyImageToClipboard(image);
-				using (var resultingImage = PortableClipboard.GetImageFromClipboard())
+				var imagePath = GetPathToImage("LineSpacing.png");
+				using (var image = PalasoImage.FromFileRobustly(imagePath))
 				{
-					// There is no working PalasoImage.Equals(), so just try a few properties
-					Assert.AreEqual(image.FileName, resultingImage.FileName);
-					Assert.AreEqual(image.Image.Size, resultingImage.Image.Size);
-					Assert.AreEqual(image.Image.Flags, resultingImage.Image.Flags);
+					PortableClipboard.CopyImageToClipboard(image);
+					using (var resultingImage = PortableClipboard.GetImageFromClipboard())
+					{
+						// There is no working PalasoImage.Equals(), so just try a few properties
+						Assert.AreEqual(image.FileName, resultingImage.FileName);
+						Assert.AreEqual(image.Image.Size, resultingImage.Image.Size);
+						Assert.AreEqual(image.Image.Flags, resultingImage.Image.Flags);
+					}
 				}
 			}
 		}
@@ -44,16 +50,19 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 		[Platform(Exclude = "Linux", Reason = "Linux code to copy image to clipboard not yet implemented.")]
 		public void ClipboardRoundTripWorks_Bmp()
 		{
-			var imagePath = GetPathToImage("PasteHS.bmp");
-			using (var image = PalasoImage.FromFileRobustly(imagePath))
+			lock (_lock)
 			{
-				PortableClipboard.CopyImageToClipboard(image);
-				using (var resultingImage = PortableClipboard.GetImageFromClipboard())
+				var imagePath = GetPathToImage("PasteHS.bmp");
+				using (var image = PalasoImage.FromFileRobustly(imagePath))
 				{
-					// There is no working PalasoImage.Equals(), so just try a few properties
-					Assert.AreEqual(image.FileName, resultingImage.FileName);
-					Assert.AreEqual(image.Image.Size, resultingImage.Image.Size);
-					Assert.AreEqual(image.Image.Flags, resultingImage.Image.Flags);
+					PortableClipboard.CopyImageToClipboard(image);
+					using (var resultingImage = PortableClipboard.GetImageFromClipboard())
+					{
+						// There is no working PalasoImage.Equals(), so just try a few properties
+						Assert.AreEqual(image.FileName, resultingImage.FileName);
+						Assert.AreEqual(image.Image.Size, resultingImage.Image.Size);
+						Assert.AreEqual(image.Image.Flags, resultingImage.Image.Flags);
+					}
 				}
 			}
 		}
@@ -62,19 +71,22 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 		[Platform(Exclude = "Linux", Reason = "Linux code to copy image to clipboard not yet implemented.")]
 		public void ClipboardRoundTripWorks_GetsExistingMetadata()
 		{
-			var imagePath = GetPathToImage("AOR_EAG00864.png");
-			using (var image = PalasoImage.FromFileRobustly(imagePath))
+			lock (_lock)
 			{
-				var preCopyLicense = image.Metadata.License.Token;
-				var preCopyCollectionUri = image.Metadata.CollectionUri;
-				PortableClipboard.CopyImageToClipboard(image);
-				using (var resultingImage = PortableClipboard.GetImageFromClipboard())
+				var imagePath = GetPathToImage("AOR_EAG00864.png");
+				using (var image = PalasoImage.FromFileRobustly(imagePath))
 				{
-					// Test that the same metadata came through
-					Assert.IsTrue(resultingImage.Metadata.IsMinimallyComplete);
-					Assert.AreEqual(preCopyLicense, resultingImage.Metadata.License.Token);
-					Assert.AreEqual(preCopyCollectionUri, resultingImage.Metadata.CollectionUri);
-					Assert.AreEqual(image.Image.Flags, resultingImage.Image.Flags);
+					var preCopyLicense = image.Metadata.License.Token;
+					var preCopyCollectionUri = image.Metadata.CollectionUri;
+					PortableClipboard.CopyImageToClipboard(image);
+					using (var resultingImage = PortableClipboard.GetImageFromClipboard())
+					{
+						// Test that the same metadata came through
+						Assert.IsTrue(resultingImage.Metadata.IsMinimallyComplete);
+						Assert.AreEqual(preCopyLicense, resultingImage.Metadata.License.Token);
+						Assert.AreEqual(preCopyCollectionUri, resultingImage.Metadata.CollectionUri);
+						Assert.AreEqual(image.Image.Flags, resultingImage.Image.Flags);
+					}
 				}
 			}
 		}
@@ -83,9 +95,12 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 		[Platform(Exclude = "Linux", Reason = "This requires a GTK message loop to run or something like this")]
 		public void ClipboardRoundTripWorks_Text()
 		{
-			PortableClipboard.SetText("Hello world");
-			Assert.That(PortableClipboard.ContainsText(), Is.True);
-			Assert.That(PortableClipboard.GetText(), Is.EqualTo("Hello world"));
+			lock (_lock)
+			{
+				PortableClipboard.SetText("Hello world");
+				Assert.That(PortableClipboard.ContainsText(), Is.True);
+				Assert.That(PortableClipboard.GetText(), Is.EqualTo("Hello world"));
+			}
 		}
 	}
 }
