@@ -63,7 +63,7 @@ namespace SIL.Lift
 			{
 				transform.Transform(outputOfPassOne, new XsltArgumentList(), output);
 			}
-			#if NET461
+			#if NET462
 			TempFileCollection tempfiles = transform.TemporaryFiles;
 			if (tempfiles != null) // tempfiles will be null when debugging is not enabled
 			{

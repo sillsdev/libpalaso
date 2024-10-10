@@ -53,7 +53,7 @@ namespace SIL.Migration
 				var transform = new XslCompiledTransform();
 				transform.Load(xslReader);
 				transform.Transform(reader, writer);
-#if NET461
+#if NET462
 				transform.TemporaryFiles?.Delete();
 #endif
 			}
