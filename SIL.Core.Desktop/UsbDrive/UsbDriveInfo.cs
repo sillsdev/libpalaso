@@ -1,10 +1,10 @@
-﻿// Copyright (c) 2009-2016 SIL International
+// Copyright (c) 2009-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using JetBrains.Annotations;
 
 namespace SIL.UsbDrive
 {
@@ -13,14 +13,16 @@ namespace SIL.UsbDrive
 	{
 		bool IsReady { get; }
 		DirectoryInfo RootDirectory { get; }
+		[PublicAPI]
 		string VolumeLabel { get; }
 		ulong TotalSize { get; }
+		[PublicAPI]
 		ulong AvailableFreeSpace { get; }
 	}
 
 	internal class UsbDriveWrapper : IUsbDriveInfo
 	{
-		private DriveInfo _driveInfo;
+		private readonly DriveInfo _driveInfo;
 
 		public UsbDriveWrapper(DriveInfo driveInfo)
 		{
@@ -45,6 +47,7 @@ namespace SIL.UsbDrive
 	/// 3) full drives
 	/// 4) locked drives(not today, but maybe soon)
 	/// </summary>
+	[PublicAPI]
 	public class UsbDriveInfoForTests : IUsbDriveInfo
 	{
 		public UsbDriveInfoForTests(string path)
@@ -65,9 +68,11 @@ namespace SIL.UsbDrive
 
 	public interface IRetrieveUsbDriveInfo
 	{
+		[PublicAPI]
 		List<IUsbDriveInfo> GetDrives();
 	}
 
+	[PublicAPI]
 	public class RetrieveUsbDriveInfo : IRetrieveUsbDriveInfo
 	{
 		public List<IUsbDriveInfo> GetDrives()
@@ -79,6 +84,7 @@ namespace SIL.UsbDrive
 	/// <summary>
 	/// This class allows tests to set up pretend usb drives
 	/// </summary>
+	[PublicAPI]
 	public class RetrieveUsbDriveInfoForTests : IRetrieveUsbDriveInfo
 	{
 		private readonly List<IUsbDriveInfo> _driveInfos;

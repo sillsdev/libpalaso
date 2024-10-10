@@ -1,4 +1,4 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -10,7 +10,7 @@ namespace SIL.Tests.IO
 	{
 		public FileTestEnvironment()
 		{
-			string fileContents = "some bogus text\n<element></element>\n<el2 lang='fr' />";
+			const string fileContents = "some bogus text\n<element></element>\n<el2 lang='fr' />";
 			TempFile = new TempFile(fileContents);
 		}
 

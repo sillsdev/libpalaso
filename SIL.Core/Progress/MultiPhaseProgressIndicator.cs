@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2019 SIL International
+// Copyright (c) 2011-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System.Threading;
@@ -35,13 +35,13 @@ namespace SIL.Progress
 
 		public SynchronizationContext SyncContext
 		{
-			get { return _globalIndicator.SyncContext; }
-			set { _globalIndicator.SyncContext = value; }
+			get => _globalIndicator.SyncContext;
+			set => _globalIndicator.SyncContext = value;
 		}
 
 		public int PercentCompleted // per process
 		{
-			get { return _currentPhasePercentComplete; }
+			get => _currentPhasePercentComplete;
 			set
 			{
 				int valueToSet = value;

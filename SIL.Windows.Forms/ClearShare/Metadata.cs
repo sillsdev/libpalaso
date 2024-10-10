@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2024 SIL International
+// Copyright (c) 2018-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -15,6 +15,7 @@ using TagLib;
 using TagLib.IFD;
 using TagLib.Image;
 using TagLib.Xmp;
+using static System.String;
 
 namespace SIL.Windows.Forms.ClearShare
 {
@@ -56,9 +57,7 @@ namespace SIL.Windows.Forms.ClearShare
 		/// <returns></returns>
 		public static Metadata FromFile(string path)
 		{
-			var m = new Metadata();
-			m._path = path;
-
+			var m = new Metadata { _path = path };
 			LoadProperties(path, m);
 			return m;
 		}
@@ -141,7 +140,7 @@ namespace SIL.Windows.Forms.ClearShare
 			{
 				// TagLib can throw this if it can't read some part of the metadata.  This
 				// prevents us from even looking at images that have such metadata, which
-				// seems unreasonable.  (TagLib doesn't fully understand IPTC profiles, for
+				// seems unreasonable. (TagLib doesn't fully understand IPTC profiles, for
 				// example, which can lead to this exception.)
 				// See https://issues.bloomlibrary.org/youtrack/issue/BL-11933 for a user complaint.
 				System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
@@ -168,9 +167,7 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 			destinationMetadata.CopyrightNotice = tagMain.Copyright;
 			destinationMetadata.Creator = tagMain.Creator;
-			XmpTag xmpTag = tagMain as XmpTag;
-			if (xmpTag == null)
-				xmpTag = ((CombinedImageTag) tagMain).Xmp;
+			XmpTag xmpTag = tagMain as XmpTag ?? ((CombinedImageTag) tagMain).Xmp;
 			var licenseProperties = new Dictionary<string, string>();
 			if (xmpTag != null)
 			{
@@ -182,7 +179,7 @@ namespace SIL.Windows.Forms.ClearShare
 				destinationMetadata.AttributionUrl = xmpTag.GetTextNode(kNsCc, "attributionURL");
 
 				var licenseUrl = xmpTag.GetTextNode(kNsCc, "license");
-				if (!string.IsNullOrWhiteSpace(licenseUrl))
+				if (!IsNullOrWhiteSpace(licenseUrl))
 					licenseProperties["license"] = licenseUrl;
 				var rights = GetRights(xmpTag);
 				if (rights != null)
@@ -191,7 +188,7 @@ namespace SIL.Windows.Forms.ClearShare
 			destinationMetadata.License = LicenseInfo.FromXmp(licenseProperties);
 
 			//NB: we're losing non-ascii somewhere... the copyright symbol is just the most obvious
-			if (!string.IsNullOrEmpty(destinationMetadata.CopyrightNotice))
+			if (!IsNullOrEmpty(destinationMetadata.CopyrightNotice))
 			{
 				destinationMetadata.CopyrightNotice = destinationMetadata.CopyrightNotice.Replace("Copyright �", "Copyright ©");
 			}
@@ -207,7 +204,7 @@ namespace SIL.Windows.Forms.ClearShare
 		///</summary>
 		public LicenseInfo License
 		{
-			get { return _license; }
+			get => _license;
 			set
 			{
 				if (value != _license)
@@ -221,7 +218,7 @@ namespace SIL.Windows.Forms.ClearShare
 		private string _copyrightNotice;
 		public string CopyrightNotice
 		{
-			get { return _copyrightNotice; }
+			get => _copyrightNotice;
 			set
 			{
 				if (value!=null && value.Trim().Length == 0)
@@ -229,7 +226,7 @@ namespace SIL.Windows.Forms.ClearShare
 				if (value != _copyrightNotice)
 					HasChanges = true;
 				_copyrightNotice = FixArtOfReadingCopyrightProblem(value);
-				if (!String.IsNullOrEmpty(_copyrightNotice))
+				if (!IsNullOrEmpty(_copyrightNotice))
 					IsEmpty = false;
 
 			}
@@ -244,8 +241,8 @@ namespace SIL.Windows.Forms.ClearShare
 		/// <returns></returns>
 		private string FixArtOfReadingCopyrightProblem(string value)
 		{
-			if(string.IsNullOrEmpty(value))
-				return string.Empty;
+			if(IsNullOrEmpty(value))
+				return Empty;
 			var startOfProblem = value.IndexOf("This work");
 			if (startOfProblem == -1)
 				return value;
@@ -255,11 +252,11 @@ namespace SIL.Windows.Forms.ClearShare
 		private string _creator;
 
 		/// <summary>
-		/// Use this for artist, photographer, company, whatever.  It is mapped to EXIF:Author and XMP:AttributionName
+		/// Use this for artist, photographer, company, whatever. It is mapped to EXIF:Author and XMP:AttributionName
 		/// </summary>
 		public string Creator
 		{
-			get { return _creator; }
+			get => _creator;
 			set
 			{
 				if (value != null && value.Trim().Length == 0)
@@ -267,7 +264,7 @@ namespace SIL.Windows.Forms.ClearShare
 				if (value != _creator)
 					HasChanges = true;
 				_creator = value;
-				if (!String.IsNullOrEmpty(_creator))
+				if (!IsNullOrEmpty(_creator))
 					IsEmpty = false;
 			}
 		}
@@ -279,7 +276,7 @@ namespace SIL.Windows.Forms.ClearShare
 		/// </summary>
 		public string AttributionUrl
 		{
-			get { return _attributionUrl; }
+			get => _attributionUrl;
 			set
 			{
 				if (value != null && value.Trim().Length == 0)
@@ -287,7 +284,7 @@ namespace SIL.Windows.Forms.ClearShare
 				if (value != _attributionUrl)
 					HasChanges = true;
 				_attributionUrl = value;
-				if (!String.IsNullOrEmpty(_attributionUrl))
+				if (!IsNullOrEmpty(_attributionUrl))
 					IsEmpty = false;
 			}
 		}
@@ -300,7 +297,7 @@ namespace SIL.Windows.Forms.ClearShare
 		/// </summary>
 		public string CollectionName
 		{
-			get { return _collectionName; }
+			get => _collectionName;
 			set
 			{
 				if (value != null && value.Trim().Length == 0)
@@ -308,7 +305,7 @@ namespace SIL.Windows.Forms.ClearShare
 				if (value != _collectionName)
 					HasChanges = true;
 				_collectionName = value;
-				if (!String.IsNullOrEmpty(_collectionName))
+				if (!IsNullOrEmpty(_collectionName))
 					IsEmpty = false;
 
 			}
@@ -317,7 +314,7 @@ namespace SIL.Windows.Forms.ClearShare
 		private string _collectionUri;
 		public string CollectionUri
 		{
-			get { return _collectionUri; }
+			get => _collectionUri;
 			set
 			{
 				if (value != null && value.Trim().Length == 0)
@@ -325,7 +322,7 @@ namespace SIL.Windows.Forms.ClearShare
 				if (value != _collectionUri)
 					HasChanges = true;
 				_collectionUri = value;
-				if (!String.IsNullOrEmpty(_collectionUri))
+				if (!IsNullOrEmpty(_collectionUri))
 					IsEmpty = false;
 
 			}
@@ -339,20 +336,20 @@ namespace SIL.Windows.Forms.ClearShare
 			get
 			{
 				//I'm thinking, license is secondary. Primary is who holds the copyright, and what year.
-				return !String.IsNullOrEmpty(GetCopyrightYear()) && !String.IsNullOrEmpty(GetCopyrightBy());
+				return !IsNullOrEmpty(GetCopyrightYear()) && !IsNullOrEmpty(GetCopyrightBy());
 			}
 		}
 
 		private class MetadataAssignment
 		{
-			public Func<Metadata, string> GetStringFunction { get; set; }
-			public Func<Metadata, bool> ShouldSetValue { get; set; }
+			public Func<Metadata, string> GetStringFunction { get; }
+			public Func<Metadata, bool> ShouldSetValue { get; }
 			public string Switch;
 			public string ResultLabel;
 			public Action<Metadata, string> AssignmentAction;
 
 			public MetadataAssignment(string Switch, string resultLabel, Action<Metadata, string> assignmentAction, Func<Metadata, string> stringProvider)
-				: this(Switch, resultLabel, assignmentAction, stringProvider, p => !String.IsNullOrEmpty(stringProvider(p)))
+				: this(Switch, resultLabel, assignmentAction, stringProvider, p => !IsNullOrEmpty(stringProvider(p)))
 			{
 			}
 
@@ -394,10 +391,7 @@ namespace SIL.Windows.Forms.ClearShare
 		private bool _hasChanges;
 		public bool HasChanges
 		{
-			get
-			{
-				return _hasChanges || (License!=null && License.HasChanges);
-			}
+			get => _hasChanges || (License != null && License.HasChanges);
 			set
 			{
 				_hasChanges = value;
@@ -465,7 +459,8 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 			// do not attempt to add metadata to a file type that does not support it.
 			if (!FileFormatSupportsMetadata(path))
-				throw new NotSupportedException(String.Format("The image file {0} is in a format that does not support metadata.", Path.GetFileName(path)));
+				throw new NotSupportedException(
+					$"The image file {Path.GetFileName(path)} is in a format that does not support metadata.");
 
 			var file = RetryUtility.Retry(() =>
 				TagLib.File.Create(path) as TagLib.Image.File,
@@ -493,6 +488,7 @@ namespace SIL.Windows.Forms.ClearShare
 		/// where a photo was taken should not be copied to all of them).
 		/// </summary>
 		/// <param name="path"></param>
+		[PublicAPI]
 		public void WriteIntellectualPropertyOnly(string path)
 		{
 			Write(path, false);
@@ -513,7 +509,7 @@ namespace SIL.Windows.Forms.ClearShare
 		// So now instead of blindly assuming NullLicense means the license hasn't been set, we look at the
 		// copyright also. If the copyright has been set, we assume the license was set to all rights reserved.
 		// If the copyright has not been set, we assume the license has not been set either.
-		public bool IsLicenseNotSet => License == null || (License is NullLicense && string.IsNullOrEmpty(CopyrightNotice));
+		public bool IsLicenseNotSet => License == null || (License is NullLicense && IsNullOrEmpty(CopyrightNotice));
 
 		public Metadata DeepCopy()
 		{
@@ -544,7 +540,7 @@ namespace SIL.Windows.Forms.ClearShare
 				{
 					//value types can simply be 'set'
 					if (item.PropertyType.IsValueType || item.PropertyType.IsEnum ||
-						item.PropertyType.Equals(typeof(System.String)))
+						item.PropertyType.Equals(typeof(String)))
 					{
 						item.SetValue(target, item.GetValue(source, null), null);
 					}
@@ -621,13 +617,13 @@ namespace SIL.Windows.Forms.ClearShare
 			AddOrModify(xmp, kNsCollections, "CollectionURI", CollectionUri);
 			AddOrModify(xmp, kNsCollections, "CollectionName", CollectionName);
 			AddOrModify(xmp, kNsCc, "attributionURL", AttributionUrl);
-			AddOrModify(xmp, kNsCc, "license", License == null ? null : License.Url);
-			SetRights(xmp, License == null ? null : License.RightsStatement);
+			AddOrModify(xmp, kNsCc, "license", License?.Url);
+			SetRights(xmp, License?.RightsStatement);
 		}
 
 		/// <summary>
 		/// Set the copyright. This is tricky because when we do tagMain.Copyright = value,
-		/// this sets the rights:default langauge to that string (as we wish), as well as setting
+		/// this sets the rights:default language to that string (as we wish), as well as setting
 		/// copyright in any other tag that may be present and support it. We don't want to bypass
 		/// setting copyright on other tags, so we need to set it on tagMain, not just do something
 		/// to the xmp.
@@ -657,14 +653,14 @@ namespace SIL.Windows.Forms.ClearShare
 			var rightsNode = xmp.FindNode("http://purl.org/dc/elements/1.1/", "rights");
 			if (rightsNode == null)
 			{
-				if (string.IsNullOrEmpty(rights))
+				if (IsNullOrEmpty(rights))
 					return; // leave it missing.
 				// No existing rights node, and we have some. We use (default lang) rights for copyright too, and there seems to be no way to
 				// make the base node without setting that. So set it to something meaningless.
 				// This will typically never happen, since our dialog requires a non-empty copyright.
 				// I'm not entirely happy with it, but as far as I can discover the current version of taglib cannot
 				// set the 'en' alternative of dc:rights without setting the  default alternative. In fact, I'm not sure the
-				// result of doing so would technically be valid xmp; the standard calls for every langauge alternation
+				// result of doing so would technically be valid xmp; the standard calls for every language alternation
 				// to have a default.
 				xmp.SetLangAltNode("http://purl.org/dc/elements/1.1/", "rights", "Unknown");
 				rightsNode = xmp.FindNode("http://purl.org/dc/elements/1.1/", "rights");
@@ -674,7 +670,7 @@ namespace SIL.Windows.Forms.ClearShare
 				if (child.Namespace == "http://www.w3.org/1999/02/22-rdf-syntax-ns#" && child.Name == "li" &&
 					HasLangQualifier(child, "en"))
 				{
-					if (string.IsNullOrEmpty(rights))
+					if (IsNullOrEmpty(rights))
 					{
 						rightsNode.RemoveChild(child);
 						// enhance: possibly we should remove rightsNode, if it now has no children, and if taglib can.
@@ -686,7 +682,7 @@ namespace SIL.Windows.Forms.ClearShare
 				}
 			}
 			// Didn't find an existing rights:en node.
-			if (string.IsNullOrEmpty(rights))
+			if (IsNullOrEmpty(rights))
 				return; // leave it missing.
 			var childNode = new XmpNode(XmpTag.RDF_NS, "li", rights);
 			childNode.AddQualifier(new XmpNode(XmpTag.XML_NS, "lang", "en"));
@@ -741,8 +737,8 @@ namespace SIL.Windows.Forms.ClearShare
 		}
 
 		/// <summary>
-		/// Save the current metadata in the user settings, so that in the future, a call to LoadFromStoredExamplar() will retrieve them.
-		/// This is used to quickly populate metadata with the values used in the past (e.g. many images will have the same illustruator, license, etc.)
+		/// Save the current metadata in the user settings, so that in the future, a call to LoadFromStoredExemplar() will retrieve them.
+		/// This is used to quickly populate metadata with the values used in the past (e.g. many images will have the same illustrator, license, etc.)
 		/// </summary>
 		/// <param name="category">e.g. "image", "document"</param>
 		public void StoreAsExemplar(FileCategory category)
@@ -752,7 +748,7 @@ namespace SIL.Windows.Forms.ClearShare
 
 		/// <summary>
 		/// Get previously saved values from a file in the user setting.
-		/// This is used to quickly populate metadata with the values used in the past (e.g. many images will have the same illustruator, license, etc.)
+		/// This is used to quickly populate metadata with the values used in the past (e.g. many images will have the same illustrator, license, etc.)
 		/// </summary>
 		/// <param name="category">e.g. "image", "document"</param>
 		public void LoadFromStoredExemplar(FileCategory category)
@@ -796,16 +792,16 @@ namespace SIL.Windows.Forms.ClearShare
 			b.Append(localizedCreatorLabel).Append(": ").AppendLine(Creator);
 			b.AppendLine($"{localizedCreatorLabel}: {Creator}");
 			b.AppendLine(CopyrightNotice);
-			if(!string.IsNullOrEmpty(CollectionName))
+			if(!IsNullOrEmpty(CollectionName))
 				b.AppendLine(CollectionName);
-			if (!string.IsNullOrEmpty(CollectionUri))
+			if (!IsNullOrEmpty(CollectionUri))
 				b.AppendLine(CollectionUri);
 			var description = License.GetDescription(languagePriorityIds, out idOfLanguageUsed);
 			// BL-4243, Description for CC usually contains the url already.
-			if (!string.IsNullOrEmpty(License.Url) && !description.Contains(License.Url))
+			if (!IsNullOrEmpty(License.Url) && !description.Contains(License.Url))
 				b.AppendLine(License.Url);
 			b.AppendLine(description);
-			if (!String.IsNullOrWhiteSpace(License.RightsStatement))
+			if (!IsNullOrWhiteSpace(License.RightsStatement))
 				b.AppendLine(License.RightsStatement);
 			return b.ToString();
 		}
@@ -820,17 +816,17 @@ namespace SIL.Windows.Forms.ClearShare
 			{
 				var m = new Metadata();
 				m.LoadFromStoredExemplar(category);
-				return string.Format("{0}/{1}/{2}", m.Creator, m.CopyrightNotice, m.License.ToString());
+				return $"{m.Creator}/{m.CopyrightNotice}/{m.License}";
 			}
 			catch (Exception)
 			{
-				return string.Empty;
+				return Empty;
 			}
 		}
 
 		private static string GetExemplarPath(FileCategory category)
 		{
-			String appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+			var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 			var path = appData.CombineForPath("palaso");
 			if(!Directory.Exists(path))
 			{
@@ -855,13 +851,13 @@ namespace SIL.Windows.Forms.ClearShare
 			if ((License is CreativeCommonsLicense) && !((CreativeCommonsLicense) License).AttributionRequired)
 			{
 				// Public Domain, no copyright as such.
-				if (!string.IsNullOrEmpty(year))
+				if (!IsNullOrEmpty(year))
 					CopyrightNotice = by + ", " + year;
 				else
 					CopyrightNotice = by;
 				return;
 			}
-			if(!string.IsNullOrEmpty(year))
+			if(!IsNullOrEmpty(year))
 				CopyrightNotice = "Copyright © " + year + ", " + by;
 			else
 				CopyrightNotice = "Copyright © " + by;
@@ -875,32 +871,32 @@ namespace SIL.Windows.Forms.ClearShare
 
 		public string GetCopyrightYear()
 		{
-			if (string.IsNullOrEmpty(CopyrightNotice))
-				return string.Empty;
-			Match m = Regex.Match(CopyrightNotice, kCopyrightPattern);
+			if (IsNullOrEmpty(CopyrightNotice))
+				return Empty;
+			var m = Regex.Match(CopyrightNotice, kCopyrightPattern);
 			return m.Groups["year"].Value;
 		}
 
 		public string GetCopyrightBy()
 		{
-			if(string.IsNullOrEmpty(CopyrightNotice))
-				return string.Empty;
-			Match m = Regex.Match(CopyrightNotice, kCopyrightPattern);
+			if(IsNullOrEmpty(CopyrightNotice))
+				return Empty;
+			var m = Regex.Match(CopyrightNotice, kCopyrightPattern);
 
 			//I was never able to get the cases without years to work with the standard pattern (just not good enough with regex's).
 			if (!m.Groups["year"].Success && !m.Groups["by"].Success)
 			{
 				m = Regex.Match(CopyrightNotice, kNoYearPattern);
 			}
-			var trimChars = new char[] { ' ', '\t', ',', '.', ':', ';' };
+			var trimChars = new[] { ' ', '\t', ',', '.', ':', ';' };
 			var by0 = m.Groups["by"].Value.Trim(trimChars);
-			if (!String.IsNullOrEmpty(by0))
+			if (!IsNullOrEmpty(by0))
 				return by0;
 
 			// Okay, maybe we can get this by deleting the Copyright word or symbol and the year.
 			m = Regex.Match(CopyrightNotice, kNoYearPattern);
 			var by1 = m.Groups["by"].Value.Trim();
-			if (String.IsNullOrEmpty(by1))
+			if (IsNullOrEmpty(by1))
 				by1 = CopyrightNotice;
 			m = Regex.Match(by1, @"(?<year>\d\d\d\d)");
 			if (m.Groups["year"].Success)
@@ -920,26 +916,26 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 			var notice = "";
 			var isCC0 = License?.Token == "cc0";
-			if (!string.IsNullOrWhiteSpace(Creator))
+			if (!IsNullOrWhiteSpace(Creator))
 			{
-				notice += string.Format("{0}", Creator);
+				notice += $"{Creator}";
 			}
-			if (!string.IsNullOrWhiteSpace(CollectionName))
+			if (!IsNullOrWhiteSpace(CollectionName))
 			{
 				if (notice.Length > 0)
 					notice += ", ";
 				notice += CollectionName;
 			}
-			if (!isCC0 && !string.IsNullOrWhiteSpace(CopyrightNotice))
+			if (!isCC0 && !IsNullOrWhiteSpace(CopyrightNotice))
 			{
 				if (notice.Length > 0)
 					notice += ", ";
-				notice += string.Format("© {0} {1}", GetCopyrightYear(), GetCopyrightBy());
+				notice += $"© {GetCopyrightYear()} {GetCopyrightBy()}";
 			}
 			if (License != null)
 			{
 				var minimalFormForCredits = License.GetMinimalFormForCredits(languagePriorityIds, out idOfLanguageUsedForLicense);
-				if (!string.IsNullOrWhiteSpace(minimalFormForCredits))
+				if (!IsNullOrWhiteSpace(minimalFormForCredits))
 				{
 					if (notice.Length > 0)
 						notice += ". ";

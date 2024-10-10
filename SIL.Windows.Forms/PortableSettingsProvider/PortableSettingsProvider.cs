@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------------------------------------
-#region // Copyright (c) 2010, SIL International. All Rights Reserved.
-// <copyright from='2010' to='2010' company='SIL International'>
+#region // Copyright 2024 SIL GlobalAll Rights Reserved.
+// <copyright from='2010' to='2024' company='SIL Global'>
 //		Copyright (c) 2010, SIL International. All Rights Reserved.
 //
 //		Distributable under the terms of either the Common Public License or the

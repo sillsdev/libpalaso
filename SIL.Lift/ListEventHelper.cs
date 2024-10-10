@@ -1,4 +1,4 @@
-// Copyright (c) 2009-2020 SIL International
+// Copyright (c) 2009-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System.ComponentModel;
@@ -34,10 +34,8 @@ namespace SIL.Lift
 				IBindingList list = (IBindingList) sender;
 				INotifyPropertyChanged newGuy = (INotifyPropertyChanged) list[e.NewIndex];
 				_listOwner.WireUpChild(newGuy);
-				if (newGuy is PalasoDataObject)
-				{
-					((PalasoDataObject) newGuy).Parent = _listOwner;
-				}
+				if (newGuy is PalasoDataObject dataObject)
+					dataObject.Parent = _listOwner;
 			}
 			_listOwner.NotifyPropertyChanged(_listName);
 		}

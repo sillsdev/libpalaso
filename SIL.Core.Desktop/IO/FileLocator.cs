@@ -1,10 +1,11 @@
-// Copyright (c) 2014 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using Microsoft.Win32;
 using SIL.PlatformUtilities;
 using SIL.Reporting;
@@ -15,27 +16,30 @@ namespace SIL.IO
 	{
 		string LocateFile(string fileName);
 		string LocateFile(string fileName, string descriptionForErrorMessage);
+		[PublicAPI]
 		string LocateOptionalFile(string fileName);
+		[PublicAPI]
 		string LocateFileWithThrow(string fileName);
 		string LocateDirectory(string directoryName);
+		[PublicAPI]
 		string LocateDirectoryWithThrow(string directoryName);
 		string LocateDirectory(string directoryName, string descriptionForErrorMessage);
+		[PublicAPI]
 		IFileLocator CloneAndCustomize(IEnumerable<string> addedSearchPaths);
 	}
 
 	public interface IChangeableFileLocator : IFileLocator
 	{
+		[PublicAPI]
 		void AddPath(string path);
 		void RemovePath(string path);
 	}
 
 	public class FileLocator : IChangeableFileLocator
 	{
-		private readonly List<string> _searchPaths;
-
 		public FileLocator(IEnumerable<string> searchPaths)
 		{
-			this._searchPaths = new List<string>(searchPaths);
+			SearchPaths = new List<string>(searchPaths);
 		}
 
 		public string LocateFile(string fileName)
@@ -53,9 +57,9 @@ namespace SIL.IO
 		/// Subclasses (e.g. in Bloom) override this to provide a dynamic set of paths
 		/// </summary>
 		/// <returns></returns>
-		virtual protected IEnumerable<string> GetSearchPaths()
+		protected virtual IEnumerable<string> GetSearchPaths()
 		{
-			return _searchPaths;
+			return SearchPaths;
 		}
 
 		public string LocateFile(string fileName, string descriptionForErrorMessage)
@@ -90,7 +94,7 @@ namespace SIL.IO
 			{
 				ErrorReport.NotifyUserOfProblem(
 					"{0} could not find the {1}.  It expected to find it in one of these locations: {2}",
-					UsageReporter.AppNameToUseInDialogs, descriptionForErrorMessage, string.Join(", ", _searchPaths)
+					UsageReporter.AppNameToUseInDialogs, descriptionForErrorMessage, string.Join(", ", SearchPaths)
 					);
 			}
 			return path;
@@ -101,7 +105,7 @@ namespace SIL.IO
 			if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
 			{
 				throw new ApplicationException(String.Format("Could not find {0}.  It expected to find it in one of these locations: {1}",
-					directoryName, string.Join(Environment.NewLine, _searchPaths)));
+					directoryName, string.Join(Environment.NewLine, SearchPaths)));
 			}
 			return path;
 		}
@@ -129,31 +133,28 @@ namespace SIL.IO
 			var path = LocateFile(fileName);
 			if (string.IsNullOrEmpty(path) || !File.Exists(path))
 			{
-				throw new ApplicationException("Could not find " + fileName + ". It expected to find it in one of these locations: " + Environment.NewLine + string.Join(Environment.NewLine, _searchPaths));
+				throw new ApplicationException("Could not find " + fileName + ". It expected to find it in one of these locations: " + Environment.NewLine + string.Join(Environment.NewLine, SearchPaths));
 			}
 			return path;
 		}
 
-		protected List<string> SearchPaths
-		{
-			get { return _searchPaths; }
-		}
+		protected List<string> SearchPaths { get; }
 
 		/// <summary>
-		/// Use this when you can't mess with the whole application's filelocator, but you want to add a path or two, e.g., the folder of the current book in Bloom.
+		/// Use this when you can't mess with the whole application's FileLocator, but you want to add a path or two, e.g., the folder of the current book in Bloom.
 		/// </summary>
 		/// <param name="addedSearchPaths"></param>
 		/// <returns></returns>
 		public virtual IFileLocator CloneAndCustomize(IEnumerable<string> addedSearchPaths)
 		{
-			return new FileLocator(new List<string>(_searchPaths.Concat(addedSearchPaths)));
+			return new FileLocator(new List<string>(SearchPaths.Concat(addedSearchPaths)));
 		}
 
 		#region Methods for locating file in program files folders
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Searches the registry and returns the full path to the application program used to
-		/// open files having the specified extention. The fileExtension can be with or without
+		/// open files having the specified extension. The fileExtension can be with or without
 		/// the preceding period. If the command cannot be found in the registry, then null is
 		/// returned. If a command in the registry is found, but it refers to a program file
 		/// that does not exist, null is returned.
@@ -193,11 +194,11 @@ namespace SIL.IO
 			if (value == null)
 				return null;
 
-			key = Registry.ClassesRoot.OpenSubKey(string.Format("{0}\\shell\\open\\command", value));
+			key = Registry.ClassesRoot.OpenSubKey($"{value}\\shell\\open\\command");
 
 			if (key == null && value.ToLower() == "ramp.package")
 			{
-				key = Registry.ClassesRoot.OpenSubKey(string.Format("{0}\\shell\\open\\command", "ramp"));
+				key = Registry.ClassesRoot.OpenSubKey("ramp\\shell\\open\\command");
 				if (key == null)
 					return null;
 			}
@@ -216,12 +217,12 @@ namespace SIL.IO
 
 		public virtual void AddPath(string path)
 		{
-			_searchPaths.Add(path);
+			SearchPaths.Add(path);
 		}
 
 		public void RemovePath(string path)
 		{
-			_searchPaths.Remove(path);
+			SearchPaths.Remove(path);
 		}
 	}
 }

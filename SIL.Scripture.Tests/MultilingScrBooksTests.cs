@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------------------
-#region // Copyright (c) 2014, SIL International.   
-// <copyright from='2002' to='2014' company='SIL International'>
-//		Copyright (c) 2014, SIL International.   
+#region // Copyright 2024 SIL Global
+// <copyright from='2002' to='2024' company='SIL Global'>
+//		Copyright (c) 2024 SIL Global
 //    
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
 // </copyright> 
@@ -59,8 +59,7 @@ namespace SIL.Scripture.Tests
 		[TestCase(66, ExpectedResult = "REV")]
 		public string GetBookAbbrevDifferentEncoding(int bookNum)
 		{
-			List<string> array = new List<string>();
-			array.Add("99"); // some arbitrary should-never-exist value
+			List<string> array = new List<string> { "99" /* some arbitrary should-never-exist value */ };
 			m_mlscrBook.RequestedEncodings = array;
 
 			return m_mlscrBook.GetBookAbbrev(bookNum);

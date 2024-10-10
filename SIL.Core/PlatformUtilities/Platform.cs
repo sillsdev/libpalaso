@@ -1,4 +1,4 @@
-// Copyright (c) 2014 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 // Parts based on code by MJ Hutchinson http://mjhutchinson.com/journal/2010/01/25/integrating_gtk_application_mac
 // Parts based on code by bugsnag-dotnet (https://github.com/bugsnag/bugsnag-dotnet/blob/v1.4/src/Bugsnag/Diagnostics.cs)
@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Management;
 #endif
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 
 namespace SIL.PlatformUtilities
 {
@@ -54,7 +55,9 @@ namespace SIL.PlatformUtilities
 		public static bool IsMac => IsUnix && UnixName == UnixNameMac;
 		public static bool IsWindows => !IsUnix;
 
+		[PublicAPI]
 		public static bool IsDotNetCore => false;
+		[PublicAPI]
 		public static bool IsDotNetFramework => IsDotNet;
 
 		private static string _unixName;
@@ -336,6 +339,7 @@ namespace SIL.PlatformUtilities
 
 		public static string ProcessArchitecture => Environment.Is64BitProcess ? x64 : x86;
 
+		[PublicAPI]
 		public static bool IsRunning64Bit => Environment.Is64BitProcess;
 
 		public static bool IsGnomeShell

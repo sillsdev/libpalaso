@@ -1,15 +1,14 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using SIL.Extensions;
+using JetBrains.Annotations;
 
 namespace SIL.IO
 {
-
 	/// <summary>
 	/// This is useful a temporary file is needed. When it is disposed, it will delete the file.
 	/// 
@@ -33,14 +32,7 @@ namespace SIL.IO
 		/// possible file names are already in use.</remarks>
 		public TempFile()
 		{
-			if (NamePrefix == null)
-			{
-				Path = System.IO.Path.GetTempFileName();
-			}
-			else
-			{
-				Path = MakeFileAtRandomPath();
-			}
+			Path = NamePrefix == null ? System.IO.Path.GetTempFileName() : MakeFileAtRandomPath();
 		}
 
 		/// <summary>
@@ -197,6 +189,7 @@ namespace SIL.IO
 		/// <summary>
 		/// Make a TempFile that is a copy of the specified one. See also comment on <see cref="NamePrefix"/>.
 		/// </summary>
+		[PublicAPI]
 		public static TempFile CopyOf(string pathToExistingFile)
 		{
 			TempFile t = new TempFile();
@@ -242,12 +235,12 @@ namespace SIL.IO
 		/// <param name="filename">with or with out an extension, will work the same</param>
 		public static TempFile WithFilename(string filename)
 		{
-			if (filename == null) throw new ArgumentNullException("filename");
+			if (filename == null) throw new ArgumentNullException(nameof(filename));
 			if (filename == string.Empty)
-				throw new ArgumentException("Filename has no content", "filename");
+				throw new ArgumentException("Filename has no content", nameof(filename));
 			filename = filename.Trim();
 			if (filename == string.Empty)
-				throw new ArgumentException("Filename has only whitespace", "filename");
+				throw new ArgumentException("Filename has only whitespace", nameof(filename));
 
 			var pathname = System.IO.Path.Combine(System.IO.Path.GetTempPath(), filename);
 			File.Create(pathname).Close();

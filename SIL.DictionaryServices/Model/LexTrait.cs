@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2020 SIL International
+// Copyright (c) 2010-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -32,8 +32,7 @@ namespace SIL.DictionaryServices.Model
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
 			if (Name != other.Name) return false;
-			if (Value != other.Value) return false;
-			return true;
+			return Value == other.Value;
 		}
 
 		public override int GetHashCode()

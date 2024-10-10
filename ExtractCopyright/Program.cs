@@ -1,7 +1,8 @@
-// Copyright (c) 2017-2020 SIL International
+// Copyright (c) 2017-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.IO;
+using static System.String;
 
 namespace SIL.ExtractCopyright
 {
@@ -41,10 +42,10 @@ namespace SIL.ExtractCopyright
 			{
 				var current = Directory.GetCurrentDirectory();
 				debianFolder = Path.Combine(current, "debian");
-				while (!string.IsNullOrEmpty(current) && !Directory.Exists(debianFolder))
+				while (!IsNullOrEmpty(current) && !Directory.Exists(debianFolder))
 				{
 					current = Path.GetDirectoryName(current);
-					if (!string.IsNullOrEmpty(current))
+					if (!IsNullOrEmpty(current))
 						debianFolder = Path.Combine(current, "debian");
 				}
 				if (Directory.Exists(debianFolder))
@@ -62,13 +63,12 @@ namespace SIL.ExtractCopyright
 			}
 
 			// If the user didn't supply the prefix folder, use an empty string.
-			if (prefixFolder == null)
-				prefixFolder = String.Empty;
+			prefixFolder ??= Empty;
 
 			return CopyrightFile.CreateOrUpdateCopyrightFile(debianFolder, prefixFolder);
 		}
 
-		static int ShowUsage(CopyrightFile.ExitValue retval)
+		private static int ShowUsage(CopyrightFile.ExitValue retval)
 		{
 			Console.WriteLine("ExtractCopyright creates or updates the Debian copyright file from the");
 			Console.WriteLine("acknowledgements embedded in the .Net assemblies.  It is highly recommended");
