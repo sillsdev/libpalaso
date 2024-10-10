@@ -46,8 +46,8 @@ namespace SIL.Tests.Acknowledgements
 		public void CreateAnAcknowledgement_NoCopyright_OverriddenByFile()
 		{
 			var ack = new AcknowledgementAttribute("testKey") { Name = "testName",
-				Location = GetDllWithPathInTestAssemblyFolder("NDesk.DBus.dll") } ;
-			Assert.That(ack.Copyright, Is.EqualTo("Copyright (C) Alp Toker"));
+				Location = GetDllWithPathInTestAssemblyFolder("nunit.framework.dll") } ;
+			Assert.That(ack.Copyright, Is.EqualTo("Copyright (c) 2022 Charlie Poole, Rob Prouse"));
 		}
 
 		[Test]

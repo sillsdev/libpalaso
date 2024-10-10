@@ -12,28 +12,28 @@ namespace SIL.Tests.PlatformUtilities
 	public class PlatformTests
 	{
 		[Test]
-		[Platform(Exclude="Net")]
+		[Platform(Exclude="Net,NetCore")]
 		public void IsMono_Mono()
 		{
 			Assert.That(Platform.IsMono, Is.True);
 		}
 
 		[Test]
-		[Platform(Include="Net")]
+		[Platform(Include="Net,NetCore")]
 		public void IsMono_Net()
 		{
 			Assert.That(Platform.IsMono, Is.False);
 		}
 
 		[Test]
-		[Platform(Exclude="Net")]
+		[Platform(Exclude="Net,NetCore")]
 		public void IsDotnet_Mono()
 		{
 			Assert.That(Platform.IsDotNet, Is.False);
 		}
 
 		[Test]
-		[Platform(Include="Net")]
+		[Platform(Include="Net,NetCore")]
 		public void IsDotnet_Net()
 		{
 			Assert.That(Platform.IsDotNet, Is.True);

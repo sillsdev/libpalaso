@@ -5,6 +5,7 @@
     <AssemblyName>SIL.Core.Tests</AssemblyName>
     <Description>Unit tests for SIL.Core</Description>
     <AddSyntheticProjectReferencesForSolutionDependencies>false</AddSyntheticProjectReferencesForSolutionDependencies>
+    <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
