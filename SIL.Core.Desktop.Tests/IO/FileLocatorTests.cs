@@ -1,11 +1,8 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
-using System;
-using System.IO;
 using NUnit.Framework;
 using SIL.IO;
-using SIL.PlatformUtilities;
 using SIL.Reporting;
 
 namespace SIL.Tests.IO
@@ -19,9 +16,9 @@ namespace SIL.Tests.IO
 			var locator = new FileLocator(new[] {"bogus"});
 			ErrorReport.IsOkToInteractWithUser = false;
 			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(() =>
-																				{
-																  locator.LocateFile("foo.txt", "booo hooo");
-																				});
+				{
+					locator.LocateFile("foo.txt", "booo hooo");
+				});
 		}
 
 		[Test]

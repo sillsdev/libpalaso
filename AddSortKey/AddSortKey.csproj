@@ -7,10 +7,10 @@
     <AssemblyName>AddSortKey</AssemblyName>
     <Configurations>Debug;Release</Configurations>
     <Description>AddSortKey tool</Description>
-    <Company>SIL International</Company>
-    <Authors>SIL International</Authors>
+    <Company>SIL Global</Company>
+    <Authors>SIL Global</Authors>
     <Product>libpalaso</Product>
-    <Copyright>Copyright © 2010-2020 SIL International</Copyright>
+    <Copyright>Copyright © 2010-2024 SIL Global</Copyright>
     <OutputPath>../output/$(Configuration)</OutputPath>
     <SignAssembly>true</SignAssembly>
     <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>

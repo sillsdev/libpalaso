@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2019 SIL International
+// Copyright (c) 2010-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -9,9 +9,9 @@ namespace SIL.Progress
 {
 	public class ProgressIndicatorForMultiProgress : IProgressIndicator
 	{
-		private int                      _percentCompleted;
-		private SynchronizationContext   _syncContext;
-		private List<IProgressIndicator> _indicators;
+		private int _percentCompleted;
+		private SynchronizationContext _syncContext;
+		private readonly List<IProgressIndicator> _indicators;
 		public ProgressIndicatorForMultiProgress()
 		{
 			_percentCompleted = 0;
@@ -29,7 +29,7 @@ namespace SIL.Progress
 
 		public int PercentCompleted
 		{
-			get { return _percentCompleted; }
+			get => _percentCompleted;
 			set
 			{
 				_percentCompleted = value;
@@ -64,10 +64,7 @@ namespace SIL.Progress
 
 		public SynchronizationContext SyncContext
 		{
-			get
-			{
-				return _syncContext;
-			}
+			get => _syncContext;
 			set
 			{
 				_syncContext = value;

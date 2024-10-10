@@ -1,6 +1,5 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-using System;
 using System.Globalization;
 using System.IO;
 using System.Xml;
@@ -30,8 +29,7 @@ namespace SIL.Extensions
 		public static string ToStringMonoWorkaround(this XAttribute attr)
 		{
 			using (var sw = new StringWriter(CultureInfo.InvariantCulture)) {
-				var ws = new XmlWriterSettings();
-				ws.ConformanceLevel = ConformanceLevel.Fragment;
+				var ws = new XmlWriterSettings { ConformanceLevel = ConformanceLevel.Fragment };
 				using (var w = XmlWriter.Create(sw, ws)) {
 					w.WriteAttributeString(GetPrefixOfNamespace(attr.Name.Namespace), attr.Name.LocalName,
 						attr.Name.NamespaceName, attr.Value);

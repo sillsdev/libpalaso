@@ -1,10 +1,11 @@
-// Copyright (c) 2010-2019 SIL International
+// Copyright (c) 2010-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using JetBrains.Annotations;
 
 namespace SIL.Progress
 {
@@ -12,9 +13,9 @@ namespace SIL.Progress
 	{
 		private class ProgressHandler
 		{
-			public IProgress Handler { get; private set; }
-			public bool CanHandleStatus { get; private set; }
-			public bool CanHandleMessages { get; private set; }
+			public IProgress Handler { get; }
+			public bool CanHandleStatus { get; }
+			public bool CanHandleMessages { get; }
 			public ProgressHandler(IProgress p, Capabilities c)
 			{
 				Handler = p;
@@ -40,7 +41,7 @@ namespace SIL.Progress
 
 		private readonly List<ProgressHandler>             _progressHandlers =new List<ProgressHandler>();
 		private          bool                              _cancelRequested;
-		private          ProgressIndicatorForMultiProgress _indicatorForMultiProgress;
+		private readonly ProgressIndicatorForMultiProgress _indicatorForMultiProgress;
 
 		public MultiProgress(IEnumerable<IProgress> progressHandlers)
 		{
@@ -59,7 +60,7 @@ namespace SIL.Progress
 		}
 
 		public SynchronizationContext SyncContext {
-			get { return _indicatorForMultiProgress.SyncContext; }
+			get => _indicatorForMultiProgress.SyncContext;
 			set
 			{
 				foreach (ProgressHandler progressHandler in _progressHandlers)
@@ -86,10 +87,7 @@ namespace SIL.Progress
 				}
 				return _cancelRequested;
 			}
-			set
-			{
-				_cancelRequested = value;
-			}
+			set => _cancelRequested = value;
 		}
 
 		public bool ErrorEncountered
@@ -110,7 +108,7 @@ namespace SIL.Progress
 
 		public IProgressIndicator ProgressIndicator
 		{
-			get { return _indicatorForMultiProgress; }
+			get => _indicatorForMultiProgress;
 			set
 			{
 				// cjh: this could cause confusion by wrapping AddIndicator() with a property setter.  There's no way to "undo" the set later on.
@@ -217,6 +215,7 @@ namespace SIL.Progress
 			}
 		}
 
+		[PublicAPI]
 		public void AddStatusProgress(IProgress p)
 		{
 			_progressHandlers.Add(new ProgressHandler(p, Capabilities.Status));

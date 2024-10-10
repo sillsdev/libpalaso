@@ -1,6 +1,7 @@
-// Copyright (c) 2014 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
+using JetBrains.Annotations;
 using Mono.Unix.Native;
 using SIL.PlatformUtilities;
 
@@ -74,10 +75,12 @@ namespace SIL.IO
 		/// Check to see if the object has been disposed.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void CheckDisposed()
 		{
 			if (IsDisposed)
-				throw new ObjectDisposedException(String.Format("'{0}' in use after being disposed.", GetType().Name));
+				throw new ObjectDisposedException(
+					$"'{GetType().Name}' in use after being disposed.");
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -89,7 +92,7 @@ namespace SIL.IO
 		{
 			Dispose(true);
 			// This object will be cleaned up by the Dispose method.
-			// Therefore, you should call GC.SupressFinalize to
+			// Therefore, you should call GC.SuppressFinalize to
 			// take this object off the finalization queue
 			// and prevent finalization code for this object
 			// from executing a second time.

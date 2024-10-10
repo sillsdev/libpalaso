@@ -1,8 +1,9 @@
-// Copyright (c) 2017-2019 SIL International
+// Copyright (c) 2017-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Diagnostics;
 using System.IO;
+using JetBrains.Annotations;
 using NAudio.Wave;
 
 namespace SIL.Media.AlsaAudio
@@ -12,6 +13,7 @@ namespace SIL.Media.AlsaAudio
 	/// figure out how to implement (or which aren't needed by AlsaAudio) have do-nothing stubs to allow
 	/// source code compatibility.  This implementation may or may not be useful outside of Bloom.
 	/// </summary>
+	[PublicAPI]
 	public class AudioRecorder : IAudioRecorder, IDisposable
 	{
 		// variables copied from SIL.Media.Naudio implementation.
@@ -104,7 +106,7 @@ namespace SIL.Media.AlsaAudio
 				_session = new AudioAlsaSession(waveFileName);
 				var device = "default";
 				if (SelectedDevice != null && !SelectedDevice.Equals(RecordingDevice.DefaultDevice))
-					device = String.Format("plughw:{0}", SelectedDevice.DeviceNumber);
+					device = $"plughw:{SelectedDevice.DeviceNumber}";
 				_session.SetInputDevice(device);
 				_session.StartRecording((uint)RecordingFormat.SampleRate, (ushort)RecordingFormat.Channels);
 			}

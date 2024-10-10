@@ -1,8 +1,8 @@
 // ---------------------------------------------------------------------------------------------
 using SIL.Windows.Forms.Keyboarding;
 
-#region // Copyright (c) 2022, SIL International. All Rights Reserved.
-// <copyright from='2013' to='2022' company='SIL International'>
+#region // Copyright 2024 SIL GlobalAll Rights Reserved.
+// <copyright from='2013' to='2024' company='SIL Global'>
 //		Copyright (c) 2022, SIL International. All Rights Reserved.
 //
 //		Distributable under the terms of either the Common Public License or the
