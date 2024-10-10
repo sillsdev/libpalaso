@@ -4,6 +4,7 @@
     <RootNamespace>SIL.Archiving</RootNamespace>
     <AssemblyTitle>SIL.Archiving</AssemblyTitle>
     <Description>SIL.Archiving contains classes for archiving data to REAP and IMDI.</Description>
+    <TargetFrameworks>$(TargetFrameworks);netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>

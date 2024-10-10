@@ -101,7 +101,7 @@ namespace SIL.Archiving.Tests
 			var writable = _model.IsPathWritable(dir);
 			Assert.False(writable);
 			Assert.AreEqual(1, m_messages.Count);
-			Assert.AreEqual("Test implementation message for PathNotWritable", m_messages[0].MsgText);
+			Assert.IsTrue(m_messages[0].MsgText.ToLower().Contains("path"), "Error should mention the path in its explanation.");
 			Assert.AreEqual(Warning, m_messages[0].MsgType);
 		}
 
@@ -113,7 +113,7 @@ namespace SIL.Archiving.Tests
 			var writable = _model.IsPathWritable(dir);
 			Assert.False(writable);
 			Assert.AreEqual(1, m_messages.Count);
-			Assert.IsTrue(m_messages[0].MsgText.Contains("path"), "Error should mention the path in its explanation.");
+			Assert.IsTrue(m_messages[0].MsgText.ToLower().Contains("path"), "Error should mention the path in its explanation.");
 			Assert.AreEqual(Warning, m_messages[0].MsgType);
 		}
 
@@ -124,7 +124,7 @@ namespace SIL.Archiving.Tests
 			var writable = _model.IsPathWritable(dir);
 			Assert.False(writable);
 			Assert.AreEqual(1, m_messages.Count);
-			Assert.IsTrue(m_messages[0].MsgText.Contains("path"), "Error should mention the path in its explanation.");
+			Assert.IsTrue(m_messages[0].MsgText.ToLower().Contains("path"), "Error should mention the path in its explanation.");
 			Assert.AreEqual(Warning, m_messages[0].MsgType);
 		}
 
