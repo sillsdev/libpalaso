@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFrameworks>net462</TargetFrameworks>
     <RootNamespace>AddSortKey</RootNamespace>
     <AssemblyName>AddSortKey</AssemblyName>
     <Configurations>Debug;Release</Configurations>

@@ -338,7 +338,7 @@ namespace SIL.IO
 			RetryUtility.Retry(() => File.WriteAllLines(path, contents), memo:$"WriteAllLines {path}");
 		}
 
-#if NET461
+#if NET462
 		public static System.Security.AccessControl.FileSecurity GetAccessControl(string filePath)
 		{
 			return RetryUtility.Retry(() => File.GetAccessControl(filePath), memo: $"GetAccessControl {filePath}");

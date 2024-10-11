@@ -104,7 +104,7 @@ namespace SIL.Progress
 					_progressState.WriteToLog(err.Message);
 					_progressState.State = ProgressState.StateValue.StoppedWithError;
 				}
-#if NET461
+#if NET462
 				finally
 				{
 					_progressState.StatusLabel = "Cleaning up...";

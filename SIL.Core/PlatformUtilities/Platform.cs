@@ -46,7 +46,7 @@ namespace SIL.PlatformUtilities
 
 		public static bool IsDotNetCore => RuntimeInformation.FrameworkDescription == ".NET Core";
 		public static bool IsDotNetFramework => IsDotNet && RuntimeInformation.FrameworkDescription == ".NET Framework";
-#elif NET461
+#elif NET462
 		private static readonly string UnixNameMac = "Darwin";
 		private static readonly string UnixNameLinux = "Linux";
 
