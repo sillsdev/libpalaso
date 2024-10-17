@@ -5,6 +5,7 @@
     <AssemblyName>SIL.Linux.Logging.Tests</AssemblyName>
     <Description>Unit tests for SIL.Linux.Logging</Description>
     <IsPackable>false</IsPackable>
+    <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
