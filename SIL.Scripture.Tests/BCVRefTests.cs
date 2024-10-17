@@ -12,8 +12,8 @@
 // readily available to other projects.
 // --------------------------------------------------------------------------------------------
 using System;
+using Moq;
 using NUnit.Framework;
-using Rhino.Mocks;
 
 namespace SIL.Scripture.Tests
 {
@@ -93,16 +93,16 @@ namespace SIL.Scripture.Tests
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-        public void IsValidInVersification()
-        {
-            var versification = MockRepository.GenerateMock<IScrVers>();
-            versification.Stub(v => v.GetLastChapter(65)).Return(1);
-            versification.Stub(v => v.GetLastVerse(65, 1)).Return(20);
-            Assert.IsTrue((new BCVRef(65, 1, 1)).IsValidInVersification(versification));
-            Assert.IsTrue((new BCVRef(65, 1, 20)).IsValidInVersification(versification));
-            Assert.IsFalse((new BCVRef(65, 99, 1)).IsValidInVersification(versification));
-            Assert.IsFalse((new BCVRef(65, 1, 21)).IsValidInVersification(versification));
-        }
+		public void IsValidInVersification()
+		{
+				var versification = new Mock<IScrVers>();
+				versification.Setup(m => m.GetLastChapter(65)).Returns(1);
+				versification.Setup(m => m.GetLastVerse(65, 1)).Returns(20);
+				Assert.IsTrue(new BCVRef(65, 1, 1).IsValidInVersification(versification.Object));
+				Assert.IsTrue(new BCVRef(65, 1, 20).IsValidInVersification(versification.Object));
+				Assert.IsFalse(new BCVRef(65, 99, 1).IsValidInVersification(versification.Object));
+				Assert.IsFalse(new BCVRef(65, 1, 21).IsValidInVersification(versification.Object));
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
