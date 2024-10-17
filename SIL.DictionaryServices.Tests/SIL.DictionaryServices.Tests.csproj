@@ -5,6 +5,7 @@
     <AssemblyName>SIL.DictionaryServices.Tests</AssemblyName>
     <Description>Unit tests for SIL.DictionaryServices</Description>
     <IsPackable>false</IsPackable>
+    <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>

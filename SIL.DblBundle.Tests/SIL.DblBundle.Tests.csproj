@@ -4,6 +4,7 @@
     <RootNamespace>SIL.DblBundle.Tests</RootNamespace>
     <AssemblyName>SIL.DblBundle.Tests</AssemblyName>
     <Description>Unit tests for SIL.DblBundle</Description>
+    <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>

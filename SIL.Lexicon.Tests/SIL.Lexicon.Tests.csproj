@@ -5,6 +5,7 @@
     <AssemblyName>SIL.Lexicon.Tests</AssemblyName>
     <Description>Unit tests for SIL.Lexicon</Description>
     <IsPackable>false</IsPackable>
+    <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
