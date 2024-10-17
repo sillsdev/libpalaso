@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2018 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System.Windows.Forms;
@@ -24,7 +24,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		{
 			// The TextBox objects aren't yet created, so we have to delay removing/fixing
 			// their context menus.  OnLoad seems like a reasonable time for that.
-			_usePortableClipboard = SIL.PlatformUtilities.Platform.IsLinux;
+			_usePortableClipboard = PlatformUtilities.Platform.IsLinux;
 		}
 
 		protected override void OnLoad(System.EventArgs e)
@@ -39,7 +39,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 		/// <summary>
 		/// Get or set a value indicating whether this
-		/// <see cref="SIL.Windows.Forms.Miscellaneous.FormForUsingPortableClipboard"/> use PortableClipboard.
+		/// <see cref="Windows.Forms.Miscellaneous.FormForUsingPortableClipboard"/> use PortableClipboard.
 		/// This allows Windows builds to join in the fun if desired.
 		/// </summary>
 		/// <value>
@@ -47,7 +47,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		/// </value>
 		public bool UsePortableClipboard
 		{
-			get { return _usePortableClipboard; }
+			get => _usePortableClipboard;
 			set
 			{
 				_usePortableClipboard = value;

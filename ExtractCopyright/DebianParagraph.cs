@@ -1,6 +1,5 @@
-﻿// Copyright (c) 2017 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-using System;
 using System.Collections.Generic;
 
 namespace SIL.ExtractCopyright
@@ -13,16 +12,10 @@ namespace SIL.ExtractCopyright
 	{
 		public List<DebianField> Fields = new List<DebianField>();
 
-		public DebianParagraph()
-		{
-		}
-
 		public override string ToString ()
 		{
-			if (Fields.Count == 0)
-				return string.Format ("[empty DebianParagraph]");
-			else
-				return string.Format("[Fields[0] = {0}: {1}] + {2} more fields", Fields[0].Tag, Fields[0].Value, Fields.Count - 1);
+			return Fields.Count == 0 ? "[empty DebianParagraph]" :
+				$"[Fields[0] = {Fields[0].Tag}: {Fields[0].Value}] + {Fields.Count - 1} more fields";
 		}
 
 		/// <summary>

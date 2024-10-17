@@ -1,4 +1,4 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -8,6 +8,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using SIL.PlatformUtilities;
+using static System.Int32;
 
 namespace SIL.IO
 {
@@ -43,9 +44,8 @@ namespace SIL.IO
 					return -1;
 			}
 
-			int retval;
 			// Use cached value if we can to avoid process invocation.
-			if (_deviceNumber.TryGetValue(pathToCheck, out retval))
+			if (_deviceNumber.TryGetValue(pathToCheck, out var retval))
 				return retval;
 
 			using (var process = new Process())
@@ -54,7 +54,7 @@ namespace SIL.IO
 				process.StartInfo = new ProcessStartInfo
 				{
 					FileName = "stat",
-					Arguments = string.Format("{0} %d \"{1}\"", statFlags, pathToCheck),
+					Arguments = $"{statFlags} %d \"{pathToCheck}\"",
 					UseShellExecute = false,
 					RedirectStandardOutput = true,
 					CreateNoWindow = true
@@ -73,7 +73,7 @@ namespace SIL.IO
 				process.WaitForExit(2000);
 				if (!String.IsNullOrWhiteSpace(output))
 				{
-					if (Int32.TryParse(output.Trim(), out retval))
+					if (TryParse(output.Trim(), out retval))
 					{
 						_deviceNumber.Add(pathToCheck, retval);
 						return retval;
@@ -185,7 +185,7 @@ namespace SIL.IO
 		/// If necessary, append a number to make the folder path unique.
 		/// </summary>
 		/// <param name="folderPath">Source folder pathname.</param>
-		/// <returns>A unique folder pathname at the same level as <paramref name="folderPath"/>. It may have a number apended to <paramref name="folderPath"/>, or it may be <paramref name="folderPath"/>.</returns>
+		/// <returns>A unique folder pathname at the same level as <paramref name="folderPath"/>. It may have a number appended to <paramref name="folderPath"/>, or it may be <paramref name="folderPath"/>.</returns>
 		public static string GetUniqueFolderPath(string folderPath)
 		{
 			var i = 0;
@@ -211,8 +211,8 @@ namespace SIL.IO
 			{
 				while (!string.IsNullOrEmpty(path))
 				{
-					var subdir = Path.GetFileName(path);
-					if (subdir == directory)
+					var subDir = Path.GetFileName(path);
+					if (subDir == directory)
 						return true;
 					path = Path.GetDirectoryName(path);
 				}

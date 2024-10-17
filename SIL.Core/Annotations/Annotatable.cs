@@ -1,4 +1,4 @@
-// Copyright (c) 2007-2020 SIL International
+// Copyright (c) 2007-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -28,8 +28,7 @@ namespace SIL.Annotations
 				}
 				else if (Annotation == null)
 				{
-					Annotation = new Annotation();
-					Annotation.IsOn = true;
+					Annotation = new Annotation { IsOn = true };
 				}
 			}
 		}
@@ -38,8 +37,7 @@ namespace SIL.Annotations
 
 		public virtual Annotatable Clone()
 		{
-			var clone = new Annotatable();
-			clone.Annotation = Annotation?.Clone();
+			var clone = new Annotatable { Annotation = Annotation?.Clone() };
 			return clone;
 		}
 

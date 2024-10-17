@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------------------------
-#region // Copyright (c) 2023, SIL International.
-// <copyright from='2013' to='2023' company='SIL International'>
-//		Copyright (c) 2023, SIL International.   
+#region // Copyright 2024 SIL Global
+// <copyright from='2013' to='2024' company='SIL Global'>
+//		Copyright (c) 2024 SIL Global
 //    
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
 // </copyright> 
@@ -44,7 +44,7 @@ namespace SIL.Windows.Forms.FileSystem
 
 		public DialogResult DefaultResult
 		{
-			get { return (AcceptButton == btnNo) ? btnNo.DialogResult : btnYes.DialogResult; }
+			get => (AcceptButton == btnNo) ? btnNo.DialogResult : btnYes.DialogResult;
 			set
 			{
 				switch (value)
@@ -63,7 +63,7 @@ namespace SIL.Windows.Forms.FileSystem
 
 		public string Title
 		{
-			get { return Text; }
+			get => Text;
 			set
 			{
 				if (string.IsNullOrEmpty(value))
@@ -75,8 +75,8 @@ namespace SIL.Windows.Forms.FileSystem
 
 		public bool ApplyToAll
 		{
-			get { return chkApplyToAll.Checked; }
-			set { chkApplyToAll.Checked = value; }
+			get => chkApplyToAll.Checked;
+			set => chkApplyToAll.Checked = value;
 		}
 	}
 }

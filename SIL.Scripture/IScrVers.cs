@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------------------
-#region // Copyright (c) 2014, SIL International.
-// <copyright from='2008' to='2014' company='SIL International'>
-//		Copyright (c) 2014, SIL International.   
+#region // Copyright (c) 20124 SIL Global.
+// <copyright from='2008' to='2014' company='SIL Global'>
+//		Copyright (c) 2024 SIL Global
 //	
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
 // </copyright> 
@@ -9,6 +9,8 @@
 // 
 // File: IScrVers.cs
 // --------------------------------------------------------------------------------------------
+using JetBrains.Annotations;
+
 namespace SIL.Scripture
 {
 	public interface IScrVers
@@ -18,6 +20,7 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Gets last book in this versification
 		/// </summary>
+		[PublicAPI]
 		int GetLastBook();
 
 		/// <summary>
@@ -35,6 +38,7 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Determines whether the specified verse is excluded in the versification.
 		/// </summary>
+		[PublicAPI]
 		bool IsExcluded(int bbbcccvvv);
 
 		/// <summary>
@@ -42,6 +46,7 @@ namespace SIL.Scripture
 		/// </summary>
 		/// <returns>first verse in the specified book and chapter that is not excluded or
 		/// returns <c>null</c> if no included verse left in book</returns>
+		[PublicAPI]
 		VerseRef? FirstIncludedVerse(int bookNum, int chapterNum);
 
 		/// <summary>
@@ -61,6 +66,7 @@ namespace SIL.Scripture
 		/// </summary>
 		/// <returns>true if successful (i.e. all verses were in the same the same chapter in the new versification),
 		/// false if the changing resulted in the reference spanning chapters (which makes the results undefined)</returns>
+		[PublicAPI]
 		bool ChangeVersificationWithRanges(VerseRef reference, out VerseRef newReference);
 	}
 }

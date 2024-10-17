@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------------------
-#region // Copyright (c) 2013, SIL International.   
-// <copyright from='2003' to='2011' company='SIL International'>
-//		Copyright (c) 2013, SIL International.   
+#region // Copyright 2024 SIL Global
+// <copyright from='2003' to='2024' company='SIL Global'>
+//		Copyright (c) 2024 SIL Global
 //    
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
 // </copyright> 
@@ -12,6 +12,7 @@
 
 using System;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Windows.Forms;
 
 namespace SIL.Windows.Forms.Scripture
@@ -34,12 +35,10 @@ namespace SIL.Windows.Forms.Scripture
 		/// <summary>Event which occurs when the control's image is being painted.</summary>
 		public event PaintEventHandler PaintImage;
 		
-		private bool m_mouseIsOver = false;
-		private bool m_mouseIsDown = false;
-		private bool m_canToggle = false;
+		private bool m_mouseIsOver;
+		private bool m_mouseIsDown;
 		private bool m_shadeWhenMouseOver = true;
-		private bool m_textIsClipped;
-		private int m_textLeadingMargin = 0;
+		private int m_textLeadingMargin;
 		private StringFormat m_stringFormat;
 		private ButtonState m_state = ButtonState.Normal;
 		private PaintState m_paintState = PaintState.Normal;
@@ -62,7 +61,7 @@ namespace SIL.Windows.Forms.Scripture
 			/// <summary>A button control should be painted as though it's pushed and the
 			/// mouse is not over it (this is for buttons that can toggle)</summary>
 			Pushed
-		};
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -91,7 +90,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// ------------------------------------------------------------------------------------
 		public StringFormat TextFormat
 		{
-			get { return m_stringFormat; }
+			get => m_stringFormat;
 			set
 			{
 				if (value != null)
@@ -120,8 +119,8 @@ namespace SIL.Windows.Forms.Scripture
 		/// ------------------------------------------------------------------------------------
 		public int TextLeadingMargin
 		{
-			get { return m_textLeadingMargin; }
-			set { m_textLeadingMargin = (value >= 0 ? value : 0); }
+			get => m_textLeadingMargin;
+			set => m_textLeadingMargin = (value >= 0 ? value : 0);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -130,21 +129,14 @@ namespace SIL.Windows.Forms.Scripture
 		/// display rectangle and had to be clipped.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public bool TextIsClipped
-		{
-			get { return m_textIsClipped; }
-		}
+		public bool TextIsClipped { get; private set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Gets or sets a value indicating whether or not a button acts like a toggle button.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public bool CanToggle
-		{
-			get { return m_canToggle; }
-			set { m_canToggle = value; }
-		}
+		public bool CanToggle { get; set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -153,13 +145,13 @@ namespace SIL.Windows.Forms.Scripture
 		/// ------------------------------------------------------------------------------------
 		public ButtonState State
 		{
-			get { return m_state; }
+			get => m_state;
 			set
 			{
 				if (m_state != value)
 				{
 					m_state = value;
-					this.Invalidate();
+					Invalidate();
 				}
 			}
 		}
@@ -172,13 +164,13 @@ namespace SIL.Windows.Forms.Scripture
 		/// ------------------------------------------------------------------------------------
 		public bool ShadeWhenMouseOver
 		{
-			get { return m_shadeWhenMouseOver; }
+			get => m_shadeWhenMouseOver;
 			set
 			{
 				if (m_shadeWhenMouseOver != value)
 				{
 					m_shadeWhenMouseOver = value;
-					this.Invalidate();
+					Invalidate();
 				}
 			}
 		}
@@ -188,10 +180,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// 
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		protected bool ButtonIsOn
-		{
-			get { return State == ButtonState.Pushed; }
-		}
+		protected bool ButtonIsOn => State == ButtonState.Pushed;
 
 		#endregion
 
@@ -214,7 +203,7 @@ namespace SIL.Windows.Forms.Scripture
 			else
 				PaintText(this, e);
 
-			if (this.Image != null)
+			if (Image != null)
 			{
 				if (PaintImage == null)
 					OnPaintImage(e);
@@ -236,14 +225,14 @@ namespace SIL.Windows.Forms.Scripture
 			// Fill with white first, before filling with partially transparent background color.
 			using (var brush = new SolidBrush(Color.White))
 			{
-				e.Graphics.FillRectangle(brush, this.ClientRectangle);
+				e.Graphics.FillRectangle(brush, ClientRectangle);
 
-				brush.Color = GetBackColorShade(m_paintState, this.BackColor);
-				e.Graphics.FillRectangle(brush, this.ClientRectangle);
+				brush.Color = GetBackColorShade(m_paintState, BackColor);
+				e.Graphics.FillRectangle(brush, ClientRectangle);
 				
 				if (m_paintState != PaintState.Normal)
 				{
-					Rectangle rc = this.ClientRectangle;
+					Rectangle rc = ClientRectangle;
 					rc.Width--;
 					rc.Height--;
 					e.Graphics.DrawRectangle(new Pen(new SolidBrush(SystemColors.ActiveCaption)), rc);
@@ -259,7 +248,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// ------------------------------------------------------------------------------------
 		protected virtual void OnPaintText(PaintEventArgs e)
 		{
-			Rectangle rc = this.ClientRectangle;
+			Rectangle rc = ClientRectangle;
 			using (var brush = new SolidBrush(Enabled ? ForeColor : SystemColors.GrayText))
 			{
 				// If the mouse is over the button then give the text a raised look.
@@ -272,12 +261,12 @@ namespace SIL.Windows.Forms.Scripture
 				if (TextLeadingMargin > 0)
 				{
 					rc.Width -= TextLeadingMargin;
-					if (this.RightToLeft == RightToLeft.No)
+					if (RightToLeft == RightToLeft.No)
 						rc.X += TextLeadingMargin;
 				}
 				
 				// Now we'll draw the text.
-				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+				e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 				Size sz;
 				if (UseCompatibleTextRendering)
 				{
@@ -290,7 +279,7 @@ namespace SIL.Windows.Forms.Scripture
 					sz = TextRenderer.MeasureText(e.Graphics, Text, Font, rc.Size, FormatFlags);
 				}
 				// Check if the text was clipped.
-				m_textIsClipped = (sz.Width > rc.Width || sz.Height > rc.Height);
+				TextIsClipped = (sz.Width > rc.Width || sz.Height > rc.Height);
 			}
 		}
 
@@ -353,12 +342,11 @@ namespace SIL.Windows.Forms.Scripture
 		/// Try to figure out if we're supposed to display the text right-to-left
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		private bool IsRightToLeft(Control c)
+		private static bool IsRightToLeft(Control c)
 		{
 			if (c.RightToLeft == RightToLeft.Inherit)
-				return (c.Parent != null) ? IsRightToLeft(c.Parent) : false;
-			else
-				return c.RightToLeft == RightToLeft.Yes;
+				return c.Parent != null && IsRightToLeft(c.Parent);
+			return c.RightToLeft == RightToLeft.Yes;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -369,7 +357,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// ------------------------------------------------------------------------------------
 		protected virtual void OnPaintImage(PaintEventArgs e)
 		{
-			Rectangle rc = this.ClientRectangle;
+			Rectangle rc = ClientRectangle;
 
 			// If the mouse is over the button then give the image a raised look.
 			if (m_paintState == PaintState.MouseOver)
@@ -378,7 +366,7 @@ namespace SIL.Windows.Forms.Scripture
 				rc.Height++;
 			}
 
-			this.DrawImage(e.Graphics, this.Image, rc, this.ImageAlign);			
+			DrawImage(e.Graphics, Image, rc, ImageAlign);			
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -391,7 +379,7 @@ namespace SIL.Windows.Forms.Scripture
 		{
 			base.OnMouseEnter(e);
 			m_mouseIsOver = true;
-			this.Invalidate();
+			Invalidate();
 		}
 		
 		/// ------------------------------------------------------------------------------------
@@ -404,7 +392,7 @@ namespace SIL.Windows.Forms.Scripture
 		{
 			base.OnMouseLeave(e);
 			m_mouseIsOver = false;
-			this.Invalidate();
+			Invalidate();
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -420,7 +408,7 @@ namespace SIL.Windows.Forms.Scripture
 			if (e.Button == MouseButtons.Left)
 			{
 				m_mouseIsDown = true;
-				this.Invalidate();
+				Invalidate();
 			}
 		}
 
@@ -445,7 +433,7 @@ namespace SIL.Windows.Forms.Scripture
 						ButtonState.Pushed : ButtonState.Normal);
 				}
 
-				this.Invalidate();
+				Invalidate();
 			}
 		}
 
@@ -461,12 +449,12 @@ namespace SIL.Windows.Forms.Scripture
 			
 			if (m_mouseIsDown)
 			{
-				bool inbounds = MouseInBounds(e.X, e.Y);
+				bool inBounds = MouseInBounds(e.X, e.Y);
 				
-				if (inbounds != m_mouseIsOver)
+				if (inBounds != m_mouseIsOver)
 				{
-					m_mouseIsOver = inbounds;
-					this.Invalidate();
+					m_mouseIsOver = inBounds;
+					Invalidate();
 				}
 			}
 		}
@@ -495,7 +483,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// ------------------------------------------------------------------------------------
 		protected Color GetBackColorShade(PaintState state, Color normalBack)
 		{
-			if (this.Enabled)
+			if (Enabled)
 			{
 				switch (state)
 				{
