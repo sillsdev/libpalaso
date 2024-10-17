@@ -73,9 +73,9 @@ namespace SIL.CommandLineProcessing
 				if (secondsBeforeTimeOut>0 && DateTime.Now > end)
 				{
 					if (_outputReader != null)
-						_outputReader.Abort();
+						_outputReader.Interrupt();
 					if (_errorReader != null)
-						_errorReader.Abort();
+						_errorReader.Interrupt();
 					return false;
 				}
 			}

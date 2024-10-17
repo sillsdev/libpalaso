@@ -22,6 +22,12 @@ namespace SIL.Tests.Progress
 			_countForWork = 0;
 		}
 
+		[TearDown]
+		public void TearDown()
+		{
+			_logBuilder.Dispose();
+		}
+
 		[Test]
 		[Category("ByHand")]
 		[Explicit]
