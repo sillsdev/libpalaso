@@ -20,23 +20,24 @@ namespace SIL.Scripture.Tests
 		/// ------------------------------------------------------------------------------------
 		public TestScrVers()
 		{
-			var m_vers = new Mock<IScrVers>();
-			m_vers.Setup(v => v.GetLastChapter(1)).Returns(50);
-			m_vers.Setup(v => v.GetLastVerse(1, 1)).Returns(31);
-			m_vers.Setup(v => v.GetLastVerse(1, 2)).Returns(25);
-			m_vers.Setup(v => v.GetLastChapter(5)).Returns(34);
-			m_vers.Setup(v => v.GetLastVerse(5, 1)).Returns(46);
-			m_vers.Setup(v => v.GetLastVerse(5, 17)).Returns(20);
-			m_vers.Setup(v => v.GetLastChapter(6)).Returns(24);
-			m_vers.Setup(v => v.GetLastVerse(6, 1)).Returns(18);
-			m_vers.Setup(v => v.GetLastChapter(7)).Returns(21);
-			m_vers.Setup(v => v.GetLastVerse(7, 21)).Returns(25);
-			m_vers.Setup(v => v.GetLastChapter(57)).Returns(1);
-			m_vers.Setup(v => v.GetLastVerse(57, 1)).Returns(25);
-			m_vers.Setup(v => v.GetLastChapter(59)).Returns(5);
-			m_vers.Setup(v => v.GetLastVerse(59, 1)).Returns(27);
-			m_vers.Setup(v => v.GetLastChapter(66)).Returns(22);
-			m_vers.Setup(v => v.GetLastVerse(66, 1)).Returns(20);
+			var mock = new Mock<IScrVers>();
+			mock.Setup(v => v.GetLastChapter(1)).Returns(50);
+			mock.Setup(v => v.GetLastVerse(1, 1)).Returns(31);
+			mock.Setup(v => v.GetLastVerse(1, 2)).Returns(25);
+			mock.Setup(v => v.GetLastChapter(5)).Returns(34);
+			mock.Setup(v => v.GetLastVerse(5, 1)).Returns(46);
+			mock.Setup(v => v.GetLastVerse(5, 17)).Returns(20);
+			mock.Setup(v => v.GetLastChapter(6)).Returns(24);
+			mock.Setup(v => v.GetLastVerse(6, 1)).Returns(18);
+			mock.Setup(v => v.GetLastChapter(7)).Returns(21);
+			mock.Setup(v => v.GetLastVerse(7, 21)).Returns(25);
+			mock.Setup(v => v.GetLastChapter(57)).Returns(1);
+			mock.Setup(v => v.GetLastVerse(57, 1)).Returns(25);
+			mock.Setup(v => v.GetLastChapter(59)).Returns(5);
+			mock.Setup(v => v.GetLastVerse(59, 1)).Returns(27);
+			mock.Setup(v => v.GetLastChapter(66)).Returns(22);
+			mock.Setup(v => v.GetLastVerse(66, 1)).Returns(20);
+			m_vers = mock.Object;
 		}
 
 		public int GetLastChapter(int bookNum)
