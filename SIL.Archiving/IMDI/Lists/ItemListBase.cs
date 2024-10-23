@@ -5,10 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Xml;
+using JetBrains.Annotations;
 using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI.Schema;
 using SIL.Extensions;
 using SIL.WritingSystems;
+using static System.String;
+using static System.StringComparison;
 
 namespace SIL.Archiving.IMDI.Lists
 {
@@ -32,7 +35,7 @@ namespace SIL.Archiving.IMDI.Lists
 			Text = value;
 			Value = value;
 			// most of the time InnerText is empty - use the "Value" attribute for both if it is empty
-			Definition = string.IsNullOrEmpty(definition) ? value : definition;
+			Definition = IsNullOrEmpty(definition) ? value : definition;
 		}
 
 		public override string ToString() { return Text; }
@@ -44,10 +47,10 @@ namespace SIL.Archiving.IMDI.Lists
 		}
 
 		/// <summary>Convert to BooleanType</summary>
+		[PublicAPI]
 		public BooleanType ToBooleanType()
 		{
-			BooleanEnum boolEnum;
-			return Enum.TryParse(Value, true, out boolEnum)
+			return Enum.TryParse(Value, true, out BooleanEnum boolEnum)
 				? new BooleanType { Type = VocabularyTypeValueType.ClosedVocabulary, Value = boolEnum, Link = ListType.Link(ListType.Boolean) }
 				: new BooleanType { Type = VocabularyTypeValueType.ClosedVocabulary, Value = BooleanEnum.Unknown, Link = ListType.Link(ListType.Boolean) };
 		}
@@ -61,7 +64,7 @@ namespace SIL.Archiving.IMDI.Lists
 		/// 3) "Definition" or "Text"; 4) default (English) value.</param>
 		internal void Localize(string listName, Func<string, string, string, string, string> localize)
 		{
-			if (localize != null && !string.IsNullOrEmpty(Value))
+			if (localize != null && !IsNullOrEmpty(Value))
 			{
 				if (Text == Definition)
 				{
@@ -91,7 +94,7 @@ namespace SIL.Archiving.IMDI.Lists
 			var thatValue = CheckSpecialCase(other);
 
 			// compare the Text properties
-			return String.Compare(thisValue, thatValue, StringComparison.InvariantCultureIgnoreCase);
+			return String.Compare(thisValue, thatValue, InvariantCultureIgnoreCase);
 		}
 
 		/// <summary>Used for sorting. Compare 2 IMDIListItem objects. They are identical if the Text properties are the same</summary>
@@ -255,7 +258,7 @@ namespace SIL.Archiving.IMDI.Lists
 		protected virtual void Initialize()
 		{
 			// Add blank option
-			Insert(0, new IMDIListItem(string.Empty, string.Empty));
+			Insert(0, new IMDIListItem(Empty, Empty));
 		}
 
 		/// <summary>Gets a list of the Entry nodes from the selected XML file.</summary>
@@ -269,7 +272,7 @@ namespace SIL.Archiving.IMDI.Lists
 			var listFileName = CheckFile(listName);
 
 			// if the file was not found, throw an exception
-			if (string.IsNullOrEmpty(listFileName))
+			if (IsNullOrEmpty(listFileName))
 				throw new FileNotFoundException($"The list {listName} was not found.");
 
 			XmlDocument doc = new XmlDocument();
@@ -286,7 +289,7 @@ namespace SIL.Archiving.IMDI.Lists
 
 			// if no entries were found, throw an exception
 			if (nodes == null || nodes.Count == 0)
-				throw new XmlException(string.Format($"The file {listFileName} does not contain any list entries. There might be a problem with the content at {ListType.Link(listName)}"));
+				throw new XmlException(Format($"The file {listFileName} does not contain any list entries. There might be a problem with the content at {ListType.Link(listName)}"));
 
 			return nodes;
 		}
@@ -315,7 +318,7 @@ namespace SIL.Archiving.IMDI.Lists
 		{
 			get
 			{
-				if (!string.IsNullOrEmpty(_listPath)) return _listPath;
+				if (!IsNullOrEmpty(_listPath)) return _listPath;
 
 				var thisPath = ArchivingFileSystem.SilCommonIMDIDataFolder;
 
@@ -363,7 +366,7 @@ namespace SIL.Archiving.IMDI.Lists
 
 				var definition = node.InnerText.Replace("Definition:", "").Replace("\t", " ").Replace("\r", "").Replace("\n", " ").Trim();  // if InnerText is set, it may contain the value for the meta-data file (some files do, some don't)
 
-				if (uppercaseFirstCharacter && !string.IsNullOrEmpty(value) &&
+				if (uppercaseFirstCharacter && !IsNullOrEmpty(value) &&
 					(value.Substring(0, 1) != value.Substring(0, 1).ToUpper()))
 				{
 					value = value.ToUpperFirstLetter();
@@ -385,21 +388,16 @@ namespace SIL.Archiving.IMDI.Lists
 		/// <param name="value">The meta-data value of the item to find</param>
 		public IMDIListItem FindByValue(string value)
 		{
-			try
-			{
-				return this.First(i => String.Equals(i.Value, value, StringComparison.CurrentCultureIgnoreCase));
-			}
-			catch
-			{
-				return Closed ? this.FirstOrDefault(i => String.Equals(i.Value, "Unspecified", StringComparison.CurrentCultureIgnoreCase)) : null;
-			}
+			return this.FirstOrDefault(i => i.Value.Equals(value, CurrentCultureIgnoreCase)) ??
+				(Closed ? this.FirstOrDefault(i =>
+					i.Value.Equals("Unspecified", CurrentCultureIgnoreCase)) : null);
 		}
 
 		/// <summary>Returns the first item found with the given Text, or null if not found</summary>
 		/// <param name="text">The (potentially localized) UI text of the item to find</param>
 		public IMDIListItem FindByText(string text)
 		{
-			var itm = this.FirstOrDefault(i => String.Equals(i.Text, text, StringComparison.CurrentCultureIgnoreCase));
+			var itm = this.FirstOrDefault(i => i.Text.Equals(text, CurrentCultureIgnoreCase));
 			return itm;
 		}
 	}
