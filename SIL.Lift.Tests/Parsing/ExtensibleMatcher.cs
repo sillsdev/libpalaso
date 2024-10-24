@@ -1,11 +1,10 @@
 using System;
 using System.IO;
-using NMock2;
 using SIL.Lift.Parsing;
 
 namespace SIL.Lift.Tests.Parsing
 {
-	class ExtensibleMatcher:Matcher
+	class ExtensibleMatcher : Extensible
 	{
 		private readonly string _expectedId;
 		private readonly Guid _expectedGuid;
@@ -45,7 +44,8 @@ namespace SIL.Lift.Tests.Parsing
 			: this(string.Empty)
 		{
 		}
-		public override bool Matches(object o)
+		
+		public override bool Equals(object o)
 		{
 			Extensible e = (Extensible) o;
 
@@ -73,14 +73,5 @@ namespace SIL.Lift.Tests.Parsing
 			}
 			return true;
 		}
-
-		public override void DescribeTo(TextWriter writer)
-		{
-			writer.Write(string.Format("ExtensibleMatcher(expectedId={0}, expectedGuid={1}, expectedCreationTime={2}, expectedModificationTime={3})",
-				_expectedId,
-				(_expectedGuid==Guid.Empty)?"anything": _expectedGuid.ToString(),
-				(_expectedCreationTime == DateTime.MinValue) ? "anything" : _expectedCreationTime.ToString(),
-				(_expectedModificationTime == DateTime.MinValue) ? "anything" : _expectedModificationTime.ToString()));
-		}
-	}
+  }
 }

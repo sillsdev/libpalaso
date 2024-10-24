@@ -5,6 +5,7 @@
     <AssemblyName>SIL.Lift.Tests</AssemblyName>
     <Description>Unit tests for SIL.Lift</Description>
     <IsPackable>false</IsPackable>
+    <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,12 +22,6 @@
     <ProjectReference Include="..\SIL.Lift\SIL.Lift.csproj" />
     <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj" />
     <ProjectReference Include="..\SIL.WritingSystems.Tests\SIL.WritingSystems.Tests.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="NMock2">
-      <HintPath>..\lib\NMock2.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
