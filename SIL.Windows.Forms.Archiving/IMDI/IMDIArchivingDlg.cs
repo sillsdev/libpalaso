@@ -97,7 +97,7 @@ namespace SIL.Windows.Forms.Archiving.IMDI
 			// add the current folder label
 			_destinationFolderLabel = new Label
 			{
-				Anchor = AnchorStyles.Left,
+				Anchor = AnchorStyles.Left | AnchorStyles.Right,
 				AutoSize = true,
 				TextAlign = ContentAlignment.MiddleLeft
 			};
@@ -200,11 +200,7 @@ namespace SIL.Windows.Forms.Archiving.IMDI
 
 		void SetDestinationLabelText()
 		{
-			var labelText = ((IMDIArchivingDlgViewModel)_viewModel).OutputFolder;
-			if (labelText.Length > 50)
-				labelText = labelText.Substring(0, 3) + "..." + labelText.Substring(labelText.Length - 44);
-
-			_destinationFolderLabel.Text = labelText;
+			_destinationFolderLabel.Text =  ((IMDIArchivingDlgViewModel)_viewModel).OutputFolder;
 		}
 
 		void _browseDestinationFolder_Click(object sender, EventArgs e)
@@ -345,8 +341,11 @@ namespace SIL.Windows.Forms.Archiving.IMDI
 			//UpdateLaunchButtonText();
 			_buttonLaunchRamp.Visible = false;
 			_tableLayoutPanel.SetColumn(_buttonCreatePackage, 1);
-			_buttonCreatePackage.Text = LocalizationManager.GetString("DialogBoxes.IMDIArchivingDlg.CreatePackageButtonLabel", "Create Package");
+			_buttonCreatePackage.Text = LocalizationManager.GetString(
+				"DialogBoxes.IMDIArchivingDlg.CreatePackageButtonLabel", "Create Package");
 			UpdateOverviewText();
+			_buttonCancel.Text = LocalizationManager.GetString(
+				"DialogBoxes.IMDIArchivingDlg.CloseButtonLabel", "Close");
 		}
 
 	}
