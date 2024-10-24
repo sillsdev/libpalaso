@@ -1,11 +1,10 @@
 using System;
 using System.IO;
-using NMock2;
 using SIL.Lift.Parsing;
 
 namespace SIL.Lift.Tests.Parsing
 {
-	class LiftMultiTextAnnotationMatcher : Matcher
+	class LiftMultiTextAnnotationMatcher : LiftMultiText
 	{
 		private readonly string _expectedLanguageOfFirstAnnotation;
 		private readonly string _expectedNameOfFirstAnnotation;
@@ -24,7 +23,7 @@ namespace SIL.Lift.Tests.Parsing
 			_expectedNameOfFirstAnnotation = expectedNameOfFirstAnnotation;
 		}
 
-		public override bool Matches(object o)
+		public override bool Equals(object o)
 		{
 			LiftMultiText m = (LiftMultiText)o;
 			if (m.Annotations.Count != _expectedCount)
@@ -43,11 +42,6 @@ namespace SIL.Lift.Tests.Parsing
 					&& t.Value == _expectedValueOfFirstAnnotation
 					&& t.Who == _expectedWhoOfFirstAnnotation
 					&& t.When == _expectedWhenOfFirstAnnotation);
-		}
-
-		public override void DescribeTo(TextWriter writer)
-		{
-			writer.Write(string.Format("LiftMultiTextAnnotationMatcher(expectedName={1}, expectedValue={2}, numberOfAnnotations={3})", _expectedLanguageOfFirstAnnotation, _expectedNameOfFirstAnnotation, _expectedValueOfFirstAnnotation, _expectedCount));
 		}
 	}
 }
