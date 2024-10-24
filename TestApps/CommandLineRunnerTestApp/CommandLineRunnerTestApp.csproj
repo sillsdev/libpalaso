@@ -4,9 +4,8 @@
     <RootNamespace>SIL.CommandLineProcessing.TestApp</RootNamespace>
     <AssemblyName>SIL.CommandLineProcessing.TestApp</AssemblyName>
     <Description>SIL.CommandLineProcessing test app</Description>
-    <OutputPath>../../output/$(Configuration)</OutputPath>
     <IsPackable>false</IsPackable>
-    <UseWindowsForms>true</UseWindowsForms>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
   </PropertyGroup>
 </Project>

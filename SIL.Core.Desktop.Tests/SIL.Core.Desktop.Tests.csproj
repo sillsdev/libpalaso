@@ -22,8 +22,4 @@
     <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-
 </Project>
