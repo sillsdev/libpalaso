@@ -74,6 +74,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Made IMDIPackage.CreateIMDIPackage asynchronous, changing its signature to take a CancellationToken parameter and return Task<bool>.
 - [SIL.Archiving] Made MetaTranscript.WriteCorpusImdiFile asynchronous, changing its signature to return Task<bool>.
 - [SIL.Archiving] Changed the name of the third parameter in ArchivingDlgViewModel.AddFileGroup from progressMessage to addingToArchiveProgressMessage.
+- [SIL.Windows.Forms.Archiving] Changed Cancel Button to say Close instead in IMDIArchivingDlg.
 
 ### Fixed
 - [SIL.Archiving] Fixed typo in RampArchivingDlgViewModel for Ethnomusicology performance collection.
