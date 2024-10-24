@@ -1,4 +1,4 @@
-// Copyright (c) 2002-2015 SIL International
+// Copyright (c) 2002-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections;
@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using JetBrains.Annotations;
 
 namespace SIL.Reporting
 {
@@ -49,6 +50,7 @@ namespace SIL.Reporting
 				if (nTypes > 0)
 					strB.Append("(");
 				strB.Append(e.GetType());
+				e = e.InnerException;
 				nTypes++;
 			}
 
@@ -65,6 +67,7 @@ namespace SIL.Reporting
 		/// </summary>
 		/// <param name="e">The exception</param>
 		/// <returns>String with stack traces of all nested exceptions.</returns>
+		[PublicAPI]
 		public static string GetAllStackTraces(Exception e)
 		{
 			StringBuilder strB = new StringBuilder();

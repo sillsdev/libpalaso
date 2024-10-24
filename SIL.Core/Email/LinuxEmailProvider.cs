@@ -1,4 +1,4 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
@@ -63,21 +63,9 @@ namespace SIL.Email
 			//return true;
 		}
 
-		protected virtual string EmailCommand
-		{
-			get
-			{
-				return "xdg-email";
-			}
-		}
+		protected virtual string EmailCommand => "xdg-email";
 
-		protected virtual string FormatString
-		{
-			get
-			{
-				return "--subject '{1}' --body '{2}'{3}{4}{5}{0}";
-			}
-		}
+		protected virtual string FormatString => "--subject '{1}' --body '{2}'{3}{4}{5}{0}";
 
 		private static string GetArguments(IList<string> arguments, string field)
 		{

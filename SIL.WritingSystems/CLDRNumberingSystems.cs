@@ -1,7 +1,5 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;

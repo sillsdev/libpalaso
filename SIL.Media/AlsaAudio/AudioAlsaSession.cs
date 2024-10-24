@@ -1,4 +1,4 @@
-// Copyright (c) 2015 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Diagnostics;
@@ -34,11 +34,7 @@ namespace SIL.Media.AlsaAudio
 		/// <summary>
 		/// Gets the path to the sound file, as established by the constructor.
 		/// </summary>
-		public string FilePath
-		{
-			get;
-			private set;
-		}
+		public string FilePath { get; }
 
 		/// <summary>
 		/// Start recording.
@@ -83,42 +79,27 @@ namespace SIL.Media.AlsaAudio
 		/// <summary>
 		/// true iff recording is underway.
 		/// </summary>
-		public bool IsRecording
-		{
-			get { return _device.IsRecording; }
-		}
+		public bool IsRecording => _device.IsRecording;
 
 		/// <summary>
 		/// true iff playing a WAVE file
 		/// </summary>
-		public bool IsPlaying
-		{
-			get { return _device.IsPlaying; }
-		}
+		public bool IsPlaying => _device.IsPlaying;
 
 		/// <summary>
 		/// true iff neither recording nor playing.
 		/// </summary>
-		public bool CanRecord
-		{
-			get { return !IsPlaying && !IsRecording; }
-		}
+		public bool CanRecord => !IsPlaying && !IsRecording;
 
 		/// <summary>
 		/// true iff either playing or recording.
 		/// </summary>
-		public bool CanStop
-		{
-			get { return IsPlaying || IsRecording; }
-		}
+		public bool CanStop => IsPlaying || IsRecording;
 
 		/// <summary>
 		/// true iff neither playing nor recording.
 		/// </summary>
-		public bool CanPlay
-		{
-			get { return !IsPlaying && !IsRecording; }
-		}
+		public bool CanPlay => !IsPlaying && !IsRecording;
 
 		/// <summary>
 		/// Play the sound file set by the constructor.
@@ -128,7 +109,7 @@ namespace SIL.Media.AlsaAudio
 			if (!CanPlay)
 				throw new ApplicationException("AlsaAudioSession: Already recording or playing on the ALSA sound device");
 			if (!File.Exists(FilePath))
-				throw new FileNotFoundException(string.Format("AlsaAudioSession: {0} does not exist", FilePath));
+				throw new FileNotFoundException($"AlsaAudioSession: {FilePath} does not exist");
 			if (new FileInfo(FilePath).Length == 0)
 				throw new FileLoadException("Trying to play empty file");
 			if(!_device.StartPlaying(FilePath))

@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2023 SIL International
+// Copyright (c) 2013-2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using SIL.Core.ClearShare;
 using SIL.Extensions;
 using SIL.IO;
 using SIL.Lexicon;
@@ -160,7 +159,7 @@ namespace SIL.Windows.Forms.TestApp
 			{
 				File.WriteAllText(tempfile.Path,
 					@"<html><head><meta charset='UTF-8' /></head><body>" +
-					@"<h3>Copyright 2024 <a href=""http://sil.org"">SIL International</a></h3>" +
+					@"<h3>Copyright 2024 <a href=""http://sil.org"">SIL Global</a></h3>" +
 					@"<p>Testing the <b>about box</b></p><ul>#DependencyAcknowledgements#</ul></body></html>");
 				var uri = new Uri(tempfile.Path);
 				using (var dlg = new SILAboutBox(uri.AbsoluteUri, useFullVersionNumber))

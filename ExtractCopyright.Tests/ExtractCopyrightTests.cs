@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 SIL International
+// Copyright (c) 2017-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -6,6 +6,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
+using static System.String;
 
 namespace SIL.Tests.ExtractCopyright
 {
@@ -293,7 +294,7 @@ Description: Literacy materials development for language communities
 			Assert.AreEqual("https://github.com/BloomBooks/BloomDesktop", sourceUrl);
 		}
 
-		readonly string[] _changelogLines = new string[] {
+		readonly string[] _changelogLines = {
 			"bloom-desktop-alpha (3.9.0) stable; urgency=medium",
 			"",
 			"  * Up the version number on the master (unstable/alpha) branch to 3.9.",
@@ -336,7 +337,7 @@ Description: Literacy materials development for language communities
 
 			// ignore programName if already set, set contactEmail if empty
 			programName = "bloom-desktop";
-			contactEmail = String.Empty;
+			contactEmail = Empty;
 			SIL.ExtractCopyright.CopyrightFile.ParseChangelogContentForValues(_changelogLines, ref programName, ref contactEmail);
 			Assert.AreEqual("bloom-desktop", programName);
 			Assert.AreEqual("Stephen McConnel <stephen_mcconnel@sil.org>", contactEmail);

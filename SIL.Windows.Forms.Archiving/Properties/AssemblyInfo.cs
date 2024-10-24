@@ -11,5 +11,5 @@ using SIL.Acknowledgements;
 	LicenseUrl = "https://raw.githubusercontent.com/haf/DotNetZip.Semverd/master/LICENSE", Location = "./DotNetZip.dll",
 	Html = "<li><a href='https://github.com/haf/DotNetZip.Semverd'>DotNetZip</a> © Henrik Feldt/Dino Chiesa 2006-2018 (<a href='https://raw.githubusercontent.com/haf/DotNetZip.Semverd/master/LICENSE'>Multiple</a>) - a library for handling zip archives</li>")]
 [assembly: Acknowledgement("L10NSharp", Url = "https://github.com/sillsdev/l10nsharp/",
-	Copyright = "Copyright © SIL International 2010-2017", LicenseUrl = "https://opensource.org/licenses/MIT",
+	Copyright = "Copyright © SIL Global 2010-2024", LicenseUrl = "https://opensource.org/licenses/MIT",
 	Location = "./L10NSharp.dll")]

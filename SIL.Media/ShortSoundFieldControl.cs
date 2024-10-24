@@ -1,4 +1,4 @@
-// Copyright (c) 2015 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Diagnostics;
@@ -92,7 +92,7 @@ namespace SIL.Media
 
 		public string Path
 		{
-			get { return _path; }
+			get => _path;
 			set
 			{
 				_path = value;

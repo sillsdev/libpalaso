@@ -1,8 +1,9 @@
-// Copyright (c) 2010-2019 SIL International
+// Copyright (c) 2010-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
 using System.Threading;
+using JetBrains.Annotations;
 using SIL.Extensions;
 
 namespace SIL.Progress
@@ -14,8 +15,8 @@ namespace SIL.Progress
 		public string LastWarning { get; private set; }
 		public string LastError { get; private set; }
 		public bool CancelRequested { get; set; }
-		public bool WarningEncountered { get { return !string.IsNullOrEmpty(LastWarning); } }
-		public bool ErrorEncountered { get { return !string.IsNullOrEmpty(LastError); }
+		public bool WarningEncountered { get => !string.IsNullOrEmpty(LastWarning); }
+		public bool ErrorEncountered { get => !string.IsNullOrEmpty(LastError);
 			set { }
 		}
 
@@ -62,6 +63,7 @@ namespace SIL.Progress
 			set {  }
 		}
 
+		[PublicAPI]
 		public bool WasCancelled
 		{
 			get

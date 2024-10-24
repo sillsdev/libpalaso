@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2019 SIL International
+// Copyright (c) 2010-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -67,7 +67,7 @@ namespace SIL.Progress
 
 		public bool ShowVerbose
 		{
-			set { _verbose = value; }
+			set => _verbose = value;
 		}
 	}
 }

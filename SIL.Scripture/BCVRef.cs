@@ -1,20 +1,22 @@
 // ---------------------------------------------------------------------------------------------
-#region // Copyright (c) 2021, SIL International.
-// <copyright from='2005' to='2021' company='SIL International'>
-//		Copyright (c) 2021, SIL International.   
+#region // Copyright (c) 2024 SIL Global.
+// <copyright from='2005' to='2024' company='SIL Global'>
+//		Copyright (c) 2024, SIL Global.   
 //	
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
 // </copyright> 
 #endregion
 // 
 // This class originated in FieldWorks (under the GNU Lesser General Public License), but we
-// have decided to make it available in SIL.Scripture as part of Palaso so it will be more
-// readily available to other projects.
+// decided to make it available in SIL.Scripture to make it more readily available to other
+// projects.
 // ---------------------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using JetBrains.Annotations;
+using static System.Char;
+using static System.Int32;
 
 namespace SIL.Scripture
 {
@@ -797,25 +799,25 @@ namespace SIL.Scripture
 			{
 				string sref = startRef.Chapter.ToString();
 				if (startRef.Verse > 0 || endRef.Verse > 0)
-					sref += (chapterVerseSeparator + startRef.Verse.ToString());
+					sref += (chapterVerseSeparator + startRef.Verse);
 
-				sref += (verseBridge + endRef.Chapter.ToString());
+				sref += (verseBridge + endRef.Chapter);
 				if (startRef.Verse > 0 || endRef.Verse > 0)
-					sref += (chapterVerseSeparator + endRef.Verse.ToString());
+					sref += (chapterVerseSeparator + endRef.Verse);
 
 				return bookName + " " + sref;
 			}
 			
 			if (startRef.Verse != endRef.Verse)
 			{
-				return bookName + " " + startRef.Chapter.ToString() + chapterVerseSeparator +
-					startRef.Verse.ToString() + verseBridge + endRef.Verse.ToString();
+				return bookName + " " + startRef.Chapter + chapterVerseSeparator +
+					startRef.Verse + verseBridge + endRef.Verse;
 			}
 			
 			if (startRef.Verse != 0)
 			{
-				return bookName + " " + startRef.Chapter.ToString() + chapterVerseSeparator +
-					startRef.Verse.ToString();
+				return bookName + " " + startRef.Chapter + chapterVerseSeparator +
+					startRef.Verse;
 			}
 
 			string sLiteral = null;
@@ -920,7 +922,7 @@ namespace SIL.Scripture
 
 			// Break out the chapter and verse numbers
 			bool inChapter = true;
-			if (IsSingleChapterBook && (sAfterToken[0] != '1' || (sAfterToken.Length > 1 && Char.IsDigit(sAfterToken[1]))))
+			if (IsSingleChapterBook && (sAfterToken[0] != '1' || (sAfterToken.Length > 1 && IsDigit(sAfterToken[1]))))
 			{
 				m_chapter = 1;
 				inChapter = false;
@@ -928,25 +930,25 @@ namespace SIL.Scripture
 
 			foreach (char ch in sAfterToken)
 			{
-				if (Char.IsDigit(ch))
+				if (IsDigit(ch))
 				{
 					if (inChapter)
 					{
 						m_chapter *= 10;
-						m_chapter += (int)Char.GetNumericValue(ch);
+						m_chapter += (int)GetNumericValue(ch);
 					}
 					else
 					{
 						if (m_verse < 0)
-							m_verse = (int)Char.GetNumericValue(ch);
+							m_verse = (int)GetNumericValue(ch);
 						else
 						{
 							m_verse *= 10;
-							m_verse += (int)Char.GetNumericValue(ch);
+							m_verse += (int)GetNumericValue(ch);
 						}
 					}
 				}
-				else if (!char.IsWhiteSpace(ch))
+				else if (!IsWhiteSpace(ch))
 				{
 					if (inChapter)
 						inChapter = false;
@@ -996,16 +998,16 @@ namespace SIL.Scripture
 			chapterString = chapterString.TrimStart();
 			if (chapterString == string.Empty)
 				throw new ArgumentException("The chapter string was empty");
-			if (!Char.IsDigit(chapterString[0]))
+			if (!IsDigit(chapterString[0]))
 				throw new ArgumentException("The chapter string does not start with a digit");
 
 			int chapter = 0;
 			for (int i = 0; i < chapterString.Length; i++)
 			{
 				char ch = chapterString[i];
-				if (Char.IsDigit(ch))
+				if (IsDigit(ch))
 				{
-					chapter = chapter * 10 + (int)Char.GetNumericValue(ch);
+					chapter = chapter * 10 + (int)GetNumericValue(ch);
 					if (chapter > Int16.MaxValue)
 						chapter = Int16.MaxValue;
 				}
@@ -1076,8 +1078,8 @@ namespace SIL.Scripture
 			for (int i = sVerseNum.Length - 1; i >= 0; i--)
 			{
 				int numVal = -1;
-				if (Char.IsDigit(sVerseNum[i]))
-					numVal = (int)Char.GetNumericValue(sVerseNum[i]);
+				if (IsDigit(sVerseNum[i]))
+					numVal = (int)GetNumericValue(sVerseNum[i]);
 
 				if (numVal >= 0 && numVal <= 9)
 				{
@@ -1245,24 +1247,24 @@ namespace SIL.Scripture
 			while (i < sourceString.Length)
 			{
 				char ch = sourceString[i];
-				if (Char.IsDigit(ch))
+				if (IsDigit(ch))
 				{
 					stringSplitPos = i + 1;
 				}
-				else if (Char.IsLetter(ch))
+				else if (IsLetter(ch))
 				{
 					if (prevChar == '.')
 					{
 						stringSplitPos = i;
 						break;
 					}
-					if (Char.IsLetter(prevChar) || Char.IsPunctuation(prevChar))
+					if (IsLetter(prevChar) || IsPunctuation(prevChar))
 					{
 						stringSplitPos = i - 1;
 						break;
 					}
 				}
-				else if (ch != '.' && Char.IsPunctuation(ch))
+				else if (ch != '.' && IsPunctuation(ch))
 				{
 					if (iDashCount > 0)
 					{
@@ -1305,26 +1307,26 @@ namespace SIL.Scripture
 			int lastSegment = 0;
 			foreach (char ch in literalVerse)
 			{
-				if (Char.IsDigit(ch))
+				if (IsDigit(ch))
 				{
 					// Add the digit to either the first or last verse in the bridge
 					if (inFirst)
 					{
-						firstVerse = firstVerse * 10 + (int)Char.GetNumericValue(ch);
+						firstVerse = firstVerse * 10 + (int)GetNumericValue(ch);
 						if (firstVerse > Int16.MaxValue)
 							return false; // whoops, we got too big!
 					}
 					else
 					{
-						lastVerse = lastVerse * 10 + (int)Char.GetNumericValue(ch);
+						lastVerse = lastVerse * 10 + (int)GetNumericValue(ch);
 						if (lastVerse > Int16.MaxValue)
 							return false; // whoops, we got too big!
 					}
 				}
-				else if (Char.IsLetter(ch))
+				else if (IsLetter(ch))
 				{
 					// letters are used for segments
-					if (Char.IsDigit(prevChar))
+					if (IsDigit(prevChar))
 					{
 						if (inFirst)
 						{
@@ -1414,9 +1416,8 @@ namespace SIL.Scripture
 
 			string sFirstRef = pieces[0];
 			int bbcccvvvStart = bcvRefStart.BBCCCVVV;
-			int intVal;
 
-			if (Int32.TryParse(sFirstRef, out intVal))
+			if (Int32.TryParse(sFirstRef, out var intVal))
 			{
 				if (intVal > 176)
 				{
@@ -1438,7 +1439,7 @@ namespace SIL.Scripture
 			{
 				// have to check *second* character because first character in a book code
 				// can be a number; e.g. 2JN
-				if (sFirstRef.Length < 3 || !Char.IsLetter(sFirstRef[1]))
+				if (sFirstRef.Length < 3 || !IsLetter(sFirstRef[1]))
 				{
 					if (bcvRefStart.Book != bcvRefEnd.Book)
 						return false;
@@ -1463,9 +1464,9 @@ namespace SIL.Scripture
 
 			// The following handles the simple case of a verse number AND the more complex case of a verse
 			// number followed by a sub-verse segment letter.
-			if (Int32.TryParse(sEndRef, out intVal) ||
-				(sEndRef.Length >= 2 && sEndRef.Length <= 4 && Char.IsLetter(sEndRef[sEndRef.Length - 1]) &&
-				Int32.TryParse(sEndRef.Remove(sEndRef.Length - 1), out intVal)))
+			if (TryParse(sEndRef, out intVal) ||
+				(sEndRef.Length >= 2 && sEndRef.Length <= 4 && IsLetter(sEndRef[sEndRef.Length - 1]) &&
+				TryParse(sEndRef.Remove(sEndRef.Length - 1), out intVal)))
 			{
 				if (intVal > 176)
 				{
@@ -1485,7 +1486,7 @@ namespace SIL.Scripture
 			}
 			else
 			{
-				if (sEndRef.Length < 3 || !Char.IsLetter(sEndRef[1]))
+				if (sEndRef.Length < 3 || !IsLetter(sEndRef[1]))
 					sEndRef = NumberToBookCode(bcvRefStart.Book) + " " + sEndRef;
 
 				bcvRefEnd.Parse(sEndRef);

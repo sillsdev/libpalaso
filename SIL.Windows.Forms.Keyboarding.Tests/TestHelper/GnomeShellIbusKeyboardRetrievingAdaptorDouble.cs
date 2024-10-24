@@ -1,10 +1,8 @@
-// Copyright (c) 2020 SIL International
+// Copyright (c) 2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
 using IBusDotNet;
 using SIL.Reflection;
 using SIL.Windows.Forms.Keyboarding.Linux;
-using SIL.Windows.Forms.Keyboarding.Tests.TestHelper;
 
 namespace SIL.Windows.Forms.Keyboarding.Tests.TestHelper
 {

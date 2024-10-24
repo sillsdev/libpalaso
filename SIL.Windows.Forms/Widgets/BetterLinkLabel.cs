@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -45,11 +45,12 @@ namespace SIL.Windows.Forms.Widgets
 			{
 				try
 				{
-					SIL.Program.Process.SafeStart(URL);
+					Program.Process.SafeStart(URL);
 				}
 				catch(Exception)
 				{
-					ErrorReport.NotifyUserOfProblem(string.Format("Could not follow that link to {0}. Your computer is not set up to follow links of that kind, but you can try typing it into your web browser.",URL));
+					ErrorReport.NotifyUserOfProblem(
+						$"Could not follow that link to {URL}. Your computer is not set up to follow links of that kind, but you can try typing it into your web browser.");
 				}
 			}
 			else if (LinkClicked != null)

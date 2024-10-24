@@ -1,7 +1,7 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
 using SIL.ObjectModel;
+using JetBrains.Annotations;
 
 namespace SIL.TestUtilities.NUnitExtensions
 {
@@ -25,6 +25,7 @@ namespace SIL.TestUtilities.NUnitExtensions
 		/// XML string.
 		/// </summary>
 		/// <example>Assert.That(actual, Is.XmlEqualTo("<root/>"));</example>
+		[PublicAPI]
 		public static XmlEquatableConstraint XmlEqualTo(string expected)
 		{
 			return new XmlEquatableConstraint(expected);

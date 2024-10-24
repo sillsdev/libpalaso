@@ -1,4 +1,4 @@
-// Copyright (c) 2013, SIL International.
+// Copyright (c) 2024, SIL Global.
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
 using System.Windows.Forms;
 using IBusDotNet;

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 SIL International
+// Copyright (c) 2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -9,12 +9,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 {
 	internal class GnomeXkbInfo
 	{
-		private readonly IntPtr _gnomeXkbInfo;
-
-		public GnomeXkbInfo()
-		{
-			_gnomeXkbInfo = Unmanaged.gnome_xkb_info_new();
-		}
+		private readonly IntPtr _gnomeXkbInfo = Unmanaged.gnome_xkb_info_new();
 
 		public IEnumerable<string> GetAllLayouts()
 		{

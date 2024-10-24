@@ -1,4 +1,4 @@
-// Copyright (c) 2024 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -237,11 +237,9 @@ namespace SIL.CommandLineProcessing
 		{
 			if (File.Exists(path))
 				throw new ArgumentException(
-					Format(
-						"MakePathToDirectorySafeFromEncodingProblems() is only for directories, but {0} is a file.",
-						path));
+					$"MakePathToDirectorySafeFromEncodingProblems() is only for directories, but {path} is a file.");
 
-			var safe = "";
+			string safe;
 
 			//if the filename doesn't exist yet, we can't get the 8.3 name. So we make it, get the name, then delete it.
 			//NB: this will not yet deal with the problem of creating a directory

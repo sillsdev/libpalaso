@@ -1,14 +1,11 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
-using System.Reflection;
 using Icu.Collation;
-using SIL.PlatformUtilities;
 
 namespace SIL.WritingSystems
 {
@@ -50,10 +47,11 @@ namespace SIL.WritingSystems
 
 		public static bool ValidateSortRules(string rules, out string message)
 		{
-			Collator.CollationRuleErrorInfo errorInfo = Collator.CheckRules(LdmlCollationParser.ReplaceUnicodeEscapesForIcu(rules));
+			var errorInfo = Collator.CheckRules(LdmlCollationParser.ReplaceUnicodeEscapesForIcu(rules));
 			if (errorInfo != null)
 			{
-				message = string.Format("Invalid ICU rules (Line: {0}, Column: {1}).", errorInfo.Line, errorInfo.Offset);
+				message =
+					$"Invalid ICU rules (Line: {errorInfo.Line}, Column: {errorInfo.Offset}).";
 				return false;
 			}
 			message = null;

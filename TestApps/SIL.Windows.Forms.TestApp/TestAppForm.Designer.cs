@@ -1,14 +1,15 @@
 // ---------------------------------------------------------------------------------------------
 using SIL.Windows.Forms.Keyboarding;
 
-#region // Copyright (c) 2022, SIL International. All Rights Reserved.
-// <copyright from='2013' to='2022' company='SIL International'>
-//		Copyright (c) 2022, SIL International. All Rights Reserved.
+#region // Copyright 2024 SIL GlobalAll Rights Reserved.
+// <copyright from='2013' to='2024' company='SIL Global'>
+//		Copyright (c) 2024, SIL Global. All Rights Reserved.
 //
-//		Distributable under the terms of either the Common Public License or the
-//		GNU Lesser General Public License, as specified in the LICENSING.txt file.
-// </copyright>
+//		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
+// </copyright> 
 #endregion
+// 
+// This class was originally licensed under the GNU Lesser General Public License.
 // ---------------------------------------------------------------------------------------------
 using SIL.Windows.Forms.SuperToolTip;
 

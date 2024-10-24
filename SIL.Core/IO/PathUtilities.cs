@@ -1,4 +1,4 @@
-// Copyright (c) 2014 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 using SIL.Extensions;
 using SIL.PlatformUtilities;
 using SIL.Reporting;
@@ -143,14 +144,14 @@ namespace SIL.IO
 		private struct SHFILEOPSTRUCT
 		{
 
-			public IntPtr hwnd;
+			public readonly IntPtr hwnd;
 			[MarshalAs(UnmanagedType.U4)] public FileOperationType wFunc;
 			public string pFrom;
-			public string pTo;
+			public readonly string pTo;
 			public FileOperationFlags fFlags;
-			[MarshalAs(UnmanagedType.Bool)] public bool fAnyOperationsAborted;
-			public IntPtr hNameMappings;
-			public string lpszProgressTitle;
+			[MarshalAs(UnmanagedType.Bool)] public readonly bool fAnyOperationsAborted;
+			public readonly IntPtr hNameMappings;
+			public readonly string lpszProgressTitle;
 		}
 
 		[DllImport("shell32.dll", CharSet = CharSet.Auto)]
@@ -159,11 +160,12 @@ namespace SIL.IO
 		private static void WriteTrashInfoFile(string trashPath, string filePath, string trashedFile)
 		{
 			var trashInfo = Path.Combine(trashPath, "info", trashedFile + ".trashinfo");
-			var lines = new List<string>();
-			lines.Add("[Trash Info]");
-			lines.Add(string.Format("Path={0}", filePath));
-			lines.Add(string.Format("DeletionDate={0}",
-				DateTime.Now.ToString("yyyyMMddTHH:mm:ss", CultureInfo.InvariantCulture)));
+			var lines = new List<string>
+			{
+				"[Trash Info]",
+				$"Path={filePath}",
+				$"DeletionDate={DateTime.Now.ToString("yyyyMMddTHH:mm:ss", CultureInfo.InvariantCulture)}"
+			};
 			File.WriteAllLines(trashInfo, lines);
 		}
 
@@ -196,7 +198,7 @@ namespace SIL.IO
 				// alternative using visual basic dll:
 				// FileSystem.DeleteDirectory(item.FolderPath,UIOption.OnlyErrorDialogs), RecycleOption.SendToRecycleBin);
 
-				//moves it to the recyle bin
+				//moves it to the recycle bin
 				try
 				{
 					var shf = new SHFILEOPSTRUCT
@@ -265,11 +267,12 @@ namespace SIL.IO
 		[CLSCompliant(false)]
 		public static extern int SHOpenFolderAndSelectItems(IntPtr pidlList, uint cild, IntPtr children, uint dwFlags);
 
+		[PublicAPI]
 		public static void SelectItemInExplorerEx(string path)
 		{
 			var pidlList = ILCreateFromPathW(path);
 			if(pidlList == IntPtr.Zero)
-				throw new Exception(string.Format("ILCreateFromPathW({0}) failed", path));
+				throw new Exception($"ILCreateFromPathW({path}) failed");
 			try
 			{
 				Marshal.ThrowExceptionForHR(SHOpenFolderAndSelectItems(pidlList, 0, IntPtr.Zero, 0));
@@ -290,10 +293,10 @@ namespace SIL.IO
 		{
 			if (Platform.IsWindows)
 			{
-				//we need to use this becuase of a bug in windows that strips composed characters before trying to find the target path (http://stackoverflow.com/a/30405340/723299)
+				//we need to use this because of a bug in windows that strips composed characters before trying to find the target path (http://stackoverflow.com/a/30405340/723299)
 				var pidlList = ILCreateFromPathW(path);
 				if(pidlList == IntPtr.Zero)
-					throw new Exception(string.Format("ILCreateFromPathW({0}) failed", path));
+					throw new Exception($"ILCreateFromPathW({path}) failed");
 				try
 				{
 					Marshal.ThrowExceptionForHR(SHOpenFolderAndSelectItems(pidlList, 0, IntPtr.Zero, 0));
@@ -311,11 +314,11 @@ namespace SIL.IO
 				{
 					case "nautilus":
 					case "nemo":
-						arguments = string.Format("\"{0}\"", path);
+						arguments = $"\"{path}\"";
 						break;
 					default:
 						fileManager = "xdg-open";
-						arguments = string.Format("\"{0}\"", Path.GetDirectoryName(path));
+						arguments = $"\"{Path.GetDirectoryName(path)}\"";
 						break;
 				}
 				Process.Start(fileManager, arguments);
@@ -344,7 +347,7 @@ namespace SIL.IO
 			}
 			arguments = string.Format(arguments, directory);
 
-			Process.Start(new ProcessStartInfo()
+			Process.Start(new ProcessStartInfo
 				{
 					FileName = fileManager,
 					Arguments = arguments,

@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2020 SIL International
+// Copyright (c) 2014-2024, SIL Global
 
 namespace SIL.Windows.Forms.Widgets
 {

@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using SIL.Acknowledgements;
 
 [assembly: InternalsVisibleTo("SIL.Windows.Forms.WritingSystems.Tests, " +
@@ -8,7 +8,7 @@ using SIL.Acknowledgements;
 	"142a40a91e53d56e79f69dc79c4e95817de498aac924ee011f03b4e1c1d772d51c4946c1185e3bfb621bc6")]
 
 [assembly: Acknowledgement("L10NSharp", Url = "https://github.com/sillsdev/l10nsharp/",
-	Copyright = "Copyright © SIL International 2010-2014", LicenseUrl = "https://opensource.org/licenses/MIT",
+	Copyright = "Copyright © SIL Global 2010-2024", LicenseUrl = "https://opensource.org/licenses/MIT",
 	Location = "./L10NSharp.dll")]
 
 // LGPL-2.1 license is actually for Enchant, not for Enchant.Net
