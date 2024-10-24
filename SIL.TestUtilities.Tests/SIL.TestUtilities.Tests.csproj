@@ -5,6 +5,7 @@
     <AssemblyName>SIL.TestUtilities.Tests</AssemblyName>
     <Description>Unit tests for SIL.TestUtilities</Description>
     <IsPackable>false</IsPackable>
+    <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
