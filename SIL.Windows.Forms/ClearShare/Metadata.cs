@@ -907,8 +907,8 @@ namespace SIL.Windows.Forms.ClearShare
 
 		/// <summary>
 		/// A super compact form of credits that doesn't introduce any English.
-		/// Jane Doe, © 2008 SIL International. CC BY-NC 3.0
-		/// International Illustrations: Art Of Reading, © 2009 SIL International. CC ND 4.0
+		/// Jane Doe, © 2008 SIL Global. CC BY-NC 3.0
+		/// International Illustrations: Art Of Reading, © 2009 SIL Global. CC ND 4.0
 		/// Sam Smith, Free Pictures by Sam. CC0 1.0
 		/// CC0 1.0
 		/// </summary>

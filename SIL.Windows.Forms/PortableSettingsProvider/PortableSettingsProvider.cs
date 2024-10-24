@@ -1,23 +1,26 @@
 // ---------------------------------------------------------------------------------------------
 #region // Copyright 2024 SIL GlobalAll Rights Reserved.
 // <copyright from='2010' to='2024' company='SIL Global'>
-//		Copyright (c) 2010, SIL International. All Rights Reserved.
+//		Copyright (c) 2024, SIL Global. All Rights Reserved.
 //
-//		Distributable under the terms of either the Common Public License or the
-//		GNU Lesser General Public License, as specified in the LICENSING.txt file.
-// </copyright>
+//		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
+// </copyright> 
 #endregion
+// 
+// This class (as ported) originated in FieldWorks (under the GNU Lesser General Public License),
+// but we decided to make it available in SIL.Windows.Forms to make it more readily available to
+// other projects.
 //
 // File: PortableSettingsProvider.cs
-// Responsibility: D. Olson
+// Original author: D. Olson
 //
 // <remarks>
 // This class is based on a class by the same name found at
-// http://www.codeproject.com/KB/vb/CustomSettingsProvider.aspx. The original was written in
+// https://www.codeproject.com/KB/vb/CustomSettingsProvider.aspx. The original was written in
 // VB.Net so this is a C# port of that. Other changes include some variable name changes,
 // making the settings file path a public static property, special handling of string
 // collections, getting rid of the IsRoaming support and all-around method rewriting.
-// The original code is under the CPOL license (http://www.codeproject.com/info/cpol10.aspx).
+// The original code is under the CPOL license (https://www.codeproject.com/info/cpol10.aspx).
 // </remarks>
 // ---------------------------------------------------------------------------------------------
 using System;

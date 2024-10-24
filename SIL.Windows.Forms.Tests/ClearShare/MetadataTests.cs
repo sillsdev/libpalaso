@@ -289,24 +289,24 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightBy_HasSymbolAndComma_ReturnsCopyrightHolder()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "© 2012, SIL International";
-			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+			m.CopyrightNotice = "© 2012, SIL Global";
+			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
 		}
 
 		[Test]
 		public void GetCopyrightBy_HasCopyrightAndSymbolAndComma_ReturnsCopyrightHolder()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "Copyright © 2012, SIL International";
-			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+			m.CopyrightNotice = "Copyright © 2012, SIL Global";
+			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
 		}
 
 		[Test]
 		public void GetCopyrightBy_HasCopyrightAndSymbolNoYear_ReturnsCopyrightHolder()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "Copyright © SIL International";
-			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+			m.CopyrightNotice = "Copyright © SIL Global";
+			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
 		}
 
 
@@ -314,8 +314,8 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightBy_HasCOPYRIGHTAndSymbolNoYear_ReturnsCopyrightHolder()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "COPYRIGHT © SIL International";
-			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+			m.CopyrightNotice = "COPYRIGHT © SIL Global";
+			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
 		}
 
 
@@ -323,8 +323,8 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightBy_HasSymbolNoComma_ReturnsCopyrightHolder()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "© 2012 SIL International";
-			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+			m.CopyrightNotice = "© 2012 SIL Global";
+			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
 		}
 
 
@@ -340,8 +340,8 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightBy_HasSymbolNoYear_ReturnsCopyrightHolder()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "© SIL International";
-			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+			m.CopyrightNotice = "© SIL Global";
+			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
 		}
 
 
@@ -349,8 +349,8 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightBy_NoSymbolOrYear_ReturnsCopyrightHolder()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "SIL International";
-			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+			m.CopyrightNotice = "SIL Global";
+			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
 		}
 
 		[Test]
@@ -366,8 +366,8 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightInfo_ArtOfReading_ReturnsCopyrightInfo()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "Copyright, SIL International 2009. ";	// (from AOR_Cat3.png)
-			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+			m.CopyrightNotice = "Copyright, SIL Global 2009. ";	// (from AOR_Cat3.png)
+			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
 			Assert.AreEqual("2009", m.GetCopyrightYear());
 		}
 
@@ -393,7 +393,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightYear_HasCopyrightAndSymbolAndComma_ReturnsCopyrightYear()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "Copyright © 2012, SIL International";
+			m.CopyrightNotice = "Copyright © 2012, SIL Global";
 			Assert.AreEqual("2012", m.GetCopyrightYear());
 		}
 
@@ -402,7 +402,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightYear_HasSymbolAndComma_ReturnsCopyrightYear()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "© 2012, SIL International";
+			m.CopyrightNotice = "© 2012, SIL Global";
 			Assert.AreEqual("2012", m.GetCopyrightYear());
 		}
 
@@ -410,7 +410,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightYear_NoSymbolOrComma_ReturnsCopyrightYear()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "2012 SIL International";
+			m.CopyrightNotice = "2012 SIL Global";
 			Assert.AreEqual("2012", m.GetCopyrightYear());
 		}
 
@@ -418,7 +418,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightYear_SymbolButNoYear_ReturnsEmptyString()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "© SIL International";
+			m.CopyrightNotice = "© SIL Global";
 			Assert.AreEqual("", m.GetCopyrightYear());
 		}
 
@@ -427,7 +427,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightYear_NoYear_ReturnsEmptyString()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "SIL International";
+			m.CopyrightNotice = "SIL Global";
 			Assert.AreEqual("", m.GetCopyrightYear());
 		}
 

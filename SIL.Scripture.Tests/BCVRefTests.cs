@@ -1,6 +1,6 @@
 // --------------------------------------------------------------------------------------------
 #region // Copyright (c) 2024 SIL Global
-// <copyright from='2003' to='2020' company='SIL Global'>
+// <copyright from='2003' to='2024' company='SIL Global'>
 //		Copyright (c) 2024 SIL Global
 //    
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
@@ -8,8 +8,8 @@
 #endregion
 // 
 // This class originated in FieldWorks (under the GNU Lesser General Public License), but we
-// have decided to make it available in SIL.Scripture as part of Palaso so it will be more
-// readily available to other projects.
+// decided to move the class it tests into SIL.Scripture to make it more readily available to
+// other projects.
 // --------------------------------------------------------------------------------------------
 using System;
 using NUnit.Framework;

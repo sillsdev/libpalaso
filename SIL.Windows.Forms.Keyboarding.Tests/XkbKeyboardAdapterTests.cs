@@ -1,12 +1,16 @@
-// --------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
+#region // Copyright (c) 2024 SIL Global.
 // <copyright from='2011' to='2024' company='SIL Global'>
-// 	Copyright (c) 2011, SIL International. All Rights Reserved.
-//
-// 	Distributable under the terms of either the Common Public License or the
-// 	GNU Lesser General Public License, as specified in the LICENSING.txt file.
-// </copyright>
-// --------------------------------------------------------------------------------------------
-
+//		Copyright (c) 2024, SIL Global.   
+//	
+//		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
+// </copyright> 
+#endregion
+// 
+// This class originated in FieldWorks (under the GNU Lesser General Public License), but we
+// decided to make it available in SIL.Windows.Forms.Keyboarding to make it more readily
+// available to other projects.
+// ---------------------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

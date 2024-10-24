@@ -8,8 +8,8 @@
 #endregion
 // 
 // This class originated in FieldWorks (under the GNU Lesser General Public License), but we
-// have decided to make it available in SIL.Scripture as part of Palaso so it will be more
-// readily available to other projects.
+// decided to make it available in SIL.Scripture to make it more readily available to other
+// projects.
 // ---------------------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
