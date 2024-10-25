@@ -42,7 +42,7 @@ namespace SIL.Lift.Tests.Parsing
 		[TearDown]
 		public void TearDown()
 		{
-
+			_merger.VerifyNoOtherCalls();
 		}
 
 		[Test]
@@ -264,7 +264,7 @@ namespace SIL.Lift.Tests.Parsing
 
 		private void ExpectGetOrMakeEntry(Func<Extensible, bool> extensibleMatcher)
 		{
-			_merger.Setup(m => m.GetOrMakeEntry(It.Is<Extensible>(e => extensibleMatcher(e)), 0)).Returns(new Dummy());
+			_merger.Setup(m => m.GetOrMakeEntry(It.Is<Extensible>(e => extensibleMatcher(e)), 0)).Returns(new Dummy()).Verifiable();
 		}
 
 		private void ExpectEmptyEntry()
@@ -275,78 +275,78 @@ namespace SIL.Lift.Tests.Parsing
 
 		private void ExpectGetOrMakeEntry()
 		{
-			_merger.Setup(m => m.GetOrMakeEntry(It.IsAny<Extensible>(), It.IsAny<int>())).Returns(new Dummy());
+			_merger.Setup(m => m.GetOrMakeEntry(It.IsAny<Extensible>(), It.IsAny<int>())).Returns(new Dummy()).Verifiable();
 		}
 
 		private void ExpectGetOrMakeSense()
 		{
-			_merger.Setup(m => m.GetOrMakeSense(It.IsAny<Dummy>(), It.IsAny<Extensible>(), It.IsAny<string>())).Returns(new Dummy());
+			_merger.Setup(m => m.GetOrMakeSense(It.IsAny<Dummy>(), It.IsAny<Extensible>(), It.IsAny<string>())).Returns(new Dummy()).Verifiable();
 		}
 
 		private void ExpectMergeInGrammi(string value, Func<List<Trait>, bool> traitListMatcher)
 		{
-			_merger.Setup(m => m.MergeInGrammaticalInfo(It.IsAny<Dummy>(), value, It.Is<List<Trait>>(l => traitListMatcher(l))));
+			_merger.Setup(m => m.MergeInGrammaticalInfo(It.IsAny<Dummy>(), value, It.Is<List<Trait>>(l => traitListMatcher(l)))).Verifiable();
 		}
 
 		private void ExpectGetOrMakeExample()
 		{
-			_merger.Setup(m => m.GetOrMakeExample(It.IsAny<Dummy>(), It.IsAny<Extensible>())).Returns(new Dummy());
+			_merger.Setup(m => m.GetOrMakeExample(It.IsAny<Dummy>(), It.IsAny<Extensible>())).Returns(new Dummy()).Verifiable();
 		}
 
 
 		private void ExpectMergeInLexemeForm(LiftMultiText matcher)
 		{
-			_merger.Setup(m => m.MergeInLexemeForm(It.IsAny<Dummy>(), It.Is<LiftMultiText>(l => matcher.Equals(l))));
+			_merger.Setup(m => m.MergeInLexemeForm(It.IsAny<Dummy>(), It.Is<LiftMultiText>(l => matcher.Equals(l)))).Verifiable();
 		}
 
 		private void ExpectFinishEntry()
 		{
-			_merger.Setup(m => m.FinishEntry(It.IsAny<Dummy>()));
+			_merger.Setup(m => m.FinishEntry(It.IsAny<Dummy>())).Verifiable();
 		}
 
 		private void ExpectMergeInField(string tagMatcher, DateTime dateCreatedMatcher, DateTime dateModifiedMatcher, Func<LiftMultiText, bool> multiTextMatcher, Func<List<Trait>, bool> traitsMatcher)
 		{
-			_merger.Setup(m => m.MergeInField(It.IsAny<DummyBase>(), tagMatcher, dateCreatedMatcher, dateModifiedMatcher, It.Is<LiftMultiText>(l => multiTextMatcher(l)), It.Is<List<Trait>>(l => traitsMatcher(l))));
+			_merger.Setup(m => m.MergeInField(It.IsAny<DummyBase>(), tagMatcher, dateCreatedMatcher, dateModifiedMatcher, It.Is<LiftMultiText>(l => multiTextMatcher(l)), It.Is<List<Trait>>(l => traitsMatcher(l)))).Verifiable();
 		}
 
 		private void ExpectMergeInTrait(Func<Trait, bool> traitMatcher)
 		{
-			_merger.Setup(m => m.MergeInTrait(It.IsAny<DummyBase>(), It.Is<Trait>(t => traitMatcher(t))));
+			_merger.Setup(m => m.MergeInTrait(It.IsAny<DummyBase>(), It.Is<Trait>(t => traitMatcher(t)))).Verifiable();
 		}
 		private void ExpectMergeInRelation(string relationType, string targetId)
 		{
-			_merger.Setup(m => m.MergeInRelation(It.IsAny<DummyBase>(), relationType, targetId, It.IsAny<string>()));
+			_merger.Setup(m => m.MergeInRelation(It.IsAny<DummyBase>(), relationType, targetId, It.IsAny<string>())).Verifiable();
 		}
 
 		private void ExpectMergeInPicture(string href)
 		{
-			_merger.Setup(m => m.MergeInPicture(It.IsAny<Dummy>(), href, null));
+			_merger.Setup(m => m.MergeInPicture(It.IsAny<Dummy>(), href, null)).Verifiable();
 		}
 
 		private void ExpectMergeInPictureWithCaption(string href)
 		{
-			_merger.Setup(m => m.MergeInPicture(It.IsAny<Dummy>(), href, It.IsNotNull<LiftMultiText>()));
+			_merger.Setup(m => m.MergeInPicture(It.IsAny<Dummy>(), href, It.IsNotNull<LiftMultiText>())).Verifiable();
 		}
 
 		private void ExpectMergeInMediaWithCaption(string href, string caption)
 		{
-			_merger.Setup(m => m.MergeInMedia(It.IsAny<Dummy>(), href, It.Is<LiftMultiText>(lmt => lmt.ToString() == caption)));
+			_merger.Setup(m => m.MergeInMedia(It.IsAny<Dummy>(), href, It.Is<LiftMultiText>(lmt => lmt.ToString() == caption))).Verifiable();
 		}
 
 		private void ExpectEntryWasDeleted()
 		{
-			_merger.Setup(m => m.EntryWasDeleted(It.IsAny<Extensible>(), It.IsAny<DateTime>()));
+			_merger.Setup(m => m.EntryWasDeleted(It.IsAny<Extensible>(), It.IsAny<DateTime>())).Verifiable();
 			//todo expect more!
 		}
 
 		private void ExpectMergeInNote(string value)
 		{
-			_merger.Setup(m => m.MergeInNote(It.IsAny<Dummy>(), It.IsAny<string>(), It.Is<LiftMultiText>(l => l.ToString() == value), It.IsAny<string>()));
+			_merger.Setup(m => m.MergeInNote(It.IsAny<Dummy>(), It.IsAny<string>(), It.Is<LiftMultiText>(l => l.ToString() == value), It.IsAny<string>())).Verifiable();
 		}
 
 		private void ExpectTypedMergeInNote(string type)
 		{
-			_merger.Setup(m => m.MergeInNote(It.IsAny<Dummy>(), type, It.IsAny<LiftMultiText>(), It.IsAny<string>()));
+			_merger.Setup(m => m.MergeInNote(It.IsAny<Dummy>(), type, It.IsAny<LiftMultiText>(), It.IsAny<string>())).Verifiable();
 		}
 
 
@@ -1034,7 +1034,7 @@ namespace SIL.Lift.Tests.Parsing
 		{
 			if (rangeElementCount > 0)
 				_merger.Setup(_ => _.ProcessRangeElement(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<LiftMultiText>(), It.IsAny<LiftMultiText>(), It.IsAny<LiftMultiText>(), It.IsAny<string>()));
-			if (fieldCount > 0)	
+			if (fieldCount > 0)
 				_merger.Setup(_ => _.ProcessFieldDefinition(It.IsAny<string>(), It.IsAny<LiftMultiText>()));
 			if (entryCount > 0)
 				_merger.Setup(_ => _.GetOrMakeEntry(It.IsAny<Extensible>(), It.IsAny<int>()));
