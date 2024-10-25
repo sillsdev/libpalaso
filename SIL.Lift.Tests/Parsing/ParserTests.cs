@@ -5,6 +5,8 @@ using System.Text;
 using System.Xml;
 using Moq;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
 using SIL.IO;
 using SIL.Lift.Merging;
 using SIL.Lift.Parsing;
@@ -42,7 +44,8 @@ namespace SIL.Lift.Tests.Parsing
 		[TearDown]
 		public void TearDown()
 		{
-			_merger.VerifyNoOtherCalls();
+			if (TestContext.CurrentContext.Result.Outcome == ResultState.Success)
+				_merger.VerifyNoOtherCalls();
 		}
 
 		[Test]
@@ -264,7 +267,9 @@ namespace SIL.Lift.Tests.Parsing
 
 		private void ExpectGetOrMakeEntry(Func<Extensible, bool> extensibleMatcher)
 		{
-			_merger.Setup(m => m.GetOrMakeEntry(It.Is<Extensible>(e => extensibleMatcher(e)), 0)).Returns(new Dummy()).Verifiable();
+			_merger.SetupSequence(m => m.GetOrMakeEntry(It.Is<Extensible>(e => extensibleMatcher(e)), 0))
+				.Returns(new Dummy())
+				.Throws(() => new NUnitException("GetOrMakeEntry should only be called once"));
 		}
 
 		private void ExpectEmptyEntry()
@@ -275,78 +280,108 @@ namespace SIL.Lift.Tests.Parsing
 
 		private void ExpectGetOrMakeEntry()
 		{
-			_merger.Setup(m => m.GetOrMakeEntry(It.IsAny<Extensible>(), It.IsAny<int>())).Returns(new Dummy()).Verifiable();
+			_merger.SetupSequence(m => m.GetOrMakeEntry(It.IsAny<Extensible>(), It.IsAny<int>()))
+				.Returns(new Dummy())
+				.Throws(() => new NUnitException("GetOrMakeEntry should only be called once"));
 		}
 
 		private void ExpectGetOrMakeSense()
 		{
-			_merger.Setup(m => m.GetOrMakeSense(It.IsAny<Dummy>(), It.IsAny<Extensible>(), It.IsAny<string>())).Returns(new Dummy()).Verifiable();
+			_merger.SetupSequence(m => m.GetOrMakeSense(It.IsAny<Dummy>(), It.IsAny<Extensible>(), It.IsAny<string>()))
+				.Returns(new Dummy())
+				.Throws(() => new NUnitException("GetOrMakeSense should only be called once"));
 		}
 
 		private void ExpectMergeInGrammi(string value, Func<List<Trait>, bool> traitListMatcher)
 		{
-			_merger.Setup(m => m.MergeInGrammaticalInfo(It.IsAny<Dummy>(), value, It.Is<List<Trait>>(l => traitListMatcher(l)))).Verifiable();
+			_merger.SetupSequence(m => m.MergeInGrammaticalInfo(It.IsAny<Dummy>(), value, It.Is<List<Trait>>(l => traitListMatcher(l))))
+				.Pass()
+				.Throws(() => new NUnitException("MergeInGrammaticalInfo should only be called once"));
 		}
 
 		private void ExpectGetOrMakeExample()
 		{
-			_merger.Setup(m => m.GetOrMakeExample(It.IsAny<Dummy>(), It.IsAny<Extensible>())).Returns(new Dummy()).Verifiable();
+			_merger.SetupSequence(m => m.GetOrMakeExample(It.IsAny<Dummy>(), It.IsAny<Extensible>()))
+				.Returns(new Dummy())
+				.Throws(() => new NUnitException("GetOrMakeExample should only be called once"));
 		}
 
 
 		private void ExpectMergeInLexemeForm(LiftMultiText matcher)
 		{
-			_merger.Setup(m => m.MergeInLexemeForm(It.IsAny<Dummy>(), It.Is<LiftMultiText>(l => matcher.Equals(l)))).Verifiable();
+			_merger.SetupSequence(m => m.MergeInLexemeForm(It.IsAny<Dummy>(), It.Is<LiftMultiText>(l => matcher.Equals(l))))
+				.Pass()
+				.Throws(() => new NUnitException("MergeInLexemeForm should only be called once"));
 		}
 
 		private void ExpectFinishEntry()
 		{
-			_merger.Setup(m => m.FinishEntry(It.IsAny<Dummy>())).Verifiable();
+			_merger.SetupSequence(m => m.FinishEntry(It.IsAny<Dummy>()))
+				.Pass()
+				.Throws(() => new NUnitException("FinishEntry should only be called once"));
 		}
 
 		private void ExpectMergeInField(string tagMatcher, DateTime dateCreatedMatcher, DateTime dateModifiedMatcher, Func<LiftMultiText, bool> multiTextMatcher, Func<List<Trait>, bool> traitsMatcher)
 		{
-			_merger.Setup(m => m.MergeInField(It.IsAny<DummyBase>(), tagMatcher, dateCreatedMatcher, dateModifiedMatcher, It.Is<LiftMultiText>(l => multiTextMatcher(l)), It.Is<List<Trait>>(l => traitsMatcher(l)))).Verifiable();
+			_merger.SetupSequence(m => m.MergeInField(It.IsAny<DummyBase>(), tagMatcher, dateCreatedMatcher, dateModifiedMatcher, It.Is<LiftMultiText>(l => multiTextMatcher(l)), It.Is<List<Trait>>(l => traitsMatcher(l))))
+				.Pass()
+				.Throws(() => new NUnitException("MergeInField should only be called once"));
 		}
 
 		private void ExpectMergeInTrait(Func<Trait, bool> traitMatcher)
 		{
-			_merger.Setup(m => m.MergeInTrait(It.IsAny<DummyBase>(), It.Is<Trait>(t => traitMatcher(t)))).Verifiable();
+			_merger.SetupSequence(m => m.MergeInTrait(It.IsAny<DummyBase>(), It.Is<Trait>(t => traitMatcher(t))))
+				.Pass()
+				.Throws(() => new NUnitException("MergeInTrait should only be called once"));
 		}
 		private void ExpectMergeInRelation(string relationType, string targetId)
 		{
-			_merger.Setup(m => m.MergeInRelation(It.IsAny<DummyBase>(), relationType, targetId, It.IsAny<string>())).Verifiable();
+			_merger.SetupSequence(m => m.MergeInRelation(It.IsAny<DummyBase>(), relationType, targetId, It.IsAny<string>()))
+				.Pass()
+				.Throws(() => new NUnitException("MergeInRelation should only be called once"));
 		}
 
 		private void ExpectMergeInPicture(string href)
 		{
-			_merger.Setup(m => m.MergeInPicture(It.IsAny<Dummy>(), href, null)).Verifiable();
+			_merger.SetupSequence(m => m.MergeInPicture(It.IsAny<Dummy>(), href, null))
+				.Pass()
+				.Throws(() => new NUnitException("MergeInPicture should only be called once"));
 		}
 
 		private void ExpectMergeInPictureWithCaption(string href)
 		{
-			_merger.Setup(m => m.MergeInPicture(It.IsAny<Dummy>(), href, It.IsNotNull<LiftMultiText>())).Verifiable();
+			_merger.SetupSequence(m => m.MergeInPicture(It.IsAny<Dummy>(), href, It.IsNotNull<LiftMultiText>()))
+				.Pass()
+				.Throws(() => new NUnitException("MergeInPicture should only be called once"));
 		}
 
 		private void ExpectMergeInMediaWithCaption(string href, string caption)
 		{
-			_merger.Setup(m => m.MergeInMedia(It.IsAny<Dummy>(), href, It.Is<LiftMultiText>(lmt => lmt.ToString() == caption))).Verifiable();
+			_merger.SetupSequence(m => m.MergeInMedia(It.IsAny<Dummy>(), href, It.Is<LiftMultiText>(lmt => lmt.ToString() == caption)))
+				.Pass()
+				.Throws(() => new NUnitException("MergeInMedia should only be called once"));
 		}
 
 		private void ExpectEntryWasDeleted()
 		{
-			_merger.Setup(m => m.EntryWasDeleted(It.IsAny<Extensible>(), It.IsAny<DateTime>())).Verifiable();
+			_merger.SetupSequence(m => m.EntryWasDeleted(It.IsAny<Extensible>(), It.IsAny<DateTime>()))
+				.Pass()
+				.Throws(() => new NUnitException("EntryWasDeleted should only be called once"));
 			//todo expect more!
 		}
 
 		private void ExpectMergeInNote(string value)
 		{
-			_merger.Setup(m => m.MergeInNote(It.IsAny<Dummy>(), It.IsAny<string>(), It.Is<LiftMultiText>(l => l.ToString() == value), It.IsAny<string>())).Verifiable();
+			_merger.SetupSequence(m => m.MergeInNote(It.IsAny<Dummy>(), It.IsAny<string>(), It.Is<LiftMultiText>(l => l.ToString() == value), It.IsAny<string>()))
+				.Pass()
+				.Throws(() => new NUnitException("MergeInNote should only be called once"));
 		}
 
 		private void ExpectTypedMergeInNote(string type)
 		{
-			_merger.Setup(m => m.MergeInNote(It.IsAny<Dummy>(), type, It.IsAny<LiftMultiText>(), It.IsAny<string>())).Verifiable();
+			_merger.SetupSequence(m => m.MergeInNote(It.IsAny<Dummy>(), type, It.IsAny<LiftMultiText>(), It.IsAny<string>()))
+				.Pass()
+				.Throws(() => new NUnitException("MergeInNote should only be called once"));
 		}
 
 
@@ -466,7 +501,9 @@ namespace SIL.Lift.Tests.Parsing
 
 		private void ExpectMergeInPronunciation(string value)
 		{
-			_merger.Setup(m => m.MergeInPronunciation(It.IsAny<Dummy>(), It.Is<LiftMultiText>(l => l.ToString() == value), It.IsAny<string>())).Returns(new Dummy());
+			_merger.SetupSequence(m => m.MergeInPronunciation(It.IsAny<Dummy>(), It.Is<LiftMultiText>(l => l.ToString() == value), It.IsAny<string>()))
+				.Returns(new Dummy())
+				.Throws(() => new NUnitException("MergeInPronunciation should only be called once"));
 		}
 
 		[Test]
@@ -479,15 +516,21 @@ namespace SIL.Lift.Tests.Parsing
 
 		private void ExpectMergeInVariant(string value)
 		{
-			_merger.Setup(m => m.MergeInVariant(It.IsAny<Dummy>(), It.Is<LiftMultiText>(l => l.ToString() == value), It.IsAny<string>())).Returns(new Dummy());
+			_merger.SetupSequence(m => m.MergeInVariant(It.IsAny<Dummy>(), It.Is<LiftMultiText>(l => l.ToString() == value), It.IsAny<string>()))
+				.Returns(new Dummy())
+				.Throws(() => new NUnitException("MergeInVariant should only be called once"));
 		}
 
 		private void ExpectValueOfMergeInTranslationForm(string type, string value)
 		{
 			if (type == null)
-				_merger.Setup(m => m.MergeInTranslationForm(It.IsAny<Dummy>(), null, It.Is<LiftMultiText>(l => l.ToString() == value), It.IsAny<string>()));
+				_merger.SetupSequence(m => m.MergeInTranslationForm(It.IsAny<Dummy>(), null, It.Is<LiftMultiText>(l => l.ToString() == value), It.IsAny<string>()))
+					.Pass()
+					.Throws(() => new NUnitException("MergeInTranslationForm should only be called once"));
 			else
-				_merger.Setup(m => m.MergeInTranslationForm(It.IsAny<Dummy>(), type, It.Is<LiftMultiText>(l => l.ToString() == value), It.IsAny<string>()));
+				_merger.SetupSequence(m => m.MergeInTranslationForm(It.IsAny<Dummy>(), type, It.Is<LiftMultiText>(l => l.ToString() == value), It.IsAny<string>()))
+					.Pass()
+					.Throws(() => new NUnitException("MergeInTranslationForm should only be called once"));
 		}
 
 
