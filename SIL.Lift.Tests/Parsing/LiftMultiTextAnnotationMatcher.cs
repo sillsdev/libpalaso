@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using SIL.Lift.Parsing;
 
 namespace SIL.Lift.Tests.Parsing
@@ -25,6 +24,11 @@ namespace SIL.Lift.Tests.Parsing
 
 		public override bool Equals(object o)
 		{
+			if (o == null)
+			{
+				throw new NullReferenceException();
+			}
+
 			LiftMultiText m = (LiftMultiText)o;
 			if (m.Annotations.Count != _expectedCount)
 			{

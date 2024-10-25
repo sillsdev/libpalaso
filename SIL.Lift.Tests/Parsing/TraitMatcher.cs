@@ -1,4 +1,4 @@
-using System.IO;
+using System;
 using SIL.Lift.Parsing;
 
 namespace SIL.Lift.Tests.Parsing
@@ -18,6 +18,11 @@ namespace SIL.Lift.Tests.Parsing
 
 		public override bool Equals(object o)
 		{
+			if (o == null)
+			{
+				throw new NullReferenceException();
+			}
+
 			Trait trait = (Trait)o;
 			return (trait.Annotations.Count == _expectedNumberofAnnotations)
 				   &&(trait.Name == _expectedName)

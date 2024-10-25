@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using SIL.Lift.Parsing;
 
 namespace SIL.Lift.Tests.Parsing
@@ -44,9 +43,14 @@ namespace SIL.Lift.Tests.Parsing
 			: this(string.Empty)
 		{
 		}
-		
+
 		public override bool Equals(object o)
 		{
+			if (o == null)
+			{
+				throw new NullReferenceException();
+			}
+
 			Extensible e = (Extensible) o;
 
 			if (e.Id != _expectedId)
