@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 SIL International
+// Copyright (c) 2017-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using JetBrains.Annotations;
 using SIL.PlatformUtilities;
 using SIL.Reporting;
 
@@ -26,13 +27,12 @@ namespace SIL.IO
 		/// <returns>Null if the copy was unsuccessful, otherwise the path to the copied directory</returns>
 		public static string CopyDirectoryToTempDirectory(string srcDirectory)
 		{
-			string dstDirectory;
-			return (CopyDirectory(srcDirectory, Path.GetTempPath(), out dstDirectory) ? dstDirectory : null);
+			return CopyDirectory(srcDirectory, Path.GetTempPath(), out var dstDirectory) ? dstDirectory : null;
 		}
 
 
 		/// <summary>
-		/// Makes a copy of the specifed source directory and its contents in the specified
+		/// Makes a copy of the specified source directory and its contents in the specified
 		/// destination directory. The copy has the same directory name as the source, but ends up
 		/// as a sub directory of the specified destination directory. The destination directory must
 		/// already exist. If the copy fails at any point in the process, the user is notified
@@ -119,6 +119,7 @@ namespace SIL.IO
 		/// <param name="fullDirectoryPath"></param>
 		/// <param name="showErrorMessage"></param>
 		/// <returns>True if able to set access, False otherwise</returns>
+		[PublicAPI]
 		public static bool SetFullControl(string fullDirectoryPath, bool showErrorMessage = true)
 		{
 			if (!Platform.IsWindows)

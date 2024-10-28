@@ -1,10 +1,11 @@
-// Copyright (c) 2015 SIL International
+// Copyright (c) 2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using JetBrains.Annotations;
 using X11.XKlavier;
 using SIL.Reporting;
 using SIL.Keyboarding;
@@ -137,7 +138,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// <summary>
 		/// Creates and returns a keyboard definition object based on the layout and locale.
 		/// Note that this method is used when we do NOT have a matching available keyboard.
-		/// Therefore we can presume that the created one is NOT available.
+		/// Therefore, we can presume that the created one is NOT available.
 		/// </summary>
 		public KeyboardDescription CreateKeyboardDefinition(string id)
 		{
@@ -217,6 +218,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// All public Properties and Methods should call this
 		/// before doing anything else.
 		/// </summary>
+		[PublicAPI]
 		public void CheckDisposed()
 		{
 			if (IsDisposed)

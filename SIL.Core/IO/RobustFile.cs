@@ -1,10 +1,11 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using JetBrains.Annotations;
 using SIL.Code;
 
 namespace SIL.IO
@@ -74,7 +75,7 @@ namespace SIL.IO
 		/// <summary>
 		/// Creates a stream that will write to disk on every write.
 		/// For most purposes (except perhaps logging when crashes are likely),
-		/// calling Flush(true) on the stream when finished would probaby suffice.
+		/// calling Flush(true) on the stream when finished would probably suffice.
 		/// </summary>
 		public static FileStream Create(string path)
 		{
@@ -93,9 +94,9 @@ namespace SIL.IO
 		}
 
 		/// <summary>
-		/// Creates a streamwriter that will write to disk on every write.
+		/// Creates a StreamWriter that will write to disk on every write.
 		/// For most purposes (except perhaps logging when crashes are likely),
-		/// calling Flush(true) on the stream when finished would probaby suffice.
+		/// calling Flush(true) on the stream when finished would probably suffice.
 		/// </summary>
 		public static StreamWriter CreateText(string path)
 		{
@@ -103,7 +104,7 @@ namespace SIL.IO
 			// This is based on the .Net implementation of CreateText (flattened somewhat)
 			// Various methods in the call chain check these things:
 			if (path == null)
-				throw new ArgumentNullException("path"); // TeamCity builds do not handle nameof()
+				throw new ArgumentNullException(nameof(path)); // TeamCity builds do not handle nameof()
 			if (path.Length == 0)
 				throw new ArgumentException("Argument_EmptyPath");
 
@@ -152,12 +153,14 @@ namespace SIL.IO
 			return RetryUtility.Retry(() => File.GetAttributes(path), memo:$"GetAttributes {path}");
 		}
 
+		[PublicAPI]
 		public static DateTime GetLastWriteTime(string path)
 		{
 			// Nothing different from File for now
 			return File.GetLastWriteTime(path);
 		}
 
+		[PublicAPI]
 		public static DateTime GetLastWriteTimeUtc(string path)
 		{
 			// Nothing different from File for now
@@ -188,16 +191,19 @@ namespace SIL.IO
 			return RetryUtility.Retry(() => File.OpenText(path), memo:$"OpenText {path}");
 		}
 
+		[PublicAPI]
 		public static byte[] ReadAllBytes(string path)
 		{
 			return RetryUtility.Retry(() => File.ReadAllBytes(path), memo:$"ReadAllBytes {path}");
 		}
 
+		[PublicAPI]
 		public static string[] ReadAllLines(string path)
 		{
 			return RetryUtility.Retry(() => File.ReadAllLines(path), memo:$"ReadAllLines {path}");
 		}
 
+		[PublicAPI]
 		public static string[] ReadAllLines(string path, Encoding encoding)
 		{
 			return RetryUtility.Retry(() => File.ReadAllLines(path, encoding), memo:$"ReaderAllLines {path},{encoding}");
@@ -246,12 +252,12 @@ namespace SIL.IO
 
 		public static void ReplaceByCopyDelete(string sourcePath, string destinationPath, string backupPath)
 		{
-			if (!string.IsNullOrEmpty(backupPath) && RobustFile.Exists(destinationPath))
+			if (!string.IsNullOrEmpty(backupPath) && Exists(destinationPath))
 			{
-				RobustFile.Copy(destinationPath, backupPath, true);
+				Copy(destinationPath, backupPath, true);
 			}
-			RobustFile.Copy(sourcePath, destinationPath, true);
-			RobustFile.Delete(sourcePath);
+			Copy(sourcePath, destinationPath, true);
+			Delete(sourcePath);
 		}
 
 		public static void SetAttributes(string path, FileAttributes fileAttributes)
@@ -295,11 +301,11 @@ namespace SIL.IO
 		/// <param name="encoding"></param>
 		public static void WriteAllText(string path, string contents, Encoding encoding)
 		{
-			// It's helpful to check for these first so we don't actaully create the file.
+			// It's helpful to check for these first so we don't actually create the file.
 			if (contents == null)
-				throw new ArgumentNullException(@"contents", @"contents must not be null");
+				throw new ArgumentNullException(nameof(contents), @"contents must not be null");
 			if (encoding == null)
-				throw new ArgumentNullException(@"encoding", @"encoding must not be null");
+				throw new ArgumentNullException(nameof(encoding), @"encoding must not be null");
 			RetryUtility.Retry(() =>
 			{
 				// This forces it to block until the data is really safely on disk.
@@ -332,6 +338,7 @@ namespace SIL.IO
 			RetryUtility.Retry(() => File.AppendAllText(path, contents), memo:$"AppendAllText {path}");
 		}
 
+		[PublicAPI]
 		public static void WriteAllLines(string path, IEnumerable<string> contents)
 		{
 			// Note: this doesn't block until the data is really safely on disk.

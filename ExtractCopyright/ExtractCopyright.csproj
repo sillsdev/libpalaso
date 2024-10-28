@@ -2,10 +2,13 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>ExtractCopyright</RootNamespace>
+    <RootNamespace>SIL.ExtractCopyright</RootNamespace>
     <AssemblyName>ExtractCopyright</AssemblyName>
     <Description>ExtractCopyright tool</Description>
     <IsPackable>false</IsPackable>
+    <Authors>SIL Global</Authors>
+    <Company>SIL Global</Company>
+    <Copyright>Copyright © 2010-2024 SIL Global</Copyright>
   </PropertyGroup>
 
   <ItemGroup>

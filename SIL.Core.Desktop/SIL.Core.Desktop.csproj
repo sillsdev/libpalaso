@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyTitle>SIL.Core.Desktop</AssemblyTitle>
     <Description>SIL.Core.Desktop provides general UI related utilities for language software.</Description>
-    <!--we use company 'SIL' here instead of 'SIL International' that we use elsewhere because changing this would mess up settings on user's machine and cause failing tests -->
+    <!--we use company 'SIL' here instead of 'SIL Global' that we use elsewhere because changing this would mess up settings on user's machine and cause failing tests -->
     <Company>SIL</Company>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -10,6 +10,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
+    <PackageReference Include="JetBrains.Annotations" Version="2024.2.0">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="NDesk.DBus" Version="0.15.0" Condition=" $(DefineConstants.Contains('NETFRAMEWORK')) " />
     <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />

@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2014 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 
 namespace SIL.Windows.Forms.HtmlBrowser
 {
@@ -36,65 +37,44 @@ namespace SIL.Windows.Forms.HtmlBrowser
 
 		#region IWebBrowser Members
 
-		public bool CanGoBack
-		{
-			get { return m_WebBrowser.CanGoBack; }
-		}
+		public bool CanGoBack => m_WebBrowser.CanGoBack;
 
-		public bool CanGoForward
-		{
-			get { return m_WebBrowser.CanGoForward; }
-		}
+		public bool CanGoForward => m_WebBrowser.CanGoForward;
 
 		public void Dispose()
 		{
 			m_WebBrowser.Dispose();
-			// Call GC.SupressFinalize to take this object off the finalization queue
+			// Call GC.SuppressFinalize to take this object off the finalization queue
 			// and prevent finalization code for this object from executing a second time.
 			GC.SuppressFinalize(this);
 		}
 
 		public string DocumentText
 		{
-			get { return m_WebBrowser.DocumentText; }
-			set { m_WebBrowser.DocumentText = value; }
+			get => m_WebBrowser.DocumentText;
+			set => m_WebBrowser.DocumentText = value;
 		}
 
-		public string DocumentTitle
-		{
-			get { return m_WebBrowser.DocumentTitle; }
-		}
+		public string DocumentTitle => m_WebBrowser.DocumentTitle;
 
-		public HtmlDocument Document
-		{
-			get { return m_WebBrowser.Document; }
-		}
+		public HtmlDocument Document => m_WebBrowser.Document;
 
-		public bool Focused
-		{
-			get { return m_WebBrowser.Focused; }
-		}
+		public bool Focused => m_WebBrowser.Focused;
 
-		public bool IsBusy
-		{
-			get { return m_WebBrowser.IsBusy; }
-		}
+		public bool IsBusy => m_WebBrowser.IsBusy;
 
 		public bool IsWebBrowserContextMenuEnabled
 		{
-			get { return m_WebBrowser.IsWebBrowserContextMenuEnabled; }
-			set { m_WebBrowser.IsWebBrowserContextMenuEnabled = value; }
+			get => m_WebBrowser.IsWebBrowserContextMenuEnabled;
+			set => m_WebBrowser.IsWebBrowserContextMenuEnabled = value;
 		}
 
-		public string StatusText
-		{
-			get { return m_WebBrowser.StatusText; }
-		}
+		public string StatusText => m_WebBrowser.StatusText;
 
 		public Uri Url
 		{
-			get { return m_WebBrowser.Url; }
-			set { m_WebBrowser.Url = value; }
+			get => m_WebBrowser.Url;
+			set => m_WebBrowser.Url = value;
 		}
 
 		public bool GoBack()
@@ -134,34 +114,32 @@ namespace SIL.Windows.Forms.HtmlBrowser
 
 		public void ScrollLastElementIntoView()
 		{
-			if(Document != null && Document.Body != null)
+			if (Document != null && Document.Body != null)
 			{
 				var childCount = Document.Body.Children.Count;
 				Document.Body.Children[childCount - 1].ScrollIntoView(false);
 			}
 		}
 
-		public object NativeBrowser
-		{
-			get { return m_WebBrowser; }
-		}
+		public object NativeBrowser => m_WebBrowser;
 
 		public bool WebBrowserShortcutsEnabled
 		{
-			get { return m_WebBrowser.WebBrowserShortcutsEnabled; }
-			set { m_WebBrowser.WebBrowserShortcutsEnabled = value; }
+			get => m_WebBrowser.WebBrowserShortcutsEnabled;
+			set => m_WebBrowser.WebBrowserShortcutsEnabled = value;
 		}
 
+		[PublicAPI]
 		public bool AllowNavigation
 		{
-			get { return m_WebBrowser.AllowNavigation; }
-			set { m_WebBrowser.AllowNavigation = value; }
+			get => m_WebBrowser.AllowNavigation;
+			set => m_WebBrowser.AllowNavigation = value;
 		}
 
 		public bool AllowWebBrowserDrop
 		{
-			get { return m_WebBrowser.AllowWebBrowserDrop; }
-			set { m_WebBrowser.AllowWebBrowserDrop = value; }
+			get => m_WebBrowser.AllowWebBrowserDrop;
+			set => m_WebBrowser.AllowWebBrowserDrop = value;
 		}
 
 		#endregion

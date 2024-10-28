@@ -1,4 +1,4 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System.Collections.Generic;
 using System.Text;
@@ -7,21 +7,9 @@ namespace SIL.Email
 {
 	public class ThunderbirdEmailProvider : LinuxEmailProvider
 	{
-		protected override string EmailCommand
-		{
-			get
-			{
-				return "thunderbird";
-			}
-		}
+		protected override string EmailCommand => "thunderbird";
 
-		protected override string FormatString
-		{
-			get
-			{
-				return "-compose \"to='{0}',subject='{1}',body='{2}'{3}{4}{5}\"";
-			}
-		}
+		protected override string FormatString => "-compose \"to='{0}',subject='{1}',body='{2}'{3}{4}{5}\"";
 
 		private static string GetArguments(IList<string> arguments, string prefix = "")
 		{

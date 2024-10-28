@@ -1,4 +1,4 @@
-// Copyright (c) 2021 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -114,24 +114,15 @@ namespace SIL.Windows.Forms.Clipboarding
 			{
 				// This line gets all the file paths that were selected in explorer
 				string[] files = dataObject.GetData(DataFormats.FileDrop) as string[];
-				if (files == null)
-					return null;
 
-				foreach (var file in files.Where(f => RobustFile.Exists(f)))
-				{
-					return PalasoImage.FromFileRobustly(file);
-				}
-
-				return null; // not an image
+				return files?.Where(RobustFile.Exists).Select(PalasoImage.FromFileRobustly).FirstOrDefault();
 			}
 
 			if (Clipboard.ContainsText() && RobustFile.Exists(Clipboard.GetText()))
 				return PalasoImage.FromImage(Image.FromStream(new FileStream(Clipboard.GetText(), FileMode.Open)));
 
 			if (ex != null)
-			{
 				throw ex;
-			}
 
 			return null;
 		}

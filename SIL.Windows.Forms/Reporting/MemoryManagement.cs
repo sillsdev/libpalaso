@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Diagnostics;
@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using L10NSharp;
 using SIL.PlatformUtilities;
 using SIL.Reporting;
-using SIL.Windows.Forms.FileDialogExtender;
 
 namespace SIL.Windows.Forms.Reporting
 {
@@ -24,7 +23,7 @@ namespace SIL.Windows.Forms.Reporting
 		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
 		private class MemoryStatusEx
 		{
-			private uint dwLength;
+			private uint dwLength = (uint)Marshal.SizeOf(typeof(MemoryStatusEx));
 			public uint dwMemoryLoad;
 			public ulong ullTotalPhys;
 			public ulong ullAvailPhys;
@@ -33,10 +32,6 @@ namespace SIL.Windows.Forms.Reporting
 			public ulong ullTotalVirtual;
 			public ulong ullAvailVirtual;
 			public ulong ullAvailExtendedVirtual;
-			public MemoryStatusEx()
-			{
-				dwLength = (uint)Marshal.SizeOf(typeof(MemoryStatusEx));
-			}
 		}
 
 		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
@@ -100,9 +95,9 @@ namespace SIL.Windows.Forms.Reporting
 			Debug.Write("DEBUG: " + message);
 			// Limit memory below 1GB unless we have a 64-bit process with lots of physical memory.
 			// In that case, still limit memory to well under 2GB before warning.
-			long safelimit = 1000000000;
+			long safeLimit = 1000000000;
 			if (is64BitProcess && memInfo.TotalPhysicalMemory >= 8192000000L)
-				safelimit = 2000000000;
+				safeLimit = 2000000000;
 			bool danger;
 			// In Windows/.Net, Process.PrivateMemorySize64 seems to give a reasonable value for current
 			// memory usage.  In Linux/Mono, Process.PrivateMemorySize64 seems to include a large amount
@@ -110,9 +105,9 @@ namespace SIL.Windows.Forms.Reporting
 			// approximating how much memory the process is currently using.  (It may be that this would
 			// be a better value for Windows as well, but we'll leave it as it is for now.)
 			if (Platform.IsWindows)
-				danger = memorySize64 > safelimit;
+				danger = memorySize64 > safeLimit;
 			else
-				danger = workingSet64 > safelimit;
+				danger = workingSet64 > safeLimit;
 			if (danger && okToBotherUser && !s_warningShown)
 			{
 				s_warningShown = true;
@@ -141,13 +136,13 @@ namespace SIL.Windows.Forms.Reporting
 			}
 			else
 			{
-				var meminfo = File.ReadAllText("/proc/meminfo");
-				var match = new Regex(@"MemTotal:\s+(\d+) kB").Match(meminfo);
+				var memInfo = File.ReadAllText("/proc/meminfo");
+				var match = new Regex(@"MemTotal:\s+(\d+) kB").Match(memInfo);
 				if (match.Success)
 					returnVal.TotalPhysicalMemory = ulong.Parse(match.Groups[1].Value) * 1024;
 
 				ulong totalSwapMemory = 0;
-				var match2 = new Regex(@"SwapTotal:\s+(\d+) kB").Match(meminfo);
+				var match2 = new Regex(@"SwapTotal:\s+(\d+) kB").Match(memInfo);
 				if (match2.Success)
 					totalSwapMemory = ulong.Parse(match2.Groups[1].Value) * 1024;
 				var availableMemory = returnVal.TotalPhysicalMemory + totalSwapMemory;

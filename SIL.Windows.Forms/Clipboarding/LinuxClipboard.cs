@@ -1,4 +1,4 @@
-// Copyright (c) 2021 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -14,15 +14,9 @@ namespace SIL.Windows.Forms.Clipboarding
 	{
 		private static IntPtr Clipboard => gtk_clipboard_get(gdk_atom_intern("CLIPBOARD", false));
 
-		public bool ContainsText()
-		{
-			return gtk_clipboard_wait_is_text_available(Clipboard);
-		}
+		public bool ContainsText() => gtk_clipboard_wait_is_text_available(Clipboard);
 
-		public string GetText()
-		{
-			return gtk_clipboard_wait_for_text(Clipboard);
-		}
+		public string GetText() => gtk_clipboard_wait_for_text(Clipboard);
 
 		public string GetText(TextDataFormat format) => GetText();
 

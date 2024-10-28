@@ -1,12 +1,14 @@
-﻿// Copyright (c) 2010-2019 SIL International
+// Copyright (c) 2010-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
 using System.IO;
+using JetBrains.Annotations;
 using SIL.Extensions;
 
 namespace SIL.Progress
 {
+	[PublicAPI]
 	public class FileLogProgress : GenericProgress
 	{
 		private readonly string _path;

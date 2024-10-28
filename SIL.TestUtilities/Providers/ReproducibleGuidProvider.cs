@@ -1,6 +1,7 @@
-﻿// Copyright (c) 2018 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
+using JetBrains.Annotations;
 using SIL.Providers;
 
 namespace SIL.TestUtilities.Providers
@@ -15,6 +16,7 @@ namespace SIL.TestUtilities.Providers
 	/// GuidProvider.ResetToDefault();
 	/// </code>
 	/// </remarks>
+	[PublicAPI]
 	public class ReproducibleGuidProvider: GuidProvider
 	{
 		private          int    _count;
@@ -30,9 +32,6 @@ namespace SIL.TestUtilities.Providers
 			_guidTemplate = guidTemplate;
 		}
 
-		public override Guid NewGuid()
-		{
-			return new Guid(string.Format(_guidTemplate, _count++));
-		}
+		public override Guid NewGuid() => new Guid(string.Format(_guidTemplate, _count++));
 	}
 }

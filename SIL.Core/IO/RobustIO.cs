@@ -1,4 +1,4 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
+using JetBrains.Annotations;
 using SIL.Code;
 using SIL.PlatformUtilities;
 
@@ -147,6 +148,7 @@ namespace SIL.IO
 		/// Robustly try to enumerate all of the files in a directory.  Unfortunately, this makes the
 		/// method wait until all the files are gathered before any are returned.
 		/// </summary>
+		[PublicAPI]
 		public static IEnumerable<string> EnumerateFilesInDirectory(string folderPath, string searchPattern = "*", SearchOption option = SearchOption.TopDirectoryOnly)
 		{
 			// Directory.EnumerateFiles returns files incrementally, not waiting until it has
@@ -203,8 +205,8 @@ namespace SIL.IO
 
 		private static void EnumerateDirectoriesInDirectoryInternal(string folderPath, string searchPattern, SearchOption option, HashSet<string> subdirSet)
 		{
-			foreach (var subdir in Directory.EnumerateDirectories(folderPath, searchPattern, option))
-				subdirSet.Add(subdir);
+			foreach (var subDir in Directory.EnumerateDirectories(folderPath, searchPattern, option))
+				subdirSet.Add(subDir);
 		}
 
 		/// <summary>
@@ -239,6 +241,7 @@ namespace SIL.IO
 				entrySet.Add(entry);
 		}
 
+		[PublicAPI]
 		public static void RequireThatDirectoryExists(string path)
 		{
 			bool exists = false;
@@ -273,6 +276,7 @@ namespace SIL.IO
 		/// </summary>
 		/// <param name="path">path of the file to read</param>
 		/// <returns>the contents of the file as a string</returns>
+		[PublicAPI]
 		public static string ReadAllTextFromFileWhichMightGetWrittenTo(string path)
 		{
 			return RetryUtility.Retry(() => ReadAllTextFromFileWhichMightGetWrittenToInternal(path),
@@ -297,6 +301,7 @@ namespace SIL.IO
 			}
 		}
 
+		[PublicAPI]
 		public static bool IsFileLocked(string filePath)
 		{
 			try
@@ -305,7 +310,7 @@ namespace SIL.IO
 				// to open it for modification.
 				// BL-10139 indicated that the default 10 retries over two seconds
 				// is sometimes not enough, so I've increased it here.
-				// No guarantee that even 5s is enough if Dropbox is busy syncing a large
+				// No guarantee that even 5s is enough if DropBox is busy syncing a large
 				// file across a poor internet, but I think after that it's better to give
 				// the user a failed message.
 				RetryUtility.Retry(() =>
@@ -339,6 +344,7 @@ namespace SIL.IO
 			return XElement.Parse(content);
 		}
 
+		[PublicAPI]
 		public static void SaveXElement(XElement xElement, string fileName)
 		{
 			RetryUtility.Retry(() => xElement.Save(fileName), memo:$"SaveXElement {fileName}");

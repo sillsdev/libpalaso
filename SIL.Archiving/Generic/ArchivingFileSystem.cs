@@ -1,4 +1,4 @@
-// Copyright (c) 2020 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -29,16 +29,12 @@ namespace SIL.Archiving.Generic
 		}
 
 		/// <summary />
-		public static string SilCommonArchivingDataFolder
-		{
-			get { return CheckFolder(Path.Combine(SilCommonDataFolder, kAccessProtocolFolderName)); }
-		}
+		public static string SilCommonArchivingDataFolder =>
+			CheckFolder(Path.Combine(SilCommonDataFolder, kAccessProtocolFolderName));
 
 		/// <summary />
-		public static string SilCommonIMDIDataFolder
-		{
-			get { return CheckFolder(Path.Combine(SilCommonArchivingDataFolder, "IMDI")); }
-		}
+		public static string SilCommonIMDIDataFolder =>
+			CheckFolder(Path.Combine(SilCommonArchivingDataFolder, "IMDI"));
 
 		/// <summary />
 		public static string CheckFolder(string folderName)

@@ -1,4 +1,4 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System.IO;
@@ -26,7 +26,7 @@ namespace SIL.IO
 
 		public static bool Grep(string inputPath, string pattern)
 		{
-			Regex regex = new Regex(pattern, RegexOptions.Compiled);
+			var regex = new Regex(pattern, RegexOptions.Compiled);
 
 			using (StreamReader reader = File.OpenText(inputPath))
 			{

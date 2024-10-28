@@ -1,9 +1,10 @@
-// Copyright (c) 2019 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
 using System.Xml;
 using System.Xml.Linq;
+using JetBrains.Annotations;
 using NUnit.Framework.Constraints;
 
 namespace SIL.TestUtilities.NUnitExtensions
@@ -26,19 +27,12 @@ namespace SIL.TestUtilities.NUnitExtensions
 			var actualXml = actualParam as XNode;
 			if (actualXml == null)
 			{
-				var actualXmlNode = actualParam as XmlNode;
-				if (actualXmlNode != null)
-				{
+				if (actualParam is XmlNode actualXmlNode)
 					actualXml = XElement.Parse(actualXmlNode.OuterXml);
-				}
-				else if (actualParam is string)
-				{
-					actualXml = XElement.Parse((string)actualParam);
-				}
+				else if (actualParam is string s)
+					actualXml = XElement.Parse(s);
 				else if (actualParam == null)
-				{
 					return string.IsNullOrEmpty(_expectedXml);
-				}
 				else
 				{
 					throw new ArgumentException("Don't know how to convert value to XML",
@@ -59,6 +53,7 @@ namespace SIL.TestUtilities.NUnitExtensions
 		public override string Description => _expectedXml;
 	}
 
+	[PublicAPI]
 	public static class XmlEquatableConstraintExtensionMethods
 	{
 		public static XmlEquatableConstraint XmlEqualTo(
