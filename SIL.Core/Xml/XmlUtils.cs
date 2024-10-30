@@ -970,10 +970,11 @@ namespace SIL.Xml
 		/// <param name="writer"></param>
 		/// <param name="dataToWrite"></param>
 		/// <param name="suppressIndentingChildren"></param>
-		public static void WriteNode(XmlWriter writer, string dataToWrite, HashSet<string> suppressIndentingChildren)
+		/// <param name="preserveNamespaces">a set of namespaces to preserve when writing out elements</param>
+		public static void WriteNode(XmlWriter writer, string dataToWrite, HashSet<string> suppressIndentingChildren, HashSet<string> preserveNamespaces = null)
 		{
 			XElement element = XDocument.Parse(dataToWrite).Root;
-			WriteNode(writer, element, suppressIndentingChildren);
+			WriteNode(writer, element, suppressIndentingChildren, preserveNamespaces);
 		}
 
 		/// <summary>
@@ -984,11 +985,12 @@ namespace SIL.Xml
 		/// <param name="writer"></param>
 		/// <param name="dataToWrite"></param>
 		/// <param name="suppressIndentingChildren"></param>
-		public static void WriteNode(XmlWriter writer, XElement dataToWrite, HashSet<string> suppressIndentingChildren)
+		/// <param name="preserveNamespaces">a set of namespaces to preserve when writing out elements</param>
+		public static void WriteNode(XmlWriter writer, XElement dataToWrite, HashSet<string> suppressIndentingChildren, HashSet<string> preserveNamespaces = null)
 		{
 			if (dataToWrite == null)
 				return;
-			WriteElementTo(writer, dataToWrite, suppressIndentingChildren);
+			WriteElementTo(writer, dataToWrite, suppressIndentingChildren, preserveNamespaces);
 		}
 
 		/// <summary>
@@ -997,11 +999,18 @@ namespace SIL.Xml
 		/// <param name="writer"></param>
 		/// <param name="element"></param>
 		/// <param name="suppressIndentingChildren"></param>
-		private static void WriteElementTo(XmlWriter writer, XElement element, HashSet<string> suppressIndentingChildren)
+		/// <param name="preserveNamespaces">a set of namespaces to preserve when writing out elements</param>
+		private static void WriteElementTo(XmlWriter writer, XElement element, HashSet<string> suppressIndentingChildren, HashSet<string> preserveNamespaces = null)
 		{
 			writer.WriteStartElement(element.Name.LocalName);
 			foreach (var attr in element.Attributes())
-				writer.WriteAttributeString(attr.Name.LocalName, attr.Value);
+			{
+				var ns = attr.Name.NamespaceName;
+				if(preserveNamespaces != null && preserveNamespaces.Contains(ns))
+					writer.WriteAttributeString(attr.Name.LocalName, attr.Name.NamespaceName, attr.Value);
+				else
+					writer.WriteAttributeString(attr.Name.LocalName, attr.Value);
+			}
 			// The writer automatically suppresses indenting children for any element that it detects has text children.
 			// However, it won't do this for the first child if that is an element, even if it later encounters text children.
 			// Also, there may be a parent where text including white space is significant, yet it is possible for the
