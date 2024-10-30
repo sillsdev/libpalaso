@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
+- [SIL.Core] Added optional parameter, preserveNamespaces, to XmlUtils.WriteNode
 - [SIL.Core] Added optional parameter, includeSystemLibraries, to AcknowledgementsProvider.CollectAcknowledgements
 - [SIL.Windows.Forms] Added ability to select which SIL logo(s) to use in SILAboutBox.
 - [SIL.Windows.Forms] Added public enum Widgets.SilLogoVariant
