@@ -16,6 +16,8 @@
     <OutputPath>$(MSBuildThisFileDirectory)/output/$(Configuration)</OutputPath>
     <PackageOutputPath>$(MSBuildThisFileDirectory)/output</PackageOutputPath>
     <SignAssembly>true</SignAssembly>
+<!--    required to ensure test projects are marked as packable, otherwise Microsoft.NET.Test.Sdk marks them as not -->
+    <IsPackable Condition="'$(IsPackable)'==''">true</IsPackable>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)/palaso.snk</AssemblyOriginatorKeyFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
