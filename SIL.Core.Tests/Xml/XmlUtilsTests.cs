@@ -176,6 +176,37 @@ namespace SIL.Tests.Xml
 			}
 			Assert.That(output.ToString(), Is.EqualTo(expectedOutput));
 		}
+
+		[Test]
+		public void WriteNode_PreserveNamespacesArePreserved()
+		{
+			string input = @"<text><span class='bold' xmlns:fw='https://fakefw.com' fw:special='no' xml:space='preserve'> </span></text>";
+			string expectedOutput =
+				"<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n"
+				+ "<root>\r\n"
+				+ "	<text>\r\n"
+				+ "		<span\r\n"
+				+ "			class=\"bold\" xmlns:fw=\"https://fakefw.com\"\r\n"
+				+ "			fw:special=\"no\"\r\n"
+				+ "			xml:space=\"preserve\"> </span>\r\n"
+				+ "	</text>\r\n"
+				+ "</root>";
+			var output = new StringBuilder();
+			var preserveNamespace = new HashSet<string>();
+			preserveNamespace.Add("xml");
+			preserveNamespace.Add("xmlns");
+			preserveNamespace.Add("fw");
+			using (var writer = XmlWriter.Create(output, CanonicalXmlSettings.CreateXmlWriterSettings()))
+			{
+				writer.WriteStartDocument();
+				writer.WriteStartElement("root");
+				XmlUtils.WriteNode(writer, input, new HashSet<string>(), preserveNamespace);
+				writer.WriteEndElement();
+				writer.WriteEndDocument();
+			}
+			Assert.That(output.ToString(), Is.EqualTo(expectedOutput));
+		}
+
 		/// <summary>
 		/// This verifies that suppressing pretty-printing of children works for spans nested in spans nested in text.
 		/// </summary>
@@ -191,8 +222,10 @@ namespace SIL.Tests.Xml
 				+ "				class=\"italic\">bit</span>bt</span></text>\r\n"
 				+ "</root>";
 			var output = new StringBuilder();
-			var suppressIndentingChildren = new HashSet<string>();
-			suppressIndentingChildren.Add("text");
+			var suppressIndentingChildren = new HashSet<string>
+			{
+			   "text"
+			};
 			using (var writer = XmlWriter.Create(output, CanonicalXmlSettings.CreateXmlWriterSettings()))
 			{
 				writer.WriteStartDocument();
