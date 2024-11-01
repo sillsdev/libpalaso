@@ -1075,6 +1075,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 		}
 
+		[Obsolete]
 		public SpellCheckInfo CurrentSpellChecker
 		{
 			get
@@ -1089,6 +1090,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 		}
 
+		[Obsolete]
 		public List<SpellCheckInfo> GetSpellCheckComboBoxItems()
 		{
 			_spellCheckerItems.Clear();

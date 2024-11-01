@@ -80,7 +80,7 @@ namespace SIL.Windows.Forms.HtmlBrowser
 					if (browser == null)
 					{
 						var path = Path.Combine(Path.GetDirectoryName(
-							new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath),
+							new Uri(Assembly.GetExecutingAssembly().Location).LocalPath),
 							"SIL.Windows.Forms.GeckoBrowserAdapter.dll");
 						if (File.Exists(path))
 						{

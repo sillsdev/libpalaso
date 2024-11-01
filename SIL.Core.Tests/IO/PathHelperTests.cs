@@ -322,7 +322,7 @@ namespace SIL.Tests.IO
 		public void StripFilePrefix_EnsureFilePrefixIsRemoved_Windows()
 		{
 			var prefix = Uri.UriSchemeFile + ":";
-			var fullPathname = Assembly.GetExecutingAssembly().CodeBase;
+			var fullPathname = Assembly.GetExecutingAssembly().Location;
 			Assert.IsTrue(fullPathname.StartsWith(prefix));
 
 			var reducedPathname = PathHelper.StripFilePrefix(fullPathname);
@@ -335,7 +335,7 @@ namespace SIL.Tests.IO
 		public void StripFilePrefix_EnsureFilePrefixIsRemoved_Linux()
 		{
 			var prefix = Uri.UriSchemeFile + ":";
-			var fullPathname = Assembly.GetExecutingAssembly().CodeBase;
+			var fullPathname = Assembly.GetExecutingAssembly().Location;
 			Assert.IsTrue(fullPathname.StartsWith(prefix));
 
 			var reducedPathname = PathHelper.StripFilePrefix(fullPathname);
