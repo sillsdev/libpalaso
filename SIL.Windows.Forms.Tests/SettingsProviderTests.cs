@@ -90,16 +90,15 @@ namespace SIL.Windows.Forms.Tests
 		[Test]
 		public void CanOverrideDefaultLocation()
 		{
-			string settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL", "SettingsProviderTests");
-			Directory.CreateDirectory(settingsPath);
-			using (TemporaryFolder.TrackExisting(settingsPath))
+			RegistrationSettingsProvider.SetProductName("SettingsProviderTests");
+			var settingsProvider = new TestCrossPlatformSettingsProvider();
+			settingsProvider.Initialize(null, null); // Seems to be what .NET does, despite warnings
+
+			string dirPath = settingsProvider.UserConfigLocation;
+			Directory.CreateDirectory(dirPath);
+			using (TemporaryFolder.TrackExisting(dirPath))
 			{
-				RegistrationSettingsProvider.SetProductName("SettingsProviderTests");
-				var settingsProvider = new TestCrossPlatformSettingsProvider();
-				settingsProvider.Initialize(null, null); // Seems to be what .NET does, despite warnings
-				string dirPath = settingsProvider.UserConfigLocation;
 				Assert.That(dirPath, Does.Contain("SettingsProviderTests"));
-				Directory.CreateDirectory(dirPath);
 				string filePath = Path.Combine(dirPath, TestCrossPlatformSettingsProvider.UserConfigFileName);
 				using (new TempFile(filePath, true))
 				{
@@ -160,15 +159,15 @@ namespace SIL.Windows.Forms.Tests
 		[Category("KnownMonoIssue")]
 		public void Upgrade_SectionsRenamed_SettingsMigrated()
 		{
-			string settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL", "SettingsProviderTests");
-			Directory.CreateDirectory(settingsPath);
-			using (TemporaryFolder.TrackExisting(settingsPath))
+			RegistrationSettingsProvider.SetProductName("SettingsProviderTests");
+			var settingsProvider = new TestCrossPlatformSettingsProvider();
+			settingsProvider.Initialize(null, null); // Seems to be what .NET does, despite warnings
+
+			string appSettingsRoot = Path.Combine(settingsProvider.UserConfigLocation, "..");
+			string dirPath = Path.Combine(appSettingsRoot, "0.0.0.0");
+			Directory.CreateDirectory(dirPath);
+			using (TemporaryFolder.TrackExisting(dirPath))
 			{
-				RegistrationSettingsProvider.SetProductName("SettingsProviderTests");
-				var settingsProvider = new TestCrossPlatformSettingsProvider();
-				settingsProvider.Initialize(null, null); // Seems to be what .NET does, despite warnings
-				string dirPath = Path.Combine(settingsPath, "0.0.0.0");
-				Directory.CreateDirectory(dirPath);
 				string filePath = Path.Combine(dirPath, TestCrossPlatformSettingsProvider.UserConfigFileName);
 				using (new TempFile(filePath, true))
 				{
@@ -180,6 +179,48 @@ namespace SIL.Windows.Forms.Tests
 			<setting name='Email' serializeAs='String'>
 				<value>someone@somewhere.org</value>
 			</setting>
+		</Palaso.UI.WindowsForms.Registration.Registration>
+	</userSettings>
+</configuration>");
+
+					Registration.Registration regSettings = Registration.Registration.Default;
+					regSettings.Upgrade();
+					Assert.That(regSettings.Email, Is.EqualTo("someone@somewhere.org"));
+				}
+			}
+		}
+
+		/// <summary>
+		/// This test is ignored on Mono, because of known issues in the ApplicationSettingsBase class (Xamarin-15818
+		/// and Xamarin-2315). This issue is fixed in Mono-SIL.
+		///
+		/// This test adds and changes values from the earlier tests. This is necessary to confirm
+		/// we're reading the temp file for this test, as opposed to a temp file a previous.
+		/// </summary>
+		[Test]
+		[Category("KnownMonoIssue")]
+		public void Upgrade_ExtraFields_SettingsMigrated()
+		{
+			RegistrationSettingsProvider.SetProductName("SettingsProviderTests");
+			var settingsProvider = new TestCrossPlatformSettingsProvider();
+			settingsProvider.Initialize(null, null); // Seems to be what .NET does, despite warnings
+
+			string appSettingsRoot = Path.Combine(settingsProvider.UserConfigLocation, "..");
+			string dirPath = Path.Combine(appSettingsRoot, "0.0.0.0");
+			Directory.CreateDirectory(dirPath);
+			using (TemporaryFolder.TrackExisting(dirPath))
+			{
+				string filePath = Path.Combine(dirPath, TestCrossPlatformSettingsProvider.UserConfigFileName);
+				using (new TempFile(filePath, true))
+				{
+					File.WriteAllText(filePath,
+						@"<?xml version='1.0' encoding='utf-8'?>
+<configuration>
+	<userSettings>
+		<Palaso.UI.WindowsForms.Registration.Registration>
+			<setting name='Email' serializeAs='String'>
+				<value>someone2@somewhere.org</value>
+			</setting>
 			<setting name='LaunchCount' serializeAs='String'>
 				<value>10</value>
 			</setting>
@@ -189,7 +230,7 @@ namespace SIL.Windows.Forms.Tests
 
 					Registration.Registration regSettings = Registration.Registration.Default;
 					regSettings.Upgrade();
-					Assert.That(regSettings.Email, Is.EqualTo("someone@somewhere.org"));
+					Assert.That(regSettings.Email, Is.EqualTo("someone2@somewhere.org"));
 					Assert.That(regSettings.LaunchCount, Is.EqualTo(10));
 				}
 			}
@@ -198,14 +239,14 @@ namespace SIL.Windows.Forms.Tests
 		[Test, Ignore("Probably due to statics on CrossPlatformSettingsProvider, this test is corrupted by other tests. Works fine in isolation")]
 		public void LoadSettings_FileCorrupt_ShowsErrorAndSelfHeals()
 		{
-			var settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL", "SettingsProviderTests");
-			Directory.CreateDirectory(settingsPath);
-			using (TemporaryFolder.TrackExisting(settingsPath))
+			RegistrationSettingsProvider.SetProductName("SettingsProviderTests");
+			var settingsProvider = new TestCrossPlatformSettingsProvider();
+			settingsProvider.Initialize(null, null); // Seems to be what .NET does, despite warnings
+
+			string dirPath = settingsProvider.UserConfigLocation;
+			Directory.CreateDirectory(dirPath);
+			using (TemporaryFolder.TrackExisting(dirPath))
 			{
-				var settingsProvider = new TestCrossPlatformSettingsProvider();
-				settingsProvider.Initialize(null, null); // Seems to be what .NET does, despite warnings
-				var dirPath = settingsProvider.UserConfigLocation;
-				Directory.CreateDirectory(dirPath);
 				var filePath = Path.Combine(dirPath, TestCrossPlatformSettingsProvider.UserConfigFileName);
 				File.Delete(filePath);
 				using (new TempFile(filePath, true))
@@ -232,14 +273,14 @@ namespace SIL.Windows.Forms.Tests
 		[Test]
 		public void CheckForErrorsInFile_FileCorrupt_ReturnsMessage()
 		{
-			var settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL", "SettingsProviderTests");
-			Directory.CreateDirectory(settingsPath);
-			using (TemporaryFolder.TrackExisting(settingsPath))
+			RegistrationSettingsProvider.SetProductName("SettingsProviderTests");
+			var settingsProvider = new TestCrossPlatformSettingsProvider();
+			settingsProvider.Initialize(null, null); // Seems to be what .NET does, despite warnings
+
+			string dirPath = settingsProvider.UserConfigLocation;
+			Directory.CreateDirectory(dirPath);
+			using (TemporaryFolder.TrackExisting(dirPath))
 			{
-				var settingsProvider = new TestCrossPlatformSettingsProvider();
-				settingsProvider.Initialize(null, null); // Seems to be what .NET does, despite warnings
-				var dirPath = settingsProvider.UserConfigLocation;
-				Directory.CreateDirectory(dirPath);
 				var filePath = Path.Combine(dirPath, TestCrossPlatformSettingsProvider.UserConfigFileName);
 				using (new TempFile(filePath, true))
 				{
