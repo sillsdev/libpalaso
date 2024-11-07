@@ -1,7 +1,7 @@
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Xml.Serialization;
-using Ionic.Zip;
 using NUnit.Framework;
 using SIL.DblBundle.Text;
 using SIL.IO;
@@ -33,10 +33,7 @@ namespace SIL.DblBundle.Tests
 			{
 			}
 
-			public override string Name
-			{
-				get { return "Test"; }
-			}
+			public override string Name => "Test";
 		}
 
 		/// <summary>
@@ -65,14 +62,14 @@ namespace SIL.DblBundle.Tests
 
 		private static TempFile CreateDummyVersion1_5ZippedTestBundle()
 		{
-			TempFile bundle = TempFile.WithExtension(DblBundleFileUtils.kDblBundleExtension);
+			var bundle = TempFile.WithExtension(DblBundleFileUtils.kDblBundleExtension);
+			RobustFile.Delete(bundle.Path);
 
 			using (var metadataXml = TempFile.WithFilename("metadata.xml"))
-			using (var zip = new ZipFile())
+			using (var zip = ZipFile.Open(bundle.Path, ZipArchiveMode.Create))
 			{
 				File.WriteAllText(metadataXml.Path, @"<?xml version=""1.0"" encoding=""utf-8""?><DBLMetadata type=""text"" typeVersion=""1.5""></DBLMetadata>");
-				zip.AddFile(metadataXml.Path, string.Empty);
-				zip.Save(bundle.Path);
+				zip.CreateEntryFromFile(metadataXml.Path, Path.GetFileName(metadataXml.Path));
 			}
 
 			return bundle;

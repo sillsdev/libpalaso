@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
+using System.IO.Packaging;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Ionic.Zip;
 using NUnit.Framework;
 using SIL.Core.ClearShare;
 using SIL.IO;
@@ -120,23 +121,24 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void GetMode_ZipFileWithMultipleTypesInList_ReturnsCorrectMetsList()
 		{
-			ZipFile zipFile = new ZipFile();
-			zipFile.AddEntry("blah.mp3", "whatever");
-			zipFile.AddEntry("blah.doc", "whatever");
-			zipFile.AddEntry("blah.niff", "whatever");
 			var tempFile = TempFile.WithExtension("zip");
 			try
 			{
-				zipFile.Save(tempFile.Path);
-				var mode = m_model.GetMode(new[] { zipFile.Name });
-				Assert.AreEqual("\"" + RampArchivingDlgViewModel.kFileTypeModeList + "\":[\"" +
+				RobustFile.Delete(tempFile.Path);
+				using (var zipFile = ZipFile.Open(tempFile.Path, ZipArchiveMode.Create))
+				{
+					zipFile.CreateEntry("blah.mp3");
+					zipFile.CreateEntry("blah.doc");
+					zipFile.CreateEntry("blah.niff");
+				}
+				var mode = m_model.GetMode(new[] { tempFile.Path });
+				Assert.That(mode, Is.EqualTo("\"" + RampArchivingDlgViewModel.kFileTypeModeList + "\":[\"" +
 					RampArchivingDlgViewModel.kModeSpeech + "\",\"" +
 					RampArchivingDlgViewModel.kModeText + "\",\"" +
-					RampArchivingDlgViewModel.kModeMusicalNotation + "\"]", mode);
+					RampArchivingDlgViewModel.kModeMusicalNotation + "\"]"));
 			}
 			finally
 			{
-				zipFile.Dispose();
 				tempFile.Dispose();
 			}
 		}
@@ -145,24 +147,25 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void GetMode_FwBackupFileWithMultipleTypesInList_ReturnsCorrectMetsList()
 		{
-			ZipFile zipFile = new ZipFile();
-			zipFile.AddEntry("blah.fwdata", "whatever");
-			zipFile.AddEntry("fonts/blah.ttf", "whatever");
-			zipFile.AddEntry("images/blah.jpeg", "whatever");
 			var tempFile = TempFile.WithExtension("fwbackup");
 			try
 			{
-				zipFile.Save(tempFile.Path);
-				var mode = m_model.GetMode(new[] { zipFile.Name });
-				Assert.AreEqual("\"" + RampArchivingDlgViewModel.kFileTypeModeList + "\":[\"" +
+				RobustFile.Delete(tempFile.Path);
+				using (var zipFile = ZipFile.Open(tempFile.Path, ZipArchiveMode.Create))
+				{
+					zipFile.CreateEntry("blah.fwdata");
+					zipFile.CreateEntry("fonts/blah.ttf");
+					zipFile.CreateEntry("images/blah.jpeg");
+				}
+				var mode = m_model.GetMode(new[] { tempFile.Path });
+				Assert.That(mode, Is.EqualTo("\"" + RampArchivingDlgViewModel.kFileTypeModeList + "\":[\"" +
 					RampArchivingDlgViewModel.kModeText + "\",\"" +
 					RampArchivingDlgViewModel.kModeDataset + "\",\"" +
 					RampArchivingDlgViewModel.kModeSoftwareOrFont + "\",\"" +
-					RampArchivingDlgViewModel.kModePhotograph + "\"]", mode);
+					RampArchivingDlgViewModel.kModePhotograph + "\"]"));
 			}
 			finally
 			{
-				zipFile.Dispose();
 				tempFile.Dispose();
 			}
 		}
@@ -407,10 +410,12 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void SetAbstract_ThreeLanguages_IncludedInMetsData()
 		{
-			Dictionary<string, string> abstracts = new Dictionary<string, string>();
-			abstracts["eng"] = "This is pretty abstract";
-			abstracts["fra"] = "C'est assez abstrait";
-			abstracts["spa"] = "Esto es bastante abstracto";
+			Dictionary<string, string> abstracts = new Dictionary<string, string>
+				{
+					["eng"] = "This is pretty abstract",
+					["fra"] = "C'est assez abstrait",
+					["spa"] = "Esto es bastante abstracto"
+				};
 			m_model.SetAbstract(abstracts);
 			var data = m_model.GetMetadata();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\"," +
