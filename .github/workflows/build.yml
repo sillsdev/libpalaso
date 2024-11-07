@@ -30,8 +30,9 @@ jobs:
 
     - name: Kill lingering test processes
       run: |
-        taskkill /F /IM testhost.exe /T
-        taskkill /F /IM dotnet.exe /T
+        taskkill /F /IM testhost.exe /T || exit 0
+        taskkill /F /IM dotnet.exe /T || exit 0
+      continue-on-error: true
 
     - name: Test project (net6.0)
       id: test_net6
@@ -39,8 +40,9 @@ jobs:
 
     - name: Kill lingering test processes
       run: |
-        taskkill /F /IM testhost.exe /T
-        taskkill /F /IM dotnet.exe /T
+        taskkill /F /IM testhost.exe /T || exit 0
+        taskkill /F /IM dotnet.exe /T || exit 0
+      continue-on-error: true
 
     - name: Test project (net8.0)
       id: test_net8
