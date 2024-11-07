@@ -18,8 +18,11 @@ jobs:
       with:
         fetch-depth: '0'
 
-    - name: Build project
-      run: dotnet build -bl:build.binlog --configuration Release
+    - name: Build project - Release
+      run: dotnet build -bl:build.rls.binlog --configuration Release
+
+    - name: Build project - Debug
+      run: dotnet build -bl:build.dbg.binlog --configuration Debug
 
     # there are cases where this will fail and we want to know about it
     # so we don't use continue-on-error, but we still want to publish the results
@@ -66,7 +69,8 @@ jobs:
       with:
         name: binary-logs
         path: |
-          build.binlog
+          build.rls.binlog
+          build.dbg.binlog
           test_netcoreapp21.binlog
           test_net6.binlog
           test_net8.binlog
