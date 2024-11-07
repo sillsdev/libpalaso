@@ -18,23 +18,27 @@ jobs:
       with:
         fetch-depth: '0'
 
-    - name: Build project
-      run: dotnet build -bl:build.binlog --configuration Release
-
-    # there are cases where this will fail and we want to know about it
+    # Note that there are cases where tests may fail and we want to know about it,
     # so we don't use continue-on-error, but we still want to publish the results
-    # Separate test steps for each framework to avoid file lock issues
+    
+    # Separate build and test steps for each framework to avoid file lock issues
+    - name: Build project for netcoreapp2.1
+      run: dotnet build -bl:build_netcoreapp21.binlog --configuration Release --framework netcoreapp2.1
+
     - name: Test project (netcoreapp2.1)
-      id: test_netcoreapp21
-      run: dotnet test -bl:test_netcoreapp21.binlog --framework netcoreapp2.1 --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results_netcoreapp21" --results-directory ./test-results/netcoreapp2.1
+      run: dotnet test --no-build -bl:test_netcoreapp21.binlog --framework netcoreapp2.1 --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results_netcoreapp21" --results-directory ./test-results/netcoreapp2.1
+
+    - name: Build project for net6.0
+      run: dotnet build -bl:build_net6.0.binlog --configuration Release --framework net6.0
 
     - name: Test project (net6.0)
-      id: test_net6
-      run: dotnet test -bl:test_net6.binlog --framework net6.0 --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results_net6" --results-directory ./test-results/net6.0
+      run: dotnet test --no-build -bl:test_net6.0.binlog --framework net6.0 --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results_net6.0" --results-directory ./test-results/net6.0
+
+    - name: Build project for net8.0
+      run: dotnet build -bl:build_net8.0.binlog --configuration Release --framework net8.0
 
     - name: Test project (net8.0)
-      id: test_net8
-      run: dotnet test -bl:test_net8.binlog --framework net8.0 --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results_net8" --results-directory ./test-results/net8.0
+      run: dotnet test --no-build -bl:test_net8.0.binlog --framework net8.0 --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results_net8.0" --results-directory ./test-results/net8.0
 
     - name: Publish test results
       if: ${{ !cancelled() && (steps.test_netcoreapp21.outcome != 'skipped' || steps.test_net6.outcome != 'skipped' || steps.test_net8.outcome != 'skipped') }}
