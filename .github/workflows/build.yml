@@ -56,10 +56,7 @@ jobs:
       uses: EnricoMi/publish-unit-test-result-action/windows@v2
       with:
         check_name: LibPalaso Tests
-        files: |
-          ./test-results/netcoreapp2.1/**/*.trx
-          ./test-results/net6.0/**/*.trx
-          ./test-results/net8.0/**/*.trx
+        files: ./test-results/**/*.trx
         action_fail: true
         action_fail_on_inconclusive: true
 
