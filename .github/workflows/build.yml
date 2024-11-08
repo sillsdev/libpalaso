@@ -34,7 +34,7 @@ jobs:
       shell: bash
       id: step_two
       run: |
-        "$action_state" # This will output 'yellow' (will it though)
+        echo "$action_state" # This will output 'yellow' (will it though)
 
     - name: Format the date of next Tuesday
       shell: bash
