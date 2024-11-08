@@ -7,6 +7,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
     timeout-minutes: 60
@@ -25,27 +29,13 @@ jobs:
       with:
         fetch-depth: '0'
 
-    - name: Set the value
-      shell: bash
-      id: step_one
-      run: |
-        echo "action_state=yellow" >> "$GITHUB_ENV"
-    - name: Use the value
-      shell: bash
-      id: step_two
-      run: |
-        echo "$action_state" # This will output 'yellow' (will it though)
-
     - name: Format the date of next Tuesday
-      shell: bash
       id: tuesday
       run: echo "abbr=$(date '+tuesday%y%m%d')" >> $GITHUB_ENV
 
     - name: Read exported variable
-      shell: bash
       run: |
         echo "$abbr"
-        echo "${{ env.abbr }}"
 
     # - name: Build project
     #   run: dotnet build -bl:build.binlog --configuration Release
