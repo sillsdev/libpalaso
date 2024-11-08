@@ -3,6 +3,7 @@ using SIL.IO;
 using SIL.Windows.Forms.ImageToolbox;
 using SIL.Windows.Forms.Miscellaneous;
 using NUnit.Framework;
+using System;
 
 namespace SIL.Windows.Forms.Tests.Miscellaneous
 {
@@ -95,6 +96,13 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 		[Platform(Exclude = "Linux", Reason = "This requires a GTK message loop to run or something like this")]
 		public void ClipboardRoundTripWorks_Text()
 		{
+			if (Environment.UserInteractive)
+				Assert.Ignore("Skipping clipboard test in interactive mode. This probably can't " +
+					"work at all on Windows 11, except maybe if run as an admin. Since it " +
+					"changes the real Windows clipboard, we wouldn't want it to run during a " +
+					"normal test run in an interactive environment. To run it locally, comment " +
+					"out this condition (and try running as admin if on Windows 11).");
+
 			lock (_lock)
 			{
 				PortableClipboard.SetText("Hello world");
