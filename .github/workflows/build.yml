@@ -25,13 +25,14 @@ jobs:
       with:
         fetch-depth: '0'
 
-    - name: Set color
-      id: color-selector
-      run: echo "SELECTED_COLOR=green" >> "$GITHUB_OUTPUT"
-    - name: Get color
-      env:
-        SELECTED_COLOR: ${{ steps.color-selector.outputs.SELECTED_COLOR }}
-      run: echo "The selected color is $SELECTED_COLOR"
+    - name: Set the value
+      id: step_one
+      run: |
+        echo "action_state=yellow" >> "$GITHUB_ENV"
+    - name: Use the value
+      id: step_two
+      run: |
+        printf '%s\n' "$action_state" # This will output 'yellow'
 
     # - name: Build project
     #   run: dotnet build -bl:build.binlog --configuration Release
