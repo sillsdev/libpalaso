@@ -127,7 +127,8 @@ namespace SIL.Archiving.Tests
 				RobustFile.Delete(tempFile.Path);
 				using (var zipFile = ZipFile.Open(tempFile.Path, ZipArchiveMode.Create))
 				{
-					zipFile.CreateEntry("blah.mp3");
+					// For good measure, make sure we can handle filenames with Unicode surrogate pairs
+					zipFile.CreateEntry("blah\uD800\uDC00\ud803\ude6d\udbff\udfff.mp3");
 					zipFile.CreateEntry("blah.doc");
 					zipFile.CreateEntry("blah.niff");
 				}
