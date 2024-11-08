@@ -32,7 +32,7 @@ jobs:
     - name: Use the value
       id: step_two
       run: |
-        printf '%s\n' "$action_state" # This will output 'yellow'
+        $action_state # This will output 'yellow' (will it though)
 
     # - name: Build project
     #   run: dotnet build -bl:build.binlog --configuration Release
