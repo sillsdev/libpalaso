@@ -27,9 +27,9 @@ jobs:
     # there are cases where this will fail and we want to know about it
     # so we don't use continue-on-error, but we still want to publish the results
     # Separate test steps for each framework to avoid file lock issues
-    - name: Test project (netcoreapp2.1)
-      id: test_netcoreapp21
-      run: dotnet test --no-build -bl:test_netcoreapp21.binlog --framework netcoreapp2.1 --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results_netcoreapp21" --results-directory ./test-results/netcoreapp2.1
+    - name: Test project (.NET Framework 4.6.2)
+      id: test_net462
+      run: dotnet test --no-build -bl:test_net462.binlog --framework net462 --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results_net462" --results-directory ./test-results/net462
 
     - name: Kill lingering test processes
       run: |
@@ -37,9 +37,9 @@ jobs:
         taskkill /F /IM dotnet.exe /T || exit 0
       continue-on-error: true
 
-    - name: Test project (net6.0)
-      id: test_net6
-      run: dotnet test --no-build -bl:test_net6.binlog --framework net6.0 --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results_net6" --results-directory ./test-results/net6.0
+    - name: Test project (.NET Framework 4.8)
+      id: test_net48
+      run: dotnet test --no-build -bl:test_net48.binlog --framework net48 --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results_net48" --results-directory ./test-results/net48
 
     - name: Kill lingering test processes
       run: |
@@ -52,7 +52,7 @@ jobs:
       run: dotnet test --no-build -bl:test_net8.binlog --framework net8.0 --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results_net8" --results-directory ./test-results/net8.0
 
     - name: Publish test results
-      if: ${{ !cancelled() && (steps.test_netcoreapp21.outcome != 'skipped' || steps.test_net6.outcome != 'skipped' || steps.test_net8.outcome != 'skipped') }}
+      if: ${{ !cancelled() && (steps.test_net462.outcome != 'skipped' || steps.test_net48.outcome != 'skipped' || steps.test_net8.outcome != 'skipped') }}
       uses: EnricoMi/publish-unit-test-result-action/windows@v2
       with:
         check_name: LibPalaso Tests
@@ -68,6 +68,6 @@ jobs:
         path: |
           build.rls.binlog
           build.dbg.binlog
-          test_netcoreapp21.binlog
-          test_net6.binlog
+          test_net462.binlog
+          test_net48.binlog
           test_net8.binlog
