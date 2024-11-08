@@ -25,14 +25,15 @@ jobs:
       with:
         fetch-depth: '0'
 
-    - name: Set the value
-      id: step_one
+
+    - name: Format the date of next Tuesday
+      id: tuesday
+      run: echo "abbr=$(date '+tuesday%y%m%d')" >> $GITHUB_ENV
+
+    - name: Read exported variable
       run: |
-        echo "action_state=yellow" >> "$GITHUB_ENV"
-    - name: Use the value
-      id: step_two
-      run: |
-        "$action_state" # This will output 'yellow' (will it though)
+        echo "$abbr"
+        echo "${{ env.abbr }}"
 
     # - name: Build project
     #   run: dotnet build -bl:build.binlog --configuration Release
