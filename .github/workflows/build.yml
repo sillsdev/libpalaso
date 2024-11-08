@@ -42,7 +42,7 @@ jobs:
     # so we don't use continue-on-error, but we still want to publish the results
     - name: Test project
       id: test
-      run: dotnet test -bl:test.binlog "$TEST_PATH"/SIL*Tests.dll --filter "TestCategory != SkipOnTeamCity" --no-build --configuration Release --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
+      run: dotnet test "$TEST_PATH"/SIL*Tests.dll --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
 
     - name: Publish test results
       if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
