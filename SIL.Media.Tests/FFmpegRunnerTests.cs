@@ -1,4 +1,6 @@
+using System;
 using System.IO;
+using FFMpegCore;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.Media.Tests.Properties;
@@ -79,7 +81,27 @@ namespace SIL.Media.Tests
 				var outputPath = originalAudioPath.Replace("mp3", "low.mp3");
 				FFmpegRunner.MakeLowQualityCompressedAudio(originalAudioPath, outputPath, new ConsoleProgress());
 				Assert.IsTrue(File.Exists(outputPath));
-				System.Diagnostics.Process.Start(outputPath);
+				
+				var mediaInfoOrig = FFProbe.Analyse(file.Path);
+				var mediaInfo = FFProbe.Analyse(outputPath);
+
+				// Validate resolution and bit rate
+				Assert.That(mediaInfo.PrimaryVideoStream, Is.Null);
+				Assert.That(mediaInfo.PrimaryAudioStream, Is.Not.Null);
+				Assert.That(mediaInfo.AudioStreams.Count, Is.EqualTo(1));
+				Assert.That(mediaInfo.PrimaryAudioStream.Channels, Is.EqualTo(1));
+				Assert.That(mediaInfo.Format.BitRate, Is.LessThan(mediaInfoOrig.Format.BitRate));
+				Assert.That(mediaInfo.PrimaryAudioStream.SampleRateHz, Is.EqualTo(8000));
+				try
+				{
+					// When running the by-hand test, the default media player might leave this
+					// locked, so this cleanup will fail.
+					RobustFile.Delete(outputPath);
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+				}
 			}
 		}
 
@@ -92,7 +114,28 @@ namespace SIL.Media.Tests
 				var outputPath = file.Path.Replace("wmv", "low.wmv");
 				FFmpegRunner.MakeLowQualitySmallVideo(file.Path, outputPath, 0, new ConsoleProgress());
 				Assert.IsTrue(File.Exists(outputPath));
-				System.Diagnostics.Process.Start(outputPath);
+
+				var mediaInfoOrig = FFProbe.Analyse(file.Path);
+				var mediaInfo = FFProbe.Analyse(outputPath);
+
+				// Validate resolution and bit rate
+				Assert.That(mediaInfo.PrimaryVideoStream, Is.Not.Null);
+				Assert.That(mediaInfo.VideoStreams.Count, Is.EqualTo(1));
+				Assert.That(mediaInfo.PrimaryAudioStream, Is.Not.Null);
+				Assert.That(mediaInfo.AudioStreams.Count, Is.EqualTo(1));
+				Assert.That(mediaInfo.PrimaryVideoStream.Width, Is.EqualTo(160));
+				Assert.That(mediaInfo.PrimaryVideoStream.Height, Is.EqualTo(120));
+				Assert.That(mediaInfo.Format.BitRate, Is.LessThan(mediaInfoOrig.Format.BitRate));
+				try
+				{
+					// When running the by-hand test, the default media player might leave this
+					// locked, so this cleanup will fail.
+					RobustFile.Delete(outputPath);
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+				}
 			}
 		}
 	}

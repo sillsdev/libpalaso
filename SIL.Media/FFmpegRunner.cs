@@ -168,7 +168,7 @@ namespace SIL.Media
 			var arguments = $"-i \"{inputPath}\" -vn {mp3LameCodecArg} -ac {channels} \"{outputPath}\"";
 			var result = RunFFmpeg(arguments, progress);
 
-			//hide a meaningless error produced by some versions of liblame
+			// Hide a meaningless error produced by some versions of liblame
 			if (result.StandardError.Contains("lame: output buffer too small")
 				&& File.Exists(outputPath))
 			{
@@ -203,7 +203,7 @@ namespace SIL.Media
 			var arguments = $"-i \"{inputPath}\" -vn -acodec vorbis -ac {channels} \"{outputPath}\"";
 			var result = RunFFmpeg(arguments, progress);
 
-			//hide a meaningless error produced by some versions of liblame
+			// Hide a meaningless error produced by some versions of liblame
 			if (result.StandardError.Contains("lame: output buffer too small")
 				&& File.Exists(outputPath))
 			{
@@ -294,7 +294,7 @@ namespace SIL.Media
 
 			var result = RunFFmpeg(arguments, progress);
 
-			//hide a meaningless error produced by some versions of liblame
+			// Hide a meaningless error produced by some versions of liblame
 			if (result.StandardError.Contains("lame: output buffer too small")
 				&& File.Exists(outputPath))
 			{
@@ -328,7 +328,7 @@ namespace SIL.Media
 
 			var result = RunFFmpeg(arguments, progress);
 
-			//hide a meaningless error produced by some versions of liblame
+			// Hide a meaningless error produced by some versions of liblame
 			if (result.StandardError.Contains("lame: output buffer too small") && File.Exists(outputPath))
 			{
 				var doctoredResult = new ExecutionResult
@@ -361,7 +361,7 @@ namespace SIL.Media
 
 			var result = RunFFmpeg(arguments, progress);
 
-			//hide a meaningless error produced by some versions of liblame
+			// Hide a meaningless error produced by some versions of liblame
 			if (result.StandardError.Contains("lame: output buffer too small")
 				&& File.Exists(outputPath))
 			{
@@ -404,7 +404,7 @@ namespace SIL.Media
 
 			var result = RunFFmpeg(arguments, progress);
 
-			//hide a meaningless error produced by some versions of liblame
+			// Hide a meaningless error produced by some versions of liblame
 			if (result.StandardError.Contains("lame: output buffer too small")
 				&& File.Exists(outputPath))
 			{
