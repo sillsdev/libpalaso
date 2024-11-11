@@ -52,7 +52,7 @@ jobs:
       if: failure()
       uses: actions/upload-artifact@v4
       with:
-        name: binary-logs
+        name: binary-logs (${{ matrix.framework }})
         path: |
           build.binlog
           test.binlog
