@@ -53,9 +53,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: binary-logs (${{ matrix.framework }})
-        path: |
-          build.binlog
-          test.binlog
+        path: build.binlog
 
   publish-test-results:
     runs-on: ubuntu-latest
