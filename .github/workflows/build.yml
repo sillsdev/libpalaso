@@ -30,7 +30,7 @@ jobs:
         fetch-depth: '0'
 
     - name: Build project
-      run: dotnet build -bl:build.binlog -c Release -f ${{ matrix.framework }}
+      run: dotnet build -bl:build.binlog -c Release
 
     - name: Get Path to Tests
       run: echo "TEST_PATH=$(dotnet msbuild SIL.Core.Tests/ --getProperty:OutputPath -p:TargetFramework=${{ matrix.framework }} -p:Configuration=Release)" >> $GITHUB_ENV
