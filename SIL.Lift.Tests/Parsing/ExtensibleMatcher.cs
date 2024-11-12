@@ -77,5 +77,17 @@ namespace SIL.Lift.Tests.Parsing
 			}
 			return true;
 		}
-  }
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				var hashCode = (_expectedId != null ? _expectedId.GetHashCode() : 0);
+				hashCode = (hashCode * 397) ^ _expectedGuid.GetHashCode();
+				hashCode = (hashCode * 397) ^ _expectedCreationTime.GetHashCode();
+				hashCode = (hashCode * 397) ^ _expectedModificationTime.GetHashCode();
+				return hashCode;
+			}
+		}
+	}
 }

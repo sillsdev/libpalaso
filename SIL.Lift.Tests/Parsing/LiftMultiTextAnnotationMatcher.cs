@@ -47,5 +47,20 @@ namespace SIL.Lift.Tests.Parsing
 					&& t.Who == _expectedWhoOfFirstAnnotation
 					&& t.When == _expectedWhenOfFirstAnnotation);
 		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				int hashCode = base.GetHashCode();
+				hashCode = (hashCode * 397) ^ (_expectedLanguageOfFirstAnnotation != null ? _expectedLanguageOfFirstAnnotation.GetHashCode() : 0);
+				hashCode = (hashCode * 397) ^ (_expectedNameOfFirstAnnotation != null ? _expectedNameOfFirstAnnotation.GetHashCode() : 0);
+				hashCode = (hashCode * 397) ^ (_expectedValueOfFirstAnnotation != null ? _expectedValueOfFirstAnnotation.GetHashCode() : 0);
+				hashCode = (hashCode * 397) ^ (_expectedWhoOfFirstAnnotation != null ? _expectedWhoOfFirstAnnotation.GetHashCode() : 0);
+				hashCode = (hashCode * 397) ^ _expectedWhenOfFirstAnnotation.GetHashCode();
+				hashCode = (hashCode * 397) ^ _expectedCount;
+				return hashCode;
+			}
+		}
 	}
 }
