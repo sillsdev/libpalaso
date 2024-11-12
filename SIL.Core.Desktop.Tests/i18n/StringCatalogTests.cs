@@ -13,7 +13,7 @@ namespace SIL.Tests.i18n
 #if NET
 	[System.Runtime.Versioning.SupportedOSPlatform("windows")]
 #endif
-	[Platform("windows")]
+	[Platform(Include = "Win")]
 	public class StringCatalogTests
 	{
 		private string _poFile = Path.GetTempFileName();

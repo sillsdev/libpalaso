@@ -11,7 +11,7 @@ using SIL.WritingSystems;
 namespace SIL.DictionaryServices.Tests
 {
 	[TestFixture]
-	[Platform(Include = "Windows")]
+	[Platform(Include = "Win")]
 	[OfflineSldr]
 #if NET
 	[System.Runtime.Versioning.SupportedOSPlatform("windows")]
