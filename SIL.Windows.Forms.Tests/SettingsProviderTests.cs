@@ -195,7 +195,7 @@ namespace SIL.Windows.Forms.Tests
 		/// and Xamarin-2315). This issue is fixed in Mono-SIL.
 		///
 		/// This test adds and changes values from the earlier tests. This is necessary to confirm
-		/// we're reading the temp file for this test, as opposed to a temp file a previous.
+		/// we're reading the temp file for this test, as opposed to a temp file from a previous.
 		/// </summary>
 		[Test]
 		[Category("KnownMonoIssue")]
