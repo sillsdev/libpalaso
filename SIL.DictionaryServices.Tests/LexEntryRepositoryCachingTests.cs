@@ -11,7 +11,11 @@ using SIL.WritingSystems;
 namespace SIL.DictionaryServices.Tests
 {
 	[TestFixture]
+	[Platform(Include = "Windows")]
 	[OfflineSldr]
+#if NET
+	[System.Runtime.Versioning.SupportedOSPlatform("windows")]
+#endif
 	public class LiftLexEntryRepositoryCachingTests
 	{
 		private TemporaryFolder _tempfolder;

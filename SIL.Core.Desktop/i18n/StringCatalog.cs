@@ -6,6 +6,9 @@ using SIL.Reporting;
 
 namespace SIL.i18n
 {
+#if NET
+	[System.Runtime.Versioning.SupportedOSPlatform("windows")]
+#endif
 	public class StringCatalog
 	{
 		private Dictionary<string, string> _catalog;
