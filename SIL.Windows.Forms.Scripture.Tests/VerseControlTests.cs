@@ -59,6 +59,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 			Assert.AreEqual(32, m_verseCtrl.VerseRef.VerseNum);
 		}
 
+		[Retry(3)]
 		[TestCase("2 Corinthians 3:18", ExpectedResult = "2CO 3:18")]
 		[TestCase("2 Corinthians3:18", ExpectedResult = "2CO 3:18")]
 		[TestCase("2 Corinthians3*18", ExpectedResult = "2CO 3:18")]

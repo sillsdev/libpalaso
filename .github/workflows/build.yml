@@ -7,10 +7,21 @@ on:
   pull_request:
   workflow_dispatch:
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
     timeout-minutes: 60
     runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        framework: [net462, net48, net8.0]
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.framework }}
+      cancel-in-progress: true
 
     steps:
     - name: Checkout code
@@ -19,28 +30,45 @@ jobs:
         fetch-depth: '0'
 
     - name: Build project
-      run: dotnet build -bl:build.binlog --configuration Release
+      run: dotnet build -bl:build.binlog -c Release
+
+    - name: Get Path to Tests
+      run: echo "TEST_PATH=$(dotnet msbuild SIL.Core.Tests/ --getProperty:OutputPath -p:TargetFramework=${{ matrix.framework }} -p:Configuration=Release)" >> $GITHUB_ENV
 
     # there are cases where this will fail and we want to know about it
     # so we don't use continue-on-error, but we still want to publish the results
     - name: Test project
       id: test
-      run: dotnet test -bl:test.binlog --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
+      run: dotnet test "$TEST_PATH"/SIL*Tests.dll --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
 
-    - name: Publish test results
-      if: ${{ !cancelled() && steps.test.outcome != 'skipped' }}
-      uses: EnricoMi/publish-unit-test-result-action/windows@v2
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
       with:
-        check_name: LibPalaso Tests
-        files: ./test-results/**/*.trx
-        action_fail: true
-        action_fail_on_inconclusive: true
+        name: Test results (${{ matrix.framework }})
+        path: ./test-results
 
     - name: Publish logs on failure
       if: failure()
       uses: actions/upload-artifact@v4
       with:
-        name: binary-logs
-        path: |
-          build.binlog
-          test.binlog
+        name: binary-logs (${{ matrix.framework }})
+        path: build.binlog
+
+  publish-test-results:
+    runs-on: ubuntu-latest
+    needs: build
+    if: always()
+    steps:
+      - name: Download test results
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: Test results *
+      - name: Publish test results
+        uses: EnricoMi/publish-unit-test-result-action@8885e273a4343cd7b48eaa72428dea0c3067ea98 # v2.14.0
+        with:
+          check_name: Palaso Tests
+          files: artifacts/**/*.trx
+          action_fail: true
+          action_fail_on_inconclusive: true

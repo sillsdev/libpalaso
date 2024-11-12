@@ -4,6 +4,7 @@
     <RootNamespace>SIL.Windows.Forms.Keyboarding.Tests</RootNamespace>
     <AssemblyTitle>SIL.Windows.Forms.Keyboarding.Tests</AssemblyTitle>
     <Description>Unit tests for SIL.Windows.Forms.Keyboarding</Description>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
