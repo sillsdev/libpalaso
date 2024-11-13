@@ -4,7 +4,15 @@
     <RootNamespace>SIL.Windows.Forms.Keyboarding</RootNamespace>
     <AssemblyTitle>SIL.Windows.Forms.Keyboarding</AssemblyTitle>
     <Description>The SIL.Windows.Forms.Keyboarding library provides cross-platform functionality for keyboard selection and switching in Windows Forms applications. Currently, this library supports system and Keyman keyboards on Windows, and X keyboard extension (XKB) and Intelligent Input Bus (IBus) keyboards on Linux.</Description>
+    <TargetFrameworks>$(TargetFrameworks);net8-windows</TargetFrameworks>
   </PropertyGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8-windows'">
+    <Content Remove="Linux\**" />
+    <Compile Remove="Linux\**" />
+    <EmbeddedResource Remove="Linux\**" />
+    <None Remove="Linux\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
@@ -23,6 +31,11 @@
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition=" $(DefineConstants.Contains('NETFRAMEWORK')) ">
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+  
   <ItemGroup>
     <Reference Include="Keyman10Interop">
       <HintPath>..\lib\Keyman10Interop.dll</HintPath>
@@ -33,8 +46,6 @@
     <Reference Include="KeymanLink">
       <HintPath>..\lib\KeymanLink.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../lib/Keyman*.dll">

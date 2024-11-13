@@ -4,6 +4,7 @@
     <RootNamespace>SIL.Windows.Forms.Keyboarding.Tests</RootNamespace>
     <AssemblyTitle>SIL.Windows.Forms.Keyboarding.Tests</AssemblyTitle>
     <Description>Unit tests for SIL.Windows.Forms.Keyboarding</Description>
+    <TargetFrameworks>$(TargetFrameworks);net8-windows</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
@@ -25,8 +26,27 @@
     <ProjectReference Include="..\SIL.Windows.Forms.Keyboarding\SIL.Windows.Forms.Keyboarding.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" $(DefineConstants.Contains('NETFRAMEWORK')) ">
     <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+
+  <!-- explicitly remove Linux files for Windows -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8-windows'">
+    <Compile Remove="TestHelper\GnomeKeyboardRetrievingHelperDouble.cs" />
+    <Compile Remove="TestHelper\GnomeShellIbusKeyboardRetrievingAdaptorDouble.cs" />
+    <Compile Remove="CombinedIbusKeyboardRetrievingAdaptorTests.cs" />
+    <Compile Remove="CombinedIbusKeyboardSwitchingAdaptorTests.cs" />
+    <Compile Remove="GnomeKeyboardRetrievingHelperTests.cs" />
+    <Compile Remove="GnomeShellIbusKeyboardRetrievingAdaptorTests.cs" />
+    <Compile Remove="GnomeShellIbusKeyboardSwitchingAdaptorTests.cs" />
+    <Compile Remove="IbusDefaultEventHandlerTests.cs" />
+    <Compile Remove="IbusKeyboardAdaptorTests.cs" />
+    <Compile Remove="IbusKeyboardDescriptionTests.cs" />
+    <Compile Remove="IbusXkbKeyboardDescriptionTests.cs" />
+    <Compile Remove="LinuxKeyboardControllerTests.cs" />
+    <Compile Remove="UnityKeyboardRetrievingHelperTests.cs" />
+    <Compile Remove="XkbKeyboardAdapterTests.cs" />
+    <Compile Remove="XklEngineTests.cs" />
   </ItemGroup>
 
 </Project>
