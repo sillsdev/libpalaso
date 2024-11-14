@@ -31,7 +31,7 @@ namespace SIL.Archiving
 			if (ArchivingDlgViewModel.IsMono)
 				exeFile = FileLocationUtilities.LocateInProgramFiles("ramp", true);
 			else
-				exeFile = FileLocator.GetFromRegistryProgramThatOpensFileType(rampFileExtension) ??
+				exeFile = FileLocator.GetDefaultProgramForFileType(rampFileExtension) ??
 					FileLocationUtilities.LocateInProgramFiles("ramp.exe", true, "ramp");
 
 			// make sure the file exists

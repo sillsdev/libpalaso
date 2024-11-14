@@ -6,6 +6,7 @@
     <Description>Unit tests for SIL.TestUtilities</Description>
     <IsPackable>false</IsPackable>
     <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
