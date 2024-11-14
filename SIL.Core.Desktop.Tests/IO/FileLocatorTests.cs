@@ -30,27 +30,21 @@ namespace SIL.Tests.IO
 		}
 
 		[Test]
-		[Platform(Exclude="Unix")]
-		[Category("KnownMonoIssue")]
-		public void GetFromRegistryProgramThatOpensFileType_SendInvalidType_ReturnsNull()
+		public void GetDefaultProgramForFileType_SendInvalidType_ReturnsNull()
 		{
-			Assert.IsNull(FileLocator.GetFromRegistryProgramThatOpensFileType(".blah"));
+			Assert.IsNull(FileLocator.GetDefaultProgramForFileType(".blah"));
 		}
 
 		[Test]
-		[Platform(Exclude="Unix")]
-		[Category("KnownMonoIssue")]
-		public void GetFromRegistryProgramThatOpensFileType_SendValidType_ReturnsProgramPath()
+		public void GetDefaultProgramForFileType_SendValidType_ReturnsProgramPath()
 		{
-			Assert.IsNotNull(FileLocator.GetFromRegistryProgramThatOpensFileType(".txt"));
+			Assert.IsNotNull(FileLocator.GetDefaultProgramForFileType(".txt"));
 		}
 
 		[Test]
-		[Platform(Exclude="Unix")]
-		[Category("KnownMonoIssue")]
-		public void GetFromRegistryProgramThatOpensFileType_SendExtensionWithoutPeriod_ReturnsProgramPath()
+		public void GetDefaultProgramForFileType_SendExtensionWithoutPeriod_ReturnsProgramPath()
 		{
-			Assert.IsNotNull(FileLocator.GetFromRegistryProgramThatOpensFileType("txt"));
+			Assert.IsNotNull(FileLocator.GetDefaultProgramForFileType("txt"));
 		}
 	}
 }
