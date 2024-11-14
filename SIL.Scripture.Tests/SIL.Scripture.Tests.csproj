@@ -5,6 +5,7 @@
     <AssemblyName>SIL.Scripture.Tests</AssemblyName>
     <Description>Unit tests for SIL.Scripture</Description>
     <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
