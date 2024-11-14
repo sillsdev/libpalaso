@@ -5,6 +5,7 @@
     <AssemblyName>SIL.DblBundle.Tests</AssemblyName>
     <Description>Unit tests for SIL.DblBundle</Description>
     <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
