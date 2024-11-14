@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 using JetBrains.Annotations;
-using Microsoft.Win32;
 using SIL.PlatformUtilities;
 using SIL.Reporting;
 
@@ -150,69 +152,134 @@ namespace SIL.IO
 			return new FileLocator(new List<string>(SearchPaths.Concat(addedSearchPaths)));
 		}
 
-		#region Methods for locating file in program files folders
+		#region Methods for locating program file associated with a file
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Searches the registry and returns the full path to the application program used to
-		/// open files having the specified extension. The fileExtension can be with or without
-		/// the preceding period. If the command cannot be found in the registry, then null is
-		/// returned. If a command in the registry is found, but it refers to a program file
-		/// that does not exist, null is returned.
+		/// returns the full path to the application program used to open files having the
+		/// specified extension/type. The fileExtension can be with or without
+		/// the preceding period. If no associated application can be found or the associated
+		/// program does not actually exist, null is returned.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static string GetFromRegistryProgramThatOpensFileType(string fileExtension)
+		public static string GetDefaultProgramForFileType(string fileExtension)
 		{
-			if (!Platform.IsWindows)
-			{
-				//------------------------------------------------------------------------------------
-				// The following command will output the mime type of an existing file, Phil.html:
-				//    file -b --mime-type ~/Phil.html
-				//
-				// This command will tell you the default application to open the file Phil.html:
-				//    ext=$(grep "$(file -b --mime-type ~/Phil.html)" /etc/mime.types
-				//        | awk '{print $1}') && xdg-mime query default $ext
-				//
-				// This command will open the file Phil.html using the default application:
-				//    xdg-open ~/Page.html
-				//------------------------------------------------------------------------------------
+			if (!fileExtension.StartsWith("."))
+				fileExtension = "." + fileExtension;
 
-				throw new NotImplementedException(
-					"GetFromRegistryProgramThatOpensFileType not implemented on Mono yet.");
-			}
+			if (Platform.IsWindows)
+				return GetDefaultWindowsProgramForFileType(fileExtension);
 
-			var ext = fileExtension.Trim();
-			if (!ext.StartsWith("."))
-				ext = "." + ext;
+			if (Platform.IsMac)
+				return GetDefaultMacProgramForFileType(fileExtension);
 
-			var key = Registry.ClassesRoot.OpenSubKey(ext);
-			if (key == null)
-				return null;
+			if (Platform.IsLinux)
+				return GetDefaultLinuxProgramForFileType(fileExtension);
 
-			var value = key.GetValue(string.Empty) as string;
-			key.Dispose();
-
-			if (value == null)
-				return null;
-
-			key = Registry.ClassesRoot.OpenSubKey($"{value}\\shell\\open\\command");
-
-			if (key == null && value.ToLower() == "ramp.package")
-			{
-				key = Registry.ClassesRoot.OpenSubKey("ramp\\shell\\open\\command");
-				if (key == null)
-					return null;
-			}
-
-			value = key?.GetValue(string.Empty) as string;
-			key?.Dispose();
-
-			if (value == null)
-				return null;
-
-			value = value.Trim('\"', '%', '1', ' ');
-			return (!File.Exists(value) ? null : value);
+			throw new PlatformNotSupportedException("This operating system is not supported.");
 		}
 
+		[DllImport("Shlwapi.dll", CharSet = CharSet.Unicode)]
+		private static extern uint AssocQueryString(
+			uint flags,
+			int str,
+			string pszAssoc,
+			string pszExtra,
+			[Out] StringBuilder pszOut,
+			ref uint pcchOut);
+
+		private static string GetDefaultWindowsProgramForFileType(string fileExtension)
+		{
+			const int assocStrExecutable = 2;
+			uint length = 260;
+			var sb = new StringBuilder((int)length);
+
+			var result = AssocQueryString(0, assocStrExecutable, fileExtension, null, sb, ref length);
+
+			if (result != 0 || sb.Length == 0)
+				return null;
+
+			var path = sb.ToString();
+			return Path.GetFileName(path) != "OpenWith.exe" && File.Exists(path) ? path : null;
+		}
+
+		private static string GetDefaultMacProgramForFileType(string fileExtension)
+		{
+			try
+			{
+				string filePath = $"/tmp/dummy{fileExtension}";
+				Process.Start("touch", filePath)?.WaitForExit();
+
+				var process = new Process
+				{
+					StartInfo = new ProcessStartInfo
+					{
+						FileName = "open",
+						Arguments = "-Ra " + filePath,
+						RedirectStandardOutput = true,
+						UseShellExecute = false,
+						CreateNoWindow = true
+					}
+				};
+
+				process.Start();
+				var output = process.StandardOutput.ReadToEnd().Trim();
+				process.WaitForExit();
+
+				return string.IsNullOrEmpty(output) ? null : output;
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
+		private static string GetDefaultLinuxProgramForFileType(string fileExtension)
+		{
+			try
+			{
+				var mimeProcess = new Process
+				{
+					StartInfo = new ProcessStartInfo
+					{
+						FileName = "xdg-mime",
+						Arguments = "query default " + fileExtension,
+						RedirectStandardOutput = true,
+						UseShellExecute = false,
+						CreateNoWindow = true
+					}
+				};
+
+				mimeProcess.Start();
+				var desktopEntry = mimeProcess.StandardOutput.ReadToEnd().Trim();
+				mimeProcess.WaitForExit();
+
+				if (string.IsNullOrEmpty(desktopEntry))
+					return null;
+
+				// Check if the executable associated with the desktop entry exists
+				var whichProcess = new Process
+				{
+					StartInfo = new ProcessStartInfo
+					{
+						FileName = "which",
+						Arguments = desktopEntry,
+						RedirectStandardOutput = true,
+						UseShellExecute = false,
+						CreateNoWindow = true
+					}
+				};
+
+				whichProcess.Start();
+				string executablePath = whichProcess.StandardOutput.ReadToEnd().Trim();
+				whichProcess.WaitForExit();
+
+				return string.IsNullOrEmpty(executablePath) ? null : executablePath;
+			}
+			catch
+			{
+				return null;
+			}
+		}
 		#endregion
 
 		public virtual void AddPath(string path)
