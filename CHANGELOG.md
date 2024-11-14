@@ -77,10 +77,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Made MetaTranscript.WriteCorpusImdiFile asynchronous, changing its signature to return Task<bool>.
 - [SIL.Archiving] Changed the name of the third parameter in ArchivingDlgViewModel.AddFileGroup from progressMessage to addingToArchiveProgressMessage.
 - [SIL.Windows.Forms.Archiving] Changed Cancel Button to say Close instead in IMDIArchivingDlg.
+- [SIL.Core.Desktop] Renamed GetFromRegistryProgramThatOpensFileType to GetDefaultProgramForFileType.
 
 ### Fixed
 - [SIL.Archiving] Fixed typo in RampArchivingDlgViewModel for Ethnomusicology performance collection.
 - [SIL.Archiving] Changed URLs that used http: to https: in resource EmptyMets.xml.
+- [SIL.Core.Desktop] Implemented GetDefaultProgramForFileType (as trenamed) in a way that works on Windows 11, Mono (probably) and MacOS (untested).
 
 ### Removed
 
