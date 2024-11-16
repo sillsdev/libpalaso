@@ -34,6 +34,12 @@ jobs:
 
     - name: Get Path to Tests
       run: echo "TEST_PATH=$(dotnet msbuild SIL.Core.Tests/ --getProperty:OutputPath -p:TargetFramework=${{ matrix.framework }} -p:Configuration=Release)" >> $GITHUB_ENV
+      
+    - name: Install FFmpeg
+      uses: FedericoCarboni/setup-ffmpeg@v3
+      id: setup-ffmpeg
+      with:
+        ffmpeg-version: release
 
     # there are cases where this will fail and we want to know about it
     # so we don't use continue-on-error, but we still want to publish the results

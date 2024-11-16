@@ -265,10 +265,7 @@ namespace SIL.Media.Tests
 				_recorder.StopRecordingAndSaveAsWav();
 			}
 
-			public ISimpleAudioSession Recorder
-			{
-				get { return _recorder; }
-			}
+			public ISimpleAudioSession Recorder => _recorder;
 
 			public void Dispose()
 			{
@@ -451,8 +448,8 @@ namespace SIL.Media.Tests
 		{
 			using (var folder = new TemporaryFolder("Record_LongRecording"))
 			{
-				string fpath = Path.Combine(folder.Path, "long.wav");
-				using (var x = AudioFactory.CreateAudioSession(fpath))
+				string fPath = Path.Combine(folder.Path, "long.wav");
+				using (var x = AudioFactory.CreateAudioSession(fPath))
 				{
 					SystemSounds.Beep.Play();
 					Assert.DoesNotThrow(() => x.StartRecording());

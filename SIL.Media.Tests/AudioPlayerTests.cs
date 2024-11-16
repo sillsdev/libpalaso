@@ -10,11 +10,9 @@ using NAudio.Wave;
 namespace SIL.Media.Tests
 {
 	/// <summary>
-	/// All these tests are skipped on TeamCity (even if you remove this category) because SIL.Media.Tests compiles to an exe,
-	/// and the project that builds libpalaso on TeamCity (build/Palaso.proj, task Test) invokes RunNUnitTC which
-	/// selects the test assemblies using Include="$(RootDir)/output/$(Configuration)/*.Tests.dll" which excludes exes.
-	/// I have not tried to verify that all of these tests would actually have problems on TeamCity, but it seemed
-	/// helpful to document in the usual way that they are not, in fact, run there. 
+	/// SkipOnTeamCity does not affect CI build using GHA, but I'm keeping it here for posterity's sake or if we ever
+	/// need to go back to building on TC. The comment here used to say that this test fixture compiled to an exe so
+	/// the tests would be skipped on TC anyway, but that is no longer true.
 	/// </summary>
 	[Category("SkipOnTeamCity")]
 	[TestFixture]
@@ -33,7 +31,7 @@ namespace SIL.Media.Tests
 		}
 
 		/// <summary>
-		/// This test shows what caused hearthis to abandon the naudio; previous to a change to this class in 2/2012, it is believed that all was ok.
+		/// This test shows what caused HearThis to abandon NAudio; previous to a change to this class in 2/2012, it is believed that all was ok.
 		/// </summary>
 		[Test, Ignore("Known to Fail (hangs forever")]
 		public void PlayFile_ThenDispose_FileCanBeDeleted()

@@ -9,13 +9,11 @@ using SIL.Progress;
 namespace SIL.Media.Tests
 {
 	/// <summary>
-	/// All these tests are skipped on TeamCity (even if you remove this category) because SIL.Media.Tests compiles to an exe,
-	/// and the project that builds libpalaso on TeamCity (build/Palaso.proj, task Test) invokes RunNUnitTC which
-	/// selects the test assemblies using Include="$(RootDir)/output/$(Configuration)/*.Tests.dll" which excludes exes.
-	/// I have not tried to verify that all of these tests would actually have problems on TeamCity, but it seemed
-	/// helpful to document in the usual way that they are not, in fact, run there. 
+	/// SkipOnTeamCity does not affect CI build using GHA, but I'm keeping it here for posterity's sake or if we ever
+	/// need to go back to building on TC. The comment here used to say that this test fixture compiled to an exe so
+	/// the tests would be skipped on TC anyway, but that is no longer true.
 	/// </summary>
-	[Category("SkipOnTeamCity")]
+	[Category("RequiresFfmpeg")]
 	[TestFixture]
 	public class FFmpegRunnerTests
 	{
@@ -23,18 +21,21 @@ namespace SIL.Media.Tests
 		public void CheckRequirements()
 		{
 			if (!FFmpegRunner.HaveNecessaryComponents)
-				Assert.Ignore("These tests require ffmpeg to be installed.");
+			{
+				if (Environment.GetEnvironmentVariable("CI") == null)
+					Assert.Ignore("These tests require ffmpeg to be installed.");
+				else
+					Assert.Fail("On CI build using GHA, FFMpeg should have been installed before running tests.");
+			}
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
 		public void HaveNecessaryComponents_ReturnsTrue()
 		{
 			Assert.IsTrue(FFmpegRunner.HaveNecessaryComponents);
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
 		public void ExtractMp3Audio_CreatesFile()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -46,7 +47,6 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
 		public void ExtractOggAudio_CreatesFile()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -58,7 +58,6 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
 		public void ChangeNumberOfAudioChannels_CreatesFile()
 		{
 			using (var file = TempFile.FromResource(Resources._2Channel, ".wav"))
@@ -70,7 +69,6 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
 		public void MakeLowQualityCompressedAudio_CreatesFile()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -94,8 +92,6 @@ namespace SIL.Media.Tests
 				Assert.That(mediaInfo.PrimaryAudioStream.SampleRateHz, Is.EqualTo(8000));
 				try
 				{
-					// When running the by-hand test, the default media player might leave this
-					// locked, so this cleanup will fail.
 					RobustFile.Delete(outputPath);
 				}
 				catch (Exception e)
@@ -106,7 +102,6 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
 		public void MakeLowQualitySmallVideo_CreatesFile()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))

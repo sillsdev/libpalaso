@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.Media.Tests.Properties;
@@ -5,13 +6,12 @@ using SIL.Media.Tests.Properties;
 namespace SIL.Media.Tests
 {
 	/// <summary>
-	/// All these tests are skipped on TeamCity (even if you remove this category) because SIL.Media.Tests compiles to an exe,
-	/// and the project that builds libpalaso on TeamCity (build/Palaso.proj, task Test) invokes RunNUnitTC which
-	/// selects the test assemblies using Include="$(RootDir)/output/$(Configuration)/*.Tests.dll" which excludes exes.
-	/// I have not tried to verify that all of these tests would actually have problems on TeamCity, but it seemed
-	/// helpful to document in the usual way that they are not, in fact, run there.
+	/// SkipOnTeamCity does not affect CI build using GHA, but I'm keeping it here for posterity's sake or if we ever
+	/// need to go back to building on TC. The comment here used to say that this test fixture compiled to an exe so
+	/// the tests would be skipped on TC anyway, but that is no longer true.
 	/// </summary>
 	[Category("SkipOnTeamCity")]
+	[Category("RequiresFFprobe")]
 	[TestFixture]
 	public class MediaInfoTests
 	{
@@ -19,18 +19,21 @@ namespace SIL.Media.Tests
 		public void CheckRequirements()
 		{
 			if (!MediaInfo.HaveNecessaryComponents)
-				Assert.Ignore(MediaInfo.MissingComponentMessage);
+			{
+				if (Environment.GetEnvironmentVariable("CI") == null)
+					Assert.Ignore(MediaInfo.MissingComponentMessage);
+				else
+					Assert.Fail("On CI build using GHA, FFMpeg should have been installed before running tests.");
+			}
 		}
 
 		[Test]
-		[Category("RequiresFFprobe")]
 		public void HaveNecessaryComponents_ReturnsTrue()
 		{
 			Assert.IsTrue(MediaInfo.HaveNecessaryComponents);
 		}
 
 		[Test]
-		[Category("RequiresFFprobe")]
 		public void VideoInfo_Duration_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -43,7 +46,6 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFFprobe")]
 		public void VideoInfo_Encoding_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -54,7 +56,6 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFFprobe")]
 		public void VideoInfo_Resolution_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -65,7 +66,6 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFFprobe")]
 		public void VideoInfo_FramesPerSecond_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -77,7 +77,6 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFFprobe")]
 		public void AudioInfo_Duration_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
@@ -89,7 +88,6 @@ namespace SIL.Media.Tests
 
 
 		[Test]
-		[Category("RequiresFFprobe")]
 		public void AudioInfo_SampleFrequency_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
@@ -100,7 +98,6 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFFprobe")]
 		public void AudioInfo_Channels_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
@@ -111,7 +108,6 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFFprobe")]
 		public void AudioInfo_BitDepth_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
@@ -122,7 +118,6 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFFprobe")]
 		public void AudioInfo_H4N24BitStereoBitDepth_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources._24bitH4NSample, ".wav"))
@@ -133,14 +128,12 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFFprobe")]
 		public void GetMediaInfo_AudioFile_VideoInfoAndImageInfoAreNull()
 		{
 			using (var file = TempFile.FromResource(Resources.finished,".wav"))
 			{
 				var info =MediaInfo.GetInfo(file.Path);
 				Assert.IsNull(info.Video);
-				//Assert.IsNull(info.Image);
 			}
 		}
 
