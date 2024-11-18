@@ -9,11 +9,6 @@ using NAudio.Wave;
 
 namespace SIL.Media.Tests
 {
-	/// <summary>
-	/// SkipOnTeamCity does not affect CI build using GHA, but I'm keeping it here for posterity's sake or if we ever
-	/// need to go back to building on TC. The comment here used to say that this test fixture compiled to an exe so
-	/// the tests would be skipped on TC anyway, but that is no longer true.
-	/// </summary>
 	[Category("SkipOnTeamCity")]
 	[TestFixture]
 	public class AudioPlayerTests
