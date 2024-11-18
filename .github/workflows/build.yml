@@ -40,6 +40,7 @@ jobs:
       id: setup-ffmpeg
       with:
         ffmpeg-version: release
+    - run: echo ffmpeg path ${{ steps.setup-ffmpeg.outputs.ffmpeg-path }}
 
     # there are cases where this will fail and we want to know about it
     # so we don't use continue-on-error, but we still want to publish the results
