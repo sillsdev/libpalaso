@@ -27,6 +27,7 @@ namespace SIL.Media
 		/// If your app knows where FFmpeg lives, you can tell us before making any calls.
 		/// </summary>
 		public static string FFmpegLocation;
+		private static bool? _ffmpegOnPath;
 
 		/// <summary>
 		/// Find the path to FFmpeg, and remember it (some apps (like SayMore) call FFmpeg a lot)
@@ -96,7 +97,23 @@ namespace SIL.Media
 				if (File.Exists(exePath))
 					return exePath;
 			}
-			return null;
+
+			//Locate may be called multiple times, we don't want to run this command every time.
+			if (_ffmpegOnPath == null)
+			{
+				try
+				{
+					//try to just run ffmpeg from the path, if it works then we can use that directly.
+					var results = CommandLineRunner.Run("ffmpeg", "-version", ".", 5, new NullProgress());
+					_ffmpegOnPath = results.StandardOutput
+						.Contains("ffmpeg version");
+				}
+				catch
+				{
+					_ffmpegOnPath = false;
+				}
+			}
+			return _ffmpegOnPath.Value ? "ffmpeg" : null;
 		}
 
 		private static string GetPathToBundledFFmpeg()
