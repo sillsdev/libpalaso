@@ -80,6 +80,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Archiving] Changed Cancel Button to say Close instead in IMDIArchivingDlg.
 - [SIL.Core.Desktop] Renamed GetFromRegistryProgramThatOpensFileType to GetDefaultProgramForFileType.
 - [SIL.Media] Made FFmpegRunner able to use version of FFmpeg found on the path.
+- [SIL.Media] Upgraded irrKlang to v. 1.6.
 
 ### Fixed
 - [SIL.Archiving] Fixed typo in RampArchivingDlgViewModel for Ethnomusicology performance collection.
