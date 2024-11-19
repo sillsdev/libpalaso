@@ -3,6 +3,7 @@ using SIL.IO;
 using SIL.Windows.Forms.ImageToolbox;
 using SIL.Windows.Forms.Miscellaneous;
 using NUnit.Framework;
+using System;
 
 namespace SIL.Windows.Forms.Tests.Miscellaneous
 {
