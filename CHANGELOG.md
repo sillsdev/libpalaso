@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Added public property isValid to IMDIPackage.
 - [SIL.Archiving] Added public event InitializationFailed to IMDIArchivingDlgViewModel.
 - [SIL.Archiving] Added the following properties to ArchivingDlgViewModel as an alternative way to customize the initial summary displayed: GetOverriddenPreArchivingMessages, InitialFileGroupDisplayMessageType, OverrideGetFileGroupDisplayMessage
+- [SIL.Media] Added FFmpegRunner.FfmpegMinimumVersion property.
 
 ### Changed
 

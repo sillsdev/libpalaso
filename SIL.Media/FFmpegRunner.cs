@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using SIL.CommandLineProcessing;
 using SIL.IO;
@@ -27,6 +28,15 @@ namespace SIL.Media
 		/// If your app knows where FFmpeg lives, you can tell us before making any calls.
 		/// </summary>
 		public static string FFmpegLocation;
+		/// <summary>
+		/// If your app has a known minimum version of FFMpeg that it will work with, you can set
+		/// this to prevent this library from attempting to use a version that is not going to meet
+		/// your requirements. This will be ignored if you set FFmpegLocation, if the ffmpeg
+		/// installation is based on a Linux package dependency or if FFmpeg is colocated with the
+		/// applications, since it seems safe to assume that you are not specifying or installing a
+		/// version that does not satisfy your needs.
+		/// </summary>
+		public static Version FfmpegMinimumVersion;
 		private static bool? _ffmpegOnPath;
 
 		/// <summary>
@@ -68,7 +78,11 @@ namespace SIL.Media
 
 			var fromChoco = MediaInfo.GetFFmpegFolderFromChocoInstall(kFFmpegExe);
 			if (fromChoco != null)
-				return Path.Combine(fromChoco, kFFmpegExe);
+			{
+				var pathToFFmpeg = Path.Combine(fromChoco, kFFmpegExe);
+				if (MeetsMinimumVersionRequirement(pathToFFmpeg))
+					return pathToFFmpeg;
+			}
 
 			var progFileDirs = new List<string> {
 				Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
@@ -94,26 +108,45 @@ namespace SIL.Media
 			foreach (var path in progFileDirs)
 			{
 				var exePath = (Path.Combine(path, "FFmpeg for Audacity", kFFmpegExe));
-				if (File.Exists(exePath))
+				if (File.Exists(exePath) && MeetsMinimumVersionRequirement(exePath))
 					return exePath;
 			}
 
-			//Locate may be called multiple times, we don't want to run this command every time.
+			string ffmpeg = null;
+
+			// Locate may be called multiple times, we don't want to run this command every time.
 			if (_ffmpegOnPath == null)
 			{
-				try
-				{
-					//try to just run ffmpeg from the path, if it works then we can use that directly.
-					var results = CommandLineRunner.Run("ffmpeg", "-version", ".", 5, new NullProgress());
-					_ffmpegOnPath = results.StandardOutput
-						.Contains("ffmpeg version");
-				}
-				catch
-				{
-					_ffmpegOnPath = false;
-				}
+				ffmpeg = Path.GetFileNameWithoutExtension(kFFmpegExe);
+				// Try to just run ffmpeg from the path, if it works then we can use that directly.
+				_ffmpegOnPath = MeetsMinimumVersionRequirement(ffmpeg);
+				if (!_ffmpegOnPath.Value)
+					ffmpeg = null;
 			}
-			return _ffmpegOnPath.Value ? "ffmpeg" : null;
+			return ffmpeg;
+		}
+
+		private static bool MeetsMinimumVersionRequirement(string ffmpeg)
+		{
+			try
+			{
+				var version = new Regex(@"ffmpeg version (?<version>\d+\.\d+(\.\d+)?)");
+				var results = CommandLineRunner.Run(ffmpeg, "-version", ".", 5, new NullProgress());
+				var match = version.Match(results.StandardOutput);
+				if (!match.Success)
+					return false;
+				if (FfmpegMinimumVersion == null)
+					return true;
+				var actualVersion = Version.Parse(match.Groups["version"].Value);
+				actualVersion = new Version(actualVersion.Major, actualVersion.Minor,
+					actualVersion.Build >= 0 ? actualVersion.Build : 0,
+					actualVersion.Revision >= 0 ? actualVersion.Revision : 0);
+				return actualVersion >= FfmpegMinimumVersion;
+			}
+			catch
+			{
+				return false;
+			}
 		}
 
 		private static string GetPathToBundledFFmpeg()

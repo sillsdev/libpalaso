@@ -25,9 +25,40 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		public void HaveNecessaryComponents_ReturnsTrue()
+		public void HaveNecessaryComponents_NoExplicitMinVersion_ReturnsTrue()
 		{
 			Assert.IsTrue(FFmpegRunner.HaveNecessaryComponents);
+		}
+
+		[TestCase(5, 1)]
+		[TestCase(4, 9)]
+		public void HaveNecessaryComponents_TwoDigitMinVersion_ReturnsTrue(int major, int minor)
+		{
+			FFmpegRunner.FfmpegMinimumVersion = new Version(major, minor);
+			Assert.IsTrue(FFmpegRunner.HaveNecessaryComponents);
+		}
+
+		[TestCase(5, 1, 1)]
+		[TestCase(5, 0, 0)]
+		public void HaveNecessaryComponents_ThreeDigitMinVersion_ReturnsTrue(int major, int minor, int build)
+		{
+			FFmpegRunner.FfmpegMinimumVersion = new Version(major, minor, build);
+			Assert.IsTrue(FFmpegRunner.HaveNecessaryComponents);
+		}
+
+		[TestCase(5, 1, 1, 0)]
+		[TestCase(5, 0, 0, 9)]
+		public void HaveNecessaryComponents_FourDigitMinVersion_ReturnsTrue(int major, int minor, int build, int revision)
+		{
+			FFmpegRunner.FfmpegMinimumVersion = new Version(major, minor, build, revision);
+			Assert.IsTrue(FFmpegRunner.HaveNecessaryComponents);
+		}
+
+		[Test]
+		public void HaveNecessaryComponents_ReallyHighVersionThatDoesNotExist_ReturnsFalse()
+		{
+			FFmpegRunner.FfmpegMinimumVersion = new Version(int.MaxValue, int.MaxValue);
+			Assert.IsFalse(FFmpegRunner.HaveNecessaryComponents);
 		}
 
 		[Test]
