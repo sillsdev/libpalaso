@@ -45,6 +45,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- BREAKING CHANGE: Replaced dependency on DotNetZip with System.IO.Compression.ZipFile (Client installers will need to be changed.)
 - BREAKING CHANGE: Changed to target .Net Framework 4.6.2 instead of 4.6.1
 - [SIL.Windows.Forms] Look for PNG data on clipboard before checking for plain image in WindowsClipboard.GetImageFromClipboard() in order to preserve transparency in copied images.
 - [SIL.Windows.Forms] Changed layout of SILAboutBox to accommodate wider SIL logo.

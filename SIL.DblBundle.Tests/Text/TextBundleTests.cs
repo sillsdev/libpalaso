@@ -1,14 +1,15 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
-using Ionic.Zip;
 using NUnit.Framework;
 using SIL.DblBundle.Tests.Properties;
 using SIL.DblBundle.Text;
 using SIL.DblBundle.Usx;
 using SIL.IO;
 using SIL.WritingSystems;
+using static System.String;
 
 namespace SIL.DblBundle.Tests.Text
 {
@@ -139,8 +140,7 @@ namespace SIL.DblBundle.Tests.Text
 		public void TryGetBook(bool legacy)
 		{
 			var bundle = legacy ? _legacyBundle : _bundle;
-			UsxDocument book;
-			Assert.IsTrue(bundle.TryGetBook("MAT", out book));
+			Assert.IsTrue(bundle.TryGetBook("MAT", out var book));
 			Assert.AreEqual("MAT", book.BookId);
 		}
 
@@ -252,6 +252,7 @@ namespace SIL.DblBundle.Tests.Text
 			bool includeLdml = true, bool invalidUsxDirectory = false, bool includeFont = false)
 		{
 			TempFile bundle = TempFile.WithExtension(DblBundleFileUtils.kDblBundleExtension);
+			RobustFile.Delete(bundle.Path);
 
 			using (var englishLds = TempFile.WithFilename("English.lds"))
 			using (var metadataXml = TempFile.WithFilename("metadata.xml"))
@@ -260,7 +261,7 @@ namespace SIL.DblBundle.Tests.Text
 			using (var ldmlXml = TempFile.WithFilename(DblBundleFileUtils.kLegacyLdmlFileName))
 			using (var ttf = TempFile.WithFilename("AppSILI.ttf"))
 			using (var matUsx = TempFile.WithFilename("MAT.usx"))
-			using (var zip = new ZipFile())
+			using (var zip = ZipFile.Open(bundle.Path, ZipArchiveMode.Create))
 			{
 				string xml;
 				var subdirectory = "release";
@@ -268,7 +269,7 @@ namespace SIL.DblBundle.Tests.Text
 				{
 					case MetadataVersion.V1_4:
 						xml = Resources.metadata_xml;
-						subdirectory = string.Empty;
+						subdirectory = Empty;
 						break;
 					case MetadataVersion.V2_1:
 						xml = Resources.metadataVersion2_1_xml;
@@ -280,30 +281,35 @@ namespace SIL.DblBundle.Tests.Text
 						throw new ArgumentOutOfRangeException(nameof(version), version, null);
 				}
 				File.WriteAllText(metadataXml.Path, xml);
-				zip.AddFile(metadataXml.Path, string.Empty);
+				zip.CreateEntryFromFile(metadataXml.Path, Path.GetFileName(metadataXml.Path));
 
 				File.WriteAllBytes(englishLds.Path, Resources.English_lds);
-				zip.AddFile(englishLds.Path, subdirectory);
+				zip.CreateEntryFromFile(englishLds.Path,
+					Path.Combine(subdirectory, Path.GetFileName(englishLds.Path)));
 				File.WriteAllText(stylesXml.Path, Resources.styles_xml);
-				zip.AddFile(stylesXml.Path, subdirectory);
+				zip.CreateEntryFromFile(stylesXml.Path,
+					Path.Combine(subdirectory, Path.GetFileName(stylesXml.Path)));
 				File.WriteAllBytes(versificationVrs.Path, Resources.versification_vrs);
-				zip.AddFile(versificationVrs.Path, subdirectory);
+				zip.CreateEntryFromFile(versificationVrs.Path,
+					Path.Combine(subdirectory, Path.GetFileName(versificationVrs.Path)));
 				if (includeLdml)
 				{
 					File.WriteAllText(ldmlXml.Path, Resources.ldml_xml);
-					zip.AddFile(ldmlXml.Path, subdirectory);
+					zip.CreateEntryFromFile(ldmlXml.Path,
+						Path.Combine(subdirectory, Path.GetFileName(ldmlXml.Path)));
 				}
 				if (includeFont)
 				{
 					File.WriteAllBytes(ttf.Path,
 						(byte[])Resources.ResourceManager.GetObject("AppSILI", CultureInfo.InvariantCulture));
-					zip.AddFile(ttf.Path, subdirectory);
+					zip.CreateEntryFromFile(ttf.Path,
+						Path.Combine(subdirectory, Path.GetFileName(ttf.Path)));
 				}
 				File.WriteAllBytes(matUsx.Path, Resources.MAT_usx);
-				if (subdirectory != String.Empty)
+				if (subdirectory != Empty)
 					subdirectory += "/";
-				zip.AddFile(matUsx.Path, subdirectory + (invalidUsxDirectory ? "USX_999" : "USX_1"));
-				zip.Save(bundle.Path);
+				zip.CreateEntryFromFile(matUsx.Path, Path.Combine(subdirectory +
+					(invalidUsxDirectory ? "USX_999" : "USX_1"), Path.GetFileName(matUsx.Path)));
 			}
 
 			return bundle;
