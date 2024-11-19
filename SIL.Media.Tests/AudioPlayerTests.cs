@@ -9,7 +9,13 @@ using NAudio.Wave;
 
 namespace SIL.Media.Tests
 {
-	[Category("SkipOnTeamCity")]
+	/// <summary>
+	/// Tests for the AudioPlayer class.
+	/// </summary>
+	/// <remarks>This fixture used to be skipped during the CI build, perhaps because of the test
+	/// that actually tries to do playback (since that would require an audio output device).
+	/// However, that test is now ignored and the only non-ignored test works fine without an
+	/// actual playback device.</remarks>
 	[TestFixture]
 	public class AudioPlayerTests
 	{
