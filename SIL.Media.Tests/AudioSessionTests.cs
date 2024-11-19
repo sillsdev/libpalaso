@@ -15,7 +15,6 @@ namespace SIL.Media.Tests
 	// Some of these tests require a speaker. Others require a microphone.
 	// None of them will work if neither a speaker nor a microphone is available.
 	[TestFixture]
-	[NUnit.Framework.Category("SkipOnTeamCity")]
 	[NUnit.Framework.Category("AudioTests")]
 	public class AudioSessionTests
 	{

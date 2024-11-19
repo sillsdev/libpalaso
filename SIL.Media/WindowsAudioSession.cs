@@ -17,7 +17,7 @@ namespace SIL.Media
 	internal class WindowsAudioSession : ISimpleAudioSession, ISimpleAudioWithEvents
 	{
 		private readonly IrrKlang.IAudioRecorder _recorder;
-		private readonly ISoundEngine _engine = new ISoundEngine();
+		private readonly ISoundEngine _engine = new ISoundEngine(SoundOutputDriver.AutoDetect, SoundEngineOptionFlag.PrintDebugInfoIntoDebugger);
 		private bool _thinkWeAreRecording;
 		private DateTime _startRecordingTime;
 		private DateTime _stopRecordingTime;
