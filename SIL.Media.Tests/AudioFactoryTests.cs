@@ -6,7 +6,6 @@ namespace SIL.Media.Tests
 {
 	// These will not work if a speaker is not available.
 	[TestFixture]
-	[Category("SkipOnTeamCity")]
 	[Category("AudioTests")]
 	public class AudioFactoryTests
 	{
