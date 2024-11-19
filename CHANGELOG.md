@@ -79,6 +79,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Changed the name of the third parameter in ArchivingDlgViewModel.AddFileGroup from progressMessage to addingToArchiveProgressMessage.
 - [SIL.Windows.Forms.Archiving] Changed Cancel Button to say Close instead in IMDIArchivingDlg.
 - [SIL.Core.Desktop] Renamed GetFromRegistryProgramThatOpensFileType to GetDefaultProgramForFileType.
+- [SIL.Media] Made FFmpegRunner able to use version of FFmpeg found on the path.
 
 ### Fixed
 - [SIL.Archiving] Fixed typo in RampArchivingDlgViewModel for Ethnomusicology performance collection.
