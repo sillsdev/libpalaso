@@ -267,7 +267,7 @@ namespace SIL.IO
 		/// Used to make a real file out of a resource for the purpose of testing
 		/// </summary>
 		/// <param name="resource">e.g., an audio resource</param>
-		/// <param name="extension">with or with out '.', will work the same</param>
+		/// <param name="extension">with or without '.', will work the same</param>
 		public static TempFile FromResource(Stream resource, string extension)
 		{
 			var f = WithExtension(extension);

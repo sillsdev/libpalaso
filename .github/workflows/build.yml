@@ -43,7 +43,7 @@ jobs:
         ffmpeg-version: release
     - run: echo ffmpeg path ${{ steps.setup-ffmpeg.outputs.ffmpeg-path }}
     
-    - name: Install Scream on Windows
+    - name: Install Scream
       shell: powershell
       run: |
         Invoke-WebRequest https://github.com/duncanthrax/scream/releases/download/4.0/Scream4.0.zip -OutFile Scream4.0.zip
@@ -54,8 +54,7 @@ jobs:
     - name: Setup MSVC Dev Cmd
       uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Sign and Install Scream Driver on Windows
-      if: matrix.os == 'windows-latest'
+    - name: Sign and Install Scream Driver
       shell: powershell
       run: |
         signtool sign /v /fd SHA256 /f ScreamCertificate.pfx Scream\Install\driver\x64\Scream.cat

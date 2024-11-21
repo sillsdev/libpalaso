@@ -81,6 +81,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core.Desktop] Renamed GetFromRegistryProgramThatOpensFileType to GetDefaultProgramForFileType.
 - [SIL.Media] Made FFmpegRunner able to use version of FFmpeg found on the path.
 - [SIL.Media] Upgraded irrKlang to v. 1.6.
+- [SIL.Media] In FFmpegRunner, changed ExtractMp3Audio, ExtractOggAudio, ExtractAudio, and ChangeNumberOfAudioChannels to use LocateAndRememberFFmpeg instead of LocateFFmpeg. This is potentially a breaking change but only in the edge case where an app does not install FFmpeg and the user installs it while running the app.
+- [SIL.Media] Made the Windows implementation of ISimpleAudioSession more robust in that it will attempt to create an irrKlang-based recorder even if there is no audio output device enabled.
 
 ### Fixed
 - [SIL.Archiving] Fixed typo in RampArchivingDlgViewModel for Ethnomusicology performance collection.

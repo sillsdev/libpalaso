@@ -17,7 +17,7 @@ namespace SIL.Media
 	internal class WindowsAudioSession : ISimpleAudioSession, ISimpleAudioWithEvents
 	{
 		private readonly IrrKlang.IAudioRecorder _recorder;
-		private readonly ISoundEngine _engine = new ISoundEngine(SoundOutputDriver.AutoDetect, SoundEngineOptionFlag.PrintDebugInfoIntoDebugger);
+		private readonly ISoundEngine _engine = CreateSoundEngine();
 		private bool _thinkWeAreRecording;
 		private DateTime _startRecordingTime;
 		private DateTime _stopRecordingTime;
@@ -28,6 +28,28 @@ namespace SIL.Media
 		/// Will be raised when playing is over
 		/// </summary>
 		public event EventHandler PlaybackStopped;
+
+		private static ISoundEngine CreateSoundEngine()
+		{
+			try
+			{
+				// By default, try to auto-detect the sound driver. Normally on an end-user
+				// computer this will succeed, but even though we're trying to use irrKlang
+				// for recording only, if there's no default audio output device, it will
+				// fail.
+				return new ISoundEngine();
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				// As a fallback, we'll try to create the engine with a null output driver.
+				// This should succeed even if there's no default audio output device, and
+				// it gets a bunch of tests to pass in that scenario, but I'm not 100% sure
+				// it will work for actual recording in all situations as it might rely on
+				// it for timing or internal buffer synchronization, even when only recording.
+				return new ISoundEngine(SoundOutputDriver.NullDriver);
+			}
+		}
 
 		/// <summary>
 		/// Constructor for an AudioSession using the IrrKlang library
@@ -113,7 +135,8 @@ namespace SIL.Media
 		/// The current version of Play uses NAudio for playback. IrrKlang had issues with playback.
 		/// In the future it may be best to try the latest version of IrrKlang and see if true safe
 		/// cross-platform recording and playback can be accomplished now. This would eliminate the need for
-		/// the AlsaAudio classes on linux.
+		/// the AlsaAudio classes on linux. Note: irrKlang was upgraded to v. 1.6 in Nov 2024, but I did
+		/// not re-check to see if it works for playback on all platforms.
 		/// </summary>
 		public void Play()
 		{
