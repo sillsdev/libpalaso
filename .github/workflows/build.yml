@@ -43,6 +43,14 @@ jobs:
         ffmpeg-version: release
     - run: echo ffmpeg path ${{ steps.setup-ffmpeg.outputs.ffmpeg-path }}
     
+    - name: Add FFmpeg to PATH
+      run: echo "::add-path::${{ steps.setup-ffmpeg.outputs.ffmpeg-path }}"
+      
+    - name: Verify FFmpeg Installation
+      run: |
+        echo $PATH
+        ffmpeg -version
+    
     - name: Install Scream
       shell: powershell
       run: |
