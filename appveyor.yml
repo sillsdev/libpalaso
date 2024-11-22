@@ -10,6 +10,7 @@ init:
       set IGNORE_NORMALISATION_GIT_HEAD_MOVE=1
 install:
   - choco install gitversion.portable --version 5.11.1 -y
+  - choco install ffmpeg -y
 nuget:
   disable_publish_on_pr: true
   disable_publish_octopus: true
@@ -32,6 +33,8 @@ test:
   categories:
     except:
     - SkipOnTeamCity
+    - RequiresAudioOutputDevice
+    - RequiresAudioInputDevice
 artifacts:
 - path: output/*nupkg
   name: nuget
