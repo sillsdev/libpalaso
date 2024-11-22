@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Ionic.Zip;
 using JetBrains.Annotations;
 using SIL.Core.ClearShare;
 using SIL.Extensions;
@@ -267,8 +267,8 @@ namespace SIL.Archiving
 			{
 				if (FileUtils.GetIsZipFile(file))
 				{
-					using (var zipFile = new ZipFile(file))
-						AddModesToSet(zipFile.EntryFileNames);
+					using (var zipArchive = ZipFile.OpenRead(file))
+						AddModesToSet(zipArchive.Entries.Select(e => e.FullName));
 					continue;
 				}
 
@@ -1674,41 +1674,34 @@ namespace SIL.Archiving
 
 			ReportMajorProgressPoint(StringId.SavingFilesInPackage, cancellationToken);
 
-			using (var zip = new ZipFile())
+			using (var zip = ZipFile.Open(PackagePath, ZipArchiveMode.Create))
 			{
-				// RAMP packages must not be compressed or RAMP can't read them.
-				zip.UseZip64WhenSaving = Zip64Option.AsNecessary; // See SP-2291
-				zip.CompressionLevel = Ionic.Zlib.CompressionLevel.None;
-				zip.AddFiles(filesToCopyAndZip.Values, @"\");
-				zip.AddFile(_metsFilePath, Empty);
-				zip.SaveProgress += delegate(object sender, SaveProgressEventArgs args)
-				{
-					HandleZipSaveProgress(args, cancellationToken);
-				};
-				zip.Save(PackagePath);
+				foreach (var filePath in filesToCopyAndZip.Values)
+					AddFileToZipArchive(zip, filePath, cancellationToken);
 
-				if (!cancellationToken.IsCancellationRequested)
-					Thread.Sleep(800);
+				AddFileToZipArchive(zip, _metsFilePath, cancellationToken);
 			}
 		}
 
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// This is called by the Save method on the ZipFile class as the zip file is being
-		/// saved to the disk.
+		/// Add the requested file to the zip archive after reporting progress and checking for
+		/// cancellation by user.
 		/// </summary>
+		/// <remarks>RAMP packages must not be compressed or RAMP can't read them.</remarks>
 		/// ------------------------------------------------------------------------------------
-		private void HandleZipSaveProgress(SaveProgressEventArgs e,
+		private void AddFileToZipArchive(ZipArchive zip, string filePath,
 			CancellationToken cancellationToken)
 		{
-			if (e.EventType != ZipProgressEventType.Saving_BeforeWriteEntry)
-				return;
-
-			if (_progressMessages.TryGetValue(e.CurrentEntry.FileName, out var msg))
+			if (_progressMessages.TryGetValue(filePath, out var msg))
 				DisplayMessage(msg, MessageType.Progress);
 
-			ReportProgress(Path.GetFileName(e.CurrentEntry.FileName), MessageType.Detail, cancellationToken);
+			var fileName = Path.GetFileName(filePath);
+
+			ReportProgress(fileName, MessageType.Detail, cancellationToken);
+
+			zip.CreateEntryFromFile(filePath, fileName, CompressionLevel.NoCompression);
 		}
 
 		#endregion
@@ -1759,17 +1752,17 @@ namespace SIL.Archiving
 			// get the data directory
 			dir = Path.Combine(dir, "data");
 			if (!Directory.Exists(dir))
-				throw new DirectoryNotFoundException(Format("The path {0} is not valid.", dir));
+				throw new DirectoryNotFoundException($"The path {dir} is not valid.");
 
 			// get the options directory
 			dir = Path.Combine(dir, "options");
 			if (!Directory.Exists(dir))
-				throw new DirectoryNotFoundException(Format("The path {0} is not valid.", dir));
+				throw new DirectoryNotFoundException($"The path {dir} is not valid.");
 
 			// get the languages.yaml file
 			var langFile = Path.Combine(dir, "languages.yaml");
 			if (!File.Exists(langFile))
-				throw new FileNotFoundException(Format("The file {0} was not found.", langFile), langFile);
+				throw new FileNotFoundException($"The file {langFile} was not found.", langFile);
 
 			return langFile;
 		}
@@ -1815,12 +1808,12 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public string GetLanguageName(string iso3Code)
 		{
-			var langs = GetLanguageList();
+			var languages = GetLanguageList();
 
-			if (langs == null)
+			if (languages == null)
 				throw new Exception("The language list for RAMP was not retrieved.");
 
-			return langs.ContainsKey(iso3Code) ? langs[iso3Code] : null;
+			return languages.TryGetValue(iso3Code, out var lang) ? lang : null;
 		}
 		#endregion
 
