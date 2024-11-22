@@ -1,8 +1,10 @@
 // Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security;
 using JetBrains.Annotations;
 using SIL.PlatformUtilities;
 using static System.Environment;
@@ -106,21 +108,45 @@ namespace SIL.IO
 
 		/// <summary>
 		/// Return subdirectories of <paramref name="path"/> that are not system or hidden.
+		/// Subdirectories which the user does not have permission to access will also be skipped.
 		/// There are some cases where our call to Directory.GetDirectories() throws.
 		/// For example, when the access permissions on a folder are set so that it can't be read.
 		/// Another possible example may be Windows Backup files, which apparently look like directories.
 		/// </summary>
 		/// <param name="path">Directory path to look in.</param>
-		/// <returns>Zero or more directory names that are not system or hidden.</returns>
-		/// <exception cref="UnauthorizedAccessException">E.g. when the user does not have
-		/// read permission.</exception>
+		/// <returns>Zero or more directory names that are not system or hidden</returns>
+		/// <exception cref="UnauthorizedAccessException">The caller does not have the required
+		/// permission to access the subdirectories of <paramref name="path"/>.</exception>
+		/// <exception cref="ArgumentException">
+		/// <paramref name="path" /> is a zero-length string, contains only white space, or contains one or more invalid characters. You can query for invalid characters by using the <see cref="M:System.IO.Path.GetInvalidPathChars" /> method.</exception>
+		/// <exception cref="ArgumentNullException">
+		/// <paramref name="path" /> is <see langword="null" />.</exception>
+		/// <exception cref="PathTooLongException">The specified <paramref name="path" />, file name,
+		/// or both exceed the system-defined maximum length.</exception>
+		/// <exception cref="IOException"><paramref name="path" /> is a file name.</exception>
+		/// <exception cref="DirectoryNotFoundException">The specified <paramref name="path" /> is
+		/// invalid (for example, it is on an unmapped drive).</exception>
 		public static string[] GetSafeDirectories(string path)
 		{
-			return (from directoryName in Directory.GetDirectories(path)
-				let dirInfo = new DirectoryInfo(directoryName)
-				where (dirInfo.Attributes & FileAttributes.System) != FileAttributes.System
-				where (dirInfo.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden
-				select directoryName).ToArray();
+			var list = new List<string>();
+			foreach (var directoryName in Directory.GetDirectories(path))
+			{
+				try
+				{
+					var dirInfo = new DirectoryInfo(directoryName);
+					if ((dirInfo.Attributes & FileAttributes.System) != FileAttributes.System)
+					{
+						if ((dirInfo.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
+							list.Add(directoryName);
+					}
+				}
+				catch (SecurityException e)
+				{
+					Console.WriteLine(e);
+				}
+			}
+
+			return list.ToArray();
 		}
 
 		#region Utilities that are specific to the Windows OS.

@@ -83,6 +83,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Fixed typo in RampArchivingDlgViewModel for Ethnomusicology performance collection.
 - [SIL.Archiving] Changed URLs that used http: to https: in resource EmptyMets.xml.
 - [SIL.Core.Desktop] Implemented GetDefaultProgramForFileType (as trenamed) in a way that works on Windows 11, Mono (probably) and MacOS (untested).
+- [SIL.Core] Made GetSafeDirectories not crash and simply not return any subdirectory the user does not have permission to access.
+- [SIL.Core] In GetDirectoryDistributedWithApplication, prevented a failure in accessing one of the specified subfolders from allowing it to try the others.
 
 ### Removed
 
