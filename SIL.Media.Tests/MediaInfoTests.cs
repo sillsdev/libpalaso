@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.Media.Tests.Properties;
@@ -24,7 +25,35 @@ namespace SIL.Media.Tests
 		[Test]
 		public void HaveNecessaryComponents_ReturnsTrue()
 		{
-			Assert.IsTrue(MediaInfo.HaveNecessaryComponents);
+			Assert.IsTrue(MediaInfo.HaveNecessaryComponents,
+				"FFprobe was expected to have been found on system path or in a known location.");
+		}
+
+		[TestCase(null)]
+		[TestCase("")]
+		public void SetFFprobeFolder_ToNullOrEmpty_HaveNecessaryComponentsReturnsTrue(string presetFolder)
+		{
+			MediaInfo.FFprobeFolder = presetFolder;
+			Assert.IsTrue(MediaInfo.HaveNecessaryComponents,
+				"FFprobe was expected to have been found on system path or in a known location.");
+		}
+
+		[Test]
+		public void SetFFprobeFolder_ToNonexistentFolder_ThrowsDirectoryNotFoundException()
+		{
+			Assert.That(() =>
+			{
+				MediaInfo.FFprobeFolder = "D:\\ThereIsNoWayThi5F0lderShould\\exist";
+			}, Throws.Exception.InstanceOf<DirectoryNotFoundException>());
+		}
+
+		[Test]
+		public void SetFFprobeFolder_ToFolderWithoutFFprobe_ThrowsFileNotFoundException()
+		{
+			Assert.That(() =>
+			{
+				MediaInfo.FFprobeFolder = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments);
+			}, Throws.Exception.InstanceOf<FileNotFoundException>());
 		}
 
 		[Test]
