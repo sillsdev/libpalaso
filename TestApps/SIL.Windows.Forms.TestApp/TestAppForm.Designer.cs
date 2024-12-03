@@ -87,9 +87,9 @@ namespace SIL.Windows.Forms.TestApp
             this.btnOpenProject = new System.Windows.Forms.Button();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // toolStrip1
-            // 
+            //
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this._uiLanguageMenu});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
@@ -97,18 +97,18 @@ namespace SIL.Windows.Forms.TestApp
             this.toolStrip1.Size = new System.Drawing.Size(187, 25);
             this.toolStrip1.TabIndex = 9;
             this.toolStrip1.Text = "toolStrip1";
-            // 
+            //
             // _uiLanguageMenu
-            // 
+            //
             this._uiLanguageMenu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this._uiLanguageMenu.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._uiLanguageMenu.Name = "_uiLanguageMenu";
             this._uiLanguageMenu.Size = new System.Drawing.Size(58, 22);
             this._uiLanguageMenu.Text = "English";
             this._uiLanguageMenu.ToolTipText = "User-interface Language";
-            // 
+            //
             // btnThrowException
-            // 
+            //
             this.btnThrowException.Location = new System.Drawing.Point(12, 440);
             this.btnThrowException.Name = "btnThrowException";
             this.btnThrowException.Size = new System.Drawing.Size(157, 23);
@@ -116,9 +116,9 @@ namespace SIL.Windows.Forms.TestApp
             this.btnThrowException.Text = "Throw Unhandled Exception";
             this.btnThrowException.UseVisualStyleBackColor = true;
             this.btnThrowException.Click += new System.EventHandler(this.btnThrowException_Click);
-            // 
+            //
             // btnShowFormWithModalChild
-            // 
+            //
             this.btnShowFormWithModalChild.Location = new System.Drawing.Point(12, 411);
             this.btnShowFormWithModalChild.Name = "btnShowFormWithModalChild";
             this.btnShowFormWithModalChild.Size = new System.Drawing.Size(157, 23);
@@ -126,9 +126,9 @@ namespace SIL.Windows.Forms.TestApp
             this.btnShowFormWithModalChild.Text = "Form w/ Modal Child...";
             this.btnShowFormWithModalChild.UseVisualStyleBackColor = true;
             this.btnShowFormWithModalChild.Click += new System.EventHandler(this.btnShowFormWithModalChild_Click);
-            // 
+            //
             // btnTestContributorsList
-            // 
+            //
             this.btnTestContributorsList.Location = new System.Drawing.Point(12, 382);
             this.btnTestContributorsList.Name = "btnTestContributorsList";
             this.btnTestContributorsList.Size = new System.Drawing.Size(157, 23);
@@ -136,9 +136,9 @@ namespace SIL.Windows.Forms.TestApp
             this.btnTestContributorsList.Text = "Test Contributors List...";
             this.btnTestContributorsList.UseVisualStyleBackColor = true;
             this.btnTestContributorsList.Click += new System.EventHandler(this.btnTestContributorsList_Click);
-            // 
+            //
             // recordPlayButton
-            // 
+            //
             this.recordPlayButton.Location = new System.Drawing.Point(12, 353);
             this.recordPlayButton.Name = "recordPlayButton";
             this.recordPlayButton.Size = new System.Drawing.Size(157, 23);
@@ -147,9 +147,9 @@ namespace SIL.Windows.Forms.TestApp
             this.recordPlayButton.UseVisualStyleBackColor = true;
             this.recordPlayButton.MouseDown += new System.Windows.Forms.MouseEventHandler(this.recordPlayButton_MouseDown);
             this.recordPlayButton.MouseUp += new System.Windows.Forms.MouseEventHandler(this.recordPlayButton_MouseUp);
-            // 
+            //
             // btnFlexibleMessageBox
-            // 
+            //
             this.btnFlexibleMessageBox.Location = new System.Drawing.Point(12, 324);
             this.btnFlexibleMessageBox.Name = "btnFlexibleMessageBox";
             this.btnFlexibleMessageBox.Size = new System.Drawing.Size(157, 23);
@@ -157,9 +157,9 @@ namespace SIL.Windows.Forms.TestApp
             this.btnFlexibleMessageBox.Text = "Flexible Message Box";
             this.btnFlexibleMessageBox.UseVisualStyleBackColor = true;
             this.btnFlexibleMessageBox.Click += new System.EventHandler(this.btnFlexibleMessageBox_Click);
-            // 
+            //
             // btnSettingProtectionDialog
-            // 
+            //
             this.btnSettingProtectionDialog.Location = new System.Drawing.Point(12, 294);
             this.btnSettingProtectionDialog.Name = "btnSettingProtectionDialog";
             this.btnSettingProtectionDialog.Size = new System.Drawing.Size(157, 23);
@@ -167,9 +167,9 @@ namespace SIL.Windows.Forms.TestApp
             this.btnSettingProtectionDialog.Text = "SettingProtectionDialog";
             this.btnSettingProtectionDialog.UseVisualStyleBackColor = true;
             this.btnSettingProtectionDialog.Click += new System.EventHandler(this.btnSettingProtectionDialog_Click);
-            // 
+            //
             // _silAboutBoxGecko
-            // 
+            //
             this._silAboutBoxGecko.Location = new System.Drawing.Point(12, 179);
             this._silAboutBoxGecko.Name = "_silAboutBoxGecko";
             this._silAboutBoxGecko.Size = new System.Drawing.Size(157, 23);
@@ -177,9 +177,9 @@ namespace SIL.Windows.Forms.TestApp
             this._silAboutBoxGecko.Text = "SIL AboutBox (Gecko)";
             this._silAboutBoxGecko.UseVisualStyleBackColor = true;
             this._silAboutBoxGecko.Click += new System.EventHandler(this.OnSilAboutBoxGeckoClicked);
-            // 
+            //
             // label1
-            // 
+            //
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 569);
@@ -201,9 +201,9 @@ namespace SIL.Windows.Forms.TestApp
             this.superToolTip1.SetSuperStuff(this.label1, superToolTipInfoWrapper1);
             this.label1.TabIndex = 1;
             this.label1.Text = "Hover over me to see a tooltip";
-            // 
+            //
             // label2
-            // 
+            //
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(12, 589);
@@ -220,9 +220,9 @@ namespace SIL.Windows.Forms.TestApp
             this.superToolTip2.SetSuperStuff(this.label2, superToolTipInfoWrapper2);
             this.label2.TabIndex = 1;
             this.label2.Text = "Hover for simple, long tooltip";
-            // 
+            //
             // btnSelectFile
-            // 
+            //
             this.btnSelectFile.Location = new System.Drawing.Point(12, 265);
             this.btnSelectFile.Name = "btnSelectFile";
             this.btnSelectFile.Size = new System.Drawing.Size(157, 23);
@@ -230,9 +230,9 @@ namespace SIL.Windows.Forms.TestApp
             this.btnSelectFile.Text = "Select File";
             this.btnSelectFile.UseVisualStyleBackColor = true;
             this.btnSelectFile.Click += new System.EventHandler(this.OnSelectFileClicked);
-            // 
+            //
             // btnMetaDataEditor
-            // 
+            //
             this.btnMetaDataEditor.Location = new System.Drawing.Point(12, 236);
             this.btnMetaDataEditor.Name = "btnMetaDataEditor";
             this.btnMetaDataEditor.Size = new System.Drawing.Size(157, 23);
@@ -240,9 +240,9 @@ namespace SIL.Windows.Forms.TestApp
             this.btnMetaDataEditor.Text = "Meta Data Editor";
             this.btnMetaDataEditor.UseVisualStyleBackColor = true;
             this.btnMetaDataEditor.Click += new System.EventHandler(this.OnShowMetaDataEditorClicked);
-            // 
+            //
             // btnShowReleaseNotes
-            // 
+            //
             this.btnShowReleaseNotes.Location = new System.Drawing.Point(12, 207);
             this.btnShowReleaseNotes.Name = "btnShowReleaseNotes";
             this.btnShowReleaseNotes.Size = new System.Drawing.Size(157, 23);
@@ -250,9 +250,9 @@ namespace SIL.Windows.Forms.TestApp
             this.btnShowReleaseNotes.Text = "Show Release Notes";
             this.btnShowReleaseNotes.UseVisualStyleBackColor = true;
             this.btnShowReleaseNotes.Click += new System.EventHandler(this.OnShowReleaseNotesClicked);
-            // 
+            //
             // btnSilAboutBox
-            // 
+            //
             this.btnSilAboutBox.Location = new System.Drawing.Point(12, 150);
             this.btnSilAboutBox.Name = "btnSilAboutBox";
             this.btnSilAboutBox.Size = new System.Drawing.Size(157, 23);
@@ -260,19 +260,9 @@ namespace SIL.Windows.Forms.TestApp
             this.btnSilAboutBox.Text = "SIL AboutBox";
             this.btnSilAboutBox.UseVisualStyleBackColor = true;
             this.btnSilAboutBox.Click += new System.EventHandler(this.OnSilAboutBoxClicked);
-            // 
-            // btnImageToolbox
-            // 
-            this.btnImageToolbox.Location = new System.Drawing.Point(12, 121);
-            this.btnImageToolbox.Name = "btnImageToolbox";
-            this.btnImageToolbox.Size = new System.Drawing.Size(157, 23);
-            this.btnImageToolbox.TabIndex = 0;
-            this.btnImageToolbox.Text = "Image Toolbox";
-            this.btnImageToolbox.UseVisualStyleBackColor = true;
-            this.btnImageToolbox.Click += new System.EventHandler(this.OnImageToolboxClicked);
-            // 
+            //
             // btnWritingSystemSetupDialog
-            // 
+            //
             this.btnWritingSystemSetupDialog.Location = new System.Drawing.Point(12, 92);
             this.btnWritingSystemSetupDialog.Name = "btnWritingSystemSetupDialog";
             this.btnWritingSystemSetupDialog.Size = new System.Drawing.Size(157, 23);
@@ -280,9 +270,9 @@ namespace SIL.Windows.Forms.TestApp
             this.btnWritingSystemSetupDialog.Text = "WritingSystemSetupDialog";
             this.btnWritingSystemSetupDialog.UseVisualStyleBackColor = true;
             this.btnWritingSystemSetupDialog.Click += new System.EventHandler(this.OnWritingSystemSetupDialogClicked);
-            // 
+            //
             // btnLookupISOCodeDialog
-            // 
+            //
             this.btnLookupISOCodeDialog.Location = new System.Drawing.Point(12, 63);
             this.btnLookupISOCodeDialog.Name = "btnLookupISOCodeDialog";
             this.btnLookupISOCodeDialog.Size = new System.Drawing.Size(157, 23);
@@ -290,9 +280,9 @@ namespace SIL.Windows.Forms.TestApp
             this.btnLookupISOCodeDialog.Text = "LanguageLookupDialog";
             this.btnLookupISOCodeDialog.UseVisualStyleBackColor = true;
             this.btnLookupISOCodeDialog.Click += new System.EventHandler(this.OnLanguageLookupDialogClicked);
-            // 
+            //
             // btnFolderBrowserControl
-            // 
+            //
             this.btnFolderBrowserControl.Location = new System.Drawing.Point(12, 34);
             this.btnFolderBrowserControl.Name = "btnFolderBrowserControl";
             this.btnFolderBrowserControl.Size = new System.Drawing.Size(157, 23);
@@ -300,17 +290,17 @@ namespace SIL.Windows.Forms.TestApp
             this.btnFolderBrowserControl.Text = "FolderBrowserControl";
             this.btnFolderBrowserControl.UseVisualStyleBackColor = true;
             this.btnFolderBrowserControl.Click += new System.EventHandler(this.OnFolderBrowserControlClicked);
-            // 
+            //
             // superToolTip1
-            // 
+            //
             this.superToolTip1.FadingInterval = 10;
-            // 
+            //
             // superToolTip2
-            // 
+            //
             this.superToolTip2.FadingInterval = 10;
-            // 
+            //
             // btnMediaFileInfo
-            // 
+            //
             this.btnMediaFileInfo.Location = new System.Drawing.Point(12, 468);
             this.btnMediaFileInfo.Margin = new System.Windows.Forms.Padding(2);
             this.btnMediaFileInfo.Name = "btnMediaFileInfo";
@@ -319,9 +309,9 @@ namespace SIL.Windows.Forms.TestApp
             this.btnMediaFileInfo.Text = "Get Media File Info";
             this.btnMediaFileInfo.UseVisualStyleBackColor = true;
             this.btnMediaFileInfo.Click += new System.EventHandler(this.btnMediaFileInfo_Click);
-            // 
+            //
             // btnShowFileOverwriteDlg
-            // 
+            //
             this.btnShowFileOverwriteDlg.Location = new System.Drawing.Point(12, 496);
             this.btnShowFileOverwriteDlg.Margin = new System.Windows.Forms.Padding(2);
             this.btnShowFileOverwriteDlg.Name = "btnShowFileOverwriteDlg";
@@ -330,9 +320,9 @@ namespace SIL.Windows.Forms.TestApp
             this.btnShowFileOverwriteDlg.Text = "Show File Overwrite Dialog";
             this.btnShowFileOverwriteDlg.UseVisualStyleBackColor = true;
             this.btnShowFileOverwriteDlg.Click += new System.EventHandler(this.btnShowFileOverwriteDlg_Click);
-            // 
+            //
             // btnOpenProject
-            // 
+            //
             this.btnOpenProject.Location = new System.Drawing.Point(12, 523);
             this.btnOpenProject.Margin = new System.Windows.Forms.Padding(2);
             this.btnOpenProject.Name = "btnOpenProject";
@@ -341,9 +331,9 @@ namespace SIL.Windows.Forms.TestApp
             this.btnOpenProject.Text = "Open Project";
             this.btnOpenProject.UseVisualStyleBackColor = true;
             this.btnOpenProject.Click += new System.EventHandler(this.btnOpenProject_Click);
-            // 
+            //
             // TestAppForm
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(187, 613);

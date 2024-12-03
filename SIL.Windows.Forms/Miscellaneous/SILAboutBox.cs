@@ -91,7 +91,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 						return titleAttribute.Title;
 					}
 				}
-				return Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
+				return Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
 			}
 		}
 
@@ -156,7 +156,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 		private string GetBuiltOnDate()
 		{
-			var file = PathHelper.StripFilePrefix(_assembly.CodeBase);
+			var file = PathHelper.StripFilePrefix(_assembly.Location);
 			var fi = new FileInfo(file);
 
 			// Use UTC for calculation of build-on-date so that we get the same date regardless

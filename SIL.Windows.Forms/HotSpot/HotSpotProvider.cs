@@ -180,7 +180,6 @@ namespace SIL.Windows.Forms.HotSpot
 
 		#region Nested type: HotSpotPainter
 
-		[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
 		private class HotSpotPainter: NativeWindow, IDisposable
 		{
 			private readonly TextBoxBase _control;
