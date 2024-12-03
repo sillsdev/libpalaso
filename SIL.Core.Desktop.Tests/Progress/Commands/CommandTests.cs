@@ -53,7 +53,7 @@ namespace SIL.Tests.Progress.Commands
 		public void CommandCallsFinalize()
 		{
 			TestCommand cmd = new TestCommand();
-			cmd.Finish += new EventHandler(OnFinish);
+			cmd.Finish += OnFinish;
 			cmd.BeginInvoke();
 			WaitOnBool(ref _onFinishCalled);
 		}
