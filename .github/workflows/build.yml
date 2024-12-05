@@ -78,7 +78,7 @@ jobs:
 
     - name: Run the Installer
       shell: powershell
-      run: Start-Process -FilePath "VBCABLE_Driver_Pack45\VBCABLE_Setup.exe" -ArgumentList -Wait -NoNewWindow
+      run: Start-Process -FilePath "VBCABLE_Driver_Pack45\VBCABLE_Setup.exe" -Wait -NoNewWindow -Verb RunAs
 
     - name: Cleanup extracted files
       shell: powershell
@@ -88,6 +88,14 @@ jobs:
         }
         if (Test-Path "VBCABLE_Driver_Pack45.zip") {
             Remove-Item -Force "VBCABLE_Driver_Pack45.zip"
+        }
+        
+    - name: Verify VB-CABLE Installation
+      shell: powershell
+      run: |
+        if (!(Test-Path "C:\Windows\System32\drivers\vbcable.sys")) {
+           Write-Error "VB-CABLE driver not installed correctly."
+           exit 1
         }
 
     - name: Start Windows Audio Service
