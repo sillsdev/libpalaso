@@ -78,7 +78,7 @@ jobs:
 
     - name: Run the Installer
       shell: powershell
-      run: Start-Process -FilePath "VBCABLE_Driver_Pack45\VBCABLE_Setup.exe" -ArgumentList "/S" -Wait -NoNewWindow
+      run: Start-Process -FilePath "VBCABLE_Driver_Pack45\VBCABLE_Setup.exe" -ArgumentList -Wait -NoNewWindow
 
     - name: Cleanup extracted files
       shell: powershell
