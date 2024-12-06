@@ -90,7 +90,7 @@ namespace SIL.CommandLineProcessing
 		}
 
 		/// <summary>
-		/// use this one if you're doing a long running task that you'll have running in a thread,
+		/// use this one if you're doing a long-running task that you'll have running in a thread,
 		/// so that you need a way to abort it
 		/// </summary>
 		public ExecutionResult Start(string exePath, string arguments, Encoding encoding,

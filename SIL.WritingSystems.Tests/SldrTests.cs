@@ -18,6 +18,8 @@ namespace SIL.WritingSystems.Tests
 			public TestEnvironment(bool sldrOffline = true, DateTime? embeddedAllTagsTime = null)
 			{
 				var sldrCachePath = Sldr.SldrCachePath;
+				Directory.CreateDirectory(sldrCachePath);
+
 				Sldr.Cleanup();
 				if (embeddedAllTagsTime == null)
 					Sldr.Initialize(sldrOffline, sldrCachePath);
