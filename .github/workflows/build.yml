@@ -59,7 +59,7 @@ jobs:
     - name: Setup MSVC Dev Cmd
       uses: ilammy/msvc-dev-cmd@v1
 
-    - name: Sign and Install Scream Driver
+    - name: Sign and Install Scream Driver - allows unit tests that require an audio output device
       shell: powershell
       run: |
         signtool sign /v /fd SHA256 /f ScreamCertificate.pfx Scream\Install\driver\x64\Scream.cat
@@ -68,36 +68,6 @@ jobs:
         Scream\Install\helpers\devcon-x64.exe install Scream\Install\driver\x64\Scream.inf *Scream
       timeout-minutes: 5
       
-    - name: Download Virtual Audio Cable Driver ZIP
-      shell: powershell
-      run: Invoke-WebRequest -Uri "https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack45.zip" -OutFile "VBCABLE_Driver_Pack45.zip"
-
-    - name: Extract the ZIP file
-      shell: powershell
-      run: Expand-Archive -Path "VBCABLE_Driver_Pack45.zip" -DestinationPath "VBCABLE_Driver_Pack45"
-
-    - name: Run the Installer
-      shell: powershell
-      run: Start-Process -FilePath "VBCABLE_Driver_Pack45\VBCABLE_Setup.exe" -Wait -NoNewWindow -Verb RunAs
-
-    - name: Cleanup extracted files
-      shell: powershell
-      run: |
-        if (Test-Path "VBCABLE_Driver_Pack45") {
-            Remove-Item -Recurse -Force "VBCABLE_Driver_Pack45"
-        }
-        if (Test-Path "VBCABLE_Driver_Pack45.zip") {
-            Remove-Item -Force "VBCABLE_Driver_Pack45.zip"
-        }
-        
-    - name: Verify VB-CABLE Installation
-      shell: powershell
-      run: |
-        if (!(Test-Path "C:\Windows\System32\drivers\vbcable.sys")) {
-           Write-Error "VB-CABLE driver not installed correctly."
-           exit 1
-        }
-
     - name: Start Windows Audio Service
       run: net start audiosrv
       shell: powershell
@@ -106,7 +76,7 @@ jobs:
     # so we don't use continue-on-error, but we still want to publish the results
     - name: Test project
       id: test
-      run: dotnet test "$TEST_PATH"/SIL*Tests.dll --filter "TestCategory != SkipOnTeamCity" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
+      run: dotnet test "$TEST_PATH"/SIL*Tests.dll --filter "(TestCategory != SkipOnTeamCity) & (TestCategory != RequiresAudioInputDevice)" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
 
     - name: Upload test results
       if: always()
