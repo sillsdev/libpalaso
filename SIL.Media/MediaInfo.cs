@@ -8,6 +8,7 @@ using SIL.PlatformUtilities;
 using SIL.Reporting;
 using static System.String;
 using static SIL.IO.FileLocationUtilities;
+using static SIL.Media.FFmpegRunner;
 
 namespace SIL.Media
 {
@@ -16,14 +17,16 @@ namespace SIL.Media
 	/// </summary>
 	public class MediaInfo
 	{
-		private static string FFprobeExe => Platform.IsWindows ? "ffprobe.exe" : "ffprobe";
+		private const string kFFprobe = "ffprobe";
+		private static string FFprobeExe => Platform.IsWindows ? "ffprobe.exe" : kFFprobe;
 
 		private static string s_ffProbeFolder;
+		private static bool s_foundFFProbeOnPath;
 		
 		/// <summary>
 		/// Returns false if it can't find FFprobe
 		/// </summary>
-		public static bool HaveNecessaryComponents => !IsNullOrEmpty(LocateAndRememberFFprobe());
+		public static bool HaveNecessaryComponents => !IsNullOrEmpty(LocateAndRememberFFprobe()) || s_foundFFProbeOnPath;
 
 		/// <summary>
 		/// The folder where FFprobe should be found. An application can use this to set
@@ -32,20 +35,26 @@ namespace SIL.Media
 		/// for other purposes, this folder will also be used for those calls.
 		/// </summary>
 		/// <exception cref="DirectoryNotFoundException">Folder does not exist</exception>
-		/// <exception cref="FileNotFoundException">Folder does not contain the ffprobe
+		/// <exception cref="FileNotFoundException">Folder does not contain the FFprobe
 		/// executable</exception>
 		/// <exception cref="ArgumentException">FFMpegCore failed to set the requested
 		/// FFprobe folder.</exception>
-		/// <remarks>If set to <see cref="Empty"/>, indicates to this library that
-		/// FFprobe is not installed, and therefore methods to retrieve media info will
-		/// fail unconditionally (i.e. they will throw an exception)</remarks>
+		/// <returns><see cref="Empty"/> if FFprobe is not installed or is on the path.</returns>
+		/// <remarks>If this returns <see cref="Empty"/>, clients can use
+		/// <see cref="HaveNecessaryComponents"/> to know whether FFprobe was found on the system
+		/// path. If not, attempts to retrieve media info will fail unconditionally (i.e. they will
+		/// throw an exception)</remarks>
 		[PublicAPI]
 		public static string FFprobeFolder
 		{
-			get => s_ffProbeFolder;
+			get => LocateAndRememberFFprobe();
 			set
 			{
-				if (value != Empty)
+				if (IsNullOrEmpty(value))
+				{
+					s_foundFFProbeOnPath = MeetsMinimumVersionRequirement(FFprobeExe);
+				}
+				else
 				{
 					if (!Directory.Exists(value))
 						throw new DirectoryNotFoundException("Directory not found: " + value);
@@ -77,72 +86,73 @@ namespace SIL.Media
 		/// <returns></returns>
 		private static string LocateAndRememberFFprobe()
 		{
-			if (null != FFprobeFolder)
-				return FFprobeFolder;
+			if (null != s_ffProbeFolder)
+				return s_ffProbeFolder;
 			try
 			{
-				FFprobeFolder = GetPresumedFFprobeFolder();
+				s_ffProbeFolder = GetPresumedFFprobeFolder();
+				return s_ffProbeFolder;
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
 				return null;
 			}
-			return FFprobeFolder;
-		}
 
-		/// <summary>
-		/// On Windows, FFprobe will typically be distributed with SIL software, but if something
-		/// wants to use this library and work with a version of it that the user downloaded or
-		/// compiled locally, this tries to find where they put it. On other platforms, ffprobe
-		/// should be installed in the standard location by the package manager.
-		/// </summary>
-		/// <returns>A folder where FFprobe can be found; else <see cref="Empty"/></returns>
-		private static string GetPresumedFFprobeFolder()
-		{
-			var folder = GlobalFFOptions.Current.BinaryFolder;
+			// On Windows, FFprobe will typically be distributed with SIL software, but if something
+			// wants to use this library and work with a version of it that the user downloaded or
+			// compiled locally, this tries to find where they put it. On other platforms, FFprobe
+			// should be installed in the standard location by the package manager.
+			// Returns a folder where FFprobe can be found; else Empty.
+			static string GetPresumedFFprobeFolder()
+			{
+				var folder = GlobalFFOptions.Current.BinaryFolder;
 
-			// On Linux, we assume the package has included the needed dependency.
-			// ENHANCE: Make it possible to find in a non-default location
-			if (!Platform.IsWindows)
-			{
-				if (IsNullOrEmpty(folder) && File.Exists(Path.Combine("/usr/bin", FFprobeExe)))
-					folder = "/usr/bin";
-			}
-			else
-			{
-				if (IsNullOrEmpty(folder) || !File.Exists(Path.Combine(folder, FFprobeExe)))
+				// On Linux, we assume the package has included the needed dependency.
+				// ENHANCE: Make it possible to find in a non-default location
+				if (!Platform.IsWindows)
 				{
-					var withApplicationDirectory =
-						GetFileDistributedWithApplication(true, "ffmpeg", FFprobeExe) ??
-						GetFileDistributedWithApplication(true, "ffprobe", FFprobeExe);
-
-					folder = (!IsNullOrEmpty(withApplicationDirectory) ?
-						Path.GetDirectoryName(withApplicationDirectory) :
-						GetFFmpegFolderFromChocoInstall(FFprobeExe)) ?? Empty;
+					if (IsNullOrEmpty(folder) &&
+					    File.Exists(Path.Combine(kLinuxBinFolder, FFprobeExe)))
+						folder = kLinuxBinFolder;
 				}
-			}
+				else
+				{
+					if (IsNullOrEmpty(folder) || !File.Exists(Path.Combine(folder, FFprobeExe)))
+					{
+						// If the application explicitly set FFmpegLocation or we can find it
+						// by the normal logic, then use the ffProbe found in that same folder.
+						if (LocateAndRememberFFmpeg() != null)
+						{
+							folder = Path.GetDirectoryName(FFmpegLocation);
+							if (!IsNullOrEmpty(folder) &&
+							    File.Exists(Path.Combine(folder, FFprobeExe)))
+								return folder;
+						}
 
-			return folder;
-		}
+						// Most of this logic is likely redundant since LocateAndRememberFFmpeg should
+						// have already checked these places, but there's a faint chance that FFprobe
+						// is there even is FFmpeg is not.
+						var withApplicationDirectory =
+							GetFileDistributedWithApplication(true, kFFmpeg, FFprobeExe) ??
+							GetFileDistributedWithApplication(true, kFFprobe, FFprobeExe);
 
-		internal static string GetFFmpegFolderFromChocoInstall(string exeNeeded)
-		{
-			try
-			{
-				var programData = Environment.GetFolderPath(Environment.SpecialFolder
-					.CommonApplicationData);
+						folder = (!IsNullOrEmpty(withApplicationDirectory) ?
+							Path.GetDirectoryName(withApplicationDirectory) :
+							GetFFmpegFolderFromChocoInstall(FFprobeExe)) ?? Empty;
 
-				var folder = Path.Combine(programData, "chocolatey", "lib", "ffmpeg", "tools",
-					"ffmpeg", "bin");
-				if (!File.Exists(Path.Combine(folder, exeNeeded)))
-					folder = null;
+						if (folder == Empty)
+						{
+							if (MeetsMinimumVersionRequirement(FFprobeExe))
+							{
+								s_foundFFProbeOnPath = true;
+								return Empty;
+							}
+						}
+					}
+				}
+
 				return folder;
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine(e);
-				return null;
 			}
 		}
 
@@ -240,8 +250,8 @@ namespace SIL.Media
 
 			/// <summary>
 			/// Note that since a media file might contain multiple audio and video tracks
-			/// and they might start and stop at different times, the total duration reported
-			/// by <see cref="MediaInfo.AnalysisData"/> could be greater than this duration.
+			/// which might start and stop at different times, the total duration reported
+			/// by <see cref="AnalysisData"/> could be greater than this duration.
 			/// </summary>
 			[PublicAPI]
 			public TimeSpan Duration { get; }
@@ -269,8 +279,8 @@ namespace SIL.Media
 
 			/// <summary>
 			/// Note that since a media file might contain multiple audio and video tracks
-			/// and they might start and stop at different times, the total duration reported
-			/// by <see cref="MediaInfo.AnalysisData"/> could be greater than this duration.
+			/// which might start and stop at different times, the total duration reported
+			/// by <see cref="AnalysisData"/> could be greater than this duration.
 			/// </summary>
 			[PublicAPI]
 			public TimeSpan Duration { get; }

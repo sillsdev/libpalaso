@@ -8,14 +8,21 @@ using SIL.Media.Naudio;
 
 namespace SIL.Media.Tests
 {
-	// Some of these tests require a speaker. Others require a microphone.
-	// None of them will work if neither a speaker nor a microphone is available.
 	[TestFixture]
-	[Category("SkipOnTeamCity")]
 	[Category("AudioTests")]
+	[Category("RequiresAudioInputDevice")]
 	public class AudioRecorderTests
 	{
-		
+		private RecordingDevice _defaultRecordingDevice;
+
+		[OneTimeSetUp]
+		public void SetUpFixture()
+		{
+			_defaultRecordingDevice = RecordingDevice.Devices.FirstOrDefault() as RecordingDevice;
+			Assert.That(_defaultRecordingDevice, Is.Not.Null,
+				"These tests require a microphone.");
+		}
+
 		[Test]
 		public void BeginRecording_OnNonUiThread_Throws()
 		{
@@ -23,7 +30,7 @@ namespace SIL.Media.Tests
 			{
 				using (var recorder = new AudioRecorder(1))
 				{
-					recorder.SelectedDevice = RecordingDevice.Devices.First() as RecordingDevice;
+					recorder.SelectedDevice = _defaultRecordingDevice;
 					Assert.That(() => recorder.BeginRecording(f.Path, false), Throws.Exception);
 				}
 			}
@@ -42,8 +49,7 @@ namespace SIL.Media.Tests
 					// Note: BeginRecording
 					ctrl.HandleCreated += delegate
 					{
-						recorder.SelectedDevice =
-							RecordingDevice.Devices.First() as RecordingDevice;
+						recorder.SelectedDevice = _defaultRecordingDevice;
 						recorder.BeginRecording(f.Path, false);
 						Thread.Sleep(100);
 						recorder.Stop();
@@ -86,8 +92,7 @@ namespace SIL.Media.Tests
 					// Note: BeginRecording
 					ctrl.HandleCreated += delegate
 					{
-						recorder.SelectedDevice =
-							RecordingDevice.Devices.First() as RecordingDevice;
+						recorder.SelectedDevice = _defaultRecordingDevice;
 						recorder.BeginRecording(f.Path, false);
 					};
 
@@ -117,8 +122,7 @@ namespace SIL.Media.Tests
 					// Note: BeginRecording
 					ctrl.HandleCreated += delegate
 					{
-						recorder.SelectedDevice =
-							RecordingDevice.Devices.First() as RecordingDevice;
+						recorder.SelectedDevice = _defaultRecordingDevice;
 						recorder.BeginRecording(f.Path, false);
 					};
 
@@ -148,8 +152,7 @@ namespace SIL.Media.Tests
 				{
 					ctrl.HandleCreated += delegate
 					{
-						recorder.SelectedDevice =
-							RecordingDevice.Devices.First() as RecordingDevice;
+						recorder.SelectedDevice = _defaultRecordingDevice;
 						recorder.BeginMonitoring();
 						monitoringStarted = true;
 					};

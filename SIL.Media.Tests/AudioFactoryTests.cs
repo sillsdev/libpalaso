@@ -4,10 +4,9 @@ using SIL.IO;
 
 namespace SIL.Media.Tests
 {
-	// These will not work if a speaker is not available.
 	[TestFixture]
-	[Category("SkipOnTeamCity")]
 	[Category("AudioTests")]
+	[Category("RequiresAudioOutputDevice")] // These will not work if a speaker is not available.
 	public class AudioFactoryTests
 	{
 		[Test]
@@ -26,7 +25,6 @@ namespace SIL.Media.Tests
 				using (var x = AudioFactory.CreateAudioSession(f.Path)) { }
 			}
 		}
-
 
 		[Test]
 		public void Construct_FileDoesNotExist_DoesNotCreateFile()

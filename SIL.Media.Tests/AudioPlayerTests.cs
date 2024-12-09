@@ -10,13 +10,12 @@ using NAudio.Wave;
 namespace SIL.Media.Tests
 {
 	/// <summary>
-	/// All these tests are skipped on TeamCity (even if you remove this category) because SIL.Media.Tests compiles to an exe,
-	/// and the project that builds libpalaso on TeamCity (build/Palaso.proj, task Test) invokes RunNUnitTC which
-	/// selects the test assemblies using Include="$(RootDir)/output/$(Configuration)/*.Tests.dll" which excludes exes.
-	/// I have not tried to verify that all of these tests would actually have problems on TeamCity, but it seemed
-	/// helpful to document in the usual way that they are not, in fact, run there. 
+	/// Tests for the AudioPlayer class.
 	/// </summary>
-	[Category("SkipOnTeamCity")]
+	/// <remarks>This fixture used to be skipped during the CI build, perhaps because of the test
+	/// that actually tries to do playback (since that would require an audio output device).
+	/// However, that test is now ignored and the only non-ignored test works fine without an
+	/// actual playback device.</remarks>
 	[TestFixture]
 	public class AudioPlayerTests
 	{
@@ -33,7 +32,7 @@ namespace SIL.Media.Tests
 		}
 
 		/// <summary>
-		/// This test shows what caused hearthis to abandon the naudio; previous to a change to this class in 2/2012, it is believed that all was ok.
+		/// This test shows what caused HearThis to abandon NAudio; previous to a change to this class in 2/2012, it is believed that all was ok.
 		/// </summary>
 		[Test, Ignore("Known to Fail (hangs forever")]
 		public void PlayFile_ThenDispose_FileCanBeDeleted()
