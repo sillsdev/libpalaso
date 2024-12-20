@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Added public property isValid to IMDIPackage.
 - [SIL.Archiving] Added public event InitializationFailed to IMDIArchivingDlgViewModel.
 - [SIL.Archiving] Added the following properties to ArchivingDlgViewModel as an alternative way to customize the initial summary displayed: GetOverriddenPreArchivingMessages, InitialFileGroupDisplayMessageType, OverrideGetFileGroupDisplayMessage
+- [SIL.Media] Added FFmpegRunner.MinimumVersion property (also used by MediaInfo for FFprobe).
 
 ### Changed
 
@@ -78,11 +79,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Changed the name of the third parameter in ArchivingDlgViewModel.AddFileGroup from progressMessage to addingToArchiveProgressMessage.
 - [SIL.Windows.Forms.Archiving] Changed Cancel Button to say Close instead in IMDIArchivingDlg.
 - [SIL.Core.Desktop] Renamed GetFromRegistryProgramThatOpensFileType to GetDefaultProgramForFileType.
+- [SIL.Media] Made FFmpegRunner able to use version of FFmpeg found on the path.
+- [SIL.Media] Upgraded irrKlang to v. 1.6.
+- [SIL.Media] In FFmpegRunner, changed ExtractMp3Audio, ExtractOggAudio, ExtractAudio, and ChangeNumberOfAudioChannels to use LocateAndRememberFFmpeg instead of LocateFFmpeg. This is potentially a breaking change but only in the edge case where an app does not install FFmpeg and the user installs it while running the app.
+- [SIL.Media] Made the Windows implementation of ISimpleAudioSession more robust in that it will attempt to create an irrKlang-based recorder even if there is no audio output device enabled.
+- [SIL.Media] Made FFmpegRunner explicitly a static class (technically a breaking change, though all methods were already static).
+- [SIL.Media] Made FFmpegRunner look for the exe on the path before trying to find a version installed for Audacity (which is unlikely to succeed anyway).
+- [SIL.Media] Made MediaInfo look for the FFprobe exe in the same location as FFmpeg when the application has specified the location for it or when it was previously located in one of the expected locations. Also made it more robust by making it more likely to find FFprobe (when it is on the system path).
 
 ### Fixed
 - [SIL.Archiving] Fixed typo in RampArchivingDlgViewModel for Ethnomusicology performance collection.
 - [SIL.Archiving] Changed URLs that used http: to https: in resource EmptyMets.xml.
 - [SIL.Core.Desktop] Implemented GetDefaultProgramForFileType (as trenamed) in a way that works on Windows 11, Mono (probably) and MacOS (untested).
+- [SIL.Media] MediaInfo.HaveNecessaryComponents properly returns true if FFprobe is on the system path.
+- [SIL.Media] Made MediaInfo.FFprobeFolder look for and return the folder when first accessed, even if no prior call to the setter or other action had caused it t be found.
 
 ### Removed
 

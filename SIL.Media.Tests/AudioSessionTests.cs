@@ -12,10 +12,8 @@ using SIL.TestUtilities;
 
 namespace SIL.Media.Tests
 {
-	// Some of these tests require a speaker. Others require a microphone.
-	// None of them will work if neither a speaker nor a microphone is available.
+	// Some of these tests require a microphone (or a virtual audio input device).
 	[TestFixture]
-	[NUnit.Framework.Category("SkipOnTeamCity")]
 	[NUnit.Framework.Category("AudioTests")]
 	public class AudioSessionTests
 	{
@@ -25,17 +23,6 @@ namespace SIL.Media.Tests
 			using (var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName()))
 			{
 				Assert.Throws<ApplicationException>(() => x.StopRecordingAndSaveAsWav());
-			}
-		}
-
-		[Test]
-		public void StopPlaying_WhilePlaying_NoExceptionThrown()
-		{
-			using (var session = new RecordingSession(1000))
-			{
-				session.Recorder.Play();
-				Thread.Sleep(100);
-				session.Recorder.StopPlaying();
 			}
 		}
 
@@ -51,6 +38,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
+		[NUnit.Framework.Category("RequiresAudioInputDevice")]
 		public void Play_WhileRecording_Throws()
 		{
 			using (var session = new RecordingSession())
@@ -117,19 +105,34 @@ namespace SIL.Media.Tests
 			}
 		}
 
+		/// <summary>
+		/// For reasons I don't entirely understand, this test will actually pass when run
+		/// by itself against a single target framework without an audio output device, but
+		/// to get it to pass when running as part of the fixture or when testing against both
+		/// frameworks, it is necessary to have an audio output device.
+		/// </summary>
 		[Test]
+		[NUnit.Framework.Category("RequiresAudioOutputDevice")]
 		public void CanStop_WhilePlaying_True()
 		{
-			using (var session = new RecordingSession(1000))
+			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
 			{
-				session.Recorder.Play();
-				Thread.Sleep(100);
-				Assert.IsTrue(session.Recorder.CanStop);
+				using (var x = AudioFactory.CreateAudioSession(file.Path))
+				{
+					x.Play();
+					Thread.Sleep(200);
+					Assert.That(x.CanStop, Is.True, "Playback should last more than 200 ms.");
+					// We used to test this in a separate test:
+					// StopPlaying_WhilePlaying_NoExceptionThrown
+					// But now that would be redundant since we need to stop playback in order to
+					// safely dispose.
+					x.StopPlaying();
+				}
 			}
 		}
 
-
 		[Test]
+		[NUnit.Framework.Category("RequiresAudioInputDevice")]
 		public void RecordAndStop_FileAlreadyExists_FileReplaced()
 		{
 			using (var f = new TempFile())
@@ -151,6 +154,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
+		[NUnit.Framework.Category("RequiresAudioInputDevice")]
 		public void IsRecording_WhileRecording_True()
 		{
 			using (var f = new TempFile())
@@ -167,6 +171,7 @@ namespace SIL.Media.Tests
 
 		[Test]
 		[Platform(Exclude = "Linux", Reason = "AudioAlsaSession doesn't implement ISimpleAudioWithEvents")]
+		[NUnit.Framework.Category("RequiresAudioInputDevice")]
 		public void RecordThenPlay_SmokeTest()
 		{
 			using (var f = new TempFile())
@@ -210,36 +215,27 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		public void Play_GiveThaiFileName_ShouldHearTwoSounds()
+		[NUnit.Framework.Category("RequiresAudioInputDevice")]
+		public void Play_GiveThaiFileName_ShouldHearTinklingSounds()
 		{
-			using (var d = new TemporaryFolder("palaso media test"))
+			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
 			{
-				var soundPath = d.Combine("ก.wav");
-				File.Create(soundPath).Close();
-				using (var f = TempFile.TrackExisting(soundPath))
+				using (var d = new TemporaryFolder("palaso media test"))
 				{
-					var w = new BackgroundWorker();
-					// ReSharper disable once RedundantDelegateCreation
-					w.DoWork += new DoWorkEventHandler((o, args) => SystemSounds.Exclamation.Play());
-
-					using (var x = AudioFactory.CreateAudioSession(f.Path))
+					var soundPath = d.Combine("ก.wav");
+					RobustFile.Copy(file.Path, soundPath);
+					using (var f = TempFile.TrackExisting(soundPath))
 					{
-						x.StartRecording();
-						w.RunWorkerAsync();
-						Thread.Sleep(2000);
-						x.StopRecordingAndSaveAsWav();
-					}
-
-					using (var y = AudioFactory.CreateAudioSession(f.Path))
-					{
-						y.Play();
-						Thread.Sleep(1000);
-						y.StopPlaying();
+						using (var y = AudioFactory.CreateAudioSession(f.Path))
+						{
+							y.Play();
+							Thread.Sleep(1000);
+							y.StopPlaying();
+						}
 					}
 				}
 			}
 		}
-
 
 		/// <summary>
 		/// for testing things while recording is happening
@@ -265,10 +261,7 @@ namespace SIL.Media.Tests
 				_recorder.StopRecordingAndSaveAsWav();
 			}
 
-			public ISimpleAudioSession Recorder
-			{
-				get { return _recorder; }
-			}
+			public ISimpleAudioSession Recorder => _recorder;
 
 			public void Dispose()
 			{
@@ -288,6 +281,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
+		[NUnit.Framework.Category("RequiresAudioInputDevice")]
 		public void CanStop_WhileRecording_True()
 		{
 			using (var session = new RecordingSession())
@@ -297,6 +291,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
+		[NUnit.Framework.Category("RequiresAudioInputDevice")]
 		public void CanPlay_WhileRecording_False()
 		{
 			using (var session = new RecordingSession())
@@ -306,6 +301,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
+		[NUnit.Framework.Category("RequiresAudioInputDevice")]
 		public void CanRecord_WhileRecording_False()
 		{
 			using (var session = new RecordingSession())
@@ -323,26 +319,48 @@ namespace SIL.Media.Tests
 			}
 		}
 
+		/// <summary>
+		/// For reasons I don't entirely understand, this test will actually pass when run
+		/// by itself against a single target framework without an audio output device, but
+		/// to get it to pass when running as part of the fixture or when testing against both
+		/// frameworks, it is necessary to have an audio output device.
+		/// </summary>
 		[Test]
+		[NUnit.Framework.Category("RequiresAudioOutputDevice")]
+		[NUnit.Framework.Category("RequiresAudioInputDevice")]
 		public void CanRecord_WhilePlaying_False()
 		{
 			using (var session = new RecordingSession(1000))
 			{
 				session.Recorder.Play();
 				Thread.Sleep(100);
-				Assert.IsTrue(session.Recorder.IsPlaying);
-				Assert.IsFalse(session.Recorder.CanRecord);
+				Assert.That(session.Recorder.IsPlaying, Is.True,
+					"Should be playing, not recording.");
+				Assert.That(session.Recorder.CanRecord, Is.False);
 			}
 		}
 
+		/// <summary>
+		/// For reasons I don't entirely understand, this test will actually pass when run
+		/// by itself against a single target framework without an audio output device, but
+		/// to get it to pass when running as part of the fixture or when testing against both
+		/// frameworks, it is necessary to have an audio output device. I tried setting the
+		/// ParallelScope to None, but even that didn't work, so it does not seem to be an
+		/// issue with parallel test runs affecting each other.
+		/// </summary>
 		[Test]
+		[NUnit.Framework.Category("RequiresAudioOutputDevice")]
 		public void CanPlay_WhilePlaying_False()
 		{
-			using (var session = new RecordingSession(1000))
+			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
 			{
-				session.Recorder.Play();
-				Thread.Sleep(100);
-				Assert.IsFalse(session.Recorder.CanPlay);
+				using (var x = AudioFactory.CreateAudioSession(file.Path))
+				{
+					x.Play();
+					Thread.Sleep(200);
+					Assert.That(x.CanPlay, Is.False, "Playback should last more than 200 ms.");
+					x.StopPlaying();
+				}
 			}
 		}
 
@@ -371,6 +389,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
+		[NUnit.Framework.Category("RequiresAudioInputDevice")]
 		public void RecordThenPlay_OK()
 		{
 			using (var f = new TempFile())
@@ -429,6 +448,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
+		[NUnit.Framework.Category("RequiresAudioInputDevice")]
 		public void Record_DoesRecord ()
 		{
 			using (var folder = new TemporaryFolder("Record_DoesRecord"))
@@ -451,8 +471,8 @@ namespace SIL.Media.Tests
 		{
 			using (var folder = new TemporaryFolder("Record_LongRecording"))
 			{
-				string fpath = Path.Combine(folder.Path, "long.wav");
-				using (var x = AudioFactory.CreateAudioSession(fpath))
+				string fPath = Path.Combine(folder.Path, "long.wav");
+				using (var x = AudioFactory.CreateAudioSession(fPath))
 				{
 					SystemSounds.Beep.Play();
 					Assert.DoesNotThrow(() => x.StartRecording());
