@@ -1,10 +1,10 @@
 // // Copyright (c) 2024 SIL Global
 // // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
-using SIL.Windows.Forms.Miscellaneous;
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using SIL.Windows.Forms.Miscellaneous;
 
 namespace SIL.Windows.Forms.Clipboarding
 {
