@@ -531,7 +531,7 @@ namespace SIL.WritingSystems
 			get
 			{
 				//jh (Oct 2010) made it start with RFC5646 because all ws's in a lang start with the
-				//same abbreviation, making imppossible to see (in SOLID for example) which you chose.
+				//same abbreviation, making it impossible to see (in SOLID for example) which you chose.
 				bool languageIsUnknown = _languageTag.Equals(WellKnownSubtags.UnlistedLanguage, StringComparison.OrdinalIgnoreCase);
 				if (!string.IsNullOrEmpty(_languageTag) && !languageIsUnknown)
 				{
