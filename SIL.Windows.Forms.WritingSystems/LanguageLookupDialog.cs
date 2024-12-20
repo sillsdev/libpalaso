@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using SIL.WritingSystems;
 using SIL.Windows.Forms.Miscellaneous;
 
@@ -26,10 +27,18 @@ namespace SIL.Windows.Forms.WritingSystems
 			set { _languageLookupControl.IsShowRegionalDialectsCheckBoxVisible = value; }
 		}
 
+		[PublicAPI]
 		public bool IncludeScriptMarkers
 		{
 			get { return _languageLookupControl.IncludeScriptMarkers; }
 			set { _languageLookupControl.IncludeScriptMarkers = value; }
+		}
+
+		[PublicAPI]
+		public string Caption
+		{
+			get => Text;
+			set => Text = value;
 		}
 
 		public bool IsScriptAndVariantLinkVisible
