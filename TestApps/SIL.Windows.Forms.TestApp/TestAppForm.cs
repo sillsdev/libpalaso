@@ -135,16 +135,6 @@ namespace SIL.Windows.Forms.TestApp
 				dialog.ShowDialog();
 		}
 
-		private void OnImageToolboxClicked(object sender, EventArgs e)
-		{
-			Application.EnableVisualStyles();
-			ThumbnailViewer.UseWebViewer = true;
-			using (var dlg = new ImageToolboxDialog(new PalasoImage(), null))
-			{
-				dlg.ShowDialog();
-			}
-		}
-
 		private void OnSilAboutBoxClicked(object sender, EventArgs e)
 		{
 			ShowSilAboutBox(XWebBrowser.BrowserType.Default, true);

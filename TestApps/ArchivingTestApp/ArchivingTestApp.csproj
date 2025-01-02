@@ -12,10 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="L10NSharp" Version="7.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\SIL.Archiving\SIL.Archiving.csproj" />
     <ProjectReference Include="..\..\SIL.Core\SIL.Core.csproj" />
     <ProjectReference Include="..\..\SIL.Windows.Forms.Archiving\SIL.Windows.Forms.Archiving.csproj" />

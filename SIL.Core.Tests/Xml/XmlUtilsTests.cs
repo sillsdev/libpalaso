@@ -208,17 +208,6 @@ namespace SIL.Tests.Xml
 		public void WriteNode_ProtectsAgainstXmlnsFormatThrashing()
 		{
 			string input = @"<text><span class='bold' xmlns:fw='http://software.sil.org/fieldworks' fw:special='yes' xml:space='preserve'> </span></text>";
-			string expectedOutput =
-				"<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n"
-				+ "<root>\r\n"
-				+ "	<text>\r\n"
-				+ "		<span\r\n"
-				+ "			class=\"bold\"\r\n"
-				+ "			xmlns:fw=\"http://software.sil.org/fieldworks\"\r\n"
-				+ "			fw:special=\"yes\"\r\n"
-				+ "			xml:space=\"preserve\"> </span>\r\n"
-				+ "	</text>\r\n"
-				+ "</root>";
 			var output = new StringBuilder();
 			var preserveNamespace = new HashSet<string>();
 			preserveNamespace.Add("xml");
