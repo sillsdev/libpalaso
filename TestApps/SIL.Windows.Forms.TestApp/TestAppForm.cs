@@ -102,6 +102,9 @@ namespace SIL.Windows.Forms.TestApp
 		{
 			using (var dialog = new LanguageLookupDialog())
 			{
+				if ((ModifierKeys & Keys.Shift) == Keys.Shift)
+					dialog.Caption = "Add a language, my friend!";
+
 				dialog.SetLanguageAlias("zh-Hans", "Simplified Chinese (简体中文)");
 				dialog.MatchingLanguageFilter = info => info.LanguageTag != "cmn";
 
