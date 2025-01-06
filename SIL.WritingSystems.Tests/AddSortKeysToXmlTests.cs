@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Xml;
 using System.Xml.XPath;
 using NUnit.Framework;
+using SIL.Base32;
 
 namespace SIL.WritingSystems.Tests
 {
@@ -38,6 +39,16 @@ namespace SIL.WritingSystems.Tests
 			this._uri = "http://sil.org/sort-key";
 
 			_sortKeyGenerator = CultureInfo.InvariantCulture.CompareInfo.GetSortKey;
+		}
+
+		[Test]
+		public void VerifySortKeyGenerator()
+		{
+			var sortKey = _sortKeyGenerator("z");
+			var sortKeyBase32 = Base32Convert.ToBase32HexString(sortKey.KeyData, Base32FormattingOptions.None);
+			//this may be over specified, but all the tests expect this to pass
+			Assert.AreEqual("1QKG20810400", sortKeyBase32);
+			Assert.AreEqual("z", sortKey.OriginalString);
 		}
 
 		[Test]

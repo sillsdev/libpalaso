@@ -1,0 +1,5 @@
+<Project>
+  <ItemGroup>
+    <ConfigFiles Include="$(MSBuildThisFileDirectory)../contentFiles/any/any/SIL.Windows.Forms.Keyboarding.dll.config" />
+  </ItemGroup>
+</Project>

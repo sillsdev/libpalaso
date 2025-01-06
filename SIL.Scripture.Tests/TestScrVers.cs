@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------------------
-#region // Copyright (c) 2014, SIL International.
-// <copyright from='2013' to='2014' company='SIL International'>
-//		Copyright (c) 2014, SIL International.   
+#region // Copyright 2024 SIL Global
+// <copyright from='2013' to='2024' company='SIL Global'>
+//		Copyright (c) 2024 SIL Global
 //	
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
 // </copyright> 
@@ -9,7 +9,7 @@
 // 
 // File: TestScrVers.cs
 // --------------------------------------------------------------------------------------------
-using Rhino.Mocks;
+using Moq;
 
 namespace SIL.Scripture.Tests
 {
@@ -20,23 +20,24 @@ namespace SIL.Scripture.Tests
 		/// ------------------------------------------------------------------------------------
 		public TestScrVers()
 		{
-			m_vers = MockRepository.GenerateMock<IScrVers>();
-			m_vers.Stub(v => v.GetLastChapter(1)).Return(50);
-			m_vers.Stub(v => v.GetLastVerse(1, 1)).Return(31);
-			m_vers.Stub(v => v.GetLastVerse(1, 2)).Return(25);
-			m_vers.Stub(v => v.GetLastChapter(5)).Return(34);
-			m_vers.Stub(v => v.GetLastVerse(5, 1)).Return(46);
-			m_vers.Stub(v => v.GetLastVerse(5, 17)).Return(20);
-			m_vers.Stub(v => v.GetLastChapter(6)).Return(24);
-			m_vers.Stub(v => v.GetLastVerse(6, 1)).Return(18);
-			m_vers.Stub(v => v.GetLastChapter(7)).Return(21);
-			m_vers.Stub(v => v.GetLastVerse(7, 21)).Return(25);
-			m_vers.Stub(v => v.GetLastChapter(57)).Return(1);
-			m_vers.Stub(v => v.GetLastVerse(57, 1)).Return(25);
-			m_vers.Stub(v => v.GetLastChapter(59)).Return(5);
-			m_vers.Stub(v => v.GetLastVerse(59, 1)).Return(27);
-			m_vers.Stub(v => v.GetLastChapter(66)).Return(22);
-			m_vers.Stub(v => v.GetLastVerse(66, 1)).Return(20);
+			var mock = new Mock<IScrVers>();
+			mock.Setup(v => v.GetLastChapter(1)).Returns(50);
+			mock.Setup(v => v.GetLastVerse(1, 1)).Returns(31);
+			mock.Setup(v => v.GetLastVerse(1, 2)).Returns(25);
+			mock.Setup(v => v.GetLastChapter(5)).Returns(34);
+			mock.Setup(v => v.GetLastVerse(5, 1)).Returns(46);
+			mock.Setup(v => v.GetLastVerse(5, 17)).Returns(20);
+			mock.Setup(v => v.GetLastChapter(6)).Returns(24);
+			mock.Setup(v => v.GetLastVerse(6, 1)).Returns(18);
+			mock.Setup(v => v.GetLastChapter(7)).Returns(21);
+			mock.Setup(v => v.GetLastVerse(7, 21)).Returns(25);
+			mock.Setup(v => v.GetLastChapter(57)).Returns(1);
+			mock.Setup(v => v.GetLastVerse(57, 1)).Returns(25);
+			mock.Setup(v => v.GetLastChapter(59)).Returns(5);
+			mock.Setup(v => v.GetLastVerse(59, 1)).Returns(27);
+			mock.Setup(v => v.GetLastChapter(66)).Returns(22);
+			mock.Setup(v => v.GetLastVerse(66, 1)).Returns(20);
+			m_vers = mock.Object;
 		}
 
 		public int GetLastChapter(int bookNum)

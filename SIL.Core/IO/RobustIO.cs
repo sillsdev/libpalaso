@@ -1,12 +1,14 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
+using JetBrains.Annotations;
 using SIL.Code;
 using SIL.PlatformUtilities;
 
@@ -29,7 +31,7 @@ namespace SIL.IO
 					throw new IOException("Could not delete directory "+path);
 			}
 			else
-				RetryUtility.Retry(() => Directory.Delete(path, false));
+				RetryUtility.Retry(() => Directory.Delete(path, false), memo:$"DeleteDirectory {path}, {recursive}");
 		}
 
 		/// <summary>
@@ -139,7 +141,194 @@ namespace SIL.IO
 
 		public static void MoveDirectory(string sourceDirName, string destDirName)
 		{
-			RetryUtility.Retry(() => Directory.Move(sourceDirName, destDirName));
+			RetryUtility.Retry(() => Directory.Move(sourceDirName, destDirName), memo:$"MoveDirectory to {destDirName}");
+		}
+
+		/// <summary>
+		/// Robustly try to enumerate all of the files in a directory.  Unfortunately, this makes the
+		/// method wait until all the files are gathered before any are returned.
+		/// </summary>
+		[PublicAPI]
+		public static IEnumerable<string> EnumerateFilesInDirectory(string folderPath, string searchPattern = "*", SearchOption option = SearchOption.TopDirectoryOnly)
+		{
+			// Directory.EnumerateFiles returns files incrementally, not waiting until it has
+			// accessed the whole directory. Thus retries of this method could return multiple
+			// instances of some file paths, which is undesirable.  We accumulate the files in
+			// a HashSet to avoid duplicates in case the operation has to be retried.  This
+			// unavoidably slows things down since we have to wait until all the files are
+			// gathered before any are returned.
+			var fileSet = new HashSet<string>();
+			RetryUtility.Retry(() =>
+				EnumerateFilesInDirectoryInternal(folderPath, searchPattern, option, fileSet),
+				RetryUtility.kDefaultMaxRetryAttempts,
+				RetryUtility.kDefaultRetryDelay,
+				new HashSet<Type>
+				{
+					Type.GetType("System.IO.IOException"),
+					Type.GetType("System.Runtime.InteropServices.ExternalException")
+				},
+				memo:$"EnumerateFilesInDirectory {folderPath}, {searchPattern}, {option}");
+			return fileSet;
+		}
+
+		private static void EnumerateFilesInDirectoryInternal(string folderPath, string searchPattern, SearchOption option, HashSet<string> fileSet)
+		{
+			foreach (var file in Directory.EnumerateFiles(folderPath, searchPattern, option))
+				fileSet.Add(file);
+		}
+
+		/// <summary>
+		/// Robustly try to enumerate all of the subdirectories in a directory.  Unfortunately, this
+		/// makes the method wait until all the subdirectories are gathered before any are returned.
+		/// </summary>
+		public static IEnumerable<string> EnumerateDirectoriesInDirectory(string folderPath, string searchPattern = "*", SearchOption option = SearchOption.TopDirectoryOnly)
+		{
+			// Directory.EnumerateDirectories returns subdirectories incrementally, not waiting
+			// until it has accessed the whole directory. Thus retries of this method could return
+			// multiple instances of some subdirectory paths, which is undesirable.  We accumulate
+			// the subdirectories in a HashSet to avoid duplicates in case the operation has to be
+			// retried.  This unavoidably slows things down since we have to wait until all the
+			// subdirectories are gathered before any are returned.
+			var subdirSet = new HashSet<string>();
+			RetryUtility.Retry(() =>
+				EnumerateDirectoriesInDirectoryInternal(folderPath, searchPattern, option, subdirSet),
+				RetryUtility.kDefaultMaxRetryAttempts,
+				RetryUtility.kDefaultRetryDelay,
+				new HashSet<Type>
+				{
+					Type.GetType("System.IO.IOException"),
+					Type.GetType("System.Runtime.InteropServices.ExternalException")
+				},
+				memo: $"EnumerateDirectoriesInDirectory {folderPath}, {searchPattern}, {option}");
+			return subdirSet;
+		}
+
+		private static void EnumerateDirectoriesInDirectoryInternal(string folderPath, string searchPattern, SearchOption option, HashSet<string> subdirSet)
+		{
+			foreach (var subDir in Directory.EnumerateDirectories(folderPath, searchPattern, option))
+				subdirSet.Add(subDir);
+		}
+
+		/// <summary>
+		/// Robustly try to enumerate all of the entries in a directory.  Unfortunately, this makes
+		/// the method wait until all the entries are gathered before any are returned.
+		/// </summary>
+		public static IEnumerable<string> EnumerateEntriesInDirectory(string folderPath, string searchPattern = "*", SearchOption option = SearchOption.TopDirectoryOnly)
+		{
+			// Directory.EnumerateFileSystemEntries returns entries incrementally, not waiting
+			// until it has accessed the whole directory. Thus retries of this method could return
+			// multiple instances of some entry paths, which is undesirable.  We accumulate the
+			// entries in a HashSet to avoid duplicates in case the operation has to be retried.
+			// This unavoidably slows things down since we have to wait until all the entries are
+			// gathered before any are returned.
+			var entrySet = new HashSet<string>();
+			RetryUtility.Retry(() =>
+				EnumerateEntriesInDirectoryInternal(folderPath, searchPattern, option, entrySet),
+				RetryUtility.kDefaultMaxRetryAttempts,
+				RetryUtility.kDefaultRetryDelay,
+				new HashSet<Type>
+				{
+					Type.GetType("System.IO.IOException"),
+					Type.GetType("System.Runtime.InteropServices.ExternalException")
+				},
+				memo: $"EnumerateEntriesInDirectory {folderPath}, {searchPattern}, {option}");
+			return entrySet;
+		}
+
+		private static void EnumerateEntriesInDirectoryInternal(string folderPath, string searchPattern, SearchOption option, HashSet<string> entrySet)
+		{
+			foreach (var entry in Directory.EnumerateFileSystemEntries(folderPath, searchPattern, option))
+				entrySet.Add(entry);
+		}
+
+		[PublicAPI]
+		public static void RequireThatDirectoryExists(string path)
+		{
+			bool exists = false;
+			RetryUtility.Retry(() => { exists = Directory.Exists(path); }, memo: $"RequireThatDirectoryExists {path}");
+			if (!exists)
+			{
+				throw new ArgumentException($"The path '{path}' does not exist.");
+			}
+		}
+
+		public static FileStream GetFileStream(string path, FileMode mode)
+		{
+			// Note that new FileStream(path, mode) uses different default values for FileAccess and FileShare than
+			// does File.Open(path, mode).
+			FileStream stream = null;
+			RetryUtility.Retry(() => { stream = new FileStream(path, mode); }, memo: $"GetFileStream {path}, {mode}");
+			return stream;
+		}
+		public static FileStream GetFileStream(string path, FileMode mode, FileAccess access)
+		{
+			// Note that new FileStream(path, mode, access) uses a different default value for FileShare than
+			// does File.Open(path, mode, access).
+			FileStream stream = null;
+			RetryUtility.Retry(() => { stream = new FileStream(path, mode, access); }, memo:$"GetFileStream {path}, {mode}, {access}");
+			return stream;
+		}
+
+		/// <summary>
+		/// Reads all text (like RobustFile.ReadAllText) from a file. Works even if that file may
+		/// be written to one or more times.
+		/// e.g. reading the progress output file of ffmpeg while ffmpeg is running.
+		/// </summary>
+		/// <param name="path">path of the file to read</param>
+		/// <returns>the contents of the file as a string</returns>
+		[PublicAPI]
+		public static string ReadAllTextFromFileWhichMightGetWrittenTo(string path)
+		{
+			return RetryUtility.Retry(() => ReadAllTextFromFileWhichMightGetWrittenToInternal(path),
+				memo: $"ReadAllTextFromFileWhichMightGetWrittenTo {path}");
+		}
+
+		private static string ReadAllTextFromFileWhichMightGetWrittenToInternal(string path)
+		{
+			using (FileStream logFileStream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+			using (StreamReader logFileReader = new StreamReader(logFileStream))
+			{
+				StringBuilder sb = new StringBuilder();
+
+				char[] buffer = new char[4096];
+				while (!logFileReader.EndOfStream)
+				{
+					logFileReader.ReadBlock(buffer, 0, buffer.Length);
+					sb.Append(buffer);
+				}
+
+				return sb.ToString();
+			}
+		}
+
+		[PublicAPI]
+		public static bool IsFileLocked(string filePath)
+		{
+			try
+			{
+				// If something recently changed it we might get some spurious failures
+				// to open it for modification.
+				// BL-10139 indicated that the default 10 retries over two seconds
+				// is sometimes not enough, so I've increased it here.
+				// No guarantee that even 5s is enough if DropBox is busy syncing a large
+				// file across a poor internet, but I think after that it's better to give
+				// the user a failed message.
+				RetryUtility.Retry(() =>
+				{
+					using (File.Open(filePath, FileMode.Open))
+					{
+					}
+				}, maxRetryAttempts: 25, memo: $"IsFileLocked: ${filePath}");
+			}
+			catch (IOException)
+			{
+				return true;
+			}
+			catch (UnauthorizedAccessException)
+			{
+				return true;
+			}
+			return false;
 		}
 
 		public static XElement LoadXElement(string uri)
@@ -155,9 +344,10 @@ namespace SIL.IO
 			return XElement.Parse(content);
 		}
 
+		[PublicAPI]
 		public static void SaveXElement(XElement xElement, string fileName)
 		{
-			RetryUtility.Retry(() => xElement.Save(fileName));
+			RetryUtility.Retry(() => xElement.Save(fileName), memo:$"SaveXElement {fileName}");
 		}
 
 		/// <summary>
@@ -174,7 +364,7 @@ namespace SIL.IO
 					doc.Save(stream);
 					stream.Close();
 				}
-			});
+			}, memo:$"SaveXml {path}");
 		}
 	}
 }

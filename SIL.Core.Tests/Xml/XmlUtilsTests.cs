@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Xml;
@@ -11,6 +13,7 @@ using SIL.Xml;
 namespace SIL.Tests.Xml
 {
 	[TestFixture]
+	[SuppressMessage("ReSharper", "PossibleNullReferenceException")]
 	public class XmlUtilsTests
 	{
 		[Test]
@@ -92,6 +95,35 @@ namespace SIL.Tests.Xml
 			Assert.AreEqual("ABC", XmlUtils.SanitizeString(s));
 		}
 
+		[Test]
+		public void RemoveNamespaces_FromElements()
+		{
+			var element = XElement.Parse("<Element xmlns='http://sil.org/xml' att='tribute'><Inner should='be preserved' me='2'></Inner></Element>");
+			element.RemoveNamespaces();
+			foreach (var elt in element.DescendantsAndSelf())
+			{
+				Assert.That(elt.Name.NamespaceName, Is.Null.Or.Empty);
+			}
+			Assert.That(element.Attributes().Count(), Is.EqualTo(1));
+			Assert.That(element.Attribute("att").Value, Is.EqualTo("tribute"));
+			var inner = element.Element("Inner");
+			Assert.That(inner.Attributes().Count(), Is.EqualTo(2));
+			Assert.That(inner.Attribute("should").Value, Is.EqualTo("be preserved"));
+			Assert.That(inner.Attribute("me").Value, Is.EqualTo("2"));
+		}
+
+		[Test]
+		public void RemoveNamespaces_FromSubElements()
+		{
+			var element = XElement.Parse("<Element><Sub xmlns='http://marines.mil/sub-marines'></Sub></Element>");
+			element.RemoveNamespaces();
+			foreach (var elt in element.DescendantsAndSelf())
+			{
+				Assert.That(elt.Name.NamespaceName, Is.Null.Or.Empty);
+				Assert.That(elt.Attributes(), Is.Empty);
+			}
+		}
+
 		/// <summary>
 		/// This is a regression test for (FLEx) LT-13962, a problem caused by importing white space introduced by pretty-printing.
 		/// </summary>
@@ -144,6 +176,62 @@ namespace SIL.Tests.Xml
 			}
 			Assert.That(output.ToString(), Is.EqualTo(expectedOutput));
 		}
+
+		[Test]
+		public void WriteNode_PreserveNamespacesArePreserved()
+		{
+			string input = @"<text><span class='bold' xml:space='preserve'> </span></text>";
+			string expectedOutput =
+				"<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n"
+				+ "<root>\r\n"
+				+ "	<text>\r\n"
+				+ "		<span\r\n"
+				+ "			class=\"bold\"\r\n"
+				+ "			xml:space=\"preserve\"> </span>\r\n"
+				+ "	</text>\r\n"
+				+ "</root>";
+			var output = new StringBuilder();
+			var preserveNamespace = new HashSet<string>();
+			preserveNamespace.Add("xml");
+			using (var writer = XmlWriter.Create(output, CanonicalXmlSettings.CreateXmlWriterSettings()))
+			{
+				writer.WriteStartDocument();
+				writer.WriteStartElement("root");
+				XmlUtils.WriteNode(writer, input, new HashSet<string>(), preserveNamespace);
+				writer.WriteEndElement();
+				writer.WriteEndDocument();
+			}
+			Assert.That(output.ToString(), Is.EqualTo(expectedOutput));
+		}
+
+		[Test]
+		public void WriteNode_ProtectsAgainstXmlnsFormatThrashing()
+		{
+			string input = @"<text><span class='bold' xmlns:fw='http://software.sil.org/fieldworks' fw:special='yes' xml:space='preserve'> </span></text>";
+			string expectedOutput =
+				"<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n"
+				+ "<root>\r\n"
+				+ "	<text>\r\n"
+				+ "		<span\r\n"
+				+ "			class=\"bold\"\r\n"
+				+ "			xmlns:fw=\"http://software.sil.org/fieldworks\"\r\n"
+				+ "			fw:special=\"yes\"\r\n"
+				+ "			xml:space=\"preserve\"> </span>\r\n"
+				+ "	</text>\r\n"
+				+ "</root>";
+			var output = new StringBuilder();
+			var preserveNamespace = new HashSet<string>();
+			preserveNamespace.Add("xml");
+			preserveNamespace.Add("xmlns");
+			preserveNamespace.Add("fw");
+			using (var writer = XmlWriter.Create(output, CanonicalXmlSettings.CreateXmlWriterSettings()))
+			{
+				writer.WriteStartDocument();
+				writer.WriteStartElement("root");
+				Assert.Throws<ArgumentException>(()=> XmlUtils.WriteNode(writer, input, new HashSet<string>(), preserveNamespace));
+			}
+		}
+
 		/// <summary>
 		/// This verifies that suppressing pretty-printing of children works for spans nested in spans nested in text.
 		/// </summary>
@@ -159,8 +247,10 @@ namespace SIL.Tests.Xml
 				+ "				class=\"italic\">bit</span>bt</span></text>\r\n"
 				+ "</root>";
 			var output = new StringBuilder();
-			var suppressIndentingChildren = new HashSet<string>();
-			suppressIndentingChildren.Add("text");
+			var suppressIndentingChildren = new HashSet<string>
+			{
+			   "text"
+			};
 			using (var writer = XmlWriter.Create(output, CanonicalXmlSettings.CreateXmlWriterSettings()))
 			{
 				writer.WriteStartDocument();

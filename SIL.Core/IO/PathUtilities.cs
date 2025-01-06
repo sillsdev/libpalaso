@@ -1,4 +1,4 @@
-// Copyright (c) 2014 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 using SIL.Extensions;
 using SIL.PlatformUtilities;
 using SIL.Reporting;
@@ -143,14 +144,14 @@ namespace SIL.IO
 		private struct SHFILEOPSTRUCT
 		{
 
-			public IntPtr hwnd;
+			public readonly IntPtr hwnd;
 			[MarshalAs(UnmanagedType.U4)] public FileOperationType wFunc;
 			public string pFrom;
-			public string pTo;
+			public readonly string pTo;
 			public FileOperationFlags fFlags;
-			[MarshalAs(UnmanagedType.Bool)] public bool fAnyOperationsAborted;
-			public IntPtr hNameMappings;
-			public string lpszProgressTitle;
+			[MarshalAs(UnmanagedType.Bool)] public readonly bool fAnyOperationsAborted;
+			public readonly IntPtr hNameMappings;
+			public readonly string lpszProgressTitle;
 		}
 
 		[DllImport("shell32.dll", CharSet = CharSet.Auto)]
@@ -159,11 +160,12 @@ namespace SIL.IO
 		private static void WriteTrashInfoFile(string trashPath, string filePath, string trashedFile)
 		{
 			var trashInfo = Path.Combine(trashPath, "info", trashedFile + ".trashinfo");
-			var lines = new List<string>();
-			lines.Add("[Trash Info]");
-			lines.Add(string.Format("Path={0}", filePath));
-			lines.Add(string.Format("DeletionDate={0}",
-				DateTime.Now.ToString("yyyyMMddTHH:mm:ss", CultureInfo.InvariantCulture)));
+			var lines = new List<string>
+			{
+				"[Trash Info]",
+				$"Path={filePath}",
+				$"DeletionDate={DateTime.Now.ToString("yyyyMMddTHH:mm:ss", CultureInfo.InvariantCulture)}"
+			};
 			File.WriteAllLines(trashInfo, lines);
 		}
 
@@ -196,7 +198,7 @@ namespace SIL.IO
 				// alternative using visual basic dll:
 				// FileSystem.DeleteDirectory(item.FolderPath,UIOption.OnlyErrorDialogs), RecycleOption.SendToRecycleBin);
 
-				//moves it to the recyle bin
+				//moves it to the recycle bin
 				try
 				{
 					var shf = new SHFILEOPSTRUCT
@@ -224,8 +226,11 @@ namespace SIL.IO
 			// move file or directory
 			if (Directory.Exists(filePath) || File.Exists(filePath))
 			{
-				var trashPath = Path.Combine(Environment.GetFolderPath(
-					Environment.SpecialFolder.LocalApplicationData), "Trash");
+				var localDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+				// We want to use the standard Trash location for flatpak, not the sandboxed one.
+				if (Platform.IsFlatpak)
+					localDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".local/share");
+				var trashPath = Path.Combine(localDataPath, "Trash");
 				var trashedFileName = Path.GetRandomFileName();
 				if (!Directory.Exists(trashPath))
 				{
@@ -239,6 +244,13 @@ namespace SIL.IO
 
 				WriteTrashInfoFile(trashPath, filePath, trashedFileName);
 				// Directory.Move works for directories and files
+				if (Platform.IsFlatpak)
+				{
+					// flatpak mounts pieces of the file system differently for sandboxing, so Move won't work.
+					DirectoryHelper.Copy(filePath, recyclePath);
+					Directory.Delete(filePath, true);
+					return true;
+				}
 				DirectoryHelper.Move(filePath, recyclePath);
 				return true;
 			}
@@ -255,11 +267,12 @@ namespace SIL.IO
 		[CLSCompliant(false)]
 		public static extern int SHOpenFolderAndSelectItems(IntPtr pidlList, uint cild, IntPtr children, uint dwFlags);
 
+		[PublicAPI]
 		public static void SelectItemInExplorerEx(string path)
 		{
 			var pidlList = ILCreateFromPathW(path);
 			if(pidlList == IntPtr.Zero)
-				throw new Exception(string.Format("ILCreateFromPathW({0}) failed", path));
+				throw new Exception($"ILCreateFromPathW({path}) failed");
 			try
 			{
 				Marshal.ThrowExceptionForHR(SHOpenFolderAndSelectItems(pidlList, 0, IntPtr.Zero, 0));
@@ -280,10 +293,10 @@ namespace SIL.IO
 		{
 			if (Platform.IsWindows)
 			{
-				//we need to use this becuase of a bug in windows that strips composed characters before trying to find the target path (http://stackoverflow.com/a/30405340/723299)
+				//we need to use this because of a bug in windows that strips composed characters before trying to find the target path (http://stackoverflow.com/a/30405340/723299)
 				var pidlList = ILCreateFromPathW(path);
 				if(pidlList == IntPtr.Zero)
-					throw new Exception(string.Format("ILCreateFromPathW({0}) failed", path));
+					throw new Exception($"ILCreateFromPathW({path}) failed");
 				try
 				{
 					Marshal.ThrowExceptionForHR(SHOpenFolderAndSelectItems(pidlList, 0, IntPtr.Zero, 0));
@@ -301,11 +314,11 @@ namespace SIL.IO
 				{
 					case "nautilus":
 					case "nemo":
-						arguments = string.Format("\"{0}\"", path);
+						arguments = $"\"{path}\"";
 						break;
 					default:
 						fileManager = "xdg-open";
-						arguments = string.Format("\"{0}\"", Path.GetDirectoryName(path));
+						arguments = $"\"{Path.GetDirectoryName(path)}\"";
 						break;
 				}
 				Process.Start(fileManager, arguments);
@@ -318,8 +331,8 @@ namespace SIL.IO
 		/// <param name="directory">Full path of the directory</param>
 		public static void OpenDirectoryInExplorer(string directory)
 		{
-			//Enhance: on Windows, use ShellExecuteExW instead, as it will probably be able to 
-			//handle languages with combining characters (diactrics), whereas this explorer 
+			//Enhance: on Windows, use ShellExecuteExW instead, as it will probably be able to
+			//handle languages with combining characters (diactrics), whereas this explorer
 			//approach will fail (at least as of windows 8.1)
 
 			var fileManager = DefaultFileManager;
@@ -334,7 +347,7 @@ namespace SIL.IO
 			}
 			arguments = string.Format(arguments, directory);
 
-			Process.Start(new ProcessStartInfo()
+			Process.Start(new ProcessStartInfo
 				{
 					FileName = fileManager,
 					Arguments = arguments,
@@ -353,68 +366,70 @@ namespace SIL.IO
 
 		private static string GetDefaultFileManager()
 		{
-			if (PlatformUtilities.Platform.IsWindows)
+			if (Platform.IsWindows)
 				return "explorer.exe";
 
 			const string fallbackFileManager = "xdg-open";
 
-			using (var xdgmime = new Process())
+			using var xdgmime = new Process();
+			bool processError = false;
+			xdgmime.RunProcess("xdg-mime", "query default inode/directory", exception =>  {
+				processError = true;
+			});
+			if (processError)
 			{
-				bool processError = false;
-				xdgmime.RunProcess("xdg-mime", "query default inode/directory", exception =>  {
-					processError = true;
-				});
-				if (processError)
-				{
-					Logger.WriteMinorEvent("Error executing 'xdg-mime query default inode/directory'");
-					return fallbackFileManager;
-				}
-				string desktopFile = xdgmime.StandardOutput.ReadToEnd().TrimEnd(' ', '\n', '\r');
-				xdgmime.WaitForExit();
-				if (string.IsNullOrEmpty(desktopFile))
-				{
-					Logger.WriteMinorEvent("Didn't find default value for mime type inode/directory");
-					return fallbackFileManager;
-				}
-				// Look in /usr/share/applications for .desktop file
-				var desktopFilename = Path.Combine(
+				Logger.WriteMinorEvent("Error executing 'xdg-mime query default inode/directory'");
+				return fallbackFileManager;
+			}
+			string desktopFile = xdgmime.StandardOutput.ReadToEnd().TrimEnd(' ', '\n', '\r');
+			xdgmime.WaitForExit();
+			if (string.IsNullOrEmpty(desktopFile))
+			{
+				Logger.WriteMinorEvent("Didn't find default value for mime type inode/directory");
+				return fallbackFileManager;
+			}
+			// Look in /usr/share/applications for .desktop file
+			string desktopFilename = null;
+			if (Platform.IsFlatpak)
+				desktopFilename = Path.Combine("/app/share/applications", desktopFile);
+			if (desktopFilename == null || !File.Exists(desktopFilename))
+				desktopFilename = Path.Combine(
 					Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
 					"applications", desktopFile);
-				if (!File.Exists(desktopFilename))
+			if (!File.Exists(desktopFilename))
+			{
+				// We didn't find the .desktop file yet, so check in ~/.local/share/applications
+				desktopFilename = Path.Combine(
+					Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+					"applications", desktopFile);
+			}
+			if (!File.Exists(desktopFilename))
+			{
+				Logger.WriteMinorEvent("Can't find desktop file for {0}", desktopFile);
+				return fallbackFileManager;
+			}
+			using (var reader = File.OpenText(desktopFilename))
+			{
+				string line;
+				for (line = reader.ReadLine();
+					!line.StartsWith("Exec=", StringComparison.InvariantCultureIgnoreCase) && !reader.EndOfStream;
+					line = reader.ReadLine())
 				{
-					// We didn't find the .desktop file yet, so check in ~/.local/share/applications
-					desktopFilename = Path.Combine(
-						Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-						"applications", desktopFile);
 				}
-				if (!File.Exists(desktopFilename))
-				{
-					Logger.WriteMinorEvent("Can't find desktop file for {0}", desktopFile);
-					return fallbackFileManager;
-				}
-				using (var reader = File.OpenText(desktopFilename))
-				{
-					string line;
-					for (line = reader.ReadLine();
-						!line.StartsWith("Exec=", StringComparison.InvariantCultureIgnoreCase) && !reader.EndOfStream;
-						line = reader.ReadLine())
-					{
-					}
 
-					if (!line.StartsWith("Exec=", StringComparison.InvariantCultureIgnoreCase))
-					{
-						Logger.WriteMinorEvent("Can't find Exec line in {0}", desktopFile);
-						_defaultFileManager = string.Empty;
-						return _defaultFileManager;
-					}
-
-					var start = "Exec=".Length;
-					var argStart = line.IndexOf('%');
-					var cmdLine = argStart > 0 ? line.Substring(start, argStart - start) : line.Substring(start);
-					cmdLine = cmdLine.TrimEnd();
-					Logger.WriteMinorEvent("Detected default file manager as {0}", cmdLine);
-					return cmdLine;
+				if (!line.StartsWith("Exec=", StringComparison.InvariantCultureIgnoreCase))
+				{
+					Logger.WriteMinorEvent("Can't find Exec line in {0}", desktopFile);
+					_defaultFileManager = string.Empty;
+					return _defaultFileManager;
 				}
+
+				var start = "Exec=".Length;
+				var argStart = line.IndexOf('%');
+				var cmdLine = argStart > 0 ? line.Substring(start, argStart - start) : line.Substring(start);
+				cmdLine = cmdLine.TrimEnd();
+				Logger.WriteMinorEvent("Detected default file manager as {0}", cmdLine);
+				return cmdLine;
 			}
 		}
 
@@ -422,31 +437,7 @@ namespace SIL.IO
 
 		private static string DefaultFileManager
 		{
-			get
-			{
-				if (_defaultFileManager == null)
-					_defaultFileManager = GetDefaultFileManager();
-
-				return _defaultFileManager;
-			}
-		}
-
-		[Obsolete("Use PathHelper.GetDeviceNumber()")]
-		public static int GetDeviceNumber(string filePath)
-		{
-			return PathHelper.GetDeviceNumber(filePath);
-		}
-
-		[Obsolete("Use PathHelper.PathsAreOnSameVolume()")]
-		public static bool PathsAreOnSameVolume(string firstPath, string secondPath)
-		{
-			return PathHelper.AreOnSameVolume(firstPath, secondPath);
-		}
-
-		[Obsolete("Use PathHelper.ContainsDirectory()")]
-		public static bool PathContainsDirectory(string path, string directory)
-		{
-			return PathHelper.ContainsDirectory(path, directory);
+			get { return _defaultFileManager ??= GetDefaultFileManager(); }
 		}
 	}
 }

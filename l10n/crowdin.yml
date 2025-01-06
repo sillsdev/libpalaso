@@ -1,0 +1,10 @@
+project_id: 393909
+base_path: "."
+preserve_hierarchy: true
+
+files: [
+ {
+  "source" : "Palaso.en.xlf",
+  "translation" : "/%locale%/Palaso.%locale%.xlf",
+ }
+]

@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using System.Collections.Generic;
 using SIL.TestUtilities;
 using Is = SIL.TestUtilities.NUnitExtensions.Is;
@@ -19,10 +19,7 @@ namespace SIL.WritingSystems.Tests
 			return x.ValueEquals(y);
 		}
 
-		public override string ExceptionList
-		{
-			get { return "|IsChanged|_urls|PropertyChanged|PropertyChanging|"; }
-		}
+		public override string ExceptionList => "|IsChanged|Urls|PropertyChanged|PropertyChanging|";
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
 		{

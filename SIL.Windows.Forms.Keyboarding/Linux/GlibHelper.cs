@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2020 SIL International
+// Copyright (c) 2015-2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -11,13 +11,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 {
 	public static class GlibHelper
 	{
-		public static void InitGlib()
-		{
-			// g_type_init() is needed for Precise, but deprecated for Trusty.
-			// Remove this (and the DllImport above) when we stop supporting Precise.
-			Unmanaged.g_type_init();
-		}
-
 		/// <summary>
 		/// Returns <c>true</c> if the <paramref name="schema"/> is installed on the machine,
 		/// otherwise <c>false</c>.

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using NUnit.Framework;
@@ -68,6 +68,23 @@ namespace SIL.Tests
 			// Execute
 			Assert.That(() => ExceptionHandler.Init(new TestExceptionHandler()),
 				Throws.InvalidOperationException.With.Message.Contains(nameof(ConsoleExceptionHandler)));
+		}
+
+		[Test]
+		public void TypeOfExistingHandler_NotInitialized_ReturnsNull()
+		{
+			Assert.That(ExceptionHandler.TypeOfExistingHandler, Is.Null);
+		}
+		
+		[Test]
+		public void TypeOfExistingHandler_Initialized_ReturnsTypeOfHandler()
+		{
+			// Setup
+			ExceptionHandler.Init(new TestExceptionHandler());
+
+			// Execute
+			Assert.That(ExceptionHandler.TypeOfExistingHandler,
+				Is.EqualTo(typeof(TestExceptionHandler)));
 		}
 	}
 }

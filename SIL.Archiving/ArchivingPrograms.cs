@@ -1,5 +1,6 @@
-﻿using System.IO;
+using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using SIL.IO;
 
 namespace SIL.Archiving
@@ -8,15 +9,17 @@ namespace SIL.Archiving
 	public static class ArchivingPrograms
 	{
 		/// <summary>Is RAMP installed on this computer</summary>
+		[PublicAPI]
 		public static bool RampIsInstalled()
 		{
-			return (GetRampExeFileLocation() != null);
+			return GetRampExeFileLocation() != null;
 		}
 
 		/// <summary>Is Arbil installed on this computer</summary>
+		[PublicAPI]
 		public static bool ArbilIsInstalled()
 		{
-			return (GetArbilExeFileLocation() != null);
+			return GetArbilExeFileLocation() != null;
 		}
 
 		/// <summary>Get the path and file name of the RAMP executable file</summary>
@@ -28,7 +31,7 @@ namespace SIL.Archiving
 			if (ArchivingDlgViewModel.IsMono)
 				exeFile = FileLocationUtilities.LocateInProgramFiles("ramp", true);
 			else
-				exeFile = FileLocator.GetFromRegistryProgramThatOpensFileType(rampFileExtension) ??
+				exeFile = FileLocator.GetDefaultProgramForFileType(rampFileExtension) ??
 					FileLocationUtilities.LocateInProgramFiles("ramp.exe", true, "ramp");
 
 			// make sure the file exists
@@ -74,9 +77,6 @@ namespace SIL.Archiving
 		}
 
 		/// <summary>Command line parameters use to launch Arbil in Linux</summary>
-		public static string ArbilCommandLineArgs
-		{
-			get { return "-Xms256m -Xmx1024m -jar \"{0}\""; }
-		}
+		public static string ArbilCommandLineArgs => "-Xms256m -Xmx1024m -jar \"{0}\"";
 	}
 }

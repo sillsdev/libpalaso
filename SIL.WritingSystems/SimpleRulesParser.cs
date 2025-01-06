@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -196,10 +196,17 @@ namespace SIL.WritingSystems
 			}
 			catch (ParserErrorException e)
 			{
-				string errString = sc.InputString.Split(new char[] { '\n' })[e.ParserError.Line - 1];
-				int startingPos = Math.Max((int)e.ParserError.Column - 2, 0);
-				errString = errString.Substring(startingPos, Math.Min(10, errString.Length - startingPos));
-				message = String.Format("{0}: '{1}'", e.ParserError.ErrorText, errString);
+				string[] lines = sc.InputString.Split(new char[] {'\n'});
+				if (e.ParserError.Line > 0 && e.ParserError.Line <= lines.Length)
+				{
+					string errString = lines[e.ParserError.Line - 1];
+					int startingPos = Math.Max((int) e.ParserError.Column - 2, 0);
+					errString = errString.Substring(startingPos, Math.Min(10, errString.Length - startingPos));
+					message = String.Format("{0}: '{1}'", e.ParserError.ErrorText, errString);
+				}
+				else
+					message = e.ParserError.ErrorText;
+
 				return false;
 			}
 			catch (Exception e)

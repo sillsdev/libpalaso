@@ -114,15 +114,9 @@ namespace SIL.DblBundle.Text
 			string stylesheetPath = Path.Combine(PathToUnzippedBundleInnards, filename);
 
 			if (!File.Exists(stylesheetPath))
-			{
-				throw new ApplicationException(
-					string.Format(Localizer.GetString("DblBundle.FileMissingFromBundle",
-						"Required {0} file not found. File is not a valid Text Release Bundle:"), filename) +
-					Environment.NewLine + _pathToZippedBundle);
-			}
+				DblBundleFileUtils.ThrowExceptionForMissingRequiredFile(filename, _pathToZippedBundle);
 
-			Exception exception;
-			var stylesheet = Stylesheet.Load(stylesheetPath, out exception);
+			var stylesheet = Stylesheet.Load(stylesheetPath, out var exception);
 			if (exception != null)
 			{
 				throw new ApplicationException(Localizer.GetString("DblBundle.StylesheetInvalid",
@@ -202,17 +196,6 @@ namespace SIL.DblBundle.Text
 
 		#region Public methods
 		/// <summary>
-		/// Copy the versification file from the text bundle to destinationPath
-		/// </summary>
-		/// <exception cref="ApplicationException">Bundle does not contain a versification file
-		/// (required for valid bundles)</exception>
-		[Obsolete("Use GetVersification instead.")]
-		public void CopyVersificationFile(string destinationPath)
-		{
-			RobustFile.Copy(VersificationPath, destinationPath, true);
-		}
-
-		/// <summary>
 		/// Gets a TextReader object that can be used to access the contents of the versification
 		/// file in the text bundle.
 		/// </summary>
@@ -221,30 +204,6 @@ namespace SIL.DblBundle.Text
 		/// (required for valid bundles)</exception>
 		public TextReader GetVersification() =>
 			new StreamReader(new FileStream(VersificationPath, FileMode.Open));
-
-		/// <summary>
-		/// Copies any font files (*.ttf) in the bundle to the given destination directory
-		/// </summary>
-		[Obsolete("Use GetFonts instead.")]
-		public bool CopyFontFiles(string destinationDir, out ISet<string> filesWhichFailedToCopy)
-		{
-			filesWhichFailedToCopy = new HashSet<string>();
-			foreach (var ttfFile in Directory.GetFiles(PathToUnzippedBundleInnards, "*.ttf"))
-			{
-				string newPath = Path.Combine(destinationDir, Path.GetFileName(ttfFile));
-				try
-				{
-					if (!File.Exists(newPath))
-						File.Copy(ttfFile, newPath, true);
-				}
-				catch (Exception)
-				{
-					filesWhichFailedToCopy.Add(Path.GetFileName(ttfFile));
-				}
-			}
-
-			return !filesWhichFailedToCopy.Any();
-		}
 
 		/// <summary>
 		/// Gets a collection of TextReader objects identified by the file names whose contents
@@ -265,21 +224,6 @@ namespace SIL.DblBundle.Text
 		/// <returns>true if an LDML file exists in the bundle, false otherwise</returns>
 		/// </summary>
 		public bool ContainsLdmlFile() => File.Exists(LdmlFilePath);
-
-		/// <summary>
-		/// Copies ldml.xml from the text bundle to the destinationPath (if it exists)
-		/// </summary>
-		[Obsolete("Use GetLdml instead.")]
-		public bool CopyLdmlFile(string destinationDir)
-		{
-			if (ContainsLdmlFile())
-			{
-				string newPath = Path.Combine(destinationDir, LanguageIso + DblBundleFileUtils.kUnzippedLdmlFileExtension);
-				File.Copy(LdmlFilePath, newPath, true);
-				return true;
-			}
-			return false;
-		}
 
 		/// <summary>
 		/// Gets a TextReader object that can be used to access the contents of the LDML

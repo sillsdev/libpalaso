@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2015 SIL International
+// Copyright (c) 2011-2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -84,6 +84,13 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// Gets an action that when executed will launch the keyboard setup application
 		/// </summary>
 		Action GetKeyboardSetupAction();
+
+		/// <summary>
+		/// Gets an action that when executed will launch the secondary keyboard setup
+		/// application, or null if this adaptor doesn't support secondary keyboard setup
+		/// applications
+		/// </summary>
+		Action GetSecondaryKeyboardSetupAction();
 
 		/// <summary>
 		/// Returns <c>true</c> if this is the secondary keyboard application, e.g.

@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using MarkdownDeep;
+using Markdig;
 using SIL.IO;
 
 namespace SIL.Windows.Forms.ReleaseNotes
@@ -16,11 +16,21 @@ namespace SIL.Windows.Forms.ReleaseNotes
 	/// </remarks>
 	public partial class ShowReleaseNotesDialog : Form
 	{
+		private static readonly MarkdownPipeline pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+
 		private readonly string _path;
 		private TempFile _temp;
 		private readonly Icon _icon;
 
 		public bool ApplyMarkdown { get; set;}
+
+		/// <summary>
+		/// If set, a stylesheet link is added to the generated HTML file using the supplied URL.
+		/// This can be useful for formatting the markdown output in various ways such as limiting
+		/// the maximum width of images to the width of the dialog display area.
+		/// If not set, no stylesheet link is generated.
+		/// </summary>
+		public string CssLinkHref { get; set; }
 
 		public ShowReleaseNotesDialog(Icon icon, string path, bool applyMarkdown = true)
 		{
@@ -37,8 +47,7 @@ namespace SIL.Windows.Forms.ReleaseNotes
 			_temp = TempFile.WithExtension("htm");
 			if (ApplyMarkdown)
 			{
-				var md = new Markdown();
-				File.WriteAllText(_temp.Path, GetBasicHtmlFromMarkdown(md.Transform(contents)));
+				File.WriteAllText(_temp.Path, GetBasicHtmlFromMarkdown(Markdown.ToHtml(contents, pipeline)));
 			}
 			else if (contents.Contains("<html>") && contents.Contains("<body"))
 			{
@@ -63,7 +72,8 @@ namespace SIL.Windows.Forms.ReleaseNotes
 
 		private string GetBasicHtmlFromMarkdown(string markdownHtml)
 		{
-			return string.Format("<html><head><meta charset=\"utf-8\"/></head><body>{0}</body></html>", markdownHtml);
+			var linkCss = string.IsNullOrEmpty(CssLinkHref) ? "" : $"<link rel=\"stylesheet\" href=\"{CssLinkHref}\" type=\"text/css\"></link>";
+			return string.Format("<html><head><meta charset=\"utf-8\"/>{0}</head><body>{1}</body></html>", linkCss, markdownHtml);
 		}
 	}
 }

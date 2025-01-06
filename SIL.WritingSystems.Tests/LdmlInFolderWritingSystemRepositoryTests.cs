@@ -10,7 +10,7 @@ using NUnit.Framework;
 using SIL.Extensions;
 using SIL.Keyboarding;
 using SIL.TestUtilities;
-using Is = SIL.TestUtilities.NUnitExtensions.Is;
+using static SIL.WritingSystems.WellKnownSubtags;
 
 namespace SIL.WritingSystems.Tests
 {
@@ -66,12 +66,32 @@ namespace SIL.WritingSystems.Tests
 
 			public TestEnvironment()
 			{
-				_localRepoFolder = new TemporaryFolder("LdmlInFolderWritingSystemRepositoryTests");
-				_templateFolder = new TemporaryFolder("Templates");
-				_globalRepoFolder = new TemporaryFolder("GlobalWritingSystemRepository");
+				string testDirName = GetTestDirectoryName();
+				
+				_localRepoFolder = new TemporaryFolder(Path.Combine(testDirName, "LdmlInFolderWritingSystemRepositoryTests"));
+				_templateFolder = new TemporaryFolder(Path.Combine(testDirName, "Templates"));
+				_globalRepoFolder = new TemporaryFolder(Path.Combine(testDirName, "GlobalWritingSystemRepository"));
 				_writingSystem = new WritingSystemDefinition();
 				_writingSystemCustomDataMapper = new TestWritingSystemCustomDataMapper();
 				ResetRepositories();
+			}
+
+			/// <summary>
+			/// Returns a probably unique directory name to be used to place temporary folder in for the test environment
+			/// </summary>
+			/// <returns>Returns a string representing just the directory name (the path to the directory is not included)
+			/// The format is the "[TestName]_[Random8LetterSuffix]"
+			/// Given that this function doesn't receive or return the path to the directory,
+			/// it is not guaranteed that nothing exists at the full path the caller eventually constructs
+			/// </returns>
+			private string GetTestDirectoryName()
+			{
+				string prefix = TestContext.CurrentContext?.Test?.Name ?? "";
+
+				string randomFileName = Path.GetRandomFileName();	// 8.3 file name format
+				string suffix = Path.GetFileNameWithoutExtension(randomFileName);	// Now without the 3-letter extension
+
+				return $"{prefix}_{suffix}";
 			}
 
 			public void ResetRepositories()
@@ -1038,7 +1058,8 @@ namespace SIL.WritingSystems.Tests
 ");
 
 				WritingSystemDefinition chWS;
-				Assert.That(environment.LocalRepository.WritingSystemFactory.Create("zh-CN", out chWS), Is.False);
+				Assert.That(environment.LocalRepository.WritingSystemFactory.Create(
+					ChineseSimplifiedTag, out chWS), Is.False);
 				Assert.That(chWS.Language, Is.EqualTo((LanguageSubtag) "zh"));
 				Assert.That(chWS.Script, Is.EqualTo((ScriptSubtag) "Hans"));
 				Assert.That(chWS.Region, Is.EqualTo((RegionSubtag) "CN"));
@@ -1048,7 +1069,7 @@ namespace SIL.WritingSystems.Tests
 				// ensure that the template is used when the writing system is saved
 				environment.LocalRepository.Set(chWS);
 				environment.LocalRepository.Save();
-				XElement ldmlElem = XElement.Load(environment.GetPathForLocalWSId("zh-CN"));
+				XElement ldmlElem = XElement.Load(environment.GetPathForLocalWSId(ChineseSimplifiedTag));
 				Assert.That((string) ldmlElem.Elements("layout").Elements("orientation").Elements("lineOrder").First(), Is.EqualTo("top-to-bottom"));
 			}
 		}
@@ -1081,6 +1102,134 @@ namespace SIL.WritingSystems.Tests
 					"Copying to global repo shouldn't update the timestamp");
 				Assert.That(environment.GlobalRepository.Get(enUsTag).DateModified,
 					Is.EqualTo(expectedDateTime), "Copying to global repo shouldn't update the timestamp");
+			}
+		}
+
+		[Test]
+		public void CheckForNewerGlobalWritingSystems_NoLangTags_ReturnsAllNew()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				// Setup
+				// Create and save two WSs into the local store which will copy them to the global store.
+				var enUsTag = "en-US";
+				var ws = new WritingSystemDefinition(enUsTag);
+				var expectedDateTime = new DateTime(2018, 12, 01, 8, 7, 6, DateTimeKind.Utc);
+				ws.DateModified = expectedDateTime;
+				environment.LocalRepository.Set(ws);
+				var frTag = "fr";
+				var wsFr = new WritingSystemDefinition(frTag);
+				ws.DateModified = expectedDateTime;
+				environment.LocalRepository.Set(wsFr);
+				environment.LocalRepository.Save();
+
+				// SUT
+				CollectionAssert.IsEmpty(environment.LocalRepository.CheckForNewerGlobalWritingSystems(),
+					"Global and local should be the same.");
+
+				// Modify the two global ws.
+				ws = environment.GlobalRepository.Get(enUsTag);
+				ws.SpellCheckingId = "spelchequer";
+				environment.GlobalRepository.Set(ws);
+
+				wsFr = environment.GlobalRepository.Get(frTag);
+				wsFr.SpellCheckingId = "lespelchequer";
+				environment.GlobalRepository.Set(wsFr);
+				environment.GlobalRepository.Save();
+
+				var newerGlobalWss = environment.LocalRepository.CheckForNewerGlobalWritingSystems();
+				Assert.That(newerGlobalWss.Count(), Is.EqualTo(2));
+			}
+		}
+
+		[Test]
+		public void CheckForNewerGlobalWritingSystems_WithLangTag_ReturnsAllNew()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				// Setup
+				// Create and save two WSs into the local store which will copy them to the global store.
+				var enUsTag = "en-US";
+				var ws = new WritingSystemDefinition(enUsTag);
+				var expectedDateTime = new DateTime(2018, 12, 01, 8, 7, 6, DateTimeKind.Utc);
+				ws.DateModified = expectedDateTime;
+				environment.LocalRepository.Set(ws);
+				var frTag = "fr";
+				var wsFr = new WritingSystemDefinition(frTag);
+				ws.DateModified = expectedDateTime;
+				environment.LocalRepository.Set(wsFr);
+				environment.LocalRepository.Save();
+
+				// SUT
+				CollectionAssert.IsEmpty(environment.LocalRepository.CheckForNewerGlobalWritingSystems(),
+					"Global and local should be the same.");
+
+				// On some systems, it's possible for the local and one or both of the global to report happening in the same tick.
+				// This would make it so that the code would view them as technically not newer, since they were reported in the same tick.
+				// So we would like to wait at least 1 tick first before proceeding to the global part.
+				// Not sure if this is relevant or not, but in some scenarios the system clock may have a resolution of roughly 15 milliseconds,
+				// so probably safer to wait a good chunk more than 15ms.
+				Thread.Sleep(50);	// in milliseconds
+
+				// Modify the two global ws.
+				ws = environment.GlobalRepository.Get(enUsTag);
+				ws.SpellCheckingId = "spelchequer";
+				environment.GlobalRepository.Set(ws);
+
+				wsFr = environment.GlobalRepository.Get(frTag);
+				wsFr.SpellCheckingId = "lespelchequer";
+				environment.GlobalRepository.Set(wsFr);
+				environment.GlobalRepository.Save();
+
+				var newerGlobalWss = environment.LocalRepository.CheckForNewerGlobalWritingSystems(new [] {frTag}).ToArray();
+
+				// Verify
+				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1), "frtag count");
+				Assert.That(newerGlobalWss[0].LanguageTag, Is.EqualTo(frTag));
+				newerGlobalWss = environment.LocalRepository.CheckForNewerGlobalWritingSystems(new[] { enUsTag }).ToArray();
+				Assert.That(newerGlobalWss.Count(), Is.EqualTo(1), "enUsTag count");
+				Assert.That(newerGlobalWss[0].LanguageTag, Is.EqualTo(enUsTag));
+			}
+		}
+
+		[Test]
+		public void Save_UpdatesGlobalStore_IdAndLangTagMismatchDoesNotCrash()
+		{
+			// If the global store has a writing system with the id that doesn't match
+			// the language tag we should not crash and we should match and update the
+			// global store
+			using (var environment = new TestEnvironment())
+			{
+				// Setup
+				// Create and save a new WS in the local store - this will copy the WS into the
+				// global store since it doesn't exist yet
+				var enLatnUsId = "en-Latn-US";
+				var enUsTag = "en-US";
+				var ws = new WritingSystemDefinition(enUsTag);
+				ws.Id = enLatnUsId;
+				var expectedDateTime = new DateTime(2018, 12, 01, 8, 7, 6, DateTimeKind.Utc);
+				ws.DateModified = expectedDateTime;
+				environment.LocalRepository.Set(ws);
+				ws.RightToLeftScript = true;
+				ws.DefaultCollation = new SystemCollationDefinition { LanguageTag = enUsTag };
+				ws.AcceptChanges();
+				Assert.That(ws.Id, Is.Not.EqualTo(ws.LanguageTag));
+				environment.LocalRepository.Save();
+				var lastModifiedInWs = environment.GlobalRepository.Get(enLatnUsId).DateModified;
+
+				// SUT
+				ws.RightToLeftScript = false;
+				environment.LocalRepository.Save();
+
+				// Verify
+				Assert.That(environment.GlobalRepository.Get(enLatnUsId).DateModified,
+					Is.GreaterThan(lastModifiedInWs), "WS in memory didn't get updated");
+				Assert.That(
+					environment.GlobalRepository.Get(enLatnUsId).DateModified
+						.ToISO8601TimeFormatWithUTCString(),
+					Is.EqualTo(environment.GetWsFromFileInGlobalWS(enLatnUsId).DateModified
+						.ToISO8601TimeFormatWithUTCString()),
+					"WS in memory and in global store are different");
 			}
 		}
 

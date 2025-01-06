@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2018 SIL International
+// Copyright (c) 2013-2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -61,7 +61,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			IsSwitchingKeyboards = true;
 			try
 			{
-				if (keyboard?.InputLanguage?.Culture == null)
+				if (keyboard?.InputLanguage?.Culture == null || keyboard.InputProcessorProfile.LangId == 0)
 				{
 					return false;
 				}

@@ -1,15 +1,14 @@
-// Copyright (c) 2015 SIL International
+// Copyright (c) 2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 using X11.XKlavier;
 using SIL.Reporting;
 using SIL.Keyboarding;
-using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
@@ -71,8 +70,9 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				existingKeyboard.SetIsAvailable(false);
 		}
 
-		internal static void AddKeyboardForLayout(IDictionary<string, XkbKeyboardDescription> curKeyboards, XklConfigRegistry.LayoutDescription layout,
-			uint iGroup, IKeyboardSwitchingAdaptor engine)
+		internal static void AddKeyboardForLayout(
+			IDictionary<string, XkbKeyboardDescription> curKeyboards,
+			XklConfigRegistry.LayoutDescription layout, uint iGroup, IKeyboardSwitchingAdaptor engine)
 		{
 			var description = GetDescription(layout);
 			CultureInfo culture = null;
@@ -86,6 +86,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				// TODO: fix mono's list of supported locales. Doesn't support e.g. de-BE.
 				// See mono/tools/locale-builder.
 			}
+
 			var id = $"{layout.LocaleId}_{layout.LayoutId}";
 			var inputLanguage = new InputLanguageWrapper(culture, IntPtr.Zero, layout.Language);
 			if (curKeyboards.TryGetValue(id, out var existingKeyboard))
@@ -97,13 +98,15 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 					existingKeyboard.SetInputLanguage(inputLanguage);
 					existingKeyboard.GroupIndex = (int) iGroup;
 				}
+
 				curKeyboards.Remove(id);
 			}
 			else
 			{
-				var keyboard = new XkbKeyboardDescription(id, description, layout.LayoutId, layout.LocaleId, true,
-					inputLanguage, engine, (int) iGroup);
-				KeyboardController.Instance.Keyboards.Add(keyboard);
+				var keyboard = new XkbKeyboardDescription(id, description, layout.LayoutId,
+					layout.LocaleId, true, inputLanguage, engine, (int) iGroup);
+				if (!KeyboardController.Instance.Keyboards.Contains(keyboard.Id))
+					KeyboardController.Instance.Keyboards.Add(keyboard);
 			}
 		}
 
@@ -135,7 +138,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// <summary>
 		/// Creates and returns a keyboard definition object based on the layout and locale.
 		/// Note that this method is used when we do NOT have a matching available keyboard.
-		/// Therefore we can presume that the created one is NOT available.
+		/// Therefore, we can presume that the created one is NOT available.
 		/// </summary>
 		public KeyboardDescription CreateKeyboardDefinition(string id)
 		{
@@ -200,36 +203,10 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		protected virtual string GetKeyboardSetupApplication(out string arguments)
 		{
-			// NOTE: if we get false results (e.g. because the user has installed multiple
-			// desktop environments) we could check for the currently running desktop
-			// (Platform.DesktopEnvironment) and return the matching program
-			arguments = null;
-			// XFCE
-			if (File.Exists("/usr/bin/xfce4-keyboard-settings"))
-				return "/usr/bin/xfce4-keyboard-settings";
-			// Cinnamon
-			if (File.Exists("/usr/lib/cinnamon-settings/cinnamon-settings.py") && File.Exists("/usr/bin/python"))
-			{
-				arguments = "/usr/lib/cinnamon-settings/cinnamon-settings.py " +
-					(Platform.DesktopEnvironment == "cinnamon"
-						? "region layouts" // Wasta 12
-						: "keyboard"); // Wasta 14;
-				return "/usr/bin/python";
-			}
-			// GNOME
-			if (File.Exists("/usr/bin/gnome-control-center"))
-			{
-				arguments = "region layouts";
-				return "/usr/bin/gnome-control-center";
-			}
-			// KDE
-			if (File.Exists("/usr/bin/kcmshell4"))
-			{
-				arguments = "kcm_keyboard";
-				return "/usr/bin/kcmshell4";
-			}
-			return null;
+			return KeyboardRetrievingHelper.GetKeyboardSetupApplication(out arguments);
 		}
+
+		public Action GetSecondaryKeyboardSetupAction() => null;
 
 		public bool IsSecondaryKeyboardSetupApplication => false;
 
@@ -241,6 +218,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// All public Properties and Methods should call this
 		/// before doing anything else.
 		/// </summary>
+		[PublicAPI]
 		public void CheckDisposed()
 		{
 			if (IsDisposed)

@@ -1,46 +1,25 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
-    <Configurations>Debug;Release</Configurations>
+    <RootNamespace>SIL.Windows.Forms.Keyboarding</RootNamespace>
+    <AssemblyTitle>SIL.Windows.Forms.Keyboarding</AssemblyTitle>
     <Description>The SIL.Windows.Forms.Keyboarding library provides cross-platform functionality for keyboard selection and switching in Windows Forms applications. Currently, this library supports system and Keyman keyboards on Windows, and X keyboard extension (XKB) and Intelligent Input Bus (IBus) keyboards on Linux.</Description>
-    <Company>SIL International</Company>
-    <Authors>SIL International</Authors>
-    <Product>libpalaso</Product>
-    <Copyright>Copyright © 2010-2020 SIL International</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/sillsdev/libpalaso</PackageProjectUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <OutputPath>../output/$(Configuration)</OutputPath>
-    <PackageOutputPath>../output</PackageOutputPath>
-    <SignAssembly>true</SignAssembly>
-    <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
-    <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <DebugType>portable</DebugType>
-    <AppendToReleaseNotesProperty><![CDATA[
-See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/CHANGELOG.md]]>
-    </AppendToReleaseNotesProperty>
-    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.3.4">
-      <PrivateAssets>all</PrivateAssets>
+    <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
+    <PackageReference Include="ibusdotnet" Version="2.0.3" />
+    <PackageReference Include="icu.net" Version="3.0.0-beta.296" />
+    <PackageReference Include="JetBrains.Annotations" Version="2024.2.0">
+      <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="ibusdotnet" Version="2.0.1" />
-    <PackageReference Include="icu.net" Version="2.6.0" />
-    <PackageReference Include="L10NSharp" Version="4.1.0-beta0036" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Mono.Posix" Version="5.4.0.201" Condition="'$(OS)' == 'Windows_NT'" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="[2.3.1,)" PrivateAssets="All" />
+    <PackageReference Include="L10NSharp" Version="7.0.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <PackageReference Include="Mono.Unix" Version="7.1.0-final.1.21458.1" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj" />
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
   </ItemGroup>
 
@@ -55,7 +34,6 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
       <HintPath>..\lib\KeymanLink.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="Mono.Posix" Condition="'$(OS)' != 'Windows_NT'" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
@@ -68,11 +46,21 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
       <Pack>true</Pack>
       <PackagePath>build</PackagePath>
     </Content>
+    <None Include="app.config" Pack="true" PackagePath="contentFiles\any\any\$(AssemblyTitle).dll.config" />
   </ItemGroup>
 
   <PropertyGroup>
     <!-- See https://github.com/dotnet/sdk/issues/987#issuecomment-286307697 why that is needed -->
     <AssemblySearchPaths>$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
   </PropertyGroup>
+
+  <Target Name="CollectRuntimeOutputs" BeforeTargets="_GetPackageFiles">
+    <ItemGroup>
+      <None Include="$(PackageId).props" Pack="true" PackagePath="build" />
+      <None Include="$(PackageId).props" Pack="true" PackagePath="buildMultiTargeting" />
+      <None Include="$(PackageId).targets" Pack="true" PackagePath="build" />
+      <None Include="$(PackageId).targets" Pack="true" PackagePath="buildMultiTargeting" />
+    </ItemGroup>
+  </Target>
 
 </Project>

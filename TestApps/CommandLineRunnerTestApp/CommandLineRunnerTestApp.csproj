@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>SIL.CommandLineProcessing.TestApp</RootNamespace>
+    <AssemblyName>SIL.CommandLineProcessing.TestApp</AssemblyName>
+    <Description>SIL.CommandLineProcessing test app</Description>
+    <IsPackable>false</IsPackable>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
+  </PropertyGroup>
+</Project>

@@ -573,7 +573,7 @@ namespace SIL.WritingSystems.Tests
 	<collations>
 		<defaultCollation>standard</defaultCollation>
 		<collation type='standard'>
-			<special xmlns:sil='urn://www.sil.org/ldml/0.1' sil:needscompiling='true'>
+			<special xmlns:sil='urn://www.sil.org/ldml/0.1' sil:" + LdmlDataMapper.NeedsCompiling + @"='true'>
 				<sil:simple><![CDATA[
 					a/A
 					b/B
@@ -669,6 +669,14 @@ namespace SIL.WritingSystems.Tests
 			</sil:kbd>
 		</sil:external-resources>
 	</special>".Replace("'", "\"");
+
+		public static string DuplicateFirstUrlElem(string outerElem)
+		{
+			var ichMin = outerElem.IndexOf("<sil:url", StringComparison.Ordinal);
+			var ichLim = outerElem.IndexOf("</sil:url>", StringComparison.Ordinal) + 10;
+			var urlElem = outerElem.Substring(ichMin, ichLim - ichMin);
+			return outerElem.Insert(ichMin, urlElem);
+		}
 
 		/// <summary>
 		/// Minimal LDML for version 3

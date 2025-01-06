@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------------------
-#region // Copyright (c) 2014, SIL International.   
-// <copyright from='2002' to='2014' company='SIL International'>
-//		Copyright (c) 2014, SIL International.   
+#region // Copyright 2024 SIL Global
+// <copyright from='2002' to='2024' company='SIL Global'>
+//		Copyright (c) 2024 SIL Global
 //    
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
 // </copyright> 
@@ -59,8 +59,7 @@ namespace SIL.Scripture.Tests
 		[TestCase(66, ExpectedResult = "REV")]
 		public string GetBookAbbrevDifferentEncoding(int bookNum)
 		{
-			List<string> array = new List<string>();
-			array.Add("99"); // some arbitrary should-never-exist value
+			List<string> array = new List<string> { "99" /* some arbitrary should-never-exist value */ };
 			m_mlscrBook.RequestedEncodings = array;
 
 			return m_mlscrBook.GetBookAbbrev(bookNum);
@@ -184,10 +183,25 @@ namespace SIL.Scripture.Tests
 		/// Tests edge cases when parsing a reference string
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		// 4T corresponds to 2 Timothy
+		[TestCase("4T1:5", ExpectedResult = 55001005)]
+		// Letters are not supported as chapter/verse separators
+		[TestCase("LUK 5a15", ExpectedResult = 1001001)]
+		// Letters are not supported as chapter/verse separators
+		[TestCase("LUK5α15", ExpectedResult = 1001001)]
+		// ३ is Devanagari digit 3, which is not supported as chapter/verse separators
+		[TestCase("LUK 5३15", ExpectedResult = 42001001)]
+		// ३,५ are Devanagari digits 3,4, which are not supported as chapter/verse identifiers
+		[TestCase("LUK ३:५", ExpectedResult = 42001001)]
+		
 		[TestCase("Luk 5,15", ExpectedResult = 42005015)]
 		[TestCase("luk 5.15", ExpectedResult = 42005015)]
 		[TestCase("LUK5:15", ExpectedResult = 42005015)]
-		[TestCase("4T1:5", ExpectedResult = 55001005)]
+		[TestCase("LUK 5/15", ExpectedResult = 42005015)]
+		[TestCase("LUK5_15", ExpectedResult = 42005015)]
+		[TestCase("LUK5;15", ExpectedResult = 42005015)]
+		[TestCase("LUK5 15", ExpectedResult = 42005015)]
+		[TestCase("LUK 5 15", ExpectedResult = 42005015)]
 		public int ParseRefString_EdgeCases(string input)
 		{
 			return m_mlscrBook.ParseRefString(input).BBCCCVVV;

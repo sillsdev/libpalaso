@@ -1,4 +1,4 @@
-// Copyright (c) 2018 SIL International 
+// Copyright (c) 2024 SIL Global 
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT) 
 using System;
 using System.Drawing;
@@ -6,6 +6,7 @@ using NUnit.Framework;
 using SIL.IO;
 using SIL.TestUtilities;
 using SIL.Windows.Forms.ClearShare;
+using TagLib.Xmp;
 
 namespace SIL.Windows.Forms.Tests.ClearShare
 {
@@ -288,24 +289,24 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightBy_HasSymbolAndComma_ReturnsCopyrightHolder()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "© 2012, SIL International";
-			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+			m.CopyrightNotice = "© 2012, SIL Global";
+			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
 		}
 
 		[Test]
 		public void GetCopyrightBy_HasCopyrightAndSymbolAndComma_ReturnsCopyrightHolder()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "Copyright © 2012, SIL International";
-			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+			m.CopyrightNotice = "Copyright © 2012, SIL Global";
+			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
 		}
 
 		[Test]
 		public void GetCopyrightBy_HasCopyrightAndSymbolNoYear_ReturnsCopyrightHolder()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "Copyright © SIL International";
-			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+			m.CopyrightNotice = "Copyright © SIL Global";
+			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
 		}
 
 
@@ -313,8 +314,8 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightBy_HasCOPYRIGHTAndSymbolNoYear_ReturnsCopyrightHolder()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "COPYRIGHT © SIL International";
-			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+			m.CopyrightNotice = "COPYRIGHT © SIL Global";
+			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
 		}
 
 
@@ -322,8 +323,8 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightBy_HasSymbolNoComma_ReturnsCopyrightHolder()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "© 2012 SIL International";
-			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+			m.CopyrightNotice = "© 2012 SIL Global";
+			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
 		}
 
 
@@ -339,8 +340,8 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightBy_HasSymbolNoYear_ReturnsCopyrightHolder()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "© SIL International";
-			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+			m.CopyrightNotice = "© SIL Global";
+			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
 		}
 
 
@@ -348,8 +349,8 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightBy_NoSymbolOrYear_ReturnsCopyrightHolder()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "SIL International";
-			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+			m.CopyrightNotice = "SIL Global";
+			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
 		}
 
 		[Test]
@@ -365,8 +366,8 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightInfo_ArtOfReading_ReturnsCopyrightInfo()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "Copyright, SIL International 2009. ";	// (from AOR_Cat3.png)
-			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+			m.CopyrightNotice = "Copyright, SIL Global 2009. ";	// (from AOR_Cat3.png)
+			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
 			Assert.AreEqual("2009", m.GetCopyrightYear());
 		}
 
@@ -392,7 +393,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightYear_HasCopyrightAndSymbolAndComma_ReturnsCopyrightYear()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "Copyright © 2012, SIL International";
+			m.CopyrightNotice = "Copyright © 2012, SIL Global";
 			Assert.AreEqual("2012", m.GetCopyrightYear());
 		}
 
@@ -401,7 +402,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightYear_HasSymbolAndComma_ReturnsCopyrightYear()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "© 2012, SIL International";
+			m.CopyrightNotice = "© 2012, SIL Global";
 			Assert.AreEqual("2012", m.GetCopyrightYear());
 		}
 
@@ -409,7 +410,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightYear_NoSymbolOrComma_ReturnsCopyrightYear()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "2012 SIL International";
+			m.CopyrightNotice = "2012 SIL Global";
 			Assert.AreEqual("2012", m.GetCopyrightYear());
 		}
 
@@ -417,7 +418,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightYear_SymbolButNoYear_ReturnsEmptyString()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "© SIL International";
+			m.CopyrightNotice = "© SIL Global";
 			Assert.AreEqual("", m.GetCopyrightYear());
 		}
 
@@ -426,7 +427,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void GetCopyrightYear_NoYear_ReturnsEmptyString()
 		{
 			var m = new Metadata();
-			m.CopyrightNotice = "SIL International";
+			m.CopyrightNotice = "SIL Global";
 			Assert.AreEqual("", m.GetCopyrightYear());
 		}
 
@@ -472,7 +473,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 				CollectionName = "My Collection",
 				License = new CreativeCommonsLicense(true,true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike)
 				{
-					IntergovernmentalOriganizationQualifier = true
+					IntergovernmentalOrganizationQualifier = true
 				}
 			};
 
@@ -488,13 +489,64 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 				CopyrightNotice = "Copyright © 2014 SIL",
 				License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike)
 				{
-					IntergovernmentalOriganizationQualifier = true,
+					IntergovernmentalOrganizationQualifier = true,
 					RightsStatement = "Only people named Fred can use this."
 				}
 			};
 
 			string idOfLanguageUsedForLicense;
 			Assert.AreEqual("© 2014 SIL. CC BY-SA IGO 3.0. Only people named Fred can use this.", m.MinimalCredits(new[] { "en" }, out idOfLanguageUsedForLicense));
+		}
+
+		[Test]
+		public void ChangingFromCCLicense_WorksOkay()
+		{
+			// Important: use the same XmpTag object throughout this test.
+			// We're testing that we can change the type of license in a tag, not just the specifics of the license.
+			var tag = new XmpTag();
+
+			var meta1 = new Metadata
+			{
+				CopyrightNotice = "Copyright © 2021 SIL",
+				License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives)
+			};
+			VerifyMetadataUnchangedSavingToTag(meta1, tag, "Verify CC license: ");
+
+			var meta2 = new Metadata
+			{
+				CopyrightNotice = "Copyright © 2021 LSDev",
+				License = new CustomLicense
+				{
+					RightsStatement = "You can use this only on alternate Tuesdays."
+				}
+			};
+			VerifyMetadataUnchangedSavingToTag(meta2, tag, "Verify custom license: ");
+
+			var meta3 = new Metadata
+			{
+				CopyrightNotice = "Copyright © 2021 Steve",
+				License = new NullLicense()
+			};
+			VerifyMetadataUnchangedSavingToTag(meta3, tag, "Verify null license: ");
+
+			// Go through the license changes one more time in a different order.
+			VerifyMetadataUnchangedSavingToTag(meta2, tag, "Verify custom license again: ");
+			VerifyMetadataUnchangedSavingToTag(meta1, tag, "Verify CC license again: ");
+			VerifyMetadataUnchangedSavingToTag(meta3, tag, "Verify null license again: ");
+		}
+
+		private void VerifyMetadataUnchangedSavingToTag(Metadata oldMetadata, XmpTag tag, string header)
+		{
+			// XmpTag objects are wretched to work with, so load it into another Metadata object for testing.
+			// This way we test both SaveInImageTag and LoadProperties for round-tripping.
+			oldMetadata.SaveInImageTag(tag);
+			var newMetadata = new Metadata();
+			Metadata.LoadProperties(tag, newMetadata);
+			Assert.AreEqual(oldMetadata.CopyrightNotice, newMetadata.CopyrightNotice, header + "CopyrightNotice");
+			Assert.AreEqual(oldMetadata.License.GetType().FullName, newMetadata.License.GetType().FullName, header + "License class type");
+			Assert.AreEqual(oldMetadata.License.Token, newMetadata.License.Token, header + "License.Token");
+			Assert.AreEqual(oldMetadata.License.Url, newMetadata.License.Url, header + "License.Url");
+			Assert.AreEqual(oldMetadata.License.RightsStatement, newMetadata.License.RightsStatement, header + "License.RightsStatement");
 		}
 	}
 }

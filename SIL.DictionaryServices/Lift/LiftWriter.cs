@@ -77,10 +77,10 @@ namespace SIL.DictionaryServices.Lift
 			// _writer.WriteAttributeString("xmlns", "flex", null, "http://fieldworks.sil.org");
 		}
 
-		public void WriteHeader(string headerConentsNotIncludingHeaderElement)
+		public void WriteHeader(string headerContentsNotIncludingHeaderElement)
 		{
 			Writer.WriteStartElement("header");
-			Writer.WriteRaw(headerConentsNotIncludingHeaderElement);
+			Writer.WriteRaw(headerContentsNotIncludingHeaderElement);
 			Writer.WriteEndElement();
 		}
 
@@ -194,10 +194,10 @@ namespace SIL.DictionaryServices.Lift
 //  ok if no form is given          if (!MultiTextBase.IsEmpty(etymology))
 //            {
 				Writer.WriteStartElement("etymology");
-				//type is required, so add the attribute even if it's emtpy
+				//type is required, so add the attribute even if it's empty
 				Writer.WriteAttributeString("type", etymology.Type.Trim());
 
-				//source is required, so add the attribute even if it's emtpy
+				//source is required, so add the attribute even if it's empty
 				Writer.WriteAttributeString("source", etymology.Source.Trim());
 				AddMultitextGlosses(string.Empty, etymology.Gloss);
 				WriteCustomMultiTextField("comment", etymology.Comment);
@@ -244,7 +244,7 @@ namespace SIL.DictionaryServices.Lift
 		}
 
 		/// <summary>
-		/// in the plift subclass, we add a pronounciation if we have an audio writing system alternative on the lexical unit
+		/// in the plift subclass, we add a pronunciation if we have an audio writing system alternative on the lexical unit
 		/// </summary>
 		 protected virtual void InsertPronunciationIfNeeded(LexEntry entry, List<string> propertiesAlreadyOutput)
 		{
@@ -379,7 +379,7 @@ namespace SIL.DictionaryServices.Lift
 		}
 
 		/// <summary>
-		/// this base implementationg is for when we're just exporting to lift, and dont' want to filter or order.
+		/// this base implementation is for when we're just exporting to lift, and don't want to filter or order.
 		/// It is overridden in a child class for writing presentation-ready lift, when
 		/// we do want to filter and order
 		/// </summary>

@@ -1,49 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
     <RootNamespace>SIL.Linux.Logging</RootNamespace>
     <AssemblyTitle>SIL.Linux.Logging</AssemblyTitle>
-    <Configurations>Debug;Release</Configurations>
     <Description>SIL.Linux.Logging provides a library to log to the syslog service.</Description>
-    <Company>SIL International</Company>
-    <Authors>SIL International</Authors>
-    <Product>libpalaso</Product>
-    <Copyright>Copyright © 2010-2020 SIL International</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/sillsdev/libpalaso</PackageProjectUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <OutputPath>../output/$(Configuration)</OutputPath>
-    <PackageOutputPath>../output</PackageOutputPath>
-    <SignAssembly>true</SignAssembly>
-    <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
-    <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <AppendToReleaseNotesProperty><![CDATA[
-See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/CHANGELOG.md]]>
-    </AppendToReleaseNotesProperty>
-    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <TargetFrameworks>$(TargetFrameworks);netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.3.4">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Mono.Posix" Version="5.4.0.201" Condition="'$(OS)' == 'Windows_NT'" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="[2.3.1,)" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Mono.Posix" Condition="'$(OS)' != 'Windows_NT'" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <PackageReference Include="Mono.Unix" Version="7.1.0-final.1.21458.1" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
-    <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj" />
   </ItemGroup>
 
 </Project>

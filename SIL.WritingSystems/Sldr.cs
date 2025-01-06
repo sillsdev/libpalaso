@@ -10,7 +10,9 @@ using System.Net;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Web;
+using Icu;
 using Newtonsoft.Json;
+using SIL.Extensions;
 using SIL.ObjectModel;
 using SIL.PlatformUtilities;
 using SIL.Threading;
@@ -98,7 +100,7 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				string basePath = Platform.IsLinux ? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+				var basePath = Platform.IsMac ? "/Users/Shared" : Platform.IsLinux ? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
 					: Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
 				return Path.Combine(basePath, "SIL", "SldrCache");
 			}
@@ -141,12 +143,68 @@ namespace SIL.WritingSystems
 			_offlineMode = offlineMode;
 			SldrCachePath = sldrCachePath;
 			_embeddedAllTagsTime = embeddedAllTagsTime;
+
+			InitializeGetUnicodeCategoryBasedOnIcu();
 		}
 
-		public static bool IsInitialized
+		/// <summary>
+		/// This initialization sets an ICU-based implementation to get the Unicode character
+		/// category of a character in a string. The default implementation used in
+		/// StringExtensions is based on the Unicode support in System.Globalization because
+		/// SIL.Core does not reference Icu.net, but if a product is using a version of ICU
+		/// that has more up-to-date information, that is the preferred source.
+		/// </summary>
+		private static void InitializeGetUnicodeCategoryBasedOnIcu()
 		{
-			get { return _sldrCacheMutex != null; }
+			if (StringExtensions.AltImplGetUnicodeCategory != null)
+				return;
+			try
+			{
+				// Unfortunately, this version has to be looked up in the docs. There is no way
+				// (e.g. from System.Globalization) to look this up at runtime.
+				const double unicodeVersionOfDotNet462 = 8.0;
+
+				if (double.TryParse(Wrapper.UnicodeVersion, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out var icuUnicodeVersion) &&
+				    icuUnicodeVersion > unicodeVersionOfDotNet462)
+				{
+					StringExtensions.AltImplGetUnicodeCategory = GetUnicodeCategoryBasedOnICU;
+				}
+			}
+			catch (System.IO.FileLoadException)
+			{
+				// The program doesn't have the ICU library available.  We can live with this.
+			}
 		}
+
+		/// <summary>
+		/// Uses ICU to get the Unicode category of the character at the indicated position in the
+		/// string.
+		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">Index out of range. Must be a positive
+		/// number less than the length of the <see cref="s"/></exception>
+		/// <exception cref="ArgumentException">String contains invalid surrogate characters (e.g.,
+		/// a low surrogate that is not preceded by a high surrogate)</exception>
+		/// <remarks>Internal for testing.</remarks>
+		internal static UnicodeCategory GetUnicodeCategoryBasedOnICU(string s, int index)
+		{
+			if (index < 0 || index >= s.Length)
+				throw new ArgumentOutOfRangeException(nameof(index), index,
+					"Index out of range. Must be a positive number less than the" +
+					$" length ({s.Length}) of the string: {{s}}");
+
+			// Just to be a bit more robust (like the default
+			// "UnicodeInfo.GetUnicodeCategory" implementation), if they gave us the index
+			// of the low surrogate and there is a valid high surrogate character preceding
+			// it, we'll fix things up so it doesn't throw an exception.
+			if (char.IsLowSurrogate(s, index) && index > 0 &&
+				char.IsHighSurrogate(s, index - 1))
+				index--;
+
+			return Character.GetCharType(char.ConvertToUtf32(s, index))
+				.ToUnicodeCategory();
+		}
+
+		public static bool IsInitialized => _sldrCacheMutex != null;
 
 		/// <summary>
 		/// Cleans up the SLDR. This should be called to properly clean up SLDR resources.
@@ -174,27 +232,26 @@ namespace SIL.WritingSystems
 		/// <param name="destinationPath">Destination path to save the requested LDML file</param>
 		/// <param name="languageTag">Current IETF language tag</param>
 		/// <param name="topLevelElements">List of top level element names to request. SLDR will always publish identity, so it doesn't need to be requested.
-		/// If null, the entire LDML file will be requested.</param>
+		/// If empty list, the entire LDML file will be requested.</param>
 		/// <param name="filename">Saved filename</param>
 		/// <returns>Enum status SldrStatus if file could be retrieved and the source</returns>
 		public static SldrStatus GetLdmlFile(string destinationPath, string languageTag, IEnumerable<string> topLevelElements, out string filename)
 		{
 			CheckInitialized();
 
-			if (String.IsNullOrEmpty(destinationPath))
+			if (string.IsNullOrEmpty(destinationPath))
 				throw new ArgumentException("destinationPath");
 			if (!Directory.Exists(destinationPath))
 				throw new DirectoryNotFoundException("destinationPath");
-			if (String.IsNullOrEmpty(languageTag) || (!IetfLanguageTag.IsValid(languageTag)))
+			if (string.IsNullOrEmpty(languageTag) || (!IetfLanguageTag.IsValid(languageTag)))
 				throw new ArgumentException("ietfLanguageTag");
 			if (topLevelElements == null)
-				throw new ArgumentNullException("topLevelElements");
+				throw new ArgumentNullException(nameof(topLevelElements));
 
-			string sldrLanguageTag = IetfLanguageTag.Canonicalize(languageTag);
-			SldrLanguageTagInfo langTagInfo;
-			if (LanguageTags.TryGet(sldrLanguageTag, out langTagInfo))
+			var sldrLanguageTag = IetfLanguageTag.Canonicalize(languageTag);
+			if (LanguageTags.TryGet(sldrLanguageTag, out var langTagInfo))
 				sldrLanguageTag = langTagInfo.SldrLanguageTag;
-			string[] topLevelElementsArray = topLevelElements.ToArray();
+			var topLevelElementsArray = topLevelElements.ToArray();
 
 			using (_sldrCacheMutex.Lock())
 			{
@@ -204,16 +261,16 @@ namespace SIL.WritingSystems
 				bool redirected;
 				do
 				{
-					string revid, uid = "", tempString;
+					var uid = string.Empty;
 					if (destinationPath == SldrCachePath)
 					{
-						filename = string.Format("{0}.{1}", sldrLanguageTag, LdmlExtension);
+						filename = $"{sldrLanguageTag}.{LdmlExtension}";
 					}
 					else
 					{
-						filename = string.Format("{0}.{1}", languageTag, LdmlExtension);
+						filename = $"{languageTag}.{LdmlExtension}";
 						// Check if LDML file already exists in destination and read revid and uid
-						if (!ReadSilIdentity(Path.Combine(destinationPath, filename), out tempString, out uid))
+						if (!ReadSilIdentity(Path.Combine(destinationPath, filename), out _, out uid))
 							uid = DefaultUserId;
 					}
 
@@ -221,20 +278,20 @@ namespace SIL.WritingSystems
 					if (sldrLanguageTag.Contains(WellKnownSubtags.IpaVariant) || sldrLanguageTag.Contains(WellKnownSubtags.AudioScript))
 						return SldrStatus.NotFound;
 
-					sldrCacheFilePath = Path.Combine(SldrCachePath, !string.IsNullOrEmpty(uid) && uid != DefaultUserId ? string.Format("{0}-{1}.{2}", sldrLanguageTag, uid, LdmlExtension)
-						: string.Format("{0}.{1}", sldrLanguageTag, LdmlExtension));
+					sldrCacheFilePath = Path.Combine(SldrCachePath, !string.IsNullOrEmpty(uid) && uid != DefaultUserId ? $"{sldrLanguageTag}-{uid}.{LdmlExtension}"
+						: $"{sldrLanguageTag}.{LdmlExtension}");
 					// Read revid from cache file
-					ReadSilIdentity(sldrCacheFilePath, out revid, out tempString);
+					ReadSilIdentity(sldrCacheFilePath, out var revid, out _);
 
 					// Concatenate parameters for url string
-					string requestedElements = string.Empty;
+					var requestedElements = string.Empty;
 					if (topLevelElementsArray.Length > 0)
-						requestedElements = string.Format("&inc[]={0}", string.Join("&inc[]=", topLevelElementsArray));
-					string requestedUserId = !string.IsNullOrEmpty(uid) ? string.Format("&uid={0}", uid) : string.Empty;
-					string requestedRevid = !string.IsNullOrEmpty(revid) ? string.Format("&revid={0}", revid) : string.Empty;
-					string url = BuildLdmlRequestUrl(sldrLanguageTag, requestedElements, requestedUserId, requestedRevid);
+						requestedElements = $"&inc[]={string.Join("&inc[]=", topLevelElementsArray)}";
+					var requestedUserId = !string.IsNullOrEmpty(uid) && uid != DefaultUserId ? $"&uid={uid}" : string.Empty;
+					var requestedRevid = !string.IsNullOrEmpty(revid) ? $"&revid={revid}" : string.Empty;
+					var url = BuildLdmlRequestUrl(sldrLanguageTag, requestedElements, requestedUserId, requestedRevid);
 
-					string tempFilePath = sldrCacheFilePath + "." + TmpExtension;
+					var tempFilePath = sldrCacheFilePath + "." + TmpExtension;
 
 					// Using WebRequest instead of WebClient so we have access to disable AllowAutoRedirect
 					var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(url));
@@ -248,25 +305,26 @@ namespace SIL.WritingSystems
 							throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
 
 						// Check the response header to see if the requested LDML file got redirected
-						using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
+						using var webResponse = (HttpWebResponse) webRequest.GetResponse();
+						switch (webResponse.StatusCode)
 						{
-							if (webResponse.StatusCode == HttpStatusCode.NotModified)
-							{
+							case HttpStatusCode.NotModified:
 								// Report status that file is the most current from SLDR
 								status = SldrStatus.FromSldr;
 								redirected = false;
-							}
-							else if (webResponse.StatusCode == HttpStatusCode.MovedPermanently)
+								break;
+							case HttpStatusCode.MovedPermanently:
 							{
 								// Extract ietfLanguageTag from the response header
-								var parsedresponse = HttpUtility.ParseQueryString(webResponse.Headers["Location"]);
-								sldrLanguageTag = parsedresponse.Get("ws_id").Split('?')[0];
+								var parsedResponse = HttpUtility.ParseQueryString(webResponse.Headers["Location"]);
+								sldrLanguageTag = parsedResponse.Get("ws_id").Split('?')[0];
 								redirected = true;
+								break;
 							}
-							else
+							default:
 							{
 								// Download the LDML file to a temp file in case the transfer gets interrupted
-								using (Stream responseStream = webResponse.GetResponseStream())
+								using (var responseStream = webResponse.GetResponseStream())
 								using (var fs = new FileStream(tempFilePath, FileMode.OpenOrCreate, FileAccess.Write))
 								{
 									var buff = new byte[102400];
@@ -281,6 +339,7 @@ namespace SIL.WritingSystems
 								status = SldrStatus.FromSldr;
 								sldrCacheFilePath = MoveTmpToCache(tempFilePath, uid);
 								redirected = false;
+								break;
 							}
 						}
 					}
@@ -339,7 +398,7 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				string stagingParam = string.Empty;
+				var stagingParam = string.Empty;
 				var useStaging = Environment.GetEnvironmentVariable(SldrStaging) ?? "false";
 				if (useStaging.ToLower().Equals("true") || useStaging.ToLower().Equals("yes"))
 				{
@@ -352,20 +411,17 @@ namespace SIL.WritingSystems
 
 		internal static string BuildLdmlRequestUrl(string sldrLanguageTag, string requestedElements, string requestedUserId, string requestedRevid)
 		{
-			return string.Format("{0}{1}?ext={2}&flatten=1{3}{4}{5}{6}",
-				SldrRepository, sldrLanguageTag, LdmlExtension,
-				requestedElements, requestedUserId, requestedRevid, StagingParameter);
+			return
+				$"{SldrRepository}{sldrLanguageTag}?ext={LdmlExtension}&flatten=1{requestedElements}{requestedUserId}{requestedRevid}{StagingParameter}";
 		}
 
 		private static string GetSldrCacheFilePath(string uid, string sldrLanguageTag)
 		{
 			string sldrCacheFilename;
 			if (!string.IsNullOrEmpty(uid) && (uid != DefaultUserId))
-				sldrCacheFilename = string.Format("{0}-{1}.{2}", sldrLanguageTag, uid,
-					LdmlExtension);
+				sldrCacheFilename = $"{sldrLanguageTag}-{uid}.{LdmlExtension}";
 			else
-				sldrCacheFilename = string.Format("{0}.{1}", sldrLanguageTag,
-					LdmlExtension);
+				sldrCacheFilename = $"{sldrLanguageTag}.{LdmlExtension}";
 			return Path.Combine(SldrCachePath, sldrCacheFilename);
 		}
 
@@ -414,10 +470,10 @@ namespace SIL.WritingSystems
 				CreateSldrCacheDirectory();
 
 				cachedAllTagsPath = Path.Combine(SldrCachePath, "langtags.json");
-				DateTime sinceTime = _embeddedAllTagsTime.ToUniversalTime();
+				var sinceTime = _embeddedAllTagsTime.ToUniversalTime();
 				if (File.Exists(cachedAllTagsPath))
 				{
-					DateTime fileTime = File.GetLastWriteTimeUtc(cachedAllTagsPath);
+					var fileTime = File.GetLastWriteTimeUtc(cachedAllTagsPath);
 					if (sinceTime > fileTime)
 						// delete the old langtags.json file if a newer embedded one is available.
 						// this can happen if the application is upgraded to use a newer version of SIL.WritingSystems
@@ -435,27 +491,28 @@ namespace SIL.WritingSystems
 
 					// get SLDR langtags.json from the SLDR api compressed
 					// it will throw WebException or have status HttpStatusCode.NotModified if file is unchanged or not get it
-					string langtagsUrl = string.Format("{0}index.html?query=langtags&ext=json{1}", SldrRepository, StagingParameter);
+					var langtagsUrl =
+						$"{SldrRepository}index.html?query=langtags&ext=json{StagingParameter}";
 					var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(langtagsUrl));
 					webRequest.UserAgent = UserAgent;
 					webRequest.IfModifiedSince = sinceTime;
 					webRequest.Timeout = 10000;
 					webRequest.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-					using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
+					using var webResponse = (HttpWebResponse) webRequest.GetResponse();
+					if (webResponse.StatusCode != HttpStatusCode.NotModified)
 					{
-						if (webResponse.StatusCode != HttpStatusCode.NotModified)
-						{
-							using (Stream output = File.OpenWrite(cachedAllTagsPath))
-							{
-								using (Stream input = webResponse.GetResponseStream())
-								{
-									input.CopyTo(output);
-								}
-							}
-						}
+						using Stream output = File.OpenWrite(cachedAllTagsPath);
+						using var input = webResponse.GetResponseStream();
+						input.CopyTo(output);
 					}
 				}
 				catch (WebException)
+				{
+				}
+				catch (UnauthorizedAccessException)
+				{
+				}
+				catch (IOException)
 				{
 				}
 			}
@@ -493,6 +550,15 @@ namespace SIL.WritingSystems
 					return DeriveTagsFromJsonEntries(rootObject);
 				}
 			}
+			// If the user somehow got their SLDR locked against access, what can we do but attempt to go on!?
+			catch (UnauthorizedAccessException ex)
+			{
+				Debug.Fail($"Inaccessible SLDR cache at: {cachedAllTagsPath}{Environment.NewLine}{ex.Message}");
+			}
+			catch (IOException ex)
+			{
+				Debug.Fail($"Error reading SLDR cache at: {cachedAllTagsPath}{Environment.NewLine}{ex.Message}");
+			}
 			catch (JsonReaderException)
 			{
 				SaveBadFile(cachedAllTagsPath);
@@ -520,46 +586,44 @@ namespace SIL.WritingSystems
 		{
 			var tags = new KeyedList<string, SldrLanguageTagInfo>(info => info.LanguageTag, StringComparer.InvariantCultureIgnoreCase);
 
-			foreach (AllTagEntry entry in rootObject)
+			foreach (var entry in rootObject)
 			{
 				// tags starting with x- have undefined structure so ignoring them
 				// tags starting with _ showed up in buggy data so we'll drop them also
-				if (!entry.tag.StartsWith("x-") && !entry.tag.StartsWith("_"))
+				if (entry.tag.StartsWith("x-") || entry.tag.StartsWith("_"))
+					continue;
+
+				if (!entry.deprecated && !StandardSubtags.RegisteredLanguages.TryGet(entry.tag.Split('-')[0], out var languageTag))
 				{
-					LanguageSubtag languageTag;
-					if (!entry.deprecated && !StandardSubtags.RegisteredLanguages.TryGet(entry.tag.Split('-')[0], out languageTag))
+					if (entry.iso639_3 == null)
 					{
-						if (entry.iso639_3 == null)
-						{
-							StandardSubtags.AddLanguage(entry.tag.Split('-')[0], entry.name, false, entry.tag.Split('-')[0]);
-						}
-						else if (!StandardSubtags.RegisteredLanguages.TryGet(entry.iso639_3, out languageTag))
-						{
-							StandardSubtags.AddLanguage(entry.iso639_3, entry.name, false, entry.iso639_3);
-						}
+						StandardSubtags.AddLanguage(entry.tag.Split('-')[0], entry.name, false, entry.tag.Split('-')[0]);
 					}
-					string implicitStringCode = null;
-
-					// the script is always in the full tag
-					string scriptCode = entry.full.Split('-')[1];
-					if (scriptCode.Length == 4)
+					else if (!StandardSubtags.RegisteredLanguages.TryGet(entry.iso639_3, out languageTag))
 					{
-						var tagComponents = entry.tag.Split('-');
-
-						ScriptSubtag scriptTag;
-						if (!StandardSubtags.RegisteredScripts.TryGet(scriptCode, out scriptTag))
-						{
-							StandardSubtags.AddScript(scriptCode, scriptCode);
-						}
-
-						// if the script is also in the tag then it is explicit not implicit
-						if (tagComponents.Length == 1 || tagComponents[1] != scriptCode)
-						{
-							implicitStringCode = scriptCode;
-						}
+						StandardSubtags.AddLanguage(entry.iso639_3, entry.name, false, entry.iso639_3);
 					}
-					tags.Add(new SldrLanguageTagInfo(entry.tag, implicitStringCode, entry.tag, entry.sldr));
 				}
+				string implicitStringCode = null;
+
+				// the script is always in the full tag
+				var scriptCode = entry.full.Split('-')[1];
+				if (scriptCode.Length == 4)
+				{
+					var tagComponents = entry.tag.Split('-');
+
+					if (!StandardSubtags.RegisteredScripts.TryGet(scriptCode, out var scriptTag))
+					{
+						StandardSubtags.AddScript(scriptCode, scriptCode);
+					}
+
+					// if the script is also in the tag then it is explicit not implicit
+					if (tagComponents.Length == 1 || tagComponents[1] != scriptCode)
+					{
+						implicitStringCode = scriptCode;
+					}
+				}
+				tags.Add(new SldrLanguageTagInfo(entry.tag, implicitStringCode, entry.tag, entry.sldr));
 			}
 			return tags;
 		}
@@ -569,42 +633,37 @@ namespace SIL.WritingSystems
 		/// Returns boolean if the LDML file exists.
 		/// </summary>
 		/// <param name="filePath">Full path to the LDML file to parse</param>
-		/// <param name="revid">This contains the SHA of the git revision that was current when the user pulled the LDML file. 
+		/// <param name="revid">This contains the SHA of the git revision that was current when the user pulled the LDML file.
 		/// This attribute is stripped from files before inclusion in the SLDR</param>
-		/// <param name="uid">This holds a unique id that identifies a particular editor of a file. Notice that no two uids will be the same even across LDML files. 
-		/// Thus the uid is a unique identifier for an LDML file as edited by a user. If a user downloads a file and they don't already have a 
+		/// <param name="uid">This holds a unique id that identifies a particular editor of a file. Notice that no two uids will be the same even across LDML files.
+		/// Thus the uid is a unique identifier for an LDML file as edited by a user. If a user downloads a file and they don't already have a
 		/// uid for that file then they should use the given uid. On subsequent downloads they must update the uid to the existing uid for that file.
-		/// In implementation terms the UID is calculated as the 32-bit timestamp of the file request from the server, 
-		/// with another 16-bit collision counter appended and represented in MIME64 as 8 characters. 
+		/// In implementation terms the UID is calculated as the 32-bit timestamp of the file request from the server,
+		/// with another 16-bit collision counter appended and represented in MIME64 as 8 characters.
 		/// This attribute is stripped from files before inclusion in the SLDR.</param>
 		/// <returns>Boolean if the LDML file exists</returns>
 		internal static bool ReadSilIdentity(string filePath, out string revid, out string uid)
 		{
-			revid = String.Empty;
-			uid = String.Empty;
+			revid = string.Empty;
+			uid = string.Empty;
 
-			if (String.IsNullOrEmpty(filePath))
-				throw new ArgumentNullException("filePath");
+			if (string.IsNullOrEmpty(filePath))
+				throw new ArgumentNullException(nameof(filePath));
 			if (!File.Exists(filePath))
 				return false;
-			XElement element = XElement.Load(filePath);
+			var element = XElement.Load(filePath);
 			if (element.Name != "ldml")
 				throw new ApplicationException("Unable to load writing system definition: Missing <ldml> tag.");
 
-			XElement identityElem = element.Element("identity");
-			if (identityElem != null)
-			{
-				XElement specialElem = identityElem.NonAltElement("special");
-				if (specialElem != null)
-				{
-					XElement silIdentityElem = specialElem.Element(Sil + "identity");
-					if (silIdentityElem != null)
-					{
-						revid = (string) silIdentityElem.Attribute("revid") ?? string.Empty;
-						uid = (string) silIdentityElem.Attribute("uid") ?? string.Empty;
-					}
-				}
-			}
+			var identityElem = element.Element("identity");
+
+			var specialElem = identityElem?.NonAltElement("special");
+			var silIdentityElem = specialElem?.Element(Sil + "identity");
+			if (silIdentityElem == null)
+				return true;
+
+			revid = (string) silIdentityElem.Attribute("revid") ?? string.Empty;
+			uid = (string) silIdentityElem.Attribute("uid") ?? string.Empty;
 			return true;
 		}
 
@@ -618,39 +677,33 @@ namespace SIL.WritingSystems
 		/// <returns>Path to the LDML file in SLDR cache</returns>
 		internal static string MoveTmpToCache(string filePath, string originalUid)
 		{
-			XElement element = XElement.Load(filePath);
+			var element = XElement.Load(filePath);
 			if (element.Name != "ldml")
 				throw new ApplicationException("Unable to load writing system definition: Missing <ldml> tag.");
 
-			string uid = string.Empty;
-			string sldrCacheFilePath = filePath.Replace("." + TmpExtension, "");
+			var uid = string.Empty;
+			var sldrCacheFilePath = filePath.Replace("." + TmpExtension, "");
 
-			XElement identityElem = element.Element("identity");
-			if (identityElem != null)
+			var identityElem = element.Element("identity");
+			var specialElem = identityElem?.NonAltElement("special");
+			var silIdentityElem = specialElem?.Element(Sil + "identity");
+			if (silIdentityElem != null)
 			{
-				XElement specialElem = identityElem.NonAltElement("special");
-				if (specialElem != null)
+				if ((string) silIdentityElem.Attribute("draft") == "approved")
 				{
-					XElement silIdentityElem = specialElem.Element(Sil + "identity");
-					if (silIdentityElem != null)
-					{
-						if ((string) silIdentityElem.Attribute("draft") == "approved")
-						{
-							// Remove uid attribute
-							uid = string.Empty;
-							silIdentityElem.SetOptionalAttributeValue("uid", uid);
+					// Remove uid attribute
+					uid = string.Empty;
+					silIdentityElem.SetOptionalAttributeValue("uid", uid);
 
-							// Clean out original LDML file that contains uid in cache
-							string originalFile = string.Empty;
-							if (!string.IsNullOrEmpty(originalUid) && (originalUid != DefaultUserId))
-								originalFile = sldrCacheFilePath.Replace("." + LdmlExtension, "-" + originalUid + "." + LdmlExtension);
-							if (File.Exists(originalFile))
-								File.Delete(originalFile);
-						}
-						else
-							uid = (string) silIdentityElem.Attribute("uid");
-					}
+					// Clean out original LDML file that contains uid in cache
+					var originalFile = string.Empty;
+					if (!string.IsNullOrEmpty(originalUid) && (originalUid != DefaultUserId))
+						originalFile = sldrCacheFilePath.Replace("." + LdmlExtension, "-" + originalUid + "." + LdmlExtension);
+					if (File.Exists(originalFile))
+						File.Delete(originalFile);
 				}
+				else
+					uid = (string) silIdentityElem.Attribute("uid");
 			}
 
 			// sldrCache/filename.ldml
@@ -667,8 +720,8 @@ namespace SIL.WritingSystems
 				element.WriteTo(writer);
 
 			File.Delete(filePath);
-				
-			return sldrCacheFilePath;	
+
+			return sldrCacheFilePath;
 		}
 
 		private static void CreateSldrCacheDirectory()
@@ -676,19 +729,18 @@ namespace SIL.WritingSystems
 			if (Directory.Exists(SldrCachePath))
 				return;
 
-			DirectoryInfo di = Directory.CreateDirectory(SldrCachePath);
-			if (!Platform.IsLinux && !SldrCachePath.StartsWith(Path.GetTempPath()))
-			{
-				// NOTE: GetAccessControl/ModifyAccessRule/SetAccessControl is not implemented in Mono
-				DirectorySecurity ds = di.GetAccessControl();
-				var sid = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
-				AccessRule rule = new FileSystemAccessRule(sid, FileSystemRights.Write | FileSystemRights.ReadAndExecute
-					| FileSystemRights.Modify, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit,
-					PropagationFlags.InheritOnly, AccessControlType.Allow);
-				bool modified;
-				ds.ModifyAccessRule(AccessControlModification.Add, rule, out modified);
-				di.SetAccessControl(ds);
-			}
+			var di = Directory.CreateDirectory(SldrCachePath);
+			if (Platform.IsUnix || SldrCachePath.StartsWith(Path.GetTempPath()))
+				return;
+
+			// NOTE: GetAccessControl/ModifyAccessRule/SetAccessControl is not implemented in Mono
+			var ds = di.GetAccessControl();
+			var sid = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
+			AccessRule rule = new FileSystemAccessRule(sid, FileSystemRights.Write | FileSystemRights.ReadAndExecute
+				| FileSystemRights.Modify, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit,
+				PropagationFlags.InheritOnly, AccessControlType.Allow);
+			ds.ModifyAccessRule(AccessControlModification.Add, rule, out var modified);
+			di.SetAccessControl(ds);
 		}
 	}
 }

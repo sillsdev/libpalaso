@@ -47,17 +47,21 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 			// Linux: typically /usr/share/SIL/ImageCollections
 			// (This is not the typical place for a Linux package to install things
 			// and CamelCase is not a standard way to name folders.
-			// Typically each package would make its own folder at the root of /user/share.
+			// Typically each package would make its own folder at the root of /usr/share.
 			// Then something like sil-image-collection might plausibly be part of each
 			// folder name.
 			// But that will require a whole different strategy for finding them, possibly
 			// something like an environment variable, or we could search the whole
-			// of /user/share for folders starting with sil-image-collection. Let's wait and see whether anyone
+			// of /usr/share for folders starting with sil-image-collection. Let's wait and see whether anyone
 			// actually wants to do this and doesn't find the current proposal satisfactory.)
 			//unit tests can override this
-			ImageCollectionsFolder =
-				Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)
-					.CombineForPath("SIL", "ImageCollections");
+			ImageCollectionsFolder = null;
+			if (PlatformUtilities.Platform.IsFlatpak)
+				ImageCollectionsFolder = "/app/share/SIL/ImageCollections";
+			if (ImageCollectionsFolder == null || !Directory.Exists(ImageCollectionsFolder))
+				ImageCollectionsFolder =
+					Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)
+						.CombineForPath("SIL", "ImageCollections");
 			_searchLanguage = searchLanguageId;
 			_collections = new List<ImageCollection>();
 		}
@@ -137,15 +141,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 		{
 			foundExactMatches = false;
 
-			// On a dev machine, the index loading feels instantaneous with AOR,
-			// but if the user were on a super slow computer, and entered a query quickly, he would
-			// get a spinning cursor until they are done.
-			const int kMaxSecondsToWaitForIndexLoading = 20;
-			var whenToGiveUp = DateTime.Now.AddSeconds(kMaxSecondsToWaitForIndexLoading);
-			while(!_indicesLoaded && DateTime.Now < whenToGiveUp)
-			{
-				Thread.Sleep(10);
-			}
+			WaitForLoadingToFinish();
 			// If still not done, give up and return no results.
 			if(!_indicesLoaded)
 			{
@@ -182,12 +178,28 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 			return finalResult;
 		}
 
+		private void WaitForLoadingToFinish()
+		{
+			// On a dev machine, the index loading feels instantaneous with AOR,
+			// but if the user were on a super slow computer, and entered a query quickly, he would
+			// get a spinning cursor until they are done.
+			const int kMaxSecondsToWaitForIndexLoading = 20;
+			var whenToGiveUp = DateTime.Now.AddSeconds(kMaxSecondsToWaitForIndexLoading);
+			while (!_indicesLoaded && DateTime.Now < whenToGiveUp)
+			{
+				Thread.Sleep(10);
+			}
+		}
+
 
 		/// <summary>
 		/// Load the index again, this time for the a different language id
 		/// </summary>
 		public void ChangeSearchLanguageAndReloadIndex(string searchLanguageId)
 		{
+			// Usually not needed, but reduce the possibility of a crash from trying to set the
+			// same index twice.  See https://issues.bloomlibrary.org/youtrack/issue/BL-9825.
+			WaitForLoadingToFinish();
 			_searchLanguage = searchLanguageId;
 			foreach (var c in Collections)
 			{

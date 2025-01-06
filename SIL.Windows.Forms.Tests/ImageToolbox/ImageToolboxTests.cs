@@ -112,5 +112,77 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 				Assert.IsNotNull(viewOnClickMethod, "MWFFileView no longer has an OnClickViewMenuSubItem(object, EventArgs) method");
 			}
 		}
+
+		[Test]
+		public void DoubleCheckFileFilterWorks()
+		{
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(null, "foo.txt"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(null, "foo.doc"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(null, "foo"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(null, "foo."));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(null, "foo.bar"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(null, "foo.bar.baz"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter("", "foo.txt"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter("", "foo.doc"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter("", "foo"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter("", "foo."));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter("", "foo.bar"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter("", "foo.bar.baz"));
+
+			var filterAll = "All files|*.*";
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterAll, "foo.txt"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterAll, "foo.doc"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterAll, "foo"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterAll, "foo."));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterAll, "foo.bar"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterAll, "foo.bar.baz"));
+
+			var filterTxtOnly = "Text files|*.txt";
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterTxtOnly, "foo.txt"));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterTxtOnly, "foo.doc"));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterTxtOnly, "foo"));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterTxtOnly, "foo."));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterTxtOnly, "foo.bar"));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterTxtOnly, "foo.txt.baz"));
+
+			var filterTxtAndDoc = "Text files|*.txt|Word files|*.doc";
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterTxtAndDoc, "foo.txt"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterTxtAndDoc, "foo.doc"));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterTxtAndDoc, "foo"));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterTxtAndDoc, "foo."));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterTxtAndDoc, "foo.bar"));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterTxtAndDoc, "foo.txt.baz"));
+
+			var filterTxtAndDocWithAll = "Text files|*.txt|Word files|*.doc|All files|*.*";
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterTxtAndDocWithAll, "foo.txt"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterTxtAndDocWithAll, "foo.doc"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterTxtAndDocWithAll, "foo"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterTxtAndDocWithAll, "foo."));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterTxtAndDocWithAll, "foo.bar"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterTxtAndDocWithAll, "foo.txt.baz"));
+
+			var filterCodeSourceFiles = "Image files|*.png;*.jpg;*.jpeg;*.tiff";
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterCodeSourceFiles, "foo.png"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterCodeSourceFiles, "foo.jpg"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterCodeSourceFiles, "foo.jpeg"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterCodeSourceFiles, "foo.tiff"));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterCodeSourceFiles, "foo"));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterCodeSourceFiles, "foo."));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterCodeSourceFiles, "foo.bar"));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterCodeSourceFiles, "foo.png.baz"));
+
+			var filterCsCppSourceFiles = "Bitmap files|*.bmp;*.png;*.tiff|JPEG files|*.jpg;*.jpeg";
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterCsCppSourceFiles, "foo.bmp"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterCsCppSourceFiles, "foo.png"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterCsCppSourceFiles, "foo.tiff"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterCsCppSourceFiles, "foo.jpg"));
+			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(filterCsCppSourceFiles, "foo.jpeg"));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterCsCppSourceFiles, "foo.h"));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterCsCppSourceFiles, "foo.cs"));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterCsCppSourceFiles, "foo"));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterCsCppSourceFiles, "foo."));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterCsCppSourceFiles, "foo.bar"));
+			Assert.IsFalse(AcquireImageControl.DoubleCheckFileFilter(filterCsCppSourceFiles, "foo.png.baz"));
+		}
 	}
 }

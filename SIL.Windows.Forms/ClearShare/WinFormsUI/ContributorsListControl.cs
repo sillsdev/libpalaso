@@ -6,8 +6,10 @@ using System.Drawing;
 using System.Linq;
 using System.Media;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 using L10NSharp.UI;
 using SIL.Code;
+using SIL.Core.ClearShare;
 using SIL.Windows.Forms.Widgets.BetterGrid;
 
 namespace SIL.Windows.Forms.ClearShare.WinFormsUI
@@ -29,6 +31,16 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		public ContributorsListControl()
 		{
 			InitializeComponent();
+			_grid.DataError += _grid_DataError;
+		}
+
+		private void _grid_DataError(object sender, DataGridViewDataErrorEventArgs e)
+		{
+		    if (e.Exception != null &&
+				e.Context == DataGridViewDataErrorContexts.Commit)
+			{
+				MessageBox.Show(e.Exception.Message);
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -43,8 +55,6 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		private void Initialize()
 		{
 			_grid.Font = SystemFonts.MenuFont;
-
-			// TODO: Localize column headings
 
 			DataGridViewColumn col = BetterGrid.CreateTextBoxColumn("name", "Name");
 			col.Width = 150;
@@ -64,7 +74,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 			_grid.AddRemoveRowColumn(null, null,
 				null /* TODO: Enhance BetterGrid to be able to show tool tips in non-virtual mode */,
-				rowIndex => DeleteRow(rowIndex));
+				DeleteRow);
 
 			_grid.AllowUserToAddRows = true;
 			_grid.AllowUserToDeleteRows = true;
@@ -78,15 +88,13 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			_grid.RowsRemoved += HandleGridRowsRemoved;
 			_grid.ColumnHeaderMouseClick += _grid_ColumnHeaderMouseClick;
 
-			if (_model.ContributorsGridSettings != null)
-				_model.ContributorsGridSettings.InitializeGrid(_grid);
+			_model.ContributorsGridSettings?.InitializeGrid(_grid);
 		}
 
 		// SP-874: Not able to open L10NSharp with Alt-Shift-click
-		void _grid_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+		private void _grid_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
 		{
-			if (ColumnHeaderMouseClick != null)
-				ColumnHeaderMouseClick(sender, e);
+			ColumnHeaderMouseClick?.Invoke(sender, e);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -97,28 +105,20 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		/// problem.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		private new bool DesignMode
-		{
-			get
-			{
-				return (base.DesignMode || GetService(typeof(IDesignerHost)) != null) ||
-					(LicenseManager.UsageMode == LicenseUsageMode.Designtime);
-			}
-		}
+		private new bool DesignMode => base.DesignMode ||
+			GetService(typeof(IDesignerHost)) != null ||
+			LicenseManager.UsageMode == LicenseUsageMode.Designtime;
 
 		/// ------------------------------------------------------------------------------------
-		public bool InEditMode
-		{
-			get { return _grid.IsCurrentRowDirty; }
-		}
+		[PublicAPI]
+		public bool InEditMode => _grid.IsCurrentRowDirty;
 
 		/// ------------------------------------------------------------------------------------
-		public bool InNewContributionRow
-		{
-			get { return (_grid.CurrentCellAddress.Y == _grid.NewRowIndex); }
-		}
+		[PublicAPI]
+		public bool InNewContributionRow => _grid.CurrentCellAddress.Y == _grid.NewRowIndex;
 
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public Contribution GetCurrentContribution()
 		{
 			return GetContributionFromRow(_grid.CurrentCellAddress.Y);
@@ -134,7 +134,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		void HandleNewContributionListAvailable(object sender, EventArgs e)
+		private void HandleNewContributionListAvailable(object sender, EventArgs e)
 		{
 			Guard.AgainstNull(_model.Contributions, "Contributions");
 
@@ -153,7 +153,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		void HandleGridMouseClick(object sender, MouseEventArgs e)
+		private void HandleGridMouseClick(object sender, MouseEventArgs e)
 		{
 			var hi = _grid.HitTest(e.X, e.Y);
 
@@ -164,13 +164,31 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				return;
 			}
 
+			void SelectFirstCellInClickedRow() => _grid.CurrentCell = _grid[0, hi.RowIndex];
+
 			// At this point we know the user clicked on a row heading. Now we
 			// need to make sure the row they're leaving is in a valid state.
 			if (ValidatingContributor != null && _grid.CurrentCellAddress.Y >= 0 &&
 				_grid.CurrentCellAddress.Y < _grid.RowCount - 1)
 			{
-				if (_grid.CurrentCellAddress.Y == _model.Contributions.Count())
+				if (_grid.CurrentCellAddress.Y == _model.Contributions.Count)
 					return;
+
+				if (_grid.IsDirty)
+				{
+					try
+					{
+						// This actually forces the commit/validation and will fail if the
+						// current edit has the contribution in a bogus state.
+						SelectFirstCellInClickedRow();
+						return;
+					}
+					catch
+					{
+						SystemSounds.Beep.Play();
+						return;
+					}
+				}
 
 				var contribution = _model.Contributions.ElementAt(_grid.CurrentCellAddress.Y);
 				if (!GetIsValidContribution(contribution))
@@ -180,8 +198,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				}
 			}
 
-			// Make the first cell current in the row the user clicked.
-			_grid.CurrentCell = _grid[0, hi.RowIndex];
+			SelectFirstCellInClickedRow();
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -195,7 +212,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		void HandleGridLeave(object sender, EventArgs e)
+		private void HandleGridLeave(object sender, EventArgs e)
 		{
 			_grid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
 
@@ -222,8 +239,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 			if (!string.IsNullOrEmpty(kvp.Key))
 			{
-				if (_msgWindow == null)
-					_msgWindow = new FadingMessageWindow();
+				_msgWindow ??= new FadingMessageWindow();
 
 				var dataGridViewColumn = _grid.Columns[kvp.Key];
 				if (dataGridViewColumn != null)
@@ -241,13 +257,13 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		void HandleGridRowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+		private void HandleGridRowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
 		{
 			SaveContributions();
 		}
 
 		/// ------------------------------------------------------------------------------------
-		void HandleGridRowValidated(object sender, DataGridViewCellEventArgs e)
+		private void HandleGridRowValidated(object sender, DataGridViewCellEventArgs e)
 		{
 			SaveContributions();
 		}
@@ -312,44 +328,42 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		void HandleRoleValueChanged(object sender, EventArgs e)
+		private void HandleRoleValueChanged(object sender, EventArgs e)
 		{
-			if (_msgWindow != null)
-				_msgWindow.Close();
+			_msgWindow?.Close();
 		}
 
 		/// ------------------------------------------------------------------------------------
-		void HandleGridCellEndEdit(object sender, DataGridViewCellEventArgs e)
+		private void HandleGridCellEndEdit(object sender, DataGridViewCellEventArgs e)
 		{
 			var ctrl = _grid.Tag as Control;
 
+			var txtBox = ctrl as TextBox;
 			// SP-793: Text should match case of autocomplete list
-			if (e.ColumnIndex == 0)
+			if (e.ColumnIndex == 0 && txtBox != null)
 			{
-				var txtBox = ctrl as TextBox;
-				if (txtBox != null)
-				{
-					// is the current text an exact match for the autocomplete list?
-					var list = txtBox.AutoCompleteCustomSource.Cast<object>().ToList();
-					var found = list.FirstOrDefault(item => String.Equals(item.ToString(), txtBox.Text, StringComparison.CurrentCulture));
+				// is the current text an exact match for the autocomplete list?
+				var list = txtBox.AutoCompleteCustomSource.Cast<object>().ToList();
+				var found = list.FirstOrDefault(item =>
+					String.Equals(item.ToString(), txtBox.Text, StringComparison.CurrentCulture));
 
-					if (found == null)
+				if (found == null)
+				{
+					// is the current text a match except for case for the autocomplete list?
+					found = list.FirstOrDefault(item => String.Equals(item.ToString(),
+						txtBox.Text, StringComparison.CurrentCultureIgnoreCase));
+					if (found != null)
 					{
-						// is the current text a match except for case for the autocomplete list?
-						found = list.FirstOrDefault(item => String.Equals(item.ToString(), txtBox.Text, StringComparison.CurrentCultureIgnoreCase));
-						if (found != null)
-						{
-							txtBox.Text = found.ToString();
-							_grid.CurrentCell.Value = txtBox.Text;
-						}
+						txtBox.Text = found.ToString();
+						_grid.CurrentCell.Value = txtBox.Text;
 					}
 				}
 			}
 
-			if (ctrl is TextBox)
-				ctrl.KeyPress -= HandleCellEditBoxKeyPress;
-			else if (ctrl is ComboBox)
-				((ComboBox)ctrl).SelectedIndexChanged -= HandleRoleValueChanged;
+			if (txtBox != null)
+				txtBox.KeyPress -= HandleCellEditBoxKeyPress;
+			else if (ctrl is ComboBox box)
+				box.SelectedIndexChanged -= HandleRoleValueChanged;
 
 			_grid.CellEndEdit -= HandleGridCellEndEdit;
 			_grid.Tag = null;
@@ -389,15 +403,13 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 		/// <remarks>SP-874: Localize column headers</remarks>
 		[CLSCompliant (false)]
+		[PublicAPI]
 		public void SetLocalizationExtender(L10NSharpExtender extender)
 		{
 			extender.SetLocalizingId(_grid, "ContributorsEditorGrid");
 		}
 
 		/// <remarks>We need to be able to adjust the visual properties to match the hosting program</remarks>
-		public BetterGrid Grid
-		{
-			get { return _grid; }
-		}
+		public BetterGrid Grid => _grid;
 	}
 }

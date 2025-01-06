@@ -1,11 +1,8 @@
-// Copyright (c) 2018 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
-using System;
-using System.IO;
 using NUnit.Framework;
 using SIL.IO;
-using SIL.PlatformUtilities;
 using SIL.Reporting;
 
 namespace SIL.Tests.IO
@@ -19,9 +16,9 @@ namespace SIL.Tests.IO
 			var locator = new FileLocator(new[] {"bogus"});
 			ErrorReport.IsOkToInteractWithUser = false;
 			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(() =>
-																				{
-																  locator.LocateFile("foo.txt", "booo hooo");
-																				});
+				{
+					locator.LocateFile("foo.txt", "booo hooo");
+				});
 		}
 
 		[Test]
@@ -33,27 +30,21 @@ namespace SIL.Tests.IO
 		}
 
 		[Test]
-		[Platform(Exclude="Unix")]
-		[Category("KnownMonoIssue")]
-		public void GetFromRegistryProgramThatOpensFileType_SendInvalidType_ReturnsNull()
+		public void GetDefaultProgramForFileType_SendInvalidType_ReturnsNull()
 		{
-			Assert.IsNull(FileLocator.GetFromRegistryProgramThatOpensFileType(".blah"));
+			Assert.IsNull(FileLocator.GetDefaultProgramForFileType(".blah"));
 		}
 
 		[Test]
-		[Platform(Exclude="Unix")]
-		[Category("KnownMonoIssue")]
-		public void GetFromRegistryProgramThatOpensFileType_SendValidType_ReturnsProgramPath()
+		public void GetDefaultProgramForFileType_SendValidType_ReturnsProgramPath()
 		{
-			Assert.IsNotNull(FileLocator.GetFromRegistryProgramThatOpensFileType(".txt"));
+			Assert.IsNotNull(FileLocator.GetDefaultProgramForFileType(".txt"));
 		}
 
 		[Test]
-		[Platform(Exclude="Unix")]
-		[Category("KnownMonoIssue")]
-		public void GetFromRegistryProgramThatOpensFileType_SendExtensionWithoutPeriod_ReturnsProgramPath()
+		public void GetDefaultProgramForFileType_SendExtensionWithoutPeriod_ReturnsProgramPath()
 		{
-			Assert.IsNotNull(FileLocator.GetFromRegistryProgramThatOpensFileType("txt"));
+			Assert.IsNotNull(FileLocator.GetDefaultProgramForFileType("txt"));
 		}
 	}
 }

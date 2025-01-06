@@ -1,8 +1,9 @@
-
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Threading;
 using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI.Lists;
 using SIL.Archiving.IMDI.Schema;
@@ -14,7 +15,7 @@ namespace SIL.Archiving.IMDI
 	public class IMDIPackage : ArchivingPackage
 	{
 		/// <summary></summary>
-		public MetaTranscript BaseImdiFile { get; private set; }
+		public MetaTranscript BaseImdiFile { get; }
 
 		/// <summary>The file to import into Arbil</summary>
 		public string MainExportFile { get; private set; }
@@ -40,15 +41,12 @@ namespace SIL.Archiving.IMDI
 		}
 
 #region Properties
-		private IIMDIMajorObject BaseMajorObject
-		{
-			get { return (IIMDIMajorObject)BaseImdiFile.Items[0]; }
-		}
+		private IIMDIMajorObject BaseMajorObject => (IIMDIMajorObject)BaseImdiFile.Items[0];
 
 		/// <summary>The path where the corpus imdi file and corpus directory will be created</summary>
 		public string PackagePath
 		{
-			get { return _packagePath; }
+			get => _packagePath;
 			set
 			{
 				if (_creationStarted)
@@ -56,6 +54,12 @@ namespace SIL.Archiving.IMDI
 				_packagePath = value;
 			}
 		}
+
+		/// <summary>Generally an IMDI package should have at least one session. (This is not
+		/// strictly required for a corpus package, though it would be strange to want to
+		/// archive a corpus with no sessions.)</summary>
+		public bool IsValid => _corpus || Sessions.Any();
+
 		#endregion
 
 		// **** Corpus Layout ****
@@ -65,25 +69,33 @@ namespace SIL.Archiving.IMDI
 		// Test_Corpus\Test_Corpus_Catalog.imdi (catalogue of information)
 		// Test_Corpus\Test_Session (directory)
 		// Test_Corpus\Test_Session.imdi (session meta data file)
-		// Test_Corpus\Test_Session\Contributors (directory - contains files pertaining to contributers/actors)
+		// Test_Corpus\Test_Session\Contributors (directory - contains files pertaining to contributors/actors)
 		// Test_Corpus\Test_Session\Files*.* (session files)
 		// Test_Corpus\Contributors\Files*.* (contributor/actor files)
 
-		/// <summary>Creates the corpus directory structure, meta data files, and copies content files</summary>
+		/// <summary>Creates the corpus directory structure, meta data files, and copies content
+		/// files, checking for cancellation before each IO operation.</summary>
 		/// <returns></returns>
-		public bool CreateIMDIPackage()
+		public async Task<bool> CreateIMDIPackage(CancellationToken cancellationToken)
 		{
+			if (!IsValid)
+				return false;
+
 			_creationStarted = true;
 
 			// list of session files for the corpus
 			List<string> sessionFiles = new List<string>();
 
 			// create the session directories
-// ReSharper disable once LoopCanBeConvertedToQuery
 			foreach (var session in Sessions)
 			{
-				var sessImdi = new MetaTranscript { Items = new object[] { session }, Type = MetatranscriptValueType.SESSION };
-				sessionFiles.Add(sessImdi.WriteImdiFile(PackagePath, Name));
+				cancellationToken.ThrowIfCancellationRequested();
+
+				var sessionImdi = new MetaTranscript {
+					Items = new object[] { session },
+					Type = MetatranscriptValueType.SESSION
+				};
+				sessionFiles.Add(await sessionImdi.WriteImdiFile(PackagePath, Name));
 			}
 
 			if (!_corpus)
@@ -101,16 +113,20 @@ namespace SIL.Archiving.IMDI
 			foreach (var fileName in sessionFiles)
 				corpus.CorpusLink.Add(new CorpusLinkType { Value = fileName.Replace("\\", "/"), Name = string.Empty });
 
+			cancellationToken.ThrowIfCancellationRequested();
+
 			// create the catalogue
-			corpus.CatalogueLink = CreateCorpusCatalogue();
+			corpus.CatalogueLink = await CreateCorpusCatalogue();
+
+			cancellationToken.ThrowIfCancellationRequested();
 
 			//  Create the corpus imdi file
-			MainExportFile = BaseImdiFile.WriteImdiFile(PackagePath, Name);
+			MainExportFile = await BaseImdiFile.WriteImdiFile(PackagePath, Name);
 
 			return true;
 		}
 
-		private string CreateCorpusCatalogue()
+		private async Task<string> CreateCorpusCatalogue()
 		{
 			// Create the package catalogue imdi file
 			var catalogue = new Catalogue
@@ -159,7 +175,7 @@ namespace SIL.Archiving.IMDI
 				catalogue.Publisher.Add(Publisher);
 
 			// keys
-			foreach (var kvp in _keys)
+			foreach (var kvp in Keys)
 				catalogue.Keys.Key.Add(new KeyType { Name = kvp.Key, Value = kvp.Value });
 
 			// access
@@ -184,7 +200,7 @@ namespace SIL.Archiving.IMDI
 
 			// write the xml file
 			var catImdi = new MetaTranscript { Items = new object[] { catalogue }, Type = MetatranscriptValueType.CATALOGUE };
-			return catImdi.WriteImdiFile(PackagePath, Name).Replace("\\", "/");
+			return (await catImdi.WriteImdiFile(PackagePath, Name)).Replace("\\", "/");
 		}
 
 		/// <summary>Add a description of the package/corpus</summary>
@@ -195,7 +211,8 @@ namespace SIL.Archiving.IMDI
 			foreach (var itm in BaseMajorObject.Description)
 			{
 				if (itm.LanguageId == description.Iso3LanguageId)
-					throw new InvalidOperationException(string.Format("A description for language {0} has already been set", itm.LanguageId));
+					throw new InvalidOperationException(
+						$"A description for language {itm.LanguageId} has already been set");
 			}
 
 			BaseMajorObject.Description.Add(description);
@@ -209,10 +226,8 @@ namespace SIL.Archiving.IMDI
 			// prevent duplicate description
 			if (_corpus)
 			{
-				foreach (var sess in Sessions.Where(sess => sess.Name == sessionId))
-				{
-					sess.AddDescription(description);
-				}
+				foreach (var session in Sessions.Where(s => s.Name == sessionId))
+					session.AddDescription(description);
 			}
 			else
 			{

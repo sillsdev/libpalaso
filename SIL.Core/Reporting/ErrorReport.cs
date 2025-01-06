@@ -17,10 +17,27 @@ namespace SIL.Reporting
 	public interface IErrorReporter
 	{
 		void ReportFatalException(Exception e);
+
+		/// <summary>
+		/// Notify the user of the <paramref name="exception"/> and <paramref name="message"/>, if <paramref name="policy"/> permits, using the IErrorReporter's default options 
+		/// </summary>
+		/// <remarks>In contrast to the <see cref="SIL.Reporting.IErrorReporter.NotifyUserOfProblem(IRepeatNoticePolicy, string, ErrorResult, string)" /> version,
+		/// this method overload does not require the implementation to block (if the caller is not on the UI thread)
+		/// I would suggest that it should not block (if the caller is not on the UI thread).
+		/// By not blocking, you reduce headache and worry about the application deadlocking.
+		/// This will allow the caller to do an easy "fire and forget" of the problem notification mechanism</remarks>
+		void NotifyUserOfProblem(IRepeatNoticePolicy policy, Exception exception, string message);
+
+		/// <summary>
+		/// Notify the user of the <paramref name="message"/>, if <paramref name="policy"/> permits. Customize the alternate button label. Wait for user input. Return button clicked to the user.
+		/// </summary>
+		/// <remarks>The method overload should block and wait for the user to press the required button</remarks>
+		/// <returns>The method should return <paramref name="resultIfAlternateButtonPressed"/> if the alternate button is clicked, ErrorResult.OK otherwise</returns>
 		ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
 										string alternateButton1Label,
 										ErrorResult resultIfAlternateButtonPressed,
 										string message);
+
 		void ReportNonFatalException(Exception exception, IRepeatNoticePolicy policy);
 		void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args);
 		void ReportNonFatalMessageWithStackTrace(string message, params object[] args);
@@ -110,6 +127,11 @@ namespace SIL.Reporting
 			_errorReporter = ExceptionHandler.GetObjectFromSilWindowsForms<IErrorReporter>() ?? new ConsoleErrorReporter();
 		}
 
+		/// <summary>
+		/// Gets the current IErrorReporter
+		/// </summary>
+		public static IErrorReporter GetErrorReporter() => _errorReporter;
+		
 		/// <summary>
 		/// Use this method if you want to override the default IErrorReporter.
 		/// This method should normally be called only once at application startup.
@@ -438,7 +460,14 @@ namespace SIL.Reporting
 				foreach (var version in list)
 				{
 					if (version.Match(Environment.OSVersion))
-						return version.Label + " " + Environment.OSVersion.ServicePack;
+					{
+						// From: https://stackoverflow.com/questions/69038560/detect-windows-11-with-net-framework-or-windows-api
+						if (version.Label == "Windows 10" && Environment.OSVersion.Version.Build >= 22000)
+						{
+							return "Windows 11+ " + Environment.OSVersion.ServicePack + " (" + Environment.OSVersion.Version + ")";
+						}
+						return version.Label + " " + Environment.OSVersion.ServicePack + " (" + Environment.OSVersion.Version + ")";
+					}
 				}
 
 				// Handle any as yet unrecognized (possibly unmanifested) versions, or anything that reported its self as Windows 8.
@@ -473,23 +502,23 @@ namespace SIL.Reporting
 
 		public static ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy, string messageFmt, params object[] args)
 		{
-			return NotifyUserOfProblem(policy, null, default(ErrorResult), messageFmt, args);
+			NotifyUserOfProblem(policy, null, messageFmt, args);
+			return ErrorResult.OK;
 		}
 
-		public static void NotifyUserOfProblem(Exception error, string messageFmt, params object[] args)
+		public static void NotifyUserOfProblem(Exception exception, string messageFmt, params object[] args)
 		{
-			NotifyUserOfProblem(new ShowAlwaysPolicy(), error, messageFmt, args);
+			NotifyUserOfProblem(new ShowAlwaysPolicy(), exception, messageFmt, args);
 		}
-
-		public static void NotifyUserOfProblem(IRepeatNoticePolicy policy, Exception error, string messageFmt, params object[] args)
+	
+		public static void NotifyUserOfProblem(IRepeatNoticePolicy policy, Exception exception, string messageFmt, params object[] args)
 		{
-			var result = NotifyUserOfProblem(policy, "Details", ErrorResult.Yes, messageFmt, args);
-			if (result == ErrorResult.Yes)
+			var message = string.Format(messageFmt, args);
+			NotifyUserOfProblemWrapper(message, exception, () =>
 			{
-				OnShowDetails(error, string.Format(messageFmt, args));
-			}
-
-			UsageReporter.ReportException(false, null, error, String.Format(messageFmt, args));
+				_errorReporter.NotifyUserOfProblem(policy, exception, message);
+				return ErrorResult.OK;
+			});
 		}
 
 		public static ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
@@ -499,14 +528,41 @@ namespace SIL.Reporting
 									params object[] args)
 		{
 			var message = string.Format(messageFmt, args);
+			return NotifyUserOfProblemWrapper(message, null, () =>
+			{
+				return _errorReporter.NotifyUserOfProblem(policy, alternateButton1Label, resultIfAlternateButtonPressed, message);
+			});
+		}
+
+		/// <summary>
+		/// Subclasses should call this method if they offer another overload of NotifyUserOfProblem.
+		/// This will call their NotifyUserOfProblem functionality, plus the before-and-after logic for them, notably:
+		/// * Checks if s_justRecordNonFatalMessagesForTesting is true and if so, skips calling the notification/reporting logic.
+		/// * Calls UsageReporter.ReportException if exception is non-null
+		/// </summary>
+		/// <param name="message">The message that would be showed to the user</param>
+		/// <param name="exception">The associated exception. May be null.</param>
+		/// <param name="notifyUserOfProblem">A delegate that takes no arguments.
+		/// It should call (via a closure) the actual core logic of having the _errorReporter notify the user of the problem.
+		/// It should return the ErrorResult that is desired to be passed back to the caller</param>
+		/// <returns>Returns the same return result as the result of NotifyDelegate</returns>
+		protected static ErrorResult NotifyUserOfProblemWrapper(string message, Exception exception, Func<ErrorResult> notifyUserOfProblem)
+		{
 			if (s_justRecordNonFatalMessagesForTesting)
 			{
 				s_previousNonFatalMessage = message;
 				return ErrorResult.OK;
 			}
-			return _errorReporter.NotifyUserOfProblem(policy, alternateButton1Label, resultIfAlternateButtonPressed, message);
-		}
 
+			var returnResult = notifyUserOfProblem();
+
+			if (exception != null)
+			{
+				UsageReporter.ReportException(false, null, exception, message);
+			}
+			return returnResult;
+		}
+		
 		/// <summary>
 		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
 		/// This version assumes the message has already been formatted with any arguments.

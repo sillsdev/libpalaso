@@ -15,6 +15,10 @@ namespace SIL.Threading
 	///
 	/// This is needed because Mono does not support system-wide, named mutexes. Mono does implement the Mutex class,
 	/// but even when using the constructors with names, it only works within a single process.
+	///
+	/// Note that in .NET 8.0 and later (and perhaps starting sooner than version 8), a named mutex can be used across
+	/// processes in Linux and macOS. However, software using the previous method of locking would not recognize the
+	/// new method of locking, so Linux continues to use the old, file-based approach internally.
 	/// </summary>
 	public class GlobalMutex : DisposableBase
 	{
@@ -24,14 +28,18 @@ namespace SIL.Threading
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GlobalMutex"/> class.
+		/// A <see cref="GlobalMutex"/> object is only intended to work with other <see cref="GlobalMutex"/> objects.
+		/// The name provided may not be the exact name/ID used by the internal OS object(s) used to enforce the mutex.
 		/// </summary>
 		public GlobalMutex(string name)
 		{
 			_name = name;
-			if (!Platform.IsWindows)
+			if (Platform.IsWindows)
+				_adapter = new WindowsGlobalMutexAdapter(name);
+			else if (Platform.IsLinux)
 				_adapter = new LinuxGlobalMutexAdapter(name);
 			else
-				_adapter = new WindowsGlobalMutexAdapter(name);
+				_adapter = new ExplicitGlobalMutexAdapter(name);
 		}
 
 		/// <summary>
@@ -284,6 +292,20 @@ namespace SIL.Threading
 			{
 				_mutex.Dispose();
 			}
+		}
+
+		/// <summary>
+		/// A .NET native Mutex object works cross-process on all OSes if we prepend its name with "Global\".
+		/// On multi-user systems (e.g., Terminal Server on Windows) this can cause one user to grab the lock that another user
+		/// would like to get. If this is an important scenario, then a login session ID and/or username could be included in
+		/// the name of the Mutex. Without prepending "Global\", though, named Mutexes don't work cross-process on OSes other
+		/// than Windows.
+		/// </summary>
+		private class ExplicitGlobalMutexAdapter: WindowsGlobalMutexAdapter
+		{
+			private const string GLOBAL = "Global\\";
+
+			public ExplicitGlobalMutexAdapter(string name) : base(name.StartsWith(GLOBAL) ? name : $"{GLOBAL}{name}") {}
 		}
 	}
 }

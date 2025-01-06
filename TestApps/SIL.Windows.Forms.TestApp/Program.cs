@@ -1,43 +1,50 @@
 using System;
 using System.IO;
-using System.Threading;
 using System.Windows.Forms;
 using L10NSharp;
 using SIL.IO;
+using SIL.Reporting;
+using SIL.Windows.Forms.Reporting;
 using SIL.WritingSystems;
 
 namespace SIL.Windows.Forms.TestApp
 {
-	static class Program
+	public static class Program
 	{
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
+		internal static ILocalizationManager PrimaryL10NManager;
+
 		[STAThread]
-		static void Main(string[] args)
+		public static void Main(string[] args)
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
+
+			SetUpErrorHandling();
+
 			Sldr.Initialize();
-			var localizationFolder = Path.GetDirectoryName(FileLocationUtilities.GetFileDistributedWithApplication("Palaso.en.tmx"));
-			LocalizationManager.Create(TranslationMemory.Tmx, "fr", "Palaso", "Palaso", "1.0.0", localizationFolder, "SIL/Palaso",
-				null, "");
-			if(args.Length>0) //for testing commandlinerunner
+			Icu.Wrapper.Init();
+
+			var preferredUILocale = "fr";
+			if (args.Length > 0)
 			{
-				for (int i = 0; i < 10; i++)
-				{
-					Console.WriteLine(i);
-					Thread.Sleep(1000);
-				}
-				return;
+				preferredUILocale = args[0].ToLowerInvariant();
 			}
+
+			var localizationFolder = Path.GetDirectoryName(
+				FileLocationUtilities.GetFileDistributedWithApplication($"Palaso.{preferredUILocale}.xlf"));
+			PrimaryL10NManager = LocalizationManager.Create(preferredUILocale, "Palaso", "Palaso",
+				"1.0.0", localizationFolder, "SIL/Palaso", null, "testapp@sil.org", new [] {"SIL."});
 
 			Application.Run(new TestAppForm());
 
 			Sldr.Cleanup();
-	   }
+		}
 
-
-
+		private static void SetUpErrorHandling()
+		{
+			ErrorReport.EmailAddress = "bogus_test_app_email_addr@sil.org";
+			ErrorReport.AddStandardProperties();
+			ExceptionHandler.Init(new WinFormsExceptionHandler());
+		}
 	}
 }

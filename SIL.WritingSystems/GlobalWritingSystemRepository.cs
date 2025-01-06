@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using System.Text;
 using SIL.IO;
 using SIL.PlatformUtilities;
 using SIL.Threading;
@@ -20,8 +19,8 @@ namespace SIL.WritingSystems
 	public class GlobalWritingSystemRepository : GlobalWritingSystemRepository<WritingSystemDefinition>
 	{
 		///<summary>
-		/// Initializes the global writing system repository.  Migrates any ldml files if required,
-		/// notifying of any changes of writing system id that occured during migration.
+		/// Initializes the global writing system repository. Migrates any ldml files if required,
+		/// notifying of any changes of writing system id that occurred during migration.
 		///</summary>
 		public static GlobalWritingSystemRepository Initialize(Action<int, IEnumerable<LdmlMigrationInfo>> migrationHandler = null)
 		{
@@ -156,7 +155,7 @@ namespace SIL.WritingSystems
 				// This allows unit tests to set the _defaultBasePath (through reflection)
 				if (string.IsNullOrEmpty(_defaultBasePath))
 				{
-					string basePath = Platform.IsLinux
+					var basePath = Platform.IsMac ? "/Users/Shared" : Platform.IsLinux
 						? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
 						: Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
 					_defaultBasePath = Path.Combine(basePath, "SIL", "WritingSystemRepository");
@@ -178,7 +177,7 @@ namespace SIL.WritingSystems
 		public static void CreateGlobalWritingSystemRepositoryDirectory(string path)
 		{
 			DirectoryInfo di = Directory.CreateDirectory(path);
-			if (!Platform.IsLinux && !path.StartsWith(Path.GetTempPath()))
+			if (!Platform.IsUnix && !path.StartsWith(Path.GetTempPath()))
 			{
 				// NOTE: GetAccessControl/ModifyAccessRule/SetAccessControl is not implemented in Mono
 				DirectorySecurity ds = di.GetAccessControl();

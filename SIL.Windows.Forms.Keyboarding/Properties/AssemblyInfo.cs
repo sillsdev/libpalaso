@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 using SIL.Acknowledgements;
 
@@ -9,16 +9,16 @@ using SIL.Acknowledgements;
 	"142a40a91e53d56e79f69dc79c4e95817de498aac924ee011f03b4e1c1d772d51c4946c1185e3bfb621bc6")]
 
 [assembly: Acknowledgement("ibusdotnet", Name = "ibusdotnet", Url = "https://www.nuget.org/packages/ibusdotnet/",
-	Copyright = "Copyright 2015 SIL International", LicenseUrl = "https://opensource.org/licenses/MIT",
+	Copyright = "Copyright 2015-2020 SIL Global", LicenseUrl = "https://opensource.org/licenses/MIT",
 	Location = "./ibusdotnet.dll")]
 [assembly: Acknowledgement("icu.net", Name = "icu.net", Url = "https://github.com/sillsdev/icu-dotnet",
-	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © SIL International 2007-2016", Location = "./icu.net.dll")]
+	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © SIL Global 2007-2024", Location = "./icu.net.dll")]
 [assembly: Acknowledgement("KeymanLink", Url = "https://keyman.com/", Copyright = "Copyright © SIL 2006",
 	Location = "./KeymanLink.dll")]
 [assembly: Acknowledgement("L10NSharp", Url = "https://github.com/sillsdev/l10nsharp/",
-	Copyright = "Copyright © SIL International 2010-2014", LicenseUrl = "https://opensource.org/licenses/MIT",
+	Copyright = "Copyright © SIL Global 2010-2024", LicenseUrl = "https://opensource.org/licenses/MIT",
 	Location = "./L10NSharp.dll")]
-[assembly: Acknowledgement("Mono.Posix", Url = "https://www.nuget.org/packages/Mono.Posix/",
+[assembly: Acknowledgement("Mono.Unix", Name = "Mono.Unix", Url = "https://www.nuget.org/packages/Mono.Unix/",
 	LicenseUrl = "https://opensource.org/licenses/MIT")]
 [assembly: Acknowledgement("NDesk.DBus", Name = "NDesk.DBus", Url = "https://www.nuget.org/packages/NDesk.DBus/",
 	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © Alp Toker", Location = "./NDesk.DBus.dll")]

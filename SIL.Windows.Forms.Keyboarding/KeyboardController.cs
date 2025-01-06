@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2015 SIL International
+// Copyright (c) 2011-2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -124,7 +124,7 @@ namespace SIL.Windows.Forms.Keyboarding
 		{
 			Action program = null;
 			if (HasSecondaryKeyboardSetupApplication && Instance.Adaptors.ContainsKey(KeyboardAdaptorType.OtherIm))
-				program = Instance.Adaptors[KeyboardAdaptorType.OtherIm].GetKeyboardSetupAction();
+				program = Instance.Adaptors[KeyboardAdaptorType.OtherIm].GetSecondaryKeyboardSetupAction();
 
 			return program;
 		}
@@ -410,7 +410,7 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// </summary>
 		public void ActivateDefaultKeyboard()
 		{
-			DefaultKeyboard.Activate();
+			DefaultKeyboard?.Activate();
 		}
 
 		/// <summary>

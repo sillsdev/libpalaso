@@ -761,6 +761,16 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		}
 
 		[Test]
+		public void SelectionForSpecialCombo_HasScriptAndIPA_GivesScriptRegionVariant()
+		{
+			_model.AddNew();
+			_model.CurrentIso = "en";
+			_model.CurrentScriptCode = "Arab";
+			_model.CurrentVariant = "fonipa";
+			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
+		}
+
+		[Test]
 		public void SelectionForSpecialCombo_HasRegion_GivesScriptRegionVariant()
 		{
 			_model.AddNew();

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using X11.XKlavier;
 
@@ -9,7 +9,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// </summary>
 	public class UnityXkbKeyboardSwitchingAdaptor : XkbKeyboardSwitchingAdaptor
 	{
-		public UnityXkbKeyboardSwitchingAdaptor(IXklEngine engine): base(engine)
+		public UnityXkbKeyboardSwitchingAdaptor(IXklEngine engine) : base(engine)
 		{
 		}
 
@@ -19,7 +19,10 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			if (xkbKeyboard == null || xkbKeyboard.GroupIndex < 0)
 				return;
 
-			UnityIbusKeyboardSwitchingAdaptor.SelectKeyboard((uint)xkbKeyboard.GroupIndex);
+			var switchingAdaptor = KeyboardController.Instance
+				.Adaptors[KeyboardAdaptorType.OtherIm]
+				.SwitchingAdaptor as IUnityKeyboardSwitchingAdaptor;
+			switchingAdaptor.SelectKeyboard((uint) xkbKeyboard.GroupIndex);
 		}
 	}
 }

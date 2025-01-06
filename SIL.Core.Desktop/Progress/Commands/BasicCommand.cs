@@ -1,6 +1,5 @@
 using System;
-using System.Diagnostics;
-using System.Runtime.Remoting.Messaging;
+using System.Threading.Tasks;
 
 //For UML diagram, see ProgressSystem.uml (done in StarUML)
 
@@ -51,24 +50,22 @@ namespace SIL.Progress.Commands
 		/// <summary>
 		/// Implementation of the async work invoker
 		/// </summary>
-		/// <remarks>
-		/// We're using the delegate BeginInvoke() / EndInvoke() pattern here
-		/// </remarks>
-		protected override void BeginInvokeCore()
+		protected override async Task BeginInvokeCore()
 		{
-			WorkInvoker worker = new WorkInvoker( DoWork );
-			worker.BeginInvoke(
+			WorkInvoker worker = DoWork;
+			var workTask = Task.Run(() => worker.Invoke(
 				_initializeCallback,
-				_progressCallback ,
-				_primaryStatusTextCallback ,
-				_secondaryStatusTextCallback,
-				new AsyncCallback( EndWork ), null );
+				_progressCallback,
+				_primaryStatusTextCallback,
+				_secondaryStatusTextCallback));
+			await EndWork(workTask).ConfigureAwait(false); //resume execution on any thread
 		}
 
-		protected override void BeginInvokeCore2(ProgressState progress)
+		protected override async Task BeginInvokeCore2(ProgressState progress)
 		{
-			WorkInvoker2 worker = new WorkInvoker2(DoWork2);
-			worker.BeginInvoke(progress, new AsyncCallback(EndWork2), null);
+			WorkInvoker2 worker = DoWork2;
+			var workTask = Task.Run(() => worker.Invoke(progress));
+			await EndWork(workTask).ConfigureAwait(false); //resume execution on any thread
 		}
 
 		protected abstract void DoWork(
@@ -80,36 +77,11 @@ namespace SIL.Progress.Commands
 
 		protected abstract void DoWork2(ProgressState progress);
 
-		private void EndWork( IAsyncResult result )
+		private async Task EndWork(Task workTask)
 		{
-			AsyncResult asyncResult = (AsyncResult)result;
-			WorkInvoker asyncDelegate = (WorkInvoker)asyncResult.AsyncDelegate;
 			try
 			{
-				asyncDelegate.EndInvoke( result );
-				OnFinish( EventArgs.Empty );
-			}
-			catch( Exception e )
-			{
-				// Marshal exceptions back to the UI
-				OnError( new ErrorEventArgs( e ) );
-			}
-//            catch
-//            {
-//                // Do our exception handling; include a default catch
-//                // block because this is the final handler on the stack for this
-//                // thread, and we need to log these kinds of problems
-//                OnError( new ErrorEventArgs( null ) );
-//            }
-		}
-		private void EndWork2(IAsyncResult result)
-		{
-			Debug.WriteLine("BasicCOmmand:EndWork2");
-			AsyncResult asyncResult = (AsyncResult)result;
-			WorkInvoker2 asyncDelegate = (WorkInvoker2)asyncResult.AsyncDelegate;
-			try
-			{
-				asyncDelegate.EndInvoke(result);
+				await workTask.ConfigureAwait(false); //resume execution on any thread
 				OnFinish(EventArgs.Empty);
 			}
 			catch (Exception e)
@@ -117,16 +89,7 @@ namespace SIL.Progress.Commands
 				// Marshal exceptions back to the UI
 				OnError(new ErrorEventArgs(e));
 			}
-			//            catch
-			//            {
-			//                // Do our exception handling; include a default catch
-			//                // block because this is the final handler on the stack for this
-			//                // thread, and we need to log these kinds of problems
-			//                OnError( new ErrorEventArgs( null ) );
-			//            }
 		}
-
-
 	}
 
 	/// <summary>

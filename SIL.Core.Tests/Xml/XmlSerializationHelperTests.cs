@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 using NUnit.Framework;
-using SIL.Xml;
-using SomethingWeird;
+using SIL.IO;
+using SIL.TestUtilities;
+using static SIL.Xml.XmlSerializationHelper;
 
 namespace SIL.Tests.Xml
 {
@@ -365,7 +367,7 @@ namespace SIL.Tests.Xml
 		[TestCase(false)]
 		public void Deserialize_NullTextReader_GetsDefaultObject(bool dispose)
 		{
-			Assert.IsNull(XmlSerializationHelper.Deserialize<object>(null, dispose));
+			Assert.IsNull(Deserialize<object>(null, dispose));
 		}
 
 		[TestCase(true)]
@@ -377,7 +379,7 @@ namespace SIL.Tests.Xml
 			var stringWriter = new MyStringWriter(sb);
 			try
 			{
-				XmlSerializationHelper.Serialize(stringWriter, testObj, out var error, null,
+				Serialize(stringWriter, testObj, out var error, null,
 					dispose);
 				Assert.IsNull(error);
 
@@ -385,7 +387,7 @@ namespace SIL.Tests.Xml
 				try
 				{
 					var result =
-						XmlSerializationHelper.Deserialize<TestObject>(textReader, dispose);
+						Deserialize<TestObject>(textReader, dispose);
 					Assert.AreEqual(testObj.TestObjName, result.TestObjName);
 					Assert.AreEqual(testObj.AllThings.Count, result.AllThings.Count);
 					Assert.IsTrue(testObj.AllThings.Select(t => t.Id)
@@ -417,7 +419,7 @@ namespace SIL.Tests.Xml
 		[Test]
 		public void SerializeToString_NoEncodingSpecified_XmlHeaderHasDefaultUtf16Encoding()
 		{
-			var result = XmlSerializationHelper.SerializeToString(new TestObject("Fred"));
+			var result = SerializeToString(new TestObject("Fred"));
 			var lines = result.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList();
 			Assert.IsTrue(lines[0].StartsWith("<?xml"));
 			Assert.That(lines[0].Contains("encoding=\"utf-16\""));
@@ -428,7 +430,7 @@ namespace SIL.Tests.Xml
 		[Test]
 		public void SerializeToString_EncodingSpecified_XmlHeaderHasExpectedEncoding()
 		{
-			var result = XmlSerializationHelper.SerializeToString(new TestObject("Fred"),
+			var result = SerializeToString(new TestObject("Fred"),
 				Encoding.UTF8);
 			var lines = result.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList();
 			Assert.IsTrue(lines[0].StartsWith("<?xml"));
@@ -440,7 +442,7 @@ namespace SIL.Tests.Xml
 		[Test]
 		public void SerializeToString_OmitXmlHeading_XmlHeaderHasExpectedEncoding()
 		{
-			var result = XmlSerializationHelper.SerializeToString(new TestObject("Fred"),
+			var result = SerializeToString(new TestObject("Fred"),
 				true);
 			Assert.IsFalse(result.StartsWith("<?xml"));
 			var lines = result.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -449,20 +451,76 @@ namespace SIL.Tests.Xml
 		}
 
 		[Test]
+		public void SerializeToFileWithWriteThrough_Normal_FileCreated()
+		{
+			TemporaryFolder parentFolder = new TemporaryFolder("XmlSerializationHelperTests");
+			var path = parentFolder.Combine("test.xml");
+
+			try
+			{
+				XElement element = new XElement("test");
+				SerializeToFileWithWriteThrough(path, element);
+				Assert.IsTrue(File.Exists(path));
+			}
+			finally
+			{
+				File.Delete(path);
+			}
+		}
+
+		[Test]
+		public void SerializeToFileWithWriteThrough_BogusFile_ErrorReturned()
+		{
+			XElement element = new XElement("test");
+			SerializeToFileWithWriteThrough(@":\....Bogus:path", element, out var error);
+			Assert.That(error, Is.Not.Null);
+		}
+
+		[Test]
+		public void SerializeToFileWithWriteThrough_NullData_DeserializableFileCreated()
+		{
+			var path = Path.GetTempFileName();
+			try
+			{
+				SerializeToFileWithWriteThrough(path, (XElement)null, out var error);
+				Assert.That(error, Is.Null);
+				Assert.IsTrue(File.Exists(path));
+
+				var deserializedNullObject = DeserializeFromFile<XElement>(path);
+				Assert.That(deserializedNullObject, Is.Null);
+			}
+			finally
+			{
+				RobustFile.Delete(path);
+			}
+		}
+
+		[Test]
 		public void SerializeToString_GenericList_SerializedCorrectly()
 		{
 			var source = new[] {"List Item 1", "List Item 2", "List Item 3"};
 			var data = (from s in source
 				select new XmlTranslation
-					{Reference = "MAT 3:6", PhraseKey = s, Translation = s.ToLower()}).ToList();
-			var result = XmlSerializationHelper.SerializeToString(data, Encoding.UTF8);
+					{Reference = $"MAT {s.Last()}:6", PhraseKey = s, Translation = s.ToLower()}).ToList();
+			var result = SerializeToString(data, Encoding.UTF8);
 			var lines = result.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList();
-			Assert.IsTrue(lines[0].StartsWith("<?xml"));
-			Assert.That(lines[0].Contains("encoding=\"utf-8\""));
+			var i = 0;
+			Assert.That(lines[i], Does.StartWith("<?xml"));
+			Assert.That(lines[i], Does.Contain("encoding=\"utf-8\""));
+			Assert.That(lines[++i].Trim('\t'), Is.EqualTo("<ArrayOfTranslation>"));
+			var item = 1;
+			for (++i; i < lines.Count - 1; i += 4, item++)
+			{
+				Assert.That(lines[i].Trim('\t'), Is.EqualTo($"<Translation ref=\"MAT {item}:6\">"));
+				Assert.That(lines[i + 1].Trim('\t'), Is.EqualTo($"<OriginalPhrase>List Item {item}</OriginalPhrase>"));
+				Assert.That(lines[i + 2].Trim('\t'), Is.EqualTo($"<Translation>list item {item}</Translation>"));
+				Assert.That(lines[i + 3].Trim('\t'), Is.EqualTo("</Translation>"));
+			}
+			Assert.That(lines[i].Trim('\t'), Is.EqualTo("</ArrayOfTranslation>"));
 		}
 	}
 
-		/// ------------------------------------------------------------------------------------
+	/// ------------------------------------------------------------------------------------
 	/// <summary>
 	/// Little class to support XML serialization
 	/// </summary>
@@ -479,7 +537,7 @@ namespace SIL.Tests.Xml
 		public string Reference { get; set; }
 		/// --------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets or sets the phrase key (typically the text of the question in English.
+		/// Gets or sets the phrase key (typically the text of the question in English).
 		/// </summary>
 		/// --------------------------------------------------------------------------------
 		[XmlElement("OriginalPhrase")]
@@ -492,47 +550,11 @@ namespace SIL.Tests.Xml
 		public string Translation { get; set; }
 		/// --------------------------------------------------------------------------------
 		/// <summary>
-		/// Initializes a new instance of the <see cref="XmlTranslation"/> class, needed
-		/// for XML serialization.
+		/// Initializes a new instance of the <see cref="XmlTranslation"/> class.
 		/// </summary>
 		/// --------------------------------------------------------------------------------
 		public XmlTranslation()
 		{
 		}
-
-		/// --------------------------------------------------------------------------------
-		/// <summary>
-		/// Initializes a new instance of the <see cref="XmlTranslation"/> class.
-		/// </summary>
-		/// --------------------------------------------------------------------------------
-		public XmlTranslation(ITranslatablePhrase tp)
-		{
-			Reference = tp.PhraseKey.ScriptureReference;
-			PhraseKey = tp.PhraseKey.Text;
-			Translation = tp.Translation;
-		}
-	}
-}
-
-namespace SomethingWeird
-{
-	public interface ITranslatablePhrase
-	{
-		IQuestionKey PhraseKey { get; }
-		string Translation { get; }
-	}
-
-	public interface IQuestionKey : IRefRange
-	{
-		string ScriptureReference { get; }
-		/// <summary>Text of the question in COMPOSED form</summary>
-		string Text { get; }
-		string PhraseInUse { get; }
-	}
-
-	public interface IRefRange
-	{
-		int StartRef { get;  }
-		int EndRef { get; }
 	}
 }

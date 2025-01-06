@@ -1,13 +1,10 @@
-// Copyright (c) 2020 SIL International
+// Copyright (c) 2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
 using IBusDotNet;
-using SIL.Extensions;
 using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
@@ -39,6 +36,17 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 		}
 
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (disposing && !IsDisposed)
+			{
+				// dispose managed and unmanaged objects
+				Unmanaged.LibGnomeDesktopCleanup();
+			}
+		}
+
 		public override bool IsApplicable => _helper.IsApplicable && Platform.IsGnomeShell;
 
 		public override KeyboardAdaptorType Type => KeyboardAdaptorType.System | KeyboardAdaptorType.OtherIm;
@@ -61,7 +69,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			_helper.InitKeyboards(type => true, RegisterKeyboards);
 		}
 
-		private void RegisterKeyboards(IDictionary<string, uint> installedKeyboards, (string type, string layout) firstKeyboard)
+		private void RegisterKeyboards(IDictionary<string, uint> installedKeyboards,
+			(string type, string layout) firstKeyboard)
 		{
 			if (installedKeyboards.Count <= 0)
 				return;
@@ -163,6 +172,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			{
 				gnomeXkbInfo.GetLayoutInfo(xkbKeyboard, out var displayName, out var shortName,
 					out var xkbLayout, out var xkbVariant);
+
 				keyboards.Add(new XkbIbusEngineDesc {
 					LongName = $"xkb:{xkbKeyboard}",
 					Description = displayName,
@@ -173,6 +183,11 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				});
 			}
 			return keyboards.ToArray();
+		}
+
+		protected override string GetKeyboardSetupApplication(out string arguments)
+		{
+			return KeyboardRetrievingHelper.GetKeyboardSetupApplication(out arguments);
 		}
 	}
 }

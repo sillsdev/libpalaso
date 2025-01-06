@@ -1,44 +1,28 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
     <RootNamespace>SIL.Lift.Tests</RootNamespace>
     <AssemblyName>SIL.Lift.Tests</AssemblyName>
-    <Configurations>Debug;Release</Configurations>
     <Description>Unit tests for SIL.Lift</Description>
-    <Company>SIL International</Company>
-    <Authors>SIL International</Authors>
-    <Product>libpalaso</Product>
-    <Copyright>Copyright © 2010-2020 SIL International</Copyright>
-    <OutputPath>../output/$(Configuration)</OutputPath>
-    <SignAssembly>true</SignAssembly>
-    <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
-    <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
     <IsPackable>false</IsPackable>
-    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.3.4">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Moq" Version="4.7.145" />
-    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
+    <PackageReference Include="Moq" Version="4.18.2" />
+    <PackageReference Include="NUnit" Version="3.13.3" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.3.2" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj" />
-    <ProjectReference Include="..\SIL.Core.Tests\SIL.Core.Tests.csproj" />
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
     <ProjectReference Include="..\SIL.Lift\SIL.Lift.csproj" />
     <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj" />
     <ProjectReference Include="..\SIL.WritingSystems.Tests\SIL.WritingSystems.Tests.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="NMock2">
-      <HintPath>..\lib\NMock2.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>

@@ -1,28 +1,57 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(NuGetPackageRoot)\gitversion.msbuild\build\GitVersion.MsBuild.targets" Condition="Exists('$(PkgGitVersion_GitVersion_MsBuild)\build\GitVersion.MsBuild.targets')" />
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks/>
+    <TargetFramework>netframework4.8</TargetFramework>
     <PackageId>SIL.libpalaso.l10ns</PackageId>
     <Version>$(GitVersion_NuGetVersion)</Version>
     <Authors>Jason Naylor</Authors>
     <Company>SIL International</Company>
+	<RestartBuild Condition="'$(PkgGitVersion_GitVersion_MsBuild)' == ''
+	  OR '$(PkgL10NSharp_ExtractXliff)' == ''
+	  OR '$(PkgMSBuild_Extension_Pack)' == ''
+	  OR '$(PkgNuGet_CommandLine)' == ''
+	  OR '$(PkgSIL_BuildTasks)' == ''">true</RestartBuild>
+	<RestartBuild Condition="'$(RestartBuild)' == ''">false</RestartBuild>
   </PropertyGroup>
+  
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.0.1" GeneratePathProperty="true" />
-	<PackageReference Include="L10NSharp.ExtractXliff" Version="4.1.0-beta0036" GeneratePathProperty="true" />
-    <PackageReference Include="NuGet.CommandLine" Version="5.4.0" GeneratePathProperty="true" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.9.0" GeneratePathProperty="true">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="L10NSharp.ExtractXliff" Version="7.0.0-beta0011" GeneratePathProperty="true" />
+    <PackageReference Include="MSBuild.Extension.Pack" Version="1.9.1" GeneratePathProperty="true" />
+    <PackageReference Include="NuGet.CommandLine" Version="6.1.0" GeneratePathProperty="true" />
     <PackageReference Include="SIL.BuildTasks" Version="2.3.0-beta.14" GeneratePathProperty="true" />
   </ItemGroup>
+  
   <UsingTask TaskName="NormalizeLocales" AssemblyFile="$(PkgSIL_BuildTasks)\tools\SIL.BuildTasks.dll" />
-  <Target Name="UpdateCrowdin" DependsOnTargets="restore;GetVersion">
-	<MSBuild Projects="..\build\Palaso.proj" Targets="Build" Properties="Configuration=Release" />
-	<Exec Command="&quot;$(PkgL10NSharp_ExtractXliff)\tools\ExtractXliff.exe&quot; -n SIL -o Palaso.dll -x Palaso.en.xlf -p $(GitVersion_NuGetVersion) -m SIL.Localizer.GetString -m SIL.Localizer.Localize -g ../Output/Release/net461/SIL.*.dll" />
-	<!-- <Exec Command="overcrowdin updatefiles" /> -->
+  
+  <Target Name="UpdateCrowdin">
+	<Message Text="RestartBuild=$(RestartBuild)"/>
+	<CallTarget Targets="RestoreBuildDependencies"/>
+	<CallTarget Targets="UpdateCrowdinInternal" Condition="!$(RestartBuild)" />
   </Target>
+  
+  <Target Name="RestoreBuildDependencies" DependsOnTargets="restore">
+	<MSBuild Projects="$(MSBuildProjectFullPath)" Targets="UpdateCrowdinInternal" Properties="Configuration=$(Configuration)" Condition="$(RestartBuild)" />
+  </Target>
+	
+  <Target Name="UpdateCrowdinInternal" DependsOnTargets="GetVersion">
+	<!-- Remove "not found" messages that are appended each run (Can't MatchWholeLine because leading spaces are trimmed from Lines).
+		These messages accumulate linearly and inifinitely at each ExtractXliff run and are not removed if the string is later found.
+		Removing these lines before running ExtractXliff ensures that only unfound strings are annotated, and only once.
+		See https://github.com/sillsdev/l10nsharp/issues/113 -->
+	<MSBuild.ExtensionPack.FileSystem.File TaskAction="RemoveLines" Files="Palaso.en.xlf" AvoidRegex="true"
+	  Lines="        &lt;note xml:lang=&quot;en&quot;&gt;Not found in static scan of compiled code (version 0.0.0)&lt;/note&gt;"/>
+	<!-- Build and extract strings -->
+	<MSBuild Projects="..\build\Palaso.proj" Targets="Build" Properties="Configuration=Release" />
+	<Exec Command="&quot;$(PkgL10NSharp_ExtractXliff)\tools\ExtractXliff.exe&quot; -n SIL -o Palaso.dll -b Palaso.en.xlf -x Palaso.en.xlf -p $(GitVersion_NuGetVersion) -m SIL.Localizer.GetString -m SIL.Localizer.Localize -g ../Output/Release/net462/SIL.*.dll" />
+  </Target>
+  
   <Target Name="PackageL10ns" DependsOnTargets="restore;GetVersion">
-	<RemoveDir Directories="CommonLibsL10ns" />
-	<Exec Command="overcrowdin download -e -f CommonLibsL10ns.zip" />
-	<Unzip SourceFiles="CommonLibsL10ns.zip" DestinationFolder="CommonLibsL10ns" ContinueOnError="true"/>
-	<NormalizeLocales L10nsDirectory="CommonLibsL10ns" />
+	<!-- Expects `crowdin download -i CROWDIN_PROJECT_ID -T CROWDIN_ACCESS_TOKEN` to have been run first -->
+	<NormalizeLocales L10nsDirectory="." />
 	<Exec Command="&quot;$(PkgNuGet_CommandLine)\tools\NuGet.exe&quot; pack l10ns.nuspec -Version $(GitVersion_NuGetVersion)" />
   </Target>
 </Project>

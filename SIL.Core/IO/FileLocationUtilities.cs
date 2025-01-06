@@ -4,13 +4,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using SIL.Extensions;
 using SIL.PlatformUtilities;
 using SIL.Reflection;
 
 namespace SIL.IO
 {
-	public class FileLocationUtilities
+	public static class FileLocationUtilities
 	{
 		/// <summary>
 		/// Gives the directory of either the project folder (if running from visual studio), or
@@ -23,16 +22,24 @@ namespace SIL.IO
 		{
 			get
 			{
-				string path = DirectoryOfTheApplicationExecutable;
-				char sep = Path.DirectorySeparatorChar;
-				int i = path.ToLower().LastIndexOf(sep + "output" + sep);
-
-				if (i > -1)
-				{
-					path = path.Substring(0, i + 1);
-				}
-				return path;
+				var path = DirectoryOfTheApplicationExecutable;
+				return GetProjectDirectory(path);
 			}
+		}
+
+		/// <summary>
+		/// Gives the directory of either the project folder (if running from visual studio), or
+		/// the installation folder.  Helpful for finding templates and things; by using this,
+		/// you don't have to copy those files into the build directory during development.
+		/// It assumes your build directory has "output" as part of its path.
+		/// </summary>
+		/// <returns></returns>
+		private static string GetProjectDirectory(string path)
+		{
+			var sep = Path.DirectorySeparatorChar;
+			var i = path.ToLower().LastIndexOf(sep + "output" + sep, StringComparison.Ordinal);
+
+			return (i > -1) ? path.Substring(0, i + 1) : path;
 		}
 
 		public static string DirectoryOfTheApplicationExecutable => ReflectionHelper.DirectoryOfTheApplicationExecutable;
@@ -40,13 +47,12 @@ namespace SIL.IO
 		private static string LocateExecutableDistributedWithApplication(string[] partsOfTheSubPath)
 		{
 			var exe = GetFileDistributedWithApplication(true, partsOfTheSubPath);
-			if (string.IsNullOrEmpty(exe))
-			{
-				var newParts = new List<string>(partsOfTheSubPath);
-				newParts.Insert(0, Platform.IsWindows ? "Windows" : "Linux");
-				exe = GetFileDistributedWithApplication(true, newParts.ToArray());
-			}
-			return exe;
+			if (!string.IsNullOrEmpty(exe))
+				return exe;
+
+			var newParts = new List<string>(partsOfTheSubPath);
+			newParts.Insert(0, Platform.IsWindows ? "Windows" : "Linux");
+			return GetFileDistributedWithApplication(true, newParts.ToArray());
 		}
 
 		/// <summary>
@@ -89,17 +95,12 @@ namespace SIL.IO
 
 			if (!string.IsNullOrEmpty(exe))
 				return exe;
-			if (throwExceptionIfNotFound)
-			{
-				var subPath = string.Empty;
-				foreach (var part in partsOfTheSubPath)
-				{
-					subPath = Path.Combine(subPath, part);
-				}
-				throw new ApplicationException("Could not locate the required executable, " + subPath);
-			}
 
-			return null;
+			if (!throwExceptionIfNotFound)
+				return null;
+
+			throw new ApplicationException($"Could not locate the required executable, {Path.Combine(partsOfTheSubPath)}");
+
 		}
 
 		public static string LocateExecutable(params string[] partsOfTheSubPath)
@@ -107,35 +108,34 @@ namespace SIL.IO
 			return LocateExecutable(true, partsOfTheSubPath);
 		}
 
+		private static string[] DirectoriesHoldingFiles => new[] {string.Empty, "DistFiles",
+			"common" /*for wesay*/, "src" /*for Bloom*/};
+
 		/// <summary>
 		/// Find a file which, on a development machine, lives in [solution]/[distFileFolderName]/[subPath],
 		/// and when installed, lives in
 		/// [applicationFolder]/[distFileFolderName]/[subPath1]/[subPathN]  or
 		/// [applicationFolder]/[subPath]/[subPathN]
 		/// </summary>
-		/// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
+		/// <returns>The path to the file, or <c>null</c> if the file is not found
+		/// and <paramref name="optional"/> is set to <c>true</c>.</returns>
+		/// <exception cref="ApplicationException">If the file is not found and
+		/// <paramref name="optional"/> is <c>false</c>.</exception>
+		/// <example>GetFileDistributedWithApplication(false, "info", "releaseNotes.htm");</example>
 		public static string GetFileDistributedWithApplication(bool optional, params string[] partsOfTheSubPath)
 		{
-			foreach (var directoryHoldingFiles in new[] {"", "DistFiles", "common" /*for wesay*/, "src" /*for Bloom*/})
+			foreach (var directoryHoldingFiles in DirectoriesHoldingFiles)
 			{
-				var path = Path.Combine(FileLocationUtilities.DirectoryOfApplicationOrSolution, directoryHoldingFiles);
-
-				foreach (var part in partsOfTheSubPath)
-				{
-					path = Path.Combine(path, part);
-				}
+				var path = Path.Combine(DirectoryOfApplicationOrSolution,
+					directoryHoldingFiles, Path.Combine(partsOfTheSubPath));
 				if (File.Exists(path))
 					return path;
 			}
 
 			if (optional)
 				return null;
-			string subpath="";
-			foreach (var part in partsOfTheSubPath)
-			{
-				subpath = Path.Combine(subpath, part);
-			}
-			throw new ApplicationException("Could not locate the required file, "+ subpath);
+
+			throw new ApplicationException($"Could not locate the required file, {Path.Combine(partsOfTheSubPath)}");
 		}
 
 		/// <summary>
@@ -151,47 +151,60 @@ namespace SIL.IO
 		}
 
 		/// <summary>
-		/// Find a file which, on a development machine, lives in [solution]/DistFiles/[subPath],
-		/// and when installed, lives in
-		/// [applicationFolder]/[subPath1]/[subPathN]
+		/// Find a directory which, on a development machine, lives in [solution]/DistFiles/[subPath],
+		/// and when installed, lives in [applicationFolder]/[subPath1]/[subPathN]
 		/// </summary>
-		/// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
+		/// <returns>The path to the directory, or <c>null</c> if the directory is not found
+		/// and <paramref name="optional"/> is set to <c>true</c>.</returns>
+		/// <exception cref="ArgumentException">If the directory is not found and
+		/// <paramref name="optional"/> is <c>false</c>.</exception>
+		/// <example>GetDirectoryDistributedWithApplication(false, "info", "releaseNotes.htm");</example>
 		public static string GetDirectoryDistributedWithApplication(bool optional, params string[] partsOfTheSubPath)
 		{
-			var path = FileLocationUtilities.DirectoryOfApplicationOrSolution;
-			foreach (var part in partsOfTheSubPath)
-			{
-				path = System.IO.Path.Combine(path, part);
-			}
+			var subPath = Path.Combine(partsOfTheSubPath);
+			var path = GetDirectoryDistributedWithApplication(DirectoryOfApplicationOrSolution,
+				subPath);
 			if (Directory.Exists(path))
 				return path;
 
-			var directoriesHoldingFiles = new[] {"DistFiles", "common" /*for wesay*/, "src" /*for Bloom*/};
-			foreach (var directoryHoldingFiles in directoriesHoldingFiles)
+			var thisDirectory = GetProjectDirectory(Path.GetDirectoryName(typeof(FileLocationUtilities).Assembly.Location));
+			if (thisDirectory != DirectoryOfApplicationOrSolution)
 			{
-				path = Path.Combine(FileLocationUtilities.DirectoryOfApplicationOrSolution, directoryHoldingFiles);
-				foreach (var part in partsOfTheSubPath)
-				{
-					path = System.IO.Path.Combine(path, part);
-				}
+				path = GetDirectoryDistributedWithApplication(thisDirectory, subPath);
+			}
+
+			if (Directory.Exists(path))
+				return path;
+
+			if (optional)
+				return null;
+
+			var message = new StringBuilder("Could not find the directory ");
+			message.Append(subPath);
+			message.Append(". We looked in ");
+			message.Append(DirectoryOfApplicationOrSolution);
+			if (thisDirectory != DirectoryOfApplicationOrSolution)
+				message.Append($" and {thisDirectory} ");
+
+			message.Append(" and in its subdirectories ");
+			message.Append(string.Join(", ", DirectoriesHoldingFiles));
+			throw new ArgumentException(message.ToString());
+		}
+
+		private static string GetDirectoryDistributedWithApplication(string directory, string subPath)
+		{
+			var path = Path.Combine(directory, subPath);
+			if (Directory.Exists(path))
+				return path;
+
+			foreach (var directoryHoldingFiles in DirectoriesHoldingFiles)
+			{
+				path = Path.Combine(directory, directoryHoldingFiles, subPath);
 				if (Directory.Exists(path))
 					return path;
 			}
 
-			if (optional && !Directory.Exists(path))
-				return null;
-
-			if (!Directory.Exists(path))
-			{
-				var message = new StringBuilder("Could not find the directory ");
-				message.Append(Path.Combine(partsOfTheSubPath));
-				message.Append(". We looked in ");
-				message.Append(FileLocationUtilities.DirectoryOfApplicationOrSolution);
-				message.Append(" and in its subdirectories ");
-				message.Append(String.Join(", ", directoriesHoldingFiles));
-				throw new ArgumentException(message.ToString());
-			}
-			return path;
+			return null;
 		}
 
 		/// <summary>

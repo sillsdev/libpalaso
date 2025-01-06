@@ -1,6 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
 using SIL.TestUtilities;
+using SIL.WritingSystems;
 
 namespace SIL.Windows.Forms.WritingSystems.Tests
 {
@@ -26,7 +27,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			model.IncludeRegionalDialects = false;
 			model.SearchText = "chinese";
 			string[] codes = model.MatchingLanguages.Select(li => li.LanguageTag).ToArray();
-			Assert.That(codes, Contains.Item("zh-CN"));
+			Assert.That(codes, Contains.Item(WellKnownSubtags.ChineseSimplifiedTag));
 			Assert.That(codes, Contains.Item("zh-TW"));
 		}
 

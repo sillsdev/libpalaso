@@ -43,6 +43,8 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public const int CurrentLdmlLibraryVersion = 3;
 
+		internal const string NeedsCompiling = "needsCompiling";
+
 		private static readonly XNamespace Palaso = "urn://palaso.org/ldmlExtensions/v1";
 		private static readonly XNamespace Sil = "urn://www.sil.org/ldml/0.1";
 
@@ -418,12 +420,13 @@ namespace SIL.WritingSystems
 
 		private static void ReadTopLevelSpecialElement(XElement specialElem, WritingSystemDefinition ws)
 		{
-			XElement externalResourcesElem = specialElem.Element(Sil + "external-resources");
+			var externalResourcesElem = specialElem.Element(Sil + "external-resources");
 			if (externalResourcesElem != null)
 			{
 				ReadFontElement(externalResourcesElem, ws);
 				ReadSpellcheckElement(externalResourcesElem, ws);
 				ReadKeyboardElement(externalResourcesElem, ws);
+				ReadCaseTailoringElement(externalResourcesElem, ws);
 			}
 		}
 
@@ -528,6 +531,15 @@ namespace SIL.WritingSystems
 						ws.KnownKeyboards.Add(keyboard);
 					}
 				}
+			}
+		}
+
+		private static void ReadCaseTailoringElement(XElement externalResourcesElem, WritingSystemDefinition ws)
+		{
+			var caseTailoringElem = externalResourcesElem.Element(Sil + "case-tailoring");
+			if (caseTailoringElem != null)
+			{
+				ws.CaseAlias = caseTailoringElem.Attribute("alias")?.Value;
 			}
 		}
 
@@ -833,7 +845,7 @@ namespace SIL.WritingSystems
 		private static SimpleRulesCollationDefinition ReadCollationRulesForCustomSimple(XElement collationElem, XElement specialElem, string collationType)
 		{
 			XElement simpleElem = specialElem.Element(Sil + "simple");
-			bool needsCompiling = (bool?) specialElem.Attribute(Sil + "needscompiling") ?? false;
+			bool needsCompiling = (bool?) specialElem.Attribute(Sil + NeedsCompiling) ?? false;
 			var scd = new SimpleRulesCollationDefinition(collationType) {SimpleRules = ((string) simpleElem).Replace("\n", "\r\n")};
 			if (!needsCompiling)
 			{
@@ -934,12 +946,13 @@ namespace SIL.WritingSystems
 				// except NewLineOnAttributes to conform to SLDR files
 				var writerSettings = CanonicalXmlSettings.CreateXmlWriterSettings();
 				writerSettings.NewLineOnAttributes = false;
-				using (var writer = XmlWriter.Create(filePath, writerSettings))
+				StringBuilder strBuilder = new StringBuilder();
+				using (var writer = XmlWriter.Create(strBuilder, writerSettings))
 				{
 					WriteLdml(writer, element, ws);
-					writer.Flush();
 					writer.Close();
 				}
+				XmlSerializationHelper.SerializeToFileWithWriteThrough(filePath, element);
 			}
 			finally
 			{
@@ -1009,11 +1022,11 @@ namespace SIL.WritingSystems
 			WriteCollationsElement(collationsElem, ws);
 			RemoveIfEmpty(ref collationsElem);
 
-			// Can have multiple specials.  Find the one with SIL namespace and external-resources.
-			// Also handle case where we create special because writingsystem has entries to write
+			// Can have multiple specials. Find the ones with the SIL namespace (we try to keep only one, but hand-editors can do whatever).
 			XElement specialElem = element.NonAltElements("special").FirstOrDefault(
-				e => !string.IsNullOrEmpty((string) e.Attribute(XNamespace.Xmlns+"sil")) && e.NonAltElement(Sil + "external-resources") != null);
-			if (specialElem == null && (ws.Fonts.Count > 0 || ws.KnownKeyboards.Count > 0 || ws.SpellCheckDictionaries.Count > 0))
+				e => !string.IsNullOrEmpty((string)e.Attribute(XNamespace.Xmlns + "sil")) && e.NonAltElement(Sil + "external-resources") != null);
+			// Handle the case where we create special because this Writing System has entries to write
+			if (specialElem == null && (ws.Fonts.Count > 0 || ws.KnownKeyboards.Count > 0 || ws.SpellCheckDictionaries.Count > 0 || ws.CaseAlias != null))
 			{
 				// Create special element
 				specialElem = GetOrCreateSpecialElement(element);
@@ -1415,16 +1428,18 @@ namespace SIL.WritingSystems
 
 			XElement specialElem = GetOrCreateSpecialElement(collationElem);
 			// SLDR generally doesn't include needsCompiling if false
-			specialElem.SetAttributeValue(Sil + "needsCompiling", scd.IsValid ? null : "true");
+			specialElem.SetAttributeValue(Sil + NeedsCompiling, scd.IsValid ? null : "true");
 			specialElem.Add(new XElement(Sil + "simple", new XCData(scd.SimpleRules)));
 		}
 		
 		private void WriteTopLevelSpecialElements(XElement specialElem, WritingSystemDefinition ws)
 		{
-			XElement externalResourcesElem = specialElem.GetOrCreateElement(Sil + "external-resources");
+			var externalResourcesElem = specialElem.GetOrCreateElement(Sil + "external-resources");
 			WriteFontElement(externalResourcesElem, ws);
 			WriteSpellcheckElement(externalResourcesElem, ws);
 			WriteKeyboardElement(externalResourcesElem, ws);
+			WriteCaseTailoringElement(externalResourcesElem, ws);
+			RemoveIfEmpty(ref externalResourcesElem);
 		}
 
 		private void WriteFontElement(XElement externalResourcesElem, WritingSystemDefinition ws)
@@ -1530,6 +1545,21 @@ namespace SIL.WritingSystems
 					}
 				}
 				externalResourcesElem.Add(kbdElem);
+			}
+		}
+
+		private void WriteCaseTailoringElement(XElement externalResourcesElem, WritingSystemDefinition ws)
+		{
+			var caseElem = externalResourcesElem.GetOrCreateElement(Sil + "case-tailoring");
+			// We are specifically not reading <sil:transform/> or <sil:case-tailoring transform=""/>, but they should round-trip.
+			// See https://github.com/silnrsi/sldr/blob/master/doc/sil_namespace.md#case-tailoring
+			if (ws.CaseAlias == null && caseElem.Attributes().All(att => att.Name == "alias"))
+			{
+				caseElem.Remove();
+			}
+			else
+			{
+				caseElem.SetAttributeValue("alias", ws.CaseAlias);
 			}
 		}
 

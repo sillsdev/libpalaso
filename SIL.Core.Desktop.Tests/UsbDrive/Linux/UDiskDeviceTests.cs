@@ -1,3 +1,4 @@
+#if !NET
 using System;
 using System.IO;
 using System.Linq;
@@ -75,3 +76,4 @@ namespace SIL.Tests.UsbDrive.Linux
 
 	}
 }
+#endif

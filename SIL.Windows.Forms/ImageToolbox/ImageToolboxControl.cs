@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using L10NSharp;
 using SIL.Code;
+using SIL.Core.ClearShare;
 using SIL.PlatformUtilities;
 using SIL.Reporting;
 using SIL.Windows.Forms.ClearShare;
@@ -142,8 +143,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 		{
 			_toolTip.SetToolTip(_currentImageBox, "");
 
-			//enchance: this only uses the "originalpath" version, which may be a lot larger than what we
-			//currently have, if we cropped, for example. But I'm loath to save it to disk just to get an accurate size.
+			// ENHANCE: this only uses the "originalpath" version, which may be a lot larger than what we
+			// currently have, if we cropped, for example. But I'm loath to save it to disk just to get an accurate size.
 			if (image!=null && !string.IsNullOrEmpty(image.OriginalFilePath) && File.Exists(image.OriginalFilePath))
 			{
 				try
@@ -169,6 +170,28 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// </summary>
 		public string InitialSearchString { get; set; }
 
+		/// <summary>
+		/// Used to report problems loading images. See more detail on AcquireImageControl
+		/// </summary>
+		public Action<string, Exception, string> ImageLoadingExceptionReporter
+		{
+			get { return _imageLoadingExceptionReporter; }
+			set
+			{
+				_imageLoadingExceptionReporter = value;
+				if (_acquireImageControl != null)
+					_acquireImageControl.ImageLoadingExceptionReporter = value;
+			}
+		}
+
+		/// <summary>
+		/// A new image was selected, or the image was cropped. Sender will be the IImageToolboxControl that changed the image
+		/// </summary>
+		public event EventHandler ImageChanged;
+
+		/// <summary>Metadata (copyright info) changed</summary>
+		public event EventHandler MetadataChanged;
+
 		private void SetupMetaDataControls(Metadata metaData)
 		{
 			Guard.AgainstNull(_imageInfo, "_imageInfo");
@@ -192,7 +215,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			_copyExemplarMetadata.Visible = Metadata.HaveStoredExemplar(Metadata.FileCategory.Image);
 			if (_invitationToMetadataPanel.Visible && _copyExemplarMetadata.Visible)
 			{
-				var s = LocalizationManager.GetString("ImageToolbox.CopyExemplarMetadata", "Use {0}", "Used to copy a previous metadata set to the current image. The  {0} will be replaced with the name of the exemplar image.");
+				var s = LocalizationManager.GetString("ImageToolbox.CopyExemplarMetadata", "Use {0}", "Used to copy a previous metadata set to the current image. The {0} will be replaced with the name of the exemplar image.");
 				_copyExemplarMetadata.Text = string.Format(s, Metadata.GetStoredExemplarSummaryString(Metadata.FileCategory.Image));
 			}
 
@@ -234,6 +257,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		// Changed this to remember the selected index because something is causing the SelectedIndexChanged
 		// event to fire twice each time an icon is clicked.
 		int _previousSelectedIndex = -1;
+		private Action<string, Exception, string> _imageLoadingExceptionReporter;
 
 		private void listView1_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -307,6 +331,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 		void imageToolboxControl_ImageChanged(object sender, EventArgs e)
 		{
 			GetImageFromCurrentControl();
+			// Use the original sender, not this, because clients would like to know who originally sent the event
+			ImageChanged?.Invoke(sender, e);
 		}
 
 		public void Closing()
@@ -324,28 +350,58 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		}
 
+		/// <summary>
+		/// If set, this action will be used instead of the default (launching <see cref="MetadataEditorDialog"/>).
+		/// For example, the client may want to use a different UI to edit the `Metadata`.
+		/// The `Action&lt;Metadata&gt;` callback saves the modified `Metadata` to the image.
+		/// <see cref="SetNewImageMetadata(Metadata)"/>
+		/// </summary>
+		public Action<Metadata, Action<Metadata>> EditMetadataActionOverride { get; set; }
+
 		private void OnEditMetadataLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			//http://jira.palaso.org/issues/browse/BL-282 hada null in here somewhere
+			// https://issues.bloomlibrary.org/youtrack/issue/BL-282 had a null in here somewhere
 			Guard.AgainstNull(_imageInfo, "_imageInfo");
 			Guard.AgainstNull(_imageInfo.Metadata, "_imageInfo.Metadata");
 
 			//it's not clear at the moment where the following belongs... but we want
 			//to encourage Creative Commons Licensing, so if there is no license, we'll start
 			//the following dialog out with a reasonable default.
-			_imageInfo.Metadata.SetupReasonableLicenseDefaultBeforeEditing();
-
-			using(var dlg = new MetadataEditorDialog(_imageInfo.Metadata))
+			var isSuggesting = false;
+			var hadChanges = false;
+			if (_imageInfo.Metadata.IsLicenseNotSet)
 			{
-				if(DialogResult.OK == dlg.ShowDialog())
-				{
-					Guard.AgainstNull(dlg.Metadata, " dlg.Metadata");
-					_imageInfo.Metadata = dlg.Metadata;
-					SetupMetaDataControls(_imageInfo.Metadata);
-					//Not doing this anymore, too risky. See https://jira.sil.org/browse/BL-1001 _imageInfo.SaveUpdatedMetadataIfItMakesSense();
-					_imageInfo.Metadata.StoreAsExemplar(Metadata.FileCategory.Image);
-				}
+				isSuggesting = true;
+				hadChanges = _imageInfo.Metadata.HasChanges;
+				_imageInfo.Metadata.SetupReasonableLicenseDefaultBeforeEditing();
 			}
+
+			if (EditMetadataActionOverride != null)
+			{
+				EditMetadataActionOverride(_imageInfo.Metadata, SetNewImageMetadata);
+				return;
+			}
+
+			using var dlg = new MetadataEditorDialog(_imageInfo.Metadata);
+			if (DialogResult.OK == dlg.ShowDialog())
+			{
+				Guard.AgainstNull(dlg.Metadata, " dlg.Metadata");
+				SetNewImageMetadata(dlg.Metadata);
+			}
+			else if (isSuggesting)
+			{
+				_imageInfo.Metadata.License = new NullLicense();
+				_imageInfo.Metadata.HasChanges = hadChanges;
+			}
+		}
+
+		private void SetNewImageMetadata(Metadata newMetadata)
+		{
+			_imageInfo.Metadata = newMetadata;
+			SetupMetaDataControls(_imageInfo.Metadata);
+			// Too risky (see https://issues.bloomlibrary.org/youtrack/issue/BL-1001): _imageInfo.SaveUpdatedMetadataIfItMakesSense();
+			_imageInfo.Metadata.StoreAsExemplar(Metadata.FileCategory.Image);
+			MetadataChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		private void OnLoad(object sender, EventArgs e)
@@ -367,7 +423,9 @@ namespace SIL.Windows.Forms.ImageToolbox
 			AddControl("Get Picture".Localize("ImageToolbox.GetPicture"), ImageToolboxButtons.browse, "browse", (x) =>
 			{
 				_acquireImageControl = new AcquireImageControl();
-				_acquireImageControl.SetIntialSearchString(InitialSearchString);
+				_acquireImageControl.ImageLoadingExceptionReporter =
+					ImageLoadingExceptionReporter;
+				_acquireImageControl.SetInitialSearchString(InitialSearchString);
 				_acquireImageControl.SearchLanguage = _incomingSearchLanguage;
 				return _acquireImageControl;
 			});
@@ -389,7 +447,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 		{
 			_imageInfo.Metadata.LoadFromStoredExemplar(Metadata.FileCategory.Image);
 			SetupMetaDataControls(ImageInfo.Metadata);
-			//Not doing this anymore, too risky. See https://jira.sil.org/browse/BL-1001  _imageInfo.SaveUpdatedMetadataIfItMakesSense();
+			MetadataChanged?.Invoke(this, EventArgs.Empty);
+			// Too risky (see https://issues.bloomlibrary.org/youtrack/issue/BL-1001): _imageInfo.SaveUpdatedMetadataIfItMakesSense();
 		}
 	}
 

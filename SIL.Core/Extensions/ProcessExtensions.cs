@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 SIL International
+// Copyright (c) 2014-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -14,23 +14,25 @@ namespace SIL.Extensions
 		/// </summary>
 		/// <returns>launched Process or null</returns>
 		public static Process RunProcess(this Process process, string program, string arguments,
-			Action<Exception> errorHandler)
+			Action<Exception> errorHandler, bool redirectStdError = false)
 		{
 			try
 			{
-				var processInfo = new ProcessStartInfo(program, arguments);
-				processInfo.UseShellExecute = false;
-				processInfo.RedirectStandardOutput = true;
+				var processInfo = new ProcessStartInfo(program, arguments) {
+					UseShellExecute = false,
+					RedirectStandardOutput = true,
+					RedirectStandardError = redirectStdError
+				};
 				process.StartInfo = processInfo;
 				process.Start();
 			}
 			catch (Exception e)
 			{
-				if (errorHandler != null)
-					errorHandler(e);
+				errorHandler?.Invoke(e);
 			}
 			return process;
 		}
+
 	}
 }
 

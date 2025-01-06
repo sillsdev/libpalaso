@@ -1,10 +1,9 @@
-// Copyright (c) 2011-2015 SIL International
+// Copyright (c) 2011-2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
-using SIL.Keyboarding;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
@@ -56,7 +55,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		}
 
 		// Has to be internal because IbusKeyboardDescription is only internal
-		internal virtual bool IBusKeyboardAlreadySet(IbusKeyboardDescription keyboard)
+		internal bool IBusKeyboardAlreadySet(IbusKeyboardDescription keyboard)
 		{
 			if (keyboard?.IBusKeyboardEngine == null)
 			{
@@ -65,7 +64,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			}
 
 			// check our cached value
-			return GlobalCachedInputContext.Keyboard == keyboard;
+			return GlobalCachedInputContext.Keyboard?.Equals(keyboard) ?? false;
 		}
 
 		protected static void UnsetKeyboard()

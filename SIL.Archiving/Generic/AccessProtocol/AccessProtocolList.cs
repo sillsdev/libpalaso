@@ -1,11 +1,12 @@
-﻿
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
-using SIL.Archiving.Properties;
+using JetBrains.Annotations;
+using static SIL.Archiving.Resources.Resources;
 
 namespace SIL.Archiving.Generic.AccessProtocol
 {
@@ -32,16 +33,14 @@ namespace SIL.Archiving.Generic.AccessProtocol
 		public static AccessProtocols Load() { return Load(null); }
 
 		/// <summary />
-		public static AccessProtocols Load(string programDirectory)
-		{
-			return _instance ?? (_instance = LoadFromFile(kProtocolFileName, Resources.AccessProtocols, programDirectory));
-		}
+		public static AccessProtocols Load(string programDirectory) =>
+			_instance ??= LoadFromFile(kProtocolFileName, GetResource(Name.AccessProtocols_json), programDirectory);
 
 		/// <summary />
 		public static AccessProtocols LoadCustom()
 		{
-			return _customInstance ??
-				   (_customInstance = LoadFromFile(kCustomProtocolFileName, Resources.CustomAccessProtocols, null));
+			return _customInstance ??=
+				LoadFromFile(kCustomProtocolFileName, GetResource(Name.CustomAccessProtocols_json), null);
 		}
 
 		private static AccessProtocols LoadFromFile(string protocolFileName, string resourceName, string programDirectory)
@@ -84,6 +83,7 @@ namespace SIL.Archiving.Generic.AccessProtocol
 		}
 
 		/// <summary />
+		[PublicAPI]
 		public static AccessProtocols LoadStandardAndCustom() { return LoadStandardAndCustom(null); }
 
 		/// <summary />
@@ -107,6 +107,7 @@ namespace SIL.Archiving.Generic.AccessProtocol
 		}
 
 		/// <summary />
+		[PublicAPI]
 		public static void SaveCustom(AccessProtocols customProtocols) { SaveCustom(customProtocols, null); }
 
 		/// <summary />
@@ -149,6 +150,7 @@ namespace SIL.Archiving.Generic.AccessProtocol
 		}
 
 		/// <summary />
+		[PublicAPI]
 		public string ChoicesToCsv()
 		{
 			StringBuilder sb = new StringBuilder();
@@ -160,20 +162,26 @@ namespace SIL.Archiving.Generic.AccessProtocol
 		}
 
 		/// <summary />
+		[PublicAPI]
 		public void SetChoicesFromCsv(string choicesCsv)
 		{
-			var choices = choicesCsv.Split(',');
-			Choices = new List<AccessOption>();
+			if (choicesCsv == null)
+				throw new ArgumentNullException(nameof(choicesCsv));
 
-			foreach (var choice in choices)
-				Choices.Add(new AccessOption { OptionName = choice.Trim() });
+			Choices = choicesCsv.Split(',').Select(c => c.Trim()).Distinct()
+				.Select(n => new AccessOption{ OptionName = n}).ToList();
 		}
 
-		/// <summary />
-		public string GetDocumentaionUri() { return GetDocumentaionUri(null); }
+		/// <summary>
+		/// Gets the path to the documentation for this access protocol 
+		/// </summary>
+		[PublicAPI]
+		public string GetDocumentationUri() => GetDocumentationUri(null);
 
-		/// <summary />
-		public string GetDocumentaionUri(string programDirectory)
+		/// <summary>
+		/// Gets the path to the documentation for this access protocol 
+		/// </summary>
+		public string GetDocumentationUri(string programDirectory)
 		{
 			if (string.IsNullOrEmpty(DocumentationFile))
 				return string.Empty;
@@ -197,8 +205,8 @@ namespace SIL.Archiving.Generic.AccessProtocol
 			if (!File.Exists(fileName))
 			{
 				var pos = DocumentationFile.LastIndexOf('.');
-				var resourceName = (pos > -1) ? DocumentationFile.Substring(0, pos) : DocumentationFile;
-				var resourceString = Resources.ResourceManager.GetString(resourceName);
+				var resourceName = pos > -1 ? DocumentationFile.Substring(0, pos) : DocumentationFile;
+				var resourceString = GetResource(resourceName);
 				if (!string.IsNullOrEmpty(resourceString))
 					File.WriteAllText(fileName, resourceString);
 			}
@@ -228,15 +236,11 @@ namespace SIL.Archiving.Generic.AccessProtocol
 		}
 
 		/// <summary />
-		public string ValueMember
-		{
-			get { return OptionName; }
-		}
+		[PublicAPI]
+		public string ValueMember => OptionName;
 
 		/// <summary />
-		public string DisplayMember
-		{
-			get { return (string.IsNullOrEmpty(Description)) ? OptionName : Description; }
-		}
+		[PublicAPI]
+		public string DisplayMember => string.IsNullOrEmpty(Description) ? OptionName : Description;
 	}
 }

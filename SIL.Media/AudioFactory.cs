@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
 using SIL.Media.AlsaAudio;
@@ -21,12 +20,6 @@ namespace SIL.Media
 		private static ISimpleAudioSession CreateIrrKlangSession(string filePath)
 		{
 			return new WindowsAudioSession(filePath);
-		}
-
-		[Obsolete("This was a unfortunate method name. Use CreateAudioSession Instead.")]
-		public static ISimpleAudioSession AudioSession(string filePath)
-		{
-			return CreateAudioSession(filePath);
 		}
 
 		///<summary>Adds an AssemblyResolve handler to redirect all attempts to load the

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 SIL International
+// Copyright (c) 2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -506,11 +506,15 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 				{
 					var childrenProperty = geckoHtmlElementType.GetProperty("ChildNodes", geckoNodeListType);
 					var children = childrenProperty.GetValue(body, BindingFlags.Default, null, null, null);
-					var countLengthProp = geckoNodeListType.GetProperty("Length", typeof(int));
-					var countLength = (int)countLengthProp.GetValue(children, BindingFlags.Default, null, null, null);
+					var countLengthProp = geckoNodeListType.GetProperty("Length", typeof(uint)); // GeckoFx 60+
+					if (countLengthProp == null)
+					{
+						countLengthProp = geckoNodeListType.GetProperty("Length", typeof(int)); // GeckoFx 45 used an int for this property
+					}
+					var countLength = Convert.ToInt32(countLengthProp.GetValue(children, BindingFlags.Default, null, null, null));
 					if(countLength > 0)
 					{
-						var lastChildProp = geckoNodeListType.GetProperty("Item"); //Magic
+						var lastChildProp = geckoNodeListType.GetProperty("Item"); // Magic
 						var lastchild = lastChildProp.GetValue(children, new object[] { countLength - 1 });
 						var scrollIntoView = geckoHtmlElementType.GetMethod("ScrollIntoView");
 						scrollIntoView.Invoke(lastchild, BindingFlags.Default, null, null, null);

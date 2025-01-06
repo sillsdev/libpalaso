@@ -1,6 +1,6 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-using System;
+
 using System.Collections.Generic;
 using System.Linq;
 using SIL.PlatformUtilities;
@@ -21,7 +21,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		#region Specific implementations of IKeyboardRetriever
 
-		public override bool IsApplicable => _helper.IsApplicable && !Platform.IsGnomeShell;
+		public override bool IsApplicable => _helper.IsApplicable && !Platform.IsGnomeShell && !Platform.IsCinnamon;
 
 		public override void Initialize()
 		{
@@ -41,7 +41,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			_helper.InitKeyboards(type => type == "xkb", RegisterKeyboards);
 		}
 
-		private void RegisterKeyboards(IDictionary<string, uint> keyboards, (string, string) firstKeyboard)
+		private void RegisterKeyboards(IDictionary<string, uint> keyboards, (string, string) _)
 		{
 			if (keyboards.Count <= 0)
 				return;

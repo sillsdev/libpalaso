@@ -1,5 +1,6 @@
 using System.Windows.Forms;
 using NUnit.Framework;
+using SIL.Core.ClearShare;
 using SIL.Windows.Forms.ClearShare;
 using SIL.Windows.Forms.ClearShare.WinFormsUI;
 
@@ -98,11 +99,11 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			m.CopyrightNotice = "test1";
 			m.Creator = "test2";
 			var ccLicense = new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
-			ccLicense.IntergovernmentalOriganizationQualifier = true;
+			ccLicense.IntergovernmentalOrganizationQualifier = true;
 			m.License = ccLicense;
 			Assert.That(m.License.Url, Does.EndWith("3.0/igo/"));
 			// SUT
-			ccLicense.IntergovernmentalOriganizationQualifier = false;
+			ccLicense.IntergovernmentalOrganizationQualifier = false;
 			m.License = ccLicense;
 			Assert.That(m.License.Url, Does.EndWith(CreativeCommonsLicense.kDefaultVersion+"/"));
 		}
@@ -117,11 +118,11 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			ccLicense.Version = "3.0"; // set old version (but non-IGO)
 			m.License = ccLicense;
 			Assert.That(m.License.Url, Does.EndWith("3.0/"));
-			ccLicense.IntergovernmentalOriganizationQualifier = true;
+			ccLicense.IntergovernmentalOrganizationQualifier = true;
 			m.License = ccLicense;
 			Assert.That(m.License.Url, Does.EndWith("3.0/igo/"));
 			// SUT
-			ccLicense.IntergovernmentalOriganizationQualifier = false;
+			ccLicense.IntergovernmentalOrganizationQualifier = false;
 			m.License = ccLicense;
 			// Considered an acceptable loss of information, since the user was messing with the IGO setting.
 			Assert.That(m.License.Url, Does.EndWith(CreativeCommonsLicense.kDefaultVersion + "/"));

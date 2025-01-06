@@ -1,4 +1,4 @@
-// Copyright (c) 2015 SIL International
+// Copyright (c) 2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -313,8 +313,7 @@ namespace SIL.Windows.Forms.Widgets
 
 		public void AssignKeyboardFromWritingSystem()
 		{
-			if (_writingSystem != null)
-				_writingSystem.LocalKeyboard.Activate();
+			_writingSystem?.LocalKeyboard?.Activate();
 		}
 
 		protected override void OnLeave(EventArgs e)

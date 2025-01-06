@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29409.12
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Core.Tests", "SIL.Core.Tests\SIL.Core.Tests.csproj", "{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -25,9 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reporting.TestApp", "TestAp
 		{DB44F49C-D8C6-434F-81ED-28EA5C9E8195} = {DB44F49C-D8C6-434F-81ED-28EA5C9E8195}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Archiving", "SIL.Archiving\SIL.Archiving.csproj", "{BCE1F124-5479-4B23-90B1-B7A4EBE44FA3}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Archiving.Tests", "SIL.Archiving.Tests\SIL.Archiving.Tests.csproj", "{892C7F20-FBBB-4AB3-BAC2-E40A135567B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms.Archiving", "SIL.Windows.Forms.Archiving\SIL.Windows.Forms.Archiving.csproj", "{BCE1F124-5479-4B23-90B1-B7A4EBE44FA3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Scripture", "SIL.Scripture\SIL.Scripture.csproj", "{F71BA7B9-D9DC-4F8C-A307-87B503D0E05B}"
 EndProject
@@ -108,45 +106,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		CHANGELOG.md = CHANGELOG.md
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
 		GitVersion.yml = GitVersion.yml
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.TestUtilities.Tests", "SIL.TestUtilities.Tests\SIL.TestUtilities.Tests.csproj", "{CCB5E6CC-8CC1-4248-924E-D4F36CBEF37D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DesignerProjects", "DesignerProjects", "{266192AE-881F-4823-9D25-D124C51C81E3}"
-	ProjectSection(SolutionItems) = preProject
-		ReadmeDesignerProjects.md = ReadmeDesignerProjects.md
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClipboardTestApp", "TestApps\ClipboardTestApp\ClipboardTestApp.csproj", "{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestApps", "TestApps", "{A3AE611B-C8D6-4EF3-B669-B0A869B012F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandLineRunnerTestApp", "TestApps\CommandLineRunnerTestApp\CommandLineRunnerTestApp.csproj", "{6407C2F9-F62D-4568-B694-7A79C72582C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastSplitterTest-Designer", "TestApps\FastSplitterTest\FastSplitterTest-Designer.csproj", "{92088975-691B-45E7-A6EB-2B0F02C1AA10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Archiving", "SIL.Archiving\SIL.Archiving.csproj", "{01B31D97-63A4-4FC6-940F-D7278F4D0F65}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reporting.TestApp-Designer", "TestApps\ReportingTest\Reporting.TestApp-Designer.csproj", "{61A11571-7E4B-4B35-AB5A-21814C6D44B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Archiving.Tests", "SIL.Archiving.Tests\SIL.Archiving.Tests.csproj", "{698FDB66-0ACE-46E0-843C-3AB70DC7B055}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Email.TestApp-Designer", "TestApps\SIL.Email.TestApp\SIL.Email.TestApp-Designer.csproj", "{26250929-0BFE-435F-A1CE-6F082EC97D3A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.TestApp-Designer", "TestApps\SIL.Windows.Forms.TestApp\SIL.Windows.Forms.TestApp-Designer.csproj", "{71407727-8774-4871-BF9C-BFFF8DE884DC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppKeyboard-Designer", "TestApps\TestAppKeyboard\TestAppKeyboard-Designer.csproj", "{5DC731FF-2CEF-4F2D-B153-55F7ABC1085F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Archiving-Designer", "SIL.Archiving\SIL.Archiving-Designer.csproj", "{0D38B613-E5B5-4CFF-AC13-F3D95A9E1ACD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Media-Designer", "SIL.Media\SIL.Media-Designer.csproj", "{D6E7D28F-72F8-48C8-A4AB-452A1431847F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Media.Tests-Designer", "SIL.Media.Tests\SIL.Media.Tests-Designer.csproj", "{800ED1E6-53B2-43C4-AFA6-872625076332}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms-Designer", "SIL.Windows.Forms\SIL.Windows.Forms-Designer.csproj", "{78BFB566-7BC9-460C-8F5D-7333192BDEE6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.DblBundle-Designer", "SIL.Windows.Forms.DblBundle\SIL.Windows.Forms.DblBundle-Designer.csproj", "{0E3547FC-7D04-4D2D-ACD9-5AA821C06CF9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.GeckoBrowserAdapter-Designer", "SIL.Windows.Forms.GeckoBrowserAdapter\SIL.Windows.Forms.GeckoBrowserAdapter-Designer.csproj", "{9CD88656-640A-4143-A9E7-6ACA604609A3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.Scripture-Designer", "SIL.Windows.Forms.Scripture\SIL.Windows.Forms.Scripture-Designer.csproj", "{0AFF34E8-CA99-4A7F-9244-6EED2D60CBA8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.Tests-Designer", "SIL.Windows.Forms.Tests\SIL.Windows.Forms.Tests-Designer.csproj", "{E7BD6834-F0A2-4966-A459-629D43BA5399}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.WritingSystems-Designer", "SIL.Windows.Forms.WritingSystems\SIL.Windows.Forms.WritingSystems-Designer.csproj", "{7B1638B6-DBB3-4978-B900-5A65F5C93BEA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchivingTestApp", "TestApps\ArchivingTestApp\ArchivingTestApp.csproj", "{321BB622-8185-4173-8770-742CD620BC18}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -190,10 +166,6 @@ Global
 		{BCE1F124-5479-4B23-90B1-B7A4EBE44FA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BCE1F124-5479-4B23-90B1-B7A4EBE44FA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BCE1F124-5479-4B23-90B1-B7A4EBE44FA3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{892C7F20-FBBB-4AB3-BAC2-E40A135567B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{892C7F20-FBBB-4AB3-BAC2-E40A135567B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{892C7F20-FBBB-4AB3-BAC2-E40A135567B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{892C7F20-FBBB-4AB3-BAC2-E40A135567B6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F71BA7B9-D9DC-4F8C-A307-87B503D0E05B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F71BA7B9-D9DC-4F8C-A307-87B503D0E05B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F71BA7B9-D9DC-4F8C-A307-87B503D0E05B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -322,34 +294,26 @@ Global
 		{CCB5E6CC-8CC1-4248-924E-D4F36CBEF37D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCB5E6CC-8CC1-4248-924E-D4F36CBEF37D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCB5E6CC-8CC1-4248-924E-D4F36CBEF37D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{92088975-691B-45E7-A6EB-2B0F02C1AA10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{92088975-691B-45E7-A6EB-2B0F02C1AA10}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{61A11571-7E4B-4B35-AB5A-21814C6D44B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{61A11571-7E4B-4B35-AB5A-21814C6D44B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{26250929-0BFE-435F-A1CE-6F082EC97D3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{26250929-0BFE-435F-A1CE-6F082EC97D3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{71407727-8774-4871-BF9C-BFFF8DE884DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{71407727-8774-4871-BF9C-BFFF8DE884DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5DC731FF-2CEF-4F2D-B153-55F7ABC1085F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5DC731FF-2CEF-4F2D-B153-55F7ABC1085F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0D38B613-E5B5-4CFF-AC13-F3D95A9E1ACD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0D38B613-E5B5-4CFF-AC13-F3D95A9E1ACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D6E7D28F-72F8-48C8-A4AB-452A1431847F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D6E7D28F-72F8-48C8-A4AB-452A1431847F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{800ED1E6-53B2-43C4-AFA6-872625076332}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{800ED1E6-53B2-43C4-AFA6-872625076332}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{78BFB566-7BC9-460C-8F5D-7333192BDEE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{78BFB566-7BC9-460C-8F5D-7333192BDEE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0E3547FC-7D04-4D2D-ACD9-5AA821C06CF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0E3547FC-7D04-4D2D-ACD9-5AA821C06CF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9CD88656-640A-4143-A9E7-6ACA604609A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9CD88656-640A-4143-A9E7-6ACA604609A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0AFF34E8-CA99-4A7F-9244-6EED2D60CBA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0AFF34E8-CA99-4A7F-9244-6EED2D60CBA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E7BD6834-F0A2-4966-A459-629D43BA5399}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E7BD6834-F0A2-4966-A459-629D43BA5399}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7B1638B6-DBB3-4978-B900-5A65F5C93BEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7B1638B6-DBB3-4978-B900-5A65F5C93BEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6407C2F9-F62D-4568-B694-7A79C72582C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6407C2F9-F62D-4568-B694-7A79C72582C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6407C2F9-F62D-4568-B694-7A79C72582C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6407C2F9-F62D-4568-B694-7A79C72582C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01B31D97-63A4-4FC6-940F-D7278F4D0F65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01B31D97-63A4-4FC6-940F-D7278F4D0F65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01B31D97-63A4-4FC6-940F-D7278F4D0F65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01B31D97-63A4-4FC6-940F-D7278F4D0F65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{698FDB66-0ACE-46E0-843C-3AB70DC7B055}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{698FDB66-0ACE-46E0-843C-3AB70DC7B055}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{698FDB66-0ACE-46E0-843C-3AB70DC7B055}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{698FDB66-0ACE-46E0-843C-3AB70DC7B055}.Release|Any CPU.Build.0 = Release|Any CPU
+		{321BB622-8185-4173-8770-742CD620BC18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{321BB622-8185-4173-8770-742CD620BC18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{321BB622-8185-4173-8770-742CD620BC18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{321BB622-8185-4173-8770-742CD620BC18}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -360,21 +324,9 @@ Global
 		{2A206833-C713-4ACB-ACD3-EB971415119E} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
 		{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
 		{CA8F3657-3D85-4C97-81A6-5C212627B2F6} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
-		{A3AE611B-C8D6-4EF3-B669-B0A869B012F9} = {266192AE-881F-4823-9D25-D124C51C81E3}
-		{92088975-691B-45E7-A6EB-2B0F02C1AA10} = {A3AE611B-C8D6-4EF3-B669-B0A869B012F9}
-		{61A11571-7E4B-4B35-AB5A-21814C6D44B4} = {A3AE611B-C8D6-4EF3-B669-B0A869B012F9}
-		{26250929-0BFE-435F-A1CE-6F082EC97D3A} = {A3AE611B-C8D6-4EF3-B669-B0A869B012F9}
-		{71407727-8774-4871-BF9C-BFFF8DE884DC} = {A3AE611B-C8D6-4EF3-B669-B0A869B012F9}
-		{5DC731FF-2CEF-4F2D-B153-55F7ABC1085F} = {A3AE611B-C8D6-4EF3-B669-B0A869B012F9}
-		{0D38B613-E5B5-4CFF-AC13-F3D95A9E1ACD} = {266192AE-881F-4823-9D25-D124C51C81E3}
-		{D6E7D28F-72F8-48C8-A4AB-452A1431847F} = {266192AE-881F-4823-9D25-D124C51C81E3}
-		{800ED1E6-53B2-43C4-AFA6-872625076332} = {266192AE-881F-4823-9D25-D124C51C81E3}
-		{78BFB566-7BC9-460C-8F5D-7333192BDEE6} = {266192AE-881F-4823-9D25-D124C51C81E3}
-		{0E3547FC-7D04-4D2D-ACD9-5AA821C06CF9} = {266192AE-881F-4823-9D25-D124C51C81E3}
-		{9CD88656-640A-4143-A9E7-6ACA604609A3} = {266192AE-881F-4823-9D25-D124C51C81E3}
-		{0AFF34E8-CA99-4A7F-9244-6EED2D60CBA8} = {266192AE-881F-4823-9D25-D124C51C81E3}
-		{E7BD6834-F0A2-4966-A459-629D43BA5399} = {266192AE-881F-4823-9D25-D124C51C81E3}
-		{7B1638B6-DBB3-4978-B900-5A65F5C93BEA} = {266192AE-881F-4823-9D25-D124C51C81E3}
+		{B1E0B522-FEDF-497E-BFCD-A572F67C03C1} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
+		{6407C2F9-F62D-4568-B694-7A79C72582C9} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
+		{321BB622-8185-4173-8770-742CD620BC18} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0915B762-D4AE-4892-BF4F-AC428A687B02}

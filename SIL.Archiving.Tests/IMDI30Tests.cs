@@ -236,7 +236,8 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void FindByISO3Code_InvalidIso3Code_MustBeInList_Throws()
 		{
-			Assert.Throws<ArgumentException>(() => LanguageList.FindByISO3Code("xyz", true));
+			var code = Assert.Throws<InvalidLanguageCodeException>(() => LanguageList.FindByISO3Code("xyz", true)).Code;
+			Assert.That(code, Is.EqualTo("xyz"));
 		}
 
 		[Test]

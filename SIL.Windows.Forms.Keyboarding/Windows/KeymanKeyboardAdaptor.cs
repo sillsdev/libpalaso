@@ -1,4 +1,4 @@
-// Copyright (c) 2014 SIL International
+// Copyright (c) 2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
@@ -290,6 +290,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					throw new NotSupportedException($"No keyboard setup action defined for keyman version {InstalledKeymanVersion}");
 			}
 		}
+
+		public Action GetSecondaryKeyboardSetupAction() => GetKeyboardSetupAction();
 
 		public bool IsSecondaryKeyboardSetupApplication => true;
 

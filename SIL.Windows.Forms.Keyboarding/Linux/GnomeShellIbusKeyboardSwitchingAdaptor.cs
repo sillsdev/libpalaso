@@ -1,10 +1,8 @@
-// Copyright (c) 2020 SIL International
+// Copyright (c) 2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Text.RegularExpressions;
 using SIL.Reporting;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux

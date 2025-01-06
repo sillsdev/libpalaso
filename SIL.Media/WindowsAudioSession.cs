@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2017 SIL International
+// Copyright (c) 2015-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -17,11 +17,10 @@ namespace SIL.Media
 	internal class WindowsAudioSession : ISimpleAudioSession, ISimpleAudioWithEvents
 	{
 		private readonly IrrKlang.IAudioRecorder _recorder;
-		private readonly ISoundEngine _engine = new ISoundEngine();
+		private readonly ISoundEngine _engine = CreateSoundEngine();
 		private bool _thinkWeAreRecording;
 		private DateTime _startRecordingTime;
 		private DateTime _stopRecordingTime;
-		private readonly string _path;
 		private readonly SoundFile _soundFile;
 		private WaveOutEvent _outputDevice;
 		private AudioFileReader _audioFile;
@@ -29,6 +28,28 @@ namespace SIL.Media
 		/// Will be raised when playing is over
 		/// </summary>
 		public event EventHandler PlaybackStopped;
+
+		private static ISoundEngine CreateSoundEngine()
+		{
+			try
+			{
+				// By default, try to auto-detect the sound driver. Normally on an end-user
+				// computer this will succeed, but even though we're trying to use irrKlang
+				// for recording only, if there's no default audio output device, it will
+				// fail.
+				return new ISoundEngine();
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				// As a fallback, we'll try to create the engine with a null output driver.
+				// This should succeed even if there's no default audio output device, and
+				// it gets a bunch of tests to pass in that scenario, but I'm not 100% sure
+				// it will work for actual recording in all situations as it might rely on
+				// it for timing or internal buffer synchronization, even when only recording.
+				return new ISoundEngine(SoundOutputDriver.NullDriver);
+			}
+		}
 
 		/// <summary>
 		/// Constructor for an AudioSession using the IrrKlang library
@@ -39,12 +60,9 @@ namespace SIL.Media
 			_soundFile = new SoundFile(filePath);
 			_engine.AddFileFactory(_soundFile);
 			_recorder = new IrrKlang.IAudioRecorder(_engine);
-			_path = filePath;
+			FilePath = filePath;
 		}
-		public string FilePath
-		{
-			get { return _path; }
-		}
+		public string FilePath { get; }
 
 		public void StartRecording()
 		{
@@ -62,7 +80,7 @@ namespace SIL.Media
 		public void StopRecordingAndSaveAsWav()
 		{
 			if (!_thinkWeAreRecording)
-				throw new ApplicationException("Stop Recording called when we weren't recording.  Use IsRecording to check first.");
+				throw new ApplicationException("Stop Recording called when we weren't recording. Use IsRecording to check first.");
 
 			_thinkWeAreRecording = false;
 			_recorder.StopRecordingAudio();
@@ -78,37 +96,25 @@ namespace SIL.Media
 		{
 			get
 			{
-				if (_startRecordingTime == default(DateTime) || _stopRecordingTime == default(DateTime))
+				if (_startRecordingTime == default || _stopRecordingTime == default)
 					return 0;
 				return _stopRecordingTime.Subtract(_startRecordingTime).TotalMilliseconds;
 			}
 		}
 
-		public bool IsRecording
-		{
-			get { return _recorder != null && _recorder.IsRecording; }
-		}
+		public bool IsRecording => _recorder != null && _recorder.IsRecording;
 
 		public bool IsPlaying { get; set; }
 
-		public bool CanRecord
-		{
-			get { return !IsPlaying && !IsRecording; }
-		}
+		public bool CanRecord => !IsPlaying && !IsRecording;
 
-		public bool CanStop
-		{
-			get { return IsPlaying || IsRecording; }
-		}
+		public bool CanStop => IsPlaying || IsRecording;
 
-		public bool CanPlay
-		{
-			get { return !IsPlaying && !IsRecording && File.Exists(_path); }
-		}
+		public bool CanPlay => !IsPlaying && !IsRecording && File.Exists(FilePath);
 
 		private void OnPlaybackStopped(object sender, StoppedEventArgs args)
 		{
-			lock (_path)
+			lock (FilePath)
 			{
 				if (_outputDevice != null)
 				{
@@ -129,7 +135,8 @@ namespace SIL.Media
 		/// The current version of Play uses NAudio for playback. IrrKlang had issues with playback.
 		/// In the future it may be best to try the latest version of IrrKlang and see if true safe
 		/// cross-platform recording and playback can be accomplished now. This would eliminate the need for
-		/// the AlsaAudio classes on linux.
+		/// the AlsaAudio classes on linux. Note: irrKlang was upgraded to v. 1.6 in Nov 2024, but I did
+		/// not re-check to see if it works for playback on all platforms.
 		/// </summary>
 		public void Play()
 		{
@@ -146,7 +153,7 @@ namespace SIL.Media
 			{
 				try
 				{
-					lock (_path)
+					lock (FilePath)
 					{
 						if (_outputDevice == null)
 						{

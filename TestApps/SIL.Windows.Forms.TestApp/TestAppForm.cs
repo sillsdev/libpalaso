@@ -1,12 +1,15 @@
-﻿// Copyright (c) 2013-2014 SIL International
+// Copyright (c) 2013-2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using SIL.Extensions;
 using SIL.IO;
 using SIL.Lexicon;
 using SIL.PlatformUtilities;
@@ -23,6 +26,9 @@ using SIL.Windows.Forms.SettingProtection;
 using SIL.Windows.Forms.WritingSystems;
 using SIL.WritingSystems;
 using SIL.Media;
+using SIL.Windows.Forms.Extensions;
+using SIL.Windows.Forms.FileSystem;
+using SIL.Windows.Forms.LocalizationIncompleteDlg;
 
 namespace SIL.Windows.Forms.TestApp
 {
@@ -34,6 +40,7 @@ namespace SIL.Windows.Forms.TestApp
 	public partial class TestAppForm : Form
 	{
 		private bool _KeyboardControllerInitialized;
+		private readonly LocalizationIncompleteViewModel _localizationIncompleteViewModel;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -44,6 +51,28 @@ namespace SIL.Windows.Forms.TestApp
 		{
 			InitializeComponent();
 			Text = Platform.DesktopEnvironmentInfoString;
+			_localizationIncompleteViewModel = new LocalizationIncompleteViewModel(
+				Program.PrimaryL10NManager, "testapp",
+				IssueAnalyticsRequest);
+			_uiLanguageMenu.InitializeWithAvailableUILocales(l => true, Program.PrimaryL10NManager,
+				_localizationIncompleteViewModel, additionalNamedLocales:new Dictionary<string, string> {
+					{ "Some untranslated language", WellKnownSubtags.UnlistedLanguage } });
+		}
+
+		private void IssueAnalyticsRequest()
+		{
+			if (InvokeRequired)
+				Invoke(new Action(IssueAnalyticsRequest));
+			else
+			{
+				var msg = "Request issued for localization into " +
+					_localizationIncompleteViewModel.StandardAnalyticsInfo["Requested language"];
+				if (!string.IsNullOrWhiteSpace(_localizationIncompleteViewModel.UserEmailAddress))
+					msg += Environment.NewLine + "by " +
+						_localizationIncompleteViewModel.StandardAnalyticsInfo["User email"];
+				msg +=  Environment.NewLine + $"for {_localizationIncompleteViewModel.NumberOfUsers} users";
+				MessageBox.Show(msg, Text);
+			}
 		}
 
 		private void OnFolderBrowserControlClicked(object sender, EventArgs e)
@@ -73,8 +102,13 @@ namespace SIL.Windows.Forms.TestApp
 		{
 			using (var dialog = new LanguageLookupDialog())
 			{
+				if ((ModifierKeys & Keys.Shift) == Keys.Shift)
+					dialog.Caption = "Add a language, my friend!";
+
 				dialog.SetLanguageAlias("zh-Hans", "Simplified Chinese (简体中文)");
 				dialog.MatchingLanguageFilter = info => info.LanguageTag != "cmn";
+
+				dialog.IsScriptAndVariantLinkVisible = true;
 				dialog.ShowDialog();
 			}
 		}
@@ -128,7 +162,7 @@ namespace SIL.Windows.Forms.TestApp
 			{
 				File.WriteAllText(tempfile.Path,
 					@"<html><head><meta charset='UTF-8' /></head><body>" +
-					@"<h3>Copyright 2014 <a href=""http://sil.org"">SIL International</a></h3>" +
+					@"<h3>Copyright 2024 <a href=""http://sil.org"">SIL Global</a></h3>" +
 					@"<p>Testing the <b>about box</b></p><ul>#DependencyAcknowledgements#</ul></body></html>");
 				var uri = new Uri(tempfile.Path);
 				using (var dlg = new SILAboutBox(uri.AbsoluteUri, useFullVersionNumber))
@@ -214,7 +248,7 @@ and displays it as HTML.
 			string msg;
 			try
 			{
-				string clipboardText = Clipboard.GetText();
+				string clipboardText = PortableClipboard.GetText();
 				if (clipboardText == String.Empty)
 					throw new ApplicationException("This is fine. It will display the default caption and message");
 				var data = clipboardText.Split(new [] {'\n'}, 2);
@@ -249,8 +283,9 @@ and displays it as HTML.
 			switch (option)
 			{
 				case 0:
-					FlexibleMessageBox.Show(this, msg, handler);
-					break;
+					msg += "\nThis message box is always on top!";
+					FlexibleMessageBox.Show(this, msg, handler, FlexibleMessageBoxOptions.AlwaysOnTop);
+					return true;
 				case 1:
 					FlexibleMessageBox.Show(this, msg, caption, handler);
 					break;
@@ -274,7 +309,8 @@ and displays it as HTML.
 					msg += "\nClick Retry to display another version of the message box.";
 					return FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.RetryCancel, handler) == DialogResult.Retry;
 				case 8:
-					FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.OK, MessageBoxIcon.Stop, handler);
+					msg += "\nThis message box is always on top!";
+					FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.OK, MessageBoxIcon.Stop, handler, FlexibleMessageBoxOptions.AlwaysOnTop);
 					break;
 				default:
 					msg += "\nWould you like to display another version of the message box?";
@@ -322,17 +358,195 @@ and displays it as HTML.
 					Application.DoEvents();
 				}
 				session.StopRecordingAndSaveAsWav();
-				if (session is ISimpleAudioWithEvents)
+				if (session is ISimpleAudioWithEvents events)
 				{
-					(session as ISimpleAudioWithEvents).PlaybackStopped += (o, args) =>
+					events.PlaybackStopped += (o, args) =>
 					{
-						this.Invoke((Action) (() => MessageBox.Show("play stopped")));
+						Invoke((Action) (() => MessageBox.Show("play stopped")));
 					};
 				}
 
 				session.Play();
 				MessageBox.Show("play started");
 			}
+		}
+
+		private void btnTestContributorsList_Click(object sender, EventArgs e)
+		{
+			using (var dlg = new ContributorsForm())
+				dlg.ShowDialog();
+		}
+
+		private void btnShowFormWithModalChild_Click(object sender, EventArgs e)
+		{
+			var parent = new ParentOfModalChild();
+			parent.Show();
+		}
+
+		private void btnThrowException_Click(object sender, EventArgs e)
+		{
+			throw new Exception("This is a test of the error reporting window!");
+		}
+
+		private string GetExtensionsStr(StringCollection extensions)
+		{
+			var prepend = "*";
+			var sb = new StringBuilder();
+			foreach (string ext in extensions)
+			{
+				sb.Append(prepend);
+				sb.Append(ext);
+				prepend = ";*";
+			}
+
+			return sb.ToString();
+		}
+
+		private void btnMediaFileInfo_Click(object sender, EventArgs e)
+		{
+			using (var dlg = new OpenFileDialog())
+			{
+				dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+				dlg.RestoreDirectory = true;
+				dlg.CheckFileExists = true;
+				dlg.CheckPathExists = true;
+				dlg.Filter = string.Format("{0} ({1})|{1}|{2} ({3})|{3}|{4} ({5})|{5}",
+					"Audio Files",
+					GetExtensionsStr(FileUtils.AudioFileExtensions),
+					"Video Files",
+					GetExtensionsStr(FileUtils.VideoFileExtensions),
+					"All Files",
+					"*.*");
+				dlg.FilterIndex = 0;
+				dlg.Multiselect = false;
+				dlg.Title = "Select a media file";
+				dlg.ValidateNames = true;
+				if (dlg.ShowDialog(this) == DialogResult.OK && File.Exists(dlg.FileName))
+				{
+					try
+					{
+						var info = MediaInfo.GetInfo(dlg.FileName);
+						var sb = new StringBuilder("File: ");
+						sb.Append(Path.GetFileName(dlg.FileName));
+						if (info.Audio != null)
+						{
+							sb.Append(Environment.NewLine);
+							sb.Append("Audio Info:");
+							sb.Append(Environment.NewLine);
+							sb.Append("  ChannelCount: ");
+							sb.Append(info.Audio.ChannelCount);
+							sb.Append(Environment.NewLine);
+							sb.Append("  Duration: ");
+							sb.Append(info.Audio.Duration);
+							sb.Append(Environment.NewLine);
+							sb.Append("  Encoding: ");
+							sb.Append(info.Audio.Encoding);
+							sb.Append(Environment.NewLine);
+							sb.Append("  SamplesPerSecond: ");
+							sb.Append(info.Audio.SamplesPerSecond);
+							if (info.Audio.BitDepth > 0)
+							{
+								sb.Append(Environment.NewLine);
+								sb.Append("  BitDepth: ");
+								sb.Append(info.Audio.BitDepth);
+							}
+							if (info.AnalysisData.AudioStreams.Count > 1)
+							{
+								sb.Append(Environment.NewLine);
+								sb.Append("  Total number of audio streams:");
+								sb.Append(info.AnalysisData.AudioStreams.Count);
+							}
+						}
+						if (info.Video != null)
+						{
+							sb.Append(Environment.NewLine);
+							sb.Append("Video Info:");
+							sb.Append(Environment.NewLine);
+							sb.Append("  Resolution: ");
+							sb.Append(info.Video.Resolution);
+							sb.Append(Environment.NewLine);
+							sb.Append("  Duration: ");
+							sb.Append(info.Video.Duration);
+							sb.Append(Environment.NewLine);
+							sb.Append("  Encoding: ");
+							sb.Append(info.Video.Encoding);
+							sb.Append(Environment.NewLine);
+							sb.Append("  FrameRate: ");
+							sb.Append(info.Video.FrameRate);
+							if (info.AnalysisData.VideoStreams.Count > 1)
+							{
+								sb.Append(Environment.NewLine);
+								sb.Append("  Total number of video streams:");
+								sb.Append(info.AnalysisData.VideoStreams.Count);
+							}
+						}
+						if (info.Audio == null && info.Video == null)
+						{
+							sb.Append(Environment.NewLine);
+							sb.Append("Not a valid media file!");
+						}
+
+						MessageBox.Show(this, sb.ToString(), "Media information");
+					}
+					catch (Exception exception)
+					{
+						MessageBox.Show(exception.Message);
+					}
+				}
+			}
+		}
+
+		private void btnShowFileOverwriteDlg_Click(object sender, EventArgs e)
+		{
+			var filenames = new List<string>
+			{
+				@"c:\folder\file.txt",
+				@"My Documents\another.doc",
+				@"LastOne.png"
+			};
+			var filesOverwritten = new List<string>();
+			var filesSkipped = new List<string>();
+			bool? overwriteAll = null;
+
+			foreach (var file in filenames)
+			{
+				if (overwriteAll == null)
+				{
+					using (var dlg = new ConfirmFileOverwriteDlg(file))
+					{
+						if (dlg.ShowDialog(this) == DialogResult.No)
+						{
+							filesSkipped.Add(file);
+							if (dlg.ApplyToAll)
+								overwriteAll = false;
+						}
+						else
+						{
+							filesOverwritten.Add(file);
+							if (dlg.ApplyToAll)
+								overwriteAll = true;
+						}
+					}
+				}
+				else if ((bool)overwriteAll)
+				{
+					filesOverwritten.Add(file);
+				}
+				else
+				{
+					filesSkipped.Add(file);
+				}
+			}
+
+			MessageBox.Show(
+				$"Files overwritten:\r\t{filesOverwritten.ToString("\r\t")}\rFiles skipped:\r\t{filesSkipped.ToString("\r\t")}", "Results");
+		}
+
+		private void btnOpenProject_Click(object sender, EventArgs e)
+		{
+			using var dlg = new ChooseProject();
+			if (dlg.ShowDialog(this) == DialogResult.OK)
+				MessageBox.Show("Got " + dlg.SelectedProject);
 		}
 	}
 }

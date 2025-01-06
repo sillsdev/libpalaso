@@ -1,17 +1,12 @@
-﻿using NUnit.Framework;
+using System;
+using System.IO;
+using NUnit.Framework;
 using SIL.IO;
 using SIL.Media.Tests.Properties;
 
 namespace SIL.Media.Tests
 {
-	/// <summary>
-	/// All these tests are skipped on TeamCity (even if you remove this category) because SIL.Media.Tests compiles to an exe,
-	/// and the project that builds libpalaso on TeamCity (build/Palaso.proj, task Test) invokes RunNUnitTC which
-	/// selects the test assemblies using Include="$(RootDir)/output/$(Configuration)/*.Tests.dll" which excludes exes.
-	/// I have not tried to verify that all of these tests would actually have problems on TeamCity, but it seemed
-	/// helpful to document in the usual way that they are not, in fact, run there. 
-	/// </summary>
-	[Category("SkipOnTeamCity")]
+	[Category("RequiresFFprobe")]
 	[TestFixture]
 	public class MediaInfoTests
 	{
@@ -19,30 +14,61 @@ namespace SIL.Media.Tests
 		public void CheckRequirements()
 		{
 			if (!MediaInfo.HaveNecessaryComponents)
-				Assert.Ignore("These tests require ffmpeg to be installed.");
+			{
+				if (Environment.GetEnvironmentVariable("CI") == null)
+					Assert.Ignore(MediaInfo.MissingComponentMessage);
+				else
+					Assert.Fail("On CI build using GHA, FFMpeg should have been installed before running tests.");
+			}
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
 		public void HaveNecessaryComponents_ReturnsTrue()
 		{
-			Assert.IsTrue(MediaInfo.HaveNecessaryComponents);
+			Assert.IsTrue(MediaInfo.HaveNecessaryComponents,
+				"FFprobe was expected to have been found on system path or in a known location.");
+		}
+
+		[TestCase(null)]
+		[TestCase("")]
+		public void SetFFprobeFolder_ToNullOrEmpty_HaveNecessaryComponentsReturnsTrue(string presetFolder)
+		{
+			MediaInfo.FFprobeFolder = presetFolder;
+			Assert.IsTrue(MediaInfo.HaveNecessaryComponents,
+				"FFprobe was expected to have been found on system path or in a known location.");
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
+		public void SetFFprobeFolder_ToNonexistentFolder_ThrowsDirectoryNotFoundException()
+		{
+			Assert.That(() =>
+			{
+				MediaInfo.FFprobeFolder = "D:\\ThereIsNoWayThi5F0lderShould\\exist";
+			}, Throws.Exception.InstanceOf<DirectoryNotFoundException>());
+		}
+
+		[Test]
+		public void SetFFprobeFolder_ToFolderWithoutFFprobe_ThrowsFileNotFoundException()
+		{
+			Assert.That(() =>
+			{
+				MediaInfo.FFprobeFolder = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments);
+			}, Throws.Exception.InstanceOf<FileNotFoundException>());
+		}
+
+		[Test]
 		public void VideoInfo_Duration_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
 			{
 				var info = MediaInfo.GetInfo(file.Path);
-				Assert.AreEqual(3060, info.Video.Duration.TotalMilliseconds);
-				Assert.AreEqual(3060, info.Audio.Duration.TotalMilliseconds);
+				Assert.That(info.Video.Duration.TotalMilliseconds, Is.EqualTo(3069).Within(0.1));
+				Assert.That(info.Video.Duration, Is.EqualTo(info.AnalysisData.Duration).Within(0.5).Milliseconds);
+				Assert.That(info.Audio.Duration.TotalMilliseconds, Is.EqualTo(3029).Within(0.1));
 			}
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
 		public void VideoInfo_Encoding_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -53,7 +79,6 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
 		public void VideoInfo_Resolution_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -64,33 +89,28 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
-		public void VideoInfo_MessedUpFramesPerSecond_LeavesEmpty()
+		public void VideoInfo_FramesPerSecond_Correct()
 		{
-			//NB: our current sample has ffmpeg saying:
-			//Seems stream 1 codec frame rate differs from container frame rate: 1000.00 (1000/1) -> 30.00 (30/1)
-			//TODO: fix the sample so we test the more normal situation of a good file
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
 			{
 				var info = MediaInfo.GetInfo(file.Path);
-				Assert.AreEqual(0, info.Video.FramesPerSecond);
+				Assert.AreEqual(30, info.Video.FramesPerSecond);
+				Assert.That(info.Video.FrameRate, Is.EqualTo(29.97d).Within(.0001));
 			}
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
 		public void AudioInfo_Duration_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
 			{
 				var info = MediaInfo.GetInfo(file.Path);
-				Assert.AreEqual(910, info.Audio.Duration.TotalMilliseconds);
+				Assert.AreEqual(918, info.Audio.Duration.TotalMilliseconds);
 			}
 		}
 
 
 		[Test]
-		[Category("RequiresFfmpeg")]
 		public void AudioInfo_SampleFrequency_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
@@ -101,7 +121,6 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
 		public void AudioInfo_Channels_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
@@ -112,7 +131,6 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
 		public void AudioInfo_BitDepth_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
@@ -123,7 +141,6 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
 		public void AudioInfo_H4N24BitStereoBitDepth_Correct()
 		{
 			using (var file = TempFile.FromResource(Resources._24bitH4NSample, ".wav"))
@@ -134,14 +151,12 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
-		[Category("RequiresFfmpeg")]
 		public void GetMediaInfo_AudioFile_VideoInfoAndImageInfoAreNull()
 		{
-			using(var file = TempFile.FromResource(Resources.finished,".wav"))
+			using (var file = TempFile.FromResource(Resources.finished,".wav"))
 			{
 				var info =MediaInfo.GetInfo(file.Path);
 				Assert.IsNull(info.Video);
-				//Assert.IsNull(info.Image);
 			}
 		}
 

@@ -5,6 +5,8 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using JetBrains.Annotations;
+using SIL.IO;
 
 namespace SIL.Xml
 {
@@ -57,13 +59,9 @@ namespace SIL.Xml
 			/// Gets the namespace URI (as defined in the W3C Namespace specification) of the
 			/// node on which the reader is positioned.
 			/// </summary>
-			/// <value></value>
 			/// <returns>The namespace URI of the current node; otherwise an empty string.</returns>
 			/// --------------------------------------------------------------------------------
-			public override string NamespaceURI
-			{
-				get { return string.Empty; }
-			}
+			public override string NamespaceURI => string.Empty;
 
 			/// --------------------------------------------------------------------------------
 			/// <summary>
@@ -130,6 +128,7 @@ namespace SIL.Xml
 		/// Serializes an object to an XML represented in an array of UTF-8 bytes.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static byte[] SerializeToByteArray<T>(T data)
 		{
 			return SerializeToByteArray(data, false);
@@ -191,8 +190,7 @@ namespace SIL.Xml
 		/// ------------------------------------------------------------------------------------
 		private static string SerializeToString<T>(T data, bool omitXmlDeclaration, Encoding encoding)
 		{
-			if (encoding == null)
-				encoding = Encoding.Unicode;
+			encoding ??= Encoding.Unicode;
 			try
 			{
 				using (var strWriter = encoding.Equals(Encoding.Unicode) ? new StringWriter() : new StringWriterWithEncoding(encoding))
@@ -229,12 +227,14 @@ namespace SIL.Xml
 			return null;
 		}
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static bool SerializeToFile<T>(string filename, T data)
 		{
 			return SerializeToFile(filename, data, null);
 		}
 
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static bool SerializeToFile<T>(string filename, T data, out Exception e)
 		{
 			return SerializeToFile(filename, data, null, out e);
@@ -242,18 +242,17 @@ namespace SIL.Xml
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Serializes an object to a the specified file.
+		/// Serializes an object to the specified file.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static bool SerializeToFile<T>(string filename, T data, string rootElementName)
 		{
-			Exception e;
-			return SerializeToFile(filename, data, rootElementName, out e);
+			return SerializeToFile(filename, data, rootElementName, out _);
 		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Serializes an object to a the specified file.
+		/// Serializes an object to the specified file.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static bool SerializeToFile<T>(string filename, T data, string rootElementName,
@@ -271,6 +270,74 @@ namespace SIL.Xml
 			}
 
 			return false;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Serialize an object directly to disk, avoiding the operating system cache.
+		///
+		/// This method is intended to prevent problems when power is lost before the operating
+		/// system cache is written to disk by writing through the cache directly to disk.
+		///
+		/// The disadvantage of this method is that it is slow; so it should only be used to
+		/// write relatively small files that are not frequently written.
+		/// </summary>
+		/// <param name="path">The full path (containing the file name and extension).</param>
+		/// <param name="data">Object to be serialized to the file.</param>
+		/// <param name="e">The exception generated during the deserialization.</param>
+		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
+		public static void SerializeToFileWithWriteThrough<T>(string path, T data,
+			out Exception e)
+		{
+			e = null;
+
+			try
+			{
+				// ENHANCE: For perhaps even more robustness, we could try using
+				// TempFileForSafeWriting or create a backup before serializing and then the
+				// caller could attempt to deserialize from the backup if the serialized file
+				// was corrupt...
+				SerializeToFileWithWriteThrough(path, data);
+			}
+			catch (Exception outEx)
+			{
+				e = outEx;
+			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Serialize an object directly to disk, avoiding the operating system cache.
+		/// 
+		/// This method is intended to prevent the problem with null files being generated
+		/// as reported here: LT-20651, LT-20333, LTB-3915, LTB-3916, and LTB-3917
+		/// Sometimes also reported as missing root element: HT-431, SP-764, SP-2229, PG-870,
+		/// WS-362, etc.
+		/// The theory is that FieldWorks is closing and power is lost before the operating
+		/// system cache is written to disk. This method is intended to prevent that problem
+		/// by writing through the cache directly to disk.
+		///
+		/// The disadvantage of this method is that it is slow; so it should only be used to
+		/// write relatively small files that are not frequently written.
+		/// </summary>
+		/// <param name="path">The full path (containing the file name and extension).</param>
+		/// <param name="data">Object to be serialized to the file.</param>
+		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
+		public static void SerializeToFileWithWriteThrough<T>(string path, T data)
+		{
+			// Note: RobustFile.Create() uses FileOptions.WriteThrough which causes the data to still be
+			// written to the operating system cache, but it is immediately flushed. If this doesn't
+			// address the problem then a more thorough solution that completely bypasses the cache
+			// is to use the c++ CreateFile() api and pass both FILE_FLAG_NO_BUFFERING and
+			// FILE_FLAG_WRITE_THROUGH.
+			// https://docs.microsoft.com/en-us/windows/win32/fileio/file-caching
+			using (var writer = RobustFile.Create(path))
+			{
+				XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
+				xmlSerializer.Serialize(writer, data);
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -324,6 +391,7 @@ namespace SIL.Xml
 		/// assumption is the writer is expecting UTF8 data.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static bool SerializeDataAndWriteAsNode<T>(XmlWriter writer, T data)
 		{
 			string xmlData = SerializeToString(data);
@@ -357,8 +425,7 @@ namespace SIL.Xml
 		/// ------------------------------------------------------------------------------------
 		public static T DeserializeFromString<T>(string input)
 		{
-			Exception e;
-			return (DeserializeFromString<T>(input, out e));
+			return (DeserializeFromString<T>(input, out _));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -366,10 +433,10 @@ namespace SIL.Xml
 		/// Deserializes XML from the specified string to an object of the specified type.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static T DeserializeFromString<T>(string input, bool fKeepWhitespaceInElements)
 		{
-			Exception e;
-			return (DeserializeFromString<T>(input, fKeepWhitespaceInElements, out e));
+			return (DeserializeFromString<T>(input, fKeepWhitespaceInElements, out _));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -390,13 +457,13 @@ namespace SIL.Xml
 		public static T DeserializeFromString<T>(string input, bool fKeepWhitespaceInElements,
 			out Exception e)
 		{
-			T data = default(T);
+			T data = default;
 			e = null;
 
 			try
 			{
 				if (string.IsNullOrEmpty(input))
-					return default(T);
+					return default;
 
 				// Whitespace is not allowed before the XML declaration,
 				// so get rid of any that exists.
@@ -425,8 +492,7 @@ namespace SIL.Xml
 		/// ------------------------------------------------------------------------------------
 		public static T DeserializeFromFile<T>(string filename)
 		{
-			Exception e;
-			return DeserializeFromFile<T>(filename, false, out e);
+			return DeserializeFromFile<T>(filename, false, out _);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -434,10 +500,10 @@ namespace SIL.Xml
 		/// Deserializes XML from the specified file to an object of the specified type.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static T DeserializeFromFile<T>(string filename, string rootElementName)
 		{
-			Exception e;
-			return DeserializeFromFile<T>(filename, rootElementName, false, out e);
+			return DeserializeFromFile<T>(filename, rootElementName, false, out _);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -450,10 +516,10 @@ namespace SIL.Xml
 		/// will preserve and return elements that contain only whitespace, otherwise
 		/// these elements will be ignored during a deserialization.</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static T DeserializeFromFile<T>(string filename, bool fKeepWhitespaceInElements)
 		{
-			Exception e;
-			return DeserializeFromFile<T>(filename, fKeepWhitespaceInElements, out e);
+			return DeserializeFromFile<T>(filename, fKeepWhitespaceInElements, out _);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -468,11 +534,11 @@ namespace SIL.Xml
 		/// will preserve and return elements that contain only whitespace, otherwise
 		/// these elements will be ignored during a deserialization.</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static T DeserializeFromFile<T>(string filename, string rootElementName,
 			bool fKeepWhitespaceInElements)
 		{
-			Exception e;
-			return DeserializeFromFile<T>(filename, rootElementName, fKeepWhitespaceInElements, out e);
+			return DeserializeFromFile<T>(filename, rootElementName, fKeepWhitespaceInElements, out _);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -499,6 +565,7 @@ namespace SIL.Xml
 		/// <param name="e">The exception generated during the deserialization.</param>
 		/// <returns></returns>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static T DeserializeFromFile<T>(string filename, string rootElementName,
 			out Exception e)
 		{
@@ -600,9 +667,11 @@ namespace SIL.Xml
 				deserializer = new XmlSerializer(typeof(T));
 			else
 			{
-				var rootAttrib = new XmlRootAttribute();
-				rootAttrib.ElementName = rootElementName;
-				rootAttrib.IsNullable = true;
+				var rootAttrib = new XmlRootAttribute
+				{
+					ElementName = rootElementName,
+					IsNullable = true
+				};
 				deserializer = new XmlSerializer(typeof(T), rootAttrib);
 			}
 

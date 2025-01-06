@@ -1,4 +1,5 @@
-﻿// Copyright (c) 2009-2016 SIL International
+#if !NETSTANDARD
+// Copyright (c) 2009-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -10,24 +11,19 @@ namespace SIL.UsbDrive.Linux
 {
 	public class UDisks
 	{
-		private readonly IUDisks _udisks;
-
 		public UDisks()
 		{
-			_udisks = Bus.System.GetObject<IUDisks>("org.freedesktop.UDisks", new ObjectPath("/org/freedesktop/UDisks"));
+			Interface = Bus.System.GetObject<IUDisks>("org.freedesktop.UDisks", new ObjectPath("/org/freedesktop/UDisks"));
 		}
 
-		public IUDisks Interface
-		{
-			get { return _udisks; }
-		}
+		public IUDisks Interface { get; }
 
 		/// <summary>
 		/// Enumerate the mounted filesystems on the given interface, returning a set of their
 		/// mount points.
 		/// </summary>
 		/// <remarks>
-		/// DBus is a bit flakey and subject to random timing problems.  We need to
+		/// DBus is a bit flaky and subject to random timing problems.  We need to
 		/// ignore any exceptions that it might throw.  This method is typically
 		/// called on a timer loop so that any information we lose will probably
 		/// be available in a few seconds.  (See https://jira.sil.org/browse/WS-226
@@ -74,3 +70,4 @@ namespace SIL.UsbDrive.Linux
 		}
 	}
 }
+#endif

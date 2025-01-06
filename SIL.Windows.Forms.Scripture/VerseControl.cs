@@ -7,12 +7,19 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using SIL.PlatformUtilities;
 using SIL.Scripture;
 using SIL.Extensions;
+using SIL.Linq;
+using SIL.Windows.Forms.Miscellaneous;
+using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.Scripture
 {
+	public delegate void NoArgsDelegate();
+	public delegate void OneArgDelegate(Object s);
+
 	/// <summary>
 	/// Control that allows the specifying of a book, chapter and verse
 	/// in the same style as Paratext.
@@ -22,13 +29,15 @@ namespace SIL.Windows.Forms.Scripture
 		#region Fields and Constructors
 
 		private const FontStyle searchTextStyle = FontStyle.Bold;
+		private const string rtlMark = "\u200f";
+		private const string ltrMark = "\u200e";
 		const int AbbreviationLength = 3; // length of book abbreviation
 		BookSet booksPresentSet = new BookSet();
 		string abbreviations = "";
 		string searchText = "";
 		bool allowVerseSegments = true; //Allow LXX style lettered verse segments
 		bool showEmptyBooks = true;
-		VerseRef curRef;
+		IScrVerseRef curRef;
 		float abbreviationWidth = -1.0f; //starting width of book abbreviation, <0 signifies to recalculate
 		readonly BookListItem[] allBooks;
 		Font emptyBooksFont = SystemFonts.DefaultFont;
@@ -44,12 +53,12 @@ namespace SIL.Windows.Forms.Scripture
 		public event PropertyChangedEventHandler VerseRefChanged;
 		/// <summary>Fired when the books listed in the control change</summary>
 		public event PropertyChangedEventHandler BooksPresentChanged;
-		/// <summary>Fired when the versification is changed</summary>
-		public event PropertyChangedEventHandler VersificationChanged;
 		/// <summary>Fired when an invalid book is entered</summary>
 		public event EventHandler InvalidBookEntered;
 		/// <summary>Fired when any part of the reference is invalid</summary>
 		public event EventHandler InvalidReferenceEntered;
+		/// <summary>Fired when any part of the pasted reference is invalid</summary>
+		public event EventHandler InvalidReferencePasted;
 		/// <summary>Fired when any textbox for the reference gets focus</summary>
 		public event EventHandler TextBoxGotFocus;
 
@@ -147,10 +156,7 @@ namespace SIL.Windows.Forms.Scripture
 			}
 		}
 
-		bool VerseSegmentsAvailable
-		{
-			get { return curRef.Versification != null && curRef.Versification.HasVerseSegments; }
-		}
+		private bool VerseSegmentsAvailable => curRef.VersificationHasVerseSegments;
 
 		/// <summary>
 		/// Gets or sets the current verse reference
@@ -167,7 +173,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// 3. Phase 2: allow prev/next verse to be segment aware. Support in LXX edit window.
 		/// </summary>
 		[Browsable(false), ReadOnly(true)]
-		public VerseRef VerseRef
+		public IScrVerseRef VerseRef
 		{
 			get
 			{
@@ -186,50 +192,30 @@ namespace SIL.Windows.Forms.Scripture
 				}
 				// old way, before segmented references allowed
 				// return new VerseRef(curRef).Simplify(); 
-				return new VerseRef(curRef).UnBridge();
+				return curRef.UnBridge();
 			}
 			set
 			{
-				// We really can't use Valid here because it checks for maximum book number
-				// and that is depenedent on the versification and when the versification of
-				// the control and the text are different we can end up ignoring values
-				// that are in fact ok. So we just check for empty references and bail out
-				// if we get one.
-				if (value.BookNum < 1 || value.ChapterNum < 1 || value.VerseNum < 0)
+				if (value == null || value.BookNum < 1 || value.ChapterNum < 1 || value.VerseNum < 0)
 				{
 					Trace.TraceWarning("Invalid VerseRef passed to VerseControl: " + value);
 					// Ignore it for now (see PT-1310)
 					return;
 				}
 
-				curRef.CopyFrom(value);
+				curRef = value.Clone();
 				if (!allowVerseSegments)
 					curRef.Simplify();
 
 				if (advanceToEnd)
-					AdvanceToLastSegment(curRef);
+					curRef.AdvanceToLastSegment();
 
 				UpdateControls();
 			}
 		}
 
 		[Browsable(false)]
-		private string BookAbbreviation
-		{
-			get { return curRef.Book; }
-		}
-
-		[Browsable(false), ReadOnly(true)]
-		public ScrVers Versification
-		{
-			set
-			{
-				if (curRef.Versification == value)
-					return;
-				curRef.Versification = value;
-				OnVersificationChanged(new PropertyChangedEventArgs("Versification"));
-			}
-		}
+		private string BookAbbreviation => curRef.Book;
 
 		[Browsable(false), ReadOnly(true)]
 		public BookSet BooksPresentSet
@@ -243,7 +229,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		public Font EmptyBooksFont
 		{
-			get { return emptyBooksFont; }
+			get => emptyBooksFont;
 			set
 			{
 				if (Equals(value, emptyBooksFont))
@@ -271,14 +257,56 @@ namespace SIL.Windows.Forms.Scripture
 		}
 
 		/// <summary>
-		/// When using a verse control to indicate the end of a range, chosing
-		/// a new books should go to the last verse of the last chapter. Chosing
+		/// When using a verse control to indicate the end of a range, choosing
+		/// a new book should go to the last verse of the last chapter. Choosing
 		/// a new chapter should go to the last verse of that chapter.
 		/// </summary>
 		public bool AdvanceToEnd
 		{
 			get { return advanceToEnd; }
 			set { advanceToEnd = value; }
+		}
+
+		/// <summary> 
+		/// Set tooltip for the verse spinner and text field.
+		/// </summary>
+		public string ToolTipVerseSelector
+		{
+			set
+			{
+				this.uiToolTip.SetToolTip(this.uiVerseSpinner, value);
+				this.uiToolTip.SetToolTip(this.uiVerse, value);
+			}
+		}
+
+		/// <summary> 
+		/// Set tooltip for the chapter spinner and text field.
+		/// </summary>
+		public string ToolTipChapterSelector
+		{
+			set
+			{
+				this.uiToolTip.SetToolTip(this.uiChapterSpinner, value);
+				this.uiToolTip.SetToolTip(this.uiChapter, value);
+			}
+		}
+
+		/// <summary> 
+		/// Set tooltip for the book selector.
+		/// </summary>
+		public string ToolTipBookSelector
+		{
+			set
+			{
+				this.uiToolTip.SetToolTip(this.uiBook, value);
+			}
+		}
+
+		public void SetContextMenuLabels(string copyLabel, string pasteLabel)
+		{
+			uiBook.SetContextMenuLabels(copyLabel, pasteLabel);
+			uiChapter.SetContextMenuLabels(copyLabel, pasteLabel);
+			uiVerse.SetContextMenuLabels(copyLabel, pasteLabel);
 		}
 
 		#endregion
@@ -332,21 +360,21 @@ namespace SIL.Windows.Forms.Scripture
 		/// <returns>true if the move was possible</returns>
 		public void PrevBook()
 		{
-			bool result = (showEmptyBooks) ? curRef.PreviousBook() : curRef.PreviousBook(booksPresentSet);
+			bool result = showEmptyBooks ? curRef.PreviousBook() : curRef.PreviousBook(booksPresentSet);
 			if (result)
 				UpdateReference();
 		}
 
 		public void NextBook()
 		{
-			bool result = (showEmptyBooks) ? curRef.NextBook() : curRef.NextBook(booksPresentSet);
+			bool result = showEmptyBooks ? curRef.NextBook() : curRef.NextBook(booksPresentSet);
 			if (result)
 				UpdateReference();
 		}
 
 		public void PrevChapter()
 		{
-			bool result = (showEmptyBooks) ? curRef.PreviousChapter() : curRef.PreviousChapter(booksPresentSet);
+			bool result = showEmptyBooks ? curRef.PreviousChapter() : curRef.PreviousChapter(booksPresentSet);
 			if (result)
 				UpdateReference();
 		}
@@ -375,6 +403,64 @@ namespace SIL.Windows.Forms.Scripture
 		#endregion
 
 		#region Control Event Methods
+		/// <summary>
+		/// The verse control may be used in forms that have CTRL-V as a shortcut key on a menu item. Since the short
+		/// cut keys are processed before the control will get a KeyDown, ProcessCmdKey needs to be overwritten to
+		/// get the key first.
+		/// </summary>
+		/// <param name="msg"></param>
+		/// <param name="keyData"></param>
+		/// <returns>true if CTRL-V was used, otherwise base method is called</returns>
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			const int WM_KEYDOWN = 0x100;
+			// check to see if values can be pasted on KeyDown for CTRL-V
+			if (msg.Msg == WM_KEYDOWN && keyData == (Keys.Control | Keys.V))
+			{
+				HandlePasteScriptureRef();
+				return true; // may not have updated verse control, but treat CTRL-V as handled
+			}
+			// copy values to clipboard on KeyDown for CTRL-C
+			if (msg.Msg == WM_KEYDOWN && keyData == (Keys.Control | Keys.C))
+			{
+				PortableClipboard.SetText(VerseRef.ToString());
+				return true;
+			}
+
+			return base.ProcessCmdKey(ref msg, keyData);
+		}
+
+		private void HandleCopy()
+		{
+			Clipboard.SetText(VerseRef.ToString());
+		}
+
+		private void HandlePaste()
+		{
+			HandlePasteScriptureRef();
+		}
+
+		private void HandlePopUpContextMenu(Object s)
+		{
+			// Enable paste option if needed
+			if (IsValidReference(GetCleanClipboardText(), out _, out _, out _))
+			{
+				if (s is VCSafeComboBox comboBox)
+					comboBox.EnablePaste();
+				if (s is VCEnterTextBox textBox)
+					textBox.EnablePaste();
+			}
+
+			// Disable tooltips when context menu pops up
+			this.uiToolTip.Active = false;
+		}
+
+		private void HandleCollapseContextMenu()
+		{
+			// Enable tooltips when context menu collapses
+			this.uiToolTip.Active = true;
+		}
+
 
 		/// <summary>
 		/// Fires a VerseRefChangedEvent
@@ -392,12 +478,6 @@ namespace SIL.Windows.Forms.Scripture
 				BooksPresentChanged(this, e);
 		}
 
-		private void OnVersificationChanged(PropertyChangedEventArgs e)
-		{
-			if (VersificationChanged != null)
-				VersificationChanged(this, e);
-		}
-
 		private void OnInvalidBook(EventArgs e)
 		{
 			if (InvalidBookEntered != null)
@@ -408,6 +488,12 @@ namespace SIL.Windows.Forms.Scripture
 		{
 			if (InvalidReferenceEntered != null)
 				InvalidReferenceEntered(this, EventArgs.Empty);
+		}
+
+		private void OnInvalidPastedReference()
+		{
+			if (InvalidReferencePasted != null)
+				InvalidReferencePasted(this, EventArgs.Empty);
 		}
 
 		private void OnTextBoxGotFocus()
@@ -476,17 +562,32 @@ namespace SIL.Windows.Forms.Scripture
 		void DrawBookParts(string[] parts, Graphics gr, Rectangle bounds, Color theColor, Font font1, Font font2)
 		{
 			Font theFont = font1;
+			int right = bounds.Right;
+			bool rtl = RightToLeft == RightToLeft.Yes;
+			if (!rtl)
+				bounds.X += 2;
+			bounds.Width -= 2;
 			for (int i = 0; i < parts.Length; i++)
 			{
 				string theText = parts[i];
 				if (i == 2)
-					bounds.X = (int)abbreviationWidth; // tab over to name column
+				{
+					if (rtl)
+						bounds.Width = right - (int)abbreviationWidth;
+					else
+						bounds.X = (int)abbreviationWidth; // tab over to name column
+				}
+
 				if (theText != "")
 				{
 					// UserControl does not have UseCompatibleTextRendering.
-					var size = TextRenderer.MeasureText(gr, theText, theFont, bounds.Size, TextFormatFlags.NoPadding|TextFormatFlags.WordBreak);
-					TextRenderer.DrawText(gr, theText, theFont, bounds, theColor, TextFormatFlags.NoPadding|TextFormatFlags.WordBreak);
-					bounds.X += size.Width;
+					TextFormatFlags flags = TextFormatFlags.NoPadding | TextFormatFlags.SingleLine;
+					if (rtl)
+						flags |= TextFormatFlags.Right;
+					var size = TextRenderer.MeasureText(gr, theText, theFont, bounds.Size, flags);
+					TextRenderer.DrawText(gr, theText, theFont, bounds, theColor, flags);
+					if (!rtl)
+						bounds.X += size.Width;
 					bounds.Width -= size.Width;
 				}
 				theFont = Equals(theFont, font1) ? font2 : font1; // flip-flop font
@@ -590,7 +691,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// </summary>
 		public void AcceptData()
 		{
-			curRef = new VerseRef(uiBook.Text + " " + uiChapter.Text + ":" + uiVerse.Text, curRef.Versification);
+			curRef = curRef.Create(uiBook.Text, uiChapter.Text, uiVerse.Text);
 
 			// Prevent going past last chapter/verse
 			if (curRef.ChapterNum > curRef.LastChapter)
@@ -656,11 +757,8 @@ namespace SIL.Windows.Forms.Scripture
 			{
 				return;
 			}
-			ScrVers versif = ScrVers.English;
-			if (!curRef.IsDefault)
-				versif = curRef.Versification;
 
-			VerseRef = new VerseRef(((BookListItem)uiBook.SelectedItem).Abbreviation + " 1:1", versif);
+			VerseRef = curRef.Create(((BookListItem)uiBook.SelectedItem).Abbreviation, "1", "1");
 
 			if (advanceToEnd)
 				AdvanceToLastChapterLastVerse();
@@ -688,6 +786,95 @@ namespace SIL.Windows.Forms.Scripture
 			if (IsBook())
 				if (AcceptOnEnter(e) && !Platform.IsLinux)
 					uiBook.SelectAll();
+		}
+
+		private string GetCleanClipboardText()
+		{
+			// return empty string if clipboard is empty
+			if (!PortableClipboard.ContainsText())
+				return "";
+
+			// if pasting text, check to see if clipboard contain verse reference. Remove RTL and LTR marks that may be there
+			// for punctuation to display in correct order.
+			string text = PortableClipboard.GetText().Trim().Replace(rtlMark, "").Replace(ltrMark, "");
+			// diacritics seem to have caused problems in Regex on Linux, so remove them before processing text
+			return text.RemoveDiacritics();
+		}
+
+		/// <summary>
+		/// Updates verse control with pasted verse reference, if pasted reference is valid.
+		/// </summary>
+		private void HandlePasteScriptureRef()
+		{
+			if (!IsValidReference(GetCleanClipboardText(), out var book, out var chapter, out var verse))
+			{
+				OnInvalidPastedReference();
+				return;
+			}
+
+			uiBook.Text = book;
+			uiChapter.Text = chapter;
+			uiVerse.Text = verse;
+
+			AcceptOnEnter(new KeyEventArgs(Keys.Enter));
+		}
+
+		/// <summary>
+		/// Check to see if text is a valid reference - either using GEN 1:1 format or localized book names
+		/// </summary>
+		/// <param name="text"></param>
+		/// <param name="book"></param>
+		/// <param name="chapter"></param>
+		/// <param name="verse"></param>
+		/// <returns>True if string is a valid reference. If valid, it also returns the related book, chapter and verse as string output parameters.</returns>
+		private bool IsValidReference(string text, out string book, out string chapter,
+			out string verse)
+		{
+			book = chapter = verse = null;
+
+			// check for standard reference in form: GEN 1:27
+			var match = Regex.Match(text, MultilingScrBooks.VerseRefRegex);
+			if (!match.Success)
+				return false;
+
+			var searchBook = match.Groups["book"].Value;
+			chapter = match.Groups["chapter"].Value;
+			verse = match.Groups["verse"].Value;
+			// chapter and verse is optional in regex, make it 1 if not given
+			if (string.IsNullOrEmpty(chapter))
+				chapter ="1";
+			else if (chapter.Length > 3)
+				return false;
+			if (string.IsNullOrEmpty(verse))
+				verse = "1";
+			else if (verse.Length > 3)
+				return false;
+			if (Canon.IsBookIdValid(searchBook))
+			{
+				book = searchBook;
+				return true;
+			}
+
+			// search for unique entry using base name of book
+			var bookItem = allBooks.OnlyOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef, false));
+			if (bookItem == null)
+			{
+				int chapterNum = int.Parse(chapter);
+				// take first book that starts with the search text and has the right number of chapters
+				bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, chapterNum, VerseRef, true));
+				// take the first book that starts with the search text and has any number of chapters
+				if (bookItem == null)
+					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef, true));
+				// take the first book contains any match of search text and has any number of chapters
+				if (bookItem == null)
+					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef, false));
+			}
+
+			if (bookItem == null)
+				return false;
+
+			book = bookItem.Abbreviation;
+			return true;
 		}
 
 		/// <summary>
@@ -765,31 +952,22 @@ namespace SIL.Windows.Forms.Scripture
 
 		void AdvanceToLastChapterLastVerse()
 		{
-			VerseRef vref = new VerseRef(uiBook.Text + " 1:1");
-			vref.Versification = curRef.Versification;
+			IScrVerseRef vref = curRef.Create(uiBook.Text, "1", "1");
 			vref.ChapterNum = vref.LastChapter;
 			vref.VerseNum = vref.LastVerse;
-			AdvanceToLastSegment(vref);
+			vref.AdvanceToLastSegment();
 			uiChapter.Text = vref.Chapter;
 			uiVerse.Text = vref.Verse;
-			curRef.CopyFrom(vref);
-		}
-
-		private static void AdvanceToLastSegment(VerseRef vref)
-		{
-			string[] segments = vref.GetSegments(null);
-			if (segments != null && segments.Length > 0)
-				vref.Verse += segments[segments.Length - 1];
+			curRef = vref;
 		}
 
 		void AdvanceToLastVerse()
 		{
-			VerseRef vref = new VerseRef(uiBook.Text + " " + uiChapter.Text + ":1");
-			vref.Versification = curRef.Versification;
+			IScrVerseRef vref = curRef.Create(uiBook.Text, uiChapter.Text, "1");
 			vref.VerseNum = vref.LastVerse;
-			AdvanceToLastSegment(vref);
+			vref.AdvanceToLastSegment();
 			uiVerse.Text = vref.Verse;
-			curRef.CopyFrom(vref);
+			curRef = vref;
 		}
 
 		void Revert()
@@ -966,6 +1144,7 @@ namespace SIL.Windows.Forms.Scripture
 			public string Name; // localized name
 			public string BaseName; // upper-case localized name without diacritics
 			public bool isPresent; // true if book has data
+			private int lastChapter = -1;
 
 			public override string ToString()
 			{
@@ -1028,6 +1207,26 @@ namespace SIL.Windows.Forms.Scripture
 					return true;
 				return false;
 			}
+
+			internal bool BookMatchesSearch(string searchText, int chapterNum, IScrVerseRef verseRef, bool mustStartWithText)
+			{
+				if (BaseName.Length < searchText.Length)
+					return false;
+				if (!Regex.IsMatch(BaseName, $"{(mustStartWithText ? "^" : "\\b")}{Regex.Escape(searchText)}", RegexOptions.IgnoreCase))
+					return false;
+
+				if (chapterNum == -1)
+					return true;
+
+				if (lastChapter == -1)
+				{
+					var lastChapterRef = verseRef.Clone();
+					lastChapterRef.BookNum = Canon.BookIdToNumber(Abbreviation);
+					lastChapter = lastChapterRef.LastChapter;
+				}
+
+				return lastChapter >= chapterNum;
+			}
 		}
 		#endregion
 
@@ -1061,5 +1260,92 @@ namespace SIL.Windows.Forms.Scripture
 			uiVerse.SelectAll();
 		}
 
+		/// <summary>
+		/// Variant of the SafeComboBox that has a custom copy/paste context menu,
+		/// and that fires events when this context menu is opened,
+		/// and when a copy/paste action is triggered from it.
+		/// </summary>
+		private class VCSafeComboBox : SafeComboBox
+		{
+			public event NoArgsDelegate CopyEvent;
+			public event NoArgsDelegate PasteEvent;
+			public event OneArgDelegate PopUpEvent;
+			public event NoArgsDelegate CollapseEvent;
+
+			private const int COPY = 0;
+			private const int PASTE = 1;
+
+			public VCSafeComboBox()
+			{
+				ContextMenu contextMenu = new ContextMenu();
+				contextMenu.MenuItems.Add("Copy", (s, e) => CopyEvent?.Invoke());
+				contextMenu.MenuItems.Add("Paste", (s, e) => PasteEvent?.Invoke());
+				contextMenu.Popup += PopUpContextMenu;
+				contextMenu.Collapse += (s, e) => CollapseEvent?.Invoke();
+				this.ContextMenu = contextMenu;
+			}
+
+			private void PopUpContextMenu(Object s, EventArgs e)
+			{
+				this.ContextMenu.MenuItems[PASTE].Enabled = false;
+
+				PopUpEvent?.Invoke(this);
+			}
+
+			public void EnablePaste()
+			{
+				this.ContextMenu.MenuItems[PASTE].Enabled = true;
+			}
+
+			public void SetContextMenuLabels(string copyLabel, string pasteLabel)
+			{
+				this.ContextMenu.MenuItems[COPY].Text = copyLabel;
+				this.ContextMenu.MenuItems[PASTE].Text = pasteLabel;
+			}
+		}
+
+		/// <summary>
+		/// Variant of the EnterTextBox that has a custom copy/paste context menu,
+		/// and that fires events when this context menu is opened,
+		/// and when a copy/paste action is triggered from it.
+		/// </summary>
+		private class VCEnterTextBox : EnterTextBox
+		{
+			public event NoArgsDelegate CopyEvent;
+			public event NoArgsDelegate PasteEvent;
+			public event OneArgDelegate PopUpEvent;
+			public event NoArgsDelegate CollapseEvent;
+
+			private const int COPY = 0;
+			private const int PASTE = 1;
+
+			public VCEnterTextBox()
+			{
+				ContextMenu contextMenu = new ContextMenu();
+				contextMenu.MenuItems.Add("Copy", (s, e) => CopyEvent?.Invoke());
+				contextMenu.MenuItems.Add("Paste", (s, e) => PasteEvent?.Invoke());
+				contextMenu.Popup += PopUpContextMenu;
+				contextMenu.Collapse += (s, e) => CollapseEvent?.Invoke();
+				this.ContextMenu = contextMenu;
+			}
+
+			private void PopUpContextMenu(Object s, EventArgs e)
+			{
+				this.ContextMenu.MenuItems[PASTE].Enabled = false;
+
+				PopUpEvent?.Invoke(this);
+			}
+
+			public void EnablePaste()
+			{
+				this.ContextMenu.MenuItems[PASTE].Enabled = true;
+			}
+
+			public void SetContextMenuLabels(string copyLabel, string pasteLabel)
+			{
+				this.ContextMenu.MenuItems[COPY].Text = copyLabel;
+				this.ContextMenu.MenuItems[PASTE].Text = pasteLabel;
+			}
+		}
 	}
 }

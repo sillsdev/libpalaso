@@ -433,8 +433,14 @@ namespace SIL.WritingSystems
 			// and not be allowed in a foreach loop
 			foreach (T ws in AllWritingSystems.Where(CanSet).ToArray())
 			{
-				SaveDefinition(ws);
-				OnChangeNotifySharedStore(ws);
+				// Changes made while calling Set on a writing system during the save
+				// could affect the ability to call Set on another writing system in the list.
+				// So test again even though we've done a first pass filter in the foreach
+				if (CanSet(ws))
+				{
+					SaveDefinition(ws);
+					OnChangeNotifySharedStore(ws);
+				}
 			}
 
 			LoadChangedIdsFromExistingWritingSystems();
@@ -514,9 +520,9 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		public override IEnumerable<T> CheckForNewerGlobalWritingSystems()
+		public override IEnumerable<T> CheckForNewerGlobalWritingSystems(IEnumerable<string> languageTags = null)
 		{
-			foreach (T ws in base.CheckForNewerGlobalWritingSystems())
+			foreach (T ws in base.CheckForNewerGlobalWritingSystems(languageTags))
 			{
 				// load local settings using custom data mappers, so these settings won't be lost if these writing systems are used to
 				// replace the existing local writing systems

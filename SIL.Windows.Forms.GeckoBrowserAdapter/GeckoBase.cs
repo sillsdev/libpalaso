@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -150,9 +150,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		}
 		public void AssignKeyboardFromWritingSystem()
 		{
-			if (_writingSystem == null)
-				return;
-			_writingSystem.LocalKeyboard.Activate();
+			_writingSystem?.LocalKeyboard?.Activate();
 		}
 
 		public void ClearKeyboard()

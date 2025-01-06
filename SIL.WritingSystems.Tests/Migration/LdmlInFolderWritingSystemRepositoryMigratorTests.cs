@@ -8,6 +8,7 @@ using SIL.Lexicon;
 using SIL.TestUtilities;
 using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using static SIL.WritingSystems.WellKnownSubtags;
 using Is = SIL.TestUtilities.NUnitExtensions.Is;
 
 namespace SIL.WritingSystems.Tests.Migration
@@ -269,7 +270,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				AssertMigrationInfoContains(migrationInfo[2], "de-bogus-stuff", "de-Qaaa-QM-x-bogus-stuff");
 				AssertMigrationInfoContains(migrationInfo[2], "en-Zxxx-x-audio", "en-Zxxx-x-audio");
 				AssertMigrationInfoContains(migrationInfo[2], "en-x-audio", "en-Zxxx-x-audio-dupl0");
-				AssertMigrationInfoContains(migrationInfo[2], "zh-CN", "zh-CN");
+				AssertMigrationInfoContains(migrationInfo[2], ChineseSimplifiedTag, ChineseSimplifiedTag);
 				AssertMigrationInfoContains(migrationInfo[2], "cmn", "zh-CN-x-dupl0");
 
 				AssertMigrationInfoContains(migrationInfo[3], "de-Qaaa-QM-x-bogus-stuff", "de-Qaaa-QM-x-bogus-stuff");
@@ -1278,6 +1279,30 @@ namespace SIL.WritingSystems.Tests.Migration
 				WritingSystemDefinition ws = repo.Get("en");
 				Assert.That(ws.Language.Name, Is.EqualTo("German"));
 				AssertThatXmlIn.File(Path.Combine(environment.LdmlPath, projectSettingsfile)).HasSpecifiedNumberOfMatchesForXpath("/ProjectLexiconSettings/WritingSystems/WritingSystem/LanguageName", 1, true);
+			}
+		}
+
+		[Test]
+		public void Migrate_CustomSimpleSort_MigrationDoesNotAddSystemCollationToLexiconSettings()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var projectSettingsfile = Path.Combine(environment.LdmlPath, "test.ulsx");
+
+				var dataMappers = new ICustomDataMapper<WritingSystemDefinition>[]
+				{
+					new ProjectLexiconSettingsWritingSystemDataMapper<WritingSystemDefinition>(new FileSettingsStore(projectSettingsfile))
+				};
+
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0WithCollationInfo(WritingSystemDefinitionV0.SortRulesType.CustomSimple));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+
+				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath, dataMappers);
+				migrator.ResetRemovedProperties(repo);
+				repo.Save();
+
+				AssertThatXmlIn.File(Path.Combine(environment.LdmlPath, projectSettingsfile)).HasNoMatchForXpath("/ProjectLexiconSettings/WritingSystems/WritingSystem/SystemCollation");
 			}
 		}
 

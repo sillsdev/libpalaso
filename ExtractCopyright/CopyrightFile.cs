@@ -1,4 +1,4 @@
-// Copyright (c) 2017 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.IO;
@@ -156,7 +156,7 @@ namespace SIL.ExtractCopyright
 			para.Fields.Add(new DebianField("Source", sourceUrl));
 
 			// REVIEW: can we assume these values?
-			var programCopyright = String.Format("{0} SIL International", DateTime.Now.Year);
+			var programCopyright = String.Format("{0} SIL Global", DateTime.Now.Year);
 			var programLicense = "MIT";
 
 			para = new DebianParagraph();
@@ -235,8 +235,6 @@ namespace SIL.ExtractCopyright
 			case "irrKlang.NET4.dll":
 			case "NAudio.dll":
 			case "KeymanLink.dll":
-			// part of Mono runtime, not part of a specific program on Linux
-			case "Mono.Posix":
 			case "Commons.Xml.Relaxng.dll":
 			case "gtk-sharp.dll":
 				return true;

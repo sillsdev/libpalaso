@@ -1,4 +1,4 @@
-// Copyright (c) 2013, SIL International.
+// Copyright (c) 2024, SIL Global.
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
 using System;
 using System.Windows.Forms;
@@ -95,7 +95,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		#endregion
 
 		/// <summary>
-		/// Wrap an ibus with protection incase DBus connection is dropped.
+		/// Wrap an ibus call with protection in case DBus connection is dropped.
 		/// </summary>
 		protected void ProtectedIBusInvoke(Action action)
 		{
@@ -107,9 +107,12 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			{
 				m_ibus = null;
 				m_inputContext = null;
+				m_connection?.Dispose();
+				m_connection = null;
 				NotifyUserOfIBusConnectionDropped();
 			}
-			catch (System.NullReferenceException)
+			// REVIEW: Is there a valid reason to catch NullReference here?
+			catch (NullReferenceException)
 			{
 			}
 		}
@@ -223,7 +226,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				m_inputContext = null;
 				NotifyUserOfIBusConnectionDropped();
 			}
-			catch (System.NullReferenceException e)
+			catch (NullReferenceException e)
 			{
 				Console.WriteLine("IbusCommunicator.ProcessKeyEvent({0},{1},{2}): caught NullReferenceException: {3}", keySym, scanCode, state, e);
 			}
@@ -321,7 +324,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// focused.</exception>
 		public string GetFocusedInputContext()
 		{
-			return m_ibus.CurrentInputContext();
+			return m_ibus?.CurrentInputContext();
 		}
 
 		/// <summary></summary>

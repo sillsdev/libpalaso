@@ -1,6 +1,7 @@
-﻿// Copyright (c) 2018 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
+using JetBrains.Annotations;
 using SIL.Providers;
 
 namespace SIL.TestUtilities.Providers
@@ -17,6 +18,7 @@ namespace SIL.TestUtilities.Providers
 	/// DateTimeProvider.ResetToDefault();
 	/// </code>
 	/// </remarks>
+	[PublicAPI]
 	public class ReproducibleDateTimeProvider: DateTimeProvider
 	{
 		private readonly DateTime _dateTime;
@@ -30,19 +32,10 @@ namespace SIL.TestUtilities.Providers
 			_dateTime = dateTime;
 		}
 
-		public override DateTime Now
-		{
-			get { return _dateTime; }
-		}
+		public override DateTime Now => _dateTime;
 
-		public override DateTime UtcNow
-		{
-			get { return _dateTime.ToUniversalTime(); }
-		}
+		public override DateTime UtcNow => _dateTime.ToUniversalTime();
 
-		public override DateTime Today
-		{
-			get { return new DateTime(_dateTime.Year, _dateTime.Month, _dateTime.Day); }
-		}
+		public override DateTime Today => new DateTime(_dateTime.Year, _dateTime.Month, _dateTime.Day);
 	}
 }

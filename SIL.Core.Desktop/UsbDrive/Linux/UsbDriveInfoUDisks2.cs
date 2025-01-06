@@ -1,5 +1,6 @@
-﻿// Copyright (c) 2016 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+#if !NETSTANDARD
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -66,30 +67,17 @@ namespace SIL.UsbDrive.Linux
 			}
 		}
 
-		public override string VolumeLabel
-		{
-			get
-			{
-				return BlockDevice.Value["org.freedesktop.UDisks2.Block"]["IdLabel"].ToString();
-			}
-		}
+		public override string VolumeLabel =>
+			BlockDevice.Value["org.freedesktop.UDisks2.Block"]["IdLabel"].ToString();
 
-		public override ulong TotalSize
-		{
-			get
-			{
-				return (ulong)BlockDevice.Value["org.freedesktop.UDisks2.Block"]["Size"];
-			}
-		}
+		public override ulong TotalSize =>
+			(ulong)BlockDevice.Value["org.freedesktop.UDisks2.Block"]["Size"];
 
 		public override ulong AvailableFreeSpace
 		{
 			// UDisks2 itself does not appear to provide this information.
 			// Could use another library if need to support this.
-			get
-			{
-				throw new NotImplementedException();
-			}
+			get => throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -145,3 +133,4 @@ namespace SIL.UsbDrive.Linux
 		}
 	}
 }
+#endif

@@ -1,4 +1,4 @@
-// Copyright (c) 2014 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 // Parts based on code by MJ Hutchinson http://mjhutchinson.com/journal/2010/01/25/integrating_gtk_application_mac
 // Parts based on code by bugsnag-dotnet (https://github.com/bugsnag/bugsnag-dotnet/blob/v1.4/src/Bugsnag/Diagnostics.cs)
@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Management;
 #endif
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 
 namespace SIL.PlatformUtilities
 {
@@ -19,7 +20,11 @@ namespace SIL.PlatformUtilities
 
 		public static bool IsUnix => Environment.OSVersion.Platform == PlatformID.Unix;
 		public static bool IsWasta => IsUnix && System.IO.File.Exists("/etc/wasta-release");
-		public static bool IsCinnamon => IsUnix && SessionManager.StartsWith("/usr/bin/cinnamon-session");
+		public static bool IsFlatpak => IsUnix && !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("FLATPAK_ID"));
+
+		public static bool IsCinnamon => IsUnix &&
+			(SessionManager.StartsWith("/usr/bin/cinnamon-session") ||
+			Environment.GetEnvironmentVariable("GDMSESSION") == "cinnamon");
 
 		public static bool IsMono
 		{
@@ -33,14 +38,16 @@ namespace SIL.PlatformUtilities
 		}
 		public static bool IsDotNet => !IsMono;
 
-#if NETSTANDARD2_0
+		public static bool IsPreWindows10 => IsWindows && OperatingSystemDescription != "Windows 10";
+
+#if NETSTANDARD2_0 || NET471_OR_GREATER
 		public static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 		public static bool IsMac => RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
 		public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
 		public static bool IsDotNetCore => RuntimeInformation.FrameworkDescription == ".NET Core";
 		public static bool IsDotNetFramework => IsDotNet && RuntimeInformation.FrameworkDescription == ".NET Framework";
-#elif NET461
+#elif NET462
 		private static readonly string UnixNameMac = "Darwin";
 		private static readonly string UnixNameLinux = "Linux";
 
@@ -48,7 +55,9 @@ namespace SIL.PlatformUtilities
 		public static bool IsMac => IsUnix && UnixName == UnixNameMac;
 		public static bool IsWindows => !IsUnix;
 
+		[PublicAPI]
 		public static bool IsDotNetCore => false;
+		[PublicAPI]
 		public static bool IsDotNetFramework => IsDotNet;
 
 		private static string _unixName;
@@ -118,6 +127,8 @@ namespace SIL.PlatformUtilities
 				// Special case for Wasta 12
 				else if (currentDesktop == "GNOME" && Environment.GetEnvironmentVariable("GDMSESSION") == "cinnamon")
 					currentDesktop = Environment.GetEnvironmentVariable("GDMSESSION");
+				else if (currentDesktop.ToLowerInvariant() == "ubuntu:gnome")
+					currentDesktop = "gnome";
 				return currentDesktop?.ToLowerInvariant();
 			}
 		}
@@ -134,12 +145,16 @@ namespace SIL.PlatformUtilities
 
 				// see http://unix.stackexchange.com/a/116694
 				// and http://askubuntu.com/a/227669
-				string currentDesktop = DesktopEnvironment;
-				string mirSession = Environment.GetEnvironmentVariable("MIR_SERVER_NAME");
+				var currentDesktop = DesktopEnvironment;
 				var additionalInfo = string.Empty;
+				var mirSession = Environment.GetEnvironmentVariable("MIR_SERVER_NAME");
 				if (!string.IsNullOrEmpty(mirSession))
 					additionalInfo = " [display server: Mir]";
-				string gdmSession = Environment.GetEnvironmentVariable("GDMSESSION") ?? "not set";
+
+				var gdmSession = Environment.GetEnvironmentVariable("GDMSESSION") ?? "not set";
+				if (gdmSession.ToLowerInvariant().EndsWith("-wayland"))
+					return $"{currentDesktop} ({gdmSession.Split('-')[0]} [display server: Wayland])";
+
 				return $"{currentDesktop} ({gdmSession}{additionalInfo})";
 			}
 		}
@@ -292,7 +307,7 @@ namespace SIL.PlatformUtilities
 				return osName + " (" + osVersion + ")";
 			}
 
-			var distro = RunTerminalCommand("bash", "-c \"[ $(which lsb_release) ] && lsb_release -d -s\"");
+			var distro = RunTerminalCommand("bash", "-c '[ $(which lsb_release) ] && [ -f /etc/wasta-release ] && echo \"$(lsb_release -d -s) ($(cat /etc/wasta-release | grep DESCRIPTION | cut -d\\\" -f 2))\" || lsb_release -d -s'");
 			return string.IsNullOrEmpty(distro) ? "UNIX" : distro;
 		}
 
@@ -324,6 +339,7 @@ namespace SIL.PlatformUtilities
 
 		public static string ProcessArchitecture => Environment.Is64BitProcess ? x64 : x86;
 
+		[PublicAPI]
 		public static bool IsRunning64Bit => Environment.Is64BitProcess;
 
 		public static bool IsGnomeShell

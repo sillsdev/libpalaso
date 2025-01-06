@@ -1,4 +1,4 @@
-﻿namespace SIL.Windows.Forms.Scripture
+namespace SIL.Windows.Forms.Scripture
 {
 	sealed partial class VerseControl
 	{
@@ -31,11 +31,23 @@
 			this.components = new System.ComponentModel.Container();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.uiVerseSpinner = new SIL.Windows.Forms.Widgets.HorizontalSpinner();
-			this.uiChapter = new SIL.Windows.Forms.Widgets.EnterTextBox();
-			this.uiVerse = new SIL.Windows.Forms.Widgets.EnterTextBox();
-			this.uiChapterSpinner = new SIL.Windows.Forms.Widgets.HorizontalSpinner();
-			this.uiBook = new SIL.Windows.Forms.Widgets.SafeComboBox();
 			this.uiToolTip = new System.Windows.Forms.ToolTip(this.components);
+			this.uiChapter = new VCEnterTextBox();
+			this.uiChapter.CopyEvent += HandleCopy;
+			this.uiChapter.PasteEvent += HandlePaste;
+			this.uiChapter.PopUpEvent += HandlePopUpContextMenu;
+			this.uiChapter.CollapseEvent += HandleCollapseContextMenu;
+			this.uiVerse = new VCEnterTextBox();
+			this.uiVerse.CopyEvent += HandleCopy;
+			this.uiVerse.PasteEvent += HandlePaste;
+			this.uiVerse.PopUpEvent += HandlePopUpContextMenu;
+			this.uiVerse.CollapseEvent += HandleCollapseContextMenu;
+			this.uiChapterSpinner = new SIL.Windows.Forms.Widgets.HorizontalSpinner();
+			this.uiBook = new VCSafeComboBox();
+			this.uiBook.CopyEvent += HandleCopy;
+			this.uiBook.PasteEvent += HandlePaste;
+			this.uiBook.PopUpEvent += HandlePopUpContextMenu;
+			this.uiBook.CollapseEvent += HandleCollapseContextMenu;
 			this.tableLayoutPanel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -69,6 +81,7 @@
 			this.uiVerseSpinner.Location = new System.Drawing.Point(166, 0);
 			this.uiVerseSpinner.Margin = new System.Windows.Forms.Padding(0);
 			this.uiVerseSpinner.Name = "uiVerseSpinner";
+			this.uiVerseSpinner.RightToLeft = System.Windows.Forms.RightToLeft.Inherit;
 			this.uiVerseSpinner.Size = new System.Drawing.Size(25, 22);
 			this.uiVerseSpinner.TabIndex = 9;
 			this.uiVerseSpinner.TabStop = false;
@@ -110,6 +123,7 @@
 			this.uiChapterSpinner.Location = new System.Drawing.Point(97, 0);
 			this.uiChapterSpinner.Margin = new System.Windows.Forms.Padding(0);
 			this.uiChapterSpinner.Name = "uiChapterSpinner";
+			this.uiChapterSpinner.RightToLeft = System.Windows.Forms.RightToLeft.Inherit;
 			this.uiChapterSpinner.Size = new System.Drawing.Size(25, 22);
 			this.uiChapterSpinner.TabIndex = 8;
 			this.uiChapterSpinner.TabStop = false;
@@ -131,7 +145,6 @@
 			this.uiBook.Name = "uiBook";
 			this.uiBook.Size = new System.Drawing.Size(53, 22);
 			this.uiBook.TabIndex = 5;
-			this.uiToolTip.SetToolTip(this.uiBook, "Select Book");
 			this.uiBook.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.uiBook_DrawItem);
 			this.uiBook.SelectionChangeCommitted += new System.EventHandler(this.uiBook_SelectionChangeCommitted);
 			this.uiBook.FontChanged += new System.EventHandler(this.uiBook_FontChanged);
@@ -164,10 +177,10 @@
 
 		private SIL.Windows.Forms.Widgets.HorizontalSpinner uiVerseSpinner;
 		private SIL.Windows.Forms.Widgets.HorizontalSpinner uiChapterSpinner;
-		private SIL.Windows.Forms.Widgets.EnterTextBox uiChapter;
-		private SIL.Windows.Forms.Widgets.EnterTextBox uiVerse;
+		private VCEnterTextBox uiChapter;
+		private VCEnterTextBox uiVerse;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private System.Windows.Forms.ToolTip uiToolTip;
-		private SIL.Windows.Forms.Widgets.SafeComboBox uiBook;
+		private VCSafeComboBox uiBook;
 	}
 }

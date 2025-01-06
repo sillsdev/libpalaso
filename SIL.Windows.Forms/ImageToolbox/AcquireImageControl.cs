@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -38,7 +38,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		void _galleryControl_ImageChanged(object sender, EventArgs e)
 		{
-			//propogate that event to the outer toolbox
+			// Propagate that event to the outer toolbox
 			if (ImageChanged != null)
 				ImageChanged(sender, e);
 		}
@@ -50,9 +50,9 @@ namespace SIL.Windows.Forms.ImageToolbox
 			if (_actModal)
 				return;		// The GTK file chooser on Linux isn't acting modal, so we simulate it.
 			_actModal = true;
-			// Something in the Mono runtime state machine keeps the GTK filechooser from getting the
+			// Something in the Mono runtime state machine keeps the GTK file chooser from getting the
 			// focus immediately when we invoke OpenFileDialogWithViews.ShowDialog() directly at this
-			// point.  Waiting for the next idle gets it into a state where the filechooser does receive
+			// point.  Waiting for the next idle gets it into a state where the file chooser does receive
 			// the focus as desired.  See https://silbloom.myjetbrains.com/youtrack/issue/BL-5809.
 			if (Platform.IsMono)
 				Application.Idle += DelayGetImageFileFromSystem;
@@ -66,53 +66,139 @@ namespace SIL.Windows.Forms.ImageToolbox
 			GetImageFileFromSystem();
 		}
 
+		// If this is set, and an image fails to load, the control will use it instead of the standard
+		// ErrorReport.NotifyUserOfProblem to report an image that fails to load. It is passed the path
+		// of the problem image, the exception that was thrown, and the standard message that would
+		// normally be displayed.
+		// Typical exceptions are OutOfMemoryException (hopefully when an image really is too big to
+		// load, but it's the default exception if anything is wrong with a file loaded by
+		// Image.FromFile(), so it could happen with a largish image that's corrupted;
+		// TagLib.CorruptFileException (most cases where file is not valid image data, though
+		// its main meaning is that specifically the metadata can't be read).
+		public Action<string, Exception, string> ImageLoadingExceptionReporter { get; set; }
+
 		private void GetImageFileFromSystem()
 		{
 			try
 			{
+				// Used to simulate having a FileOk event handler that can cancel the OK button click.
+				bool invalidFileChosen;
 				SetMode(Modes.SingleImage);
-				// The primary thing that OpenFileDialogWithViews buys us is the ability to default to large icons.
-				// OpenFileDialogWithViews still doesn't let us read (and thus remember) the selected view.
-				using (var dlg = new OpenFileDialogWithViews(OpenFileDialogWithViews.DialogViewTypes.Large_Icons))
+				do
 				{
-					if (string.IsNullOrEmpty(ImageToolboxSettings.Default.LastImageFolder))
+					invalidFileChosen = false;
+					// The primary thing that OpenFileDialogWithViews buys us is the ability to default to large icons.
+					// OpenFileDialogWithViews still doesn't let us read (and thus remember) the selected view.
+					using (var dlg = new OpenFileDialogWithViews(OpenFileDialogWithViews.DialogViewTypes.Large_Icons))
 					{
-						dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-					}
-					else
-					{
-						dlg.InitialDirectory = ImageToolboxSettings.Default.LastImageFolder; ;
-					}
-
-					dlg.Title = "Choose Picture File".Localize("ImageToolbox.FileChooserTitle", "Title shown for a file chooser dialog brought up by the ImageToolbox");
-
-					//NB: dissallowed gif because of a .net crash:  http://jira.palaso.org/issues/browse/BL-85
-					dlg.Filter = "picture files".Localize("ImageToolbox.PictureFiles", "Shown in the file-picking dialog to describe what kind of files the dialog is filtering for") + "(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
-
-					if (DialogResult.OK == dlg.ShowDialog(this.ParentForm))
-					{
-						ImageToolboxSettings.Default.LastImageFolder = Path.GetDirectoryName(dlg.FileName);
-						ImageToolboxSettings.Default.Save();
-
-						try
+						if (string.IsNullOrEmpty(ImageToolboxSettings.Default.LastImageFolder))
 						{
-							_currentImage = PalasoImage.FromFile(dlg.FileName);
+							dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 						}
-						catch (Exception err) //for example, http://jira.palaso.org/issues/browse/BL-199
+						else
 						{
-							ErrorReport.NotifyUserOfProblem(err, "Sorry, there was a problem loading that image.".Localize("ImageToolbox.ProblemLoadingImage"));
-							return;
+							dlg.InitialDirectory = ImageToolboxSettings.Default.LastImageFolder; ;
 						}
-						_pictureBox.Image = _currentImage.Image;
-						if (ImageChanged != null)
-							ImageChanged.Invoke(this, null);
+
+						dlg.Title = "Choose Picture File".Localize("ImageToolbox.FileChooserTitle", "Title shown for a file chooser dialog brought up by the ImageToolbox");
+
+						//NB: disallowed gif because of a .net crash:  http://jira.palaso.org/issues/browse/BL-85
+						dlg.Filter = "picture files".Localize("ImageToolbox.PictureFiles", "Shown in the file-picking dialog to describe what kind of files the dialog is filtering for") + "(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
+
+						if (DialogResult.OK == dlg.ShowDialog(this.ParentForm))
+						{
+							// Simulate having a FileOk event handler that can cancel the OK button click.
+							// We would prefer to actually use the event handler since that can prevent the
+							// dialog from closing, but we can't do that because of using DialogAdapters for
+							// cross-platform compatibility.  It's not worth messing with DialogAdapters at
+							// this point just to get this feature, which might not be cross-platform.
+							if (!DoubleCheckFileFilter(dlg.Filter, dlg.FileName))
+							{
+								invalidFileChosen = true;
+								continue;
+							}
+							ImageToolboxSettings.Default.LastImageFolder = Path.GetDirectoryName(dlg.FileName);
+							ImageToolboxSettings.Default.Save();
+
+							try
+							{
+								_currentImage = PalasoImage.FromFile(dlg.FileName);
+							}
+							catch (Exception err) //for example, http://jira.palaso.org/issues/browse/BL-199
+							{
+								var msg = "Sorry, there was a problem loading that image.".Localize(
+									"ImageToolbox.ProblemLoadingImage");
+								if (ImageLoadingExceptionReporter!= null)
+								{
+									ImageLoadingExceptionReporter(dlg.FileName, err, msg);
+								}
+								else
+								{
+									ErrorReport.NotifyUserOfProblem(err, msg);
+								}
+
+								return;
+							}
+							_pictureBox.Image = _currentImage.Image;
+							if (ImageChanged != null)
+								ImageChanged.Invoke(this, null);
+						}
 					}
-				}
+				} while (invalidFileChosen);
 			}
 			finally
 			{
 				_actModal = false;
 			}
+		}
+
+		/// <summary>
+		/// Return true if the filePath truly passes the filtering of the filterString.
+		/// People can defeat the filtering by typing or pasting a file path into the file path box.
+		/// </summary>
+		/// <param name="filterString">filter string like those used in file dialogs</param>
+		/// <param name="filePath">file path returned by a file dialog</param>
+		internal static bool DoubleCheckFileFilter(string filterString, string filePath)
+		{
+			if (string.IsNullOrEmpty(filterString))
+				return true; // no filter, so everything passes
+			if (string.IsNullOrEmpty(filePath))
+				return false; // no file, so nothing passes
+			var filterSections = filterString.Split('|');
+			if (filterSections.Length < 2)
+				return true; // no filter, so everything passes
+			var fileName = Path.GetFileName(filePath);
+			for (int i = 1; i < filterSections.Length; i += 2)
+			{
+				if (PassesFilter(filterSections[i], fileName))
+					return true;
+			}
+			return false;
+		}
+		private static bool PassesFilter(string filterList, string fileName)
+		{
+			var parts = filterList.Split(';');
+			foreach (var part in parts)
+			{
+				if (part == "*.*" || part == "*")
+					return true;
+				var filter = part.Trim();
+				if (filter.StartsWith("*"))
+				{
+					filter = filter.Substring(1);
+					if (fileName.EndsWith(filter, StringComparison.InvariantCultureIgnoreCase))
+						return true;
+				}
+				else if (filter.EndsWith("*"))
+				{
+					filter = filter.Substring(0, filter.Length - 1);
+					if (fileName.StartsWith(filter, StringComparison.InvariantCultureIgnoreCase))
+						return true;
+				}
+				else if (fileName.Equals(filter, StringComparison.InvariantCultureIgnoreCase))
+					return true;
+			}
+			return false;
 		}
 
 		private void OpenFileFromDrag(string path)
@@ -145,7 +231,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 					BeginInvoke(new Action<string>(OpenFileFromDrag), s);
 
-					ParentForm.Activate();        // in the case Explorer overlaps this form
+					ParentForm?.Activate();        // in the case Explorer overlaps this form
 				}
 			}
 			catch (Exception)
@@ -162,14 +248,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			_scannerButton.Checked = _cameraButton.Checked = false;
 			_currentImage = image;
 			SetMode(Modes.SingleImage);
-			if (image == null)
-			{
-				_pictureBox.Image = null;
-			}
-			else
-			{
-				_pictureBox.Image = image.Image;
-			}
+			_pictureBox.Image = image?.Image;
 		}
 
 		public PalasoImage GetImage()
@@ -225,27 +304,52 @@ namespace SIL.Windows.Forms.ImageToolbox
 			catch (ImageDeviceNotFoundException error)
 			{
 				_messageLabel.Text = error.Message + Environment.NewLine + Environment.NewLine +
-									 "Note: this program works with devices that have a 'WIA' driver, not the old-style 'TWAIN' driver";
+					TwainDriverNotSupportedMessage;
 				_messageLabel.Visible = true;
 			}
 			catch (WIA_Version2_MissingException)
 			{
-				_messageLabel.Text = "Windows XP does not come with a crucial DLL that lets you use a WIA scanner with this program. Get a technical person to download and follow the directions at http://vbnet.mvps.org/files/updates/wiaautsdk.zip";
+				_messageLabel.Text = WIAVersion2MissingMessage;
 				_messageLabel.Visible = true;
 			}
 			catch (Exception error)
 			{
-				ErrorReport.NotifyUserOfProblem(error, "Problem Getting Image".Localize("ImageToolbox.ProblemGettingImageFromDevice"));
+				ErrorReport.NotifyUserOfProblem(error, ProblemGettingImageFromDeviceMessage);
 			}
 		}
 
+		// This is a separate property because L10nSharp's extraction code cannot properly load
+		// Interop.WIA by reflection, so any strings contained in methods that depend on WIA
+		// calls are omitted.
+		private string TwainDriverNotSupportedMessage =>
+			LocalizationManager.GetString("ImageToolbox.TwainDriverNotSupported",
+				"Note: this program works with devices that have a \"WIA\" driver, not the " +
+				"old-style \"TWAIN\" driver");
+
+		// This is a separate property because L10nSharp's extraction code cannot properly load
+		// Interop.WIA by reflection, so any strings contained in methods that depend on WIA
+		// calls are omitted.
+		private string WIAVersion2MissingMessage =>
+			string.Format(
+			LocalizationManager.GetString("ImageToolbox.WindowsXpMissingWiaV2Dll",
+			"Windows XP does not come with a crucial DLL that lets you use a WIA scanner with " +
+			"this program. Get a technical person to download and follow the directions at {0}",
+			"Param 0: URL to download a zip file"),
+			"http://vbnet.mvps.org/files/updates/wiaautsdk.zip");
+
+		// This is a separate property because L10nSharp's extraction code cannot properly load
+		// Interop.WIA by reflection, so any strings contained in methods that depend on WIA
+		// calls are omitted.
+		private string ProblemGettingImageFromDeviceMessage =>
+			"Problem Getting Image".Localize("ImageToolbox.ProblemGettingImageFromDevice");
+
 		/// <summary>
-		/// use if the calling app already has some notion of what the user might be looking for (e.g. the definition in a dictionary program)
+		/// Use if the calling app already has some notion of what the user might be looking for (e.g. the definition in a dictionary program)
 		/// </summary>
 		/// <param name="searchTerm"></param>
-		public void SetIntialSearchString(string searchTerm)
+		public void SetInitialSearchString(string searchTerm)
 		{
-			_galleryControl.SetIntialSearchTerm(searchTerm);
+			_galleryControl.SetInitialSearchTerm(searchTerm);
 		}
 
 		/// <summary>
@@ -253,13 +357,13 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// </summary>
 		public string SearchLanguage
 		{
-			get { return _galleryControl.SearchLanguage; }
-			set { _galleryControl.SearchLanguage = value; }
+			get => _galleryControl.SearchLanguage;
+			set => _galleryControl.SearchLanguage = value;
 		}
 
 		/*
 		/// <summary>
-		/// Bitmaps --> PNG, JPEGs stay as jpegs.
+		/// Bitmaps --> PNG, JPEGs stay as JPEGs.
 		/// Will delete the incoming file if it needs to do a conversion.
 		/// </summary>
 		private string ConvertToPngOrJpegIfNotAlready(string incoming)
@@ -301,8 +405,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private string ConvertToPngOrJpegIfNotAlready(ImageFile wiaImageFile)
 		{
-			Image acquiredImage;//with my scanner, always a .bmp
-
 			var imageBytes = (byte[])wiaImageFile.FileData.get_BinaryData();
 			if (wiaImageFile.FileExtension == ".jpg" || wiaImageFile.FileExtension == ".png")
 			{
@@ -326,8 +428,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 				TempFile jpeg = TempFile.WithExtension(".jpg");
 				TempFile png = TempFile.WithExtension(".png");
 
-				//DOCS: "You must keep the stream open for the lifetime of the Image."(maybe just true for jpegs)
-				using (acquiredImage = Image.FromStream(stream))
+				//DOCS: "You must keep the stream open for the lifetime of the Image." (maybe just true for jpeg images)
+				using (var acquiredImage = Image.FromStream(stream))
 				{
 					acquiredImage.Save(jpeg.Path, ImageFormat.Jpeg);
 					acquiredImage.Save(png.Path, ImageFormat.Png);
@@ -367,7 +469,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 					_galleryControl.Visible = false;
 					break;
 				default:
-					throw new ArgumentOutOfRangeException("mode");
+					throw new ArgumentOutOfRangeException(nameof(mode));
 			}
 		}
 
@@ -389,7 +491,9 @@ namespace SIL.Windows.Forms.ImageToolbox
 			{
 				SetMode(Modes.SingleImage);
 			}
-
+			// This control can get loaded when the overall dialog is being disposed.
+			// See https://issues.bloomlibrary.org/youtrack/issue/BL-10314 if you don't believe me.
+			Load -= AcquireImageControl_Load;
 		}
 
 		/// <summary>

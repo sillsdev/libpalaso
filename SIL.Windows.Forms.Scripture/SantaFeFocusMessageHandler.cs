@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------------------------
-#region // Copyright (c) 2014, SIL International.
-// <copyright from='2007' to='2014' company='SIL International'>
-//		Copyright (c) 2014, SIL International.
+#region // Copyright 2024 SIL Global
+// <copyright from='2007' to='2024' company='SIL Global'>
+//		Copyright (c) 2024, SIL Global.
 //
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
 // </copyright>
@@ -32,7 +32,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// <param name="name">unique name of a message</param>
 		/// <returns>message identifier in the range 0xC000 through 0xFFFF, or 0 if an error
 		/// occurs</returns>
-		[DllImport("User32.dll", EntryPoint = "RegisterWindowMessage")]
+		[DllImport("user32.dll", EntryPoint = "RegisterWindowMessage")]
 		private static extern uint RegisterWindowMessageWindows(string name);
 
 		private static uint RegisterWindowMessageLinux(string name)
@@ -50,7 +50,7 @@ namespace SIL.Windows.Forms.Scripture
 
 
 		/// <summary></summary>
-		[DllImport("User32.dll", CharSet = CharSet.Auto, EntryPoint = "PostMessage")]
+		[DllImport("user32.dll", CharSet = CharSet.Auto, EntryPoint = "PostMessage")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		private static extern bool PostMessageWindows(IntPtr hWnd, int Msg, uint wParam, uint lParam);
 

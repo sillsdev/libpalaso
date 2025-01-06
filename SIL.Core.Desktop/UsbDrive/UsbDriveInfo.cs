@@ -1,12 +1,11 @@
-﻿// Copyright (c) 2009-2016 SIL International
+// Copyright (c) 2009-2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
 using System.Collections.Generic;
 using System.IO;
-using SIL.PlatformUtilities;
-using SIL.UsbDrive.Linux;
-using SIL.UsbDrive.Windows;
+using System.Linq;
+using JetBrains.Annotations;
 
 namespace SIL.UsbDrive
 {
@@ -15,9 +14,31 @@ namespace SIL.UsbDrive
 	{
 		bool IsReady { get; }
 		DirectoryInfo RootDirectory { get; }
+		[PublicAPI]
 		string VolumeLabel { get; }
 		ulong TotalSize { get; }
+		[PublicAPI]
 		ulong AvailableFreeSpace { get; }
+	}
+
+	internal class UsbDriveWrapper : IUsbDriveInfo
+	{
+		private readonly DriveInfo _driveInfo;
+
+		public UsbDriveWrapper(DriveInfo driveInfo)
+		{
+			_driveInfo = driveInfo;
+		}
+
+		public ulong AvailableFreeSpace => (ulong)_driveInfo.AvailableFreeSpace;
+
+		public bool IsReady => _driveInfo.IsReady;
+
+		public DirectoryInfo RootDirectory => _driveInfo.RootDirectory;
+
+		public ulong TotalSize => (ulong) _driveInfo.TotalSize;
+
+		public string VolumeLabel => _driveInfo.VolumeLabel;
 	}
 
 	/// <summary>
@@ -27,6 +48,7 @@ namespace SIL.UsbDrive
 	/// 3) full drives
 	/// 4) locked drives(not today, but maybe soon)
 	/// </summary>
+	[PublicAPI]
 	public class UsbDriveInfoForTests : IUsbDriveInfo
 	{
 		public UsbDriveInfoForTests(string path)
@@ -47,9 +69,11 @@ namespace SIL.UsbDrive
 
 	public interface IRetrieveUsbDriveInfo
 	{
+		[PublicAPI]
 		List<IUsbDriveInfo> GetDrives();
 	}
 
+	[PublicAPI]
 	public class RetrieveUsbDriveInfo : IRetrieveUsbDriveInfo
 	{
 		public List<IUsbDriveInfo> GetDrives()
@@ -61,6 +85,7 @@ namespace SIL.UsbDrive
 	/// <summary>
 	/// This class allows tests to set up pretend usb drives
 	/// </summary>
+	[PublicAPI]
 	public class RetrieveUsbDriveInfoForTests : IRetrieveUsbDriveInfo
 	{
 		private readonly List<IUsbDriveInfo> _driveInfos;
@@ -102,8 +127,12 @@ namespace SIL.UsbDrive
 
 		public static List<IUsbDriveInfo> GetDrives()
 		{
-			if (Platform.IsWindows)
-				return UsbDriveInfoWindows.GetDrives();
+#if NETSTANDARD
+			return DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.Removable)
+				.Select(d => new UsbDriveWrapper(d)).ToList<IUsbDriveInfo>();
+#else
+			if (PlatformUtilities.Platform.IsWindows)
+				return Windows.UsbDriveInfoWindows.GetDrives();
 
 			// Using SIL.UsbDrive on Linux/Mono results in NDesk spinning up a thread that
 			// continues until NDesk Bus is closed.  Failure to close the thread results in a
@@ -114,9 +143,10 @@ namespace SIL.UsbDrive
 			// Ubuntu 12.04 uses udisks. HAL use is deprecated.
 			// Ubuntu 14.04 can use udisks or udisks2.
 			// Ubuntu 16.04 uses udisks2.
-			return UsbDriveInfoUDisks2.IsUDisks2Available
-				? UsbDriveInfoUDisks2.GetDrives()
-				: UsbDriveInfoUDisks.GetDrives();
+			return Linux.UsbDriveInfoUDisks2.IsUDisks2Available
+				? Linux.UsbDriveInfoUDisks2.GetDrives()
+				: Linux.UsbDriveInfoUDisks.GetDrives();
+#endif
 		}
 	}
 

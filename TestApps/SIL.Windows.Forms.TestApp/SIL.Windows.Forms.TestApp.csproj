@@ -1,38 +1,38 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>net461</TargetFrameworks>
     <RootNamespace>SIL.Windows.Forms.TestApp</RootNamespace>
     <AssemblyName>SIL.Windows.Forms.TestApp</AssemblyName>
-    <Configurations>Debug;Release</Configurations>
     <Description>SIL.Windows.Forms.TestApp test app</Description>
-    <Company>SIL International</Company>
-    <Authors>SIL International</Authors>
-    <Product>libpalaso</Product>
-    <Copyright>Copyright © 2010-2020 SIL International</Copyright>
     <OutputPath>../../output/$(Configuration)</OutputPath>
+    <!-- Unsigned because we reference SIL.Media which itself is unsigned because it depends on
+    irrKlang.NET4.dll which is a mixed-mode assembly -->
+    <SignAssembly>false</SignAssembly>
     <IsPackable>false</IsPackable>
-    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Geckofx45" Version="45.0.34" />
-    <PackageReference Include="Geckofx45.32.Linux" Version="45.0.37" />
-    <PackageReference Include="Geckofx45.64" Version="45.0.34" />
-    <PackageReference Include="Geckofx45.64.Linux" Version="45.0.37" />
-    <PackageReference Include="GitVersionTask" Version="5.3.4">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Geckofx45" Version="45.0.34" Condition="'$(OS)'!='Unix' And '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'!='X64'" GeneratePathProperty="true" />
+    <PackageReference Include="Geckofx45.64" Version="45.0.34" Condition="'$(OS)'!='Unix' And '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'=='X64'" GeneratePathProperty="true" />
+    <PackageReference Include="Geckofx45.32.Linux" Version="45.0.37" Condition="'$(OS)'=='Unix' And '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'!='X64'" GeneratePathProperty="true" />
+    <PackageReference Include="Geckofx45.64.Linux" Version="45.0.37" Condition="'$(OS)'=='Unix' And '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'=='X64'" GeneratePathProperty="true" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
     <PackageReference Include="Icu4c.Win.Min" Version="56.1.82" />
-    <PackageReference Include="L10NSharp" Version="4.1.0-beta0036" />
+    <PackageReference Include="L10NSharp" Version="7.0.0" />
+    <PackageReference Include="SIL.libpalaso.l10ns" Version="13.*-*" GeneratePathProperty="true" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\SIL.Core.Desktop\SIL.Core.Desktop.csproj" />
     <ProjectReference Include="..\..\SIL.Core\SIL.Core.csproj" />
+    <ProjectReference Include="..\..\SIL.DblBundle\SIL.DblBundle.csproj" />
     <ProjectReference Include="..\..\SIL.Lexicon\SIL.Lexicon.csproj" />
     <ProjectReference Include="..\..\SIL.Media\SIL.Media.csproj" />
+    <ProjectReference Include="..\..\SIL.Windows.Forms.DblBundle\SIL.Windows.Forms.DblBundle.csproj" />
+    <ProjectReference Include="..\..\SIL.Windows.Forms.GeckoBrowserAdapter\SIL.Windows.Forms.GeckoBrowserAdapter.csproj" />
     <ProjectReference Include="..\..\SIL.Windows.Forms.Keyboarding\SIL.Windows.Forms.Keyboarding.csproj" />
     <ProjectReference Include="..\..\SIL.Windows.Forms.WritingSystems\SIL.Windows.Forms.WritingSystems.csproj" />
     <ProjectReference Include="..\..\SIL.Windows.Forms\SIL.Windows.Forms.csproj" />
@@ -40,7 +40,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="System.Windows.Forms" />
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <Target Name="DeleteIcuDllsFromOutput" AfterTargets="_CopyFilesMarkedCopyLocal">
@@ -49,6 +60,29 @@
       <IcuFiles Include="$(OutputPath)/icu*56.dll" />
     </ItemGroup>
     <Delete Files="@(IcuFiles)" />
+  </Target>
+
+  <Target Name="CopyGeckoFxSupportFiles" AfterTargets="CopyFilesToOutputDirectory">
+    <!-- This copy is necessary because the Geckofx45.targets uses a deprecated method of copying files -->
+    <!-- NOTE: we can't use "$(Platform)!='x64'" because Platform is AnyCPU! -->
+    <ItemGroup Condition="'$(OS)'!='Unix'">
+      <Firefox Include="$(PkgGeckofx45)/content/Firefox/*.*" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'!='X64'" />
+      <Firefox Include="$(PkgGeckofx45_64)/content/Firefox/*.*" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'=='X64'" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(OS)'=='Unix'">
+      <Firefox Include="$(PkgGeckofx45_32_Linux)/content/Firefox*/*.*" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'!='X64'" />
+      <Firefox Include="$(PkgGeckofx45_64_Linux)/content/Firefox*/*.*" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'=='X64'" />
+    </ItemGroup>
+    <Message Text="Copying Gecko Files" />
+    <Copy SourceFiles="@(Firefox)" DestinationFolder="$(OutputPath)/Firefox" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="CopyL10NFiles" AfterTargets="CopyFilesToOutputDirectory">
+    <!-- This copy is necessary because SIL.libpalaso.l10ns has no target to copy files -->
+    <ItemGroup>
+	  <L10ns Include="$(PkgSIL_libpalaso_l10ns)/content/*/*.xlf" />
+	</ItemGroup>
+	<Copy SourceFiles="@(L10ns)" DestinationFolder="../../DistFiles" />
   </Target>
 
 </Project>

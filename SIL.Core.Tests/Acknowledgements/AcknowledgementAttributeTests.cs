@@ -1,4 +1,4 @@
-// Copyright (c) 2020 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System.IO;
@@ -46,8 +46,8 @@ namespace SIL.Tests.Acknowledgements
 		public void CreateAnAcknowledgement_NoCopyright_OverriddenByFile()
 		{
 			var ack = new AcknowledgementAttribute("testKey") { Name = "testName",
-				Location = GetDllWithPathInTestAssemblyFolder("NDesk.DBus.dll") } ;
-			Assert.That(ack.Copyright, Is.EqualTo("Copyright (C) Alp Toker"));
+				Location = GetDllWithPathInTestAssemblyFolder("nunit.framework.dll") } ;
+			Assert.That(ack.Copyright, Is.EqualTo("Copyright (c) 2022 Charlie Poole, Rob Prouse"));
 		}
 
 		[Test]

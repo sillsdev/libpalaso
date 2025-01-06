@@ -1,19 +1,22 @@
 // ---------------------------------------------------------------------------------------------
-#region // Copyright (c) 2014, SIL International.
-// <copyright from='2005' to='2014' company='SIL International'>
-//		Copyright (c) 2014, SIL International.   
+#region // Copyright (c) 2024 SIL Global.
+// <copyright from='2005' to='2024' company='SIL Global'>
+//		Copyright (c) 2024, SIL Global.   
 //	
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
 // </copyright> 
 #endregion
 // 
 // This class originated in FieldWorks (under the GNU Lesser General Public License), but we
-// have decided to make it avaialble in SIL.Scripture as part of Palaso so it will be more
-// readily available to other projects.
+// decided to make it available in SIL.Scripture to make it more readily available to other
+// projects.
 // ---------------------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using JetBrains.Annotations;
+using static System.Char;
+using static System.Int32;
 
 namespace SIL.Scripture
 {
@@ -33,7 +36,7 @@ namespace SIL.Scripture
 		{
 			get
 			{
-				return new string[] {
+				return new [] {
 					"GEN", "EXO", "LEV", "NUM", "DEU", "JOS", "JDG", "RUT", "1SA", "2SA",
 					"1KI", "2KI", "1CH", "2CH", "EZR", "NEH", "EST", "JOB", "PSA", "PRO",
 					"ECC", "SNG", "ISA", "JER", "LAM", "EZK", "DAN", "HOS", "JOL", "AMO",
@@ -53,7 +56,7 @@ namespace SIL.Scripture
 		{
 			get
 			{
-				return new string[] {"GE","EX","LV","NU","DU","JO","JD",
+				return new [] {"GE","EX","LV","NU","DU","JO","JD",
 					"RU","1S","2S","1K","2K","3K","4K","EZ","NE","ES","JB","PA","PR",
 					"EC","SO","IS","JR","LA","EK","DA","HO","JL","AM","OB","JH","MI",
 					"NA","HA","ZP","HG","ZC","MA",
@@ -76,7 +79,7 @@ namespace SIL.Scripture
 			new List<string>(SilBooks.Codes_3Letter);
 
 		protected static readonly List<string> s_DeuterocanonicalBookCodes =
-			new List<string>(new string[]
+			new List<string>(new []
 		{
 			"TOB", "JDT", "ESG", "WIS", "SIR", "BAR", "LJE", "S3Y", "SUS", "BEL",
 			"1MA", "2MA", "3MA", "4MA", "1ES", "2ES", "MAN", "PS2", "ODA", "PSS",
@@ -86,8 +89,8 @@ namespace SIL.Scripture
 		/// <summary>Whether or not deuterocanonical books are supported</summary>
 		protected static bool s_fSupportDeuterocanon = false;
 
-		private static string ksTitleRef = " Title";
-		private static string ksIntroRef = " Intro";
+		private static readonly string ksTitleRef = " Title";
+		private static readonly string ksIntroRef = " Intro";
 
 		protected int m_book;
 		protected int m_chapter;
@@ -172,10 +175,8 @@ namespace SIL.Scripture
 		/// Gets an instance representing an "empty" reference.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static BCVRef Empty
-		{
-			get { return new BCVRef(); }
-		}
+		[PublicAPI]
+		public static BCVRef Empty => new BCVRef();
 
 		#region Operators
 		/// ------------------------------------------------------------------------------------
@@ -194,7 +195,7 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Implicit conversion of an integer to a <see cref="BCVRef"/>.
 		/// </summary>
-		/// <param name="nBCV">The integer representing a Scripture Reference as a BBCCVVV value
+		/// <param name="nBCV">The integer representing a Scripture Reference as a BBCCCVVV value
 		/// </param>
 		/// <returns>A <see cref="BCVRef"/></returns>
 		/// ------------------------------------------------------------------------------------
@@ -260,9 +261,9 @@ namespace SIL.Scripture
 		/// ------------------------------------------------------------------------------------
 		protected static bool AreEqual(BCVRef left, BCVRef right)
 		{
-			if ((object)left == null && (object)right == null)
+			if (Equals(left, null) && Equals(right, null))
 				return true;
-			else if ((object)left == null || (object)right == null)
+			if (Equals(left, null) || Equals(right, null))
 				return false;
 			return left.CompareTo(right) == 0;
 		}
@@ -545,6 +546,7 @@ namespace SIL.Scripture
 		/// </summary>
 		/// <param name="format">The format.</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public string ToString(RefStringFormat format)
 		{
 			return ToString(BBCCCVVV, format);
@@ -554,8 +556,23 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Returns the verse reference as a string
 		/// </summary>
+		/// <param name="format">The format.</param>
+		/// <param name="chapterVerseSeparator">Character(s) used to delimit the chapter and verse
+		/// number</param>
+		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
+		public string ToString(RefStringFormat format, string chapterVerseSeparator)
+		{
+			return ToString(BBCCCVVV, format, chapterVerseSeparator);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Returns the verse reference as a string
+		/// </summary>
 		/// <param name="bcv">The book-chapter-verse representation of a reference</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static string ToString(int bcv)
 		{
 			return ToString(bcv, RefStringFormat.General);
@@ -570,7 +587,23 @@ namespace SIL.Scripture
 		/// of using a format to facilitate exchange (e.g., XML).</param>
 		/// <returns></returns>
 		/// ------------------------------------------------------------------------------------
-		public static string ToString(int bcv, RefStringFormat format)
+		[PublicAPI]
+		public static string ToString(int bcv, RefStringFormat format) =>
+			ToString(bcv, format, ":");
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Returns the verse reference as a string
+		/// </summary>
+		/// <param name="bcv">The book-chapter-verse representation of a reference</param>
+		/// <param name="format">Indicates whether to format the reference for general purposes
+		/// of using a format to facilitate exchange (e.g., XML).</param>
+		/// <param name="chapterVerseSeparator">Character(s) used to delimit the chapter and verse
+		/// number</param>
+		/// <returns></returns>
+		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
+		public static string ToString(int bcv, RefStringFormat format, string chapterVerseSeparator)
 		{
 			string book = NumberToBookCode(GetBookFromBcv(bcv));
 			int chapter = GetChapterFromBcv(bcv);
@@ -585,7 +618,7 @@ namespace SIL.Scripture
 					goto default;
 
 				default:
-					return string.Format("{0} {1}:{2}", book, chapter, verse);
+					return string.Format($"{book} {chapter}{chapterVerseSeparator}{verse}");
 			}
 		}
 		#endregion
@@ -604,6 +637,7 @@ namespace SIL.Scripture
 		/// range</param>
 		/// <returns>The reference range as a formatted string.</returns>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static string MakeReferenceString(BCVRef startRef, BCVRef endRef,
 			string chapterVerseSeparator, string verseBridge)
 		{
@@ -627,11 +661,19 @@ namespace SIL.Scripture
 		/// chapter and verse is 1:0</param>
 		/// <returns>The reference range as a formatted string.</returns>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static string MakeReferenceString(BCVRef startRef, BCVRef endRef,
 			string chapterVerseSeparator, string verseBridge, bool supressChapterForIntroMatter)
 		{
-			return MakeReferenceString(NumberToBookCode(startRef.Book), startRef, endRef,
-				chapterVerseSeparator, verseBridge, supressChapterForIntroMatter);
+			if (endRef == null || endRef.Book == -1 || startRef.Book == endRef.Book)
+			{
+				return MakeReferenceString(NumberToBookCode(startRef.Book), startRef, endRef,
+					chapterVerseSeparator, verseBridge, supressChapterForIntroMatter);
+			}
+
+			return startRef.ToString(RefStringFormat.General, chapterVerseSeparator) +
+				verseBridge +
+				endRef.ToString(RefStringFormat.General, chapterVerseSeparator);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -648,6 +690,7 @@ namespace SIL.Scripture
 		/// range</param>
 		/// <returns>The reference range as a formatted string.</returns>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static string MakeReferenceString(string bookName, BCVRef startRef,
 			BCVRef endRef, string chapterVerseSeparator, string verseBridge)
 		{
@@ -672,6 +715,7 @@ namespace SIL.Scripture
 		/// chapter and verse is 1:0</param>
 		/// <returns>The reference range as a formatted string.</returns>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static string MakeReferenceString(string bookName, BCVRef startRef,
 			BCVRef endRef, string chapterVerseSeparator, string verseBridge,
 			bool supressChapterForIntroMatter)
@@ -701,6 +745,7 @@ namespace SIL.Scripture
 		/// <c>null</c> to treat this as a chapter-only reference</param>
 		/// <returns>The reference range as a formatted string.</returns>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static string MakeReferenceString(BCVRef startRef, BCVRef endRef,
 			string chapterVerseSeparator, string verseBridge,
 			string literalTitleText, string literalIntroText)
@@ -731,6 +776,7 @@ namespace SIL.Scripture
 		/// <c>null</c> to treat this as a chapter-only reference</param>
 		/// <returns>The reference range as a formatted string.</returns>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static string MakeReferenceString(string bookName, BCVRef startRef,
 			BCVRef endRef, string chapterVerseSeparator, string verseBridge,
 			string literalTitleText, string literalIntroText)
@@ -753,25 +799,25 @@ namespace SIL.Scripture
 			{
 				string sref = startRef.Chapter.ToString();
 				if (startRef.Verse > 0 || endRef.Verse > 0)
-					sref += (chapterVerseSeparator + startRef.Verse.ToString());
+					sref += (chapterVerseSeparator + startRef.Verse);
 
-				sref += (verseBridge + endRef.Chapter.ToString());
+				sref += (verseBridge + endRef.Chapter);
 				if (startRef.Verse > 0 || endRef.Verse > 0)
-					sref += (chapterVerseSeparator + endRef.Verse.ToString());
+					sref += (chapterVerseSeparator + endRef.Verse);
 
 				return bookName + " " + sref;
 			}
 			
 			if (startRef.Verse != endRef.Verse)
 			{
-				return bookName + " " + startRef.Chapter.ToString() + chapterVerseSeparator +
-					startRef.Verse.ToString() + verseBridge + endRef.Verse.ToString();
+				return bookName + " " + startRef.Chapter + chapterVerseSeparator +
+					startRef.Verse + verseBridge + endRef.Verse;
 			}
 			
 			if (startRef.Verse != 0)
 			{
-				return bookName + " " + startRef.Chapter.ToString() + chapterVerseSeparator +
-					startRef.Verse.ToString();
+				return bookName + " " + startRef.Chapter + chapterVerseSeparator +
+					startRef.Verse;
 			}
 
 			string sLiteral = null;
@@ -797,7 +843,7 @@ namespace SIL.Scripture
 			if (literal == String.Empty)
 				return String.Empty;
 		
-			return " " + (literal != null ? literal : chapter.ToString());
+			return " " + (literal ?? chapter.ToString());
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -811,6 +857,7 @@ namespace SIL.Scripture
 		/// <returns>0 if the left item is closest (or if they are equally close), 1 if the
 		/// right item is closest</returns>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public int ClosestTo(int left, int right)
 		{
 			int bbcccvvv = BBCCCVVV;
@@ -827,20 +874,21 @@ namespace SIL.Scripture
 		/// <remarks>This method is pretty similar to MultilingScrBooks.ParseRefString, but
 		/// it deals only with SIL codes.</remarks>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void Parse(string sTextToBeParsed)
 		{
 			// Get first token
-			string sTrimedText = sTextToBeParsed.TrimStart(null); // Trim all std white space
+			string sTrimmedText = sTextToBeParsed.TrimStart(null); // Trim all std white space
 
-			if (sTrimedText.Length < 3)
+			if (sTrimmedText.Length < 3)
 			{
 				// can't be a valid reference - set book to 0 and return
 				Book = 0;
 				return;
 			}
 
-			string sToken = sTrimedText.Substring(0, 3); // 3 letter SIL code
-			string sAfterToken = sTrimedText.Substring(3);
+			string sToken = sTrimmedText.Substring(0, 3); // 3 letter SIL code
+			string sAfterToken = sTrimmedText.Substring(3);
 
 			// Determine book number
 			m_book = BookToNumber(sToken);
@@ -874,7 +922,7 @@ namespace SIL.Scripture
 
 			// Break out the chapter and verse numbers
 			bool inChapter = true;
-			if (IsSingleChapterBook && (sAfterToken[0] != '1' || (sAfterToken.Length > 1 && Char.IsDigit(sAfterToken[1]))))
+			if (IsSingleChapterBook && (sAfterToken[0] != '1' || (sAfterToken.Length > 1 && IsDigit(sAfterToken[1]))))
 			{
 				m_chapter = 1;
 				inChapter = false;
@@ -882,25 +930,25 @@ namespace SIL.Scripture
 
 			foreach (char ch in sAfterToken)
 			{
-				if (Char.IsDigit(ch))
+				if (IsDigit(ch))
 				{
 					if (inChapter)
 					{
 						m_chapter *= 10;
-						m_chapter += (int)Char.GetNumericValue(ch);
+						m_chapter += (int)GetNumericValue(ch);
 					}
 					else
 					{
 						if (m_verse < 0)
-							m_verse = (int)Char.GetNumericValue(ch);
+							m_verse = (int)GetNumericValue(ch);
 						else
 						{
 							m_verse *= 10;
-							m_verse += (int)Char.GetNumericValue(ch);
+							m_verse += (int)GetNumericValue(ch);
 						}
 					}
 				}
-				else if (!char.IsWhiteSpace(ch))
+				else if (!IsWhiteSpace(ch))
 				{
 					if (inChapter)
 						inChapter = false;
@@ -950,16 +998,16 @@ namespace SIL.Scripture
 			chapterString = chapterString.TrimStart();
 			if (chapterString == string.Empty)
 				throw new ArgumentException("The chapter string was empty");
-			if (!Char.IsDigit(chapterString[0]))
+			if (!IsDigit(chapterString[0]))
 				throw new ArgumentException("The chapter string does not start with a digit");
 
 			int chapter = 0;
 			for (int i = 0; i < chapterString.Length; i++)
 			{
 				char ch = chapterString[i];
-				if (Char.IsDigit(ch))
+				if (IsDigit(ch))
 				{
-					chapter = chapter * 10 + (int)Char.GetNumericValue(ch);
+					chapter = chapter * 10 + (int)GetNumericValue(ch);
 					if (chapter > Int16.MaxValue)
 						chapter = Int16.MaxValue;
 				}
@@ -1030,8 +1078,8 @@ namespace SIL.Scripture
 			for (int i = sVerseNum.Length - 1; i >= 0; i--)
 			{
 				int numVal = -1;
-				if (Char.IsDigit(sVerseNum[i]))
-					numVal = (int)Char.GetNumericValue(sVerseNum[i]);
+				if (IsDigit(sVerseNum[i]))
+					numVal = (int)GetNumericValue(sVerseNum[i]);
 
 				if (numVal >= 0 && numVal <= 9)
 				{
@@ -1199,24 +1247,24 @@ namespace SIL.Scripture
 			while (i < sourceString.Length)
 			{
 				char ch = sourceString[i];
-				if (Char.IsDigit(ch))
+				if (IsDigit(ch))
 				{
 					stringSplitPos = i + 1;
 				}
-				else if (Char.IsLetter(ch))
+				else if (IsLetter(ch))
 				{
 					if (prevChar == '.')
 					{
 						stringSplitPos = i;
 						break;
 					}
-					if (Char.IsLetter(prevChar) || Char.IsPunctuation(prevChar))
+					if (IsLetter(prevChar) || IsPunctuation(prevChar))
 					{
 						stringSplitPos = i - 1;
 						break;
 					}
 				}
-				else if (ch != '.' && Char.IsPunctuation(ch))
+				else if (ch != '.' && IsPunctuation(ch))
 				{
 					if (iDashCount > 0)
 					{
@@ -1259,26 +1307,26 @@ namespace SIL.Scripture
 			int lastSegment = 0;
 			foreach (char ch in literalVerse)
 			{
-				if (Char.IsDigit(ch))
+				if (IsDigit(ch))
 				{
 					// Add the digit to either the first or last verse in the bridge
 					if (inFirst)
 					{
-						firstVerse = firstVerse * 10 + (int)Char.GetNumericValue(ch);
+						firstVerse = firstVerse * 10 + (int)GetNumericValue(ch);
 						if (firstVerse > Int16.MaxValue)
 							return false; // whoops, we got too big!
 					}
 					else
 					{
-						lastVerse = lastVerse * 10 + (int)Char.GetNumericValue(ch);
+						lastVerse = lastVerse * 10 + (int)GetNumericValue(ch);
 						if (lastVerse > Int16.MaxValue)
 							return false; // whoops, we got too big!
 					}
 				}
-				else if (Char.IsLetter(ch))
+				else if (IsLetter(ch))
 				{
 					// letters are used for segments
-					if (Char.IsDigit(prevChar))
+					if (IsDigit(prevChar))
 					{
 						if (inFirst)
 						{
@@ -1368,9 +1416,8 @@ namespace SIL.Scripture
 
 			string sFirstRef = pieces[0];
 			int bbcccvvvStart = bcvRefStart.BBCCCVVV;
-			int intVal;
 
-			if (Int32.TryParse(sFirstRef, out intVal))
+			if (Int32.TryParse(sFirstRef, out var intVal))
 			{
 				if (intVal > 176)
 				{
@@ -1392,7 +1439,7 @@ namespace SIL.Scripture
 			{
 				// have to check *second* character because first character in a book code
 				// can be a number; e.g. 2JN
-				if (sFirstRef.Length < 3 || !Char.IsLetter(sFirstRef[1]))
+				if (sFirstRef.Length < 3 || !IsLetter(sFirstRef[1]))
 				{
 					if (bcvRefStart.Book != bcvRefEnd.Book)
 						return false;
@@ -1417,9 +1464,9 @@ namespace SIL.Scripture
 
 			// The following handles the simple case of a verse number AND the more complex case of a verse
 			// number followed by a sub-verse segment letter.
-			if (Int32.TryParse(sEndRef, out intVal) ||
-				(sEndRef.Length >= 2 && sEndRef.Length <= 4 && Char.IsLetter(sEndRef[sEndRef.Length - 1]) &&
-				Int32.TryParse(sEndRef.Remove(sEndRef.Length - 1), out intVal)))
+			if (TryParse(sEndRef, out intVal) ||
+				(sEndRef.Length >= 2 && sEndRef.Length <= 4 && IsLetter(sEndRef[sEndRef.Length - 1]) &&
+				TryParse(sEndRef.Remove(sEndRef.Length - 1), out intVal)))
 			{
 				if (intVal > 176)
 				{
@@ -1439,7 +1486,7 @@ namespace SIL.Scripture
 			}
 			else
 			{
-				if (sEndRef.Length < 3 || !Char.IsLetter(sEndRef[1]))
+				if (sEndRef.Length < 3 || !IsLetter(sEndRef[1]))
 					sEndRef = NumberToBookCode(bcvRefStart.Book) + " " + sEndRef;
 
 				bcvRefEnd.Parse(sEndRef);

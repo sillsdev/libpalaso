@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2017 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -44,7 +44,7 @@ namespace SIL.Acknowledgements
 		/// For now we are just using the Name of the Reference as listed in Visual Studio. In the .csproj file,
 		/// this can be found in the Include attribute of the Reference element up until the first comma.
 		/// </summary>
-		public string Key { get; private set; }
+		public string Key { get; }
 
 		/// <summary>
 		/// Acknowledgements will be sorted by Name. This string will show up in the default Html,
@@ -61,7 +61,7 @@ namespace SIL.Acknowledgements
 				_name = versionInfo == null ? Key : versionInfo.ProductName;
 				return _name;
 			}
-			set { _name = value; }
+			set => _name = value;
 		}
 
 		/// <summary>
@@ -97,7 +97,7 @@ namespace SIL.Acknowledgements
 				var versionInfo = ExtractExecutableVersionInfo();
 				return versionInfo == null ? _copyright : versionInfo.LegalCopyright;
 			}
-			set { _copyright = value; }
+			set => _copyright = value;
 		}
 
 		/// <summary>
@@ -169,7 +169,7 @@ namespace SIL.Acknowledgements
 				_html += "</li>";
 				return _html ?? string.Empty;
 			}
-			set { _html = value; }
+			set => _html = value;
 		}
 	}
 }

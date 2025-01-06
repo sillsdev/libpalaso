@@ -1,14 +1,15 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
-using Ionic.Zip;
 using NUnit.Framework;
 using SIL.DblBundle.Tests.Properties;
 using SIL.DblBundle.Text;
 using SIL.DblBundle.Usx;
 using SIL.IO;
 using SIL.WritingSystems;
+using static System.String;
 
 namespace SIL.DblBundle.Tests.Text
 {
@@ -29,14 +30,15 @@ namespace SIL.DblBundle.Tests.Text
 		[OneTimeSetUp]
 		public void TestFixtureSetup()
 		{
-			using (var zippedBundle = CreateZippedTextBundleFromResources(true, false, true))
+			using (var zippedBundle = CreateZippedTextBundleFromResources(MetadataVersion.V1_4, true, false))
 				_legacyBundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
-			using (var zippedBundle = CreateZippedTextBundleFromResources(false, false, true))
+			using (var zippedBundle = CreateZippedTextBundleFromResources(MetadataVersion.V1_4, false, false))
 				_legacyBundleWithoutLdml = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
-			using (var zippedBundle = CreateZippedTextBundleFromResources())
+			using (var zippedBundle = CreateZippedTextBundleFromResources(MetadataVersion.V2_1))
 				_bundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
-			using (var zippedBundle = CreateZippedTextBundleFromResources(false))
+			using (var zippedBundle = CreateZippedTextBundleFromResources(MetadataVersion.V2_1, false))
 				_bundleWithoutLdml = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
+			
 		}
 
 		/// <summary>
@@ -62,6 +64,33 @@ namespace SIL.DblBundle.Tests.Text
 			Assert.AreEqual("7881095a69332502", bundle.Id);
 			Assert.AreEqual("Ri utzilaj tzij re ri kanimajawal Jesucristo", bundle.Name);
 			Assert.AreEqual("acr", bundle.LanguageIso);
+		}
+
+		/// <summary>
+		/// Tests that metadata can be read with three-.
+		/// </summary>
+		[Test]
+		public void CreateBundle_VersionHasRevision_MetadataLoadedCorrectly()
+		{
+			using (var zippedBundle = CreateZippedTextBundleFromResources(MetadataVersion.V2_2_1))
+				using (var bundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path))
+			{
+				Assert.AreEqual("55ec700d9e0d77ea", bundle.Id);
+				Assert.AreEqual("English Majority Text Version", bundle.Name);
+				Assert.AreEqual("eng", bundle.LanguageIso);
+				Assert.AreEqual("English Majority Text Version", bundle.Metadata.Name);
+				Assert.AreEqual("English Majority Text Version", bundle.Metadata.Identification.NameLocal);
+				Assert.AreEqual("xhtml", bundle.Metadata.Copyright.Statement.ContentType);
+				Assert.AreEqual("<p>© 2014 Dr. Paul W. Esposito</p>",
+					bundle.Metadata.Copyright.Statement.InternalNodes.Single().OuterXml);
+				Assert.AreEqual("xhtml",
+					bundle.Metadata.Promotion.PromoVersionInfo.ContentType);
+				Assert.AreEqual("<p>Translated by Dr. Paul W. Esposito.</p>",
+					bundle.Metadata.Promotion.PromoVersionInfo.InternalNodes.Single().OuterXml);
+				Assert.AreEqual(27, bundle.Metadata.AvailableBibleBooks.Count);
+				Assert.AreEqual("MAT", bundle.Metadata.Canons.Single().CanonBooks.First().Code);
+				Assert.AreEqual("REV", bundle.Metadata.Canons.Single().CanonBooks.Last().Code);
+			}
 		}
 
 		/// <summary>
@@ -111,8 +140,7 @@ namespace SIL.DblBundle.Tests.Text
 		public void TryGetBook(bool legacy)
 		{
 			var bundle = legacy ? _legacyBundle : _bundle;
-			UsxDocument book;
-			Assert.IsTrue(bundle.TryGetBook("MAT", out book));
+			Assert.IsTrue(bundle.TryGetBook("MAT", out var book));
 			Assert.AreEqual("MAT", book.BookId);
 		}
 
@@ -128,7 +156,7 @@ namespace SIL.DblBundle.Tests.Text
 		[Test]
 		public void GetFonts_BundleWithFont_ReturnsEnumerationWithFont()
 		{
-			using (var zippedBundle = CreateZippedTextBundleFromResources(false, false, false, true))
+			using (var zippedBundle = CreateZippedTextBundleFromResources(MetadataVersion.V2_1, false, false,  true))
 				using (var bundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path))
 				{
 					var fontInfo = bundle.GetFonts().Single();
@@ -200,9 +228,31 @@ namespace SIL.DblBundle.Tests.Text
 		/// <summary>
 		/// Helper method for tests to create a zipped text bundle.
 		/// </summary>
-		public static TempFile CreateZippedTextBundleFromResources(bool includeLdml = true, bool invalidUsxDirectory = false, bool legacyFormat = false, bool includeFont = false)
+		/// <remarks>ENHANCE: This version of this method should probably be retired and replaced
+		/// by the more useful and meaningful (private) version, but it didn't seem worth a
+		/// breaking change.</remarks>
+		public static TempFile CreateZippedTextBundleFromResources(bool includeLdml = true,
+			bool invalidUsxDirectory = false, bool legacy = false, bool includeFont = false)
+		{
+			return CreateZippedTextBundleFromResources(legacy ? MetadataVersion.V1_4 : MetadataVersion.V2_1,
+				includeLdml, invalidUsxDirectory, includeFont);
+		}
+
+		private enum MetadataVersion
+		{
+			V1_4,
+			V2_1,
+			V2_2_1,
+		}
+
+		/// <summary>
+		/// Helper method for tests to create a zipped text bundle.
+		/// </summary>
+		private static TempFile CreateZippedTextBundleFromResources(MetadataVersion version,
+			bool includeLdml = true, bool invalidUsxDirectory = false, bool includeFont = false)
 		{
 			TempFile bundle = TempFile.WithExtension(DblBundleFileUtils.kDblBundleExtension);
+			RobustFile.Delete(bundle.Path);
 
 			using (var englishLds = TempFile.WithFilename("English.lds"))
 			using (var metadataXml = TempFile.WithFilename("metadata.xml"))
@@ -211,33 +261,55 @@ namespace SIL.DblBundle.Tests.Text
 			using (var ldmlXml = TempFile.WithFilename(DblBundleFileUtils.kLegacyLdmlFileName))
 			using (var ttf = TempFile.WithFilename("AppSILI.ttf"))
 			using (var matUsx = TempFile.WithFilename("MAT.usx"))
-			using (var zip = new ZipFile())
+			using (var zip = ZipFile.Open(bundle.Path, ZipArchiveMode.Create))
 			{
-				File.WriteAllText(metadataXml.Path, legacyFormat ? Resources.metadata_xml : Resources.metadataVersion2_1_xml);
-				zip.AddFile(metadataXml.Path, string.Empty);
-
-				var subdirectory = legacyFormat ? string.Empty : "release";
+				string xml;
+				var subdirectory = "release";
+				switch (version)
+				{
+					case MetadataVersion.V1_4:
+						xml = Resources.metadata_xml;
+						subdirectory = Empty;
+						break;
+					case MetadataVersion.V2_1:
+						xml = Resources.metadataVersion2_1_xml;
+						break;
+					case MetadataVersion.V2_2_1:
+						xml = Resources.metadataVersion2_2_1_xml;
+						break;
+					default:
+						throw new ArgumentOutOfRangeException(nameof(version), version, null);
+				}
+				File.WriteAllText(metadataXml.Path, xml);
+				zip.CreateEntryFromFile(metadataXml.Path, Path.GetFileName(metadataXml.Path));
 
 				File.WriteAllBytes(englishLds.Path, Resources.English_lds);
-				zip.AddFile(englishLds.Path, subdirectory);
+				zip.CreateEntryFromFile(englishLds.Path,
+					Path.Combine(subdirectory, Path.GetFileName(englishLds.Path)));
 				File.WriteAllText(stylesXml.Path, Resources.styles_xml);
-				zip.AddFile(stylesXml.Path, subdirectory);
+				zip.CreateEntryFromFile(stylesXml.Path,
+					Path.Combine(subdirectory, Path.GetFileName(stylesXml.Path)));
 				File.WriteAllBytes(versificationVrs.Path, Resources.versification_vrs);
-				zip.AddFile(versificationVrs.Path, subdirectory);
+				zip.CreateEntryFromFile(versificationVrs.Path,
+					Path.Combine(subdirectory, Path.GetFileName(versificationVrs.Path)));
 				if (includeLdml)
 				{
 					File.WriteAllText(ldmlXml.Path, Resources.ldml_xml);
-					zip.AddFile(ldmlXml.Path, subdirectory);
+					zip.CreateEntryFromFile(ldmlXml.Path,
+						Path.Combine(subdirectory, Path.GetFileName(ldmlXml.Path)));
 				}
 				if (includeFont)
 				{
 					File.WriteAllBytes(ttf.Path,
 						(byte[])Resources.ResourceManager.GetObject("AppSILI", CultureInfo.InvariantCulture));
-					zip.AddFile(ttf.Path, subdirectory);
+					zip.CreateEntryFromFile(ttf.Path,
+						Path.Combine(subdirectory, Path.GetFileName(ttf.Path)));
 				}
 				File.WriteAllBytes(matUsx.Path, Resources.MAT_usx);
-				zip.AddFile(matUsx.Path, (legacyFormat ? "" : "release/") + (invalidUsxDirectory ? "USX_999" : "USX_1"));
-				zip.Save(bundle.Path);
+				if (subdirectory != Empty)
+					subdirectory += "/";
+				zip.CreateEntryFromFile(matUsx.Path, Path.Combine(subdirectory +
+					(invalidUsxDirectory ? "USX_999" : "USX_1"), Path.GetFileName(matUsx.Path)));
 			}
 
 			return bundle;

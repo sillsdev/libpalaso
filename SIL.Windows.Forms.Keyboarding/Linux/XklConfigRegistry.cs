@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2011-2020 SIL International
+// Copyright (c) 2011-2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
@@ -73,8 +73,8 @@ namespace X11.XKlavier
 			public override string ToString()
 			{
 				return $"[LayoutDescription: LayoutId={LayoutId}, Description={Description}, " +
-						$"LayoutVariant={LayoutVariant}, Locale={LocaleId}, LanguageCode={LanguageCode}, Language={Language}, " +
-						$"CountryCode={CountryCode}, Country={Country}]";
+					$"LayoutVariant={LayoutVariant}, Locale={LocaleId}, LanguageCode={LanguageCode}, Language={Language}, " +
+					$"CountryCode={CountryCode}, Country={Country}]";
 			}
 
 			public override bool Equals(object obj)
@@ -89,8 +89,8 @@ namespace X11.XKlavier
 			public bool Equals(LayoutDescription other)
 			{
 				return LayoutId == other.LayoutId && Description == other.Description &&
-						LayoutVariant == other.LayoutVariant &&
-						LanguageCode == other.LanguageCode && CountryCode == other.CountryCode;
+					LayoutVariant == other.LayoutVariant &&
+					LanguageCode == other.LanguageCode && CountryCode == other.CountryCode;
 			}
 
 			public override int GetHashCode()

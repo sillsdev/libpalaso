@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using SIL.Core.ClearShare;
 using SIL.Windows.Forms.Widgets.BetterGrid;
 
 namespace SIL.Windows.Forms.ClearShare
@@ -42,10 +43,9 @@ namespace SIL.Windows.Forms.ClearShare
 		/// ------------------------------------------------------------------------------------
 		public void SetContributionList(ContributionCollection list)
 		{
-			Contributions = (list ?? new ContributionCollection());
+			Contributions = list ?? new ContributionCollection();
 
-			if (NewContributionListAvailable != null)
-				NewContributionListAvailable(this, EventArgs.Empty);
+			NewContributionListAvailable?.Invoke(this, EventArgs.Empty);
 		}
 
 		/// ------------------------------------------------------------------------------------

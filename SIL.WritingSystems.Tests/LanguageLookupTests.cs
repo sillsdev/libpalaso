@@ -209,7 +209,7 @@ namespace SIL.WritingSystems.Tests
 			var languages = lookup.SuggestLanguages("United States");
 			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("en")));
 			Assert.True(languages.Take(50).All(l => l.PrimaryCountry == "United States"));
-			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("es")));
+			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("es-US")));
 
 			languages = lookup.SuggestLanguages("Fran"); // prefix of 'France'
 			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("fr")));
@@ -272,7 +272,8 @@ namespace SIL.WritingSystems.Tests
 			Assert.True(languages.Any(l => l.Names.Contains("Deg Xinag")));
 			Assert.True(languages.Any(l => l.Names.Contains("Deg Xit’an")));
 			Assert.True(languages.Any(l => l.Names.Contains("Degexit'an")));
-			Assert.AreEqual(4, languages[0].Names.Count, "2 of the 6 names are pejorative and should not be listed");
+			Assert.True(languages.Any(l => l.Names.Contains("Deg Hit’an")));
+			Assert.AreEqual(5, languages[0].Names.Count, "2 of the 7 names are pejorative and should not be listed");
 		}
 
 		/// <summary>
@@ -351,8 +352,8 @@ namespace SIL.WritingSystems.Tests
 		public void SuggestLanguages_DoesNotSuggestDeprecatedTags()
 		{
 			var lookup = new LanguageLookup();
-			var languages = lookup.SuggestLanguages("dzd").ToArray();
-			Assert.False(languages.Any(l => l.LanguageTag == "dzd"));
+			var languages = lookup.SuggestLanguages("ais").ToArray();
+			Assert.False(languages.Any(l => l.LanguageTag == "ais"));
 			languages = lookup.SuggestLanguages("yiy").ToArray();
 			Assert.False(languages.Any(l => l.LanguageTag == "yiy"));
 			languages = lookup.SuggestLanguages("jeg").ToArray();

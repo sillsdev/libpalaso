@@ -1,25 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using JetBrains.Annotations;
 using L10NSharp;
 
 namespace SIL.Windows.Forms.ClearShare
 {
-	/// <summary>
-	/// !!!!!!!!!!!!!! To keep from losing edits (having the owning metaccess not know that changes should be saved) these need to be immutable
-	/// </summary>
+	/// <summary/>
 	public abstract class LicenseInfo
 	{
 		public static LicenseInfo FromXmp(Dictionary<string, string> properties)
 		{
-			if(properties.ContainsKey("license") && properties["license"].Contains("creativecommons"))
-			{
+			if (properties.ContainsKey("license") && properties["license"].Contains("creativecommons"))
 				return CreativeCommonsLicense.FromMetadata(properties);
-			}
-			else if ( properties.ContainsKey("rights (en)"))
-			{
+
+			if ( properties.ContainsKey("rights (en)"))
 				return CustomLicense.FromMetadata(properties);
-			}
 			return new NullLicense();
 		}
 
@@ -49,18 +45,18 @@ namespace SIL.Windows.Forms.ClearShare
 			}
 		}
 
-		virtual public Image GetImage()
+		public virtual Image GetImage()
 		{
 			return null;
 		}
 
 		/// <summary>
 		/// It doesn't make sense to let the user edit the description of a well-known license, even if the meta data is unlocked.
+		/// REVIEW: How do we know whether this is a well-known license? Presently, only <see cref="CreativeCommonsLicense"/> is always well-known.
+		/// REVIEW (Hasso) 2023.07: This is never used (internally, at least) and all overriding implementations return false, too.
 		/// </summary>
-		public virtual bool EditingAllowed
-		{
-			get { return false; }//we don't konw
-		}
+		[PublicAPI]
+		public virtual bool EditingAllowed => false;
 
 		public abstract string Url { get; set; }
 
@@ -120,11 +116,9 @@ namespace SIL.Windows.Forms.ClearShare
 			return GetBestLicenseTranslation("NullLicense", englishText, comment, languagePriorityIds, out idOfLanguageUsed);
 		}
 
-		public override string Token
-		{
+		public override string Token =>
 			//do not think of changing this, there is data out there that could get messed up
-			get { return "ask"; }
-		}
+			"ask";
 
 		public override string GetMinimalFormForCredits(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
 		{
@@ -139,7 +133,7 @@ namespace SIL.Windows.Forms.ClearShare
 
 		public override string Url
 		{
-			get { return ""; }
+			get => "";
 			set { }
 		}
 	}
@@ -178,26 +172,19 @@ namespace SIL.Windows.Forms.ClearShare
 			}
 
 			//We don't actually have a way of knowing what language this is, so we use "und", from http://www.loc.gov/standards/iso639-2/faq.html#25
-			//I hearby coin "Zook's First Law": Eventually any string entered by a user will wish it had been tagged with a language identifier
+			//I hereby coin "Zook's First Law": Eventually any string entered by a user will wish it had been tagged with a language identifier
 			//"Zook's Second Law" can be: Eventually any string entered by a user will wish it was a multi-string (multiple (language,value) pairs)
 			idOfLanguageUsed = "und";
 			return RightsStatement;
 		}
 
-		public override string Token
-		{
+		public override string Token =>
 			//do not think of changing this, there is data out there that could get messed up
-			get { return "custom"; }
-		}
+			"custom";
 
 		public override Image GetImage()
 		{
 			return null;
-		}
-
-		public override bool EditingAllowed
-		{
-			get { return false; } //it may be ok, but we can't read the description.
 		}
 
 		public override string Url { get; set; }

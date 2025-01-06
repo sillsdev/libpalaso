@@ -1,9 +1,11 @@
-﻿// Copyright (c) 2015-2020 SIL International
+// Copyright (c) 2015-2024, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
@@ -12,18 +14,17 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// </summary>
 	internal class GnomeKeyboardRetrievingHelper
 	{
-		private readonly Func<string[]> _GetKeyboards;
+		private readonly Func<string[]> _getKeyboards;
 
 		public GnomeKeyboardRetrievingHelper()
 		{
-			_GetKeyboards = GetMyKeyboards;
-			GlibHelper.InitGlib();
+			_getKeyboards = GetMyKeyboards;
 		}
 
 		// Used in unit tests
 		internal GnomeKeyboardRetrievingHelper(Func<string[]> getKeyboards): this()
 		{
-			_GetKeyboards = getKeyboards;
+			_getKeyboards = getKeyboards;
 		}
 
 
@@ -32,7 +33,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			get
 			{
-				var list = _GetKeyboards();
+				var list = _getKeyboards();
 				return list != null && list.Length > 0;
 			}
 		}
@@ -40,7 +41,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		public void InitKeyboards(Func<string, bool> keyboardTypeMatches,
 			Action<IDictionary<string, uint>, (string, string)> registerKeyboards)
 		{
-			var list = _GetKeyboards();
+			var list = _getKeyboards();
 			if (list == null || list.Length < 1)
 				return;
 
@@ -57,11 +58,16 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		public static string GetKeyboardSetupApplication(out string arguments)
 		{
 			arguments = "region layouts";
-			if (File.Exists("/usr/bin/unity-control-center"))
-				return "/usr/bin/unity-control-center";
-			if (File.Exists("/usr/bin/gnome-control-center"))
-				return "/usr/bin/gnome-control-center";
-			return null;
+			var programs = Platform.IsGnomeShell
+				? new[] {
+					"/usr/bin/gnome-control-center",
+					"/usr/bin/unity-control-center"
+				}
+				: new[] {
+					"/usr/bin/unity-control-center",
+					"/usr/bin/gnome-control-center"
+				};
+			return programs.FirstOrDefault(File.Exists);
 		}
 		#endregion
 
@@ -103,7 +109,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		private static (string type, string layout) SplitKeyboardEntry(string source)
 		{
-			var parts = source.Split(new[] { ";;" }, StringSplitOptions.None);
+			var parts = source.Split(new[]{";;"}, StringSplitOptions.None);
 			Debug.Assert(parts.Length == 2);
 			return parts.Length != 2 ? (null, null) : (parts[0], parts[1]);
 		}

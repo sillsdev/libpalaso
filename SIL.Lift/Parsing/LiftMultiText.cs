@@ -408,7 +408,7 @@ namespace SIL.Lift.Parsing
 				alternative = new LiftString();
 				this[key] = alternative;
 			}
-			int start = alternative.Text.Length;
+			int start = alternative.Text?.Length ?? 0;
 			if (lang == key)
 				lang = null;
 			var span = new LiftSpan(start, length, lang, style, href);

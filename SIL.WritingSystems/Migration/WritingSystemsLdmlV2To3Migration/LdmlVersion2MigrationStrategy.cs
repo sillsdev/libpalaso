@@ -19,7 +19,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 	/// <summary>
 	/// This class is used to migrate an LdmlFile from LDML palaso version 2 to 3. 
 	/// Also note that the files are not written until all writing systems have been migrated in order to deal correctly
-	/// with duplicate Ieft Language tags that might result from migration.
+	/// with duplicate ietf Language tags that might result from migration.
 	/// </summary>
 	internal class LdmlVersion2MigrationStrategy : MigrationStrategyBase
 	{
@@ -53,8 +53,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			string spellCheckingId = writingSystemDefinitionV1.SpellCheckingId;
 			string defaultFontName = writingSystemDefinitionV1.DefaultFontName;
 			string languageName = writingSystemDefinitionV1.LanguageName.IsOneOf("Unknown Language", "Language Not Listed") ? string.Empty : writingSystemDefinitionV1.LanguageName;
-			string variant, privateUse;
-			IetfLanguageTag.SplitVariantAndPrivateUse(writingSystemDefinitionV1.Variant, out variant, out privateUse);
+			IetfLanguageTag.SplitVariantAndPrivateUse(writingSystemDefinitionV1.Variant, out var variant, out var privateUse);
 			var langTagCleaner = new IetfLanguageTagCleaner(writingSystemDefinitionV1.Language, writingSystemDefinitionV1.Script, writingSystemDefinitionV1.Region,
 				variant, privateUse);
 			langTagCleaner.Clean();

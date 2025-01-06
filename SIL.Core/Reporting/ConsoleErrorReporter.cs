@@ -16,22 +16,41 @@ namespace SIL.Reporting
 			WriteExceptionToConsole(error, null, Severity.Fatal);
 		}
 
-		public ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy, string alternateButton1Label,
-			ErrorResult resultIfAlternateButtonPressed, string message)
+		/// <summary>
+		/// Notifies the user of problem by writing to console
+		/// </summary>
+		/// <param name="policy">The policy used to check if the message should be shown</param>
+		/// <param name="error">The exception to print to console, if the policy allows</param>
+		/// <param name="message">The message to print to console, if the policy allows</param>
+		/// <exception cref="ErrorReport.ProblemNotificationSentToUserException"></exception>
+		public void NotifyUserOfProblem(IRepeatNoticePolicy policy, Exception error, string message)
 		{
 			if (!policy.ShouldShowMessage(message))
 			{
-				return ErrorResult.OK;
+				return;
 			}
 
 			if (ErrorReport.IsOkToInteractWithUser)
 			{
 				Console.WriteLine(message);
+				if (error != null)
+				{
+					Console.WriteLine(error.ToString());
+				}
 				Console.WriteLine(policy.ReoccurenceMessage);
-				return ErrorResult.OK;
+				return;
 			}
 
 			throw new ErrorReport.ProblemNotificationSentToUserException(message);
+		}
+
+		/// <param name="alternateButton1Label">N/A. You may pass null. This parameter will be ignored.</param>
+		/// <param name="resultIfAlternateButtonPressed">N/A. This parameter will be ignored.</param>
+		public ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy, string alternateButton1Label,
+			ErrorResult resultIfAlternateButtonPressed, string message)
+		{
+			NotifyUserOfProblem(policy, null, message);
+			return ErrorResult.OK;
 		}
 
 		public void ReportNonFatalException(Exception exception, IRepeatNoticePolicy policy)

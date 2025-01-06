@@ -1,63 +1,71 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net461</TargetFramework>
     <RootNamespace>SIL.Archiving</RootNamespace>
     <AssemblyTitle>SIL.Archiving</AssemblyTitle>
-    <Configurations>Debug;Release</Configurations>
-    <Description>SIL.Archiving contains Windows Forms UI elements and classes for archiving data to REAP using the RAMP application.</Description>
-    <Company>SIL International</Company>
-    <Authors>SIL International</Authors>
-    <Product>libpalaso</Product>
-    <Copyright>Copyright © 2010-2020 SIL International</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/sillsdev/libpalaso</PackageProjectUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <OutputPath>../output/$(Configuration)</OutputPath>
-    <PackageOutputPath>../output</PackageOutputPath>
-    <SignAssembly>true</SignAssembly>
-    <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
-    <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <AppendToReleaseNotesProperty><![CDATA[
-See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/CHANGELOG.md]]>
-    </AppendToReleaseNotesProperty>
-    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <Description>SIL.Archiving contains classes for archiving data to REAP and IMDI.</Description>
+    <TargetFrameworks>$(TargetFrameworks);netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetZip" Version="1.13.7" />
-    <PackageReference Include="GitVersionTask" Version="5.3.4">
-      <PrivateAssets>all</PrivateAssets>
+    <None Remove="Resources\AccessProtocols.json" />
+    <None Remove="Resources\ailca.html" />
+    <None Remove="Resources\ailla.html" />
+    <None Remove="Resources\anla.html" />
+    <None Remove="Resources\CustomAccessProtocols.json" />
+    <None Remove="Resources\elar.html" />
+    <None Remove="Resources\EmptyMets.xml" />
+    <None Remove="Resources\reap.html" />
+    <None Remove="Resources\tla.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
+    <PackageReference Include="JetBrains.Annotations" Version="2024.2.0">
+      <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="L10NSharp" Version="4.1.0-beta0036" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="[2.3.1,)" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
+    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
+    <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+    <PackageReference Include="System.Memory" Version="4.5.5" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj" />
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
-    <ProjectReference Include="..\SIL.Windows.Forms\SIL.Windows.Forms.csproj" />
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="IMDI\Schema\IMDI_3_0_Fix.py" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\AccessProtocols.json" />
+    <EmbeddedResource Include="Resources\ailca.html" />
+    <EmbeddedResource Include="Resources\ailla.html" />
+    <EmbeddedResource Include="Resources\anla.html" />
+    <EmbeddedResource Include="Resources\CustomAccessProtocols.json" />
+    <EmbeddedResource Include="Resources\elar.html" />
+    <EmbeddedResource Include="Resources\EmptyMets.xml" />
+    <EmbeddedResource Include="Resources\reap.html" />
+    <EmbeddedResource Include="Resources\tla.html" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Properties\Settings.settings">
+    <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Content Include="IMDI\Schema\IMDI_3_0_Fix.py" />
   </ItemGroup>
 
 </Project>

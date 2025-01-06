@@ -1,0 +1,366 @@
+<?xml version="1.0" standalone="yes"?><DBLMetadata version="2.2.1" id="55ec700d9e0d77ea" revision="1">
+    <identification>
+      <name>English Majority Text Version</name>
+      <nameLocal>English Majority Text Version</nameLocal>
+      <description>English: English Majority Text Version (New Testament)</description>
+      <descriptionLocal>The New Testament, English Majority Text Version</descriptionLocal>
+      <abbreviation>engEMTV</abbreviation>
+      <abbreviationLocal>EMTV</abbreviationLocal>
+      <scope>New Testament</scope>
+      <dateCompleted>2014-01-01</dateCompleted>
+      <bundleProducer>Paratext/9.0.100.10181</bundleProducer>
+      <systemId type="paratext">
+        <id>55ec700d9e0d77eae90d8041dedcf1769a4757e0</id>
+        <csetId>34de2ca2789234e51f519f5129bf06ff1f25de9d</csetId>
+        <name>EMTV</name>
+        <fullName>English Majority Text Version</fullName>
+      </systemId>
+      <systemId type="ptreg">
+        <id>t6oLBrEDfiD3CTvCK</id>
+      </systemId>
+    </identification>
+    <type>
+      <medium>text</medium>
+      <isConfidential>false</isConfidential>
+      <hasCharacters>true</hasCharacters>
+      <isTranslation>true</isTranslation>
+      <isExpression>true</isExpression>
+      <translationType>New</translationType>
+      <audience>Common</audience>
+      <projectType>Standard</projectType>
+    </type>
+    <relationships/>
+    <agencies>
+      <rightsHolder>
+        <abbr>eBible.org</abbr>
+        <url>https://eBible.org</url>
+        <nameLocal>eBible.org</nameLocal>
+        <uid>545d2cb0ae307afa44b390fc</uid>
+        <name>eBible.org</name>
+      </rightsHolder>
+      <rightsAdmin>
+        <url>https://eBible.org</url>
+        <uid>545d2cb0ae307afa44b390fc</uid>
+        <name>eBible.org</name>
+      </rightsAdmin>
+      <contributor>
+        <content>true</content>
+        <publication>true</publication>
+        <management>true</management>
+        <finance>true</finance>
+        <qa>true</qa>
+        <uid>545d2cb0ae307afa44b390fc</uid>
+        <name>eBible.org</name>
+      </contributor>
+    </agencies>
+    <language>
+      <iso>eng</iso>
+      <name>English</name>
+      <nameLocal>English</nameLocal>
+      <script>Latin</script>
+      <scriptCode>Latn</scriptCode>
+      <scriptDirection>LTR</scriptDirection>
+      <ldml>en-US</ldml>
+      <numerals>Arabic</numerals>
+    </language>
+    <countries>
+      <country>
+        <iso>US</iso>
+        <name>United States</name>
+      </country>
+    </countries>
+    <format>
+      <usxVersion>3.0</usxVersion>
+      <versedParagraphs>false</versedParagraphs>
+    </format>
+    <names>
+      <name id="book-mat">
+        <abbr>Mat</abbr>
+        <short>Matthew</short>
+        <long>The Gospel of Matthew</long>
+      </name>
+      <name id="book-mrk">
+        <abbr>Mrk</abbr>
+        <short>Mark</short>
+        <long>The Gospel of Mark</long>
+      </name>
+      <name id="book-luk">
+        <abbr>Luk</abbr>
+        <short>Luke</short>
+        <long>The Gospel of Luke</long>
+      </name>
+      <name id="book-jhn">
+        <abbr>Jhn</abbr>
+        <short>John</short>
+        <long>The Gospel of John</long>
+      </name>
+      <name id="book-act">
+        <abbr>Act</abbr>
+        <short>Acts</short>
+        <long>The Acts Of The Apostles</long>
+      </name>
+      <name id="book-rom">
+        <abbr>Rom</abbr>
+        <short>Romans</short>
+        <long>The Epistle Of Paul To The Romans</long>
+      </name>
+      <name id="book-1co">
+        <abbr>1Co</abbr>
+        <short>Corinthians</short>
+        <long>The First Epistle Of Paul To The Corinthians</long>
+      </name>
+      <name id="book-2co">
+        <abbr>2Co</abbr>
+        <short>2 Corinthians</short>
+        <long>The Second Epistle Of Paul To The Corinthians</long>
+      </name>
+      <name id="book-gal">
+        <abbr>Gal</abbr>
+        <short>Galatians</short>
+        <long>The Epistle Of Paul To The Galatians</long>
+      </name>
+      <name id="book-eph">
+        <abbr>Eph</abbr>
+        <short>Ephesians</short>
+        <long>The Epistle Of Paul To The Ephesians</long>
+      </name>
+      <name id="book-php">
+        <abbr>Php</abbr>
+        <short>Philippians</short>
+        <long>The Epistle Of Paul To The Philippians</long>
+      </name>
+      <name id="book-col">
+        <abbr>Col</abbr>
+        <short>Colossians</short>
+        <long>The Epistle Of Paul To The Colossians</long>
+      </name>
+      <name id="book-1th">
+        <abbr>1Th</abbr>
+        <short>1 Thessalonians</short>
+        <long>The First Epistle Of Paul To The Thessalonians</long>
+      </name>
+      <name id="book-2th">
+        <abbr>2Th</abbr>
+        <short>2 Thessalonians</short>
+        <long>The Second Epistle Of Paul To The Thessalonians</long>
+      </name>
+      <name id="book-1ti">
+        <abbr>1Ti</abbr>
+        <short>1 Timothy</short>
+        <long>The First Epistle Of Paul To Timothy</long>
+      </name>
+      <name id="book-2ti">
+        <abbr>2Ti</abbr>
+        <short>2 Timothy</short>
+        <long>The Second Epistle Of Paul To Timothy</long>
+      </name>
+      <name id="book-tit">
+        <abbr>Tit</abbr>
+        <short>Titus</short>
+        <long>The Epistle Of Paul To Titus</long>
+      </name>
+      <name id="book-phm">
+        <abbr>Phm</abbr>
+        <short>Philemon</short>
+        <long>The Epistle Of Paul to Philemon</long>
+      </name>
+      <name id="book-heb">
+        <abbr>Heb</abbr>
+        <short>Hebrews</short>
+        <long>The Epistle To The Hebrews</long>
+      </name>
+      <name id="book-jas">
+        <abbr>Jas</abbr>
+        <short>James</short>
+        <long>The General Epistle Of James</long>
+      </name>
+      <name id="book-1pe">
+        <abbr>1Pe</abbr>
+        <short>1 Peter</short>
+        <long>The First Epistle Of Peter</long>
+      </name>
+      <name id="book-2pe">
+        <abbr>2Pe</abbr>
+        <short>2 Peter</short>
+        <long>The Second Epistle Of Peter</long>
+      </name>
+      <name id="book-1jn">
+        <abbr>1Jn</abbr>
+        <short>1 John</short>
+        <long>The First Epistle Of John</long>
+      </name>
+      <name id="book-2jn">
+        <abbr>2Jn</abbr>
+        <short>2 John</short>
+        <long>The Second Epistle Of John</long>
+      </name>
+      <name id="book-3jn">
+        <abbr>3Jn</abbr>
+        <short>3 John</short>
+        <long>The Third Epistle Of John</long>
+      </name>
+      <name id="book-jud">
+        <abbr>Jud</abbr>
+        <short>Jude</short>
+        <long>The General Epistle Of Jude</long>
+      </name>
+      <name id="book-rev">
+        <abbr>Rev</abbr>
+        <short>Revelation</short>
+        <long>The Revelation of Jesus Christ</long>
+      </name>
+    </names>
+    <manifest>
+      <resource checksum="dfe41a8f1c3263bc5aad385790fd1ead" mimeType="application/xml" size="92855" uri="release/USX_1/1CO.usx"/>
+      <resource checksum="e17fd67b10cd1d7fa10476e77b25bbcf" mimeType="application/xml" size="23754" uri="release/USX_1/1JN.usx"/>
+      <resource checksum="ea1311a30e9659bcd8c576dd7d978a38" mimeType="application/xml" size="27212" uri="release/USX_1/1PE.usx"/>
+      <resource checksum="020b536b86f0329ab2e8a8d421a16800" mimeType="application/xml" size="19077" uri="release/USX_1/1TH.usx"/>
+      <resource checksum="428ce8cad910910748e8a62b2013c8b7" mimeType="application/xml" size="24263" uri="release/USX_1/1TI.usx"/>
+      <resource checksum="fda1bbaae3ce829962b0c9036b434313" mimeType="application/xml" size="59798" uri="release/USX_1/2CO.usx"/>
+      <resource checksum="ad664748092426e45998e8be8a877927" mimeType="application/xml" size="3564" uri="release/USX_1/2JN.usx"/>
+      <resource checksum="66572a7a75e0640027ce937cfe873524" mimeType="application/xml" size="15621" uri="release/USX_1/2PE.usx"/>
+      <resource checksum="322f62e80eea7c012ac973f22418a8ee" mimeType="application/xml" size="10881" uri="release/USX_1/2TH.usx"/>
+      <resource checksum="0390bd2663d4959c903ba4369a014bd1" mimeType="application/xml" size="17739" uri="release/USX_1/2TI.usx"/>
+      <resource checksum="5aaf15b9336170f6f27e220de931eb41" mimeType="application/xml" size="3541" uri="release/USX_1/3JN.usx"/>
+      <resource checksum="634aca5cf16611fb7b387572681b3536" mimeType="application/xml" size="233723" uri="release/USX_1/ACT.usx"/>
+      <resource checksum="0713d76beb5ded1cf8340892651cd9e4" mimeType="application/xml" size="20427" uri="release/USX_1/COL.usx"/>
+      <resource checksum="09194564ef9b3ba26a743bce5359f5b8" mimeType="application/xml" size="31332" uri="release/USX_1/EPH.usx"/>
+      <resource checksum="dffc810c328e5ef7b2f3b851d79b0353" mimeType="application/xml" size="31215" uri="release/USX_1/GAL.usx"/>
+      <resource checksum="b6bd0683ecd8aca9b6fb6d191ca9f21f" mimeType="application/xml" size="75898" uri="release/USX_1/HEB.usx"/>
+      <resource checksum="c3710d367b4e4d6e8d50192e14c3cf2f" mimeType="application/xml" size="23673" uri="release/USX_1/JAS.usx"/>
+      <resource checksum="03bf55838e7ba42ab2c8489058cf56f3" mimeType="application/xml" size="191039" uri="release/USX_1/JHN.usx"/>
+      <resource checksum="2a82f17a8c1537663f24c918c2cbaa48" mimeType="application/xml" size="6623" uri="release/USX_1/JUD.usx"/>
+      <resource checksum="6cc9acc8b3cac37ba0b14ac92cf90c0e" mimeType="application/xml" size="257378" uri="release/USX_1/LUK.usx"/>
+      <resource checksum="15581e62dcdf69a1e09fe2fdd88e0519" mimeType="application/xml" size="239084" uri="release/USX_1/MAT.usx"/>
+      <resource checksum="2c6a2a03f507dd019e4aaf4e9360b712" mimeType="application/xml" size="152397" uri="release/USX_1/MRK.usx"/>
+      <resource checksum="094da71c8d8562698b9ff0b74dfa4e0d" mimeType="application/xml" size="5213" uri="release/USX_1/PHM.usx"/>
+      <resource checksum="be684ec9d1dd46d3687152ce9cca5d0e" mimeType="application/xml" size="22278" uri="release/USX_1/PHP.usx"/>
+      <resource checksum="db5a87d06fa59fefa1743ac0e78efd39" mimeType="application/xml" size="106022" uri="release/USX_1/REV.usx"/>
+      <resource checksum="a4ea09285e07b5278705baa7015b572b" mimeType="application/xml" size="100010" uri="release/USX_1/ROM.usx"/>
+      <resource checksum="2b581ef90392b5fe1468cb8460c9ef63" mimeType="application/xml" size="10155" uri="release/USX_1/TIT.usx"/>
+      <resource checksum="67acadf862d639fe67816cbb8c422a51" mimeType="application/xml" size="3994" uri="release/eng_en-US.ldml"/>
+      <resource checksum="7a199d0e13bce3830cd19c65f8212ff7" mimeType="application/xml" size="92706" uri="release/styles.xml"/>
+      <resource checksum="e37097cbe53fe0e202f1743c84f0327d" mimeType="text/plain" size="15012" uri="release/versification.vrs"/>
+      <resource checksum="f350ce04104946a648d0ba2bb95ba81a" mimeType="application/zip" size="2189101" uri="source/source.zip"/>
+    </manifest>
+    <source>
+      <canonicalContent>
+        <book code="1CO"/>
+        <book code="1JN"/>
+        <book code="1PE"/>
+        <book code="1TH"/>
+        <book code="1TI"/>
+        <book code="2CO"/>
+        <book code="2JN"/>
+        <book code="2PE"/>
+        <book code="2TH"/>
+        <book code="2TI"/>
+        <book code="3JN"/>
+        <book code="ACT"/>
+        <book code="COL"/>
+        <book code="EPH"/>
+        <book code="GAL"/>
+        <book code="HEB"/>
+        <book code="JAS"/>
+        <book code="JHN"/>
+        <book code="JUD"/>
+        <book code="LUK"/>
+        <book code="MAT"/>
+        <book code="MRK"/>
+        <book code="PHM"/>
+        <book code="PHP"/>
+        <book code="REV"/>
+        <book code="ROM"/>
+        <book code="TIT"/>
+      </canonicalContent>
+      <structure>
+        <content src="source/source.zip" role="sourceZip"/>
+      </structure>
+    </source>
+    <publications>
+      <publication id="p1" default="true">
+        <name>English Majority Text Version</name>
+        <nameLocal>English Majority Text Version</nameLocal>
+        <description>common</description>
+        <descriptionLocal>common</descriptionLocal>
+        <abbreviation>engEMTV</abbreviation>
+        <abbreviationLocal>EMTV</abbreviationLocal>
+        <canonicalContent>
+          <book code="1CO"/>
+          <book code="1JN"/>
+          <book code="1PE"/>
+          <book code="1TH"/>
+          <book code="1TI"/>
+          <book code="2CO"/>
+          <book code="2JN"/>
+          <book code="2PE"/>
+          <book code="2TH"/>
+          <book code="2TI"/>
+          <book code="3JN"/>
+          <book code="ACT"/>
+          <book code="COL"/>
+          <book code="EPH"/>
+          <book code="GAL"/>
+          <book code="HEB"/>
+          <book code="JAS"/>
+          <book code="JHN"/>
+          <book code="JUD"/>
+          <book code="LUK"/>
+          <book code="MAT"/>
+          <book code="MRK"/>
+          <book code="PHM"/>
+          <book code="PHP"/>
+          <book code="REV"/>
+          <book code="ROM"/>
+          <book code="TIT"/>
+        </canonicalContent>
+        <structure>
+          <content name="book-mat" src="release/USX_1/MAT.usx" role="MAT"/>
+          <content name="book-mrk" src="release/USX_1/MRK.usx" role="MRK"/>
+          <content name="book-luk" src="release/USX_1/LUK.usx" role="LUK"/>
+          <content name="book-jhn" src="release/USX_1/JHN.usx" role="JHN"/>
+          <content name="book-act" src="release/USX_1/ACT.usx" role="ACT"/>
+          <content name="book-rom" src="release/USX_1/ROM.usx" role="ROM"/>
+          <content name="book-1co" src="release/USX_1/1CO.usx" role="1CO"/>
+          <content name="book-2co" src="release/USX_1/2CO.usx" role="2CO"/>
+          <content name="book-gal" src="release/USX_1/GAL.usx" role="GAL"/>
+          <content name="book-eph" src="release/USX_1/EPH.usx" role="EPH"/>
+          <content name="book-php" src="release/USX_1/PHP.usx" role="PHP"/>
+          <content name="book-col" src="release/USX_1/COL.usx" role="COL"/>
+          <content name="book-1th" src="release/USX_1/1TH.usx" role="1TH"/>
+          <content name="book-2th" src="release/USX_1/2TH.usx" role="2TH"/>
+          <content name="book-1ti" src="release/USX_1/1TI.usx" role="1TI"/>
+          <content name="book-2ti" src="release/USX_1/2TI.usx" role="2TI"/>
+          <content name="book-tit" src="release/USX_1/TIT.usx" role="TIT"/>
+          <content name="book-phm" src="release/USX_1/PHM.usx" role="PHM"/>
+          <content name="book-heb" src="release/USX_1/HEB.usx" role="HEB"/>
+          <content name="book-jas" src="release/USX_1/JAS.usx" role="JAS"/>
+          <content name="book-1pe" src="release/USX_1/1PE.usx" role="1PE"/>
+          <content name="book-2pe" src="release/USX_1/2PE.usx" role="2PE"/>
+          <content name="book-1jn" src="release/USX_1/1JN.usx" role="1JN"/>
+          <content name="book-2jn" src="release/USX_1/2JN.usx" role="2JN"/>
+          <content name="book-3jn" src="release/USX_1/3JN.usx" role="3JN"/>
+          <content name="book-jud" src="release/USX_1/JUD.usx" role="JUD"/>
+          <content name="book-rev" src="release/USX_1/REV.usx" role="REV"/>
+        </structure>
+      </publication>
+    </publications>
+    <copyright>
+      <fullStatement>
+        <statementContent type="xhtml">
+          <p>© 2014 Dr. Paul W. Esposito</p>
+        </statementContent>
+      </fullStatement>
+    </copyright>
+    <promotion>
+      <promoVersionInfo contentType="xhtml">
+        <p>Translated by Dr. Paul W. Esposito.</p>
+      </promoVersionInfo>
+    </promotion>
+    <archiveStatus>
+      <archivistName>Kahunapule Michael Johnson</archivistName>
+      <dateArchived>2020-04-05T06:46:00.7976720+00:00</dateArchived>
+      <dateUpdated>2020-04-05T06:47:02.833527</dateUpdated>
+      <comments>Initial submission</comments>
+    </archiveStatus>
+  </DBLMetadata>

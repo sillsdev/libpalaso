@@ -1,0 +1,48 @@
+version: '{build}'
+branches:
+  only:
+  - master
+image: Visual Studio 2022
+init:
+  - cmd: |
+      set GITVERSION_BUILD_NUMBER=%APPVEYOR_BUILD_NUMBER%
+      set GitVersion_NoNormalizeEnabled=true
+      set IGNORE_NORMALISATION_GIT_HEAD_MOVE=1
+install:
+  - choco install gitversion.portable --version 5.11.1 -y
+  - choco install ffmpeg -y
+nuget:
+  disable_publish_on_pr: true
+  disable_publish_octopus: true
+before_build:
+  - cmd: |
+      set GitVersion_NoNormalizeEnabled=true
+      set IGNORE_NORMALISATION_GIT_HEAD_MOVE=1
+      if defined APPVEYOR_PULL_REQUEST_NUMBER (git checkout -B PR-%APPVEYOR_PULL_REQUEST_NUMBER%) else (git checkout -B %APPVEYOR_REPO_BRANCH%)
+      gitversion /l console /output buildserver /nonormalize
+build:
+  project: build/Palaso.proj
+  publish_nuget: true
+  publish_nuget_symbols: true
+  use_snupkg_format: true
+  verbosity: minimal
+test:
+  assemblies:
+    except:
+    - SIL.TestUtilities.dll
+  categories:
+    except:
+    - SkipOnTeamCity
+    - RequiresAudioOutputDevice
+    - RequiresAudioInputDevice
+artifacts:
+- path: output/*nupkg
+  name: nuget
+deploy:
+- provider: Environment
+  name: sil-lsdev nuget
+notifications:
+- provider: GitHubPullRequest
+  on_build_success: false
+  on_build_failure: false
+  on_build_status_changed: false

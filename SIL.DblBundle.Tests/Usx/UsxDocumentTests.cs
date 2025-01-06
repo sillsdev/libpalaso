@@ -1,4 +1,4 @@
-﻿using System.Xml;
+using System.Xml;
 using NUnit.Framework;
 using SIL.DblBundle.Usx;
 
@@ -35,7 +35,7 @@ namespace SIL.DblBundle.Tests.Usx
 			return xmlDoc;
 		}
 
-		public static XmlNodeList GetChaptersAndParasForMarkOneContaining2Verses()
+		private XmlNodeList GetChaptersAndParasForMarkOneContaining2Verses()
 		{
 			var usxDocument = new UsxDocument(CreateMarkOneDoc(kParaNodeText));
 			return usxDocument.GetChaptersAndParas();

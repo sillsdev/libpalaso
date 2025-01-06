@@ -8,10 +8,13 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using System.Diagnostics;
+using JetBrains.Annotations;
 using SIL.Archiving.Generic;
 using SIL.Archiving.Generic.AccessProtocol;
 using SIL.Archiving.IMDI.Lists;
 using SIL.Extensions;
+using static SIL.Archiving.IMDI.Lists.ListType;
+using System.Threading.Tasks;
 
 namespace SIL.Archiving.IMDI.Schema
 {
@@ -29,10 +32,10 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlType(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
-	[XmlRootAttribute("METATRANSCRIPT", Namespace="http://www.mpi.nl/IMDI/Schema/IMDI", IsNullable=false)]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
+	[XmlRoot("METATRANSCRIPT", Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd", IsNullable=false)]
 	public class MetaTranscript
 	{
 		/// <remarks/>
@@ -73,9 +76,9 @@ namespace SIL.Archiving.IMDI.Schema
 		public string SchemaLocation { get; set; }
 
 		/// <remarks/>
-		[XmlElementAttribute("Catalogue", typeof(Catalogue))]
-		[XmlElementAttribute("Corpus", typeof(Corpus))]
-		[XmlElementAttribute("Session", typeof(Session))]
+		[XmlElement("Catalogue", typeof(Catalogue))]
+		[XmlElement("Corpus", typeof(Corpus))]
+		[XmlElement("Session", typeof(Session))]
 		public object[] Items { get; set; }
 
 		/// <remarks/>
@@ -95,7 +98,7 @@ namespace SIL.Archiving.IMDI.Schema
 		public string FormatId { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute]
+		[XmlAttribute]
 		public MetatranscriptValueType Type { get; set; }
 
 		/// <summary>
@@ -120,7 +123,6 @@ namespace SIL.Archiving.IMDI.Schema
 						var serializer = new XmlSerializer(GetType());
 						serializer.Serialize(xmlWriter, this);
 
-						//return strWriter.ToString();
 						return Encoding.UTF8.GetString(memStream.ToArray());
 					}
 				}
@@ -132,26 +134,26 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <param name="outputDirectoryName"></param>
 		/// <param name="corpusName"></param>
 		/// <returns>IMDI file name</returns>
-		public string WriteImdiFile(string outputDirectoryName, string corpusName)
+		public async Task<string> WriteImdiFile(string outputDirectoryName, string corpusName)
 		{
 			string corpusDirectoryName = IMDIArchivingDlgViewModel.NormalizeDirectoryName(corpusName);
 
 			switch (Type)
 			{
 				case MetatranscriptValueType.CORPUS:
-					return WriteCorpusImdiFile(outputDirectoryName, corpusDirectoryName);
+					return await WriteCorpusImdiFile(outputDirectoryName, corpusDirectoryName);
 
 				case MetatranscriptValueType.CATALOGUE:
-					return WriteCatalogueImdiFile(outputDirectoryName, corpusDirectoryName);
+					return await WriteCatalogueImdiFile(outputDirectoryName, corpusDirectoryName);
 
 				case MetatranscriptValueType.SESSION:
-					return WriteSessionImdiFile(outputDirectoryName, corpusDirectoryName);
+					return await WriteSessionImdiFile(outputDirectoryName, corpusDirectoryName);
 			}
 
 			return null;
 		}
 
-		private string WriteCorpusImdiFile(string outputDirectoryName, string corpusDirectoryName)
+		private async Task<string> WriteCorpusImdiFile(string outputDirectoryName, string corpusDirectoryName)
 		{
 			// create the corpus directory
 			Directory.CreateDirectory(Path.Combine(outputDirectoryName, corpusDirectoryName));
@@ -163,13 +165,13 @@ namespace SIL.Archiving.IMDI.Schema
 			var imdiFile = Path.Combine(outputDirectoryName, corpusDirectoryName + ".imdi");
 
 			TextWriter writer = new StreamWriter(imdiFile);
-			writer.Write(ToString());
+			await writer.WriteAsync(ToString());
 			writer.Close();
 
 			return imdiFile;
 		}
 
-		private string WriteCatalogueImdiFile(string outputDirectoryName, string corpusDirectoryName)
+		private async Task<string> WriteCatalogueImdiFile(string outputDirectoryName, string corpusDirectoryName)
 		{
 			// create the corpus directory
 			Directory.CreateDirectory(Path.Combine(outputDirectoryName, corpusDirectoryName));
@@ -181,13 +183,13 @@ namespace SIL.Archiving.IMDI.Schema
 			var imdiFile = Path.Combine(outputDirectoryName, corpusDirectoryName, corpusDirectoryName + "_Catalogue.imdi");
 
 			TextWriter writer = new StreamWriter(imdiFile);
-			writer.Write(ToString());
+			await writer.WriteAsync(ToString());
 			writer.Close();
 
 			return Path.Combine(corpusDirectoryName, corpusDirectoryName + "_Catalogue.imdi");
 		}
 
-		private string WriteSessionImdiFile(string outputDirectoryName, string corpusDirectoryName)
+		private async Task<string> WriteSessionImdiFile(string outputDirectoryName, string corpusDirectoryName)
 		{
 			// session object
 			Session s = (Session)Items[0];
@@ -207,7 +209,7 @@ namespace SIL.Archiving.IMDI.Schema
 			var imdiFile = Path.Combine(outputDirectoryName, corpusDirectoryName, sessionDirectoryName + ".imdi");
 
 			TextWriter writer = new StreamWriter(imdiFile);
-			writer.Write(ToString());
+			await writer.WriteAsync(ToString());
 			writer.Close();
 
 			return Path.Combine(corpusDirectoryName, sessionDirectoryName + ".imdi");
@@ -255,48 +257,41 @@ namespace SIL.Archiving.IMDI.Schema
 
 			foreach (var actor in session.MDGroup.Actors.Actor)
 			{
-				if (actor.Role == null)
-					actor.Role = string.Empty.ToVocabularyType(false, ListType.Link(ListType.ActorRole));
+				actor.Role ??= string.Empty.ToVocabularyType(false, Link(ActorRole));
 
-				if (actor.FamilySocialRole == null)
-					actor.FamilySocialRole = string.Empty.ToVocabularyType(false, ListType.Link(ListType.ActorFamilySocialRole));
+				actor.FamilySocialRole ??= string.Empty.ToVocabularyType(false,
+					Link(ActorFamilySocialRole));
 
-				if (actor.Anonymized == null)
-					actor.Anonymized = new BooleanType { Link = ListType.Link(ListType.Boolean) };
+				actor.Anonymized ??= new BooleanType { Link = Link(ListType.Boolean) };
 
-				if (actor.Sex == null)
-					actor.Sex = new VocabularyType { Type = VocabularyTypeValueType.ClosedVocabulary, Link = ListType.Link(ListType.ActorSex) };
+				actor.Sex ??= new VocabularyType
+					{ Type = VocabularyTypeValueType.ClosedVocabulary, Link = Link(ActorSex) };
 			}
 
 			foreach (var file in session.Resources.WrittenResource)
 			{
-				if (file.SubType == null)
-					file.SubType = new VocabularyType { Link = ListType.Link(ListType.WrittenResourceSubType) };
+				file.SubType ??= new VocabularyType { Link = Link(WrittenResourceSubType) };
 
-				if (file.Validation == null)
-					file.Validation = new ValidationType
-					{
-						Type = new VocabularyType{ Type = VocabularyTypeValueType.ClosedVocabulary, Link = ListType.Link(ListType.ValidationType) },
-						Methodology = new VocabularyType { Type = VocabularyTypeValueType.ClosedVocabulary, Link = ListType.Link(ListType.ValidationMethodology) },
-						Level = new IntegerType { Value = "Unspecified" },
-						Description = new DescriptionTypeCollection { new LanguageString() }
-					};
+				file.Validation ??= new ValidationType
+				{
+					Type = new VocabularyType
+						{ Type = VocabularyTypeValueType.ClosedVocabulary, Link = Link(ListType.ValidationType) },
+					Methodology = new VocabularyType
+						{ Type = VocabularyTypeValueType.ClosedVocabulary, Link = Link(ValidationMethodology) },
+					Level = new IntegerType { Value = "Unspecified" },
+					Description = new DescriptionTypeCollection { new LanguageString() }
+				};
 
-				if (file.Derivation == null)
-					file.Derivation = new VocabularyType { Type = VocabularyTypeValueType.ClosedVocabulary, Link = ListType.Link(ListType.WrittenResourceDerivation) };
+				file.Derivation ??= new VocabularyType
+					{ Type = VocabularyTypeValueType.ClosedVocabulary, Link = Link(WrittenResourceDerivation) };
 
-				if (file.Anonymized == null)
-					file.Anonymized = new BooleanType { Link = ListType.Link(ListType.Boolean) };
+				file.Anonymized ??= new BooleanType { Link = Link(ListType.Boolean) };
 
-				if (file.Access == null)
-					file.Access = new AccessType();
+				file.Access ??= new AccessType();
 			}
 
 			foreach (var file in session.Resources.MediaFile)
-			{
-				if (file.Access == null)
-					file.Access = new AccessType();
-			}
+				file.Access ??= new AccessType();
 		}
 
 		/// <summary>Set the access code on session files if not set already.</summary>
@@ -306,8 +301,7 @@ namespace SIL.Archiving.IMDI.Schema
 
 			foreach (var file in session.Resources.MediaFile)
 			{
-				if (file.Access == null)
-					file.Access = new AccessType();
+				file.Access ??= new AccessType();
 
 				if (string.IsNullOrEmpty(file.Access.Availability))
 					file.Access.Availability = session.AccessCode;
@@ -315,8 +309,7 @@ namespace SIL.Archiving.IMDI.Schema
 
 			foreach (var file in session.Resources.WrittenResource)
 			{
-				if (file.Access == null)
-					file.Access = new AccessType();
+				file.Access ??= new AccessType();
 
 				if (string.IsNullOrEmpty(file.Access.Availability))
 					file.Access.Availability = session.AccessCode;
@@ -325,9 +318,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class CommaSeparatedStringType
 	{
 		/// <remarks/>
@@ -336,10 +329,10 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[XmlIncludeAttribute(typeof(SubjectLanguageType))]
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[XmlInclude(typeof(SubjectLanguageType))]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class SimpleLanguageType
 	{
 		/// <remarks/>
@@ -350,19 +343,19 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class LanguageNameType : VocabularyType
 	{
 	}
 
 	/// <remarks/>
-	[XmlIncludeAttribute(typeof(LanguageNameType))]
-	[XmlIncludeAttribute(typeof(KeyType))]
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[XmlInclude(typeof(LanguageNameType))]
+	[XmlInclude(typeof(KeyType))]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class VocabularyType
 	{
 		/// <remarks/>
@@ -388,27 +381,27 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public enum VocabularyTypeValueType
 	{
 		/// <remarks/>
 		ClosedVocabulary,
 
-		/// <remarks/>
+		[PublicAPI]
 		ClosedVocabularyList,
 
 		/// <remarks/>
 		OpenVocabulary,
 
-		/// <remarks/>
+		[PublicAPI]
 		OpenVocabularyList,
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class KeyType
 	{
 		/// <remarks/>
@@ -421,35 +414,43 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class SubjectLanguageType : SimpleLanguageType
 	{
 		private DescriptionTypeCollection _descriptionField;
 
-		/// <remarks/>
+		/// <summary>
+		/// Is it the most frequently used language in the document. Only applicable if used in the context of the resource's language
+		/// </summary>
+		[PublicAPI]
 		public BooleanType Dominant { get; set; }
 
-		/// <remarks/>
+		/// <summary>
+		/// Source language of translation. Only applicable in case it is the context of a lexicon resource
+		/// </summary>
 		public BooleanType SourceLanguage { get; set; }
 
-		/// <remarks/>
+		/// <summary>
+		/// Target language of translation. Only applicable in case it is the context of a lexicon resource
+		/// </summary>
+		[PublicAPI]
 		public BooleanType TargetLanguage { get; set; }
 
 		/// <remarks/>
-		[XmlElementAttribute("Description")]
+		[XmlElement("Description")]
 		public DescriptionTypeCollection Description
 		{
-			get { return _descriptionField ?? (_descriptionField = new DescriptionTypeCollection()); }
-			set { _descriptionField = value; }
+			get => _descriptionField ??= new DescriptionTypeCollection();
+			set => _descriptionField = value;
 		}
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class BooleanType
 	{
 		/// <remarks/>
@@ -475,9 +476,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public partial class DescriptionType
 	{
 		/// <remarks/>
@@ -502,9 +503,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class Catalogue : IIMDIMajorObject
 	{
 		/// <remarks/>
@@ -617,17 +618,17 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	/// I think this is the DocumentLanguages subelement of a Catalogue element
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	/// I think this is the DocumentLanguages sub-element of a Catalogue element
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(AnonymousType=true, Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class CatalogueDocumentLanguages : IMDIDescription
 	{
 		[XmlElement("Description")]
 		public DescriptionTypeCollection Description
 		{
-			get { return DescriptionInternal; }
-			set { DescriptionInternal = value; }
+			get => DescriptionInternal;
+			set => DescriptionInternal = value;
 		}
 
 		/// <remarks/>
@@ -642,16 +643,16 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(AnonymousType=true, Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class CatalogueSubjectLanguages : IMDIDescription
 	{
 		[XmlElement("Description")]
 		public DescriptionTypeCollection Description
 		{
-			get { return DescriptionInternal; }
-			set { DescriptionInternal = value; }
+			get => DescriptionInternal;
+			set => DescriptionInternal = value;
 		}
 
 		/// <remarks/>
@@ -666,16 +667,16 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class LocationType
 	{
 		/// <remarks/>
 		public LocationType()
 		{
-			Continent = new VocabularyType { Type = VocabularyTypeValueType.ClosedVocabulary, Link = ListType.Link(ListType.Continents) };
-			Country = new VocabularyType { Link = ListType.Link(ListType.Countries) };
+			Continent = new VocabularyType { Type = VocabularyTypeValueType.ClosedVocabulary, Link = Link(Continents) };
+			Country = new VocabularyType { Link = Link(Countries) };
 			Region = new List<string>();
 		}
 
@@ -701,8 +702,8 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks>Closed vocabulary</remarks>
 		public void SetContinent(string continent)
 		{
-			var continentList = ListConstructor.GetClosedList(ListType.Continents, false, ListConstructor.RemoveUnknown.RemoveNone);
-			Continent = continentList.FindByValue(continent).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.Continents));
+			var continentList = ListConstructor.GetClosedList(Continents, false, ListConstructor.RemoveUnknown.RemoveNone);
+			Continent = continentList.FindByValue(continent).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, Link(Continents));
 		}
 
 		/// <remarks>Open vocabulary</remarks>
@@ -711,11 +712,11 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public void SetCountry(string country)
 		{
-			Country = IMDISchemaHelper.SetVocabulary(country, false, ListType.Link(ListType.Countries));
+			Country = IMDISchemaHelper.SetVocabulary(country, false, Link(Countries));
 		}
 
 		/// <remarks/>
-		[XmlElementAttribute("Region")]
+		[XmlElement("Region")]
 		public List<string> Region { get; set; }
 
 		/// <remarks/>
@@ -741,9 +742,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(AnonymousType=true, Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class CatalogueFormat
 	{
 		/// <remarks/>
@@ -760,9 +761,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(AnonymousType=true, Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class CatalogueQuality
 	{
 		/// <remarks/>
@@ -779,9 +780,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class Project : IIMDIMajorObject
 	{
 		/// <remarks/>
@@ -842,9 +843,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class ContactType
 	{
 		/// <remarks/>
@@ -861,9 +862,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class AccessType : IMDIDescription
 	{
 		/// <remarks>initialize for Arbil</remarks>
@@ -908,15 +909,15 @@ namespace SIL.Archiving.IMDI.Schema
 		[XmlElement("Description")]
 		public DescriptionTypeCollection Description
 		{
-			get { return DescriptionInternal; }
-			set { DescriptionInternal = value; }
+			get => DescriptionInternal;
+			set => DescriptionInternal = value;
 		}
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class KeysType
 	{
 		private List<KeyType> _keyField;
@@ -925,15 +926,15 @@ namespace SIL.Archiving.IMDI.Schema
 		[XmlElement("Key")]
 		public List<KeyType> Key
 		{
-			get { return _keyField ?? (_keyField = new List<KeyType>()); }
-			set { _keyField = value; }
+			get => _keyField ??= new List<KeyType>();
+			set => _keyField = value;
 		}
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class Corpus : IIMDIMajorObject
 	{
 		/// <remarks/>
@@ -982,9 +983,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class MDGroupType
 	{
 		/// <remarks/>
@@ -1015,9 +1016,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class ContentType
 	{
 		/// <summary>
@@ -1079,87 +1080,82 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public void SetInteractivity(string interactivity)
 		{
-			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentInteractivity);
-			CommunicationContext.Interactivity = list.FindByValue(interactivity).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentInteractivity));
+			IMDIItemList list = ListConstructor.GetClosedList(ContentInteractivity);
+			CommunicationContext.Interactivity = list.FindByValue(interactivity).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, Link(ContentInteractivity));
 		}
 
 		/// <remarks/>
 		public void SetPlanningType(string planningType)
 		{
-			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentPlanningType, DontRequireUppercaseFirstCharacter);
-			CommunicationContext.PlanningType = list.FindByValue(planningType).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentPlanningType));
+			IMDIItemList list = ListConstructor.GetClosedList(ContentPlanningType, DontRequireUppercaseFirstCharacter);
+			CommunicationContext.PlanningType = list.FindByValue(planningType).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, Link(ContentPlanningType));
 		}
 
 		/// <remarks/>
 		public void SetInvolvement(string involvement)
 		{
-			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentInvolvement, DontRequireUppercaseFirstCharacter);
-			CommunicationContext.Involvement = list.FindByValue(involvement).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentInvolvement));
+			IMDIItemList list = ListConstructor.GetClosedList(ContentInvolvement, DontRequireUppercaseFirstCharacter);
+			CommunicationContext.Involvement = list.FindByValue(involvement).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, Link(ContentInvolvement));
 		}
 
 		/// <remarks/>
 		public void SetSocialContext(string socialContext)
 		{
-			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentSocialContext);
-			CommunicationContext.SocialContext = list.FindByValue(socialContext).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentSocialContext));
+			IMDIItemList list = ListConstructor.GetClosedList(ContentSocialContext);
+			CommunicationContext.SocialContext = list.FindByValue(socialContext).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, Link(ContentSocialContext));
 		}
 
 		/// <remarks/>
 		public void SetEventStructure(string eventStructure)
 		{
-			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentEventStructure);
-			CommunicationContext.EventStructure = list.FindByValue(eventStructure).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentEventStructure));
+			IMDIItemList list = ListConstructor.GetClosedList(ContentEventStructure);
+			CommunicationContext.EventStructure = list.FindByValue(eventStructure).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, Link(ContentEventStructure));
 		}
 
 		/// <remarks/>
 		public void SetChannel(string channel)
 		{
-			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentChannel);
-			CommunicationContext.Channel = list.FindByValue(channel).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentChannel));
+			IMDIItemList list = ListConstructor.GetClosedList(ContentChannel);
+			CommunicationContext.Channel = list.FindByValue(channel).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, Link(ContentChannel));
 		}
 
 		/// <remarks/>
 		public void CheckRequiredFields()
 		{
-			if (Genre == null)
-				Genre = new VocabularyType { Link = ListType.Link(ListType.ContentGenre) };
+			Genre ??= new VocabularyType { Link = Link(ContentGenre) };
 
-			if (SubGenre == null)
-				SubGenre = new VocabularyType { Link = ListType.Link(ListType.ContentSubGenre) };
+			SubGenre ??= new VocabularyType { Link = Link(ContentSubGenre) };
 
-			if (Task == null)
-				Task = new VocabularyType { Link = ListType.Link(ListType.ContentTask) };
+			Task ??= new VocabularyType { Link = Link(ContentTask) };
 
-			if (Modalities == null)
-				Modalities = new VocabularyType { Link = ListType.Link(ListType.ContentModalities) };
+			Modalities ??= new VocabularyType { Link = Link(ContentModalities) };
 
-			if (Subject == null)
-				Subject = new ContentTypeSubject { Link = ListType.Link(ListType.ContentSubject) };
+			Subject ??= new ContentTypeSubject { Link = Link(ContentSubject) };
 
-			if (CommunicationContext.Interactivity == null)
-				CommunicationContext.Interactivity = new VocabularyType { Type = VocabularyTypeValueType.ClosedVocabulary, Link = ListType.Link(ListType.ContentInteractivity) };
+			CommunicationContext.Interactivity ??= new VocabularyType
+				{ Type = VocabularyTypeValueType.ClosedVocabulary, Link = Link(ContentInteractivity) };
 
-			if (CommunicationContext.PlanningType == null)
-				CommunicationContext.PlanningType = new VocabularyType { Type = VocabularyTypeValueType.ClosedVocabulary, Link = ListType.Link(ListType.ContentPlanningType) };
+			CommunicationContext.PlanningType ??= new VocabularyType
+				{ Type = VocabularyTypeValueType.ClosedVocabulary, Link = Link(ContentPlanningType) };
 
-			if (CommunicationContext.Involvement == null)
-				CommunicationContext.Involvement = new VocabularyType { Type = VocabularyTypeValueType.ClosedVocabulary, Link = ListType.Link(ListType.ContentInvolvement) };
+			CommunicationContext.Involvement ??= new VocabularyType
+				{ Type = VocabularyTypeValueType.ClosedVocabulary, Link = Link(ContentInvolvement) };
 
-			if (CommunicationContext.SocialContext == null)
-				CommunicationContext.SocialContext = new VocabularyType { Type = VocabularyTypeValueType.ClosedVocabulary, Link = ListType.Link(ListType.ContentSocialContext) };
+			CommunicationContext.SocialContext ??= new VocabularyType
+				{ Type = VocabularyTypeValueType.ClosedVocabulary, Link = Link(ContentSocialContext) };
 
-			if (CommunicationContext.EventStructure == null)
-				CommunicationContext.EventStructure = new VocabularyType { Type = VocabularyTypeValueType.ClosedVocabulary, Link = ListType.Link(ListType.ContentEventStructure) };
+			CommunicationContext.EventStructure ??= new VocabularyType
+				{ Type = VocabularyTypeValueType.ClosedVocabulary, Link = Link(ContentEventStructure) };
 
-			if (CommunicationContext.Channel == null)
-				CommunicationContext.Channel = new VocabularyType { Type = VocabularyTypeValueType.ClosedVocabulary, Link = ListType.Link(ListType.ContentChannel) };
+			CommunicationContext.Channel ??= new VocabularyType
+				{ Type = VocabularyTypeValueType.ClosedVocabulary, Link = Link(ContentChannel) };
 		}
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(AnonymousType = true, Namespace = "https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class ContentTypeCommunicationContext
 	{
 		/// <remarks>Closed vocabulary, Content-Interactivity.xml</remarks>
@@ -1182,9 +1178,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(AnonymousType=true, Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class ContentTypeSubject : VocabularyType
 	{
 		/// <remarks/>
@@ -1193,9 +1189,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class LanguagesType : IMDIDescription
 	{
 		private List<LanguageType> _languageField;
@@ -1208,10 +1204,10 @@ namespace SIL.Archiving.IMDI.Schema
 		}
 
 		/// <remarks/>
-		[XmlElementAttribute("Language")]
+		[XmlElement("Language")]
 		public List<LanguageType> Language {
-			get { return _languageField ?? (_languageField = new List<LanguageType>()); }
-			set { _languageField = value; }
+			get => _languageField ??= new List<LanguageType>();
+			set => _languageField = value;
 		}
 
 		/// <summary></summary>
@@ -1223,9 +1219,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class LanguageType : IMDIDescription
 	{
 		/// <remarks/>
@@ -1253,8 +1249,8 @@ namespace SIL.Archiving.IMDI.Schema
 		[XmlElement("Description")]
 		public DescriptionTypeCollection Description
 		{
-			get { return DescriptionInternal; }
-			set { DescriptionInternal = value; }
+			get => DescriptionInternal;
+			set => DescriptionInternal = value;
 		}
 
 		/// <remarks/>
@@ -1263,9 +1259,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class ActorsType : IMDIDescription
 	{
 		private List<ActorType> _actorField;
@@ -1273,22 +1269,22 @@ namespace SIL.Archiving.IMDI.Schema
 		[XmlElement("Description")]
 		public DescriptionTypeCollection Description
 		{
-			get { return DescriptionInternal; }
-			set { DescriptionInternal = value; }
+			get => DescriptionInternal;
+			set => DescriptionInternal = value;
 		}
 
 		/// <remarks/>
-		[XmlElementAttribute("Actor")]
+		[XmlElement("Actor")]
 		public List<ActorType> Actor {
-			get { return _actorField ?? (_actorField = new List<ActorType>()); }
-			set { _actorField = value; }
+			get => _actorField ??= new List<ActorType>();
+			set => _actorField = value;
 		}
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class ActorType
 	{
 		private LanguagesType _languagesField;
@@ -1352,7 +1348,7 @@ namespace SIL.Archiving.IMDI.Schema
 
 			// Role
 			if (!string.IsNullOrEmpty(actor.Role))
-				Role = actor.Role.ToVocabularyType(false, ListType.Link(ListType.ActorRole)); ;
+				Role = actor.Role.ToVocabularyType(false, Link(ActorRole)); ;
 
 			// Occupation
 			if (!string.IsNullOrEmpty(actor.Occupation))
@@ -1371,7 +1367,7 @@ namespace SIL.Archiving.IMDI.Schema
 		public VocabularyType Role { get; set; }
 
 		/// <remarks/>
-		[XmlElementAttribute("Name")]
+		[XmlElement("Name")]
 		public string[] Name { get; set; }
 
 		/// <remarks/>
@@ -1387,8 +1383,8 @@ namespace SIL.Archiving.IMDI.Schema
 		[XmlElement("Languages")]
 		public LanguagesType Languages
 		{
-			get { return _languagesField ?? (_languagesField = new LanguagesType()); }
-			set { _languagesField = value; }
+			get => _languagesField ??= new LanguagesType();
+			set => _languagesField = value;
 		}
 
 		/// <remarks/>
@@ -1418,8 +1414,8 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public void SetSex(string gender)
 		{
-			IMDIItemList genderList = ListConstructor.GetClosedList(ListType.ActorSex);
-			Sex = genderList.FindByValue(gender).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ActorSex));
+			IMDIItemList genderList = ListConstructor.GetClosedList(ActorSex);
+			Sex = genderList.FindByValue(gender).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, Link(ActorSex));
 		}
 
 		/// <remarks/>
@@ -1435,11 +1431,11 @@ namespace SIL.Archiving.IMDI.Schema
 			if (primaryLanguage == BooleanEnum.Unspecified)
 				imdiLanguage.PrimaryLanguage = null;
 			else
-				imdiLanguage.PrimaryLanguage = new BooleanType { Value = primaryLanguage, Link = ListType.Link(ListType.Boolean) };
+				imdiLanguage.PrimaryLanguage = new BooleanType { Value = primaryLanguage, Link = Link(ListType.Boolean) };
 			if (motherTongue == BooleanEnum.Unspecified)
 				imdiLanguage.MotherTongue = null;
 			else
-				imdiLanguage.MotherTongue = new BooleanType { Value = motherTongue, Link = ListType.Link(ListType.Boolean) };
+				imdiLanguage.MotherTongue = new BooleanType { Value = motherTongue, Link = Link(ListType.Boolean) };
 
 			Languages.Language.Add(imdiLanguage);
 		}
@@ -1458,14 +1454,14 @@ namespace SIL.Archiving.IMDI.Schema
 		public DescriptionTypeCollection Description { get; set; }
 
 		/// <remarks/>
-		[XmlAttributeAttribute]
+		[XmlAttribute]
 		public string ResourceRef { get; set; }
 
 		// TODO: Do we need this method?
 		/// <remarks/>
 		public ArchivingActor ToArchivingActor()
 		{
-			ArchivingActor actr = new ArchivingActor
+			ArchivingActor actor = new ArchivingActor
 			{
 				Age = Age,
 				Education = Education,
@@ -1473,38 +1469,38 @@ namespace SIL.Archiving.IMDI.Schema
 			};
 
 			if (Sex != null)
-				actr.Gender = Sex.Value;
+				actor.Gender = Sex.Value;
 
 			if (Name.Length > 0)
-				actr.Name = Name[0];
+				actor.Name = Name[0];
 
 			if (!string.IsNullOrEmpty(Role.Value))
-				actr.Role = Role.Value;
+				actor.Role = Role.Value;
 
 			if (!string.IsNullOrEmpty(BirthDate))
-				actr.BirthDate = BirthDate;
+				actor.BirthDate = BirthDate;
 
 			foreach (LanguageType lang in Languages.Language)
 			{
 				var iso3 = lang.Id.Substring(lang.Id.Length - 3);
 				var archLanguage = new ArchivingLanguage(iso3, lang.Name[0].Value);
-				actr.Iso3Languages.Add(archLanguage);
+				actor.Iso3Languages.Add(archLanguage);
 
 				if (lang.PrimaryLanguage.Value == BooleanEnum.@true)
-					actr.PrimaryLanguage = archLanguage;
+					actor.PrimaryLanguage = archLanguage;
 
 				if (lang.MotherTongue.Value == BooleanEnum.@true)
-					actr.MotherTongueLanguage = archLanguage;
+					actor.MotherTongueLanguage = archLanguage;
 			}
 
-			return actr;
+			return actor;
 		}
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class CorpusLinkType : ResourceLinkType
 	{
 		/// <remarks/>
@@ -1513,10 +1509,10 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[XmlIncludeAttribute(typeof(CorpusLinkType))]
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[XmlInclude(typeof(CorpusLinkType))]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class ResourceLinkType
 	{
 		/// <remarks/>
@@ -1528,13 +1524,16 @@ namespace SIL.Archiving.IMDI.Schema
 		public string Value { get; set; }
 	}
 
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	/// <summary>Groups data about name conversions for persons who are anonymised</summary>>
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class AnonymsType
 	{
-		/// <remarks/>
+		/// <summary>
+		/// URL to information to convert pseudo named to real-names
+		/// </summary>
+		[PublicAPI]
 		public ResourceLinkType ResourceLink { get; set; }
 
 		/// <remarks/>
@@ -1542,9 +1541,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class CounterPositionType
 	{
 		/// <remarks/>
@@ -1555,9 +1554,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class IntegerType
 	{
 		/// <remarks/>
@@ -1566,9 +1565,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class SourceType : IMDIDescription
 	{
 		/// <remarks/>
@@ -1580,7 +1579,10 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public QualityType Quality { get; set; }
 
-		/// <remarks/>
+		/// <summary>
+		/// Position (start (+end) ) on a old fashioned tape without time indication
+		/// </summary>
+		[PublicAPI]
 		public CounterPositionType CounterPosition { get; set; }
 
 		/// <remarks/>
@@ -1589,8 +1591,8 @@ namespace SIL.Archiving.IMDI.Schema
 		[XmlElement("Description")]
 		public DescriptionTypeCollection Description
 		{
-			get { return DescriptionInternal; }
-			set { DescriptionInternal = value; }
+			get => DescriptionInternal;
+			set => DescriptionInternal = value;
 		}
 
 		/// <remarks/>
@@ -1602,9 +1604,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class QualityType
 	{
 		/// <remarks/>
@@ -1624,9 +1626,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class ValidationType
 	{
 		/// <remarks/>
@@ -1650,9 +1652,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class WrittenResourceType : IIMDISessionFile
 	{
 		/// <remarks/>
@@ -1735,9 +1737,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class MediaFileType : IIMDISessionFile
 	{
 		/// <remarks/>
@@ -1799,10 +1801,15 @@ namespace SIL.Archiving.IMDI.Schema
 		public string OutputDirectory { get; set; }
 	}
 
-	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	/// <summary>
+	/// A "session" (aka, "resource bundle") usually corresponds to a meaningful unit of analysis,
+	/// e.g., to a piece of data having the same overall content, the same set of actors, and the
+	/// same location and time (e.g., one elicitation session on topic X, or one folktale, or one
+	/// ‘matching game’, or one conversation between several speakers).
+	/// </summary>
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class Session : IIMDIMajorObject, IArchivingSession
 	{
 		private static int _anonymizedCounter = 1;
@@ -1816,7 +1823,7 @@ namespace SIL.Archiving.IMDI.Schema
 			References = new SessionTypeReferences();
 		}
 
-		/// <summary>Name of object</summary>
+		/// <summary>Name of session</summary>
 		[XmlElement("Name")]
 		public string Name { get; set; }
 
@@ -1863,7 +1870,7 @@ namespace SIL.Archiving.IMDI.Schema
 		[XmlIgnore]
 		public ArchivingLocation Location
 		{
-			get { return MDGroup.Location.ToArchivingLocation(); }
+			get => MDGroup.Location.ToArchivingLocation();
 			set
 			{
 				var loc = MDGroup.Location;
@@ -1904,8 +1911,7 @@ namespace SIL.Archiving.IMDI.Schema
 				}
 			};
 			var imdiPackage = package as IMDIPackage;
-			var corpus = imdiPackage?.BaseImdiFile?.Items?.FirstOrDefault() as Corpus;
-			if (corpus != null)
+			if (imdiPackage?.BaseImdiFile?.Items?.FirstOrDefault() is Corpus corpus)
 				project.Description.Add(corpus.Description.FirstOrDefault());
 			MDGroup.Project = new List<Project>{ project };
 		}
@@ -1985,27 +1991,23 @@ namespace SIL.Archiving.IMDI.Schema
 		public void AddFileKeyValuePair(string fullFileName, string key, string value)
 		{
 			var sessionFile = GetFile(fullFileName);
-			if (sessionFile == null) return;
-			if (sessionFile is MediaFileType)
-			{
-				var audioOrVisualFile = sessionFile as MediaFileType;
+			if (sessionFile == null)
+				return;
+			if (sessionFile is MediaFileType audioOrVisualFile)
 				audioOrVisualFile.Keys.Key.Add(new KeyType { Name = key, Value = value });
-			}
-			else if (sessionFile is WrittenResourceType)
-			{
-				var writtenResourceFile = sessionFile as WrittenResourceType;
+			else if (sessionFile is WrittenResourceType writtenResourceFile)
 				writtenResourceFile.Keys.Key.Add(new KeyType { Name = key, Value = value });
-			}
 		}
 
 		public void AddFileDescription(string fullFileName, LanguageString description)
 		{
 			var sessionFile = GetFile(fullFileName);
-			if (sessionFile == null) return;
+			if (sessionFile == null)
+				return;
 
 			// IMDIFile.cs line 160 adds a default value which will block the adding of the first entry
 			if (sessionFile.Description.Count == 1 &&
-				sessionFile.Description.FirstOrDefault().Value == null)
+				sessionFile.Description.FirstOrDefault()?.Value == null)
 				sessionFile.Description.Remove(sessionFile.Description.FirstOrDefault());
 
 			sessionFile.Description.Add(description);
@@ -2014,7 +2016,8 @@ namespace SIL.Archiving.IMDI.Schema
 		public void AddActorContact(ArchivingActor actor, ArchivingContact contact)
 		{
 			var actorType = GetActor(actor.FullName);
-			if (actorType == null) return;
+			if (actorType == null)
+				return;
 			actorType.Contact = new ContactType
 			{
 				Name = contact.Name,
@@ -2027,8 +2030,8 @@ namespace SIL.Archiving.IMDI.Schema
 		public void AddMediaFileTimes(string fullFileName, string start, string stop)
 		{
 			var sessionFile = GetFile(fullFileName);
-			if (!(sessionFile is MediaFileType)) return;
-			var audioOrVisualFile = sessionFile as MediaFileType;
+			if (!(sessionFile is MediaFileType audioOrVisualFile))
+				return;
 			audioOrVisualFile.TimePosition.Start = start;
 			audioOrVisualFile.TimePosition.End = stop;
 		}
@@ -2068,22 +2071,13 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <summary></summary>
 		private IIMDISessionFile GetFile(string fileName)
 		{
-			foreach (var fileType in Resources.MediaFile)
-			{
-				if (fileType.FullPathAndFileName == fileName)
-					return fileType;
-			}
-			foreach (var writtenResourceType in Resources.WrittenResource)
-			{
-				if (writtenResourceType.FullPathAndFileName == fileName)
-					return writtenResourceType;
-			}
-			return null;
+			return Resources.MediaFile.FirstOrDefault(fileType => fileType.FullPathAndFileName == fileName) as IIMDISessionFile ??
+				Resources.WrittenResource.FirstOrDefault(writtenResourceType => writtenResourceType.FullPathAndFileName == fileName);
 		}
 
 		/// <remarks/>
 		[XmlIgnore]
-		public List<string> Files
+		public IReadOnlyList<string> Files
 		{
 			get
 			{
@@ -2099,126 +2093,85 @@ namespace SIL.Archiving.IMDI.Schema
 		[XmlIgnore]
 		public string Genre
 		{
-			get
-			{
-				return MDGroup.Content.Genre == null ? null : MDGroup.Content.Genre.Value;
-			}
-			set
-			{
-				MDGroup.Content.Genre = value?.Replace("<","")?.Replace(">","").ToVocabularyType(false, ListType.Link(ListType.ContentGenre));
-			}
+			get => MDGroup.Content.Genre?.Value;
+			set => MDGroup.Content.Genre = value?.Replace("<","")?.Replace(">","")
+				.ToVocabularyType(false, Link(ContentGenre));
 		}
 
 		/// <remarks/>
 		[XmlIgnore]
 		public string SubGenre
 		{
-			get
-			{
-				return MDGroup.Content.SubGenre == null ? null : MDGroup.Content.SubGenre.Value;
-			}
-			set
-			{
-				MDGroup.Content.SubGenre = value.ToVocabularyType(false, ListType.Link(ListType.ContentSubGenre));
-			}
+			get => MDGroup.Content.SubGenre?.Value;
+			set => MDGroup.Content.SubGenre = value.ToVocabularyType(false, Link(ContentSubGenre));
 		}
 
 		/// <remarks/>
 		[XmlIgnore]
 		public string Interactivity
 		{
-			get
-			{
-				return MDGroup.Content.CommunicationContext.Interactivity == null ? null : MDGroup.Content.CommunicationContext.Interactivity.Value;
-			}
-			set
-			{
-				MDGroup.Content.SetInteractivity(value);
-			}
+			get => MDGroup.Content.CommunicationContext.Interactivity?.Value;
+			set => MDGroup.Content.SetInteractivity(value);
 		}
 
 		/// <remarks/>
 		[XmlIgnore]
 		public string Involvement
 		{
-			get
-			{
-				return MDGroup.Content.CommunicationContext.Involvement == null ? null : MDGroup.Content.CommunicationContext.Involvement.Value;
-			}
-			set
-			{
-				MDGroup.Content.SetInvolvement(value);
-			}
+			get => MDGroup.Content.CommunicationContext.Involvement?.Value;
+			set => MDGroup.Content.SetInvolvement(value);
 		}
 
 		/// <remarks/>
 		[XmlIgnore]
 		public string PlanningType
 		{
-			get
-			{
-				return MDGroup.Content.CommunicationContext.PlanningType == null ? null : MDGroup.Content.CommunicationContext.PlanningType.Value;
-			}
-			set
-			{
-				MDGroup.Content.SetPlanningType(value);
-			}
+			get => MDGroup.Content.CommunicationContext.PlanningType?.Value;
+			set => MDGroup.Content.SetPlanningType(value);
 		}
 
 		/// <remarks/>
 		[XmlIgnore]
 		public string SocialContext
 		{
-			get
-			{
-				return MDGroup.Content.CommunicationContext.SocialContext == null ? null : MDGroup.Content.CommunicationContext.SocialContext.Value;
-			}
-			set
-			{
-				MDGroup.Content.SetSocialContext(value);
-			}
+			get => MDGroup.Content.CommunicationContext.SocialContext?.Value;
+			set => MDGroup.Content.SetSocialContext(value);
 		}
 
 		/// <remarks/>
 		[XmlIgnore]
 		public string Task
 		{
-			get
-			{
-				return MDGroup.Content.Task == null ? null : MDGroup.Content.Task.Value;
-			}
-			set
-			{
-				MDGroup.Content.Task = value.ToVocabularyType(false, ListType.Link(ListType.ContentTask));
-			}
+			get => MDGroup.Content.Task?.Value;
+			set => MDGroup.Content.Task = value.ToVocabularyType(false, Link(ContentTask));
 		}
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(AnonymousType=true, Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class SessionResources
 	{
 		private List<MediaFileType> _mediaFileField;
 		private List<WrittenResourceType> _writtenResourceField;
 
 		/// <remarks/>
-		[XmlElementAttribute("MediaFile")]
+		[XmlElement("MediaFile")]
 		public List<MediaFileType> MediaFile {
-			get { return _mediaFileField ?? (_mediaFileField = new List<MediaFileType>()); }
-			set { _mediaFileField = value; }
+			get => _mediaFileField ??= new List<MediaFileType>();
+			set => _mediaFileField = value;
 		}
 
 		/// <remarks/>
-		[XmlElementAttribute("WrittenResource")]
+		[XmlElement("WrittenResource")]
 		public List<WrittenResourceType> WrittenResource {
-			get { return _writtenResourceField ?? (_writtenResourceField = new List<WrittenResourceType>()); }
-			set { _writtenResourceField = value; }
+			get { return _writtenResourceField ??= new List<WrittenResourceType>(); }
+			set => _writtenResourceField = value;
 		}
 
 		/// <remarks/>
-		[XmlElementAttribute("Source")]
+		[XmlElement("Source")]
 		public SourceType[] Source { get; set; }
 
 		/// <remarks/>
@@ -2226,22 +2179,22 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(AnonymousType=true, Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class SessionReferences : IMDIDescription
 	{
 		[XmlElement("Description")]
 		public DescriptionTypeCollection Description
 		{
-			get { return DescriptionInternal; }
-			set { DescriptionInternal = value; }
+			get => DescriptionInternal;
+			set => DescriptionInternal = value;
 		}
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[XmlType(Namespace="https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public enum MetatranscriptValueType
 	{
 		// ReSharper disable InconsistentNaming
@@ -2249,36 +2202,37 @@ namespace SIL.Archiving.IMDI.Schema
 		SESSION,
 
 		/// <remarks/>
-		[XmlEnumAttribute("SESSION.Profile")]
+		[XmlEnum("SESSION.Profile")]
 		SESSIONProfile,
 
 		/// <remarks/>
+		[PublicAPI]
 		LEXICON_RESOURCE_BUNDLE,
 
 		/// <remarks/>
-		[XmlEnumAttribute("LEXICON_RESOURCE_BUNDLE.Profile")]
+		[XmlEnum("LEXICON_RESOURCE_BUNDLE.Profile")]
 		LEXICON_RESOURCE_BUNDLEProfile,
 
 		/// <remarks/>
 		CATALOGUE,
 
 		/// <remarks/>
-		[XmlEnumAttribute("CATALOGUE.Profile")]
+		[XmlEnum("CATALOGUE.Profile")]
 		CATALOGUEProfile,
 
 		/// <remarks/>
 		CORPUS,
 
 		/// <remarks/>
-		[XmlEnumAttribute("CORPUS.Profile")]
+		[XmlEnum("CORPUS.Profile")]
 		CORPUSProfile,
 		// ReSharper restore InconsistentNaming
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(Namespace = "http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(Namespace = "https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class TimePositionRangeType
 	{
 		/// <remarks/>
@@ -2296,9 +2250,9 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
-	[SerializableAttribute]
-	[DebuggerStepThroughAttribute]
-	[XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.mpi.nl/IMDI/Schema/IMDI")]
+	[Serializable]
+	[DebuggerStepThrough]
+	[XmlType(AnonymousType = true, Namespace = "https://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd")]
 	public class SessionTypeReferences
 	{
 		/// <remarks/>

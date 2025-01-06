@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Xml.Serialization;
 using NUnit.Framework;
 using SIL.Xml;
 
@@ -924,7 +921,7 @@ namespace SIL.Scripture.Tests
 
 			// Have no idea what LAO is, but it's not in the English vrs file,
 			// so Paratext considers it to have 1 chapter, and since it's the
-			// last book in the Deutoerocanon, we can't advance.
+			// last book in the Deuterocanon, we can't advance.
 			vref = new VerseRef("LAO 1:0", ScrVers.English);
 			Assert.IsFalse(vref.NextChapter());
 			Assert.AreEqual("LAO", vref.Book);
@@ -933,7 +930,7 @@ namespace SIL.Scripture.Tests
 		}
 
 		/// <summary>
-		/// Tests the NextChapter method with a set of books (contrained to the odd-numbered
+		/// Tests the NextChapter method with a set of books (constrained to the odd-numbered
 		/// books in the Torah)
 		/// </summary>
 		[Test]
@@ -2067,6 +2064,53 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(new VerseRef("EXO 6:4"), new VerseRef("EXO 6:4-10").UnBridge());
 			Assert.AreEqual(new VerseRef("EXO 6:150monkeys"), new VerseRef("EXO 6:150monkeys").UnBridge());
 		}
+
+		/// <summary>
+		/// Tests the TrySetVerseUnicode method with numerals from various Unicode-supported scripts
+		/// </summary>
+		[TestCase("५", ExpectedResult = 5, TestName = "Devanagari numeral")]
+		[TestCase("૧૬", ExpectedResult = 16, TestName = "Gujarati numeral")]
+		[TestCase("5", ExpectedResult = 5, TestName = "Latin numeral")]
+		[TestCase("᠔", ExpectedResult = 4, TestName = "Mongolian numeral")]
+		[TestCase("A", ExpectedResult = -1, TestName = "Latin non-numeral")]
+		[TestCase("ะ", ExpectedResult = -1, TestName = "Thai non-numeral")]
+		[TestCase("᠔-᠔", ExpectedResult = 4, TestName = "Mongolian complex verse")]
+		[TestCase("᠔ᠠ", ExpectedResult = 4, TestName = "Mongolian complex verse - lettered")]
+		[TestCase("二十", ExpectedResult = 20, TestName = "Japanese numeral", IgnoreReason = "Non-decimal numeral systems not yet implemented. See issue #1000")]
+		[TestCase("יא", ExpectedResult = 11, TestName = "Hebrew numeral", IgnoreReason = "Non-decimal numeral systems not yet implemented. See issue #1000")]
+		[TestCase("\U0001113A\U00011138", ExpectedResult = 42, TestName = "Chakma numeral")]
+		[TestCase("Ⅻ", ExpectedResult = 12, TestName = "Roman numeral LetterNumber")]
+		[TestCase("፹", ExpectedResult = 80, TestName = "Ethiopic numeral OtherNumber")]
+		public int TrySetVerseUnicode_InterpretNumerals(string verseStr)
+		{
+			VerseRef vref = new VerseRef("EXO 6:1");
+
+			bool success = vref.TrySetVerseUnicode(verseStr);
+			Assert.AreEqual(success, vref.VerseNum != -1);
+
+			return vref.VerseNum;
+		}
+
+		/// <summary>
+		/// Tests the Verse property's set method with various input strings
+		/// </summary>
+		[TestCase("5", ExpectedResult = 5, TestName = "Latin numeral")]
+		[TestCase("524", ExpectedResult = 524, TestName = "Large Latin numeral")]
+		[TestCase("A", ExpectedResult = -1, TestName = "Latin non-numeral")]
+		[TestCase("૧૬", ExpectedResult = -1, TestName = "Non-Latin numeral")]
+		[TestCase("1-", ExpectedResult = 1, TestName = "Complex verse - incomplete")]
+		[TestCase("2.3", ExpectedResult = 2, TestName = "Complex verse - decimal")]
+		[TestCase("5-7", ExpectedResult = 5, TestName = "Complex verse - complete")]
+		[TestCase("7a", ExpectedResult = 7, TestName = "Complex verse - lettered")]
+		public int SetVerse_InterpretNumerals(string verseStr)
+		{
+			VerseRef vref = new VerseRef("EXO 6:1");
+
+			vref.Verse = verseStr;
+
+			return vref.VerseNum;
+		}
+
 		#endregion
 
 		#region InRange

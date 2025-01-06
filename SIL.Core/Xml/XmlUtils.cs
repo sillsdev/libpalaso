@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -8,6 +7,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using SIL.Linq;
 
 namespace SIL.Xml
 {
@@ -294,43 +294,6 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Deprecated: use GetOptionalAttributeValue instead.
-		/// </summary>
-		/// <param name="node"></param>
-		/// <param name="attrName"></param>
-		/// <param name="defaultValue"></param>
-		/// <returns></returns>
-		[Obsolete("Use GetOptionalAttributeValue instead")]
-		public static string GetAttributeValue(XmlNode node, string attrName, string defaultValue)
-		{
-			return GetOptionalAttributeValue(node, attrName, defaultValue);
-		}
-
-		/// <summary>
-		/// Get an optional attribute value from an XmlNode.
-		/// </summary>
-		/// <param name="node">The XmlNode to look in.</param>
-		/// <param name="attrName">The attribute to find.</param>
-		/// <returns>The value of the attribute, or null, if not found.</returns>
-		[Obsolete("Use GetOptionalAttributeValue instead")]
-		public static string GetAttributeValue(XmlNode node, string attrName)
-		{
-			return GetOptionalAttributeValue(node, attrName);
-		}
-
-		/// <summary>
-		/// Get an optional attribute value from an XElement.
-		/// </summary>
-		/// <param name="element">The XElement to look in.</param>
-		/// <param name="attrName">The attribute to find.</param>
-		/// <returns>The value of the attribute, or null, if not found.</returns>
-		[Obsolete("Use GetOptionalAttributeValue instead")]
-		public static string GetAttributeValue(XElement element, string attrName)
-		{
-			return GetOptionalAttributeValue(element, attrName);
-		}
-
-		/// <summary>
 		/// Get an optional attribute value from an XmlNode.
 		/// </summary>
 		/// <param name="node">The XmlNode to look in.</param>
@@ -490,27 +453,6 @@ namespace SIL.Xml
 			return -1;
 		}
 
-		#region Obsolete mis-spelled methods
-		[Obsolete("Use GetMandatoryAttributeValue instead")]
-		public static string GetManditoryAttributeValue(XmlNode node, string attrName)
-		{
-			return GetMandatoryAttributeValue(node, attrName);
-		}
-
-		[Obsolete("Use GetMandatoryAttributeValue instead")]
-		public static string GetManditoryAttributeValue(XElement element, string attrName)
-		{
-			return GetMandatoryAttributeValue(element, attrName);
-		}
-
-		[Obsolete("Use GetMandatoryAttributeValue instead")]
-		public static string GetManditoryAttributeValue(XPathNavigator node, string attrName)
-		{
-			return GetMandatoryAttributeValue(node, attrName);
-		}
-
-		#endregion
-
 		/// <summary>
 		/// Get an obligatory attribute value.
 		/// </summary>
@@ -566,15 +508,6 @@ namespace SIL.Xml
 			XmlElement xe = node.OwnerDocument.CreateElement(elementName);
 			node.AppendChild(xe);
 			return xe;
-		}
-
-		/// <summary>
-		/// Append an attribute with the specified name and value to parent.
-		/// </summary>
-		[Obsolete("Use SetAttribute instead")]
-		public static void AppendAttribute(XmlNode parent, string attrName, string attrVal)
-		{
-			SetAttribute(parent, attrName, attrVal);
 		}
 
 		/// <summary>
@@ -1037,10 +970,11 @@ namespace SIL.Xml
 		/// <param name="writer"></param>
 		/// <param name="dataToWrite"></param>
 		/// <param name="suppressIndentingChildren"></param>
-		public static void WriteNode(XmlWriter writer, string dataToWrite, HashSet<string> suppressIndentingChildren)
+		/// <param name="preserveNamespaces">a set of namespaces to preserve when writing out elements</param>
+		public static void WriteNode(XmlWriter writer, string dataToWrite, HashSet<string> suppressIndentingChildren, HashSet<string> preserveNamespaces = null)
 		{
 			XElement element = XDocument.Parse(dataToWrite).Root;
-			WriteNode(writer, element, suppressIndentingChildren);
+			WriteNode(writer, element, suppressIndentingChildren, preserveNamespaces);
 		}
 
 		/// <summary>
@@ -1051,11 +985,12 @@ namespace SIL.Xml
 		/// <param name="writer"></param>
 		/// <param name="dataToWrite"></param>
 		/// <param name="suppressIndentingChildren"></param>
-		public static void WriteNode(XmlWriter writer, XElement dataToWrite, HashSet<string> suppressIndentingChildren)
+		/// <param name="preserveNamespaces">a set of namespaces to preserve when writing out elements</param>
+		public static void WriteNode(XmlWriter writer, XElement dataToWrite, HashSet<string> suppressIndentingChildren, HashSet<string> preserveNamespaces = null)
 		{
 			if (dataToWrite == null)
 				return;
-			WriteElementTo(writer, dataToWrite, suppressIndentingChildren);
+			WriteElementTo(writer, dataToWrite, suppressIndentingChildren, preserveNamespaces);
 		}
 
 		/// <summary>
@@ -1064,11 +999,33 @@ namespace SIL.Xml
 		/// <param name="writer"></param>
 		/// <param name="element"></param>
 		/// <param name="suppressIndentingChildren"></param>
-		private static void WriteElementTo(XmlWriter writer, XElement element, HashSet<string> suppressIndentingChildren)
+		/// <param name="preserveNamespaces">a set of namespaces to preserve when writing out elements</param>
+		private static void WriteElementTo(XmlWriter writer, XElement element, HashSet<string> suppressIndentingChildren, HashSet<string> preserveNamespaces = null)
 		{
 			writer.WriteStartElement(element.Name.LocalName);
 			foreach (var attr in element.Attributes())
-				writer.WriteAttributeString(attr.Name.LocalName, attr.Value);
+			{
+				// if we are preserving namespaces, we may need to write the attribute with the prefix
+				if (preserveNamespaces != null && !string.IsNullOrEmpty(attr.Name.NamespaceName))
+				{
+					var attrPrefix = element.GetPrefixOfNamespace(attr.Name.NamespaceName);
+					if (preserveNamespaces.Contains(attrPrefix))
+					{
+						if (attrPrefix == "xmlns")
+						{
+							// If you need to write out the xmlns attribute consistently between platforms custom code will need to be written
+							// I'm leaving it unimplemented until needed
+							throw new ArgumentException("The 'xmlns' local namespace declarations are handled differently in framework. Using it could cause thrashing.");
+						}
+						writer.WriteAttributeString(attrPrefix, attr.Name.LocalName, attr.Name.NamespaceName, attr.Value);
+					}
+					else
+						writer.WriteAttributeString(attr.Name.LocalName, attr.Value);
+				}
+				else
+					writer.WriteAttributeString(attr.Name.LocalName, attr.Value);
+			}
+
 			// The writer automatically suppresses indenting children for any element that it detects has text children.
 			// However, it won't do this for the first child if that is an element, even if it later encounters text children.
 			// Also, there may be a parent where text including white space is significant, yet it is possible for the
@@ -1085,7 +1042,7 @@ namespace SIL.Xml
 			{
 				var xElement = child as XElement;
 				if (xElement != null)
-					WriteElementTo(writer, xElement, suppressIndentingChildren);
+					WriteElementTo(writer, xElement, suppressIndentingChildren, preserveNamespaces);
 				else
 					child.WriteTo(writer); // defaults are fine for everything else.
 			}
@@ -1136,6 +1093,33 @@ namespace SIL.Xml
 				(codePoint >= 0xE000 && codePoint <= 0xFFFD) ||
 				(codePoint >= 0x10000/* && character <= 0x10FFFF*/) //it's impossible to get a code point bigger than 0x10FFFF because Char.ConvertToUtf32 would have thrown an exception
 			);
+		}
+
+		/// <summary>
+		/// Removes namespaces from the Xml document (makes querying easier)
+		/// </summary>
+		public static XDocument RemoveNamespaces(this XDocument document)
+		{
+			document.Root?.RemoveNamespaces();
+			return document;
+		}
+
+		/// <summary>
+		/// Removes namespaces from the Xml element and its children (makes querying easier)
+		/// </summary>
+		public static XElement RemoveNamespaces(this XElement element)
+		{
+			RemoveNamespaces(element.DescendantsAndSelf());
+			return element;
+		}
+
+		private static void RemoveNamespaces(IEnumerable<XElement> elements)
+		{
+			foreach (var element in elements)
+			{
+				element.Attributes().Where(attribute => attribute.IsNamespaceDeclaration).ForEach(attribute => attribute.Remove());
+				element.Name = element.Name.LocalName;
+			}
 		}
 
 		/// <summary>

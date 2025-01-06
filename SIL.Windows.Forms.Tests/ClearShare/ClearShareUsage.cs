@@ -1,6 +1,7 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Xml;
 using NUnit.Framework;
+using SIL.Core.ClearShare;
 using SIL.IO;
 using SIL.Windows.Forms.ClearShare;
 
@@ -44,7 +45,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			// example
 			var license = new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.Derivatives);
-			license.RightsStatement = "Please acknowledge using 'Based on work of SIL International'";
+			license.RightsStatement = "Please acknowledge using 'Based on work of SIL Global'";
 
 			var json = "{\"license\":'" + license.Token + "\",\"rights\":\"" + license.RightsStatement + "\"}";
 			// store json somewhere.

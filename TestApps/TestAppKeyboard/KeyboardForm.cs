@@ -22,13 +22,21 @@ namespace TestAppKeyboard
 			KeyboardController.RegisterControl(testAreaB, eventHandler);
 			KeyboardController.RegisterControl(testAreaC, eventHandler);
 
+			Console.WriteLine();
+			Console.WriteLine("Adding keyboards for Test Area A");
 			LoadKeyboards(keyboardsA);
+			Console.WriteLine();
+			Console.WriteLine("Adding keyboards for Test Area B");
 			LoadKeyboards(keyboardsB);
+			Console.WriteLine();
+			Console.WriteLine("Adding keyboards for Test Area C");
 			LoadKeyboards(keyboardsC);
+			Console.WriteLine();
+			Console.WriteLine("Adding keyboards for Current Keyboard dropdown");
 			LoadKeyboards(currentKeyboard);
 		}
 
-		public void LoadKeyboards(ComboBox comboBox)
+		private static void LoadKeyboards(ComboBox comboBox)
 		{
 			var keyboards = Keyboard.Controller.AvailableKeyboards;
 			foreach (var keyboard in keyboards)
@@ -36,6 +44,13 @@ namespace TestAppKeyboard
 				comboBox.Items.Add(new WSKeyboardControl.KeyboardDefinitionAdapter(keyboard));
 				Console.WriteLine($"added keyboard id: {keyboard.Id}, name: {keyboard.Name}");
 			}
+
+			if (comboBox.Items.Count <= 0)
+			{
+				Console.WriteLine("WARNING: No available keyboards found!");
+				return;
+			}
+
 			comboBox.SelectedIndex = 0;
 		}
 

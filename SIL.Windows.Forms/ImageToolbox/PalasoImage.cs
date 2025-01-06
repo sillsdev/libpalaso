@@ -1,11 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
+using System.Text;
 using SIL.Code;
+using SIL.Core.ClearShare;
 using SIL.IO;
 using SIL.Windows.Forms.ClearShare;
 
@@ -46,11 +49,11 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// the nature of the palaso image system is to deliver images, not file paths, to documents
 		/// (we don't believe in "linking" to files somewhere on the disk which is just asking for problems
 		/// as the document is shared).
-		/// But in one circumumstance, we do care: when the user chooses from disk (as opposed to from camera or scanner)
+		/// But in one circumstance, we do care: when the user chooses from disk (as opposed to from camera or scanner)
 		/// and enters metadata, we want to store that metadata in the original.  
 		/// However, there is one circumstance (currently) in which this is not the original path:
 		/// If we attempt to save metadata and can't (e.g. file is readonly), we create a temp file and 
-		/// store the metadata there, then serve the temp file to the requestor.  That's why we store this path.
+		/// store the metadata there, then serve the temp file to the requester. That's why we store this path.
 		/// </summary>
 		private string _pathForSavingMetadataChanges;
 
@@ -68,8 +71,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 			Metadata = new Metadata();
 		}
 
-
-
 		public static PalasoImage FromImage(Image image)
 		{
 			Guard.AgainstNull(image, "image");
@@ -78,7 +79,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 				Image = image
 			};
 		}
-
 
 		private Image _image;
 
@@ -91,7 +91,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 			}
 			set
 			{
-				if(_image!=null)
+				// Note: If being re-assigned to same value as before, you don't want to dispose it, otherwise {value} will basically be gone
+				if(_image!=null && _image!=value)
 				{
 					_image.Tag = "**** Disposed by palasoImage";
 					_image.Dispose();
@@ -239,6 +240,52 @@ namespace SIL.Windows.Forms.ImageToolbox
 			Metadata.Write(_pathForSavingMetadataChanges);
 		}
 
+		// Figure what extension an image file SHOULD have, based on its contents.
+		// Adapted from code at https://stackoverflow.com/questions/210650/validate-image-from-file-in-c-sharp
+		// by https://stackoverflow.com/users/499558/alex
+		private static string GetCorrectImageExtension(string path)
+		{
+			byte[] bytes = new byte[10];
+			RetryUtility.Retry(() => {
+				using (var file = File.OpenRead(path))
+				{
+					file.Read(bytes, 0, 10);
+				}
+			}, memo:$"PalasoImage.GetCorrectImageExtension({path})");
+			// see http://www.mikekunz.com/image_file_header.html  
+				var bmp = Encoding.ASCII.GetBytes("BM");     // BMP
+				var gif = Encoding.ASCII.GetBytes("GIF");    // GIF
+				var png = new byte[] { 137, 80, 78, 71 };    // PNG
+				var tiff = new byte[] { 73, 73, 42 };         // TIFF
+				var tiff2 = new byte[] { 77, 77, 42 };         // TIFF
+				var jpeg = new byte[] { 255, 216, 255, 224 }; // jpeg
+				var jpeg2 = new byte[] { 255, 216, 255, 225 }; // jpeg canon
+
+				if (bmp.SequenceEqual(bytes.Take(bmp.Length)))
+					return "bmp";
+
+				if (gif.SequenceEqual(bytes.Take(gif.Length)))
+					return "gif";
+
+				if (png.SequenceEqual(bytes.Take(png.Length)))
+					return "png";
+
+				if (tiff.SequenceEqual(bytes.Take(tiff.Length)))
+					return "tif";
+
+				if (tiff2.SequenceEqual(bytes.Take(tiff2.Length)))
+					return "tif";
+
+				if (jpeg.SequenceEqual(bytes.Take(jpeg.Length)))
+					return "jpg";
+
+				if (jpeg2.SequenceEqual(bytes.Take(jpeg2.Length)))
+					return "jpg";
+
+				// We can't guess, keep what it came with.
+				return Path.GetExtension(path);
+		}
+
 		private static Image LoadImageWithoutLocking(string path, out string tempPath)
 		{
 			/*          1) Naïve approach:  locks until the image is dispose of some day, which is counter-intuitive to me
@@ -259,18 +306,30 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 			//if(Path.GetExtension(path)==".jpg")
 			{
-				var leakMe = TempFile.WithExtension(Path.GetExtension(path));
-				File.Delete(leakMe.Path);
-				File.Copy(path, leakMe.Path);
-
-				//we output the tempath so that the caller can clean it up later
+				var leakMe = TempFile.WithExtension(GetCorrectImageExtension(path));
+				RobustFile.Copy(path, leakMe.Path, true);
+				//we output the tempPath so that the caller can clean it up later
 				tempPath = leakMe.Path;
 
 				//Note, Image.FromFile(some 8 bit or 48 bit png) will always give you a 32 bit image.
 				//See http://stackoverflow.com/questions/7276212/reading-preserving-a-pixelformat-format48bpprgb-png-bitmap-in-net
 				//There is a second argument here, useEmbeddedColorManagement, that is said to preserve it if set to true, but it doesn't work.
 
-				return Image.FromFile(leakMe.Path, true);
+				try
+				{
+					return Image.FromFile(leakMe.Path, true);
+				}
+				catch (OutOfMemoryException e)
+				{
+					// very often means really that the image file is corrupt.
+					// We'll try to diagnose that by attempting to get metadata. If that throws (probably TagLib.CorruptFileException),
+					// assume it's a better indication of the problem.
+					var metadata = Metadata.FromFile(path);
+					if (metadata.IsOutOfMemoryPlausible(e))
+						// ReSharper disable once PossibleIntendedRethrow
+						throw e; // Deliberately NOT just "throw", that loses the extra information IsOutOfMemoryPlausible added to the exception.
+					throw new TagLib.CorruptFileException("File could not be read and is possible corrupted", e);
+				}
 			}
 		}
 
@@ -284,7 +343,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 				FileName = Path.GetFileName(path),
 				_originalFilePath = path,
 				_pathForSavingMetadataChanges = path,
-				Metadata = Metadata.FromFile(path),
+				Metadata = Metadata.FromFile(tempPath),
 				_tempFilePath = tempPath
 			};
 			NormalizeImageOrientation(i);
@@ -299,17 +358,33 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// </remarks>
 		public static PalasoImage FromFileRobustly(string path)
 		{
-			return RetryUtility.Retry(() => PalasoImage.FromFile(path),
-				RetryUtility.kDefaultMaxRetryAttempts,
-				RetryUtility.kDefaultRetryDelay,
-				new HashSet<Type>
-				{
-					Type.GetType("System.IO.IOException"),
-					// Odd type to catch... but it seems that Image.FromFile (which is called in the bowels of PalasoImage.FromFile)
-					// throws OutOfMemoryException when the file is inaccessible.
-					// See http://stackoverflow.com/questions/2610416/is-there-a-reason-image-fromfile-throws-an-outofmemoryexception-for-an-invalid-i
-					Type.GetType("System.OutOfMemoryException")
-				});
+			try
+			{
+				return RetryUtility.Retry(() => PalasoImage.FromFile(path),
+					RetryUtility.kDefaultMaxRetryAttempts,
+					RetryUtility.kDefaultRetryDelay,
+					new HashSet<Type>
+					{
+						typeof(System.IO.IOException),
+						// Odd type to catch... but it seems that Image.FromFile (which is called in the bowels of PalasoImage.FromFile)
+						// throws OutOfMemoryException when the file is inaccessible.
+						// See http://stackoverflow.com/questions/2610416/is-there-a-reason-image-fromfile-throws-an-outofmemoryexception-for-an-invalid-i
+						typeof(System.OutOfMemoryException),
+						// Again you'd expect that if it's corrupt, it would stay that way, but
+						// experimentally, it seems we can get this if the file can't be read because it is (temporarily?) locked.
+						// (The text of the message reads, "File could not be read and is possible corrupted", which
+						// suggests they are using this to cover any case of not being able to read the file."
+						typeof(TagLib.CorruptFileException)
+					});
+			}
+			catch (Exception e)
+			{
+				// In case something else goes wrong, at least some errors we've seen from here
+				// (including TagLib.CorruptFileException) don't tell us WHICH FILE has the
+				// problem, so wrap in another layer that does.
+				throw new ApplicationException(
+					"Could not make PalasoImage from " + path + " because " + e.Message, e);
+			}
 		}
 
 		/// <summary>

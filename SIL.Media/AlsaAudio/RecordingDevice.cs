@@ -1,4 +1,4 @@
-// Copyright (c) 2017 SIL International
+// Copyright (c) 2024 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
@@ -30,7 +30,7 @@ namespace SIL.Media.AlsaAudio
 				}
 				return _default;
 			}
-			private set { _default = value; }
+			private set => _default = value;
 		}
 
 		public string Id { get; }
@@ -38,10 +38,6 @@ namespace SIL.Media.AlsaAudio
 		public string GenericName { get; set; }
 		public string ProductName { get; set; }
 		public WaveInCapabilities Capabilities { get; set; }
-
-		public RecordingDevice()
-		{
-		}
 
 		public override bool Equals(object obj)
 		{
@@ -58,10 +54,8 @@ namespace SIL.Media.AlsaAudio
 			return GenericName.GetHashCode() ^ ProductName.GetHashCode() + DeviceNumber;
 		}
 
-		public override string ToString ()
-		{
-			return string.Format ("[RecordingDevice: DeviceNumber={0}, GenericName={1}, ProductName={2}]", DeviceNumber, GenericName, ProductName);
-		}
+		public override string ToString () =>
+			$"[RecordingDevice: DeviceNumber={DeviceNumber}, GenericName={GenericName}, ProductName={ProductName}]";
 
 		public static List<RecordingDevice> Devices
 		{
@@ -182,7 +176,7 @@ assigned as the default (preferred) input device.
 			try
 			{
 				// get the information about the capture device of this card
-				var filename = String.Format("/proc/asound/card{0}/pcm0c/info", num);
+				var filename = $"/proc/asound/card{num}/pcm0c/info";
 				var infoLines = System.IO.File.ReadAllLines(filename);
 				if (infoLines == null | infoLines.Length == 0)
 					return false;
@@ -255,7 +249,7 @@ assigned as the default (preferred) input device.
 			IntPtr info = IntPtr.Zero;
 
 			var retval = new List<string>();
-			var cardId = String.Format("hw:{0}", cardNumber);
+			var cardId = $"hw:{cardNumber}";
 			if (snd_hctl_open(ref handle, cardId, 0) < 0)
 				return retval;
 			if (snd_hctl_load(handle) < 0)

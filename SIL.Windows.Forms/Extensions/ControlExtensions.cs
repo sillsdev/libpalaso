@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -27,7 +27,7 @@ namespace SIL.Windows.Forms.Extensions
 				SendMessageLinux(hWnd, msg, wParam, lParam);
 		}
 
-		[DllImport("user32", EntryPoint = "UpdateWindow")]
+		[DllImport("user32.dll", EntryPoint = "UpdateWindow")]
 		private static extern int UpdateWindowWindows(IntPtr hwnd);
 
 		private static int UpdateWindowLinux(IntPtr hwnd)
@@ -129,7 +129,7 @@ namespace SIL.Windows.Forms.Extensions
 
 			if (!control.InvokeRequired)
 			{
-				if (control.IsDisposed)
+				if (control.IsDisposed || control.Disposing)
 				{
 					if (errorHandling == ErrorHandlingAction.Throw)
 						throw new ObjectDisposedException("SafeInvoke called after the control was disposed. (" + nameForErrorReporting + ")");
