@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security;
 using JetBrains.Annotations;
 using SIL.PlatformUtilities;
+using SIL.Reporting;
 using static System.Environment;
 using static System.Environment.SpecialFolder;
 using static System.IO.Path;
@@ -27,7 +28,7 @@ namespace SIL.IO
 				File.Copy(filepath, Combine(destinationPath, filename), overwrite);
 			}
 
-			// Copy all the sub directories.
+			// Copy all the subdirectories.
 			foreach (var directoryPath in Directory.GetDirectories(sourcePath))
 			{
 				var directoryName = GetFileName(directoryPath);
@@ -142,7 +143,7 @@ namespace SIL.IO
 				}
 				catch (SecurityException e)
 				{
-					Console.WriteLine(e);
+					Logger.WriteError(e);
 				}
 			}
 

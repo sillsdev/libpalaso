@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using SIL.PlatformUtilities;
 using SIL.Reflection;
+using SIL.Reporting;
 
 namespace SIL.IO
 {
@@ -298,7 +299,7 @@ namespace SIL.IO
 						}
 						catch (Exception e)
 						{
-							Console.WriteLine(e);
+							Logger.WriteError(e);
 						}
 
 						if (subDirectories != null)

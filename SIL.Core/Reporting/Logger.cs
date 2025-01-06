@@ -4,18 +4,20 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using JetBrains.Annotations;
 using SIL.IO;
 
 namespace SIL.Reporting
 {
-
 	public interface ILogger
 	{
 		/// <summary>
-		/// This is something that should be listed in the source control checkin
+		/// This is something that should be listed in the source control check-in
 		/// </summary>
 		void WriteConciseHistoricalEvent(string message, params object[] args);
 	}
+
+	[PublicAPI]
 	public class MultiLogger: ILogger
 	{
 		private readonly List<ILogger> _loggers= new List<ILogger>();
@@ -58,6 +60,8 @@ namespace SIL.Reporting
 		{
 			_builder.Append(Logger.FormatMessage(message, args));
 		}
+
+		[PublicAPI]
 		public string GetLogText()
 		{
 			return _builder.ToString();
@@ -67,7 +71,7 @@ namespace SIL.Reporting
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
 	/// Logs stuff to a file created in
-	/// c:\Documents and Settings\Username\Local Settings\Temp\Companyname\Productname\Log.txt
+	/// c:\Documents and Settings\Username\Local Settings\Temp\Companyname\ProductName\Log.txt
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
 	public class Logger: IDisposable, ILogger
@@ -206,7 +210,7 @@ namespace SIL.Reporting
 		public void CheckDisposed()
 		{
 			if (IsDisposed)
-				throw new ObjectDisposedException(String.Format("'{0}' in use after being disposed.", GetType().Name));
+				throw new ObjectDisposedException($"'{GetType().Name}' in use after being disposed.");
 		}
 
 		/// <summary>
@@ -217,10 +221,7 @@ namespace SIL.Reporting
 		/// <summary>
 		/// See if the object has been disposed.
 		/// </summary>
-		public bool IsDisposed
-		{
-			get { return m_isDisposed; }
-		}
+		public bool IsDisposed => m_isDisposed;
 
 		/// <summary>
 		/// Finalizer, in case client doesn't dispose it.
@@ -243,7 +244,7 @@ namespace SIL.Reporting
 		{
 			Dispose(true);
 			// This object will be cleaned up by the Dispose method.
-			// Therefore, you should call GC.SupressFinalize to
+			// Therefore, you should call GC.SuppressFinalize to
 			// take this object off the finalization queue
 			// and prevent finalization code for this object
 			// from executing a second time.
@@ -258,7 +259,7 @@ namespace SIL.Reporting
 		/// Both managed and unmanaged resources can be disposed.
 		///
 		/// 2. If disposing is false, the method has been called by the
-		/// runtime from inside the finalizer and you should not reference (access)
+		/// runtime from inside the finalizer, and you should not reference (access)
 		/// other managed objects, as they already have been garbage collected.
 		/// Only unmanaged resources can be disposed.
 		/// </summary>
@@ -295,7 +296,7 @@ namespace SIL.Reporting
 		#endregion IDisposable & Co. implementation
 
 		/// <summary>
-		/// This is for version-control checkin descriptions. E.g. "Deleted foobar".
+		/// This is for version-control check-in descriptions. E.g. "Deleted foobar".
 		/// </summary>
 		/// <param name="message"></param>
 		/// <param name="args"></param>
@@ -354,10 +355,7 @@ namespace SIL.Reporting
 		/// <summary>
 		/// added this for a case of a catastrophic error so bad I couldn't get the means of finding out what just happened
 		/// </summary>
-		public static string MinorEventsLog
-		{
-			get { return Singleton.m_minorEvents.ToString(); }
-		}
+		public static string MinorEventsLog => Singleton.m_minorEvents.ToString();
 
 		/// <summary>
 		/// the place on disk where we are storing the log
@@ -373,10 +371,7 @@ namespace SIL.Reporting
 				return _actualLogPath;
 			}
 		}
-		public static Logger Singleton
-		{
-			get { return _singleton; }
-		}
+		public static Logger Singleton => _singleton;
 
 		private static void SetActualLogPath(string filename)
 		{
@@ -407,7 +402,7 @@ namespace SIL.Reporting
 				{
 #endif
 				CheckDisposed();
-				if (m_out != null && m_out.BaseStream.CanWrite)
+				if (m_out is { BaseStream: { CanWrite: true } })
 				{
 					m_out.Write(DateTime.Now.ToLongTimeString() + "\t");
 					m_out.WriteLine(FormatMessage(message, args));
@@ -455,7 +450,7 @@ namespace SIL.Reporting
 		}
 
 		/// <summary>
-		/// only a limitted number of the most recent of these events will show up in the log
+		/// only a limited number of the most recent of these events will show up in the log
 		/// </summary>
 		public static void WriteMinorEvent(string message, params object[] args)
 		{
@@ -483,7 +478,7 @@ namespace SIL.Reporting
 				}
 				catch (Exception)
 				{
-					return string.Format("Error formatting message with {0} args: {1}", args.Length, message);
+					return $"Error formatting message with {args.Length} args: {message}";
 				}
 			}
 			return message;
@@ -520,6 +515,7 @@ namespace SIL.Reporting
 			}
 		}
 
+		[PublicAPI]
 		public static void ShowUserTheLogFile()
 		{
 			Singleton.m_out.Flush();
@@ -527,9 +523,10 @@ namespace SIL.Reporting
 		}
 
 		/// <summary>
-		/// if you're working with unmanaged code and get a System.AccessViolationException, well you're toast, and anything
-		/// that requires UI is gonna freeze up.  So call this instead
+		/// If you're working with unmanaged code and get a System.AccessViolationException, you're
+		/// toast, and anything that requires UI is going to freeze up. So call this instead.
 		/// </summary>
+		[PublicAPI]
 		public static void ShowUserATextFileRelatedToCatastrophicError(Exception reallyBadException)
 		{
 			//did this special because we don't have an event loop to drive the error reporting dialog if Application.Run() dies
