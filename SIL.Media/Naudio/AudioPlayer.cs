@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Timers;
+using JetBrains.Annotations;
 using NAudio.Wave;
 
 namespace SIL.Media.Naudio
@@ -26,6 +27,7 @@ namespace SIL.Media.Naudio
 			};
 		}
 
+		[PublicAPI]
 		public void LoadStream(WaveStream stream)
 		{
 			InternalLoad(stream as TrimWaveStream ?? new TrimWaveStream(stream));
@@ -82,22 +84,19 @@ namespace SIL.Media.Naudio
 
 		public TimeSpan StartPosition
 		{
-			get { return _inStream.StartPosition; }
-			set { _inStream.StartPosition = value; }
+			get => _inStream.StartPosition;
+			set => _inStream.StartPosition = value;
 		}
 
 		public TimeSpan EndPosition
 		{
-			get { return _inStream.EndPosition; }
-			set { _inStream.EndPosition = value; }
+			get => _inStream.EndPosition;
+			set => _inStream.EndPosition = value;
 		}
 
 		public TimeSpan CurrentPosition { get; set; }
 
-		public PlaybackState PlaybackState
-		{
-			get { return _waveOut == null ? PlaybackState.Stopped : _waveOut.PlaybackState; }
-		}
+		public PlaybackState PlaybackState => _waveOut?.PlaybackState ?? PlaybackState.Stopped;
 
 		public void Dispose()
 		{

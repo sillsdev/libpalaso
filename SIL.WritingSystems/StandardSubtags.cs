@@ -20,7 +20,7 @@ namespace SIL.WritingSystems
 			Iso3Languages = RegisteredLanguages.Where(l => !string.IsNullOrEmpty(l.Iso3Code)).ToDictionary(l => l.Iso3Code, StringComparer.InvariantCultureIgnoreCase);
 		}
 
-		internal static void InitialiseIanaSubtags(string twotothreecodes, string subtagregistry)
+		internal static void InitialiseIanaSubtags(string twoToThreeCodes, string subtagRegistry)
 		{
 			// JohnT: can't find anywhere else to document this, so here goes: TwoToThreeMap is a file adapted from
 			// FieldWorks Ethnologue\Data\iso-639-3_20080804.tab, by discarding all but the first column (3-letter
@@ -29,8 +29,8 @@ namespace SIL.WritingSystems
 			// Iana code, and the string after it is the one we want to return as the corresponding ISO3Code.
 			// The following block of code assembles these lines into a map we can use to fill this slot properly
 			// when building the main table.
-			var twoToThreeMap = TwoAndThreeMap(twotothreecodes, false);
-			string[] ianaSubtagsAsStrings = subtagregistry.Split(new[] { "%%" }, StringSplitOptions.None);
+			var twoToThreeMap = TwoAndThreeMap(twoToThreeCodes, false);
+			string[] ianaSubtagsAsStrings = subtagRegistry.Split(new[] { "%%" }, StringSplitOptions.None);
 
 			var languages = new List<LanguageSubtag>();
 			var scripts = new List<ScriptSubtag>();
@@ -57,9 +57,9 @@ namespace SIL.WritingSystems
 						continue;
 					if (component.Split(':').Length < 2) // the description for ia (Interlingua) is spread over 2 lines
 					{
-						if (descriptions.Count() > 0)
+						if (descriptions.Count > 0)
 						{
-							description = description + component.Substring(1);
+							description += component.Substring(1);
 							descriptions.Clear();
 							descriptions.Add(description);
 						}
@@ -127,8 +127,7 @@ namespace SIL.WritingSystems
 				switch (type)
 				{
 					case "language":
-						string iso3Code;
-						if (!twoToThreeMap.TryGetValue(subtag, out iso3Code))
+						if (!twoToThreeMap.TryGetValue(subtag, out var iso3Code))
 							iso3Code = subtag;
 						languages.Add(new LanguageSubtag(subtag, description, false, iso3Code, descriptions, macrolanguage, deprecated));
 						break;

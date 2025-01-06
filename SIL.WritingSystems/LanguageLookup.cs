@@ -68,8 +68,8 @@ namespace SIL.WritingSystems
 
 			foreach (AllTagEntry entry in rootObject)
 			{
-				// tags starting with x- have undefined structure so ignoring them as well as deprecated tags
-				// tags starting with _ may provide some sort of undefined variant information, but we ignore them as well
+				// Tags starting with x- have undefined structure, so ignoring them as well as deprecated tags.
+				// Tags starting with _ may provide some sort of undefined variant information, but we ignore them as well.
 				if (!entry.deprecated && !entry.tag.StartsWith("x-", StringComparison.Ordinal) && !entry.tag.StartsWith("_", StringComparison.Ordinal))
 				{
 					AddLanguage(entry.tag, entry.iso639_3, entry.full, entry.name, entry.localname, entry.region, entry.names, entry.regions, entry.tags, entry.iana, entry.regionName);
@@ -82,10 +82,10 @@ namespace SIL.WritingSystems
 
 		/// <summary>
 		/// Some languages in langtags.json have not been normalized to have a default tag without a script marker
-		/// in one of its entries.  For some uses of the data, we really want to see only the default tags but we
-		/// also don't want to not see any languages.  So scan through the data for cases where every tag associated
+		/// in one of its entries. For some uses of the data, we really want to see only the default tags, but we
+		/// also don't want to not see any languages. So scan through the data for cases where every tag associated
 		/// with a language contains a script marker and choose one as the default to receive a minimal tag that is
-		/// equal to the language code alone.  (The one found in the most countries is chosen by default.)
+		/// equal to the language code alone. (The one found in the most countries is chosen by default.)
 		/// </summary>
 		private void EnsureDefaultTags()
 		{
@@ -99,11 +99,7 @@ namespace SIL.WritingSystems
 			for (var i = 0; i < tagList.Count; ++i)
 			{
 				var tag = tagList[i];
-				string language;
-				string script;
-				string region;
-				string variant;
-				if (!TryGetParts(tag, out language, out script, out region, out variant))
+				if (!TryGetParts(tag, out var language, out var script, out _, out _))
 				{
 					prevLang = tag;	// shouldn't happen, but if it does...
 					continue;
@@ -149,41 +145,34 @@ namespace SIL.WritingSystems
 		private bool AddLanguage(string code, string threelettercode, string full = null,
 			string name = null, string localName = null, string region = null, List<string> names = null, List<string> regions = null, List<string> tags = null, List<string> ianaNames = null, string regionName = null)
 		{
-			string primarycountry;
+			string primaryCountry;
 			if (region == null)
 			{
-				primarycountry = "";
+				primaryCountry = "";
 			}
 			else if (StandardSubtags.IsValidIso3166RegionCode(region))
 			{
 				if (StandardSubtags.IsPrivateUseRegionCode(region))
 				{
-					if (region == "XK")
-					{
-						primarycountry = "Kosovo";
-					}
-					else
-					{
-						primarycountry = "Unknown private use";
-					}
+					primaryCountry = region == "XK" ? "Kosovo" : "Unknown private use";
 				}
 				else
 				{
-					primarycountry = StandardSubtags.RegisteredRegions[region].Name; // convert to full region name
+					primaryCountry = StandardSubtags.RegisteredRegions[region].Name; // convert to full region name
 				}
 			}
 			else
 			{
-				primarycountry = "Invalid region";
+				primaryCountry = "Invalid region";
 			}
 			LanguageInfo language = new LanguageInfo
 			{
 				LanguageTag = code,
 				ThreeLetterTag = threelettercode,
 				// DesiredName defaults to Names[0], which is set below.
-				PrimaryCountry = primarycountry
+				PrimaryCountry = primaryCountry
 			};
-			language.Countries.Add(primarycountry);
+			language.Countries.Add(primaryCountry);
 
 			if (regions != null)
 			{
@@ -221,15 +210,15 @@ namespace SIL.WritingSystems
 				// add each name that is not already in language.Names
 				language.Names.AddRange(names.Select(n => n.Trim()).Where(n => !language.Names.Contains(n)));
 			}
-			// If we end up needing to add the language code, that reflects a deficiency in the data.  But
-			// having a bogus name value probably hurts less that not having any name at all.  The sort
+			// If we end up needing to add the language code, that reflects a deficiency in the data. But
+			// having a bogus name value probably hurts less that not having any name at all. The sort
 			// process mentioned above using the language tag as well as the first two items in the Names list.
 			Debug.Assert(language.Names.Count > 0);
 			if (language.Names.Count == 0)
 				language.Names.Add(code);
 
 			// add language to _codeToLanguageIndex and _nameToLanguageIndex
-			// if 2 letter code then add both 2 and 3 letter codes to _codeToLanguageIndex
+			// if 2-letter code, then add both 2 and 3-letter codes to _codeToLanguageIndex
 
 			_codeToLanguageIndex[code] = language;
 			if (full != null && !string.Equals(full, code))
@@ -244,26 +233,25 @@ namespace SIL.WritingSystems
 
 			if (tags != null)
 			{
-				foreach (string langtag in tags)
+				foreach (string langTag in tags)
 				{
-					_codeToLanguageIndex[langtag] = language;
+					_codeToLanguageIndex[langTag] = language;
 				}
 			}
 
-			foreach (string langname in language.Names)
-				GetOrCreateListFromName(langname).Add(language);
+			foreach (string langName in language.Names)
+				GetOrCreateListFromName(langName).Add(language);
 			// add to _countryToLanguageIndex
 			foreach (var country in language.Countries)
 			{
 				if (!string.IsNullOrEmpty(country))
 				{
-					List<LanguageInfo> list;
-					if (!_countryToLanguageIndex.TryGetValue(country, out list))
+					if (!_countryToLanguageIndex.TryGetValue(country, out var list))
 					{
 						list = new List<LanguageInfo>();
 						_countryToLanguageIndex[country] = list;
 					}
-						list.Add(language);
+					list.Add(language);
 				}
 			}
 
@@ -289,8 +277,7 @@ namespace SIL.WritingSystems
 
 		private List<LanguageInfo> GetOrCreateListFromName(string name)
 		{
-			List<LanguageInfo> languages;
-			if (!_nameToLanguageIndex.TryGetValue(name, out languages))
+			if (!_nameToLanguageIndex.TryGetValue(name, out var languages))
 			{
 				languages = new List<LanguageInfo>();
 				_nameToLanguageIndex.Add(name, languages);
@@ -305,13 +292,12 @@ namespace SIL.WritingSystems
 		public LanguageInfo GetLanguageFromCode(string isoCode)
 		{
 			Guard.AgainstNullOrEmptyString(isoCode, "Parameter to GetLanguageFromCode must not be null or empty.");
-			LanguageInfo languageInfo = null;
-			_codeToLanguageIndex.TryGetValue(isoCode, out languageInfo);
+			_codeToLanguageIndex.TryGetValue(isoCode, out var languageInfo);
 			return languageInfo;
 		}
 
 		/// <summary>
-		/// Get an list of languages that match the given string in some way (code, name, country)
+		/// Get a list of languages that match the given string in some way (code, name, country)
 		/// </summary>
 		public IEnumerable<LanguageInfo> SuggestLanguages(string searchString)
 		{
@@ -322,13 +308,13 @@ namespace SIL.WritingSystems
 
 			if (searchString == "*")
 			{
-				// there will be duplicate LanguageInfo entries for 2 and 3 letter codes and equivalent tags
+				// There will be duplicate LanguageInfo entries for 2 and 3-letter codes and equivalent tags.
 				var all_languages = new HashSet<LanguageInfo>(_codeToLanguageIndex.Select(l => l.Value));
 				foreach (LanguageInfo languageInfo in all_languages.OrderBy(l => l, new ResultComparer(searchString)))
 					yield return languageInfo;
 			}
-			// if the search string exactly matches a hard-coded way to say "sign", show all the sign languages
-			// there will be duplicate LanguageInfo entries for equivalent tags
+			// If the search string exactly matches a hard-coded way to say "sign", show all the sign languages.
+			// There will be duplicate LanguageInfo entries for equivalent tags
 			else if (new []{"sign", "sign language","signes", "langage des signes", "señas","lenguaje de señas"}.Contains(searchString.ToLowerInvariant()))
 			{
 				var parallelSearch = new HashSet<LanguageInfo>(_codeToLanguageIndex.AsParallel().Select(li => li.Value).Where(l =>
@@ -342,10 +328,10 @@ namespace SIL.WritingSystems
 			{
 				IEnumerable<LanguageInfo> matchOnCode = from x in _codeToLanguageIndex where x.Key.StartsWith(searchString, StringComparison.InvariantCultureIgnoreCase) select x.Value;
 				List<LanguageInfo>[] matchOnName = (from x in _nameToLanguageIndex where x.Key.StartsWith(searchString, StringComparison.InvariantCultureIgnoreCase) select x.Value).ToArray();
-				// Apostrophes can cause trouble in lookup.  Unicode TR-29 inexplicably says to use
+				// Apostrophes can cause trouble in lookup. Unicode TR-29 inexplicably says to use
 				// u2019 (RIGHT SINGLE QUOTATION MARK) for the English apostrophe when it also defines
-				// u02BC (MODIFIER LETTER APOSTROPHE) as a Letter character.  Users are quite likely to
-				// type the ASCII apostrophe (u0027) which is defined as Punctuation.  The current
+				// u02BC (MODIFIER LETTER APOSTROPHE) as a Letter character. Users are quite likely to
+				// type the ASCII apostrophe (u0027) which is defined as Punctuation. The current
 				// data appears to use u2019 in several language names, which means that users might
 				// end up thinking the language isn't in our database.
 				// See https://silbloom.myjetbrains.com/youtrack/issue/BL-6339.
@@ -393,9 +379,9 @@ namespace SIL.WritingSystems
 			/// <summary>
 			/// Sorting the languages for display is tricky: we want the most relevant languages at the
 			/// top of the list, so we can't simply sort alphabetically by language name or by language tag,
-			/// but need to take both items into account together with the current search string.  Ordering
+			/// but need to take both items into account together with the current search string. Ordering
 			/// by relevance is clearly impossible since we'd have to read the user's mind and apply that
-			/// knowledge to the data.  But the heuristics we use here may be better than nothing...
+			/// knowledge to the data. But the heuristics we use here may be better than nothing...
 			/// </summary>
 			public int Compare(LanguageInfo x, LanguageInfo y)
 			{
@@ -404,7 +390,7 @@ namespace SIL.WritingSystems
 
 				// Favor ones where some language name matches the search string to solve BL-1141
 				// We restrict this to the top 2 names of each language, and to cases where the
-				// corresponding names of the two languages are different.  (If both language names
+				// corresponding names of the two languages are different. (If both language names
 				// match the search string, there's no good reason to favor one over the other!)
 				if (!x.Names[0].Equals(y.Names[0], StringComparison.InvariantCultureIgnoreCase))
 				{
@@ -415,9 +401,9 @@ namespace SIL.WritingSystems
 				}
 				else if (x.Names.Count == 1 || y.Names.Count == 1 || !x.Names[1].Equals(y.Names[1], StringComparison.InvariantCultureIgnoreCase))
 				{
-					// If we get here, x.Names[0] == y.Names[0].  If both equal the search string, then neither x.Names[1]
+					// If we get here, x.Names[0] == y.Names[0]. If both equal the search string, then neither x.Names[1]
 					// nor y.Names[1] should equal the search string since the code adding to Names checks for redundancy.
-					// Also it's possible that neither x.Names[1] nor y.Names[1] exists at this point in the code, or that
+					// Also, it's possible that neither x.Names[1] nor y.Names[1] exists at this point in the code, or that
 					// only one of them exists, or that both of them exist (in which case they are not equal).
 					if (x.Names.Count > 1 && x.Names[1].Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
 						return -1;
@@ -425,29 +411,24 @@ namespace SIL.WritingSystems
 						return 1;
 				}
 
-				// Favor a language whose tag matches the search string exactly.  (equal tags are handled above)
+				// Favor a language whose tag matches the search string exactly. (equal tags are handled above)
 				if (x.LanguageTag.Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
 					return -1;
 				if (y.LanguageTag.Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
 					return 1;
 
 				// written this way to avoid having to catch predictable exceptions as the user is typing
-				string xlanguage;
-				string ylanguage;
-				string script;
-				string region;
-				string variant;
-				var xtagParses = TryGetParts(x.LanguageTag, out xlanguage, out script, out region, out variant);
-				var ytagParses = TryGetParts(y.LanguageTag, out ylanguage, out script, out region, out variant);
-				var bothTagLanguagesMatchSearch = xtagParses && ytagParses && xlanguage == ylanguage &&
-					_searchString.Equals(xlanguage, StringComparison.InvariantCultureIgnoreCase);
+				var xTagParses = TryGetParts(x.LanguageTag, out var xLanguage, out _, out _, out _);
+				var yTagParses = TryGetParts(y.LanguageTag, out var yLanguage, out _, out _, out _);
+				var bothTagLanguagesMatchSearch = xTagParses && yTagParses && xLanguage == yLanguage &&
+					_searchString.Equals(xLanguage, StringComparison.InvariantCultureIgnoreCase);
 				if (!bothTagLanguagesMatchSearch)
 				{
-					// One of the tag language pieces may match the search string even though not both match.  In that case,
+					// One of the tag language pieces may match the search string even though not both match. In that case,
 					// sort the matching language earlier in the list.
-					if (xtagParses && _searchString.Equals(xlanguage, StringComparison.InvariantCultureIgnoreCase))
+					if (xTagParses && _searchString.Equals(xLanguage, StringComparison.InvariantCultureIgnoreCase))
 						return -1;  // x.Tag's language part matches search string exactly, so sort it earlier in the list.
-					if (ytagParses && _searchString.Equals(ylanguage, StringComparison.InvariantCultureIgnoreCase))
+					if (yTagParses && _searchString.Equals(yLanguage, StringComparison.InvariantCultureIgnoreCase))
 						return 1;   // y.Tag's language part matches search string exactly, so sort it earlier in the list.
 				}
 
@@ -481,7 +462,7 @@ namespace SIL.WritingSystems
 				}
 
 				// Editing distance to a language name is not useful when we've detected that the user appears to be
-				// typing a language tag in that both language tags match what the user has typed.  (For example,
+				// typing a language tag in that both language tags match what the user has typed. (For example,
 				// it gives a strange and unwanted order to the variants of zh.)  In such a case we just order the
 				// matching codes by length (already done) and then alphabetically by code, skipping the sort by
 				// editing distance to the language names.
@@ -504,7 +485,8 @@ namespace SIL.WritingSystems
 						return res;
 				}
 
-				// Alphabetize by Language tag if 3 characters or less or if there is a hyphen after the first 2 or 3 chars
+				// Alphabetize by Language tag if 3 characters or fewer, or if there is a hyphen
+				// after the first 2 or 3 chars.
 				if (_lowerSearch.Length <= 3 || _lowerSearch.IndexOf('-') == 3 || _lowerSearch.IndexOf('-') == 4)
 				{
 					return string.Compare(x.LanguageTag, y.LanguageTag, StringComparison.InvariantCultureIgnoreCase);
