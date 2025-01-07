@@ -94,6 +94,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core.Desktop] Implemented GetDefaultProgramForFileType (as trenamed) in a way that works on Windows 11, Mono (probably) and MacOS (untested).
 - [SIL.Media] MediaInfo.HaveNecessaryComponents properly returns true if FFprobe is on the system path.
 - [SIL.Media] Made MediaInfo.FFprobeFolder look for and return the folder when first accessed, even if no prior call to the setter or other action had caused it t be found.
+- [SIL.Core] Made GetSafeDirectories not crash and simply not return any subdirectory the user does not have permission to access.
+- [SIL.Core] In GetDirectoryDistributedWithApplication, prevented a failure in accessing one of the specified subfolders from allowing it to try the others.
 
 ### Removed
 
