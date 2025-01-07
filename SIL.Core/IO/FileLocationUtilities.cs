@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using SIL.PlatformUtilities;
 using SIL.Reflection;
+using SIL.Reporting;
 
 namespace SIL.IO
 {
@@ -63,7 +64,7 @@ namespace SIL.IO
 		/// [applicationFolder]/[distFileFolderName]/[subPath1]/[subPathN] or
 		/// [applicationFolder]/[distFileFolderName]/[platform]/[subPath1]/[subPathN] or
 		/// [applicationFolder]/[subPath1]/[subPathN]. If the executable can't be found we
-		/// search in the ProgramFiles folder ([programfiles]/[subPath1]/[subPathN]) on Windows,
+		/// search in the ProgramFiles folder ([ProgramFiles]/[subPath1]/[subPathN]) on Windows,
 		/// and in the folders included in the PATH environment variable on Linux.
 		/// When the executable has a prefix of ".exe" we're running on Linux we also
 		/// search for files without the prefix.
@@ -109,7 +110,7 @@ namespace SIL.IO
 		}
 
 		private static string[] DirectoriesHoldingFiles => new[] {string.Empty, "DistFiles",
-			"common" /*for wesay*/, "src" /*for Bloom*/};
+			"common" /*for WeSay*/, "src" /*for Bloom*/};
 
 		/// <summary>
 		/// Find a file which, on a development machine, lives in [solution]/[distFileFolderName]/[subPath],
@@ -234,7 +235,7 @@ namespace SIL.IO
 		///
 		/// When subFoldersToSearch are not specified:
 		///		- If fallBackToDeepSearch is true, then the entire program files folder (and all
-		///		  (sub folders) is searched.
+		///		  sub folders) is searched.
 		///		- If fallBackToDeepSearch is false, then only the top-level program files
 		///		  folder is searched.
 		///
@@ -278,11 +279,11 @@ namespace SIL.IO
 			if (subFoldersToSearch.Length == 0)
 				subFoldersToSearch = new[] { string.Empty };
 
-			foreach (var progFolder in Enumerable.Where<string>(GetPossibleProgramFilesFolders(), Directory.Exists))
+			foreach (var progFolder in GetPossibleProgramFilesFolders().Where(Directory.Exists))
 			{
 				// calling Directory.GetFiles("C:\Program Files", exeName, SearchOption.AllDirectories) will fail
 				// if even one of the children of the Program Files doesn't allow you to search it.
-				// So instead we first gather up all the children directories, and then search those.
+				// So instead we first gather all the child directories, and then search those.
 				// Some will give us access denied, and that's fine, we skip them.
 				// But we don't want to look in child directories on Linux because GetPossibleProgramFilesFolders()
 				// gives us the individual elements of the PATH environment variable, and these specify exactly
@@ -291,11 +292,24 @@ namespace SIL.IO
 				{
 					if (Platform.IsWindows)
 					{
-						foreach (var subDir in DirectoryHelper.GetSafeDirectories(path))
+						string[] subDirectories = null;
+						try
 						{
-							var tgtPath = GetFiles(exeName, srcOption, subDir);
-							if (!string.IsNullOrEmpty(tgtPath))
-								return tgtPath;
+							subDirectories = DirectoryHelper.GetSafeDirectories(path);
+						}
+						catch (Exception e)
+						{
+							Logger.WriteError(e);
+						}
+
+						if (subDirectories != null)
+						{
+							foreach (var subDir in subDirectories)
+							{
+								var tgtPath = GetFiles(exeName, srcOption, subDir);
+								if (!string.IsNullOrEmpty(tgtPath))
+									return tgtPath;
+							}
 						}
 					}
 					else
@@ -336,14 +350,18 @@ namespace SIL.IO
 		{
 			if (!Platform.IsWindows)
 			{
-				foreach (var dir in Environment.GetEnvironmentVariable("PATH").Split(':'))
-					yield return dir;
+				var path = Environment.GetEnvironmentVariable("PATH");
+				if (!string.IsNullOrEmpty(path))
+				{
+					foreach (var dir in path.Split(':'))
+						yield return dir;
+				}
 				yield return "/opt"; // RAMP is installed in the /opt directory by default
 			}
 
-			var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-			yield return pf.Replace(" (x86)", string.Empty);
-			yield return pf.Replace(" (x86)", string.Empty) + " (x86)";
+			yield return Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+			if (Environment.Is64BitProcess)
+				yield return Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
 		}
 	}
 }

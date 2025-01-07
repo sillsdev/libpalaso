@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [15.0.0] - 2025-01-06
+
 ### Added
 - [SIL.Core] Added optional parameter, preserveNamespaces, to XmlUtils.WriteNode
 - [SIL.Core] Added optional parameter, includeSystemLibraries, to AcknowledgementsProvider.CollectAcknowledgements
@@ -94,6 +96,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core.Desktop] Implemented GetDefaultProgramForFileType (as trenamed) in a way that works on Windows 11, Mono (probably) and MacOS (untested).
 - [SIL.Media] MediaInfo.HaveNecessaryComponents properly returns true if FFprobe is on the system path.
 - [SIL.Media] Made MediaInfo.FFprobeFolder look for and return the folder when first accessed, even if no prior call to the setter or other action had caused it t be found.
+- [SIL.Core] Made GetSafeDirectories not crash and simply not return any subdirectory the user does not have permission to access.
+- [SIL.Core] In GetDirectoryDistributedWithApplication, prevented a failure in accessing one of the specified subfolders from allowing it to try the others.
 
 ### Removed
 
@@ -494,6 +498,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   projects
 
 [Unreleased]: https://github.com/sillsdev/libpalaso/compare/v14.1.1...master
+[15.0.0]: https://github.com/sillsdev/libpalaso/compare/v14.1.1...v15.0.0
 [14.1.1]: https://github.com/sillsdev/libpalaso/compare/v14.1.0...v14.1.1
 [14.1.0]: https://github.com/sillsdev/libpalaso/compare/v14.0.0...v14.1.0
 [14.0.0]: https://github.com/sillsdev/libpalaso/compare/v13.0.1...v14.0.0
