@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [15.0.0] - 2025-01-06
+
 ### Added
 - [SIL.Core] Added optional parameter, preserveNamespaces, to XmlUtils.WriteNode
 - [SIL.Core] Added optional parameter, includeSystemLibraries, to AcknowledgementsProvider.CollectAcknowledgements
@@ -496,6 +498,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   projects
 
 [Unreleased]: https://github.com/sillsdev/libpalaso/compare/v14.1.1...master
+[15.0.0]: https://github.com/sillsdev/libpalaso/compare/v14.1.1...v15.0.0
 [14.1.1]: https://github.com/sillsdev/libpalaso/compare/v14.1.0...v14.1.1
 [14.1.0]: https://github.com/sillsdev/libpalaso/compare/v14.0.0...v14.1.0
 [14.0.0]: https://github.com/sillsdev/libpalaso/compare/v13.0.1...v14.0.0
