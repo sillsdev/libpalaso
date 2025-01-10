@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- [SIL.TestUtilities] Made FluentAssertXml classes use "Assert.That" so they can work in clients that use NUnit 4.
+
 ## [15.0.0] - 2025-01-06
 
 ### Added
