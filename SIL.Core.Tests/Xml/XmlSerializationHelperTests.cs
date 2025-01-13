@@ -494,5 +494,67 @@ namespace SIL.Tests.Xml
 				RobustFile.Delete(path);
 			}
 		}
+
+		[Test]
+		public void SerializeToString_GenericList_SerializedCorrectly()
+		{
+			var source = new[] {"List Item 1", "List Item 2", "List Item 3"};
+			var data = (from s in source
+				select new XmlTranslation
+					{Reference = $"MAT {s.Last()}:6", PhraseKey = s, Translation = s.ToLower()}).ToList();
+			var result = SerializeToString(data, Encoding.UTF8);
+			var lines = result.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList();
+			var i = 0;
+			Assert.That(lines[i], Does.StartWith("<?xml"));
+			Assert.That(lines[i], Does.Contain("encoding=\"utf-8\""));
+			Assert.That(lines[++i].Trim('\t'), Is.EqualTo("<ArrayOfTranslation>"));
+			var item = 1;
+			for (++i; i < lines.Count - 1; i += 4, item++)
+			{
+				Assert.That(lines[i].Trim('\t'), Is.EqualTo($"<Translation ref=\"MAT {item}:6\">"));
+				Assert.That(lines[i + 1].Trim('\t'), Is.EqualTo($"<OriginalPhrase>List Item {item}</OriginalPhrase>"));
+				Assert.That(lines[i + 2].Trim('\t'), Is.EqualTo($"<Translation>list item {item}</Translation>"));
+				Assert.That(lines[i + 3].Trim('\t'), Is.EqualTo("</Translation>"));
+			}
+			Assert.That(lines[i].Trim('\t'), Is.EqualTo("</ArrayOfTranslation>"));
+		}
+	}
+
+	/// ------------------------------------------------------------------------------------
+	/// <summary>
+	/// Little class to support XML serialization
+	/// </summary>
+	/// ------------------------------------------------------------------------------------
+	[XmlType("Translation")]
+	public class XmlTranslation
+	{
+		/// --------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets or sets the reference.
+		/// </summary>
+		/// --------------------------------------------------------------------------------
+		[XmlAttribute("ref")]
+		public string Reference { get; set; }
+		/// --------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets or sets the phrase key (typically the text of the question in English).
+		/// </summary>
+		/// --------------------------------------------------------------------------------
+		[XmlElement("OriginalPhrase")]
+		public string PhraseKey { get; set; }
+		/// --------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets or sets the translation.
+		/// </summary>
+		/// --------------------------------------------------------------------------------
+		public string Translation { get; set; }
+		/// --------------------------------------------------------------------------------
+		/// <summary>
+		/// Initializes a new instance of the <see cref="XmlTranslation"/> class.
+		/// </summary>
+		/// --------------------------------------------------------------------------------
+		public XmlTranslation()
+		{
+		}
 	}
 }
