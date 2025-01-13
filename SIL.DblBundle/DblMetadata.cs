@@ -128,7 +128,7 @@ namespace SIL.DblBundle
 		}
 
 		/// <summary>
-		/// The language element of the metadata. Can be any class of type DblMetadataLangauge.
+		/// The language element of the metadata. Can be any class of type DblMetadataLanguage.
 		/// </summary>
 		[XmlElement("language")]
 		public virtual TL Language { get; set; }
