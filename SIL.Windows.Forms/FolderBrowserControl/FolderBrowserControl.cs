@@ -145,8 +145,8 @@ namespace SIL.Windows.Forms.FolderBrowserControl
 
 		private ToolTip _toolTip; // magic container for all tooltips
 
-		private ContextMenu _shortcutContextMenu; // a context menu that works on user's shortcut folders
-		private MenuItem _shortCutRemovalMenuItem; // context menu item to remove a user's shortcut folder
+		private ContextMenuStrip _shortcutContextMenu; // a context menu that works on user's shortcut folders
+		private ToolStripMenuItem _shortCutRemovalMenuItem; // context menu item to remove a user's shortcut folder
 
 		private IContainer components; // silly thing that .NET seems to like
 
@@ -328,8 +328,8 @@ namespace SIL.Windows.Forms.FolderBrowserControl
 			this._toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this._addShortcutButton = new System.Windows.Forms.Button();
 			this._infoButton = new System.Windows.Forms.Button();
-			this._shortcutContextMenu = new System.Windows.Forms.ContextMenu();
-			this._shortCutRemovalMenuItem = new System.Windows.Forms.MenuItem();
+			this._shortcutContextMenu = new System.Windows.Forms.ContextMenuStrip();
+			this._shortCutRemovalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this._toolBarGroupBox = new System.Windows.Forms.GroupBox();
 			this._toolBarGroupBox.SuspendLayout();
 			this.SuspendLayout();
@@ -513,12 +513,10 @@ namespace SIL.Windows.Forms.FolderBrowserControl
 			//
 			// _shortcutContextMenu
 			//
-			this._shortcutContextMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-			this._shortCutRemovalMenuItem});
+			this._shortcutContextMenu.Items.Insert(0, this._shortCutRemovalMenuItem);
 			//
 			// _shortCutRemovalMenuItem
 			//
-			this._shortCutRemovalMenuItem.Index = 0;
 			this._shortCutRemovalMenuItem.Text = "Remove Shortcut";
 			this._shortCutRemovalMenuItem.Click += new System.EventHandler(this.OnShortCutRemovalMenuItemClick);
 			//

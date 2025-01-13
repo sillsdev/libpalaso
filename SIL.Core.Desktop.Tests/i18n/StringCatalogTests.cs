@@ -10,6 +10,10 @@ namespace SIL.Tests.i18n
 {
 
 	[TestFixture]
+#if NET
+	[System.Runtime.Versioning.SupportedOSPlatform("windows")]
+#endif
+	[Platform(Include = "Win")]
 	public class StringCatalogTests
 	{
 		private string _poFile = Path.GetTempFileName();
