@@ -37,7 +37,7 @@ namespace SIL.Windows.Forms.Widgets
 		{
 			if (UseWebTextBox)
 			{
-				var path = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath),
+				var path = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().Location).LocalPath),
 					"SIL.Windows.Forms.GeckoBrowserAdapter.dll");
 				if (File.Exists(path))
 				{

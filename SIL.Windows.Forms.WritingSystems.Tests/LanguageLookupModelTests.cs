@@ -1,4 +1,5 @@
 using System.Linq;
+using L10NSharp;
 using NUnit.Framework;
 using SIL.TestUtilities;
 using SIL.WritingSystems;
@@ -9,6 +10,12 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 	[OfflineSldr]
 	public class LanguageLookupModelTests
 	{
+		[SetUp]
+		public void SetUp()
+		{
+			LocalizationManager.StrictInitializationMode = false;
+		}
+
 		[Test]
 		public void IncludeRegionCodes_SetToFalse_DialectsNotReturned()
 		{

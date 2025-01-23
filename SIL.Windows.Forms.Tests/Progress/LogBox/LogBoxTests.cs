@@ -25,8 +25,6 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 
 				progress.WriteMessage("done");
 
-				Console.WriteLine(progress.Text);
-				Console.WriteLine(progress.Rtf);
 				Console.WriteLine("Finished");
 			}
 		}

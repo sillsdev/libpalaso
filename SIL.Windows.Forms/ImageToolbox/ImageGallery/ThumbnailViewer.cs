@@ -42,7 +42,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 		{
 			if (UseWebViewer)
 			{
-				var path = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath),
+				var path = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().Location).LocalPath),
 					"SIL.Windows.Forms.GeckoBrowserAdapter.dll");
 				if (File.Exists(path))
 				{

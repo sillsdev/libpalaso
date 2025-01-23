@@ -28,5 +28,17 @@ namespace SIL.Lift.Tests.Parsing
 				   &&(trait.Name == _expectedName)
 				   && (trait.Value == _expectedValue);
 		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				int hashCode = base.GetHashCode();
+				hashCode = (hashCode * 397) ^ (_expectedName != null ? _expectedName.GetHashCode() : 0);
+				hashCode = (hashCode * 397) ^ (_expectedValue != null ? _expectedValue.GetHashCode() : 0);
+				hashCode = (hashCode * 397) ^ _expectedNumberofAnnotations;
+				return hashCode;
+			}
+		}
 	}
 }

@@ -80,7 +80,7 @@ namespace SIL.Tests.IO
 		[Test]
 		public void InFolderOf_WorksProperly()
 		{
-			string codeBase = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
+			string codeBase = System.Reflection.Assembly.GetExecutingAssembly().Location;
 			UriBuilder uri = new UriBuilder(codeBase);
 			string originalPath = Uri.UnescapeDataString(uri.Path);
 			string filePath, filePath2;
