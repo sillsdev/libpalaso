@@ -4,7 +4,7 @@
     <RootNamespace>SIL.Windows.Forms.Keyboarding.Tests</RootNamespace>
     <AssemblyTitle>SIL.Windows.Forms.Keyboarding.Tests</AssemblyTitle>
     <Description>Unit tests for SIL.Windows.Forms.Keyboarding</Description>
-    <TargetFrameworks>$(TargetFrameworks);net8-windows</TargetFrameworks>
+    <TargetFrameworks>$(TargetFrameworks);net8.0-windows</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <!-- explicitly remove Linux files for Windows -->
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8-windows'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
     <Compile Remove="TestHelper\GnomeKeyboardRetrievingHelperDouble.cs" />
     <Compile Remove="TestHelper\GnomeShellIbusKeyboardRetrievingAdaptorDouble.cs" />
     <Compile Remove="CombinedIbusKeyboardRetrievingAdaptorTests.cs" />

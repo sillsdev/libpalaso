@@ -7,7 +7,7 @@
     <IsPackable>false</IsPackable>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
-    <TargetFrameworks>$(TargetFrameworks);net8-windows</TargetFrameworks>
+    <TargetFrameworks>$(TargetFrameworks);net8.0-windows</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
