@@ -4,7 +4,7 @@
     <RootNamespace>SIL.Windows.Forms.Tests</RootNamespace>
     <AssemblyTitle>SIL.Windows.Forms.Tests</AssemblyTitle>
     <Description>Unit tests for SIL.Windows.Forms</Description>
-    <TargetFrameworks>$(TargetFrameworks);net8-windows</TargetFrameworks>
+    <TargetFrameworks>$(TargetFrameworks);net8.0-windows</TargetFrameworks>
     <UseWindowsForms>true</UseWindowsForms>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
