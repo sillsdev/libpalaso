@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        framework: [net462, net48, net8.0, net8.0-windows]
+        framework: [net462, net48, net8.0, net8-windows]
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.framework }}
       cancel-in-progress: true
