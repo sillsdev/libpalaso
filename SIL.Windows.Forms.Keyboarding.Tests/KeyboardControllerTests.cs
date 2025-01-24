@@ -5,31 +5,30 @@ using System;
 using System.Globalization;
 using NUnit.Framework;
 using SIL.Keyboarding;
-using Rhino.Mocks;
+using Moq;
 
 namespace SIL.Windows.Forms.Keyboarding.Tests
 {
 	[TestFixture]
 	public class KeyboardControllerTests
 	{
-		private IKeyboardRetrievingAdaptor _mockKeyboardAdaptor = MockRepository.GenerateMock<IKeyboardRetrievingAdaptor>();
+		private Mock<IKeyboardRetrievingAdaptor> _mockKeyboardAdaptor = new Mock<IKeyboardRetrievingAdaptor>();
 
 		[SetUp]
 		public void Setup()
 		{
 			// To avoid OS specific behavior in these tests we mock up our own keyboard adaptor returning appropriate values to enable these tests
-			_mockKeyboardAdaptor.Stub(k => k.IsApplicable).Return(true);
-			_mockKeyboardAdaptor.Stub(k => k.Type).Return(KeyboardAdaptorType.System);
-			_mockKeyboardAdaptor.Stub(k => k.CanHandleFormat(KeyboardFormat.Unknown)).Return(true);
-			_mockKeyboardAdaptor.Stub(k => k.CreateKeyboardDefinition(Arg<string>.Is.Anything)).Return(null) // will be ignored but still the API requires it
-				.WhenCalled(k =>
+			_mockKeyboardAdaptor.Setup(k => k.IsApplicable).Returns(true);
+			_mockKeyboardAdaptor.Setup(k => k.Type).Returns(KeyboardAdaptorType.System);
+			_mockKeyboardAdaptor.Setup(k => k.CanHandleFormat(KeyboardFormat.Unknown)).Returns(true);
+			_mockKeyboardAdaptor.Setup(k => k.CreateKeyboardDefinition(It.IsAny<string>())).Returns<string>(
+				id =>
 				{
-					var id = (string)k.Arguments[0];
 					var idParts = id.Split('_');
 					var mockKd = new MockKeyboardDescription(id, idParts[0], idParts[1]);
-					k.ReturnValue = mockKd;
+					return mockKd;
 				});
-			KeyboardController.Initialize(_mockKeyboardAdaptor);
+			KeyboardController.Initialize(_mockKeyboardAdaptor.Object);
 		}
 
 		[TearDown]
@@ -118,7 +117,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		}
 
 		/// <summary>
-		/// This mock (less code than a Rhino.Mocks version) provides sufficient IKeyboardDefinition for testing the KeyboardController
+		/// This mock provides sufficient IKeyboardDefinition for testing the KeyboardController
 		/// </summary>
 		private class MockKeyboardDescription : KeyboardDescription
 		{

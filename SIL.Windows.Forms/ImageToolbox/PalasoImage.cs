@@ -32,27 +32,27 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private string _originalFilePath;
 
-		
+
 		/// <summary>
 		/// If false, you get a debug.Fail(). If true, you get a throw.
 		/// </summary>
 		public static bool ThrowOnFailureToDisposeAnyPalasoImage = false;
 
 		/// <summary>
-		/// If the object isn't disposed, the resulting message will give this label. 
+		/// If the object isn't disposed, the resulting message will give this label.
 		/// This can help trace where it was created.
 		/// </summary>
 		public string LabelForDebugging = "unlabeled";
-		
+
 		/// <summary>
 		/// Generally, when we load an image, we can happily forget where it came from, because
 		/// the nature of the palaso image system is to deliver images, not file paths, to documents
 		/// (we don't believe in "linking" to files somewhere on the disk which is just asking for problems
 		/// as the document is shared).
 		/// But in one circumstance, we do care: when the user chooses from disk (as opposed to from camera or scanner)
-		/// and enters metadata, we want to store that metadata in the original.  
+		/// and enters metadata, we want to store that metadata in the original.
 		/// However, there is one circumstance (currently) in which this is not the original path:
-		/// If we attempt to save metadata and can't (e.g. file is readonly), we create a temp file and 
+		/// If we attempt to save metadata and can't (e.g. file is readonly), we create a temp file and
 		/// store the metadata there, then serve the temp file to the requester. That's why we store this path.
 		/// </summary>
 		private string _pathForSavingMetadataChanges;
@@ -142,7 +142,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			var format = GetImageFormatForExtension(fileExtension);
 			return format == ImageFormat.Jpeg ? ".jpg" : ".png";
 		}
-		
+
 		private void SaveInFormat(string path, ImageFormat format)
 		{
 			ThrowIfDisposedOfAlready();
@@ -212,12 +212,12 @@ namespace SIL.Windows.Forms.ImageToolbox
 				throw new NotImplementedException();
 			}
 		}
-		
-		
+
+
 		/// <summary>
 		/// If you edit the metadata, call this. If it happens to have an actual file associated, it will save it.
 		/// If not (e.g. the image came from a scanner), it won't do anything.
-		/// 
+		///
 		/// Warning. Don't use this on original images. See https://jira.sil.org/browse/BL-1001.
 		/// </summary>
 		public void SaveUpdatedMetadataIfItMakesSense()
@@ -252,7 +252,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 					file.Read(bytes, 0, 10);
 				}
 			}, memo:$"PalasoImage.GetCorrectImageExtension({path})");
-			// see http://www.mikekunz.com/image_file_header.html  
+			// see http://www.mikekunz.com/image_file_header.html
 				var bmp = Encoding.ASCII.GetBytes("BM");     // BMP
 				var gif = Encoding.ASCII.GetBytes("GIF");    // GIF
 				var png = new byte[] { 137, 80, 78, 71 };    // PNG
@@ -326,8 +326,10 @@ namespace SIL.Windows.Forms.ImageToolbox
 					// assume it's a better indication of the problem.
 					var metadata = Metadata.FromFile(path);
 					if (metadata.IsOutOfMemoryPlausible(e))
+						#pragma warning disable CA2200
 						// ReSharper disable once PossibleIntendedRethrow
 						throw e; // Deliberately NOT just "throw", that loses the extra information IsOutOfMemoryPlausible added to the exception.
+						#pragma warning restore CA2200
 					throw new TagLib.CorruptFileException("File could not be read and is possible corrupted", e);
 				}
 			}
