@@ -7,7 +7,7 @@
     <TargetFrameworks>$(TargetFrameworks);net8.0-windows</TargetFrameworks>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
+  <ItemGroup Condition=" !$(DefineConstants.Contains('NETFRAMEWORK')) ">
     <Content Remove="Linux\**" />
     <Compile Remove="Linux\**" />
     <EmbeddedResource Remove="Linux\**" />
