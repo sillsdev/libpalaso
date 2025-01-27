@@ -10,6 +10,7 @@ using JetBrains.Annotations;
 using L10NSharp.UI;
 using SIL.Code;
 using SIL.Core.ClearShare;
+using SIL.Windows.Forms.Extensions;
 using SIL.Windows.Forms.Widgets.BetterGrid;
 
 namespace SIL.Windows.Forms.ClearShare.WinFormsUI
@@ -99,7 +100,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets a value indicating whether or not the extender is currently in design mode.
+		/// Gets a value indicating whether the extender is currently in design mode.
 		/// I have had some problems with the base class' DesignMode property being true
 		/// when in design mode. I'm not sure why, but adding a couple more checks fixes the
 		/// problem.
@@ -233,9 +234,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			if (ValidatingContributor == null)
 				return;
 
-			var args = new CancelEventArgs(e.Cancel);
-			var kvp = ValidatingContributor(this, contribution, args);
-			e.Cancel = args.Cancel;
+			var kvp = ValidatingContributor(this, contribution, e);
 
 			if (!string.IsNullOrEmpty(kvp.Key))
 			{
@@ -247,7 +246,11 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 					int col = dataGridViewColumn.Index;
 					var rc = _grid.GetCellDisplayRectangle(col, e.RowIndex, true);
 					var pt = new Point(rc.X + (rc.Width / 2), rc.Y + 4);
-					_msgWindow.Show(kvp.Value, _grid.PointToScreen(pt));
+					this.SafeInvoke(() =>
+						{
+							_msgWindow.Show(kvp.Value, _grid.PointToScreen(pt));
+						}, "Showing fading message with contributor field validation error",
+						ControlExtensions.ErrorHandlingAction.IgnoreIfDisposed, true);
 
 					// Invoking here because of "reentrant call to the SetCurrentCellAddressCore" exception.
 					// Setting the CurrentCell can trigger validation again.
@@ -388,8 +391,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			if (_grid.IsCurrentCellInEditMode)
 				_grid.EndEdit(DataGridViewDataErrorContexts.RowDeletion);
 
-			if (_msgWindow != null)
-				_msgWindow.Close();
+			_msgWindow?.Close();
 
 			_grid.Rows.RemoveAt(rowIndex);
 			_grid.CurrentCell = _grid[0, _grid.CurrentCellAddress.Y];
