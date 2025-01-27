@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - [SIL.TestUtilities] Made FluentAssertXml classes use "Assert.That" so they can work in clients that use NUnit 4.
+- 
+### Fixed
+- [SIL.Windows.Forms] Changed build date in SILAboutBox to be computed using the last write time instead of creation time.
 
 ## [15.0.0] - 2025-01-06
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2024, SIL Global
+// Copyright (c) 2016-2025, SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -38,7 +38,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		/// parts of the version number, i.e. "MajorVersion.MinorVersion.Build",
 		/// <c>true</c> to display the full version number as found in Application.ProductVersion.
 		/// Passing <c>true</c> is useful if you want to display, for example, the git revision of
-		/// the build. Typically this would be set in the AssemblyInformationalVersion.</param>
+		/// the build. Typically, this would be set in the AssemblyInformationalVersion.</param>
 		/// <param name="logoVariant">If specified, allows caller to indicate particular SIL logo
 		/// variant to display. By default, a variant is chosen at random.</param>
 		public SILAboutBox(string pathToAboutBoxHtml, bool useFullVersionNumber = false,
@@ -161,7 +161,9 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 			// Use UTC for calculation of build-on-date so that we get the same date regardless
 			// of timezone setting.
-			return string.Format(LocalizationManager.GetString("AboutDialog.BuiltOnDate", "Built on {0}", "{0} is the date the application was built"), fi.CreationTimeUtc.ToString("dd-MMM-yyyy"));
+			return string.Format(LocalizationManager.GetString("AboutDialog.BuiltOnDate",
+					"Built on {0}", "{0} is the date the application was built"),
+				fi.LastWriteTimeUtc.ToString("dd-MMM-yyyy"));
 		}
 
 		private string GetShortVersionInfo()
