@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -34,7 +36,12 @@ namespace SIL.Threading
 		public GlobalMutex(string name)
 		{
 			_name = name;
-			if (Platform.IsWindows)
+			if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SIL_CORE_MAKE_GLOBAL_MUTEX_LOCAL_ONLY")))
+			{
+				_adapter = new LocalOnlyMutexAdapter(name);
+				Trace.TraceInformation($"Using local-only mutex instead of global mutex for \"{name}\"");
+			}
+			else if (Platform.IsWindows)
 				_adapter = new WindowsGlobalMutexAdapter(name);
 			else if (Platform.IsLinux)
 				_adapter = new LinuxGlobalMutexAdapter(name);
@@ -157,6 +164,54 @@ namespace SIL.Threading
 			void Wait();
 			void Release();
 			bool Unlink();
+		}
+
+		/// <summary>
+		/// Useful when applications cannot establish a global mutex due to permission limitations
+		/// </summary>
+		private class LocalOnlyMutexAdapter : IGlobalMutexAdapter
+		{
+			private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_locks = new ConcurrentDictionary<string, SemaphoreSlim>();
+
+			private readonly string _name;
+			private SemaphoreSlim _lock;
+
+			public LocalOnlyMutexAdapter(string name)
+			{
+				_name = name;
+			}
+
+			public bool Init(bool initiallyOwned)
+			{
+				bool createdNew = false;
+				_lock = s_locks.GetOrAdd(_name, _ => {
+					createdNew = true;
+					return new SemaphoreSlim(initiallyOwned ? 0 : 1, 1);
+				});
+				if (initiallyOwned && !createdNew)
+					Wait();
+				return createdNew;
+			}
+
+			public void Wait()
+			{
+				_lock.Wait();
+			}
+
+			public void Release()
+			{
+				_lock.Release();
+			}
+
+			public bool Unlink()
+			{
+				return true;
+			}
+
+			public void Dispose()
+			{
+				// Don't dispose of the lock here because other adapters could be using it
+			}
 		}
 
 		/// <summary>
