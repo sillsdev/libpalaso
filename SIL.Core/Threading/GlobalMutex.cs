@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Mono.Unix.Native;
@@ -21,6 +22,12 @@ namespace SIL.Threading
 	/// Note that in .NET 8.0 and later (and perhaps starting sooner than version 8), a named mutex can be used across
 	/// processes in Linux and macOS. However, software using the previous method of locking would not recognize the
 	/// new method of locking, so Linux continues to use the old, file-based approach internally.
+	/// 
+	/// To complicate things further, applications running in confined security contexts (e.g., Snap, Flatpak, Docker,
+	/// etc.) may not be able to establish a global mutex of any kind due to permission limitations. In those cases,
+	/// the "SIL_CORE_MAKE_GLOBAL_MUTEX_LOCAL_ONLY" environment variable can be set to "true" to use a local-only
+	/// mutex instead of a global mutex. This at least provides some locking within the same process in case the
+	/// mutex owner uses it for synchronization between threads within the same process.
 	/// </summary>
 	public class GlobalMutex : DisposableBase
 	{
@@ -36,7 +43,9 @@ namespace SIL.Threading
 		public GlobalMutex(string name)
 		{
 			_name = name;
-			if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("SIL_CORE_MAKE_GLOBAL_MUTEX_LOCAL_ONLY")))
+			string envVarValue = Environment.GetEnvironmentVariable("SIL_CORE_MAKE_GLOBAL_MUTEX_LOCAL_ONLY");
+			string[] trueValues = { "TRUE", "T", "YES", "Y", "1" };
+			if (!string.IsNullOrEmpty(envVarValue) && trueValues.Contains(envVarValue.ToUpperInvariant()))
 			{
 				_adapter = new LocalOnlyMutexAdapter(name);
 				Trace.TraceInformation($"Using local-only mutex instead of global mutex for \"{name}\"");
@@ -171,10 +180,14 @@ namespace SIL.Threading
 		/// </summary>
 		private class LocalOnlyMutexAdapter : IGlobalMutexAdapter
 		{
-			private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_locks = new ConcurrentDictionary<string, SemaphoreSlim>();
+			private static readonly ConcurrentDictionary<string, object> s_locks = new ConcurrentDictionary<string, object>();
+
+			// Links don't really make sense for this class, but we need to track them to pass tests
+			private static readonly ConcurrentDictionary<string, int> s_linkCount = new ConcurrentDictionary<string, int>();
 
 			private readonly string _name;
-			private SemaphoreSlim _lock;
+			private object _lock;
+			private bool _linked;
 
 			public LocalOnlyMutexAdapter(string name)
 			{
@@ -183,34 +196,46 @@ namespace SIL.Threading
 
 			public bool Init(bool initiallyOwned)
 			{
-				bool createdNew = false;
+				Unlink();
+
 				_lock = s_locks.GetOrAdd(_name, _ => {
-					createdNew = true;
-					return new SemaphoreSlim(initiallyOwned ? 0 : 1, 1);
+					var retVal = new object();
+					if (initiallyOwned)
+						Monitor.Enter(retVal);
+					return retVal;
 				});
-				if (initiallyOwned && !createdNew)
-					Wait();
-				return createdNew;
+
+				s_linkCount.TryGetValue(_name, out int previousLinkCount);
+				s_linkCount.AddOrUpdate(_name, 1, (_, valueToUpdate) => valueToUpdate + 1);
+				_linked = true;
+
+				if (initiallyOwned && !Monitor.IsEntered(_lock))
+					Monitor.Enter(_lock);
+
+				return previousLinkCount == 0;
 			}
 
 			public void Wait()
 			{
-				_lock.Wait();
+				Monitor.Enter(_lock);
 			}
 
 			public void Release()
 			{
-				_lock.Release();
+				Monitor.Exit(_lock);
 			}
 
 			public bool Unlink()
 			{
+				if (_linked)
+					s_linkCount.AddOrUpdate(_name, 0, (_, valueToUpdate) => valueToUpdate - 1);
+				_linked = false;
 				return true;
 			}
 
 			public void Dispose()
 			{
-				// Don't dispose of the lock here because other adapters could be using it
+				Unlink();
 			}
 		}
 
