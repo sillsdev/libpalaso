@@ -178,7 +178,7 @@ assigned as the default (preferred) input device.
 				// get the information about the capture device of this card
 				var filename = $"/proc/asound/card{num}/pcm0c/info";
 				var infoLines = System.IO.File.ReadAllLines(filename);
-				if (infoLines == null | infoLines.Length == 0)
+				if (infoLines == null || infoLines.Length == 0)
 					return false;
 				int subdeviceCount = 0;
 				int subdeviceAvail = 0;
