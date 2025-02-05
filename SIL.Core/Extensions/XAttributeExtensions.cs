@@ -1,4 +1,4 @@
-// Copyright (c) 2024 SIL Global
+// Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System.Globalization;
 using System.IO;
@@ -25,7 +25,7 @@ namespace SIL.Extensions
 		// ends up as
 		// {http://www.w3.org/2000/xmlns/}flex="http://fieldworks.sil.org"
 		// This extension method works around this problem by copying some code from
-		// the referencesource implementation.
+		// the reference source implementation.
 		public static string ToStringMonoWorkaround(this XAttribute attr)
 		{
 			using (var sw = new StringWriter(CultureInfo.InvariantCulture)) {

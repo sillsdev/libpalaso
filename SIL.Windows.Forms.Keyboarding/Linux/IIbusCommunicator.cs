@@ -1,4 +1,4 @@
-// Copyright (c) 2024, SIL Global.
+// Copyright (c) 2025 SIL Global
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
 using System;
 using System.Windows.Forms;
@@ -71,7 +71,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// </summary>
 		void CreateInputContext();
 
-		/// <summary>Occurs when the composition string gets commited, e.g. after the user pressed
+		/// <summary>Occurs when the composition string gets committed, e.g. after the user pressed
 		/// the space bar.</summary>
 		event Action<object> CommitText;
 

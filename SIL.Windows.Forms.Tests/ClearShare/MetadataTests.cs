@@ -1,5 +1,5 @@
-// Copyright (c) 2024 SIL Global 
-// This software is licensed under the MIT License (http://opensource.org/licenses/MIT) 
+// Copyright (c) 2025 SIL Global
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Drawing;
 using NUnit.Framework;

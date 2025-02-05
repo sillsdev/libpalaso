@@ -1,4 +1,4 @@
-// Copyright (c) 2024, SIL Global
+// Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -264,8 +264,8 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		private static MethodInfo _sendMessage;
 
 		/// <summary>
-		/// Please don't use this unless your really have to, and then only if its for sending messages internaly within the application.
-		/// For example sending WM_NCPAINT maybe portable but sending WM_USER + N to another application is definitely not poratable.
+		/// Please don't use this unless your really have to, and then only if its for sending messages internally within the application.
+		/// For example sending WM_NCPAINT maybe portable but sending WM_USER + N to another application is definitely not portable.
 		/// </summary>
 		public static void SendMessage(IntPtr hWnd, uint Msg, int wParam, int lParam)
 		{

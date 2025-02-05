@@ -1,4 +1,4 @@
-// Copyright (c) 2024, SIL Global
+// Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -387,7 +387,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 				MoveInputFocusBackToAWinFormsControl();
 
 				// Setting the ActiveControl ensure a Focus event occurs on the control focus is moving to.
-				// And this allows us to call RemoveinputFocus at the neccessary time.
+				// And this allows us to call RemoveinputFocus at the necessary time.
 				// This prevents keypress still going to the gecko controls when a winform TextBox has focus
 				// and the mouse is over a gecko control.
 				Form.ActiveForm.ActiveControl = control;
@@ -428,7 +428,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			base.OnEnter(e);
 		}
 		/// <summary>
-		/// This gives a move sensible result than the default winform implemenentation.
+		/// This gives a move sensible result than the default winform implementation.
 		/// </summary>
 		/// <value><c>true</c> if focused; otherwise, <c>false</c>.</value>
 		public override bool Focused
@@ -439,7 +439,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			}
 		}
 		/// <summary>
-		/// If Browser control dosesn't have X11 input focus.
+		/// If Browser control doesn't have X11 input focus.
 		/// then Ensure that it does..
 		/// </summary>
 		protected void EnsureFocusedGeckoControlHasInputFocus()
@@ -452,7 +452,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			// Attempt to do it right away.
 			this._browser.SetInputFocus();
 
-			// Othewise do it on the first idle event.
+			// Otherwise do it on the first idle event.
 			Action setInputFocus = null;
 			setInputFocus = () =>
 			{

@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2024, SIL Global
+// Copyright (c) 2014-2025 SIL Global
 
 using System;
 using System.Drawing;

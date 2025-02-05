@@ -1,4 +1,4 @@
-// Copyright (c) 2024, SIL Global
+// Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -90,7 +90,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		}
 
 		public Control TheControl { get { return this; } }
-		
+
 		public void Select(int start, int length)
 		{
 			base.Select();

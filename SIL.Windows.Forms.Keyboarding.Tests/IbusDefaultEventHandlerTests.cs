@@ -1,4 +1,4 @@
-// Copyright (c) 2024, SIL Global.
+// Copyright (c) 2025 SIL Global
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
 
 using System;
@@ -143,7 +143,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 
 		/// <summary>
 		/// This test simulates a kind of keyboard similar to the IPA ibus keyboard which calls
-		/// commit after earch character. This test simulates the first commit call without a
+		/// commit after each character. This test simulates the first commit call without a
 		/// preceding OnUpdatePreeditText.
 		/// </summary>
 		[Test]
@@ -162,7 +162,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 
 		/// <summary>
 		/// This test simulates a kind of keyboard similar to the IPA ibus keyboard which calls
-		/// commit after earch character. This test simulates the callbacks we get from the IPA
+		/// commit after each character. This test simulates the callbacks we get from the IPA
 		/// keyboard when the user presses 'n' + '>'. The IPA ibus keyboard commits the 'n',
 		/// sends us a backspace and then commits the 'ŋ'. This hypothetical keyboard doesn't
 		/// use the SurroundingText IBus capability.
@@ -187,7 +187,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 
 		/// <summary>
 		/// This test simulates a kind of keyboard similar to the IPA ibus keyboard which calls
-		/// commit after earch character. This test simulates the callbacks we get from the IPA
+		/// commit after each character. This test simulates the callbacks we get from the IPA
 		/// keyboard when the user presses 'n' + '>'. The IPA ibus keyboard commits the 'n',
 		/// sends us a backspace and then commits the 'ŋ'. This keyboard does
 		/// use the SurroundingText IBus capability.
