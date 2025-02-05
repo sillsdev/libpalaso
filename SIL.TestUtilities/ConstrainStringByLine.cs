@@ -1,4 +1,4 @@
-// Copyright (c) 2024 SIL Global
+// Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 // This file is a copy (with different namespace and minus the public class Is) of SIL.BuildTasks.Tests\ConstrainStringByLine.cs

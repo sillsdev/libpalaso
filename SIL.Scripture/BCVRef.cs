@@ -1,12 +1,12 @@
 // ---------------------------------------------------------------------------------------------
-#region // Copyright (c) 2024 SIL Global.
+#region // Copyright (c) 2025 SIL Global
 // <copyright from='2005' to='2024' company='SIL Global'>
-//		Copyright (c) 2024, SIL Global.   
-//	
+//		Copyright (c) 2025 SIL Global
+//
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
-// </copyright> 
+// </copyright>
 #endregion
-// 
+//
 // This class originated in FieldWorks (under the GNU Lesser General Public License), but we
 // decided to make it available in SIL.Scripture to make it more readily available to other
 // projects.
@@ -342,7 +342,7 @@ namespace SIL.Scripture
 			return BBCCCVVV;
 		}
 		#endregion
-		
+
 		#region Properties
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -697,7 +697,7 @@ namespace SIL.Scripture
 			return MakeReferenceString(bookName, startRef, endRef, chapterVerseSeparator,
 				verseBridge, true);
 		}
-		
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Handy little utility function for making a Reference string. When the end reference
@@ -807,13 +807,13 @@ namespace SIL.Scripture
 
 				return bookName + " " + sref;
 			}
-			
+
 			if (startRef.Verse != endRef.Verse)
 			{
 				return bookName + " " + startRef.Chapter + chapterVerseSeparator +
 					startRef.Verse + verseBridge + endRef.Verse;
 			}
-			
+
 			if (startRef.Verse != 0)
 			{
 				return bookName + " " + startRef.Chapter + chapterVerseSeparator +
@@ -842,7 +842,7 @@ namespace SIL.Scripture
 		{
 			if (literal == String.Empty)
 				return String.Empty;
-		
+
 			return " " + (literal ?? chapter.ToString());
 		}
 
@@ -916,7 +916,7 @@ namespace SIL.Scripture
 				m_chapter = m_verse = 1;
 				return;
 			}
-			
+
 			m_chapter = 0;
 			m_verse = -1;
 
@@ -1024,7 +1024,7 @@ namespace SIL.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// A version of VerseToInt that returns the starting verse value. 
+		/// A version of VerseToInt that returns the starting verse value.
 		/// </summary>
 		/// <param name="sourceString"></param>
 		/// <returns>the starting verse value</returns>
@@ -1038,7 +1038,7 @@ namespace SIL.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// A version of VerseToInt that returns the ending verse value. 
+		/// A version of VerseToInt that returns the ending verse value.
 		/// </summary>
 		/// <param name="sourceString"></param>
 		/// <returns>the ending verse value</returns>
@@ -1215,9 +1215,9 @@ namespace SIL.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Extract the verse numbers from a verse string. Determine verse number begin and end 
+		/// Extract the verse numbers from a verse string. Determine verse number begin and end
 		/// values as well as verse segment values. Ignore any unusual syntax.
-		/// Limitations: This class does not have access to the FDO Scripture bridge character 
+		/// Limitations: This class does not have access to the FDO Scripture bridge character
 		/// or to a character property engine with PUA character information.
 		/// </summary>
 		/// <param name="sourceString">string from which to attempt extracting verse numbers
@@ -1509,12 +1509,12 @@ namespace SIL.Scripture
 		/// </summary>
 		/// <param name="obj">An object to compare with this instance.</param>
 		/// <returns>
-		/// A 32-bit signed integer that indicates the relative order of the objects being 
-		/// compared. The return value has these meanings: 
-		/// 
-		/// Value				Meaning 
-		/// Less than zero		This instance is less than <paramref name="obj"/>. 
-		/// Zero				This instance is equal to <paramref name="obj"/>. 
+		/// A 32-bit signed integer that indicates the relative order of the objects being
+		/// compared. The return value has these meanings:
+		///
+		/// Value				Meaning
+		/// Less than zero		This instance is less than <paramref name="obj"/>.
+		/// Zero				This instance is equal to <paramref name="obj"/>.
 		/// Greater than zero	This instance is greater than <paramref name="obj"/>.
 		/// </returns>
 		/// <exception cref="T:System.ArgumentException">

@@ -1,12 +1,12 @@
 // ---------------------------------------------------------------------------------------------
-#region // Copyright 2024 SIL GlobalAll Rights Reserved.
+#region // Copyright (c) 2025 SIL Global
 // <copyright from='2010' to='2024' company='SIL Global'>
-//		Copyright (c) 2024, SIL Global. All Rights Reserved.
+//		Copyright (c) 2025 SIL Global
 //
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
-// </copyright> 
+// </copyright>
 #endregion
-// 
+//
 // This class (as ported) originated in FieldWorks (under the GNU Lesser General Public License),
 // but we decided to make it available in SIL.Windows.Forms to make it more readily available to
 // other projects.

@@ -1,12 +1,12 @@
 // --------------------------------------------------------------------------------------------
-#region // Copyright 2024 SIL Global
+#region // Copyright (c) 2025 SIL Global
 // <copyright from='2003' to='2024' company='SIL Global'>
-//		Copyright (c) 2024 SIL Global
-//    
+//		Copyright (c) 2025 SIL Global
+//
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
-// </copyright> 
+// </copyright>
 #endregion
-// 
+//
 // File: ScrPassageDropDown.cs
 // --------------------------------------------------------------------------------------------
 using System;
@@ -19,7 +19,7 @@ namespace SIL.Windows.Forms.Scripture
 {
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
-	/// 
+	///
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
 	public class ScrPassageDropDown : DropDownContainer
@@ -27,17 +27,17 @@ namespace SIL.Windows.Forms.Scripture
 		#region Data members
 		/// <summary>Delegate for BookSelected event.</summary>
 		public delegate void BookSelectedHandler(int bookNumber);
-		
+
 		/// <summary>Delegate for ChapterSelected event.</summary>
 		public delegate void ChapterSelectedHandler(int bookNumber, int chapterNumber);
-		
+
 		/// <summary>Delegate for VerseSelected event.</summary>
 		public delegate void VerseSelectedHandler(int bookNumber, int chapterNumber,
 			int verseNumber);
 
 		/// <summary>Event that occurs when a book is selected.</summary>
 		public event BookSelectedHandler BookSelected;
-		
+
 		/// <summary>Event that occurs when a chapter is selected.</summary>
 		public event ChapterSelectedHandler ChapterSelected;
 
@@ -68,7 +68,7 @@ namespace SIL.Windows.Forms.Scripture
 			14, 14, 17, 14, 16, 16, 16, 16, 16, 16, 18, 18, 15, 15, 15,	// 151 - 165
 			14, 14, 14, 17, 17, 19, 16, 16, 16, 16, 16					// 166 - 176
 		};
-		
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// The types of information shown in the Scripture passage drop-down.
@@ -99,7 +99,7 @@ namespace SIL.Windows.Forms.Scripture
 		private IScrVers m_versification;
 		#endregion
 
-		#region Contructor and initialization
+		#region Constructor and initialization
 		/// -----------------------------------------------------------------------------------
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ScrPassageDropDown"/> class.
@@ -146,7 +146,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private void InitializeComponent()
@@ -155,9 +155,9 @@ namespace SIL.Windows.Forms.Scripture
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScrPassageDropDown));
 			this.tipBook = new System.Windows.Forms.ToolTip(this.components);
 			this.SuspendLayout();
-			// 
+			//
 			// ScrPassageDropDown
-			// 
+			//
 			resources.ApplyResources(this, "$this");
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.Name = "ScrPassageDropDown";
@@ -167,7 +167,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private void InitializeButtons()
@@ -319,7 +319,7 @@ namespace SIL.Windows.Forms.Scripture
 		{
 			get { return m_buttons[m_currButton]; }
 		}
-	
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Gets the current button's book, chapter or verse value.
@@ -370,10 +370,10 @@ namespace SIL.Windows.Forms.Scripture
 			base.OnDeactivate(e);
 			Close();
 		}
-		
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="e"></param>
 		/// ------------------------------------------------------------------------------------
@@ -395,7 +395,7 @@ namespace SIL.Windows.Forms.Scripture
 						Close(fCancel);
 					}
 					else
-						buttonToGoTo = CurrentButton.ButtonBelow; 
+						buttonToGoTo = CurrentButton.ButtonBelow;
 					break;
 
 				case Keys.Enter:
@@ -435,7 +435,7 @@ namespace SIL.Windows.Forms.Scripture
 					}
 					break;
 			}
-			
+
 			if (buttonToGoTo > -1)
 			{
 				CurrentButton.ShadeWhenMouseOver = false;
@@ -455,13 +455,13 @@ namespace SIL.Windows.Forms.Scripture
 			m_canceled = fCancel;
 			Close();
 		}
-		
+
 		#endregion
 
 		#region Button handling methods
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private void LoadBooksButtons()
@@ -478,7 +478,7 @@ namespace SIL.Windows.Forms.Scripture
 
 			CurrentListType = ListTypes.Books;
 			PrepareLayout(numberOfButtons, BookButtonPreferredWidth, out numberRows,
-				out buttonWidth);			
+				out buttonWidth);
 
 			Point pt = new Point(1, 1);
 			int row = 0;
@@ -495,7 +495,7 @@ namespace SIL.Windows.Forms.Scripture
 				Controls.Add(m_buttons[i]);
 				pt.Y += ButtonHeight + 1;
 				row++;
-				
+
 				if (i > 0)
 					m_buttons[i].ButtonAbove = i - 1;
 				if (i < numberOfButtons - 1)
@@ -519,7 +519,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private void LoadCVButtons(List<int> list, int initialCV)
@@ -530,14 +530,14 @@ namespace SIL.Windows.Forms.Scripture
 
 			int buttonWidth;
 			int numberRows;
-			
+
 			SuspendLayout();
 			Controls.Clear();
 			ResetPointersToSurroundingButtons();
-			
+
 			PrepareLayout(numberOfButtons, CVButtonPreferredWidth, out numberRows,
-				out buttonWidth);			
-			
+				out buttonWidth);
+
 			Point pt = new Point(1, 1);
 			int row = 0;
 
@@ -558,7 +558,7 @@ namespace SIL.Windows.Forms.Scripture
 				// Determine the button to make current when the list is first shown.
 				if (chapNumber == initialCV)
 					m_currButton = i;
-				
+
 				if (i > 0)
 					m_buttons[i].ButtonAbove = i - 1;
 				if (i < numberOfButtons - 1)
@@ -602,7 +602,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="numberOfButtons"></param>
 		/// <param name="preferredButtonWidth"></param>
@@ -613,7 +613,7 @@ namespace SIL.Windows.Forms.Scripture
 			out int numberRows, out int buttonWidth)
 		{
 			System.Diagnostics.Debug.Assert(numberOfButtons > 0);
-			
+
 			if (m_nowShowing == ListTypes.Books)
 			{
 				System.Diagnostics.Debug.Assert(numberOfButtons <= m_rowsInBookDropDown.Length);
@@ -630,7 +630,7 @@ namespace SIL.Windows.Forms.Scripture
 			if (Decimal.Remainder(numberOfButtons, numberRows) > 0)
 				numberCols++;
 
-			// Because .Net or Windows restricts the minimun width of a form (in this case the
+			// Because .Net or Windows restricts the minimum width of a form (in this case the
 			// the drop-down form), adjust the width of the buttons when there are fewer than
 			// four columns.
 			if (numberCols == 1 && preferredButtonWidth < 120)
@@ -659,7 +659,7 @@ namespace SIL.Windows.Forms.Scripture
 		private void SetSizeAndLocationOfPopupDropDown(int width, int height)
 		{
 			Size dropDownSize = new Size(width, height);
-			
+
 			if (AttachedControl == null && AttachedControl.Width < dropDownSize.Width)
 			{
 				Size = dropDownSize;
@@ -672,7 +672,7 @@ namespace SIL.Windows.Forms.Scripture
 			// Get the working area (i.e. the screen's rectangle) in which the attached
 			// control lies.
 			Rectangle rcScreen = Screen.GetWorkingArea(AttachedControl);
-			
+
 			// Check if the right edge of the drop-down goes off the screen. If so,
 			// align its right edge with that of the attached control's right edge.
 			// The assumption is the right edge of the control isn't off the right
@@ -684,7 +684,7 @@ namespace SIL.Windows.Forms.Scripture
 			// align its bottom edge with that of the attached control's top edge.
 			if (dropDownLocation.Y + dropDownSize.Height > rcScreen.Bottom)
 				dropDownLocation.Y -= (dropDownSize.Height + AttachedControl.Height);
-			
+
 			Size = dropDownSize;
 			Location = dropDownLocation;
 		}
@@ -698,7 +698,7 @@ namespace SIL.Windows.Forms.Scripture
 		{
 			Point pt = new Point(CurrentButton.Width / 2,
 				CurrentButton.Height / 2);
-				
+
 			Cursor.Position = CurrentButton.PointToScreen(pt);
 		}
 		#endregion
@@ -725,11 +725,11 @@ namespace SIL.Windows.Forms.Scripture
 				tipBook.SetToolTip(button, button.Text);
 				tipBook.Active = true;
 			}
-		}	
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
@@ -737,13 +737,13 @@ namespace SIL.Windows.Forms.Scripture
 		private void ButtonMouseMove(object sender, MouseEventArgs e)
 		{
 			Point pt = new Point(e.X, e.Y);
-			
+
 			// if the mouse didn't move to another point, then ignore this message.
 			// ignore this mouse move message.
 			if (m_saveMousePos == pt)
 				return;
 
-			m_saveMousePos = pt; 
+			m_saveMousePos = pt;
 			ScrDropDownButton button = (ScrDropDownButton)sender;
 
 			// Make sure the button the mouse is over will look shaded, now that the
@@ -793,14 +793,14 @@ namespace SIL.Windows.Forms.Scripture
 				InternalChapterSelected(button.BCVValue);
 			else
 				InternalVerseSelected(button);
-		}	
+		}
 
 		#endregion
 
 		#region Methods called when Book, Chapter, or Verse is selected
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private void InternalBookSelected(ScrDropDownButton button)
@@ -857,7 +857,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="newChapter">The chapter</param>
 		/// ------------------------------------------------------------------------------------
@@ -874,7 +874,7 @@ namespace SIL.Windows.Forms.Scripture
 			List<int> verseList = new List<int>();
 			for (int i = 1; i <= m_versification.GetLastVerse(m_scRef.Book, m_scRef.Chapter); i++)
 				verseList.Add(i);
-			
+
 			if (ChapterSelected != null)
 				ChapterSelected(m_scRef.Book, m_scRef.Chapter);
 
@@ -885,7 +885,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="button"></param>
 		/// ------------------------------------------------------------------------------------
@@ -913,7 +913,7 @@ namespace SIL.Windows.Forms.Scripture
 		{
 			internal delegate void SelectedHandler(ScrDropDownButton button);
 			internal event SelectedHandler Selected;
-			
+
 			private int m_index = -1;
 			private int m_buttonAbove = -1;
 			private int m_buttonBelow = -1;
@@ -950,7 +950,7 @@ namespace SIL.Windows.Forms.Scripture
 
 			/// --------------------------------------------------------------------------------
 			/// <summary>
-			/// Gets or sets the index of the button that directly preceeds this button.
+			/// Gets or sets the index of the button that directly precedes this button.
 			/// </summary>
 			/// --------------------------------------------------------------------------------
 			public int ButtonAbove
@@ -1000,7 +1000,7 @@ namespace SIL.Windows.Forms.Scripture
 			/// <remarks>
 			/// I used to subscribe to the label button's Click event (in the
 			/// ScrPassageDropDown class) but after I did all kinds of processing due to a
-			/// click event, the label button's base class OnMouseUp event occured and undid
+			/// click event, the label button's base class OnMouseUp event occurred and undid
 			/// some of those things. Therefore, I override this in order to get the base
 			/// classes implementation of OnMouseUp out of the way before I do what I need to
 			/// in the ScrPassageDropDown class (where a bunch of these buttons are
@@ -1016,7 +1016,7 @@ namespace SIL.Windows.Forms.Scripture
 					Selected(this);
 			}
 		}
-	
+
 		#endregion
 	}
 }

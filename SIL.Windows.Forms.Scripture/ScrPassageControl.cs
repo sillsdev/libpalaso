@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------------------
-#region // Copyright 2024 SIL Global
+#region // Copyright (c) 2025 SIL Global
 // <copyright from='2003' to='2024' company='SIL Global'>
-//		Copyright (c) 2024, SIL Global.
+//		Copyright (c) 2025 SIL Global
 //
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
 // </copyright>
@@ -93,7 +93,7 @@ namespace SIL.Windows.Forms.Scripture
 
 			if (!Platform.IsWindows)
 			{
-				// Setting MinumumSize allows mono's buggy ToolStrip layout of ToolStripControlHost's to work.
+				// Setting MinimumSize allows mono's buggy ToolStrip layout of ToolStripControlHost's to work.
 				MinimumSize = new Size(100, 20);
 			}
 		}

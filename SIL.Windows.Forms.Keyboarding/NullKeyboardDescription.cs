@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2024, SIL Global
+// Copyright (c) 2011-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 namespace SIL.Windows.Forms.Keyboarding
@@ -13,7 +13,7 @@ namespace SIL.Windows.Forms.Keyboarding
 		public NullKeyboardDescription()
 			: base(string.Empty, DefaultKeyboardName, DefaultKeyboardName, string.Empty, false, null)
 		{
-			
+
 		}
 
 		public override string ToString()

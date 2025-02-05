@@ -1,12 +1,12 @@
 // --------------------------------------------------------------------------------------------
-#region // Copyright 2024 SIL Global
+#region // Copyright (c) 2025 SIL Global
 // <copyright from='2003' to='2024' company='SIL Global'>
-//		Copyright (c) 2024 SIL Global
-//    
+//		Copyright (c) 2025 SIL Global
+//
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
-// </copyright> 
+// </copyright>
 #endregion
-// 
+//
 // File: LabelButton.cs
 // --------------------------------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ namespace SIL.Windows.Forms.Scripture
 		public event PaintEventHandler PaintText;
 		/// <summary>Event which occurs when the control's image is being painted.</summary>
 		public event PaintEventHandler PaintImage;
-		
+
 		private bool m_mouseIsOver;
 		private bool m_mouseIsDown;
 		private bool m_shadeWhenMouseOver = true;
@@ -72,12 +72,12 @@ namespace SIL.Windows.Forms.Scripture
 		{
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint |
 				ControlStyles.DoubleBuffer, true);
-			
+
 			BackColor = Color.FromArgb(200, SystemColors.Control);
 			TextAlign = ContentAlignment.MiddleCenter;
 			Name = "LabelButton";
 			ResizeRedraw = true;
-			
+
 			SetTextAlignment();
 		}
 
@@ -109,7 +109,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public TextFormatFlags FormatFlags { get; set; }
-		
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Gets or sets a value for the number of pixels of margin to insert before the text
@@ -177,7 +177,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		protected bool ButtonIsOn => State == ButtonState.Pushed;
@@ -187,7 +187,7 @@ namespace SIL.Windows.Forms.Scripture
 		#region Overrides
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="e"></param>
 		/// ------------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ namespace SIL.Windows.Forms.Scripture
 				OnPaintBackground(e);
 			else
 				PaintBackground(this, e);
-			
+
 			if (PaintText == null)
 				OnPaintText(e);
 			else
@@ -211,7 +211,7 @@ namespace SIL.Windows.Forms.Scripture
 					PaintImage(this, e);
 			}
 		}
-		
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Paints the background and border portion of the button.
@@ -229,7 +229,7 @@ namespace SIL.Windows.Forms.Scripture
 
 				brush.Color = GetBackColorShade(m_paintState, BackColor);
 				e.Graphics.FillRectangle(brush, ClientRectangle);
-				
+
 				if (m_paintState != PaintState.Normal)
 				{
 					Rectangle rc = ClientRectangle;
@@ -256,7 +256,7 @@ namespace SIL.Windows.Forms.Scripture
 					rc.Offset(-1, -1);
 				else
 					rc.Height--;
-				
+
 				// Account for any specified leading margin.
 				if (TextLeadingMargin > 0)
 				{
@@ -264,7 +264,7 @@ namespace SIL.Windows.Forms.Scripture
 					if (RightToLeft == RightToLeft.No)
 						rc.X += TextLeadingMargin;
 				}
-				
+
 				// Now we'll draw the text.
 				e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 				Size sz;
@@ -366,12 +366,12 @@ namespace SIL.Windows.Forms.Scripture
 				rc.Height++;
 			}
 
-			DrawImage(e.Graphics, Image, rc, ImageAlign);			
+			DrawImage(e.Graphics, Image, rc, ImageAlign);
 		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="e"></param>
 		/// ------------------------------------------------------------------------------------
@@ -381,10 +381,10 @@ namespace SIL.Windows.Forms.Scripture
 			m_mouseIsOver = true;
 			Invalidate();
 		}
-		
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="e"></param>
 		/// ------------------------------------------------------------------------------------
@@ -439,18 +439,18 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="e"></param>
 		/// ------------------------------------------------------------------------------------
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
-			
+
 			if (m_mouseIsDown)
 			{
 				bool inBounds = MouseInBounds(e.X, e.Y);
-				
+
 				if (inBounds != m_mouseIsOver)
 				{
 					m_mouseIsOver = inBounds;
@@ -458,12 +458,12 @@ namespace SIL.Windows.Forms.Scripture
 				}
 			}
 		}
-		
+
 		#endregion
-		
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="state"></param>
 		/// <returns></returns>
@@ -475,7 +475,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="state"></param>
 		/// <param name="normalBack"></param>
@@ -492,13 +492,13 @@ namespace SIL.Windows.Forms.Scripture
 					case PaintState.Pushed:		return Color.FromArgb(40, SystemColors.ActiveCaption);
 				}
 			}
-			
+
 			return normalBack;
 		}
-		
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <returns></returns>
 		/// ------------------------------------------------------------------------------------
@@ -521,7 +521,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="x"></param>
 		/// <param name="y"></param>

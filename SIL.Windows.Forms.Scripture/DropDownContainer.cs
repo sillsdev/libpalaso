@@ -1,12 +1,12 @@
 // --------------------------------------------------------------------------------------------
-#region // Copyright 2024 SIL Global
+#region // Copyright (c) 2025 SIL Global
 // <copyright from='2003' to='2024' company='SIL Global'>
-//		Copyright (c) 2024, SIL Global.   
-//    
+//		Copyright (c) 2025 SIL Global
+//
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
-// </copyright> 
+// </copyright>
 #endregion
-// 
+//
 // File: DropDownContainer.cs
 // --------------------------------------------------------------------------------------------
 using System.Diagnostics.CodeAnalysis;
@@ -24,14 +24,14 @@ namespace SIL.Windows.Forms.Scripture
 		/// <summary>Handles AfterDropDownClose events.</summary>
 		public delegate void AfterDropDownClosedHandler(DropDownContainer dropDownContainer,
 			object eventData);
-		
+
 		/// <summary>Event which occurs after a drop-down is closed.</summary>
 		public event AfterDropDownClosedHandler AfterDropDownClosed;
 
 		/// <summary>Handles BeforeDropDownClose events.</summary>
 		public delegate void BeforeDropDownOpenedHandler(DropDownContainer dropDownContainer,
 			object eventData);
-		
+
 		/// <summary>Event which occurs before a drop-down is closed.</summary>
 		public event BeforeDropDownOpenedHandler BeforeDropDownOpened;
 
@@ -117,7 +117,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="cancel"></param>
 		/// ------------------------------------------------------------------------------------
@@ -129,7 +129,7 @@ namespace SIL.Windows.Forms.Scripture
 		#region Overrides
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="e"></param>
 		/// ------------------------------------------------------------------------------------
@@ -147,7 +147,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="e"></param>
 		/// ------------------------------------------------------------------------------------
@@ -155,9 +155,9 @@ namespace SIL.Windows.Forms.Scripture
 		{
 			if (this.Visible)
 				this.Hide();
-			
+
 			base.OnDeactivate(e);
-			
+
 			BeforeDropDownOpenedEventData = null;
 
 			// Call this delegate if there are any subscribers.

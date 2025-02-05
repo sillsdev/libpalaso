@@ -1,4 +1,4 @@
-// Copyright (c) 2024 SIL Global
+// Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using NUnit.Framework;
@@ -75,7 +75,7 @@ namespace SIL.Tests
 		{
 			Assert.That(ExceptionHandler.TypeOfExistingHandler, Is.Null);
 		}
-		
+
 		[Test]
 		public void TypeOfExistingHandler_Initialized_ReturnsTypeOfHandler()
 		{

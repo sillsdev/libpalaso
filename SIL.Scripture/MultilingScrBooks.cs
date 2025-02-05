@@ -1,12 +1,12 @@
 // --------------------------------------------------------------------------------------------
-#region // Copyright (c) 2024 SIL Global
+#region // Copyright (c) 2025 SIL Global
 // <copyright from='2008' to='2024' company='SIL Global'>
-//		Copyright (c) 2024 SIL Global
-//    
+//		Copyright (c) 2025 SIL Global
+//
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
-// </copyright> 
+// </copyright>
 #endregion
-// 
+//
 // File: MultilingScrBooks.cs
 // --------------------------------------------------------------------------------------------
 using System;
@@ -51,7 +51,7 @@ namespace SIL.Scripture
 
 			/// --------------------------------------------------------------------------------
 			/// <summary>
-			/// 
+			///
 			/// </summary>
 			/// <param name="nBookNum"></param>
 			/// <param name="sName"></param>
@@ -258,11 +258,11 @@ namespace SIL.Scripture
 		[Description("Array of encodings requested by the caller.")]
 		public List<string > RequestedEncodings
 		{
-			get 
+			get
 			{
 				return m_requestedEncodings;
 			}
-			set 
+			set
 			{
 				m_requestedEncodings = value;
 
@@ -271,7 +271,7 @@ namespace SIL.Scripture
 					m_requestedEncodings.Add(kWsSilCodes); // Add to the end
 			}
 		}
-		
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// ProcessDeuteroCanonical property
@@ -284,9 +284,9 @@ namespace SIL.Scripture
 		{
 			get {return m_fProcessDeuteroCanonical;}
 			set {m_fProcessDeuteroCanonical = false;}	// nScrBooksLim = 66;
-			// This impletation does not support deutero-canonical book names.
+			// This implementation does not support deutero-canonical book names.
 		}
-				
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// ReferenceFormat property
@@ -346,7 +346,7 @@ namespace SIL.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="icuLocale">The ISO 639-3 identifier for the writing system</param>
 		/// <returns>The WsNames object for the given ws, if it exists</returns>
@@ -425,7 +425,7 @@ namespace SIL.Scripture
 				}
 			}
 
-			// No abbreviation found in primary writing system; get SIL code instead		
+			// No abbreviation found in primary writing system; get SIL code instead
 			wsNames = GetWsNames(kWsSilCodes); // SIL codes
 			Debug.Assert (wsNames != null);
 			sAbbrev = wsNames.Name[nBook - 1]; // full SIL code is the .Name
@@ -474,7 +474,7 @@ namespace SIL.Scripture
 		/// Parses the user typed in string. Creates and returns a ScrReference object.
 		/// </summary>
 		/// <param name="sTextToBeParsed">Reference string the user types in.</param>
-		/// <param name="startingBook">The 0-based index of starting book to consider when 
+		/// <param name="startingBook">The 0-based index of starting book to consider when
 		/// parsing reference.</param>
 		/// <returns>The generated scReference object.</returns>
 		/// ------------------------------------------------------------------------------------
@@ -521,7 +521,7 @@ namespace SIL.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Generates a cannonical text form of the given reference, consisting of
+		/// Generates a canonical text form of the given reference, consisting of
 		/// book abbreviation (in primary writing system), chapter nbr, colon, verse nbr.
 		/// </summary>
 		/// <param name="scRef">The given scReference object.</param>

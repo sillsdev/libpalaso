@@ -1,12 +1,12 @@
 // --------------------------------------------------------------------------------------------
-#region // Copyright 2024 SIL Global
+#region // Copyright (c) 2025 SIL Global
 // <copyright from='2003' to='2024' company='SIL Global'>
-//		Copyright (c) 2024 SIL Global
-//    
+//		Copyright (c) 2025 SIL Global
+//
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
-// </copyright> 
+// </copyright>
 #endregion
-// 
+//
 // File: ScreenHelperTests.cs
 // --------------------------------------------------------------------------------------------
 using System.Drawing;
@@ -33,12 +33,12 @@ namespace SIL.Windows.Forms.Tests
 		{
 			foreach (Screen scrn in Screen.AllScreens)
 			{
-				// We want to skip a screen if it is vitual
+				// We want to skip a screen if it is virtual
 				if (ScreenHelper.ScreenIsVirtual(scrn))
 					continue;
 
 				Rectangle realScreenArea = ScreenHelper.AdjustedWorkingArea(scrn);
-				
+
 				// Make test rectangle half the height and width of the screen's working area.
 				Rectangle rcAdjusted = scrn.WorkingArea;
 				rcAdjusted.Width /= 2;
@@ -55,7 +55,7 @@ namespace SIL.Windows.Forms.Tests
 				// comes back fully contained within the screen.
 				rcAdjusted.Y = scrn.WorkingArea.Bottom - rcAdjusted.Height + 15;
 				ScreenHelper.EnsureVisibleRect(ref rcAdjusted);
-				Assert.IsTrue(realScreenArea.Contains(rcAdjusted), 
+				Assert.IsTrue(realScreenArea.Contains(rcAdjusted),
 					"Bottom edge test failed: " + scrn.DeviceName);
 
 				// Move rectangle so right and bottom edges are off the screen and test that
