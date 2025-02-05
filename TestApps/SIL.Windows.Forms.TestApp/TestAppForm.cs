@@ -538,5 +538,12 @@ and displays it as HTML.
 			if (dlg.ShowDialog(this) == DialogResult.OK)
 				MessageBox.Show("Got " + dlg.SelectedProject);
 		}
+
+		private static int s_FadingMessageCount = 1;
+		private void _btnShowFadingMessage_Click(object sender, EventArgs e)
+		{
+			var fadingMsgWindow = new FadingMessageWindow();
+			fadingMsgWindow.Show($"{s_FadingMessageCount++}) Fading message.", _btnShowFadingMessage.Location);
+		}
 	}
 }
