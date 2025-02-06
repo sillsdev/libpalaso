@@ -232,7 +232,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				new AllTagEntry { name = "Crimean Tatar", tag="crh-Cyrl-UA", region = "UA", regions = new List<string> {"BG", "KG", "US"}},
 				new AllTagEntry { name = "English", tag = "en", region = "US"},
-				new AllTagEntry {name = "French", tag = "fr", region = "FR", regions = new List<string> {"FR", "US"}} 
+				new AllTagEntry {name = "French", tag = "fr", region = "FR", regions = new List<string> {"FR", "US"}}
 			};
 			var lookup = new LanguageLookup(entries);
 			var languages = lookup.SuggestLanguages("United States");
@@ -314,7 +314,7 @@ namespace SIL.WritingSystems.Tests
 			languages = lookup.SuggestLanguages("hae").ToArray();
 			// “Kwottu” (pej.), “Qottu” (pej.), “Quottu” (pej.), “Qwottu” (pej.)
 			Assert.False(languages.Any(l => l.Names.Contains("ottu")));
-			// “Qotu Oromo” (pej.), 
+			// “Qotu Oromo” (pej.),
 			Assert.False(languages.Any(l => l.Names.Contains("Qotu")));
 		}
 
@@ -437,6 +437,53 @@ namespace SIL.WritingSystems.Tests
 				Assert.True(languages.Take(20).All(l => l.Names.Any(n => n.ToLowerInvariant().Contains("sign"))),
 					"At least the top 20 results for each way of typing 'sign' should have 'sign' in one of the language names");
 			}
+		}
+
+		[Test]
+		public void EnsureTagsWithPrivateUseRegions_WorksAsExpected()
+		{
+			var entries = new List<AllTagEntry>
+			{
+				new AllTagEntry
+				{
+					full = "sq-Todr-AL",
+					iana = new List<string>() { "Albanian" },
+					iso639_3 = "sqi",
+					name = "Albanian",
+					names = new List<string>()
+					{
+						"Albanian, Tosk", "Arnaut", "Arvanitika", "Camerija",
+						"Shkip",
+						"Shqip",
+						"Skchip",
+						"Tosk",
+						"Zhgabe"
+					},
+
+					region = "AL",
+					regionName = "Albania",
+					regions = new List<string>()
+					{
+						"AT", "AU", "BE", "DE",
+						"GR",
+						"HR",
+						"IT",
+						"MK",
+						"MN",
+						"RS",
+						"SE",
+						"TR",
+						"UA",
+						"US",
+						"XK"
+					},
+					sldr = false,
+					tag = "sq-Todr",
+					tags = new List<string>() { "als-Todr", "als-Todr-AL" },
+				}
+			};
+
+			new LanguageLookup(entries, false);
 		}
 
 		[Test]

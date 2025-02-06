@@ -152,14 +152,7 @@ namespace SIL.WritingSystems
 			}
 			else if (StandardSubtags.IsValidIso3166RegionCode(region))
 			{
-				if (StandardSubtags.IsPrivateUseRegionCode(region))
-				{
-					primaryCountry = region == "XK" ? "Kosovo" : "Unknown private use";
-				}
-				else
-				{
-					primaryCountry = StandardSubtags.RegisteredRegions[region].Name; // convert to full region name
-				}
+				primaryCountry = RegionToCountry(region);
 			}
 			else
 			{
@@ -180,7 +173,7 @@ namespace SIL.WritingSystems
 				{
 					if (!country.Contains('?') && country != "")
 					{
-						language.Countries.Add(StandardSubtags.RegisteredRegions[country].Name);
+						language.Countries.Add(RegionToCountry(country));
 					}
 				}
 			}
@@ -256,6 +249,26 @@ namespace SIL.WritingSystems
 			}
 
 			return true;
+		}
+
+		private static string RegionToCountry(string region)
+		{
+			string country;
+			if (StandardSubtags.IsPrivateUseRegionCode(region))
+			{
+				country = region == "XK" ? "Kosovo" : "Unknown private use";
+			}
+			else if (StandardSubtags.RegisteredRegions.TryGet(region, out var regionTag))
+			{
+				country = regionTag.Name; // convert to full region name
+			}
+			else
+			{
+				country = "Invalid region " + region;
+			}
+
+
+			return country;
 		}
 
 
