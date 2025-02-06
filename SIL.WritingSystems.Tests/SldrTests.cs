@@ -501,7 +501,7 @@ namespace SIL.WritingSystems.Tests
 
 		[Test]
 		[Explicit]
-		public void DownloadLangTags_NoPreviousETagNoFile()
+		public void DownloadLanguageTags_NoPreviousETagNoFile()
 		{
 			// Setup
 			using var sldrCachePath = new TemporaryFolder(TestContext.CurrentContext.Test.Name);
@@ -510,7 +510,7 @@ namespace SIL.WritingSystems.Tests
 			var eTagFile = Path.Combine(sldrCachePath.Path, "langtags.json.etag");
 
 			// Execute
-			Sldr.DownloadLangTags();
+			Sldr.DownloadLanguageTags();
 
 			// Verify
 			Assert.That(File.Exists(langtagsFile), Is.True);
@@ -521,18 +521,18 @@ namespace SIL.WritingSystems.Tests
 
 		[Test]
 		[Explicit]
-		public void DownloadLangTags_NoPreviousETagExistingFile()
+		public void DownloadLanguageTags_NoPreviousETagExistingFile()
 		{
 			// Setup
 			using var sldrCachePath = new TemporaryFolder(TestContext.CurrentContext.Test.Name);
 			using var environment = new TestEnvironment(false, sldrCachePath.Path);
 			var langtagsFile = Path.Combine(sldrCachePath.Path, "langtags.json");
 			var eTagFile = Path.Combine(sldrCachePath.Path, "langtags.json.etag");
-			Sldr.DownloadLangTags();
+			Sldr.DownloadLanguageTags();
 			File.Delete(eTagFile);
 
 			// Execute
-			Sldr.DownloadLangTags();
+			Sldr.DownloadLanguageTags();
 
 			// Verify
 			Assert.That(File.Exists(langtagsFile), Is.True);
@@ -541,18 +541,18 @@ namespace SIL.WritingSystems.Tests
 
 		[Test]
 		[Explicit]
-		public void DownloadLangTags_ExistingETagNoFile()
+		public void DownloadLanguageTags_ExistingETagNoFile()
 		{
 			// Setup
 			using var sldrCachePath = new TemporaryFolder(TestContext.CurrentContext.Test.Name);
 			using var environment = new TestEnvironment(false, sldrCachePath.Path);
 			var langtagsFile = Path.Combine(sldrCachePath.Path, "langtags.json");
 			var eTagFile = Path.Combine(sldrCachePath.Path, "langtags.json.etag");
-			Sldr.DownloadLangTags();
+			Sldr.DownloadLanguageTags();
 			File.Delete(langtagsFile);
 
 			// Execute
-			Sldr.DownloadLangTags();
+			Sldr.DownloadLanguageTags();
 
 			// Verify
 			Assert.That(File.Exists(langtagsFile), Is.True);
@@ -561,19 +561,19 @@ namespace SIL.WritingSystems.Tests
 
 		[Test]
 		[Explicit]
-		public void DownloadLangTags_NotModified()
+		public void DownloadLanguageTags_NotModified()
 		{
 			// Setup
 			using var sldrCachePath = new TemporaryFolder(TestContext.CurrentContext.Test.Name);
 			using var environment = new TestEnvironment(false, sldrCachePath.Path);
-			Sldr.DownloadLangTags();
+			Sldr.DownloadLanguageTags();
 			var langtagsFile = Path.Combine(sldrCachePath.Path, "langtags.json");
 			var eTagFile = Path.Combine(sldrCachePath.Path, "langtags.json.etag");
 			var langtagsFileDate = new FileInfo(langtagsFile).LastWriteTime;
 			var eTagFileDate = new FileInfo(eTagFile).LastWriteTime;
 
 			// Execute
-			Sldr.DownloadLangTags();
+			Sldr.DownloadLanguageTags();
 
 			// Verify
 			Assert.That(new FileInfo(langtagsFile).LastWriteTime, Is.EqualTo(langtagsFileDate));
@@ -582,12 +582,12 @@ namespace SIL.WritingSystems.Tests
 
 		[Test]
 		[Explicit]
-		public void DownloadLangTags_Outdated()
+		public void DownloadLanguageTags_Outdated()
 		{
 			// Setup
 			using var sldrCachePath = new TemporaryFolder(TestContext.CurrentContext.Test.Name);
 			using var environment = new TestEnvironment(false, sldrCachePath.Path);
-			Sldr.DownloadLangTags();
+			Sldr.DownloadLanguageTags();
 			var langtagsFile = Path.Combine(sldrCachePath.Path, "langtags.json");
 			var eTagFile = Path.Combine(sldrCachePath.Path, "langtags.json.etag");
 			File.WriteAllText(eTagFile, @"""12345678-abcdef""");
@@ -595,7 +595,7 @@ namespace SIL.WritingSystems.Tests
 			var eTagFileDate = new FileInfo(eTagFile).LastWriteTime;
 
 			// Execute
-			Sldr.DownloadLangTags();
+			Sldr.DownloadLanguageTags();
 
 			// Verify
 			Assert.That(new FileInfo(langtagsFile).LastWriteTime,

@@ -16,12 +16,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- [SIL.WritingSystems] Added public DownloadLanguageTags method for updating the cached langtags.json from the SLDR repository.
+
 ### Changed
 
 - [SIL.TestUtilities] Made FluentAssertXml classes use "Assert.That" so they can work in clients that use NUnit 4.
 - [SIL.Windows.Forms] Removed protected members from FadingMessageWindow: MsgThread, MsgForm, Text, MsgPoint, and ShowForm. (The underlying implementation needed to be changed, and the existing implementation was such that these members would be unlikely to have been meaningful or helpful in a derived class anyway.)
 - [SIL.Windows.Forms] Added the stated requirement that FadingMessageWindow.Show be called on the UI thread.
-- [SIL.WritingSystems] Download of langtag.json handled with etag instead of IF-MODIFIED-SINCE Header (#987)
+- [SIL.WritingSystems] Added optional parameter to InitializeLanguageTags: bool downloadLanguageTags (default true).
+- [SIL.WritingSystems] Download of langtags.json handled with ETag and If-None-Match headers instead of If-Modified-Since.
 
 ### Fixed
 

@@ -439,27 +439,32 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		public static void InitializeLanguageTags(bool downloadLangTags = true)
+		public static void InitializeLanguageTags(bool downloadLanguageTags = true)
 		{
-			LoadLanguageTagsIfNecessary(downloadLangTags);
+			LoadLanguageTagsIfNecessary(downloadLanguageTags);
 		}
 
 		/// <summary>
 		/// Gets the language tags of the available LDML files in the SLDR.
 		/// </summary>
-		private static void LoadLanguageTagsIfNecessary(bool downloadLangTags = true)
+		private static void LoadLanguageTagsIfNecessary(bool downloadLanguageTags = true)
 		{
 			if (_languageTags != null)
 				return;
 
-			if (downloadLangTags)
-				DownloadLangTags();
+			if (downloadLanguageTags)
+				DownloadLanguageTags();
 
 			_languageTags = new ReadOnlyKeyedCollection<string, SldrLanguageTagInfo>(
 				ParseAllTagsJson(Path.Combine(SldrCachePath, "langtags.json")));
 		}
 
-		public static void DownloadLangTags()
+		/// <summary>
+		/// If SLDR is online, sends a request for langtags to the SLDR repository.
+		/// If the cache has both langtags and an ETag,
+		/// then the request will include an "If-None-Match" header.
+		/// </summary>
+		public static void DownloadLanguageTags()
 		{
 			using (_sldrCacheMutex.Lock())
 			{
