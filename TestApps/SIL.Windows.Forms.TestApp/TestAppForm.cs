@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2024, SIL Global
+// Copyright (c) 2013-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
@@ -537,6 +537,13 @@ and displays it as HTML.
 			using var dlg = new ChooseProject();
 			if (dlg.ShowDialog(this) == DialogResult.OK)
 				MessageBox.Show("Got " + dlg.SelectedProject);
+		}
+
+		private static int s_FadingMessageCount = 1;
+		private void _btnShowFadingMessage_Click(object sender, EventArgs e)
+		{
+			var fadingMsgWindow = new FadingMessageWindow();
+			fadingMsgWindow.Show($"{s_FadingMessageCount++}) Fading message.", _btnShowFadingMessage.Location);
 		}
 	}
 }

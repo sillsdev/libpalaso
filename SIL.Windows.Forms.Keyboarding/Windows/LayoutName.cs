@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2024, SIL Global
+// Copyright (c) 2013-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 namespace SIL.Windows.Forms.Keyboarding.Windows
 {

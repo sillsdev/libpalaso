@@ -1,12 +1,12 @@
 // ---------------------------------------------------------------------------------------------
-#region // Copyright (c) 2024 SIL Global.
-// <copyright from='2011' to='2024' company='SIL Global'>
-//		Copyright (c) 2024, SIL Global.   
-//	
+#region // Copyright (c) 2025 SIL Global
+// <copyright from='2011' to='2025' company='SIL Global'>
+//		Copyright (c) 2025 SIL Global
+//
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
-// </copyright> 
+// </copyright>
 #endregion
-// 
+//
 // This class originated in FieldWorks (under the GNU Lesser General Public License), but we
 // decided to make it available in SIL.Windows.Forms.Keyboarding to make it more readily
 // available to other projects.
@@ -398,7 +398,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			IEnumerable<IKeyboardDefinition> keyboards = Keyboard.Controller.AvailableKeyboards;
 			Assert.AreEqual(0, keyboards.Count());
 			//Assert.AreEqual(1, KeyboardController.ErrorKeyboards.Count);
-			//Assert.AreEqual("Fake", KeyboardController.Errorkeyboards.First().Details);
+			//Assert.AreEqual("Fake", KeyboardController.ErrorKeyboards.First().Details);
 		}
 
 		/// <summary/>

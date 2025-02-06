@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2024 SIL Global
+// Copyright (c) 2017-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Diagnostics;
@@ -40,7 +40,7 @@ namespace SIL.Media.AlsaAudio
 			_maxMinutes = maxMinutes;	// ignored -- not sure what to do with this.
 			RecordingFormat = new WaveFormat(44100, 1);
 			SelectedDevice = RecordingDevice.DefaultDevice;
-			MicrophoneLevel = -1;	//unknown level.
+			MicrophoneLevel = -1;	// unknown level.
 		}
 
 		protected virtual void Dispose(bool disposing)

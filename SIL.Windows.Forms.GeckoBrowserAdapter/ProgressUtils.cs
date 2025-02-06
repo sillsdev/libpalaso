@@ -1,4 +1,4 @@
-// Copyright (c) 2024, SIL Global
+// Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -71,7 +71,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 						};
 
 						// Since ManagedThreadId isn't fixed on .NET/Windows we use just invoke
-						// on windows. (Which should peform a BeginInvoke/EndInvoke if the control was
+						// on windows. (Which should perform a BeginInvoke/EndInvoke if the control was
 						// created by the main UI thread)
 						// Enhance: if uiSynchronizationForm isn't yet created then this may not work.
 						if (Platform.IsDotNet)
@@ -80,9 +80,9 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 						}
 						else
 						{
-							// This is more reliable that calling InvokeRequried,
-							// as InvokeRequred requires the control to be created.
-							// Mono's Control.Invoke implementation uses InvokeRequred to determin if
+							// This is more reliable than calling InvokeRequired,
+							// as InvokeRequired requires the control to be created.
+							// Mono's Control.Invoke implementation uses InvokeRequired to determine if
 							// The delegate can just be run or if BeginInvoke needs to be called.
 							if (Thread.CurrentThread.ManagedThreadId != 1)
 							{

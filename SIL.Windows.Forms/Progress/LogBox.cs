@@ -477,7 +477,7 @@ namespace SIL.Windows.Forms.Progress
 
 		public static string SafeFormat(string format, params object[] args)
 		{
-			if (args == null && args.Length == 0)
+			if (args == null || args.Length == 0)
 				return format;      //in many cases, we can avoid the format entirely.  This gets us past the "hg log -template {node}" error.
 
 			return format.FormatWithErrorStringInsteadOfException(args);

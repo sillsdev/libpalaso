@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2024, SIL Global
+// Copyright (c) 2013-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -190,7 +190,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		{
 			Dispose(true);
 			// This object will be cleaned up by the Dispose method.
-			// Therefore, you should call GC.SupressFinalize to
+			// Therefore, you should call GC.SuppressFinalize to
 			// take this object off the finalization queue
 			// and prevent finalization code for this object
 			// from executing a second time.

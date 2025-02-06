@@ -10,7 +10,7 @@
     <Company>SIL Global</Company>
     <Authors>SIL Global</Authors>
     <Product>libpalaso</Product>
-    <Copyright>Copyright © 2010-2024 SIL Global</Copyright>
+    <Copyright>Copyright © 2010-2025 SIL Global</Copyright>
     <OutputPath>../output/$(Configuration)</OutputPath>
     <SignAssembly>true</SignAssembly>
     <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
