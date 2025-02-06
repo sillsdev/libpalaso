@@ -17,17 +17,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Changed
+
 - [SIL.TestUtilities] Made FluentAssertXml classes use "Assert.That" so they can work in clients that use NUnit 4.
 - [SIL.Windows.Forms] Removed protected members from FadingMessageWindow: MsgThread, MsgForm, Text, MsgPoint, and ShowForm. (The underlying implementation needed to be changed, and the existing implementation was such that these members would be unlikely to have been meaningful or helpful in a derived class anyway.)
 - [SIL.Windows.Forms] Added the stated requirement that FadingMessageWindow.Show be called on the UI thread.
-- 
+- [SIL.WritingSystems] Download of langtag.json handled with etag instead of IF-MODIFIED-SINCE Header (#987)
+
 ### Fixed
+
 - [SIL.Windows.Forms] Changed build date in SILAboutBox to be computed using the last write time instead of creation time.
 - [SIL.Windows.Forms] Made FadingMessageWindow implement all UI logic on the main UI thread in a thread-safe way. Fixes crashes like SP-2340.
 
 ## [15.0.0] - 2025-01-06
 
 ### Added
+
 - [SIL.Core] Added optional parameter, preserveNamespaces, to XmlUtils.WriteNode
 - [SIL.Core] Added optional parameter, includeSystemLibraries, to AcknowledgementsProvider.CollectAcknowledgements
 - [SIL.Windows.Forms] Added ability to select which SIL logo(s) to use in SILAboutBox.
@@ -74,7 +78,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Changed the signature of protected methods in ArchivingDlgViewModel: LaunchArchivingProgram, GetFileExcludedMsg.
 - [SIL.Archiving] Changed the signature of the public method ArchivingDlgViewModel.CreatePackage.
 - [SIL.Archiving] Changed underlying type of public enums VernacularMaterialsType and SilDomain from ulong to long.
-- [SIL.Archiving] Replaced protected _keys field (now private) in abstract class ArchivingPackage with protected accessor property Keys.
+- [SIL.Archiving] Replaced protected \_keys field (now private) in abstract class ArchivingPackage with protected accessor property Keys.
 - [SIL.Archiving] IMDIArchivingDlgViewModel (subclass of ArchivingDlgViewModel) affected by many of the changes to the base class.
 - [SIL.Archiving] IMDIArchivingDlgViewModel and RampArchivingDlgViewModel (subclasses of ArchivingDlgViewModel) affected by many of the changes to the base class.
 - [SIL.Archiving] IMDIArchivingDlgViewModel constructor signature changed.
@@ -100,6 +104,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] Made MediaInfo look for the FFprobe exe in the same location as FFmpeg when the application has specified the location for it or when it was previously located in one of the expected locations. Also made it more robust by making it more likely to find FFprobe (when it is on the system path).
 
 ### Fixed
+
 - [SIL.Archiving] Fixed typo in RampArchivingDlgViewModel for Ethnomusicology performance collection.
 - [SIL.Archiving] Changed URLs that used http: to https: in resource EmptyMets.xml.
 - [SIL.Core.Desktop] Implemented GetDefaultProgramForFileType (as trenamed) in a way that works on Windows 11, Mono (probably) and MacOS (untested).
@@ -116,14 +121,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Removed abstract properties from ArchivingDlgViewModel: InformativeText and ArchiveInfoHyperlinkText.
 - [SIL.Archiving] Removed public method ArchivingDlgViewModel.Cancel. (Now handled via cancellation tokens.)
 - [SIL.Archiving] Removed protected methods from ArchivingDlgViewModel: PreparingFilesMsg, GetSavingFilesMsg
-- [SIL.Archiving] Removed protected fields (renamed and made private) from ArchivingLanguage: _iso3Code, _englishName
-- [SIL.Archiving] Removed protected fields (made private) from ArchivingFile: _fullName, _fileName, _fileSize, _mimeType, _descriptions, _accessProtocol
+- [SIL.Archiving] Removed protected fields (renamed and made private) from ArchivingLanguage: \_iso3Code, \_englishName
+- [SIL.Archiving] Removed protected fields (made private) from ArchivingFile: \_fullName, \_fileName, \_fileSize, \_mimeType, \_descriptions, \_accessProtocol
 - [SIL.Archiving] Removed public methods CreateMetsFile and CreateRampPackage from RampArchivingDlgViewModel (made internal).
 - [SIL.Archiving] Removed ArchivingPackage and AddSession from ArchivingDlgViewModel and RampArchivingDlgViewModel (where they threw NotImplementedExceptions)
 
 ### Fixed
 
-- [SIL.Window.Forms] When choosing a file in the ImageToolbox.AcquireImageControl, a FileOk handler is simulated that verifies the selected file passes the given filter.  Users can defeat the filter mechanism by pasting or typing the file name.  While the returned filename does not pass the filter, the dialog is reopened until the user either chooses a proper filename or cancels the dialog.  The native FileOk handler can prevent the dialog from closing: we can't achieve that.  (See BL-13552.)
+- [SIL.Window.Forms] When choosing a file in the ImageToolbox.AcquireImageControl, a FileOk handler is simulated that verifies the selected file passes the given filter. Users can defeat the filter mechanism by pasting or typing the file name. While the returned filename does not pass the filter, the dialog is reopened until the user either chooses a proper filename or cancels the dialog. The native FileOk handler can prevent the dialog from closing: we can't achieve that. (See BL-13552.)
 
 ## [14.1.1] - 2024-05-23
 
@@ -188,7 +193,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- [SIL.Windows.Forms.ClearShare] Fixed Metadata.LoadProperties to catch the ArgumentOutOfRangeException thrown by TagLib.File.Create when unknown data is found in the IPTC profile segment.  The rest of the metadata (Exif / XMP) is likely to be okay, but won't be available until TagLib is fixed to allow this.  Not having the metadata available shouldn't prevent using the image.  Note that clients can now read the exception caught while loading if so desired.
+- [SIL.Windows.Forms.ClearShare] Fixed Metadata.LoadProperties to catch the ArgumentOutOfRangeException thrown by TagLib.File.Create when unknown data is found in the IPTC profile segment. The rest of the metadata (Exif / XMP) is likely to be okay, but won't be available until TagLib is fixed to allow this. Not having the metadata available shouldn't prevent using the image. Note that clients can now read the exception caught while loading if so desired.
 - [SIL.Windows.Forms.WritingSystem.WSIdentifiers] Changed ComboBox controls in WSIdentifierView and ScriptRegionVariantView to DropDownList style to prevent accidental editing that shouldn't happen
 - [SIL.Windows.Forms.ClearShare] Make Metadata.Write (and a few other methods) more robust
 - [SIL.Core.Desktop] Make FileUtils.ReplaceFileWithUserInteractionIfNeeded robust
@@ -407,7 +412,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] ConsoleErrorReporter logs exception if available
 - [SIL.Core, SIL.Windows.Forms] If WinFormsErrorReporter is set as the ErrorReporter, and ErrorReporter.NotifyUserOfProblem(IRepeatNoticePolicy, Exception, String, params object[]) is passed null for the exception, the "Details" button will no longer appear, making this consistent with the no-Exception overload of this method
 - [SIL.WritingSystems] Changed behavior of IetfLanguageTag to better handle zh-TW.
-- [SIL.WritingSystems] Download of langtag.json handled with etag instead of IF-MODIFIED-SINCE Header(#987)
 
 ### Fixed
 
