@@ -1,4 +1,4 @@
-// Copyright (c) 2024 SIL Global
+// Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -296,7 +296,7 @@ namespace SIL.Windows.Forms.HtmlBrowser
 
 		void IWebBrowserCallbacks.OnNavigating(WebBrowserNavigatingEventArgs e)
 		{
-			//we're interpretting AllowNavigation==false as meaning "links should open in an external browser"
+			//we're interpreting AllowNavigation==false as meaning "links should open in an external browser"
 			if (GetShouldThisNavigationUseExternalBrowser(e.Url.AbsolutePath))
 			{
 				try

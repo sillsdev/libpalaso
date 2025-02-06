@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2024 SIL Global
+// Copyright (c) 2017-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -19,7 +19,7 @@ Upstream-Contact: Steve McConnel <stephen_mcconnel@sil.org>
 Source: https://github.com/BloomBooks/BloomDesktop
 
 Files: *
-Copyright: 2015 SIL International
+Copyright: 2025 SIL Global
 License: MIT
 
 License: MIT

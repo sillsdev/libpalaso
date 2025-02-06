@@ -1,12 +1,12 @@
 // --------------------------------------------------------------------------------------------
-#region // Copyright (c) 20124 SIL Global.
+#region // Copyright (c) 2025 SIL Global
 // <copyright from='2008' to='2014' company='SIL Global'>
-//		Copyright (c) 2024 SIL Global
-//	
+//		Copyright (c) 2025 SIL Global
+//
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
-// </copyright> 
+// </copyright>
 #endregion
-// 
+//
 // File: IScrVers.cs
 // --------------------------------------------------------------------------------------------
 using JetBrains.Annotations;

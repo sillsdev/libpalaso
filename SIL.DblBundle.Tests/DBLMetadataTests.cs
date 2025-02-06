@@ -28,7 +28,7 @@ namespace SIL.DblBundle.Tests
 		<iso>ach</iso>
 	</language>
 	<copyright>
-		<statement contentType=""xhtml"">© 2015, SIL Inc. All rights reserved.</statement>
+		<statement contentType=""xhtml"">© 2025 SIL Global. All rights reserved.</statement>
 	</copyright>
 	<promotion>
 		<promoVersionInfo contentType=""xhtml"">
@@ -84,7 +84,7 @@ namespace SIL.DblBundle.Tests
 		[Test]
 		public void GetCopyrightStatement()
 		{
-			const string expectedValue = @"© 2015, SIL Inc. All rights reserved.";
+			const string expectedValue = @"© 2025 SIL Global. All rights reserved.";
 			Assert.AreEqual(expectedValue, m_metadata.Copyright.Statement.Xhtml);
 			Assert.AreEqual("xhtml", m_metadata.Copyright.Statement.ContentType);
 		}
@@ -192,7 +192,7 @@ namespace SIL.DblBundle.Tests
 				},
 				Copyright = new DblMetadataCopyright
 				{
-					Statement = new DblMetadataXhtmlContentNode { Xhtml = @"© 2015, SIL Inc. All rights reserved." }
+					Statement = new DblMetadataXhtmlContentNode { Xhtml = @"© 2025 SIL Global. All rights reserved." }
 				},
 				Promotion = new DblMetadataPromotion
 				{
@@ -210,7 +210,7 @@ namespace SIL.DblBundle.Tests
 		<systemId type=""type"">Idvalue</systemId>
 	</identification>
 	<copyright>
-		<statement contentType=""xhtml"">© 2015, SIL Inc. All rights reserved.</statement>
+		<statement contentType=""xhtml"">© 2025 SIL Global. All rights reserved.</statement>
 	</copyright>
 	<promotion>
 		<promoVersionInfo contentType=""xhtml"">

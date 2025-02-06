@@ -1,4 +1,4 @@
-// Copyright (c) 2024 SIL Global
+// Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
@@ -332,7 +332,7 @@ namespace SIL.IO
 		public static void OpenDirectoryInExplorer(string directory)
 		{
 			//Enhance: on Windows, use ShellExecuteExW instead, as it will probably be able to
-			//handle languages with combining characters (diactrics), whereas this explorer
+			//handle languages with combining characters (diacritics), whereas this explorer
 			//approach will fail (at least as of windows 8.1)
 
 			var fileManager = DefaultFileManager;

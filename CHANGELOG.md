@@ -18,9 +18,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - [SIL.TestUtilities] Made FluentAssertXml classes use "Assert.That" so they can work in clients that use NUnit 4.
+- [SIL.Windows.Forms] Removed protected members from FadingMessageWindow: MsgThread, MsgForm, Text, MsgPoint, and ShowForm. (The underlying implementation needed to be changed, and the existing implementation was such that these members would be unlikely to have been meaningful or helpful in a derived class anyway.)
+- [SIL.Windows.Forms] Added the stated requirement that FadingMessageWindow.Show be called on the UI thread.
 - 
 ### Fixed
 - [SIL.Windows.Forms] Changed build date in SILAboutBox to be computed using the last write time instead of creation time.
+- [SIL.Windows.Forms] Made FadingMessageWindow implement all UI logic on the main UI thread in a thread-safe way. Fixes crashes like SP-2340.
 
 ## [15.0.0] - 2025-01-06
 

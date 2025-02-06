@@ -1,4 +1,4 @@
-// Copyright (c) 2002-2024 SIL Global
+// Copyright (c) 2002-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections;
@@ -135,7 +135,7 @@ namespace SIL.Reporting
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets the hiearchical exception info.
+		/// Gets the hierarchical exception info.
 		/// </summary>
 		/// <param name="error">The error.</param>
 		/// <param name="innerMostException">The inner most exception or null if the error is

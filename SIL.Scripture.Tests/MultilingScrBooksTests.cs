@@ -1,12 +1,12 @@
 // --------------------------------------------------------------------------------------------
-#region // Copyright 2024 SIL Global
-// <copyright from='2002' to='2024' company='SIL Global'>
-//		Copyright (c) 2024 SIL Global
-//    
+#region // Copyright (c) 2025 SIL Global
+// <copyright from='2002' to='2025' company='SIL Global'>
+//		Copyright (c) 2025 SIL Global
+//
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
-// </copyright> 
+// </copyright>
 #endregion
-// 
+//
 // File: MultilingScrBooksTest.cs
 // --------------------------------------------------------------------------------------------
 using System;
@@ -50,7 +50,7 @@ namespace SIL.Scripture.Tests
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Test the <see cref="MultilingScrBooks.GetBookAbbrev"/> method. Test with 
+		/// Test the <see cref="MultilingScrBooks.GetBookAbbrev"/> method. Test with
 		/// non-existing encoding.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ namespace SIL.Scripture.Tests
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
@@ -79,7 +79,7 @@ namespace SIL.Scripture.Tests
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[TestCase("jud", ExpectedResult = 65001001)]
@@ -193,7 +193,7 @@ namespace SIL.Scripture.Tests
 		[TestCase("LUK 5३15", ExpectedResult = 42001001)]
 		// ३,५ are Devanagari digits 3,4, which are not supported as chapter/verse identifiers
 		[TestCase("LUK ३:५", ExpectedResult = 42001001)]
-		
+
 		[TestCase("Luk 5,15", ExpectedResult = 42005015)]
 		[TestCase("luk 5.15", ExpectedResult = 42005015)]
 		[TestCase("LUK5:15", ExpectedResult = 42005015)]

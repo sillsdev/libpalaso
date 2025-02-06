@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2024, SIL Global
+// Copyright (c) 2013-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Globalization;
@@ -17,13 +17,13 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 	{
 		internal static LayoutName GetLayoutNameEx(IntPtr handle)
 		{
-			// InputLanguage.LayoutName is not to be trusted, especially where there are mutiple
+			// InputLanguage.LayoutName is not to be trusted, especially where there are multiple
 			// layouts (input methods) associated with a language. This function also provides
 			// the additional benefit that it does not matter whether a user switches from using
 			// InKey in Portable mode to using it in Installed mode (perhaps as the project is
 			// moved from one computer to another), as this function will identify the correct
 			// input language regardless, rather than (unhelpfully ) calling an InKey layout in
-			// portable mode the "US" layout. The layout is identified soley by the high-word of
+			// portable mode the "US" layout. The layout is identified solely by the high-word of
 			// the HKL (a.k.a. InputLanguage.Handle).  (The low word of the HKL identifies the
 			// language.)
 			// This function determines an HKL's LayoutName based on the following order of

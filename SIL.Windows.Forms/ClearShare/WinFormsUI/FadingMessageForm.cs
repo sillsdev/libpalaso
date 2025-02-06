@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Threading;
 using System.Windows.Forms;
+using SIL.Windows.Forms.Extensions;
 using Timer = System.Windows.Forms.Timer;
 
 namespace SIL.Windows.Forms.ClearShare.WinFormsUI
@@ -47,11 +47,8 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		{
 			if (disposing)
 			{
-				if (components != null)
-					components.Dispose();
-
-				if (Timer != null)
-					Timer.Dispose();
+				components?.Dispose();
+				Timer?.Dispose();
 			}
 
 			Timer = null;
@@ -60,15 +57,12 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		protected override bool ShowWithoutActivation
-		{
-			get { return true; }
-		}
+		protected override bool ShowWithoutActivation => true;
 
 		/// ------------------------------------------------------------------------------------
 		public override string Text
 		{
-			get { return base.Text; }
+			get => base.Text;
 			set
 			{
 				base.Text = value;
@@ -232,53 +226,50 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 	/// ----------------------------------------------------------------------------------------
 	public class FadingMessageWindow
 	{
-		protected Thread MsgThread { get; set; }
+		private FadingMessageForm m_msgForm;
+		private readonly object m_syncLock = new object();
 
-		protected FadingMessageForm MsgForm { get; set; }
-
-		protected string Text { get; set; }
-
-		protected Point MsgPoint { get; set; }
-
-	    /// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Shows a fading message with the specified text at the specified screen location.
+		/// </summary>
+		/// <remarks>Caller is responsible for ensuring this is called on the UI thread.</remarks>
 		public void Show(string text, Point pt)
 		{
-			if (MsgThread != null)
-				return;
-
-			Text = text;
-			MsgPoint = pt;
-
-			// For some reason we have to specify a stack size, otherwise we get a stack overflow.
-			// The default stack size of 1MB works on WinXP. Needs to be 2MB on Win2K.
-			// Don't know what value it's using if we don't specify it.
-			MsgThread = new Thread(ShowForm, 0x200000);
-			MsgThread.CurrentUICulture = Thread.CurrentThread.CurrentUICulture;
-			MsgThread.IsBackground = true;
-			MsgThread.SetApartmentState(ApartmentState.STA);
-			MsgThread.Name = "FadingWindow";
-			MsgThread.Start();
+			lock (m_syncLock)
+			{
+				Close();
+				m_msgForm = new FadingMessageForm(pt)
+				{
+					Text = text
+				};
+				m_msgForm.FormClosed += (s, e) =>
+				{
+					lock (m_syncLock)
+					{
+						m_msgForm.Dispose();
+						m_msgForm = null; // Clear the reference when the form is closed
+					}
+				};
+				m_msgForm.Show();
+			}
 		}
 
-		/// ------------------------------------------------------------------------------------
-		protected virtual void ShowForm()
-		{
-			MsgForm = new FadingMessageForm(MsgPoint);
-			MsgForm.Text = Text;
-			MsgForm.ShowDialog();
-			MsgThread = null;
-			MsgForm = null;
-		}
-
-		/// ------------------------------------------------------------------------------------
 		public void Close()
 		{
-			if (MsgForm != null)
+			lock (m_syncLock)
 			{
-				lock (MsgForm)
-				{
-					MsgForm.Invoke(new MethodInvoker(MsgForm.Close));
-				}
+				if (m_msgForm == null || m_msgForm.IsDisposed)
+					return;
+
+				// Close the form on the UI thread
+				m_msgForm.SafeInvoke(() =>
+					{
+						// Technically, since this is being invoked synchronously, we don't need to
+						// re-obtain the lock here, but it makes the IDE (or Resharper) happy.
+						lock (m_syncLock)
+							m_msgForm?.Close();
+					}, "closing fading message",
+					ControlExtensions.ErrorHandlingAction.IgnoreIfDisposed, true);
 			}
 		}
 	}

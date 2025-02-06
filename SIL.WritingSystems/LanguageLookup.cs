@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2024, SIL Global
+// Copyright (c) 2016-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -45,7 +45,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public LanguageLookup(bool ensureDefaultTags = false)
 		{
-			Sldr.InitializeLanguageTags(); // initialise SLDR language tags for implicit script codes
+			Sldr.InitializeLanguageTags(); // initialize SLDR language tags for implicit script codes
 
 			string langTagsContent = LanguageRegistryResources.langTags;
 			// The cached file is renamed if it's invalid during Sldr.InitializeLanguageTags().

@@ -1,4 +1,4 @@
-// Copyright (c) 2024, SIL Global
+// Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -147,9 +147,9 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			}
 			catch(Exception e)
 			{
-				MessageBox.Show("Unable to load geckofx dependancy. Files may not have been included in the build.",
+				MessageBox.Show("Unable to load geckofx dependency. Files may not have been included in the build.",
 					"Failed to load geckofx", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				throw new ApplicationException("Unable to load geckofx dependancy", e);
+				throw new ApplicationException("Unable to load geckofx dependency", e);
 			}
 		}
 

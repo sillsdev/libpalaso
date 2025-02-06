@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2024 SIL Global
+// Copyright (c) 2018-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -907,8 +907,8 @@ namespace SIL.Windows.Forms.ClearShare
 
 		/// <summary>
 		/// A super compact form of credits that doesn't introduce any English.
-		/// Jane Doe, © 2008 SIL Global. CC BY-NC 3.0
-		/// International Illustrations: Art Of Reading, © 2009 SIL Global. CC ND 4.0
+		/// Jane Doe, © 2025 SIL Global. CC BY-NC 3.0
+		/// International Illustrations: Art Of Reading, © 2025 SIL Global. CC ND 4.0
 		/// Sam Smith, Free Pictures by Sam. CC0 1.0
 		/// CC0 1.0
 		/// </summary>

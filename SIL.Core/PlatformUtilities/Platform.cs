@@ -1,4 +1,4 @@
-// Copyright (c) 2024 SIL Global
+// Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 // Parts based on code by MJ Hutchinson http://mjhutchinson.com/journal/2010/01/25/integrating_gtk_application_mac
 // Parts based on code by bugsnag-dotnet (https://github.com/bugsnag/bugsnag-dotnet/blob/v1.4/src/Bugsnag/Diagnostics.cs)
