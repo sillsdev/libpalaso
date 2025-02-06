@@ -142,7 +142,7 @@ namespace SIL.WritingSystems
 			Debug.WriteLine($"LanguageLookup.EnsureDefaultTags() changed {countChanged} language tags");
 		}
 
-		private bool AddLanguage(string code, string threelettercode, string full = null,
+		private bool AddLanguage(string code, string threeLetterCode, string full = null,
 			string name = null, string localName = null, string region = null, List<string> names = null, List<string> regions = null, List<string> tags = null, List<string> ianaNames = null, string regionName = null)
 		{
 			string primaryCountry;
@@ -168,7 +168,7 @@ namespace SIL.WritingSystems
 			LanguageInfo language = new LanguageInfo
 			{
 				LanguageTag = code,
-				ThreeLetterTag = threelettercode,
+				ThreeLetterTag = threeLetterCode,
 				// DesiredName defaults to Names[0], which is set below.
 				PrimaryCountry = primaryCountry
 			};
@@ -226,9 +226,9 @@ namespace SIL.WritingSystems
 				_codeToLanguageIndex[full] = language; // add the full expanded tag
 			}
 
-			if (threelettercode != null && !string.Equals(code, threelettercode))
+			if (threeLetterCode != null && !string.Equals(code, threeLetterCode))
 			{
-				_codeToLanguageIndex[threelettercode] = language;
+				_codeToLanguageIndex[threeLetterCode] = language;
 			}
 
 			if (tags != null)

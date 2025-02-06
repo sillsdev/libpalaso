@@ -667,7 +667,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 		[Test]
         [Ignore("Not sure that it's really desirable to have the selected book and chapter be" +
         " retained if the user cancels or clicks away. Anyway, it doesn't actually behave that way now.")]
-        public void VerifyreferenceIsRetainedWhenDropdownCloses()
+        public void VerifyReferenceIsRetainedWhenDropdownCloses()
         {
             // Set control to really invalid reference.
             m_scp.Reference = "DAVID 100:100";

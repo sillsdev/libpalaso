@@ -37,7 +37,7 @@ namespace SIL.Reporting
 				{
 					Console.WriteLine(error.ToString());
 				}
-				Console.WriteLine(policy.ReoccurenceMessage);
+				Console.WriteLine(policy.ReoccurrenceMessage);
 				return;
 			}
 
@@ -88,7 +88,7 @@ namespace SIL.Reporting
 			var textToReport = GetErrorStamp(severity);
 
 			Exception innerMostException = null;
-			textToReport += ErrorReport.GetHiearchicalExceptionInfo(error, ref innerMostException);
+			textToReport += ErrorReport.GetHierarchicalExceptionInfo(error, ref innerMostException);
 
 			//if the exception had inner exceptions, show the inner-most exception first, since that is usually the one
 			//we want the developer to read.
@@ -117,7 +117,7 @@ namespace SIL.Reporting
 			}
 			catch (Exception err)
 			{
-				//We have more than one report of dieing while logging an exception.
+				//We have more than one report of dying while logging an exception.
 				textToReport += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
 				textToReport += "Was trying to log the exception: " + error.Message + Environment.NewLine;
 				textToReport += "Recent events:" + Environment.NewLine;
@@ -180,7 +180,7 @@ namespace SIL.Reporting
 			}
 			catch (Exception err)
 			{
-				//We have more than one report of dieing while logging an exception.
+				//We have more than one report of dying while logging an exception.
 				textToReport += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
 			}
 			Console.WriteLine(textToReport);

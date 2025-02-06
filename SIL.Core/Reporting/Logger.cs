@@ -71,7 +71,7 @@ namespace SIL.Reporting
 	/// ----------------------------------------------------------------------------------------
 	/// <summary>
 	/// Logs stuff to a file created in
-	/// c:\Documents and Settings\Username\Local Settings\Temp\Companyname\ProductName\Log.txt
+	/// c:\Documents and Settings\Username\Local Settings\Temp\CompanyName\ProductName\Log.txt
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
 	public class Logger: IDisposable, ILogger
@@ -442,7 +442,7 @@ namespace SIL.Reporting
 			var bldr = new StringBuilder(msg);
 			if (bldr.Length > 0)
 				bldr.AppendLine();
-			bldr.Append(ExceptionHelper.GetHiearchicalExceptionInfo(e, ref dummy));
+			bldr.Append(ExceptionHelper.GetHierarchicalExceptionInfo(e, ref dummy));
 			Debug.WriteLine(bldr.ToString());
 
 			if (Singleton != null)

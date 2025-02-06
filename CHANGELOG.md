@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.TestUtilities] Made FluentAssertXml classes use "Assert.That" so they can work in clients that use NUnit 4.
 - [SIL.Windows.Forms] Removed protected members from FadingMessageWindow: MsgThread, MsgForm, Text, MsgPoint, and ShowForm. (The underlying implementation needed to be changed, and the existing implementation was such that these members would be unlikely to have been meaningful or helpful in a derived class anyway.)
 - [SIL.Windows.Forms] Added the stated requirement that FadingMessageWindow.Show be called on the UI thread.
-- 
+-
 ### Fixed
 - [SIL.Windows.Forms] Changed build date in SILAboutBox to be computed using the last write time instead of creation time.
 - [SIL.Windows.Forms] Made FadingMessageWindow implement all UI logic on the main UI thread in a thread-safe way. Fixes crashes like SP-2340.
@@ -34,7 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Added public enum Widgets.SilLogoVariant
 - [SIL.Windows.Forms] Added to Widgets.SilResources: AllLogoVariants, GetLogo, and SilLogoRandom (to replace SilLogo101x113)
 - [SIL.Core] Added macOS support for `GlobalMutex`
-- [SIL.Archiving] Added ArchivingDlgViewModel.Standard and ArchivingDlgViewModel.StringId emumerations.
+- [SIL.Archiving] Added ArchivingDlgViewModel.Standard and ArchivingDlgViewModel.StringId enumerations.
 - [SIL.Archiving] Added public delegate ArchivingDlgViewModel.ExceptionHandler and event ArchivingDlgViewModel.OnExceptionDuringLaunch.
 - [SIL.Archiving] Added IArchivingProgressDisplay interface.
 - [SIL.Archiving] Added overload of ArchivingDlgViewModel.DisplayMessage to take format parameters.
@@ -262,7 +262,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Changed REAP access protocol label from "Insite users" to "REAP users"
 - [SIL.Archiving] Fixed typo in name of ArchiveAccessProtocol.GetDocumentationUri methods
 - [SIL.Archiving] Changed ArchiveAccessProtocol.GetDocumentationUri methods
-- [SIL.Archiving] Changed ArchiveAccessProtocol.SetChoicesFromCsv to thow ArgumentNullException instead of NullReferenceException. Also made it discard duplicate choices if the list contains duplicates.
+- [SIL.Archiving] Changed ArchiveAccessProtocol.SetChoicesFromCsv to throw ArgumentNullException instead of NullReferenceException. Also made it discard duplicate choices if the list contains duplicates.
 - [SIL.Core] `FileLocationUtilities.GetDirectoryDistributedWithApplication` checks not only in
   `DistFiles`, `common`, and `src` subdirectories, but also directly in the application or solution directory.
 - [SIL.Core] Store URLs in Sets instead of Lists in `IKeyboardDefinition` (to prevent duplicates)
