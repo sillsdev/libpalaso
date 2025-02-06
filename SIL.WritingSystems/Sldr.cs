@@ -441,7 +441,7 @@ namespace SIL.WritingSystems
 
 		public static void InitializeLanguageTags(bool downloadLangTags = true)
 		{
-			LoadLanguageTagsIfNecessary();
+			LoadLanguageTagsIfNecessary(downloadLangTags);
 		}
 
 		/// <summary>
@@ -455,8 +455,8 @@ namespace SIL.WritingSystems
 			if (downloadLangTags)
 				DownloadLangTags();
 
-			var cachedAllTagsPath = Path.Combine(SldrCachePath, "langtags.json");
-			_languageTags = new ReadOnlyKeyedCollection<string, SldrLanguageTagInfo>(ParseAllTagsJson(cachedAllTagsPath));
+			_languageTags = new ReadOnlyKeyedCollection<string, SldrLanguageTagInfo>(
+				ParseAllTagsJson(Path.Combine(SldrCachePath, "langtags.json")));
 		}
 
 		public static void DownloadLangTags()
@@ -468,28 +468,35 @@ namespace SIL.WritingSystems
 				try
 				{
 					if (_offlineMode)
-						throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
+						throw new WebException(
+							"Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
 
 					var cachedAllTagsPath = Path.Combine(SldrCachePath, "langtags.json");
 					var cachedETagPath = Path.Combine(SldrCachePath, "langtags.json.etag");
-					var cachedETag = File.Exists(cachedETagPath) ? File.ReadAllText(cachedETagPath) : "";
+					var cachedETag =
+						File.Exists(cachedETagPath) ? File.ReadAllText(cachedETagPath) : "";
 
 					// get SLDR langtags.json from the SLDR api compressed
-					// it will throw WebException or have status other than HttpStatusCode.OK if file is unchanged or not get it
-					var langtagsUrl = $"{SldrRepository}index.html?query=langtags&ext=json{StagingParameter}";
-					var webRequest = (HttpWebRequest)WebRequest.Create(Uri.EscapeUriString(langtagsUrl));
+					// if request fails or file is unchanged
+					// it will throw WebException or have status other than HttpStatusCode.OK
+					var langtagsUrl =
+						$"{SldrRepository}index.html?query=langtags&ext=json{StagingParameter}";
+					var webRequest =
+						(HttpWebRequest)WebRequest.Create(Uri.EscapeUriString(langtagsUrl));
 					webRequest.UserAgent = UserAgent;
 					// Only use an ETag header if it's nonempty and we already have cached tags
 					if (!string.IsNullOrEmpty(cachedETag) && File.Exists(cachedAllTagsPath))
 						webRequest.Headers.Set("If-None-Match", cachedETag);
 					webRequest.Timeout = 10000;
-					webRequest.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+					webRequest.AutomaticDecompression =
+						DecompressionMethods.GZip | DecompressionMethods.Deflate;
 					using var webResponse = (HttpWebResponse)webRequest.GetResponse();
 					if (webResponse.StatusCode != HttpStatusCode.OK)
 						return;
 
 					var eTag = webResponse.Headers.Get("ETag");
-					if (string.IsNullOrEmpty(cachedETag) || !cachedETag.Equals(eTag) || !File.Exists(cachedAllTagsPath))
+					if (string.IsNullOrEmpty(cachedETag) || !cachedETag.Equals(eTag)
+						|| !File.Exists(cachedAllTagsPath))
 					{
 						if (!string.IsNullOrEmpty(eTag))
 							File.WriteAllText(cachedETagPath, eTag);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using NUnit.Framework;
 using SIL.TestUtilities;
@@ -455,7 +456,8 @@ namespace SIL.WritingSystems.Tests
 				var langTagsPath = Path.Combine(Sldr.SldrCachePath, "langtags.json");
 				File.WriteAllText(langTagsPath, "[ { \"full\": \"en-Latn-GB\", \"iso639_3\": \"eng\", \"name\": \"English\", \"region\": \"GB\", \"sldr\": true, \"tag\": \"en-GB\" } ]");
 				Assert.That(File.Exists(langTagsPath), Is.True);
-				Assert.That(Sldr.LanguageTags.Count, Is.GreaterThan(1));
+				Assert.That(Sldr.LanguageTags.Count, Is.EqualTo(1));
+				Assert.That(Sldr.LanguageTags.First().LanguageTag, Is.EqualTo("en-GB"));
 			}
 		}
 
@@ -596,7 +598,8 @@ namespace SIL.WritingSystems.Tests
 			Sldr.DownloadLangTags();
 
 			// Verify
-			Assert.That(new FileInfo(langtagsFile).LastWriteTime, Is.GreaterThan(langtagsFileDate));
+			Assert.That(new FileInfo(langtagsFile).LastWriteTime,
+				Is.GreaterThan(langtagsFileDate));
 			Assert.That(new FileInfo(eTagFile).LastWriteTime, Is.GreaterThan(eTagFileDate));
 		}
 	}
