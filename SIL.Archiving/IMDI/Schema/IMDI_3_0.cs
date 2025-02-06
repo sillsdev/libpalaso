@@ -1348,7 +1348,7 @@ namespace SIL.Archiving.IMDI.Schema
 
 			// Role
 			if (!string.IsNullOrEmpty(actor.Role))
-				Role = actor.Role.ToVocabularyType(false, Link(ActorRole)); ;
+				Role = actor.Role.ToVocabularyType(false, Link(ActorRole));
 
 			// Occupation
 			if (!string.IsNullOrEmpty(actor.Occupation))

@@ -417,7 +417,7 @@ namespace SIL.Windows.Forms.Widgets
 			//
 			// get color of background
 			//
-			System.Drawing.Color color = this.BackColor;;
+			System.Drawing.Color color = this.BackColor;
 			if(State == BtnState.Inactive)
 				color = System.Drawing.Color.LightGray;
 			//
