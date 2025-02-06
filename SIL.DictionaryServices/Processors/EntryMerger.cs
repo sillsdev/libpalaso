@@ -76,7 +76,7 @@ namespace SIL.DictionaryServices.Processors
 						MultiText newText = source.GetOrCreateProperty<MultiText>(propertyName);
 						var newGuy = new KeyValuePair<string, object>(propertyName, newText);
 						//source.Properties.Remove(prop);//detach else it gets deleted
-						target.Properties.Add(newGuy); ;
+						target.Properties.Add(newGuy);
 					}
 				}
 				*/

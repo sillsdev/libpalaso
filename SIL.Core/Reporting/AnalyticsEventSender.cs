@@ -264,7 +264,7 @@ namespace SIL.Reporting
 
 				string utmcc = Uri.EscapeDataString(String.Format("__utma={0};+__utmz={1};", utma, utmz));
 
-				return (utmcc); ;
+				return utmcc;
 			}
 		}
 
