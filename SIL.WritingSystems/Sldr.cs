@@ -471,8 +471,7 @@ namespace SIL.WritingSystems
 				CreateSldrCacheDirectory();
 
 				cachedAllTagsPath = Path.Combine(SldrCachePath, "langtags.json");
-				string etagPath;
-				etagPath = Path.Combine(SldrCachePath, "langtags.json.etag");
+				var etagPath = Path.Combine(SldrCachePath, "langtags.json.etag");
 				var sinceTime = _embeddedAllTagsTime.ToUniversalTime();
 				if (File.Exists(cachedAllTagsPath))
 				{
@@ -499,11 +498,9 @@ namespace SIL.WritingSystems
 			if (_offlineMode)
 					throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
 
-			string cachedAllTagsPath;
-			cachedAllTagsPath = Path.Combine(SldrCachePath, "langtags.json");
-			string etagPath;
-			etagPath = Path.Combine(SldrCachePath, "langtags.json.etag");
-			string etag;
+			var cachedAllTagsPath = Path.Combine(SldrCachePath, "langtags.json");
+			var etagPath = Path.Combine(SldrCachePath, "langtags.json.etag");
+			var etag = ""; // TODO: determine if empty string is an okay default value
 			string currentEtag;
 			try
 			{
@@ -517,8 +514,8 @@ namespace SIL.WritingSystems
 				webRequest.Timeout = 10000;
 				webRequest.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
 				using var webResponse = (HttpWebResponse)webRequest.GetResponse();
-				if (webResponse.StatusCode != "OK")
-				{ 
+				if (webResponse.StatusCode != HttpStatusCode.OK)
+				{
 					return;
 				}
 
