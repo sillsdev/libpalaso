@@ -81,7 +81,7 @@ namespace SIL.WritingSystems
 		private const string UserAgent = "SIL.WritingSystems Library";
 
 		// Mode to test when the SLDR is unavailable.  Default to false
-		private static bool _offlineMode;
+		private static bool _offlineTestMode;
 
 		// If the user wants to request a new UID, you use "uid=unknown" and that will create a new random identifier
 		public const string DefaultUserId = "unknown";
@@ -114,22 +114,22 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Initializes the SLDR. This should be called before calling other methods or properties.
 		/// </summary>
-		public static void Initialize(bool offlineMode = false)
+		public static void Initialize(bool offlineTestMode = false)
 		{
-			Initialize(offlineMode, DefaultSldrCachePath);
+			Initialize(offlineTestMode, DefaultSldrCachePath);
 		}
 
 		/// <summary>
 		/// This method is used for testing purposes.
 		/// </summary>
-		internal static void Initialize(bool offlineMode, string sldrCachePath)
+		internal static void Initialize(bool offlineTestMode, string sldrCachePath)
 		{
 			if (IsInitialized)
 				throw new InvalidOperationException("The SLDR has already been initialized.");
 
 			_sldrCacheMutex = new GlobalMutex("SldrCache");
 			_sldrCacheMutex.Initialize();
-			_offlineMode = offlineMode;
+			_offlineTestMode = offlineTestMode;
 			SldrCachePath = sldrCachePath;
 
 			InitializeGetUnicodeCategoryBasedOnIcu();
@@ -289,7 +289,7 @@ namespace SIL.WritingSystems
 
 					try
 					{
-						if (_offlineMode)
+						if (_offlineTestMode)
 							throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
 
 						// Check the response header to see if the requested LDML file got redirected
@@ -466,16 +466,15 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public static void DownloadLanguageTags()
 		{
+			if (_offlineTestMode)
+				return;
+
 			using (_sldrCacheMutex.Lock())
 			{
 				CreateSldrCacheDirectory();
 
 				try
 				{
-					if (_offlineMode)
-						throw new WebException(
-							"Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
-
 					var cachedAllTagsPath = Path.Combine(SldrCachePath, "langtags.json");
 					var cachedETagPath = Path.Combine(SldrCachePath, "langtags.json.etag");
 					var cachedETag =
