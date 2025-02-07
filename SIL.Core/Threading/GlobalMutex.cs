@@ -22,7 +22,7 @@ namespace SIL.Threading
 	/// Note that in .NET 8.0 and later (and perhaps starting sooner than version 8), a named mutex can be used across
 	/// processes in Linux and macOS. However, software using the previous method of locking would not recognize the
 	/// new method of locking, so Linux continues to use the old, file-based approach internally.
-	/// 
+	///
 	/// To complicate things further, applications running in confined security contexts (e.g., Snap, Flatpak, Docker,
 	/// etc.) may not be able to establish a global mutex of any kind due to permission limitations. In those cases,
 	/// the "SIL_CORE_MAKE_GLOBAL_MUTEX_LOCAL_ONLY" environment variable can be set to "true" to use a local-only
@@ -236,6 +236,7 @@ namespace SIL.Threading
 			public void Dispose()
 			{
 				Unlink();
+				if (Monitor.IsEntered(_lock)) Monitor.Exit(_lock);
 			}
 		}
 
