@@ -500,7 +500,6 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		[Explicit]
 		public void DownloadLanguageTags_NoPreviousETagNoFile()
 		{
 			// Setup
@@ -520,7 +519,6 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		[Explicit]
 		public void DownloadLanguageTags_NoPreviousETagExistingFile()
 		{
 			// Setup
@@ -540,7 +538,6 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		[Explicit]
 		public void DownloadLanguageTags_ExistingETagNoFile()
 		{
 			// Setup
@@ -560,7 +557,6 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		[Explicit]
 		public void DownloadLanguageTags_NotModified()
 		{
 			// Setup
@@ -581,7 +577,6 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		[Explicit]
 		public void DownloadLanguageTags_Outdated()
 		{
 			// Setup
