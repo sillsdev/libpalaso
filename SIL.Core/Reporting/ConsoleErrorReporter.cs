@@ -168,10 +168,8 @@ namespace SIL.Reporting
 
 			textToReport += "Message (not an exception): " + message + Environment.NewLine;
 			textToReport += Environment.NewLine;
-			textToReport += "--Stack--" + Environment.NewLine; ;
-			textToReport += stack.ToString() + Environment.NewLine; ;
-
-
+			textToReport += "--Stack--" + Environment.NewLine;
+			textToReport += stack.ToString() + Environment.NewLine;
 			textToReport += ErrorReportingProperties;
 
 			try
