@@ -471,7 +471,10 @@ namespace SIL.WritingSystems.Tests
 			{
 				var langTagsPath = Path.Combine(Sldr.SldrCachePath, "langtags.json");
 				Assert.That(File.Exists(langTagsPath), Is.False);
+
 				Assert.That(Sldr.LanguageTags, Is.Not.Empty);
+				// Make sure the LanguageTags getter doesn't create the file
+				Assert.That(File.Exists(langTagsPath), Is.False);
 			}
 		}
 
