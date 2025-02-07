@@ -118,5 +118,33 @@ namespace SIL.Tests.Threading
 			otherThread.Start();
 			otherThread.Join();
 		}
+
+		//this test might seem contrived, but if it was async, with an await inside the using statement,
+		//then the dispose/release may be executed on a different thread which would cause an exception.
+		//I used threads here to make that explicit
+		//as tasks are not guaranteed to be executed on a different thread
+		[Test]
+		public void TakingTheLockFromOneThreadAndReleasingItFromAnotherThreadShouldNotThrow()
+		{
+			using (var mutex = new GlobalMutex("test"))
+			{
+				var release = mutex.InitializeAndLock();
+				Exception exception = null;
+				var otherThread = new Thread(() =>
+				{
+					try
+					{
+						release.Dispose();
+					}
+					catch (Exception e)
+					{
+						exception = e;
+					}
+				});
+				otherThread.Start();
+				otherThread.Join();
+				Assert.That(exception, Is.Null);
+			}
+		}
 	}
 }
