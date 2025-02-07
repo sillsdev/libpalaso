@@ -502,7 +502,14 @@ namespace SIL.WritingSystems.Tests
 				Throws.ArgumentException);
 		}
 
+		/// <summary>
+		/// This test is only valid when run by itself.
+		/// If other tests are running they can affect the files that this is trying to create.
+		/// </summary>
 		[Test]
+		[Category("SkipOnTeamCity")]
+		[Category("ByHand")]
+		[Explicit]
 		public void DownloadLanguageTags_NoPreviousETagNoFile()
 		{
 			// Setup
@@ -521,7 +528,14 @@ namespace SIL.WritingSystems.Tests
 				Contains.Substring("\"full\": \"aa-Latn-ET\""));
 		}
 
+		/// <summary>
+		/// This test is only valid when run by itself.
+		/// If other tests are running they can affect the files that this is trying to create.
+		/// </summary>
 		[Test]
+		[Category("SkipOnTeamCity")]
+		[Category("ByHand")]
+		[Explicit]
 		public void DownloadLanguageTags_NoPreviousETagExistingFile()
 		{
 			// Setup
@@ -540,7 +554,14 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(File.Exists(eTagFile), Is.True);
 		}
 
+		/// <summary>
+		/// This test is only valid when run by itself.
+		/// If other tests are running they can affect the files that this is trying to create.
+		/// </summary>
 		[Test]
+		[Category("SkipOnTeamCity")]
+		[Category("ByHand")]
+		[Explicit]
 		public void DownloadLanguageTags_ExistingETagNoFile()
 		{
 			// Setup
@@ -559,7 +580,14 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(File.Exists(eTagFile), Is.True);
 		}
 
+		/// <summary>
+		/// This test is only valid when run by itself.
+		/// If other tests are running they can affect the files that this is trying to create.
+		/// </summary>
 		[Test]
+		[Category("SkipOnTeamCity")]
+		[Category("ByHand")]
+		[Explicit]
 		public void DownloadLanguageTags_NotModified()
 		{
 			// Setup
@@ -579,7 +607,14 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(new FileInfo(eTagFile).LastWriteTime, Is.EqualTo(eTagFileDate));
 		}
 
+		/// <summary>
+		/// This test is only valid when run by itself.
+		/// If other tests are running they can affect the files that this is trying to create.
+		/// </summary>
 		[Test]
+		[Category("SkipOnTeamCity")]
+		[Category("ByHand")]
+		[Explicit]
 		public void DownloadLanguageTags_Outdated()
 		{
 			// Setup
