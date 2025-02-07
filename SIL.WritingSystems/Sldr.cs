@@ -78,7 +78,7 @@ namespace SIL.WritingSystems
 		// Default parameters for querying the SLDR
 		private const string LdmlExtension = "ldml";
 
-		private const string UserAgent = "SIL.WritingSystems Library";
+		internal static readonly string UserAgent = "SIL.WritingSystems Library/" + typeof(Sldr).Assembly.GetName().Version;
 
 		// Mode to test when the SLDR is unavailable.  Default to false
 		private static bool _offlineMode;

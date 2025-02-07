@@ -77,6 +77,13 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public static void CheckUserAgent()
+		{
+			Assert.That(Sldr.UserAgent, Does.Contain("SIL.WritingSystems Library")
+				.And.Contains(typeof(Sldr).Assembly.GetName().Version.ToString()));
+		}
+
+		[Test]
 		public void GetLdmlFile_EmptyPath_Throws()
 		{
 			var path = string.Empty;
