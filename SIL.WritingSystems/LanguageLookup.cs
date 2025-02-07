@@ -266,8 +266,6 @@ namespace SIL.WritingSystems
 			{
 				country = "Invalid region " + region;
 			}
-
-
 			return country;
 		}
 

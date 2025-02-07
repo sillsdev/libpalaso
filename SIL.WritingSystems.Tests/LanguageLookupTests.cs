@@ -452,7 +452,10 @@ namespace SIL.WritingSystems.Tests
 					name = "Albanian",
 					names = new List<string>()
 					{
-						"Albanian, Tosk", "Arnaut", "Arvanitika", "Camerija",
+						"Albanian, Tosk",
+						"Arnaut",
+						"Arvanitika",
+						"Camerija",
 						"Shkip",
 						"Shqip",
 						"Skchip",
@@ -464,7 +467,10 @@ namespace SIL.WritingSystems.Tests
 					regionName = "Albania",
 					regions = new List<string>()
 					{
-						"AT", "AU", "BE", "DE",
+						"AT",
+						"AU",
+						"BE",
+						"DE",
 						"GR",
 						"HR",
 						"IT",
@@ -483,7 +489,7 @@ namespace SIL.WritingSystems.Tests
 				}
 			};
 
-			new LanguageLookup(entries, false);
+			Assert.DoesNotThrow(() => new LanguageLookup(entries, false));
 		}
 
 		[Test]
