@@ -544,7 +544,7 @@ namespace SIL.DictionaryServices.Model
 		/// this is safer
 		/// </summary>
 		/// <param name="writingSystemId"></param>
-		/// <returns>string.emtpy if no headword</returns>
+		/// <returns>string.empty if no headword</returns>
 		public string GetHeadWordForm(string writingSystemId)
 		{
 			LanguageForm form = GetHeadWord(writingSystemId);

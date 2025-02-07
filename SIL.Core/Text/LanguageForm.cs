@@ -210,7 +210,7 @@ namespace SIL.Text
 				return;		// we've already deleted all the characters in the span.
 			if (location > span.Index + span.Length || length == 0)
 				return;		// the change doesn't affect the span.
-			// Adding characters to the end of the span is probably desireable if they differ.
+			// Adding characters to the end of the span is probably desirable if they differ.
 			if (length > 0)
 			{
 				// Inserting characters is fairly easy to deal with.

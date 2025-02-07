@@ -37,7 +37,7 @@ namespace SIL.Reporting
 			_googleCookie = googleCookie;
 
 
-			//I don't acutally know how this is used by google... we don't have a way of giving a sequence order across
+			//I don't actually know how this is used by Google... we don't have a way of giving a sequence order across
 			//all users... for now we only make sure they are sequential during a given run, starting from a random number.
 			_sequence = new Random().Next(1000000000);
 		}
@@ -152,7 +152,7 @@ namespace SIL.Reporting
 						_rememberGoogleCookie(cookieCollection[0]);
 						Debug.Assert(cookieCollection.Count==1, "(Debug mode only Did not expect multiple cookies from google analytics.");
 					}
-					Debug.WriteLine("Succesful SendUrlRequestAsync");// ah well
+					Debug.WriteLine("Successful SendUrlRequestAsync");// ah well
 				}
 				catch (WebException e)
 				{

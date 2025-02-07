@@ -189,7 +189,7 @@ namespace SIL.UsbDrive.Linux
 		bool JobInProgress { get; }
 		string DevicePresentationIconName { get; }
 		string DevicePresentationName { get; }
-		bool DevicePresentationNopolicy { get; }
+		bool DevicePresentationNoPolicy { get; }
 		bool DevicePresentationHide { get; }
 		UInt64 DeviceBlockSize { get; }
 		UInt64 DeviceSize { get; }
@@ -482,7 +482,7 @@ namespace SIL.UsbDrive.Linux
 	<property name="JobInProgress" type="b" access="read"/>
 	<property name="DevicePresentationIconName" type="s" access="read"/>
 	<property name="DevicePresentationName" type="s" access="read"/>
-	<property name="DevicePresentationNopolicy" type="b" access="read"/>
+	<property name="DevicePresentationNoPolicy" type="b" access="read"/>
 	<property name="DevicePresentationHide" type="b" access="read"/>
 	<property name="DeviceBlockSize" type="t" access="read"/>
 	<property name="DeviceSize" type="t" access="read"/>

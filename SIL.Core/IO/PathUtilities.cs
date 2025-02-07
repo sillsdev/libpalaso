@@ -97,7 +97,7 @@ namespace SIL.IO
 			FOF_SIMPLEPROGRESS = 0x0100,
 
 			/// <summary>
-			/// Surpress errors, if any occur during the process.
+			/// Suppress errors, if any occur during the process.
 			/// </summary>
 			FOF_NOERRORUI = 0x0400,
 

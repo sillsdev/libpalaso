@@ -100,7 +100,7 @@ namespace SIL.Xml
 		///<summary>
 		/// Return the second level elements that are in the input file.
 		///</summary>
-		///<param name="recordMarker">The element name of elements that are children of the main root elment.</param>
+		///<param name="recordMarker">The element name of elements that are children of the main root element.</param>
 		///<returns>A collection of byte arrays of the records.</returns>
 		/// <remarks>
 		/// <para>
@@ -135,7 +135,7 @@ namespace SIL.Xml
 		///<summary>
 		/// Return the second level elements that are in the input file.
 		///</summary>
-		///<param name="recordMarker">The element name of elements that are children of the main root elment.</param>
+		///<param name="recordMarker">The element name of elements that are children of the main root element.</param>
 		///<returns>A collection of strings of the records.</returns>
 		/// <remarks>
 		/// <para>

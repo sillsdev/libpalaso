@@ -25,7 +25,7 @@ namespace SIL.Archiving.Generic
 		/// <summary>Content Type for this project</summary>
 		string ContentType { get; set; }
 
-		/// <summary>Applicationse for this project</summary>
+		/// <summary>Applications for this project</summary>
 		string Applications { get; set; }
 
 		/// <summary></summary>
