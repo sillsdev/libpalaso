@@ -42,7 +42,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 	}
 
 	[TestFixture]
-	public class LiftRepositoryStateUnitializedTests: IRepositoryStateUnitializedTests<LexEntry>
+	public class LiftRepositoryStateUninitializedTests: IRepositoryStateUninitializedTests<LexEntry>
 	{
 		private string _persistedFilePath;
 		private TempFile _tempFile;
@@ -52,7 +52,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		{
 			_tempFile = new TempFile();
 			_persistedFilePath = _tempFile.Path;
-			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
+			DataMapperUnderTest = LiftRepositoryStateUninitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
 		[TearDown]
@@ -82,7 +82,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		public void Constructor_FileDoesNotExist_EmptyLiftFileIsCreated()
 		{
 			string nonExistentFileToBeCreated = Path.GetTempPath() + Path.GetRandomFileName();
-			using (LiftRepositoryStateUnitializedTests.CreateDataMapper(nonExistentFileToBeCreated))
+			using (LiftRepositoryStateUninitializedTests.CreateDataMapper(nonExistentFileToBeCreated))
 			{
 			}
 			XmlDocument dom = new XmlDocument();
@@ -97,7 +97,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		public void Constructor_FileIsEmpty_MakeFileAnEmptyLiftFile()
 		{
 			string emptyFileToBeFilled = Path.GetTempFileName();
-			using (LiftRepositoryStateUnitializedTests.CreateDataMapper(emptyFileToBeFilled))
+			using (LiftRepositoryStateUninitializedTests.CreateDataMapper(emptyFileToBeFilled))
 			{
 			}
 			XmlDocument doc = new XmlDocument();
@@ -141,7 +141,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 			_tempFile = new TempFile();
 			_persistedFilePath = _tempFile.Path;
 			LiftFileInitializer.MakeFile(_persistedFilePath);
-			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
+			DataMapperUnderTest = LiftRepositoryStateUninitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
 		[TearDown]
@@ -159,7 +159,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		protected override void CreateNewRepositoryFromPersistedData()
 		{
 			DataMapperUnderTest.Dispose();
-			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
+			DataMapperUnderTest = LiftRepositoryStateUninitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
 	}
@@ -181,7 +181,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		{
 			_tempFile = new TempFile();
 			_persistedFilePath = _tempFile.Path;
-			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
+			DataMapperUnderTest = LiftRepositoryStateUninitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
 		[TearDown]
@@ -194,7 +194,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		protected override void CreateNewRepositoryFromPersistedData()
 		{
 			DataMapperUnderTest.Dispose();
-			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
+			DataMapperUnderTest = LiftRepositoryStateUninitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
 	}
@@ -211,7 +211,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		{
 			_tempFile = new TempFile();
 			_persistedFilePath = _tempFile.Path;
-			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
+			DataMapperUnderTest = LiftRepositoryStateUninitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
 		[TearDown]
@@ -224,7 +224,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		protected override void CreateNewRepositoryFromPersistedData()
 		{
 			DataMapperUnderTest.Dispose();
-			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
+			DataMapperUnderTest = LiftRepositoryStateUninitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
 	}
@@ -240,7 +240,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		{
 			_tempFile = new TempFile();
 			_persistedFilePath = _tempFile.Path;
-			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
+			DataMapperUnderTest = LiftRepositoryStateUninitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
 		[TearDown]
@@ -253,7 +253,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		protected override void CreateNewRepositoryFromPersistedData()
 		{
 			DataMapperUnderTest.Dispose();
-			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
+			DataMapperUnderTest = LiftRepositoryStateUninitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
 
@@ -271,7 +271,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		{
 			_tempFile = new TempFile();
 			_persistedFilePath = _tempFile.Path;
-			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
+			DataMapperUnderTest = LiftRepositoryStateUninitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
 		[TearDown]
@@ -284,7 +284,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		protected override void RepopulateRepositoryFromPersistedData()
 		{
 			DataMapperUnderTest.Dispose();
-			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
+			DataMapperUnderTest = LiftRepositoryStateUninitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
 
@@ -316,7 +316,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		{
 			Assert.IsTrue(_fileStream.CanWrite);
 			Assert.Throws<IOException>(() =>
-				LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath));
+				LiftRepositoryStateUninitializedTests.CreateDataMapper(_persistedFilePath));
 		}
 	}
 }

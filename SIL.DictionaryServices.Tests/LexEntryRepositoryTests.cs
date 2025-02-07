@@ -42,19 +42,19 @@ namespace SIL.DictionaryServices.Tests
 			public void CreateThreeDifferentLexEntries(GetMultiTextFromLexEntryDelegate getMultiTextFromLexEntryDelegate)
 			{
 				LexEntry[] lexEntriesToSort = new LexEntry[3];
-				MultiText[] propertyOfLexentry = new MultiText[3];
+				MultiText[] propertyOfLexEntry = new MultiText[3];
 
 				lexEntriesToSort[0] = _repository.CreateItem();
-				propertyOfLexentry[0] = getMultiTextFromLexEntryDelegate(lexEntriesToSort[0]);
-				propertyOfLexentry[0].SetAlternative("de", "de Word2");
+				propertyOfLexEntry[0] = getMultiTextFromLexEntryDelegate(lexEntriesToSort[0]);
+				propertyOfLexEntry[0].SetAlternative("de", "de Word2");
 
 				lexEntriesToSort[1] = _repository.CreateItem();
-				propertyOfLexentry[1] = getMultiTextFromLexEntryDelegate(lexEntriesToSort[1]);
-				propertyOfLexentry[1].SetAlternative("de", "de Word3");
+				propertyOfLexEntry[1] = getMultiTextFromLexEntryDelegate(lexEntriesToSort[1]);
+				propertyOfLexEntry[1].SetAlternative("de", "de Word3");
 
 				lexEntriesToSort[2] = _repository.CreateItem();
-				propertyOfLexentry[2] = getMultiTextFromLexEntryDelegate(lexEntriesToSort[2]);
-				propertyOfLexentry[2].SetAlternative("de", "de Word1");
+				propertyOfLexEntry[2] = getMultiTextFromLexEntryDelegate(lexEntriesToSort[2]);
+				propertyOfLexEntry[2].SetAlternative("de", "de Word1");
 
 				_repository.SaveItem(lexEntriesToSort[0]);
 				_repository.SaveItem(lexEntriesToSort[1]);
@@ -204,13 +204,13 @@ namespace SIL.DictionaryServices.Tests
 		}
 
 		[Test]
-		public void GetAllEntriesSortedByHeadword_CitationFormAndLexicalFormAreIdenticalInAnEntry_EntryOnlyApearsOnce()
+		public void GetAllEntriesSortedByHeadword_CitationFormAndLexicalFormAreIdenticalInAnEntry_EntryOnlyAppearsOnce()
 		{
 			using (var env = new TestEnvironment())
 			{
-				LexEntry lexEntryWithIdenticalCitationandLexicalForm = env.Repository.CreateItem();
-				lexEntryWithIdenticalCitationandLexicalForm.CitationForm.SetAlternative("de", "de Word1");
-				lexEntryWithIdenticalCitationandLexicalForm.LexicalForm.SetAlternative("de", "de Word1");
+				LexEntry lexEntryWithIdenticalCitationAndLexicalForm = env.Repository.CreateItem();
+				lexEntryWithIdenticalCitationAndLexicalForm.CitationForm.SetAlternative("de", "de Word1");
+				lexEntryWithIdenticalCitationAndLexicalForm.LexicalForm.SetAlternative("de", "de Word1");
 				var german = WritingSystemDefinitionForTest("de");
 				ResultSet<LexEntry> listOfLexEntriesSortedByHeadWord = env.Repository.GetAllEntriesSortedByHeadword(german);
 				Assert.AreEqual(1, listOfLexEntriesSortedByHeadWord.Count);
@@ -497,7 +497,7 @@ namespace SIL.DictionaryServices.Tests
 		}
 
 		[Test]
-		public void GetAllEntriesSortedByDefinition_DefinitionAndGlossAreIdenticalAndHaveTwoIdenticalWordsSeperatedBySemiColon_ReturnsListWithOneNullRecord()
+		public void GetAllEntriesSortedByDefinition_DefinitionAndGlossAreIdenticalAndHaveTwoIdenticalWordsSeparatedBySemiColon_ReturnsListWithOneNullRecord()
 		{
 			using (var env = new TestEnvironment())
 			{
@@ -514,7 +514,7 @@ namespace SIL.DictionaryServices.Tests
 		}
 
 		[Test]
-		public void GetAllEntriesSortedByDefinition_DefinitionHasTwoIdenticalWordsSeperatedBySemiColon_ReturnsListWithOnlyOneRecord()
+		public void GetAllEntriesSortedByDefinition_DefinitionHasTwoIdenticalWordsSeparatedBySemiColon_ReturnsListWithOnlyOneRecord()
 		{
 			using (var env = new TestEnvironment())
 			{
@@ -529,7 +529,7 @@ namespace SIL.DictionaryServices.Tests
 		}
 
 		[Test]
-		public void GetAllEntriesSortedByDefinition_GlossHasTwoIdenticalWordsSeperatedBySemiColon_ReturnsListWithOnlyOneRecord()
+		public void GetAllEntriesSortedByDefinition_GlossHasTwoIdenticalWordsSeparatedBySemiColon_ReturnsListWithOnlyOneRecord()
 		{
 			using (var env = new TestEnvironment())
 			{
@@ -910,7 +910,7 @@ namespace SIL.DictionaryServices.Tests
 		}
 
 		[Test]
-		public void GetEntriesWithMatchingLexicalForm_RepositoryContainsTwoEntriesWithDifferingLexicalForms_OnlyEntryWithmatchingLexicalFormIsFound()
+		public void GetEntriesWithMatchingLexicalForm_RepositoryContainsTwoEntriesWithDifferingLexicalForms_OnlyEntryWithMatchingLexicalFormIsFound()
 		{
 			using (var env = new TestEnvironment())
 			{
@@ -1098,7 +1098,7 @@ namespace SIL.DictionaryServices.Tests
 		}
 
 		[Test]
-		public void GetEntriesWithMatchingGlossSortedByLexicalForm_TwoEntriesWithDifferingGlosses_OnlyEntryWithmatchingGlossIsFound()
+		public void GetEntriesWithMatchingGlossSortedByLexicalForm_TwoEntriesWithDifferingGlosses_OnlyEntryWithMatchingGlossIsFound()
 		{
 			using (var env = new TestEnvironment())
 			{
@@ -1213,7 +1213,7 @@ namespace SIL.DictionaryServices.Tests
 		}
 
 		[Test]
-		public void GetHomographNumber_AssignesUniqueNumbers()
+		public void GetHomographNumber_AssignsUniqueNumbers()
 		{
 			using (var env = new TestEnvironment())
 			{

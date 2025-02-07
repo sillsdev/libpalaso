@@ -11,7 +11,7 @@ namespace SIL.DictionaryServices.Processors
 	{
 		public static bool TryMergeSenseWithSomeExistingSense(LexSense targetSense, LexSense incomingSense, string[] traitsWithMultiplicity, IProgress progress)
 		{
-			//can we unify the properites?
+			//can we unify the properties?
 			if (!TryMergeProperties(targetSense, incomingSense, traitsWithMultiplicity, "senses of " + targetSense.Parent.ToString(), progress))
 			{
 				return false;

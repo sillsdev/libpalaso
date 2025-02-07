@@ -334,7 +334,7 @@ namespace SIL.DictionaryServices
 
 		/// <summary>
 		/// Gets a ResultSet containing all entries sorted by lexical form for a given writing system.
-		/// If a lexical form for a given writingsystem does not exist we substitute one from another writingsystem.
+		/// If a lexical form for a given writing system does not exist we substitute one from another writing system.
 		/// Use "Form" to access the lexical form in a RecordToken.
 		/// </summary>
 		/// <param name="writingSystemDefinition"></param>
@@ -352,24 +352,24 @@ namespace SIL.DictionaryServices
 					delegate(LexEntry entryToQuery)
 						{
 							IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-							string lexicalform = entryToQuery.LexicalForm[writingSystemDefinition.LanguageTag];
+							string lexicalForm = entryToQuery.LexicalForm[writingSystemDefinition.LanguageTag];
 							string writingSystemOfForm = writingSystemDefinition.LanguageTag;
-							if (lexicalform == "")
+							if (lexicalForm == "")
 							{
-								lexicalform = entryToQuery.LexicalForm.GetBestAlternative(writingSystemDefinition.LanguageTag);
+								lexicalForm = entryToQuery.LexicalForm.GetBestAlternative(writingSystemDefinition.LanguageTag);
 								foreach (LanguageForm form in entryToQuery.LexicalForm.Forms)
 								{
-									if(form.Form == lexicalform)
+									if(form.Form == lexicalForm)
 									{
 										writingSystemOfForm = form.WritingSystemId;
 									}
 								}
-								if (lexicalform == "")
+								if (lexicalForm == "")
 								{
-									lexicalform = null;
+									lexicalForm = null;
 								}
 							}
-							tokenFieldsAndValues.Add("Form", lexicalform);
+							tokenFieldsAndValues.Add("Form", lexicalForm);
 							tokenFieldsAndValues.Add("WritingSystem", writingSystemOfForm);
 							return new[] { tokenFieldsAndValues };
 						});
@@ -491,16 +491,16 @@ namespace SIL.DictionaryServices
 				var definitionQuery = new DelegateQuery<LexEntry>(
 					delegate(LexEntry entryToQuery)
 						{
-							var fieldsandValuesForRecordTokens = new List<IDictionary<string, object>>();
+							var fieldsAndValuesForRecordTokens = new List<IDictionary<string, object>>();
 
 							int senseNumber = 0;
 							foreach (LexSense sense in entryToQuery.Senses)
 							{
 								var rawDefinition = sense.Definition[writingSystemDefinition.LanguageTag];
-								var definitions = GetTrimmedElementsSeperatedBySemiColon(rawDefinition);
+								var definitions = GetTrimmedElementsSeparatedBySemiColon(rawDefinition);
 
 								var rawGloss = sense.Gloss[writingSystemDefinition.LanguageTag];
-								var glosses = GetTrimmedElementsSeperatedBySemiColon(rawGloss);
+								var glosses = GetTrimmedElementsSeparatedBySemiColon(rawGloss);
 
 								var definitionAndGlosses = MergeListsWhileExcludingDoublesAndEmptyStrings(definitions, glosses);
 
@@ -510,7 +510,7 @@ namespace SIL.DictionaryServices
 									IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
 									tokenFieldsAndValues.Add("Form", null);
 									tokenFieldsAndValues.Add("Sense", senseNumber);
-									fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
+									fieldsAndValuesForRecordTokens.Add(tokenFieldsAndValues);
 								}
 								else
 								{
@@ -519,13 +519,13 @@ namespace SIL.DictionaryServices
 										IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
 										tokenFieldsAndValues.Add("Form", definition);
 										tokenFieldsAndValues.Add("Sense", senseNumber);
-										fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
+										fieldsAndValuesForRecordTokens.Add(tokenFieldsAndValues);
 									}
 								}
 
 								senseNumber++;
 							}
-							return fieldsandValuesForRecordTokens;
+							return fieldsAndValuesForRecordTokens;
 						});
 				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(definitionQuery);
 
@@ -557,7 +557,7 @@ namespace SIL.DictionaryServices
 			return mergedList;
 		}
 
-		private static List<string> GetTrimmedElementsSeperatedBySemiColon(string text)
+		private static List<string> GetTrimmedElementsSeparatedBySemiColon(string text)
 		{
 			var textElements = new List<string>();
 			foreach (string textElement in text.Split(new[] { ';' }))
@@ -590,7 +590,7 @@ namespace SIL.DictionaryServices
 				var semanticDomainsQuery = new DelegateQuery<LexEntry>(
 					delegate(LexEntry entry)
 						{
-							var fieldsandValuesForRecordTokens = new List<IDictionary<string, object>>();
+							var fieldsAndValuesForRecordTokens = new List<IDictionary<string, object>>();
 							foreach (LexSense sense in entry.Senses)
 							{
 								foreach (KeyValuePair<string, IPalasoDataObjectProperty> pair in sense.Properties)
@@ -606,17 +606,17 @@ namespace SIL.DictionaryServices
 											{
 												domain = null;
 											}
-											if (CheckIfTokenHasAlreadyBeenReturnedForThisSemanticDomain(fieldsandValuesForRecordTokens, domain))
+											if (CheckIfTokenHasAlreadyBeenReturnedForThisSemanticDomain(fieldsAndValuesForRecordTokens, domain))
 											{
 												continue; //This is to avoid duplicates
 											}
 											tokenFieldsAndValues.Add("SemanticDomain", domain);
-											fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
+											fieldsAndValuesForRecordTokens.Add(tokenFieldsAndValues);
 										}
 									}
 								}
 							}
-							return fieldsandValuesForRecordTokens;
+							return fieldsAndValuesForRecordTokens;
 						}
 					);
 				ResultSet<LexEntry> itemsMatchingQuery = GetItemsMatching(semanticDomainsQuery);
@@ -630,9 +630,9 @@ namespace SIL.DictionaryServices
 			return _caches[cachename].GetResultSet();
 		}
 
-		private static bool CheckIfTokenHasAlreadyBeenReturnedForThisSemanticDomain(IEnumerable<IDictionary<string, object>> fieldsandValuesForRecordTokens, string domain)
+		private static bool CheckIfTokenHasAlreadyBeenReturnedForThisSemanticDomain(IEnumerable<IDictionary<string, object>> fieldsAndValuesForRecordTokens, string domain)
 		{
-			foreach (var tokenInfo in fieldsandValuesForRecordTokens)
+			foreach (var tokenInfo in fieldsAndValuesForRecordTokens)
 			{
 				if((string)tokenInfo["SemanticDomain"] == domain)
 				{
@@ -655,7 +655,7 @@ namespace SIL.DictionaryServices
 				var MatchingGlossQuery = new DelegateQuery<LexEntry>(
 					delegate(LexEntry entry)
 						{
-							var fieldsandValuesForRecordTokens = new List<IDictionary<string, object>>();
+							var fieldsAndValuesForRecordTokens = new List<IDictionary<string, object>>();
 							int senseNumber = 0;
 							foreach (LexSense sense in entry.Senses)
 							{
@@ -683,11 +683,11 @@ namespace SIL.DictionaryServices
 									}
 									tokenFieldsAndValues.Add("GlossWritingSystem", glossWritingSystem);
 									tokenFieldsAndValues.Add("SenseNumber", senseNumber);
-									fieldsandValuesForRecordTokens.Add(tokenFieldsAndValues);
+									fieldsAndValuesForRecordTokens.Add(tokenFieldsAndValues);
 								}
 								senseNumber++;
 							}
-							return fieldsandValuesForRecordTokens;
+							return fieldsAndValuesForRecordTokens;
 						}
 					);
 				ResultSet<LexEntry> itemsMatchingQuery = GetItemsMatching(MatchingGlossQuery);
@@ -704,7 +704,7 @@ namespace SIL.DictionaryServices
 
 		/// <summary>
 		/// Gets a ResultSet containing entries whose gloss match glossForm sorted by the lexical form
-		/// in the given writingsystem.
+		/// in the given writing system.
 		/// Use "Form" to access the lexical form and "Gloss/Form" to access the Gloss in a RecordToken.
 		/// </summary>
 		/// <param name="glossForm"></param>
@@ -802,7 +802,7 @@ namespace SIL.DictionaryServices
 
 		/// <summary>
 		/// Gets a ResultSet containing entries whose lexical form is similar to lexicalForm
-		/// sorted by the lexical form in the given writingsystem.
+		/// sorted by the lexical form in the given writing system.
 		/// Use "Form" to access the lexical form in a RecordToken.
 		/// </summary>
 		/// <returns></returns>
