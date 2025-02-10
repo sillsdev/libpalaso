@@ -57,8 +57,7 @@ namespace SIL.Windows.Forms.Reporting
 			{
 				var dlg = new ProblemNotificationDialog(message, UsageReporter.AppNameToUseInDialogs + " Problem")
 				{
-					ReoccurenceMessage = policy.ReoccurenceMessage
-
+					ReoccurrenceMessage = policy.ReoccurrenceMessage
 				};
 				if (!string.IsNullOrEmpty(alternateButton1Label))
 				{

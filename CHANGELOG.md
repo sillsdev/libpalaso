@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Tests.Text] In test class MultiTextBaseTests, renamed method AnnotationOfMisssingAlternative to AnnotationOfMissingAlternative.
 - [SIL.Windows.Forms.Keyboarding.Tests] In test class XkbKeyboardAdapterTests, renamed method Errorkeyboards to ErrorKeyboards.
 - [SIL.Windows.Forms.Keyboarding.Windows] In internal interface ITfInputProcessorProfileMgr, renamed method RegisterProfile parameter hklsubstitute to hklSubstitute.
+- [SIL.Windows.Forms.Reporting] In class ProblemNotificationDialog, renamed internal property _reoccurenceMessage to _reoccurrenceMessage.
 - [SIL.WritingSystems] In class LanguageLookup changed private method AddLanguage parameter threelettercode to threeLetterCode.
 - [SIL.Xml] (Breaking change!) In class XmlUtils, renamed method GetIndendentedXml to GetIndentedXml.
 - [SIL.UsbDrive.Linux] (Breaking change!) In interface IUDiskDevice renamed method DriveAtaSmartInitiateSelftest to DriveAtaSmartInitiateSelfTest and property DevicePresentationNopolicy to DevicePresentationNoPolicy.
@@ -39,6 +40,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Reporting] (Breaking change!) In class FontAnalytics, renamed property MinumumInterval to MinimumInterval.
 - [SIL.Scripture] (Breaking change!) In class BCVRef method MakeReferenceString, renamed parameter supressChapterForIntroMatter to suppressChapterForIntroMatter.
 - [SIL.Windows.Forms.ImageToolbox] (Breaking change!) Changed class PalsoImageNotDisposed to PalasoImageNotDisposed.
+- [SIL.Windows.Forms.Reporting] (Breaking change!) In class ProblemNotificationDialog, renamed method ReoccurenceMessage to ReoccurrenceMessage.
 
 ### Fixed
 - [SIL.Windows.Forms] Changed build date in SILAboutBox to be computed using the last write time instead of creation time.
