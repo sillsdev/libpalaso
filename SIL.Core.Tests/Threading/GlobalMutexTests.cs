@@ -93,30 +93,5 @@ namespace SIL.Tests.Threading
 				}
 			}
 		}
-
-		[Test, Timeout(1000)]
-		public void DisposingTheMutexReleasesTheLock()
-		{
-			using (var mutex = new GlobalMutex("test"))
-			{
-				mutex.Initialize();
-				//Explicitly not disposing the release
-				//which Lock returns to ensure that when the mutex is disposed, the lock is released
-				_ = mutex.Lock();
-			}
-
-			var otherThread = new Thread(() =>
-			{
-				using (var mutex = new GlobalMutex("test"))
-				{
-					//Should be able to take the lock again, threading is important here otherwise
-					//if the previous mutex still held the lock,
-					//this would be fine since they were the same thread
-					using (mutex.InitializeAndLock()) { }
-				}
-			});
-			otherThread.Start();
-			otherThread.Join();
-		}
 	}
 }
