@@ -16,7 +16,7 @@ namespace SIL.UsbDrive.Linux
 		[return: Argument("access_time_results")]
 		object[] DriveBenchmark(bool do_write_benchmark, string[] options, out object[] read_transfer_rate_results, out object[] write_transfer_rate_results);
 
-		void DriveAtaSmartInitiateSelftest(string test, string[] options);
+		void DriveAtaSmartInitiateSelfTest(string test, string[] options);
 
 		void DriveAtaSmartRefreshData(string cookie);
 
@@ -267,7 +267,7 @@ namespace SIL.UsbDrive.Linux
 	  <arg name="write_transfer_rate_results" type="a(td)" direction="out"/>
 	  <arg name="access_time_results" type="a(td)" direction="out"/>
 	</method>
-	<method name="DriveAtaSmartInitiateSelftest">
+	<method name="DriveAtaSmartInitiateSelfTest">
 	  <arg name="test" type="s" direction="in"/>
 	  <arg name="options" type="as" direction="in"/>
 	</method>

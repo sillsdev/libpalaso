@@ -20,7 +20,26 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.TestUtilities] Made FluentAssertXml classes use "Assert.That" so they can work in clients that use NUnit 4.
 - [SIL.Windows.Forms] Removed protected members from FadingMessageWindow: MsgThread, MsgForm, Text, MsgPoint, and ShowForm. (The underlying implementation needed to be changed, and the existing implementation was such that these members would be unlikely to have been meaningful or helpful in a derived class anyway.)
 - [SIL.Windows.Forms] Added the stated requirement that FadingMessageWindow.Show be called on the UI thread.
--
+- [SIL.DictionaryServices] In class LiftLexEntryRepository, renamed private method GetTrimmedElementsSeperatedBySemiColon to GetTrimmedElementsSeparatedBySemiColon and private method CheckIfTokenHasAlreadyBeenReturnedForThisSemanticDomain parameter fieldsandValuesForRecordTokens to fieldsAndValuesForRecordTokens.
+- [SIL.DictionaryServices.Tests] Renamed test class LiftLexEntryRepositoryStateUnitializedTests to LiftLexEntryRepositoryStateUninitializedTests.
+- [SIL.DictionaryServices.Tests.Lift] Renamed test class LiftRepositoryStateUnitializedTests to LiftRepositoryStateUninitializedTests.
+- [SIL.Tests.Data] Renamed test interface IRepositoryStateUnitializedTests to IRepositoryStateUninitializedTests and test class MemoryRepositoryStateUnitializedTests to MemoryRepositoryStateUninitializedTests.
+- [SIL.Tests.Spelling] Renamed test class SpellingwordTokenizerTests to SpellingWordTokenizerTests.
+- [SIL.Tests.Text] In test class MultiTextBaseTests, renamed method AnnotationOfMisssingAlternative to AnnotationOfMissingAlternative.
+- [SIL.Windows.Forms.Keyboarding.Tests] In test class XkbKeyboardAdapterTests, renamed method Errorkeyboards to ErrorKeyboards.
+- [SIL.Windows.Forms.Keyboarding.Windows] In internal interface ITfInputProcessorProfileMgr, renamed method RegisterProfile parameter hklsubstitute to hklSubstitute.
+- [SIL.WritingSystems] In class LanguageLookup changed private method AddLanguage parameter threelettercode to threeLetterCode.
+- [SIL.Xml] (Breaking change!) In class XmlUtils, renamed method GetIndendentedXml to GetIndentedXml.
+- [SIL.UsbDrive.Linux] (Breaking change!) In interface IUDiskDevice renamed method DriveAtaSmartInitiateSelftest to DriveAtaSmartInitiateSelfTest and property DevicePresentationNopolicy to DevicePresentationNoPolicy.
+- [SIL.DictionaryServices.Model] (Breaking change!) In class LexEntry, renamed WellKnownProperties.FlagSkipBaseform to WellKnownProperties.FlagSkipBaseForm and GetSomeMeaningToUseInAbsenseOfHeadWord to GetSomeMeaningToUseInAbsenceOfHeadWord.
+- [SIL.DictionaryServices.Model] (Breaking change!) In classes LexEntry and LexSense, renamed method CleanUpAfterEditting to CleanUpAfterEditing.
+- [SIL.Lift] (Breaking change!) In abstract class PalasoDataObject, renamed method CleanUpAfterEditting to CleanUpAfterEditing.
+- [SIL.Reporting] (Breaking change!) In classes ErrorReport and ExceptionHelper, renamed methed GetHiearchicalExceptionInfo to GetHierarchicalExceptionInfo.
+- [SIL.Reporting] (Breaking change!) In interface IRepeatNoticePolicy and classes ShowAlwaysPolicy and ShowOncePerSessionBasedOnExactMessagePolicy, renamed property ReoccurenceMessage to ReoccurrenceMessage.
+- [SIL.Reporting] (Breaking change!) In class FontAnalytics, renamed property MinumumInterval to MinimumInterval.
+- [SIL.Scripture] (Breaking change!) In class BCVRef method MakeReferenceString, renamed parameter supressChapterForIntroMatter to suppressChapterForIntroMatter.
+- [SIL.Windows.Forms.ImageToolbox] (Breaking change!) Changed class PalsoImageNotDisposed to PalasoImageNotDisposed.
+
 ### Fixed
 - [SIL.Windows.Forms] Changed build date in SILAboutBox to be computed using the last write time instead of creation time.
 - [SIL.Windows.Forms] Made FadingMessageWindow implement all UI logic on the main UI thread in a thread-safe way. Fixes crashes like SP-2340.

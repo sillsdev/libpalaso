@@ -1199,7 +1199,7 @@
 	-->
 	<xsd:complexType name="VocabularyDef_Type" mixed="false">
 		<xsd:annotation>
-			<xsd:documentation>The definition of a vocabulary. Attributes: Date of creation, Link to origin. Contains a Description be element to descr+++ ibe the domain of the vocabulary and a (unspecified) number of value entries</xsd:documentation>
+			<xsd:documentation>The definition of a vocabulary. Attributes: Name, Date of creation, Tags, Link to origin. Contains a Description of the domain of the vocabulary and some (unspecified) number of value Entries</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element name="Description" type="imdi:Description_Type" maxOccurs="unbounded"/>
