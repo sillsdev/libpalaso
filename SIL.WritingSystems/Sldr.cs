@@ -508,7 +508,8 @@ namespace SIL.WritingSystems
 						using var input = webResponse.GetResponseStream();
 						if (File.Exists(cachedAllTagsPath))
 							File.Delete(cachedAllTagsPath);
-						input.CopyTo(File.OpenWrite(cachedAllTagsPath));
+						using var output = File.OpenWrite(cachedAllTagsPath);
+						input.CopyTo(output);
 					}
 				}
 				catch (WebException)
