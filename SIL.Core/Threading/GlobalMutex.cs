@@ -236,7 +236,8 @@ namespace SIL.Threading
 			public void Dispose()
 			{
 				Unlink();
-				if (Monitor.IsEntered(_lock)) Monitor.Exit(_lock);
+				if (Monitor.IsEntered(_lock))
+					throw new AbandonedMutexException($"LocalOnlyMutexAdapter \"{_name}\" was disposed while locked");
 			}
 		}
 
