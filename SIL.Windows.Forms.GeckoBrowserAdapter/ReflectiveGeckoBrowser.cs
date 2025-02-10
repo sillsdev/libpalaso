@@ -461,7 +461,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			if (_getElementByIdMethod == null)
 				_getElementByIdMethod = _type.GetMethod("GetElementById", new Type[] { typeof(String) });
-			return new GeckoBodyElement(_getElementByIdMethod.Invoke (_document, new object[] { id }));;
+			return new GeckoBodyElement(_getElementByIdMethod.Invoke (_document, new object[] { id }));
 		}
 	}
 
