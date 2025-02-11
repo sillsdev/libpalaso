@@ -520,8 +520,8 @@ namespace SIL.DictionaryServices.Model
 		public bool IsDirty
 		{
 			get;
-			//ideally, this wouldn't be needed, but in making the homograph merger, I (jh) found that adding a property (a citation form)
-			// left _isDirty still false. I don't have the stomach to spend a day figure out why, so I'm making this settable.
+			// Ideally, this wouldn't be needed, but in making the homograph merger, I (jh) found that adding a property (a citation form)
+			// left _isDirty still false. I don't have the stomach to spend a day to figure out why, so I'm making this settable.
 			set;
 		}
 
