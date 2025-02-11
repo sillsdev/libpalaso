@@ -1061,6 +1061,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			using (var environment = new TestEnvironment())
 			{
+				var roles1 = FontRoles.Default | FontRoles.UI;
 				var fd1 = new FontDefinition("font1")
 				{
 					RelativeSize = 2.1f,
@@ -1069,11 +1070,12 @@ namespace SIL.WritingSystems.Tests
 					Language = "en",
 					Engines = FontEngines.Graphite | FontEngines.OpenType,
 					OpenTypeLanguage = "abcd",
-					Roles = FontRoles.Default,
+					Roles = roles1,
 					Subset = "unknown"
 				};
 				fd1.Urls.Add("http://wirl.scripts.sil.org/font1");
 
+				var roles2 = FontRoles.None;
 				var fd2 = new FontDefinition("font2")
 				{
 					RelativeSize = 2.1f,
@@ -1082,7 +1084,7 @@ namespace SIL.WritingSystems.Tests
 					Language = "en",
 					Engines = FontEngines.Graphite | FontEngines.OpenType,
 					OpenTypeLanguage = "abcd",
-					Roles = FontRoles.None,
+					Roles = roles2,
 					Subset = "unknown"
 				};
 				fd2.Urls.Add("http://wirl.scripts.sil.org/font2");
@@ -1091,13 +1093,19 @@ namespace SIL.WritingSystems.Tests
 				wsToLdml.Fonts.Add(fd1);
 				wsToLdml.Fonts.Add(fd2);
 				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
-				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
-				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath(
-					"/ldml/special/sil:external-resources/sil:font[@name='font1' and @types='default' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']/sil:url[text()='http://wirl.scripts.sil.org/font1']",
+				var filePath = environment.FilePath("test.ldml");
+				ldmlAdaptor.Write(filePath, wsToLdml, null);
+				AssertThatXmlIn.File(filePath).HasSpecifiedNumberOfMatchesForXpath(
+					"/ldml/special/sil:external-resources/sil:font[@name='font1' and @types='default ui' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']/sil:url[text()='http://wirl.scripts.sil.org/font1']",
 					1, environment.NamespaceManager);
-				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath(
+				AssertThatXmlIn.File(filePath).HasSpecifiedNumberOfMatchesForXpath(
 					"/ldml/special/sil:external-resources/sil:font[@name='font2' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']/sil:url[text()='http://wirl.scripts.sil.org/font2']",
 					1, environment.NamespaceManager);
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(filePath, wsFromLdml);
+				var fontsRoles = wsFromLdml.Fonts.Select(f => f.Roles);
+				Assert.That(fontsRoles, Does.Contain(roles1).And.Contain(roles2));
 			}
 		}
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -77,17 +76,19 @@ namespace SIL.WritingSystems
 			{string.Empty, FontRoles.Default},
 			{"default", FontRoles.Default},
 			{"heading", FontRoles.Heading},
-			{"emphasis", FontRoles.Emphasis}
+			{"emphasis", FontRoles.Emphasis},
+			{"ui", FontRoles.UI}
 		};
 
 		/// <summary>
 		/// Mapping of FontRoles enumeration to font role/type attribute
 		/// </summary>
-		private static readonly Dictionary<FontRoles, string> FontRolesToRole = new Dictionary<FontRoles, string> 
+		private static readonly Dictionary<FontRoles, string> FontRolesToRole = new Dictionary<FontRoles, string>
 		{
 			{FontRoles.Default, "default"},
 			{FontRoles.Heading, "heading"},
-			{FontRoles.Emphasis, "emphasis"}
+			{FontRoles.Emphasis, "emphasis"},
+			{FontRoles.UI, "ui"}
 		};
 
 		/// <summary>
@@ -124,7 +125,7 @@ namespace SIL.WritingSystems
 			{"ldml", KeyboardFormat.Ldml},
 			{"keylayout", KeyboardFormat.Keylayout},
 			{"kmp", KeyboardFormat.KeymanPackage }
-		}; 
+		};
 
 		/// <summary>
 		/// Mapping of KeyboardFormat enumeration to keyboard type attribute
@@ -446,7 +447,10 @@ namespace SIL.WritingSystems
 						IEnumerable<string> roleList = roles.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
 						foreach (string roleEntry in roleList)
 						{
-							fd.Roles |= RoleToFontRoles[roleEntry];
+							if (RoleToFontRoles.TryGetValue(roleEntry, out var role))
+								fd.Roles |= role;
+							else
+								fd.Roles |= FontRoles.Default;
 						}
 					}
 					else
@@ -624,7 +628,7 @@ namespace SIL.WritingSystems
 			string level1Continue = null;
 			string level2Continue = null;
 
-			// A bit strange, but we need to read the special element first to get everything we need to write 
+			// A bit strange, but we need to read the special element first to get everything we need to write
 			// level 1 and 2. So we just store everything but 1 and 2 in a list and add them after we add 1 and 2.
 			var specialQuotationMarks = new List<QuotationMark>();
 
@@ -673,7 +677,7 @@ namespace SIL.WritingSystems
 						int level = (int?) quotationElem.Attribute("level") ?? 1;
 						var type = (string) quotationElem.Attribute("type");
 						QuotationMarkingSystemType qmType = !string.IsNullOrEmpty(type) ? QuotationToQuotationMarkingSystemTypes[type] : QuotationMarkingSystemType.Normal;
-						
+
 						var qm = new QuotationMark(open, close, cont, level, qmType);
 						specialQuotationMarks.Add(qm);
 					}
@@ -892,7 +896,7 @@ namespace SIL.WritingSystems
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// The "oldFile" parameter allows the LdmldataMapper to allow data that it doesn't understand to be roundtripped.
 		/// </summary>
@@ -1074,18 +1078,18 @@ namespace SIL.WritingSystems
 				silIdentityElem.SetOptionalAttributeValue("windowsLCID", ws.WindowsLcid);
 				silIdentityElem.SetOptionalAttributeValue("defaultRegion", ws.DefaultRegion);
 				silIdentityElem.SetOptionalAttributeValue("variantName", variantName);
-					
+
 				// Move special to the end of the identity block (preserving order)
 				specialElem.Remove();
 				identityElem.Add(specialElem);
 			}
 		}
 
-		private static void WriteLanguageTagElements(XElement identityElem, string languageTag) 
+		private static void WriteLanguageTagElements(XElement identityElem, string languageTag)
 		{
 			string language, script, region, variant;
 			IetfLanguageTag.TryGetParts(languageTag, out language, out script, out region, out variant);
-			
+
 			// language element is required
 			identityElem.SetAttributeValue("language", "type", language);
 			// write the rest if they have contents
@@ -1096,7 +1100,7 @@ namespace SIL.WritingSystems
 			if (!string.IsNullOrEmpty(variant))
 				identityElem.SetAttributeValue("variant", "type", variant);
 		}
-				
+
 		private static void WriteCharactersElement(XElement charactersElem, WritingSystemDefinition ws)
 		{
 			Debug.Assert(charactersElem != null);
@@ -1431,7 +1435,7 @@ namespace SIL.WritingSystems
 			specialElem.SetAttributeValue(Sil + NeedsCompiling, scd.IsValid ? null : "true");
 			specialElem.Add(new XElement(Sil + "simple", new XCData(scd.SimpleRules)));
 		}
-		
+
 		private void WriteTopLevelSpecialElements(XElement specialElem, WritingSystemDefinition ws)
 		{
 			var externalResourcesElem = specialElem.GetOrCreateElement(Sil + "external-resources");

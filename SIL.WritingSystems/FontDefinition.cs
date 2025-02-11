@@ -19,7 +19,8 @@ namespace SIL.WritingSystems
 		None = 0,
 		Default = 1,
 		Heading = 2,
-		Emphasis = 4
+		Emphasis = 4,
+		UI = 8,
 	}
 
 	public class FontDefinition : DefinitionBase<FontDefinition>
