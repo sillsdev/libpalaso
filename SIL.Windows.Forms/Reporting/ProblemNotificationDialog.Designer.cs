@@ -32,7 +32,7 @@ namespace SIL.Windows.Forms.Reporting
 			this._acceptButton = new System.Windows.Forms.Button();
 			this._alternateButton1 = new System.Windows.Forms.Button();
 			this._message = new System.Windows.Forms.TextBox();
-			this._reoccurenceMessage = new System.Windows.Forms.Label();
+			this._reoccurrenceMessage = new System.Windows.Forms.Label();
 			this.tableLayoutOuter = new System.Windows.Forms.TableLayoutPanel();
 			((System.ComponentModel.ISupportInitialize)(this._icon)).BeginInit();
 			this.tableLayoutOuter.SuspendLayout();
@@ -92,17 +92,17 @@ namespace SIL.Windows.Forms.Reporting
 			this._message.Text = "Blah blah";
 			this._message.TextChanged += new System.EventHandler(this.HandleMessageTextChanged);
 			//
-			// _reoccurenceMessage
+			// _reoccurrenceMessage
 			//
-			this._reoccurenceMessage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-			this._reoccurenceMessage.AutoSize = true;
-			this.tableLayoutOuter.SetColumnSpan(this._reoccurenceMessage, 2);
-			this._reoccurenceMessage.ForeColor = System.Drawing.Color.Gray;
-			this._reoccurenceMessage.Location = new System.Drawing.Point(3, 158);
-			this._reoccurenceMessage.Name = "_reoccurenceMessage";
-			this._reoccurenceMessage.Size = new System.Drawing.Size(272, 13);
-			this._reoccurenceMessage.TabIndex = 3;
-			this._reoccurenceMessage.Text = "Re-occurence message";
+			this._reoccurrenceMessage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+			this._reoccurrenceMessage.AutoSize = true;
+			this.tableLayoutOuter.SetColumnSpan(this._reoccurrenceMessage, 2);
+			this._reoccurrenceMessage.ForeColor = System.Drawing.Color.Gray;
+			this._reoccurrenceMessage.Location = new System.Drawing.Point(3, 158);
+			this._reoccurrenceMessage.Name = "_reoccurrenceMessage";
+			this._reoccurrenceMessage.Size = new System.Drawing.Size(272, 13);
+			this._reoccurrenceMessage.TabIndex = 3;
+			this._reoccurrenceMessage.Text = "Reoccurrence message";
 			//
 			// tableLayoutOuter
 			//
@@ -115,7 +115,7 @@ namespace SIL.Windows.Forms.Reporting
 			this.tableLayoutOuter.Controls.Add(this._icon, 0, 0);
 			this.tableLayoutOuter.Controls.Add(this._acceptButton, 3, 1);
 			this.tableLayoutOuter.Controls.Add(this._alternateButton1, 2, 1);
-			this.tableLayoutOuter.Controls.Add(this._reoccurenceMessage, 0, 1);
+			this.tableLayoutOuter.Controls.Add(this._reoccurrenceMessage, 0, 1);
 			this.tableLayoutOuter.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tableLayoutOuter.Location = new System.Drawing.Point(5, 5);
 			this.tableLayoutOuter.Name = "tableLayoutOuter";
@@ -158,7 +158,7 @@ namespace SIL.Windows.Forms.Reporting
 		private System.Windows.Forms.PictureBox _icon;
 		internal System.Windows.Forms.Button _acceptButton;
 		internal System.Windows.Forms.Button _alternateButton1;
-		internal System.Windows.Forms.Label _reoccurenceMessage;
+		internal System.Windows.Forms.Label _reoccurrenceMessage;
 		private System.Windows.Forms.TextBox _message;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutOuter;
 	}

@@ -108,7 +108,7 @@ namespace SIL.UsbDrive.Linux
 #if false // Not supported by dbus library yet
 		#region properties
 
-			// a(ssbbbubbbbbbbb) dbus lib doesn't support this correcly yet.
+			// a(ssbbbubbbbbbbb) dbus lib doesn't support this correctly yet.
 			object[] KnownFilesystems { get; }
 			bool SupportsLuksDevices { get; }
 			bool DaemonIsInhibited { get; }

@@ -4,7 +4,7 @@ using SIL.Data;
 namespace SIL.Tests.Data
 {
 	[TestFixture]
-	public class MemoryRepositoryStateUnitializedTests: IRepositoryStateUnitializedTests<PalasoTestItem>
+	public class MemoryRepositoryStateUninitializedTests: IRepositoryStateUninitializedTests<PalasoTestItem>
 	{
 		[SetUp]
 		public override void SetUp()
@@ -37,7 +37,7 @@ namespace SIL.Tests.Data
 
 		/* todo move to query tests
 		[Test]
-		protected override void  GetItemsMatchingQuery_QueryWithShow_ReturnAllItemsMatchingQuery_v()
+		protected override void GetItemsMatchingQuery_QueryWithShow_ReturnAllItemsMatchingQuery_v()
 		{
 			Item.StoredInt = 123;
 			Item.StoredString = "I was stored!";

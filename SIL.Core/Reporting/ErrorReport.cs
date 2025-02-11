@@ -19,7 +19,7 @@ namespace SIL.Reporting
 		void ReportFatalException(Exception e);
 
 		/// <summary>
-		/// Notify the user of the <paramref name="exception"/> and <paramref name="message"/>, if <paramref name="policy"/> permits, using the IErrorReporter's default options 
+		/// Notify the user of the <paramref name="exception"/> and <paramref name="message"/>, if <paramref name="policy"/> permits, using the IErrorReporter's default options
 		/// </summary>
 		/// <remarks>In contrast to the <see cref="SIL.Reporting.IErrorReporter.NotifyUserOfProblem(IRepeatNoticePolicy, string, ErrorResult, string)" /> version,
 		/// this method overload does not require the implementation to block (if the caller is not on the UI thread)
@@ -131,7 +131,7 @@ namespace SIL.Reporting
 		/// Gets the current IErrorReporter
 		/// </summary>
 		public static IErrorReporter GetErrorReporter() => _errorReporter;
-		
+
 		/// <summary>
 		/// Use this method if you want to override the default IErrorReporter.
 		/// This method should normally be called only once at application startup.
@@ -479,10 +479,10 @@ namespace SIL.Reporting
 			return Environment.OSVersion.VersionString;
 		}
 
-		public static string GetHiearchicalExceptionInfo(Exception error, ref Exception innerMostException)
+		public static string GetHierarchicalExceptionInfo(Exception error, ref Exception innerMostException)
 		{
 			UpdateEmailSubject(error);
-			return ExceptionHelper.GetHiearchicalExceptionInfo(error, ref innerMostException);
+			return ExceptionHelper.GetHierarchicalExceptionInfo(error, ref innerMostException);
 		}
 
 		public static void ReportFatalException(Exception error)
@@ -492,7 +492,7 @@ namespace SIL.Reporting
 		}
 
 		/// <summary>
-		/// Put up a message box, unless OkToInteractWithUser is false, in which case throw an Appliciation Exception.
+		/// Put up a message box, unless OkToInteractWithUser is false, in which case throw an Application Exception.
 		/// This will not report the problem to the developer.  Use one of the "report" methods for that.
 		/// </summary>
 		public static void NotifyUserOfProblem(string message, params object[] args)
@@ -510,7 +510,7 @@ namespace SIL.Reporting
 		{
 			NotifyUserOfProblem(new ShowAlwaysPolicy(), exception, messageFmt, args);
 		}
-	
+
 		public static void NotifyUserOfProblem(IRepeatNoticePolicy policy, Exception exception, string messageFmt, params object[] args)
 		{
 			var message = string.Format(messageFmt, args);
@@ -562,7 +562,7 @@ namespace SIL.Reporting
 			}
 			return returnResult;
 		}
-		
+
 		/// <summary>
 		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
 		/// This version assumes the message has already been formatted with any arguments.
@@ -646,8 +646,9 @@ namespace SIL.Reporting
 	{
 		bool ShouldShowErrorReportDialog(Exception exception);
 		bool ShouldShowMessage(string message);
-		string ReoccurenceMessage
-		{ get;
+		string ReoccurrenceMessage
+		{
+			get;
 		}
 	}
 
@@ -663,7 +664,7 @@ namespace SIL.Reporting
 			return true;
 		}
 
-		public string ReoccurenceMessage
+		public string ReoccurrenceMessage
 		{
 			get { return string.Empty; }
 		}
@@ -686,7 +687,7 @@ namespace SIL.Reporting
 			return true;
 		}
 
-		public string ReoccurenceMessage
+		public string ReoccurrenceMessage
 		{
 			get { return "This message will not be shown again this session."; }
 		}

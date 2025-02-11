@@ -68,7 +68,7 @@ namespace SIL.Reporting
 				catch (Exception)
 				{
 					//ah well.  Debug mode only, we tell the programmer. Otherwise, we're giving a random guid
-					Debug.Fail("couldn't parse the user indentifier into a guid");
+					Debug.Fail("Couldn't parse the user identifier into a guid");
 				}
 				return new Guid(); //outside of debug mode, we guarantee some guid is returned... it's only for reporting after all
 			}
@@ -231,7 +231,7 @@ namespace SIL.Reporting
 		}
 
 		/// <summary>
-		/// store and retrieve values which are the same for all apps using this usage libary
+		/// store and retrieve values which are the same for all apps using this usage library
 		/// </summary>
 		/// <returns></returns>
 		public static Dictionary<string, string> GetAllApplicationValuesForThisUser()
@@ -285,7 +285,7 @@ namespace SIL.Reporting
 				}
 
 				//TODO: maybe report number of launches... depends on whether GA gives us the same data somehow
-				//(i.e., how many people are return vistors, etc.)
+				//(i.e., how many people are return visitors, etc.)
 
 				if (string.IsNullOrEmpty(_realPreviousVersion))
 				{
@@ -322,7 +322,7 @@ namespace SIL.Reporting
 				{
 					if (s_singleton._analytics == null)
 					{
-						//note for now, I'm figuring some libaries might call this, with no way to know if the host app has enabled it.
+						//note for now, I'm figuring some libraries might call this, with no way to know if the host app has enabled it.
 						//so we don't act like it is an error.
 						Debug.WriteLine("Got Navigation notice but google analytics wasn't enabled");
 						return;
@@ -367,7 +367,7 @@ namespace SIL.Reporting
 				{
 					if (s_singleton._analytics == null)
 					{
-						//note for now, I'm figuring some libaries might call this, with no way to know if the host app has enabled it.
+						//note for now, I'm figuring some libraries might call this, with no way to know if the host app has enabled it.
 						//so we don't act like it is an error.
 						Debug.WriteLine("Got SendEvent notice but google analytics wasn't enabled");
 						return;
@@ -416,7 +416,7 @@ namespace SIL.Reporting
 						sb.Append("Inner: " + error.InnerException.Message + "|");
 					sb.Append(error.StackTrace);
 				}
-				// Maximum URI length is about 2000 (probably 2083 to be exact), so truncate this info if ncessary.
+				// Maximum URI length is about 2000 (probably 2083 to be exact), so truncate this info if necessary.
 				// A lot of characters (such as spaces) are going to be replaced with % codes, and there is a pretty hefty
 				// wad of additional stuff that goes into the URL besides this stuff, so cap it at 1000 and hope for the best.
 				if (sb.Length > 1000)

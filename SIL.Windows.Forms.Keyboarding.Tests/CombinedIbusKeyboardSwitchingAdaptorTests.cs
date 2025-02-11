@@ -46,12 +46,12 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		{
 		}
 
-		private IbusKeyboardDescription CreateKeyboardDescription(string name, string longname,
+		private IbusKeyboardDescription CreateKeyboardDescription(string name, string longName,
 			string language, uint systemIndex)
 		{
 			var engineDescMock = new Mock<IBusEngineDesc>();
 			engineDescMock.Setup(x => x.Name).Returns(name);
-			engineDescMock.Setup(x => x.LongName).Returns(longname);
+			engineDescMock.Setup(x => x.LongName).Returns(longName);
 			engineDescMock.Setup(x => x.Language).Returns(language);
 
 			return new IbusKeyboardDescription($"{language}_{name}", engineDescMock.Object, Adaptor) {SystemIndex = systemIndex};
