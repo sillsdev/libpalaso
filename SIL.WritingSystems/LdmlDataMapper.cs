@@ -73,7 +73,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		private static readonly Dictionary<string, FontRoles> RoleToFontRoles = new Dictionary<string, FontRoles>
 		{
-			{string.Empty, FontRoles.Default},
+			{string.Empty, FontRoles.None},
 			{"default", FontRoles.Default},
 			{"heading", FontRoles.Heading},
 			{"emphasis", FontRoles.Emphasis},
@@ -455,7 +455,7 @@ namespace SIL.WritingSystems
 					}
 					else
 					{
-						fd.Roles = FontRoles.Default;
+						fd.Roles = FontRoles.None;
 					}
 
 					// Relative Size
@@ -478,7 +478,7 @@ namespace SIL.WritingSystems
 					var engines = (string) fontElem.Attribute("engines") ?? "gr ot";
 					IEnumerable<string> engineList = engines.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
 					foreach (string engineEntry in engineList)
-						fd.Engines |= (EngineToFontEngines[engineEntry]);
+						fd.Engines |= EngineToFontEngines[engineEntry];
 
 					// Subset
 					fd.Subset = (string) fontElem.Attribute("subset");

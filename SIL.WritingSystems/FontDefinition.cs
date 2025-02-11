@@ -50,7 +50,7 @@ namespace SIL.WritingSystems
 			_name = name;
 			_relativeSize = 1.0f;
 			_engines = FontEngines.Graphite | FontEngines.OpenType;
-			_roles = FontRoles.Default;
+			_roles = FontRoles.None;
 			Urls = new ObservableSortedSet<string>();
 			SetupCollectionChangeListeners();
 		}

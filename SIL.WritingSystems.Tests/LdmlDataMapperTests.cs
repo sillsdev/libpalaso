@@ -173,7 +173,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void ExistingLdml_UnknownCollation_Write_PreservesData()
 		{
-			const string ldmlwithcollation =
+			const string ldmlWithCollation =
 				@"<ldml><collations><collation><unknown>" +
 				@"<![CDATA[[caseLevel on]& c < k]]>" +
 				@"</unknown></collation></collations></ldml>";
@@ -181,7 +181,7 @@ namespace SIL.WritingSystems.Tests
 			var sw = new StringWriter();
 			var ws = new WritingSystemDefinition("en");
 			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
-			adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlwithcollation)));
+			adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlWithCollation)));
 			writer.Close();
 			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation/unknown", 1);
 		}
@@ -1061,7 +1061,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			using (var environment = new TestEnvironment())
 			{
-				var roles1 = FontRoles.Default | FontRoles.UI;
+				var roles1 = FontRoles.Emphasis | FontRoles.UI;
 				var fd1 = new FontDefinition("font1")
 				{
 					RelativeSize = 2.1f,
@@ -1093,10 +1093,10 @@ namespace SIL.WritingSystems.Tests
 				wsToLdml.Fonts.Add(fd1);
 				wsToLdml.Fonts.Add(fd2);
 				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
-				var filePath = environment.FilePath("test.ldml");
+				var filePath = environment.FilePath("testFontRoles.ldml");
 				ldmlAdaptor.Write(filePath, wsToLdml, null);
 				AssertThatXmlIn.File(filePath).HasSpecifiedNumberOfMatchesForXpath(
-					"/ldml/special/sil:external-resources/sil:font[@name='font1' and @types='default ui' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']/sil:url[text()='http://wirl.scripts.sil.org/font1']",
+					"/ldml/special/sil:external-resources/sil:font[@name='font1' and @types='emphasis ui' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']/sil:url[text()='http://wirl.scripts.sil.org/font1']",
 					1, environment.NamespaceManager);
 				AssertThatXmlIn.File(filePath).HasSpecifiedNumberOfMatchesForXpath(
 					"/ldml/special/sil:external-resources/sil:font[@name='font2' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']/sil:url[text()='http://wirl.scripts.sil.org/font2']",
@@ -1106,6 +1106,14 @@ namespace SIL.WritingSystems.Tests
 				ldmlAdaptor.Read(filePath, wsFromLdml);
 				var fontsRoles = wsFromLdml.Fonts.Select(f => f.Roles);
 				Assert.That(fontsRoles, Does.Contain(roles1).And.Contain(roles2));
+
+				// Make sure we handle type other than those in our enum
+				Assert.That(fontsRoles, Does.Not.Contain(FontRoles.Default));
+				var ldmlText = File.ReadAllText(filePath);
+				ldmlText = ldmlText.Replace("emphasis ui", "novelty");
+				File.WriteAllText(filePath, ldmlText);
+				ldmlAdaptor.Read(filePath, wsFromLdml);
+				Assert.That(wsFromLdml.Fonts.Select(f => f.Roles), Does.Contain(FontRoles.Default));
 			}
 		}
 
@@ -1461,7 +1469,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Write_WritingSystemWasloadedFromLdmlThatContainedLayoutInfo_LayoutInfoIsOnlyWrittenOnce()
+		public void Write_WritingSystemWasLoadedFromLdmlThatContainedLayoutInfo_LayoutInfoIsOnlyWrittenOnce()
 		{
 			using (var file = new TempFile())
 			{
