@@ -149,7 +149,7 @@ namespace SIL.Lift
 			//only the display code knows when to do that.      RemoveEmptyProperties();
 		}
 
-		public virtual void CleanUpAfterEditting()
+		public virtual void CleanUpAfterEditing()
 		{
 			RemoveEmptyProperties();
 		}

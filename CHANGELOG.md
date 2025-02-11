@@ -28,6 +28,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.WritingSystems] Changed optional parameter of SLDR's Initialize from offlineMode to offlineTestMode (technically a breaking change).
 - [SIL.WritingSystems] Added optional parameter to InitializeLanguageTags: bool downloadLanguageTags (default true).
 - [SIL.WritingSystems] Download of langtags.json handled with ETag and If-None-Match headers instead of If-Modified-Since.
+- [SIL.DictionaryServices] In class LiftLexEntryRepository, renamed private method GetTrimmedElementsSeperatedBySemiColon to GetTrimmedElementsSeparatedBySemiColon and private method CheckIfTokenHasAlreadyBeenReturnedForThisSemanticDomain parameter fieldsandValuesForRecordTokens to fieldsAndValuesForRecordTokens.
+- [SIL.DictionaryServices.Tests] Renamed test class LiftLexEntryRepositoryStateUnitializedTests to LiftLexEntryRepositoryStateUninitializedTests.
+- [SIL.DictionaryServices.Tests.Lift] Renamed test class LiftRepositoryStateUnitializedTests to LiftRepositoryStateUninitializedTests.
+- [SIL.Tests.Data] Renamed test interface IRepositoryStateUnitializedTests to IRepositoryStateUninitializedTests and test class MemoryRepositoryStateUnitializedTests to MemoryRepositoryStateUninitializedTests.
+- [SIL.Tests.Spelling] Renamed test class SpellingwordTokenizerTests to SpellingWordTokenizerTests.
+- [SIL.Tests.Text] In test class MultiTextBaseTests, renamed method AnnotationOfMisssingAlternative to AnnotationOfMissingAlternative.
+- [SIL.Windows.Forms.Keyboarding.Tests] In test class XkbKeyboardAdapterTests, renamed method Errorkeyboards to ErrorKeyboards.
+- [SIL.Windows.Forms.Keyboarding.Windows] In internal interface ITfInputProcessorProfileMgr, renamed method RegisterProfile parameter hklsubstitute to hklSubstitute.
+- [SIL.Windows.Forms.Reporting] In class ProblemNotificationDialog, renamed internal property _reoccurenceMessage to _reoccurrenceMessage.
+- [SIL.WritingSystems] In class LanguageLookup changed private method AddLanguage parameter threelettercode to threeLetterCode.
+- [SIL.Xml] (Breaking change!) In class XmlUtils, renamed method GetIndendentedXml to GetIndentedXml.
+- [SIL.UsbDrive.Linux] (Breaking change!) In interface IUDiskDevice renamed method DriveAtaSmartInitiateSelftest to DriveAtaSmartInitiateSelfTest and property DevicePresentationNopolicy to DevicePresentationNoPolicy.
+- [SIL.DictionaryServices.Model] (Breaking change!) In class LexEntry, renamed WellKnownProperties.FlagSkipBaseform to WellKnownProperties.FlagSkipBaseForm and GetSomeMeaningToUseInAbsenseOfHeadWord to GetSomeMeaningToUseInAbsenceOfHeadWord.
+- [SIL.DictionaryServices.Model] (Breaking change!) In classes LexEntry and LexSense, renamed method CleanUpAfterEditting to CleanUpAfterEditing.
+- [SIL.Lift] (Breaking change!) In abstract class PalasoDataObject, renamed method CleanUpAfterEditting to CleanUpAfterEditing.
+- [SIL.Reporting] (Breaking change!) In classes ErrorReport and ExceptionHelper, renamed methed GetHiearchicalExceptionInfo to GetHierarchicalExceptionInfo.
+- [SIL.Reporting] (Breaking change!) In interface IRepeatNoticePolicy and classes ShowAlwaysPolicy and ShowOncePerSessionBasedOnExactMessagePolicy, renamed property ReoccurenceMessage to ReoccurrenceMessage.
+- [SIL.Reporting] (Breaking change!) In class FontAnalytics, renamed property MinumumInterval to MinimumInterval.
+- [SIL.Scripture] (Breaking change!) In class BCVRef method MakeReferenceString, renamed parameter supressChapterForIntroMatter to suppressChapterForIntroMatter.
+- [SIL.Windows.Forms.ImageToolbox] (Breaking change!) Changed class PalsoImageNotDisposed to PalasoImageNotDisposed.
+- [SIL.Windows.Forms.Reporting] (Breaking change!) In class ProblemNotificationDialog, renamed method ReoccurenceMessage to ReoccurrenceMessage.
 
 ### Fixed
 
@@ -44,7 +65,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Added public enum Widgets.SilLogoVariant
 - [SIL.Windows.Forms] Added to Widgets.SilResources: AllLogoVariants, GetLogo, and SilLogoRandom (to replace SilLogo101x113)
 - [SIL.Core] Added macOS support for `GlobalMutex`
-- [SIL.Archiving] Added ArchivingDlgViewModel.Standard and ArchivingDlgViewModel.StringId emumerations.
+- [SIL.Archiving] Added ArchivingDlgViewModel.Standard and ArchivingDlgViewModel.StringId enumerations.
 - [SIL.Archiving] Added public delegate ArchivingDlgViewModel.ExceptionHandler and event ArchivingDlgViewModel.OnExceptionDuringLaunch.
 - [SIL.Archiving] Added IArchivingProgressDisplay interface.
 - [SIL.Archiving] Added overload of ArchivingDlgViewModel.DisplayMessage to take format parameters.
@@ -273,7 +294,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Changed REAP access protocol label from "Insite users" to "REAP users"
 - [SIL.Archiving] Fixed typo in name of ArchiveAccessProtocol.GetDocumentationUri methods
 - [SIL.Archiving] Changed ArchiveAccessProtocol.GetDocumentationUri methods
-- [SIL.Archiving] Changed ArchiveAccessProtocol.SetChoicesFromCsv to thow ArgumentNullException instead of NullReferenceException. Also made it discard duplicate choices if the list contains duplicates.
+- [SIL.Archiving] Changed ArchiveAccessProtocol.SetChoicesFromCsv to throw ArgumentNullException instead of NullReferenceException. Also made it discard duplicate choices if the list contains duplicates.
 - [SIL.Core] `FileLocationUtilities.GetDirectoryDistributedWithApplication` checks not only in
   `DistFiles`, `common`, and `src` subdirectories, but also directly in the application or solution directory.
 - [SIL.Core] Store URLs in Sets instead of Lists in `IKeyboardDefinition` (to prevent duplicates)

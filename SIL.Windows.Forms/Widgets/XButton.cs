@@ -72,7 +72,7 @@ namespace SIL.Windows.Forms.Widgets
 		/// Gets or sets a value indicating whether or not an X is drawn on the button when no
 		/// image, text or arrow direction is specified. By default, when no image, text or
 		/// arrow direction is specified, the button is drawn with an X (like a close window-
-		/// type of X). However, when DrawEmtpy is true, nothing will be drawn except the
+		/// type of X). However, when DrawEmpty is true, nothing will be drawn except the
 		/// highlighted look given when the mouse is over or down or when the button is checked.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------

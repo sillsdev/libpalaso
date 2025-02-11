@@ -54,8 +54,8 @@ namespace SIL.Tests.IO
 		{
 			Assert.IsTrue(DirectoryHelper.AreEquivalent(_srcFolder, _srcFolder));
 			Assert.IsTrue(DirectoryHelper.AreEquivalent(_dstFolder, _dstFolder));
-			const string nonExsistentFolderPath = @"c:\blah\BLAH\weird\..\funky\WhatEVer";
-			Assert.IsTrue(DirectoryHelper.AreEquivalent(nonExsistentFolderPath, nonExsistentFolderPath));
+			const string nonExistentFolderPath = @"c:\blah\BLAH\weird\..\funky\WhatEVer";
+			Assert.IsTrue(DirectoryHelper.AreEquivalent(nonExistentFolderPath, nonExistentFolderPath));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -63,8 +63,8 @@ namespace SIL.Tests.IO
 		public void AreEquivalent_TotallyDifferent_ReturnsFalse()
 		{
 			Assert.IsFalse(DirectoryHelper.AreEquivalent(_srcFolder, _dstFolder));
-			const string nonExsistentFolderPath = @"c:\blah\BLAH\weird\..\funky\WhatEVer";
-			Assert.IsFalse(DirectoryHelper.AreEquivalent(_srcFolder, nonExsistentFolderPath));
+			const string nonExistentFolderPath = @"c:\blah\BLAH\weird\..\funky\WhatEVer";
+			Assert.IsFalse(DirectoryHelper.AreEquivalent(_srcFolder, nonExistentFolderPath));
 		}
 
 		/// ------------------------------------------------------------------------------------

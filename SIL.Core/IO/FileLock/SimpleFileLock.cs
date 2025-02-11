@@ -63,7 +63,7 @@ namespace SIL.IO.FileLock
 			}
 
 			//Acquire the lock
-			
+
 			return AcquireLock();
 		}
 
@@ -142,7 +142,7 @@ namespace SIL.IO.FileLock
 		public static SimpleFileLock Create(string lockName, [Optional] TimeSpan lockTimeout)
 		{
 			if (string.IsNullOrEmpty(lockName))
-				throw new ArgumentNullException("lockName", "lockName cannot be null or emtpy.");
+				throw new ArgumentNullException("lockName", "lockName cannot be null or empty.");
 
 			return new SimpleFileLock(lockName, lockTimeout) { LockFilePath = LockIO.GetFilePath(lockName) };
 		}

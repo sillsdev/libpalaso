@@ -34,7 +34,7 @@ namespace SIL.DictionaryServices.Tests
 		public override void SaveItem_ItemDoesNotExist_Throws()
 		{
 			SetState();
-			Item.Senses.Add(new LexSense());    //make Lexentry dirty
+			Item.Senses.Add(new LexSense());    //make LexEntry dirty
 			Assert.Throws<ArgumentOutOfRangeException>(() =>
 				DataMapperUnderTest.SaveItem(Item));
 		}

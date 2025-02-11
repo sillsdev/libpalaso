@@ -136,8 +136,8 @@ namespace SIL.Keyboarding
 			}
 
 			keyboard.Format = format;
-			
-			// Clear any exisiting URL list
+
+			// Clear any existing URL list
 			keyboard.Urls.Clear();
 			foreach (string url in urls)
 				keyboard.Urls.Add(url);

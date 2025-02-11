@@ -144,7 +144,7 @@ namespace SIL.i18n
 		/// <returns></returns>
 		public static string GetFormatted(string id, string translationNotes, params object[] args)
 		{
-			//todo: this doesn't notice if the catalog has too few arugment slots, e.g.
+			//todo: this doesn't notice if the catalog has too few argument slots, e.g.
 			//if it says "blah" when it should say "blah{0}"
 
 			try

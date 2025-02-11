@@ -114,12 +114,12 @@ namespace SIL.DictionaryServices.Model
 			get { return base.PropertiesInUse.Concat(ExampleSentences.SelectMany(ex=>ex.PropertiesInUse)); }
 		}
 
-		public override void CleanUpAfterEditting()
+		public override void CleanUpAfterEditing()
 		{
-			base.CleanUpAfterEditting();
+			base.CleanUpAfterEditing();
 			foreach (LexExampleSentence sentence in _exampleSentences)
 			{
-				sentence.CleanUpAfterEditting();
+				sentence.CleanUpAfterEditing();
 			}
 			CleanUpEmptyObjects();
 		}
