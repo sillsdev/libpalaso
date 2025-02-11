@@ -17,14 +17,14 @@ using SIL.Xml;
 namespace SIL.WritingSystems
 {
 	/// <summary>
-	/// The LdmlDatamapper Reads and Writes WritingSystemDefinitions to LDML files. A typical consuming application should not
+	/// The LdmlDataMapper Reads and Writes WritingSystemDefinitions to LDML files. A typical consuming application should not
 	/// need to use the LdmlDataMapper directly but should rather use an IWritingSystemRepository (such as the
 	/// LdmlInfolderWritingSystemRepository) to manage it's writing systems.
-	/// The LdmlDatamapper is tightly tied to the CLDR version of LDML. If the LdmlDatamapper refuses to Read a
+	/// The LdmlDataMapper is tightly tied to the CLDR version of LDML. If the LdmlDataMapper refuses to Read a
 	/// particular Ldml file it may need to be migrated to the latest version. Please use the
 	/// LdmlInFolderWritingSystemRepository class for this purpose.
 	/// Please note that the LdmlDataMapper.Write method can round trip data that it does not understand if passed an
-	/// appropriate stream or xmlreader produced from the old file.
+	/// appropriate Stream or XmlReader produced from the old file.
 	/// Be aware that as of Jul-5-2011 an exception was made for certain well defined Fieldworks LDML files whose contained
 	/// Rfc5646 tag begin with "x-". These will load correctly, albeit in a transformed state, in spite of being "Version 0".
 	/// Furthermore writing systems containing RfcTags beginning with "x-" and that have a matching Fieldworks conform LDML file
@@ -94,7 +94,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Mapping of spell checking type attribute to SpellCheckDictionaryFormat enumeration
 		/// </summary>
-		private static readonly Dictionary<string, SpellCheckDictionaryFormat> SpellCheckToSpecllCheckDictionaryFormats = new Dictionary
+		private static readonly Dictionary<string, SpellCheckDictionaryFormat> SpellCheckToSpellCheckDictionaryFormats = new Dictionary
 			<string, SpellCheckDictionaryFormat>
 		{
 			{"hunspell", SpellCheckDictionaryFormat.Hunspell},
@@ -398,7 +398,7 @@ namespace SIL.WritingSystems
 		{
 			// Flag invalid versions (0-2 inclusive) from reading legacy LDML files
 			// We're intentionally not using WritingSystemLDmlVersionGetter and the
-			// cheeck for Flex7V0Compatible because the migrator will have handled that.
+			// check for Flex7V0Compatible because the migrator will have handled that.
 			if (!string.IsNullOrEmpty((string) specialElem.Attribute(XNamespace.Xmlns + "fw")) ||
 				!string.IsNullOrEmpty((string) specialElem.Attribute(XNamespace.Xmlns + "palaso")))
 			{
@@ -473,7 +473,7 @@ namespace SIL.WritingSystems
 					// OpenType language
 					fd.OpenTypeLanguage = (string) fontElem.Attribute("otlang");
 
-					// Font Engine (space separated list) supercedes legacy isGraphite flag
+					// Font Engine (space separated list) supersedes legacy isGraphite flag
 					// If attribute is missing it is assumed to be "gr ot"
 					var engines = (string) fontElem.Attribute("engines") ?? "gr ot";
 					IEnumerable<string> engineList = engines.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
@@ -507,7 +507,7 @@ namespace SIL.WritingSystems
 				var type = (string) scElem.Attribute("type");
 				if (!string.IsNullOrEmpty(type))
 				{
-					var scd = new SpellCheckDictionaryDefinition(SpellCheckToSpecllCheckDictionaryFormats[type]);
+					var scd = new SpellCheckDictionaryDefinition(SpellCheckToSpellCheckDictionaryFormats[type]);
 
 					// URL elements
 					foreach (XElement urlElem in scElem.NonAltElements(Sil + "url"))
@@ -741,7 +741,7 @@ namespace SIL.WritingSystems
 				{
 					var digits = (string)numberingSystemsElem.Attribute("digits");
 					var cldrSysId = CLDRNumberingSystems.FindNumberingSystemID(digits);
-					if (cldrSysId == null) // digits don't match a cldr def, create a custom one
+					if (cldrSysId == null) // digits don't match a CLDR def, create a custom one
 					{
 						ws.NumberingSystem = NumberingSystemDefinition.CreateCustomSystem(digits);
 					}
@@ -898,7 +898,7 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// The "oldFile" parameter allows the LdmldataMapper to allow data that it doesn't understand to be roundtripped.
+		/// The "oldFile" parameter allows the LdmlDataMapper to allow data that it doesn't understand to be roundtripped.
 		/// </summary>
 		/// <param name="filePath"></param>
 		/// <param name="ws"></param>
@@ -968,7 +968,7 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// The "oldFileReader" parameter allows the LdmldataMapper to allow data that it doesn't understand to be roundtripped.
+		/// The "oldFileReader" parameter allows the LdmlDataMapper to allow data that it doesn't understand to be roundtripped.
 		/// </summary>
 		/// <param name="xmlWriter"></param>
 		/// <param name="ws"></param>
