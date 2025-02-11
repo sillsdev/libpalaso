@@ -215,7 +215,7 @@ namespace SIL.WritingSystems
 				//Renaming the file here is a bit ugly as the content has not yet been updated. Thus there
 				//may be a mismatch between the filename and the contained rfc5646 tag. Doing it here however
 				//helps us avoid having to deal with situations where a writing system id is changed to be
-				//identical with the old id of another writing system. This could otherwise lead to dataloss.
+				//identical with the old id of another writing system. This could otherwise lead to data loss.
 				//The inconsistency is resolved on Save()
 				if (oldStoreId != ws.Id && File.Exists(GetFilePathFromLanguageTag(oldStoreId)))
 					File.Move(GetFilePathFromLanguageTag(oldStoreId), GetFilePathFromLanguageTag(ws.Id));
@@ -525,7 +525,7 @@ namespace SIL.WritingSystems
 		{
 			Dispose(true);
 			// This object will be cleaned up by the Dispose method.
-			// Therefore, you should call GC.SupressFinalize to
+			// Therefore, you should call GC.SuppressFinalize to
 			// take this object off the finalization queue
 			// and prevent finalization code for this object
 			// from executing a second time.

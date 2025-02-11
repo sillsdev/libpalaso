@@ -13,7 +13,7 @@ namespace SIL.PlatformUtilities
 		/// Initializes a new instance of the <see cref="NativeException"/> class.
 		/// </summary>
 		public NativeException(int error)
-			: base(string.Format("An error with the number, {0}, ocurred.", error))
+			: base(string.Format("An error with the number, {0}, occurred.", error))
 		{
 			_error = error;
 		}

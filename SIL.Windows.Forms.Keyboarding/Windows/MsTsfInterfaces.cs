@@ -246,7 +246,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		void RegisterProfile(ref Guid rclsid, ushort langid, ref Guid guidProfile,
 			[MarshalAs(UnmanagedType.LPWStr)] string desc, uint cchDesc,
 			[MarshalAs(UnmanagedType.LPWStr)] string iconFile, uint cchFile,
-			uint uIconIndex, uint hklsubstitute, uint dwPreferredLayout,
+			uint uIconIndex, uint hklSubstitute, uint dwPreferredLayout,
 			[MarshalAs(UnmanagedType.VariantBool)] bool bEnabledByDefault, uint dwFlags);
 
 		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]

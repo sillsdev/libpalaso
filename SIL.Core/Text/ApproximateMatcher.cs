@@ -138,7 +138,7 @@ namespace SIL.Text
 			return bestMatches;
 		}
 
-		// The Damerau-Levenshtein distance is equal to the minimal number of insertions, deletions, substitutions and transpositions needed to transform one string into anothe
+		// The Damerau-Levenshtein distance is equal to the minimal number of insertions, deletions, substitutions and transpositions needed to transform one string into another
 		// http://en.wikipedia.org/wiki/Damerau-Levenshtein_distance
 		// This algorithm is O(|x||y|) time and O(min(|x|,|y|)) space in worst and average case
 		// Ukkonen 1985 Algorithms for approximate string matching. Information and Control 64, 100-118.

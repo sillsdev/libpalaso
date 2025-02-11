@@ -117,7 +117,7 @@ namespace SIL.Archiving.IMDI.Lists
 		}
 
 		/// ---------------------------------------------------------------------------------------
-		/// <summary>Overriden so that the List contains LanguageItems rather than IMDIListItems</summary>
+		/// <summary>Overridden so that the List contains LanguageItems rather than IMDIListItems</summary>
 		public override void AddItem(string englishName, string code)
 		{
 			Add(new LanguageItem(englishName, code));
@@ -187,7 +187,7 @@ namespace SIL.Archiving.IMDI.Lists
 				if (string.IsNullOrEmpty(item.EnglishName))
 					item.EnglishName = archLanguage.EnglishName;
 			}
-			
+
 			return item;
 		}
 	}

@@ -515,9 +515,9 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 					if(countLength > 0)
 					{
 						var lastChildProp = geckoNodeListType.GetProperty("Item"); // Magic
-						var lastchild = lastChildProp.GetValue(children, new object[] { countLength - 1 });
+						var lastChild = lastChildProp.GetValue(children, new object[] { countLength - 1 });
 						var scrollIntoView = geckoHtmlElementType.GetMethod("ScrollIntoView");
-						scrollIntoView.Invoke(lastchild, BindingFlags.Default, null, null, null);
+						scrollIntoView.Invoke(lastChild, BindingFlags.Default, null, null, null);
 					}
 				}
 			}

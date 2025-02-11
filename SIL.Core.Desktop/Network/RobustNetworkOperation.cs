@@ -140,7 +140,7 @@ namespace SIL.Network
 			if (!proxyInfo.IsBypassed(destination))
 				return false;
 
-			// In the absense of a proxy it is reported as being the same as the destination url.
+			// In the absence of a proxy it is reported as being the same as the destination url.
 			if (proxyUrl.AbsoluteUri == url)
 				return false;
 
