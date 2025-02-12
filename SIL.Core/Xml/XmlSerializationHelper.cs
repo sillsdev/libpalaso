@@ -56,10 +56,19 @@ namespace SIL.Xml
 
 			/// --------------------------------------------------------------------------------
 			/// <summary>
-			/// Gets the namespace URI (as defined in the W3C Namespace specification) of the
-			/// node on which the reader is positioned.
+			/// Base class gets the namespace URI (as defined in the W3C Namespace specification)
+			/// of the node on which the reader is positioned, but here it is overridden.
 			/// </summary>
-			/// <returns>The namespace URI of the current node; otherwise an empty string.</returns>
+			/// <returns>An empty string.</returns>
+			/// <remarks>REVIEW: Why was this overridden? My guess is that it maybe it was to avoid
+			/// an exception or other undesirable behavior in the case where we're dealing with a
+			/// whitespace node that we're keeping but the underlying implementation wouldn't have
+			/// kept, but that seems only barely plausible, and even then we could catch the
+			/// exception and return Empty only in that case. Since it's an internal class and
+			/// none of the code that uses it references this property, the only possible purpose
+			/// I can think of for overriding it would be to keep it from crashing, giving
+			/// unreliable information, or maybe timing out in the debugger's watch window.
+			/// </remarks>
 			/// --------------------------------------------------------------------------------
 			public override string NamespaceURI => string.Empty;
 
