@@ -132,13 +132,9 @@ namespace SIL.Archiving.Tests
 
 		#region GetNameOfProgramToLaunch tests
 
-		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Category("SkipOnTeamCity")]
 		public void GetNameOfProgramToLaunch_ShortExeName_ReturnsExeNameWithoutExtension()
 		{
-			// fails on TeamCity because Arbil is not installed
-
 			_model.ProgramPreset = "Arbil";
 
 			// AT THIS TIME WE ARE NOT SHOWING THE LAUNCH OPTION
@@ -146,13 +142,9 @@ namespace SIL.Archiving.Tests
 			Assert.IsNull(_model.NameOfProgramToLaunch);
 		}
 
-		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Category("SkipOnTeamCity")]
 		public void GetNameOfProgramToLaunch_ExeNameContainsFolderName_ReturnsFolderName()
 		{
-			// fails on TeamCity because Arbil is not installed
-
 			_model.ProgramPreset = "Arbil";
 
 			// AT THIS TIME WE ARE NOT SHOWING THE LAUNCH OPTION
