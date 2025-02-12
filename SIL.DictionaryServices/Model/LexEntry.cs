@@ -52,7 +52,7 @@ namespace SIL.DictionaryServices.Model
 			public static string BaseForm = "BaseForm";
 			public static string CrossReference = "confer";
 			public static string Sense = "sense";
-			public static string FlagSkipBaseform = "flag-skip-BaseForm";
+			public static string FlagSkipBaseForm = "flag-skip-BaseForm";
 			public static string LiteralMeaning = "literal-meaning";
 
 			public new static bool Contains(string fieldName)
@@ -332,7 +332,7 @@ namespace SIL.DictionaryServices.Model
 		/// <summary>
 		/// This use for keeping track of the item when importing an then exporting again,
 		/// like for merging. Also used for relations (e.g. superentry). we purposefully
-		/// delay making one of these (if we aren't contructed with one) in order to give
+		/// delay making one of these (if we aren't constructed with one) in order to give
 		/// time to get a LexemeForm to make the id more readable.
 		/// </summary>
 		public string Id
@@ -353,16 +353,16 @@ namespace SIL.DictionaryServices.Model
 			}
 		}
 
-		public override void CleanUpAfterEditting()
+		public override void CleanUpAfterEditing()
 		{
 			if (IsBeingDeleted)
 			{
 				return;
 			}
-			base.CleanUpAfterEditting();
+			base.CleanUpAfterEditing();
 			foreach (LexSense sense in _senses)
 			{
-				sense.CleanUpAfterEditting();
+				sense.CleanUpAfterEditing();
 			}
 			//enhance if ever WeSay does variants, we may need to add this kind of cleanup
 			CleanUpEmptyObjects();
@@ -470,7 +470,7 @@ namespace SIL.DictionaryServices.Model
 
 		/// <summary>
 		/// this is used to prevent things like cleanup of an object that is being deleted, which
-		/// can lead to update notifications that get the dispossed entry back in the db, or in some cache
+		/// can lead to update notifications that get the disposed entry back in the db, or in some cache
 		/// </summary>
 		public bool IsBeingDeleted { get; set; }
 
@@ -520,8 +520,8 @@ namespace SIL.DictionaryServices.Model
 		public bool IsDirty
 		{
 			get;
-			//ideally, this wouldn't be needed, but in making the homograph merger, I (jh) found that adding a property (a citation form)
-			// left _isDirty still false. I dont have the stomach to spend a day figure out why, so I'm making this settable.
+			// Ideally, this wouldn't be needed, but in making the homograph merger, I (jh) found that adding a property (a citation form)
+			// left _isDirty still false. I don't have the stomach to spend a day to figure out why, so I'm making this settable.
 			set;
 		}
 
@@ -544,7 +544,7 @@ namespace SIL.DictionaryServices.Model
 		/// this is safer
 		/// </summary>
 		/// <param name="writingSystemId"></param>
-		/// <returns>string.emtpy if no headword</returns>
+		/// <returns>string.empty if no headword</returns>
 		public string GetHeadWordForm(string writingSystemId)
 		{
 			LanguageForm form = GetHeadWord(writingSystemId);
@@ -578,7 +578,7 @@ namespace SIL.DictionaryServices.Model
 		/// <summary>
 		/// used by SILCAWL list
 		/// </summary>
-		public string GetSomeMeaningToUseInAbsenseOfHeadWord(string writingSystemId)
+		public string GetSomeMeaningToUseInAbsenceOfHeadWord(string writingSystemId)
 		{
 			var s = Senses.FirstOrDefault();
 			if(s==null)

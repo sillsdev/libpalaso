@@ -142,7 +142,7 @@ namespace SIL.WritingSystems
 			Debug.WriteLine($"LanguageLookup.EnsureDefaultTags() changed {countChanged} language tags");
 		}
 
-		private bool AddLanguage(string code, string threelettercode, string full = null,
+		private bool AddLanguage(string code, string threeLetterCode, string full = null,
 			string name = null, string localName = null, string region = null, List<string> names = null, List<string> regions = null, List<string> tags = null, List<string> ianaNames = null, string regionName = null)
 		{
 			string primaryCountry;
@@ -152,14 +152,7 @@ namespace SIL.WritingSystems
 			}
 			else if (StandardSubtags.IsValidIso3166RegionCode(region))
 			{
-				if (StandardSubtags.IsPrivateUseRegionCode(region))
-				{
-					primaryCountry = region == "XK" ? "Kosovo" : "Unknown private use";
-				}
-				else
-				{
-					primaryCountry = StandardSubtags.RegisteredRegions[region].Name; // convert to full region name
-				}
+				primaryCountry = RegionToCountry(region);
 			}
 			else
 			{
@@ -168,7 +161,7 @@ namespace SIL.WritingSystems
 			LanguageInfo language = new LanguageInfo
 			{
 				LanguageTag = code,
-				ThreeLetterTag = threelettercode,
+				ThreeLetterTag = threeLetterCode,
 				// DesiredName defaults to Names[0], which is set below.
 				PrimaryCountry = primaryCountry
 			};
@@ -180,7 +173,7 @@ namespace SIL.WritingSystems
 				{
 					if (!country.Contains('?') && country != "")
 					{
-						language.Countries.Add(StandardSubtags.RegisteredRegions[country].Name);
+						language.Countries.Add(RegionToCountry(country));
 					}
 				}
 			}
@@ -226,9 +219,9 @@ namespace SIL.WritingSystems
 				_codeToLanguageIndex[full] = language; // add the full expanded tag
 			}
 
-			if (threelettercode != null && !string.Equals(code, threelettercode))
+			if (threeLetterCode != null && !string.Equals(code, threeLetterCode))
 			{
-				_codeToLanguageIndex[threelettercode] = language;
+				_codeToLanguageIndex[threeLetterCode] = language;
 			}
 
 			if (tags != null)
@@ -256,6 +249,24 @@ namespace SIL.WritingSystems
 			}
 
 			return true;
+		}
+
+		private static string RegionToCountry(string region)
+		{
+			string country;
+			if (StandardSubtags.IsPrivateUseRegionCode(region))
+			{
+				country = region == "XK" ? "Kosovo" : "Unknown private use";
+			}
+			else if (StandardSubtags.RegisteredRegions.TryGet(region, out var regionTag))
+			{
+				country = regionTag.Name; // convert to full region name
+			}
+			else
+			{
+				country = "Invalid region " + region;
+			}
+			return country;
 		}
 
 

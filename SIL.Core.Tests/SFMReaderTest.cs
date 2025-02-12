@@ -727,7 +727,7 @@ namespace SIL.Tests
 				() => test.ReadInitialText());
 		}
 		[Test]
-		public void UsfmMode_TagTerminiatedByAsterisk()
+		public void UsfmMode_TagTerminatedByAsterisk()
 		{
 			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
 					@"\tag1*some text"));
@@ -738,7 +738,7 @@ namespace SIL.Tests
 			Assert.AreEqual("some text", test.ReadNextText());
 		}
 		[Test]
-		public void DefaultMode_TagTerminiatedByAsterisk()
+		public void DefaultMode_TagTerminatedByAsterisk()
 		{
 			Stream stream = new MemoryStream(Encoding.ASCII.GetBytes(
 					@"\tag1*some text"));

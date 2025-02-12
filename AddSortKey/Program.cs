@@ -18,7 +18,7 @@ namespace AddSortKey
 			Console.Error.WriteLine("source: an XPath which selects the nodes that will be used to generate sort keys");
 			Console.Error.WriteLine("sort: the sort identifier (en-US) or sort rules");
 			Console.Error.WriteLine("  sort rules should be prefixed by their type (icu: or simple:)");
-			Console.Error.WriteLine("location: a relative xpath (from the source) to the element the sortkey attribute will be put in");
+			Console.Error.WriteLine("location: a relative xpath (from the source) to the element the sortKey attribute will be put in");
 			Console.Error.WriteLine("attribute: the name of the attribute to put the generated sort key in");
 		}
 

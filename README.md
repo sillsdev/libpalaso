@@ -105,7 +105,7 @@ building libpalaso won't succeed. Therefore it's recommended to install
 
 - Test in client projects (as applicable):
 
-  * Set an enviroment variable `LOCAL_NUGET_REPO` with the path to a folder on your computer (or local network) to publish locally-built packages
+  * Set an environment variable `LOCAL_NUGET_REPO` with the path to a folder on your computer (or local network) to publish locally-built packages
   * See [these instructions](https://docs.microsoft.com/en-us/nuget/hosting-packages/local-feeds) to enable local package sources
   * `build /t:pack` will pack nuget packages and publish them to `LOCAL_NUGET_REPO`
 

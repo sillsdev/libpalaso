@@ -17,7 +17,7 @@ namespace SIL.DictionaryServices.Lift
 		private readonly OptionsList _semanticDomainsList; // Review: how is this used in LexEntryFromLiftBuilder.
 
 		/// <summary>
-		/// the lift format puts all options in "&lt;trait/&gt;", so we need this to know when we have an optioncollection and when it's a single option field
+		/// the lift format puts all options in "&lt;trait/&gt;", so we need this to know when we have an option collection and when it's a single option field
 		/// </summary>
 		private readonly IEnumerable<string> _idsOfSingleOptionFields;
 

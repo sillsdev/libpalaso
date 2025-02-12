@@ -645,7 +645,7 @@
 			</xsd:element>
 			<xsd:element name="Size" type="imdi:String_Type">
 				<xsd:annotation>
-					<xsd:documentation>Human readabusle string that indicates total size of corpus</xsd:documentation>
+					<xsd:documentation>Human readable string that indicates total size of corpus</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element name="DistributionForm" type="imdi:Vocabulary_Type"/>
@@ -965,7 +965,7 @@
 						</xsd:element>
 						<xsd:element name="Semantics" type="imdi:Vocabulary_Type">
 							<xsd:annotation>
-								<xsd:documentation>OCV: Sense dstinction</xsd:documentation>
+								<xsd:documentation>OCV: Sense distinction</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
 						<xsd:element name="Etymology" type="imdi:Vocabulary_Type"/>
@@ -1051,7 +1051,7 @@
 						</xsd:element>
 						<xsd:element name="preferredParent" type="imdi:Vocabulary_Type" minOccurs="0" maxOccurs="1">
 							<xsd:annotation>
-								<xsd:documentation>Descibes the preferred parent of the lexiconComponent in the schema tree</xsd:documentation>
+								<xsd:documentation>Describes the preferred parent of the lexiconComponent in the schema tree</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
 						<xsd:element name="childNodes" minOccurs="0" maxOccurs="1">
@@ -1199,7 +1199,7 @@
 	-->
 	<xsd:complexType name="VocabularyDef_Type" mixed="false">
 		<xsd:annotation>
-			<xsd:documentation>The definition of a vocabulary. Attributes: Date of creattion, Link to origin. Contails a Description be element to descr+++ ibe the domain of the vocabulary and a (unspecified) number of value enries</xsd:documentation>
+			<xsd:documentation>The definition of a vocabulary. Attributes: Name, Date of creation, Tags, Link to origin. Contains a Description of the domain of the vocabulary and some (unspecified) number of value Entries</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element name="Description" type="imdi:Description_Type" maxOccurs="unbounded"/>
@@ -1282,7 +1282,7 @@
 	-->
 	<xsd:complexType name="Age_Type">
 		<xsd:annotation>
-			<xsd:documentation>Specifies age of a person with differerent counting methods</xsd:documentation>
+			<xsd:documentation>Specifies age of a person with different counting methods</xsd:documentation>
 		</xsd:annotation>
 		<xsd:simpleContent>
 			<xsd:extension base="imdi:Age_Value_Type">
@@ -1642,7 +1642,7 @@
 	-->
 	<xsd:simpleType name="EmptyString_Value_Type">
 		<xsd:annotation>
-			<xsd:documentation>empty string definition</xsd:documentation>
+			<xsd:documentation>Empty string definition</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:string">
 			<xsd:maxLength value="0"/>
@@ -1653,7 +1653,7 @@
 	-->
 	<xsd:simpleType name="CommaSeparatedString_Value_Type">
 		<xsd:annotation>
-			<xsd:documentation>Comma seperated string</xsd:documentation>
+			<xsd:documentation>Comma separated string</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:string">
 			<xsd:pattern value="[^,]*(,[^,]+)*"/>

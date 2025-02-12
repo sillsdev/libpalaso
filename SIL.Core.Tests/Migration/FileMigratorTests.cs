@@ -206,7 +206,7 @@ namespace SIL.Tests.Migration
 		}
 
 		[Test]
-		public void Migrate_UsingXslAndXml_ArrviesAtVersion3()
+		public void Migrate_UsingXslAndXml_ArrivesAtVersion3()
 		{
 			using (var e = new EnvironmentForTest())
 			{

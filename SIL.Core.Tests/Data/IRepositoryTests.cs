@@ -15,7 +15,7 @@ namespace SIL.Tests.Data
 		}
 	}
 
-	public abstract class IRepositoryStateUnitializedTests<T> where T : class, new()
+	public abstract class IRepositoryStateUninitializedTests<T> where T : class, new()
 	{
 		private IDataMapper<T> dataMapperUnderTest;
 
@@ -85,7 +85,7 @@ namespace SIL.Tests.Data
 		}
 
 		[Test]
-		public void CountAllItems_NoItemsInTheRepostory_ReturnsZero()
+		public void CountAllItems_NoItemsInTheRepository_ReturnsZero()
 		{
 			Assert.AreEqual(0, DataMapperUnderTest.CountAllItems());
 		}
@@ -446,8 +446,8 @@ namespace SIL.Tests.Data
 
 		public void SetState()
 		{
-			RepositoryId[] idsFrompersistedData = DataMapperUnderTest.GetAllItems();
-			Id = idsFrompersistedData[0];
+			RepositoryId[] idsFromPersistedData = DataMapperUnderTest.GetAllItems();
+			Id = idsFromPersistedData[0];
 			Item = DataMapperUnderTest.GetItem(Id);
 		}
 

@@ -1,7 +1,7 @@
 ###############################################################################
 #
 # This python script takes the output from xsd.exe and makes changes that
-# allow it to be used more easily and also makes it more acceptible to
+# allow it to be used more easily and also makes it more acceptable to
 # ReSharper.
 #
 ###############################################################################

@@ -143,7 +143,7 @@ namespace SIL.Tests.ObjectModel
 		{
 			IBindingList bindingList = SortableBindingListFactory.Create();
 
-			IList sortedByAddressDescneding = new[]
+			IList sortedByAddressDescending = new[]
             {
                 bindingList[2],
                 bindingList[1],
@@ -153,7 +153,7 @@ namespace SIL.Tests.ObjectModel
 			PropertyDescriptor propertyDescriptor = PropertyDescriptorHelper.Get(bindingList[0], "Address");
 			bindingList.ApplySort(propertyDescriptor, ListSortDirection.Descending);
 			bindingList.ApplySort(propertyDescriptor, ListSortDirection.Descending);
-			AssertSortableBindingList.HaveSameElements(sortedByAddressDescneding, bindingList);
+			AssertSortableBindingList.HaveSameElements(sortedByAddressDescending, bindingList);
 		}
 
 		[Test]
@@ -293,8 +293,8 @@ namespace SIL.Tests.ObjectModel
 		{
 			return new[]
             {
-                new Person(new ComparableIdentification(1), "A", "3", new NotComparableDate(1980, 04, 30), new GenericComparableAddress("1")), 
-                new Person(new ComparableIdentification(2), "B", "1", new NotComparableDate(1982, 01, 30), new GenericComparableAddress("2")), 
+                new Person(new ComparableIdentification(1), "A", "3", new NotComparableDate(1980, 04, 30), new GenericComparableAddress("1")),
+                new Person(new ComparableIdentification(2), "B", "1", new NotComparableDate(1982, 01, 30), new GenericComparableAddress("2")),
                 new Person(new ComparableIdentification(3), "C", "2", new NotComparableDate(1984, 02, 20), new GenericComparableAddress("3"))
             };
 		}
