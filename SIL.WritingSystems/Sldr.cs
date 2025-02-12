@@ -81,7 +81,7 @@ namespace SIL.WritingSystems
 		private const string UserAgent = "SIL.WritingSystems Library";
 
 		// Mode to test when the SLDR is unavailable.  Default to false
-		private static bool _offlineMode;
+		private static bool _offlineTestMode;
 
 		// If the user wants to request a new UID, you use "uid=unknown" and that will create a new random identifier
 		public const string DefaultUserId = "unknown";
@@ -111,38 +111,26 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public static string SldrCachePath { get; private set; }
 
-		private static readonly DateTime DefaultEmbeddedAllTagsTime = DateTime.Parse(LanguageRegistryResources.AllTagsTime, CultureInfo.InvariantCulture);
-		private static DateTime _embeddedAllTagsTime;
-
 		/// <summary>
 		/// Initializes the SLDR. This should be called before calling other methods or properties.
 		/// </summary>
-		public static void Initialize(bool offlineMode = false)
+		public static void Initialize(bool offlineTestMode = false)
 		{
-			Initialize(offlineMode, DefaultSldrCachePath);
+			Initialize(offlineTestMode, DefaultSldrCachePath);
 		}
 
 		/// <summary>
 		/// This method is used for testing purposes.
 		/// </summary>
-		internal static void Initialize(bool offlineMode, string sldrCachePath)
-		{
-			Initialize(offlineMode, sldrCachePath, DefaultEmbeddedAllTagsTime);
-		}
-
-		/// <summary>
-		/// This method is used for testing purposes.
-		/// </summary>
-		internal static void Initialize(bool offlineMode, string sldrCachePath, DateTime embeddedAllTagsTime)
+		internal static void Initialize(bool offlineTestMode, string sldrCachePath)
 		{
 			if (IsInitialized)
 				throw new InvalidOperationException("The SLDR has already been initialized.");
 
 			_sldrCacheMutex = new GlobalMutex("SldrCache");
 			_sldrCacheMutex.Initialize();
-			_offlineMode = offlineMode;
+			_offlineTestMode = offlineTestMode;
 			SldrCachePath = sldrCachePath;
-			_embeddedAllTagsTime = embeddedAllTagsTime;
 
 			InitializeGetUnicodeCategoryBasedOnIcu();
 		}
@@ -301,7 +289,7 @@ namespace SIL.WritingSystems
 
 					try
 					{
-						if (_offlineMode)
+						if (_offlineTestMode)
 							throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
 
 						// Check the response header to see if the requested LDML file got redirected
@@ -451,58 +439,76 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		public static void InitializeLanguageTags()
+		public static void InitializeLanguageTags(bool downloadLanguageTags = true)
 		{
-			LoadLanguageTagsIfNecessary();
+			LoadLanguageTagsIfNecessary(downloadLanguageTags);
 		}
 
 		/// <summary>
 		/// Gets the language tags of the available LDML files in the SLDR.
 		/// </summary>
-		private static void LoadLanguageTagsIfNecessary()
+		private static void LoadLanguageTagsIfNecessary(bool downloadLanguageTags = true)
 		{
 			if (_languageTags != null)
 				return;
 
-			string cachedAllTagsPath;
+			if (downloadLanguageTags)
+				DownloadLanguageTags();
+
+			_languageTags = new ReadOnlyKeyedCollection<string, SldrLanguageTagInfo>(
+				ParseAllTagsJson(Path.Combine(SldrCachePath, "langtags.json")));
+		}
+
+		/// <summary>
+		/// If SLDR is online, sends a request for langtags to the SLDR repository.
+		/// If the cache has both langtags and an ETag,
+		/// then the request will include an "If-None-Match" header.
+		/// </summary>
+		public static void DownloadLanguageTags()
+		{
+			if (_offlineTestMode)
+				return;
+
 			using (_sldrCacheMutex.Lock())
 			{
 				CreateSldrCacheDirectory();
 
-				cachedAllTagsPath = Path.Combine(SldrCachePath, "langtags.json");
-				var sinceTime = _embeddedAllTagsTime.ToUniversalTime();
-				if (File.Exists(cachedAllTagsPath))
-				{
-					var fileTime = File.GetLastWriteTimeUtc(cachedAllTagsPath);
-					if (sinceTime > fileTime)
-						// delete the old langtags.json file if a newer embedded one is available.
-						// this can happen if the application is upgraded to use a newer version of SIL.WritingSystems
-						// that has an updated embedded langtags.json file.
-						File.Delete(cachedAllTagsPath);
-					else
-						sinceTime = fileTime;
-				}
-				sinceTime += TimeSpan.FromSeconds(1);
 				try
 				{
-					if (_offlineMode)
-						throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
-
+					var cachedAllTagsPath = Path.Combine(SldrCachePath, "langtags.json");
+					var cachedETagPath = Path.Combine(SldrCachePath, "langtags.json.etag");
+					var cachedETag =
+						File.Exists(cachedETagPath) ? File.ReadAllText(cachedETagPath) : "";
 
 					// get SLDR langtags.json from the SLDR api compressed
-					// it will throw WebException or have status HttpStatusCode.NotModified if file is unchanged or not get it
+					// if request fails or file is unchanged
+					// it will throw WebException or have status other than HttpStatusCode.OK
 					var langtagsUrl =
 						$"{SldrRepository}index.html?query=langtags&ext=json{StagingParameter}";
-					var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(langtagsUrl));
+					var webRequest =
+						(HttpWebRequest)WebRequest.Create(Uri.EscapeUriString(langtagsUrl));
 					webRequest.UserAgent = UserAgent;
-					webRequest.IfModifiedSince = sinceTime;
+					// Only use an ETag header if it's nonempty and we already have cached tags
+					if (!string.IsNullOrEmpty(cachedETag) && File.Exists(cachedAllTagsPath))
+						webRequest.Headers.Set("If-None-Match", cachedETag);
 					webRequest.Timeout = 10000;
-					webRequest.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-					using var webResponse = (HttpWebResponse) webRequest.GetResponse();
-					if (webResponse.StatusCode != HttpStatusCode.NotModified)
+					webRequest.AutomaticDecompression =
+						DecompressionMethods.GZip | DecompressionMethods.Deflate;
+					using var webResponse = (HttpWebResponse)webRequest.GetResponse();
+					if (webResponse.StatusCode != HttpStatusCode.OK)
+						return;
+
+					var eTag = webResponse.Headers.Get("ETag");
+					if (string.IsNullOrEmpty(cachedETag) || !cachedETag.Equals(eTag)
+						|| !File.Exists(cachedAllTagsPath))
 					{
-						using Stream output = File.OpenWrite(cachedAllTagsPath);
+						if (!string.IsNullOrEmpty(eTag))
+							File.WriteAllText(cachedETagPath, eTag);
+
 						using var input = webResponse.GetResponseStream();
+						if (File.Exists(cachedAllTagsPath))
+							File.Delete(cachedAllTagsPath);
+						using var output = File.OpenWrite(cachedAllTagsPath);
 						input.CopyTo(output);
 					}
 				}
@@ -516,8 +522,8 @@ namespace SIL.WritingSystems
 				{
 				}
 			}
-			_languageTags = new ReadOnlyKeyedCollection<string, SldrLanguageTagInfo>(ParseAllTagsJson(cachedAllTagsPath));
 		}
+
 
 		private static IKeyedCollection<string, SldrLanguageTagInfo> ParseAllTagsJson(string cachedAllTagsPath)
 		{
