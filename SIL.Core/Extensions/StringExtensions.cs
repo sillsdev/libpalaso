@@ -151,7 +151,7 @@ namespace SIL.Extensions
 		}
 
 		/// <summary>
-		/// Similar to <see cref="Path.Combine(string,string)"/>, but it combines as may parts as
+		/// Similar to <see cref="Path.Combine(string,string)"/>, but it combines as many parts as
 		/// you have into a single, platform-appropriate path.
 		/// </summary>
 		/// <example> string path = "my".Combine("stuff", "toys", "ball.txt")</example>

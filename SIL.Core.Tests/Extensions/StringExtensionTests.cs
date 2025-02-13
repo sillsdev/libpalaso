@@ -192,7 +192,10 @@ namespace SIL.Tests.Extensions
 		
 		[TestCase("line1\rline2")]
 		[TestCase("line1\nline2")]
+		[TestCase("line1\nline2\n")]
+		[TestCase("line1\nline2\n\r")]
 		[TestCase("line1\n\rline2")]
+		[TestCase("line1\n\rline2\r\n")]
 		[TestCase("line1\r\nline2")]
 		[TestCase("line1\r\rline2")]
 		[TestCase("line1\n\nline2")]
