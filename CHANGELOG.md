@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - [SIL.WritingSystems] Added public DownloadLanguageTags method for updating the cached langtags.json from the SLDR repository.
+- [SIL.Core] Add environment variable to disable `GlobalMutex` across processes. Helpful for snap packages in Linux.
+
 
 ### Changed
 
