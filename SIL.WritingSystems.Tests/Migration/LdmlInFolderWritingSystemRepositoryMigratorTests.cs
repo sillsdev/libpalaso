@@ -149,7 +149,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		}
 
 		[Test]
-		public void Migrate_RepoContainsWsThatWouldBeMigratedToCaseInsensitiveDuplicateOfExistingWswithBogusFileName_WritingSystemWithValidRfcTagBeforeMigrationIsNotTheDuplicate()
+		public void Migrate_RepoContainsWsThatWouldBeMigratedToCaseInsensitiveDuplicateOfExistingWsWithBogusFileName_WritingSystemWithValidRfcTagBeforeMigrationIsNotTheDuplicate()
 		{
 			using (var environment = new TestEnvironment())
 			{
@@ -369,7 +369,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		}
 
 		[Test]
-		public void Migrate_LanguageSubtagContainsxDashaudioAndScriptSubtagcontainsZxxx_ZxxxIsNotAppendedToPrivateUseSubtag()
+		public void Migrate_LanguageSubtagContainsxDashaudioAndScriptSubtagContainsZxxx_ZxxxIsNotAppendedToPrivateUseSubtag()
 		{
 			using (var environment = new TestEnvironment())
 			{
@@ -540,7 +540,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		}
 
 		[Test]
-		public void Migrate_ScriptSubtagContainsMultipleValidScriptSubtagsAsWellAsDataThatIsNotValidScriptAsWellAsAudio_NonValidDataisMovedToPrivateUseAsScriptIsZxxx()
+		public void Migrate_ScriptSubtagContainsMultipleValidScriptSubtagsAsWellAsDataThatIsNotValidScriptAsWellAsAudio_NonValidDataIsMovedToPrivateUseAsScriptIsZxxx()
 		{
 			using (var environment = new TestEnvironment())
 			{
@@ -613,7 +613,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		}
 
 		[Test]
-		public void Migrate_LanguageSubtagContainsDatathatIsNotValidLanguageScriptRegionOrVariantAndIsDuplicateOfDataInPrivateUse_DataIsNotDuplicatedInPrivateUse()
+		public void Migrate_LanguageSubtagContainsDataThatIsNotValidLanguageScriptRegionOrVariantAndIsDuplicateOfDataInPrivateUse_DataIsNotDuplicatedInPrivateUse()
 		{
 			using (var environment = new TestEnvironment())
 			{
@@ -626,7 +626,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		}
 
 		[Test]
-		public void Migrate_ScriptContainsDuplicate_DuplicateIsmovedToPrivateUse()
+		public void Migrate_ScriptContainsDuplicate_DuplicateIsMovedToPrivateUse()
 		{
 			using (var environment = new TestEnvironment())
 			{
@@ -639,7 +639,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		}
 
 		[Test]
-		public void Migrate_RegionContainsDuplicate_DuplicateIsmovedToPrivateUse()
+		public void Migrate_RegionContainsDuplicate_DuplicateIsMovedToPrivateUse()
 		{
 			using (var environment = new TestEnvironment())
 			{
@@ -652,7 +652,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		}
 
 		[Test, Ignore("Currently duplicate variants are removed, which is ok")]
-		public void Migrate_VariantContainsDuplicate_DuplicateIsmovedToPrivateUse()
+		public void Migrate_VariantContainsDuplicate_DuplicateIsMovedToPrivateUse()
 		{
 			using (var environment = new TestEnvironment())
 			{
@@ -678,7 +678,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		}
 
 		[Test]
-		public void Migrate_LanguageSubtagContainsDuplicateValidlanguage_DuplicateIsMovedToPrivateUse()
+		public void Migrate_LanguageSubtagContainsDuplicateValidLanguage_DuplicateIsMovedToPrivateUse()
 		{
 			using (var environment = new TestEnvironment())
 			{
@@ -708,7 +708,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "", "", "x-bogusstuffistolong"));
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "", "", "x-bogusstuffistoolong"));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
@@ -756,7 +756,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		}
 
 		[Test]
-		public void Migrate_VariantSubtagContainsAnythingButValidVariantOrprivateUseAndIsDuplicateOfDataInPrivateUse_DataIsNotDuplicatedInPrivateUse()
+		public void Migrate_VariantSubtagContainsAnythingButValidVariantOrPrivateUseAndIsDuplicateOfDataInPrivateUse_DataIsNotDuplicatedInPrivateUse()
 		{
 			using (var environment = new TestEnvironment())
 			{
@@ -1118,7 +1118,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath);
 				migrator.ResetRemovedProperties(repo);
 
-				var expectedFont = new FontDefinition("Arial") {Features = "order=3 children=2 color=red createDate=1996", Roles = FontRoles.Default};
+				var expectedFont = new FontDefinition("Arial") {Features = "order=3 children=2 color=red createDate=1996"};
 
 				var expectedCharacterSet = new CharacterSetDefinition("main")
 				{

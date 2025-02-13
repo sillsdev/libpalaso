@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,14 +17,14 @@ using SIL.Xml;
 namespace SIL.WritingSystems
 {
 	/// <summary>
-	/// The LdmlDatamapper Reads and Writes WritingSystemDefinitions to LDML files. A typical consuming application should not
+	/// The LdmlDataMapper Reads and Writes WritingSystemDefinitions to LDML files. A typical consuming application should not
 	/// need to use the LdmlDataMapper directly but should rather use an IWritingSystemRepository (such as the
 	/// LdmlInfolderWritingSystemRepository) to manage it's writing systems.
-	/// The LdmlDatamapper is tightly tied to the CLDR version of LDML. If the LdmlDatamapper refuses to Read a
+	/// The LdmlDataMapper is tightly tied to the CLDR version of LDML. If the LdmlDataMapper refuses to Read a
 	/// particular Ldml file it may need to be migrated to the latest version. Please use the
 	/// LdmlInFolderWritingSystemRepository class for this purpose.
 	/// Please note that the LdmlDataMapper.Write method can round trip data that it does not understand if passed an
-	/// appropriate stream or xmlreader produced from the old file.
+	/// appropriate Stream or XmlReader produced from the old file.
 	/// Be aware that as of Jul-5-2011 an exception was made for certain well defined Fieldworks LDML files whose contained
 	/// Rfc5646 tag begin with "x-". These will load correctly, albeit in a transformed state, in spite of being "Version 0".
 	/// Furthermore writing systems containing RfcTags beginning with "x-" and that have a matching Fieldworks conform LDML file
@@ -74,26 +73,28 @@ namespace SIL.WritingSystems
 		/// </summary>
 		private static readonly Dictionary<string, FontRoles> RoleToFontRoles = new Dictionary<string, FontRoles>
 		{
-			{string.Empty, FontRoles.Default},
+			{string.Empty, FontRoles.None},
 			{"default", FontRoles.Default},
 			{"heading", FontRoles.Heading},
-			{"emphasis", FontRoles.Emphasis}
+			{"emphasis", FontRoles.Emphasis},
+			{"ui", FontRoles.UI}
 		};
 
 		/// <summary>
 		/// Mapping of FontRoles enumeration to font role/type attribute
 		/// </summary>
-		private static readonly Dictionary<FontRoles, string> FontRolesToRole = new Dictionary<FontRoles, string> 
+		private static readonly Dictionary<FontRoles, string> FontRolesToRole = new Dictionary<FontRoles, string>
 		{
 			{FontRoles.Default, "default"},
 			{FontRoles.Heading, "heading"},
-			{FontRoles.Emphasis, "emphasis"}
+			{FontRoles.Emphasis, "emphasis"},
+			{FontRoles.UI, "ui"}
 		};
 
 		/// <summary>
 		/// Mapping of spell checking type attribute to SpellCheckDictionaryFormat enumeration
 		/// </summary>
-		private static readonly Dictionary<string, SpellCheckDictionaryFormat> SpellCheckToSpecllCheckDictionaryFormats = new Dictionary
+		private static readonly Dictionary<string, SpellCheckDictionaryFormat> SpellCheckToSpellCheckDictionaryFormats = new Dictionary
 			<string, SpellCheckDictionaryFormat>
 		{
 			{"hunspell", SpellCheckDictionaryFormat.Hunspell},
@@ -124,7 +125,7 @@ namespace SIL.WritingSystems
 			{"ldml", KeyboardFormat.Ldml},
 			{"keylayout", KeyboardFormat.Keylayout},
 			{"kmp", KeyboardFormat.KeymanPackage }
-		}; 
+		};
 
 		/// <summary>
 		/// Mapping of KeyboardFormat enumeration to keyboard type attribute
@@ -397,7 +398,7 @@ namespace SIL.WritingSystems
 		{
 			// Flag invalid versions (0-2 inclusive) from reading legacy LDML files
 			// We're intentionally not using WritingSystemLDmlVersionGetter and the
-			// cheeck for Flex7V0Compatible because the migrator will have handled that.
+			// check for Flex7V0Compatible because the migrator will have handled that.
 			if (!string.IsNullOrEmpty((string) specialElem.Attribute(XNamespace.Xmlns + "fw")) ||
 				!string.IsNullOrEmpty((string) specialElem.Attribute(XNamespace.Xmlns + "palaso")))
 			{
@@ -446,12 +447,15 @@ namespace SIL.WritingSystems
 						IEnumerable<string> roleList = roles.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
 						foreach (string roleEntry in roleList)
 						{
-							fd.Roles |= RoleToFontRoles[roleEntry];
+							if (RoleToFontRoles.TryGetValue(roleEntry, out var role))
+								fd.Roles |= role;
+							else
+								fd.Roles |= FontRoles.Default;
 						}
 					}
 					else
 					{
-						fd.Roles = FontRoles.Default;
+						fd.Roles = FontRoles.None;
 					}
 
 					// Relative Size
@@ -469,12 +473,12 @@ namespace SIL.WritingSystems
 					// OpenType language
 					fd.OpenTypeLanguage = (string) fontElem.Attribute("otlang");
 
-					// Font Engine (space separated list) supercedes legacy isGraphite flag
+					// Font Engine (space separated list) supersedes legacy isGraphite flag
 					// If attribute is missing it is assumed to be "gr ot"
 					var engines = (string) fontElem.Attribute("engines") ?? "gr ot";
 					IEnumerable<string> engineList = engines.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
 					foreach (string engineEntry in engineList)
-						fd.Engines |= (EngineToFontEngines[engineEntry]);
+						fd.Engines |= EngineToFontEngines[engineEntry];
 
 					// Subset
 					fd.Subset = (string) fontElem.Attribute("subset");
@@ -503,7 +507,7 @@ namespace SIL.WritingSystems
 				var type = (string) scElem.Attribute("type");
 				if (!string.IsNullOrEmpty(type))
 				{
-					var scd = new SpellCheckDictionaryDefinition(SpellCheckToSpecllCheckDictionaryFormats[type]);
+					var scd = new SpellCheckDictionaryDefinition(SpellCheckToSpellCheckDictionaryFormats[type]);
 
 					// URL elements
 					foreach (XElement urlElem in scElem.NonAltElements(Sil + "url"))
@@ -624,7 +628,7 @@ namespace SIL.WritingSystems
 			string level1Continue = null;
 			string level2Continue = null;
 
-			// A bit strange, but we need to read the special element first to get everything we need to write 
+			// A bit strange, but we need to read the special element first to get everything we need to write
 			// level 1 and 2. So we just store everything but 1 and 2 in a list and add them after we add 1 and 2.
 			var specialQuotationMarks = new List<QuotationMark>();
 
@@ -673,7 +677,7 @@ namespace SIL.WritingSystems
 						int level = (int?) quotationElem.Attribute("level") ?? 1;
 						var type = (string) quotationElem.Attribute("type");
 						QuotationMarkingSystemType qmType = !string.IsNullOrEmpty(type) ? QuotationToQuotationMarkingSystemTypes[type] : QuotationMarkingSystemType.Normal;
-						
+
 						var qm = new QuotationMark(open, close, cont, level, qmType);
 						specialQuotationMarks.Add(qm);
 					}
@@ -737,7 +741,7 @@ namespace SIL.WritingSystems
 				{
 					var digits = (string)numberingSystemsElem.Attribute("digits");
 					var cldrSysId = CLDRNumberingSystems.FindNumberingSystemID(digits);
-					if (cldrSysId == null) // digits don't match a cldr def, create a custom one
+					if (cldrSysId == null) // digits don't match a CLDR def, create a custom one
 					{
 						ws.NumberingSystem = NumberingSystemDefinition.CreateCustomSystem(digits);
 					}
@@ -892,9 +896,9 @@ namespace SIL.WritingSystems
 				}
 			}
 		}
-		
+
 		/// <summary>
-		/// The "oldFile" parameter allows the LdmldataMapper to allow data that it doesn't understand to be roundtripped.
+		/// The "oldFile" parameter allows the LdmlDataMapper to allow data that it doesn't understand to be roundtripped.
 		/// </summary>
 		/// <param name="filePath"></param>
 		/// <param name="ws"></param>
@@ -964,7 +968,7 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// The "oldFileReader" parameter allows the LdmldataMapper to allow data that it doesn't understand to be roundtripped.
+		/// The "oldFileReader" parameter allows the LdmlDataMapper to allow data that it doesn't understand to be roundtripped.
 		/// </summary>
 		/// <param name="xmlWriter"></param>
 		/// <param name="ws"></param>
@@ -1074,18 +1078,18 @@ namespace SIL.WritingSystems
 				silIdentityElem.SetOptionalAttributeValue("windowsLCID", ws.WindowsLcid);
 				silIdentityElem.SetOptionalAttributeValue("defaultRegion", ws.DefaultRegion);
 				silIdentityElem.SetOptionalAttributeValue("variantName", variantName);
-					
+
 				// Move special to the end of the identity block (preserving order)
 				specialElem.Remove();
 				identityElem.Add(specialElem);
 			}
 		}
 
-		private static void WriteLanguageTagElements(XElement identityElem, string languageTag) 
+		private static void WriteLanguageTagElements(XElement identityElem, string languageTag)
 		{
 			string language, script, region, variant;
 			IetfLanguageTag.TryGetParts(languageTag, out language, out script, out region, out variant);
-			
+
 			// language element is required
 			identityElem.SetAttributeValue("language", "type", language);
 			// write the rest if they have contents
@@ -1096,7 +1100,7 @@ namespace SIL.WritingSystems
 			if (!string.IsNullOrEmpty(variant))
 				identityElem.SetAttributeValue("variant", "type", variant);
 		}
-				
+
 		private static void WriteCharactersElement(XElement charactersElem, WritingSystemDefinition ws)
 		{
 			Debug.Assert(charactersElem != null);
@@ -1431,7 +1435,7 @@ namespace SIL.WritingSystems
 			specialElem.SetAttributeValue(Sil + NeedsCompiling, scd.IsValid ? null : "true");
 			specialElem.Add(new XElement(Sil + "simple", new XCData(scd.SimpleRules)));
 		}
-		
+
 		private void WriteTopLevelSpecialElements(XElement specialElem, WritingSystemDefinition ws)
 		{
 			var externalResourcesElem = specialElem.GetOrCreateElement(Sil + "external-resources");
