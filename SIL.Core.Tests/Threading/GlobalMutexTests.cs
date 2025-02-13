@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+using System;
 using NUnit.Framework;
 using SIL.Threading;
 
