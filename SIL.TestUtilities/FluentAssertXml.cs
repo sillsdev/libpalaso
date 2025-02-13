@@ -49,12 +49,12 @@ namespace SIL.TestUtilities
 		/// <summary>
 		/// Assert functional equivalence of two XML strings while ignoring whitespace
 		///
-		/// May fail if XML header is different.  Also, see warning in CanonicalXml.
+		/// May fail if XML header is different. Also, see warning in CanonicalXml.
 		/// </summary>
 		/// <param name="xml"></param>
 		public void EqualsIgnoreWhitespace(string xml)
 		{
-			Assert.AreEqual(CanonicalXml.ToCanonicalString(_xmlString), CanonicalXml.ToCanonicalString(xml));
+			Assert.That(CanonicalXml.ToCanonicalString(xml), Is.EqualTo(CanonicalXml.ToCanonicalString(_xmlString)));
 		}
 
 		/// <summary>
@@ -63,7 +63,7 @@ namespace SIL.TestUtilities
 		/// <param name="xml"></param>
 		public void NotEqualsIgnoreWhitespace(string xml)
 		{
-			Assert.AreNotEqual(CanonicalXml.ToCanonicalString(_xmlString), CanonicalXml.ToCanonicalString(xml));
+			Assert.That(CanonicalXml.ToCanonicalString(xml), Is.Not.EqualTo(CanonicalXml.ToCanonicalString(_xmlString)));
 		}
 
 		/// <summary>
@@ -80,8 +80,8 @@ namespace SIL.TestUtilities
 		/// <param name="xml"></param>
 		public void IsNodewiseEqualTo(string xml)
 		{
-			Assert.IsTrue(NodeWiseEquals(xml),
-				String.Format("{0}\n\nis not nodewise equivalent to\n\n{1}", _xmlString, xml));
+			Assert.That(NodeWiseEquals(xml), Is.True,
+				$"{_xmlString}\n\nis not nodewise equivalent to\n\n{xml}");
 		}
 
 		/// <summary>
@@ -90,8 +90,8 @@ namespace SIL.TestUtilities
 		/// <param name="xml"></param>
 		public void IsNotNodewiseEqualTo(string xml)
 		{
-			Assert.IsFalse(NodeWiseEquals(xml),
-				String.Format("{0}\n\nis nodewise equivalent to\n\n{1}", _xmlString, xml));
+			Assert.That(NodeWiseEquals(xml), Is.False,
+				$"{_xmlString}\n\nis nodewise equivalent to\n\n{xml}");
 		}
 
 		private bool NodeWiseEquals(string xml)
@@ -129,13 +129,7 @@ namespace SIL.TestUtilities
 			_dom = dom;
 		}
 
-		protected override XmlNode NodeOrDom
-		{
-			get
-			{
-				return _dom;
-			}
-		}
+		protected override XmlNode NodeOrDom => _dom;
 	}
 
 	public abstract class AssertXmlCommands
@@ -150,7 +144,7 @@ namespace SIL.TestUtilities
 				Console.WriteLine("Could not match " + xpath);
 				PrintNodeToConsole(NodeOrDom);
 			}
-			Assert.IsNotNull(node, "Not matched: " + xpath);
+			Assert.That(node, Is.Not.Null, "Not matched: " + xpath);
 		}
 
 		/// <summary>
@@ -164,7 +158,7 @@ namespace SIL.TestUtilities
 				Console.WriteLine("Could not match " + xpath);
 				PrintNodeToConsole(NodeOrDom);
 			}
-			Assert.IsNotNull(node, "Not matched: " + xpath);
+			Assert.That(node, Is.Not.Null, "Not matched: " + xpath);
 		}
 
 		/// <summary>
@@ -181,7 +175,7 @@ namespace SIL.TestUtilities
 		public void HasSpecifiedNumberOfMatchesForXpath(string xpath, int count, bool verbose, XmlNamespaceManager nameSpaceManager = null)
 		{
 			var nodes = nameSpaceManager == null ? NodeOrDom.SafeSelectNodes(xpath) : NodeOrDom.SafeSelectNodes(xpath, nameSpaceManager);
-			if (nodes==null)
+			if (nodes == null)
 			{
 				if (count > 0)
 				{
@@ -189,14 +183,14 @@ namespace SIL.TestUtilities
 					if (verbose)
 						PrintNodeToConsole(NodeOrDom);
 				}
-				Assert.AreEqual(count, 0);
+				Assert.That(count, Is.EqualTo(0));
 			}
 			else if (nodes.Count != count)
 			{
 				Console.WriteLine("Expected {0} but got {1} matches for {2}", count, nodes.Count, xpath);
 				if (verbose)
 					PrintNodeToConsole(NodeOrDom);
-				Assert.AreEqual(count, nodes.Count, "matches for " + xpath);
+				Assert.That(nodes.Count, Is.EqualTo(count), "matches for " + xpath);
 			}
 		}
 
@@ -228,7 +222,7 @@ namespace SIL.TestUtilities
 				if (print)
 					PrintNodeToConsole(NodeOrDom);
 			}
-			Assert.IsNull(node, "Should not have matched: {0}{1}{2}", xpath, Environment.NewLine, message);
+			Assert.That(node, Is.Null, "Should not have matched: {0}{1}{2}", xpath, Environment.NewLine, message);
 		}
 
 		private XmlNode GetNode(string xpath)

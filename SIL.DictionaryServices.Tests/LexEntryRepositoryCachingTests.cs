@@ -11,18 +11,22 @@ using SIL.WritingSystems;
 namespace SIL.DictionaryServices.Tests
 {
 	[TestFixture]
+	[Platform(Include = "Win")]
 	[OfflineSldr]
+#if NET
+	[System.Runtime.Versioning.SupportedOSPlatform("windows")]
+#endif
 	public class LiftLexEntryRepositoryCachingTests
 	{
-		private TemporaryFolder _tempfolder;
+		private TemporaryFolder _tempFolder;
 		private TempFile _tempFile;
 		private LiftLexEntryRepository _repository;
 
 		[SetUp]
 		public void Setup()
 		{
-			_tempfolder = new TemporaryFolder("LiftLexEntryRepositoryCachingTests");
-			_tempFile = _tempfolder.GetNewTempFile(true);
+			_tempFolder = new TemporaryFolder("LiftLexEntryRepositoryCachingTests");
+			_tempFile = _tempFolder.GetNewTempFile(true);
 			_repository = new LiftLexEntryRepository(_tempFile.Path);
 		}
 
@@ -31,7 +35,7 @@ namespace SIL.DictionaryServices.Tests
 		{
 			_repository.Dispose();
 			_tempFile.Dispose();
-			_tempfolder.Dispose();
+			_tempFolder.Dispose();
 		}
 
 		[Test]
@@ -106,11 +110,11 @@ namespace SIL.DictionaryServices.Tests
 		[Test]
 		public void GetAllEntriesSortedByHeadWord_DeleteAfterFirstCall_EntryIsDeletedInResultSet()
 		{
-			LexEntry entrytoBeDeleted = CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 0");
+			LexEntry entryToBeDeleted = CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 0");
 
 			_repository.GetAllEntriesSortedByHeadword(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 
-			_repository.DeleteItem(entrytoBeDeleted);
+			_repository.DeleteItem(entryToBeDeleted);
 
 			ResultSet<LexEntry> results = _repository.GetAllEntriesSortedByHeadword(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 			Assert.AreEqual(0, results.Count);
@@ -119,11 +123,11 @@ namespace SIL.DictionaryServices.Tests
 		[Test]
 		public void GetAllEntriesSortedByHeadWord_DeleteByIdAfterFirstCall_EntryIsDeletedInResultSet()
 		{
-			LexEntry entrytoBeDeleted = CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 0");
+			LexEntry entryToBeDeleted = CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 0");
 
 			_repository.GetAllEntriesSortedByHeadword(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 
-			_repository.DeleteItem(_repository.GetId(entrytoBeDeleted));
+			_repository.DeleteItem(_repository.GetId(entryToBeDeleted));
 
 			ResultSet<LexEntry> results = _repository.GetAllEntriesSortedByHeadword(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 			Assert.AreEqual(0, results.Count);
@@ -195,11 +199,11 @@ namespace SIL.DictionaryServices.Tests
 		[Test]
 		public void GetAllEntriesSortedByLexicalForm_DeleteAfterFirstCall_EntryIsDeletedInResultSet()
 		{
-			LexEntry entrytoBeDeleted = CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 0");
+			LexEntry entryToBeDeleted = CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 0");
 
 			_repository.GetAllEntriesSortedByLexicalFormOrAlternative(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 
-			_repository.DeleteItem(entrytoBeDeleted);
+			_repository.DeleteItem(entryToBeDeleted);
 
 			ResultSet<LexEntry> results = _repository.GetAllEntriesSortedByLexicalFormOrAlternative(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 			Assert.AreEqual(0, results.Count);
@@ -208,11 +212,11 @@ namespace SIL.DictionaryServices.Tests
 		[Test]
 		public void GetAllEntriesSortedByLexicalForm_DeleteByIdAfterFirstCall_EntryIsDeletedInResultSet()
 		{
-			LexEntry entrytoBeDeleted = CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 0");
+			LexEntry entryToBeDeleted = CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 0");
 
 			_repository.GetAllEntriesSortedByLexicalFormOrAlternative(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 
-			_repository.DeleteItem(_repository.GetId(entrytoBeDeleted));
+			_repository.DeleteItem(_repository.GetId(entryToBeDeleted));
 
 			ResultSet<LexEntry> results = _repository.GetAllEntriesSortedByLexicalFormOrAlternative(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 			Assert.AreEqual(0, results.Count);
@@ -333,11 +337,11 @@ namespace SIL.DictionaryServices.Tests
 		[Test]
 		public void GetAllEntriesSortedByDefinition_DeleteAfterFirstCall_EntryIsDeletedInResultSet()
 		{
-			LexEntry entrytoBeDeleted = CreateEntryWithDefinitionBeforeFirstQuery("de", "word 0");
+			LexEntry entryToBeDeleted = CreateEntryWithDefinitionBeforeFirstQuery("de", "word 0");
 
 			_repository.GetAllEntriesSortedByDefinitionOrGloss(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 
-			_repository.DeleteItem(entrytoBeDeleted);
+			_repository.DeleteItem(entryToBeDeleted);
 
 			ResultSet<LexEntry> results = _repository.GetAllEntriesSortedByDefinitionOrGloss(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 			Assert.AreEqual(0, results.Count);
@@ -346,11 +350,11 @@ namespace SIL.DictionaryServices.Tests
 		[Test]
 		public void GetAllEntriesSortedByDefinition_DeleteByIdAfterFirstCall_EntryIsDeletedInResultSet()
 		{
-			LexEntry entrytoBeDeleted = CreateEntryWithDefinitionBeforeFirstQuery("de", "word 0");
+			LexEntry entryToBeDeleted = CreateEntryWithDefinitionBeforeFirstQuery("de", "word 0");
 
 			_repository.GetAllEntriesSortedByDefinitionOrGloss(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 
-			_repository.DeleteItem(_repository.GetId(entrytoBeDeleted));
+			_repository.DeleteItem(_repository.GetId(entryToBeDeleted));
 
 			ResultSet<LexEntry> results = _repository.GetAllEntriesSortedByDefinitionOrGloss(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 			Assert.AreEqual(0, results.Count);

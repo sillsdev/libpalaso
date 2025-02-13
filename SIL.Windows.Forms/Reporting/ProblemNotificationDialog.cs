@@ -29,10 +29,10 @@ namespace SIL.Windows.Forms.Reporting
 			set { _message.Text = value; }
 		}
 
-		public string ReoccurenceMessage
+		public string ReoccurrenceMessage
 		{
-			get { return _reoccurenceMessage.Text; }
-			set { _reoccurenceMessage.Text = value;}
+			get { return _reoccurrenceMessage.Text; }
+			set { _reoccurrenceMessage.Text = value;}
 		}
 
 		public new Image Icon
@@ -66,7 +66,7 @@ namespace SIL.Windows.Forms.Reporting
 			_message.Font = SystemFonts.MessageBoxFont;
 			_message.BackColor = BackColor;
 			_message.ForeColor = ForeColor;
-			_reoccurenceMessage.Font = SystemFonts.MessageBoxFont;
+			_reoccurrenceMessage.Font = SystemFonts.MessageBoxFont;
 			_icon.Image = SystemIcons.Warning.ToBitmap();
 			base.Icon = SystemIcons.Warning;
 		}

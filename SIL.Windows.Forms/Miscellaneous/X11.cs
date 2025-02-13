@@ -1,4 +1,4 @@
-// Copyright (c) 2012-2024, SIL Global
+// Copyright (c) 2012-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Reflection;

@@ -169,84 +169,84 @@ namespace SIL.Windows.Forms.Reporting
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.SuspendLayout();
-			// 
+			//
 			// m_reproduce
-			// 
+			//
 			this._reproduce.AcceptsReturn = true;
 			this._reproduce.AcceptsTab = true;
 			resources.ApplyResources(this._reproduce, "m_reproduce");
 			this.tableLayoutPanel1.SetColumnSpan(this._reproduce, 2);
 			this._reproduce.Name = "m_reproduce";
-			// 
+			//
 			// _detailsForDevelopers
-			// 
+			//
 			resources.ApplyResources(this._detailsForDevelopers, "_detailsForDevelopers");
 			this.tableLayoutPanel1.SetColumnSpan(this._detailsForDevelopers, 2);
 			this._detailsForDevelopers.Name = "_detailsForDevelopers";
-			// 
+			//
 			// _details
-			// 
+			//
 			resources.ApplyResources(this._details, "_details");
 			this._details.BackColor = System.Drawing.SystemColors.ControlLightLight;
 			this.tableLayoutPanel1.SetColumnSpan(this._details, 2);
 			this._details.Name = "_details";
 			this._details.ReadOnly = true;
-			// 
+			//
 			// _sendAndCloseButton
-			// 
+			//
 			resources.ApplyResources(this._sendAndCloseButton, "_sendAndCloseButton");
 			this._sendAndCloseButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this._sendAndCloseButton.Name = "_sendAndCloseButton";
 			this._sendAndCloseButton.Click += new System.EventHandler(this.btnClose_Click);
-			// 
+			//
 			// _lblPleaseHelp
-			// 
+			//
 			resources.ApplyResources(this._lblPleaseHelp, "_lblPleaseHelp");
 			this._lblPleaseHelp.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this.tableLayoutPanel1.SetColumnSpan(this._lblPleaseHelp, 2);
 			this._lblPleaseHelp.ForeColor = System.Drawing.Color.Black;
 			this._lblPleaseHelp.Name = "_lblPleaseHelp";
-			// 
+			//
 			// _notificationText
-			// 
+			//
 			resources.ApplyResources(this._notificationText, "_notificationText");
 			this._notificationText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this.tableLayoutPanel1.SetColumnSpan(this._notificationText, 2);
 			this._notificationText.ForeColor = System.Drawing.Color.Black;
 			this._notificationText.Name = "_notificationText";
-			// 
+			//
 			// _lblStepsToReproduce
-			// 
+			//
 			resources.ApplyResources(this._lblStepsToReproduce, "_lblStepsToReproduce");
 			this._lblStepsToReproduce.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this.tableLayoutPanel1.SetColumnSpan(this._lblStepsToReproduce, 2);
 			this._lblStepsToReproduce.ForeColor = System.Drawing.Color.Black;
 			this._lblStepsToReproduce.Name = "_lblStepsToReproduce";
-			// 
+			//
 			// _methodCombo
-			// 
+			//
 			resources.ApplyResources(this._methodCombo, "_methodCombo");
 			this._methodCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this._methodCombo.FormattingEnabled = true;
 			this._methodCombo.Name = "_methodCombo";
 			this._methodCombo.SelectedIndexChanged += new System.EventHandler(this._methodCombo_SelectedIndexChanged);
-			// 
+			//
 			// _privacyNoticeButton
-			// 
+			//
 			resources.ApplyResources(this._privacyNoticeButton, "_privacyNoticeButton");
 			this._privacyNoticeButton.Image = global::SIL.Windows.Forms.Properties.Resources.spy16x16;
 			this._privacyNoticeButton.Name = "_privacyNoticeButton";
 			this._privacyNoticeButton.UseVisualStyleBackColor = true;
 			this._privacyNoticeButton.Click += new System.EventHandler(this._privacyNoticeButton_Click);
-			// 
+			//
 			// _emailAddress
-			// 
+			//
 			this._emailAddress.ForeColor = System.Drawing.Color.DimGray;
 			resources.ApplyResources(this._emailAddress, "_emailAddress");
 			this._emailAddress.Name = "_emailAddress";
-			// 
+			//
 			// tableLayoutPanel1
-			// 
+			//
 			resources.ApplyResources(this.tableLayoutPanel1, "tableLayoutPanel1");
 			this.tableLayoutPanel1.Controls.Add(this._notificationText, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this._sendAndCloseButton, 1, 7);
@@ -259,9 +259,9 @@ namespace SIL.Windows.Forms.Reporting
 			this.tableLayoutPanel1.Controls.Add(this._details, 0, 5);
 			this.tableLayoutPanel1.Controls.Add(this._detailsForDevelopers, 0, 4);
 			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-			// 
+			//
 			// ExceptionReportingDialog
-			// 
+			//
 			this.AcceptButton = this._sendAndCloseButton;
 			resources.ApplyResources(this, "$this");
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
@@ -321,7 +321,7 @@ namespace SIL.Windows.Forms.Reporting
 			_methodCombo.Items.Add(new ReportingMethod(
 				reportingMethod, closeButtonLabelLethal, closeButtonLabelNonLethal,
 				"mapiWithPopup", SendViaEmail));
-			
+
 			try
 			{
 				reportingMethod = LocalizationManager.GetString(
@@ -639,7 +639,7 @@ namespace SIL.Windows.Forms.Reporting
 			if (data.Error != null)
 			{
 				Exception innerMostException = null;
-				bldr.Append(ErrorReport.GetHiearchicalExceptionInfo(data.Error, ref innerMostException));
+				bldr.Append(ErrorReport.GetHierarchicalExceptionInfo(data.Error, ref innerMostException));
 				// If the exception had inner exceptions, show the inner-most exception first,
 				// since that is likely to be the one most useful for the developer to read first.
 				if (innerMostException != null)
@@ -683,7 +683,7 @@ namespace SIL.Windows.Forms.Reporting
 			}
 			catch (Exception err)
 			{
-				//We have more than one report of dieing while logging an exception.
+				//We have more than one report of dying while logging an exception.
 				bldr.AppendLine("****Could not read from log: " + err.Message);
 			}
 		}
@@ -751,7 +751,7 @@ namespace SIL.Windows.Forms.Reporting
 
 
 		}
-		
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		///
@@ -1112,7 +1112,7 @@ namespace SIL.Windows.Forms.Reporting
 			bldr.Append(nextPara);
 			bldr.Append(Environment.NewLine);
 			bldr.Append(Environment.NewLine);
-			
+
 			try
 			{
 				nextPara = LocalizationManager.GetString("ExceptionReportingDialog.Privacy.Para4",

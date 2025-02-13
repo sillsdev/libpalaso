@@ -1,4 +1,4 @@
-// Copyright (c) 2024 SIL Global
+// Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -11,10 +11,10 @@ namespace SIL.IO
 {
 	/// <summary>
 	/// This is useful a temporary file is needed. When it is disposed, it will delete the file.
-	/// 
-	/// Sometimes it is useful to make a temp file and NOT have the TempFile class delete it. 
-	/// In such cases, simply do not Dispose() the TempFile. To make this possible and reliable, 
-	/// this class deliberately does NOT implement a destructor or do anything to ensure 
+	///
+	/// Sometimes it is useful to make a temp file and NOT have the TempFile class delete it.
+	/// In such cases, simply do not Dispose() the TempFile. To make this possible and reliable,
+	/// this class deliberately does NOT implement a destructor or do anything to ensure
 	/// the file is deleted if the TempFile is not disposed. Please don't change this.
 	/// </summary>
 	/// <example>using(f = new TempFile())</example>

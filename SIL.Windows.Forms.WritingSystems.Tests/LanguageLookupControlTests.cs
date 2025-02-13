@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using L10NSharp;
 using NUnit.Framework;
 using SIL.TestUtilities;
 using SIL.WritingSystems;
@@ -18,6 +19,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		[SetUp]
 		public void Setup()
 		{
+			LocalizationManager.StrictInitializationMode = false;
 			_ready = false;
 			_control = new LanguageLookupControl();
 			_control.ReadinessChanged += _control_ReadinessChanged;

@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2024, SIL Global
+// Copyright (c) 2013-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Runtime.CompilerServices;
@@ -246,7 +246,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		void RegisterProfile(ref Guid rclsid, ushort langid, ref Guid guidProfile,
 			[MarshalAs(UnmanagedType.LPWStr)] string desc, uint cchDesc,
 			[MarshalAs(UnmanagedType.LPWStr)] string iconFile, uint cchFile,
-			uint uIconIndex, uint hklsubstitute, uint dwPreferredLayout,
+			uint uIconIndex, uint hklSubstitute, uint dwPreferredLayout,
 			[MarshalAs(UnmanagedType.VariantBool)] bool bEnabledByDefault, uint dwFlags);
 
 		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]

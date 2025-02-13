@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2024, SIL Global
+// Copyright (c) 2011-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Diagnostics;
@@ -27,11 +27,11 @@ namespace X11
 	{
 		/// <summary>
 		/// Gets the X11 display connection that Mono already has open, rather than
-		/// carefully opening and closing it on our own in a way that doesnt crash (FWNX-895).
+		/// carefully opening and closing it on our own in a way that doesn't crash (FWNX-895).
 		/// </summary>
 		/// <remarks><para>NOTE: The display connection should not be closed!</para>
 		/// <para>NOTE: when running unit tests Mono's DisplayHandle might not be initialized.
-		/// One way to get it intialized is to create a control.</para></remarks>
+		/// One way to get it initialized is to create a control.</para></remarks>
 		internal static IntPtr GetDisplayConnection()
 		{
 			var swfAssembly = Assembly.GetAssembly(typeof(System.Windows.Forms.Form));

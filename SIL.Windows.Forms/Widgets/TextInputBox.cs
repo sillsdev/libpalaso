@@ -1,4 +1,4 @@
-// Copyright (c) 2024, SIL Global
+// Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -37,7 +37,7 @@ namespace SIL.Windows.Forms.Widgets
 		{
 			if (UseWebTextBox)
 			{
-				var path = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath),
+				var path = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().Location).LocalPath),
 					"SIL.Windows.Forms.GeckoBrowserAdapter.dll");
 				if (File.Exists(path))
 				{

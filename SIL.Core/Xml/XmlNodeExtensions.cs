@@ -23,7 +23,7 @@ namespace SIL.Xml
 		/// <summary>
 		/// Returns an empty list rather than null
 		/// </summary>
-		/// <remarks>NOTE: even with this method it is not safe to modify the underlaying
+		/// <remarks>NOTE: even with this method it is not safe to modify the underlying
 		/// document. While seemingly nothing bad happens it doesn't work on Mono, and the
 		/// MSDN documentation warns against doing so
 		/// (http://msdn.microsoft.com/en-us/library/hcebdtae%28v=vs.110%29.aspx).
@@ -44,7 +44,7 @@ namespace SIL.Xml
 		/// <summary>
 		/// Honors default namespace and will return an empty list rather than null
 		/// </summary>
-		/// <remarks>NOTE: even with this method it is not safe to modify the underlaying
+		/// <remarks>NOTE: even with this method it is not safe to modify the underlying
 		/// document. While seemingly nothing bad happens it doesn't work on Mono, and the
 		/// MSDN documentation warns against doing so
 		/// (http://msdn.microsoft.com/en-us/library/hcebdtae%28v=vs.110%29.aspx).

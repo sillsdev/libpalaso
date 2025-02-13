@@ -107,7 +107,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		}
 
 		[Test, Ignore("TODO: move to wesay")]
-		public void NewEntry_NoDefYesGloss_GlossCopiedToDefintion()
+		public void NewEntry_NoDefYesGloss_GlossCopiedToDefinition()
 		{
 		   // _builder.AfterEntryRead += _builder.ApplyWeSayPolicyToParsedEntry;
 
@@ -137,7 +137,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		}
 
 		[Test, Ignore("TODO: move to wesay")]
-		public void NewEntry_HasDefGlossHasAnotherWSAlternative_CopiedToDefintion()
+		public void NewEntry_HasDefGlossHasAnotherWSAlternative_CopiedToDefinition()
 		{
 		  //  _builder.AfterEntryRead += _builder.ApplyWeSayPolicyToParsedEntry;
 
@@ -589,7 +589,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		{
 #if merging
 			Guid g = Guid.NewGuid();
-			Extensible extensibleInfo = CreateFullextensibleInfo(g);
+			Extensible extensibleInfo = CreateFullExtensibleInfo(g);
 
 			LexEntry e = _repository.CreateItem();
 			LexSense sense1 = new LexSense();
@@ -606,7 +606,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 
 			//this is a temp side track
 			Assert.AreEqual(1, _repository.CountAllItems());
-			Extensible xInfo = CreateFullextensibleInfo(Guid.NewGuid());
+			Extensible xInfo = CreateFullExtensibleInfo(Guid.NewGuid());
 			LexEntry x = _merger.GetOrMakeEntry(xInfo, 1);
 			_merger.FinishEntry(x);
 			Assert.AreEqual(2, _repository.CountAllItems());
@@ -618,7 +618,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		{
 #if merging
 			Guid g = Guid.NewGuid();
-			Extensible extensibleInfo = CreateFullextensibleInfo( g);
+			Extensible extensibleInfo = CreateFullExtensibleInfo( g);
 
 			LexEntry e = _repository.CreateItem();
 			e.CreationTime = extensibleInfo.CreationTime;
@@ -634,7 +634,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		public void EntryWithIncomingUnspecifiedModTimeNotPruned()
 		{
 			Guid g = Guid.NewGuid();
-			Extensible eInfo = CreateFullextensibleInfo(g);
+			Extensible eInfo = CreateFullExtensibleInfo(g);
 			LexEntry item = _dataMapper.CreateItem();
 			item.Guid = eInfo.Guid;
 			item.Id = eInfo.Id;
@@ -674,7 +674,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 			return extensibleInfo;
 		}
 
-		private static Extensible CreateFullextensibleInfo(Guid g)
+		private static Extensible CreateFullExtensibleInfo(Guid g)
 		{
 			Extensible extensibleInfo = new Extensible();
 			extensibleInfo.Guid = g;
@@ -763,8 +763,8 @@ namespace SIL.DictionaryServices.Tests.Lift
 		public void EntryGetsFlag()
 		{
 			LexEntry e = MakeSimpleEntry();
-			_builder.MergeInTrait(e, new Trait(LexEntry.WellKnownProperties.FlagSkipBaseform, null));
-			Assert.IsTrue(e.GetHasFlag(LexEntry.WellKnownProperties.FlagSkipBaseform));
+			_builder.MergeInTrait(e, new Trait(LexEntry.WellKnownProperties.FlagSkipBaseForm, null));
+			Assert.IsTrue(e.GetHasFlag(LexEntry.WellKnownProperties.FlagSkipBaseForm));
 		}
 
 		[Test]

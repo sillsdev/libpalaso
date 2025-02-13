@@ -35,7 +35,7 @@ namespace SIL.DictionaryServices.Model
 		}
 
 		/// <summary>
-		/// Set to string.emtpy to clear the relation
+		/// Set to string.empty to clear the relation
 		/// </summary>
 		public string Key
 		{

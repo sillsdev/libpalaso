@@ -387,7 +387,7 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Return the node that has the desired 'name', either the input node or a decendent.
+		/// Return the node that has the desired 'name', either the input node or a descendant.
 		/// </summary>
 		/// <param name="node">The XmlNode to look in.</param>
 		/// <param name="name">The XmlNode name to find.</param>
@@ -414,7 +414,7 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Return the element that has the desired 'name', either the input element or a decendent.
+		/// Return the element that has the desired 'name', either the input element or a descendant.
 		/// </summary>
 		/// <param name="element">The XElement to look in.</param>
 		/// <param name="name">The XElement name to find.</param>
@@ -836,7 +836,7 @@ namespace SIL.Xml
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public static string GetIndendentedXml(string xml)
+		public static string GetIndentedXml(string xml)
 	  {
 		 string outXml = string.Empty;
 		 using(MemoryStream ms = new MemoryStream())
@@ -945,7 +945,7 @@ namespace SIL.Xml
 
 		public static string GetXmlForShowingInHtml(string xml)
 		{
-			var s = XmlUtils.GetIndendentedXml(xml).Replace("<", "&lt;");
+			var s = XmlUtils.GetIndentedXml(xml).Replace("<", "&lt;");
 			s = s.Replace("\r\n", "<br/>");
 			s = s.Replace("  ", "&nbsp;&nbsp;");
 			return s;

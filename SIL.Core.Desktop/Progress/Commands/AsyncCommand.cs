@@ -137,7 +137,7 @@ namespace SIL.Progress.Commands
 		public event EventHandler Finish;
 
 		/// <summary>
-		/// Raised when the operation has finished, and an exception has ocurred
+		/// Raised when the operation has finished, and an exception has occurred
 		/// </summary>
 		/// <remarks>This will be raised on the worker thread, not the GUI thread. There are guaranteed to be
 		/// no further events from the command after this event has been raised.</remarks>
@@ -225,7 +225,7 @@ namespace SIL.Progress.Commands
 		/// <summary>
 		/// Standard constructor
 		/// </summary>
-		/// <param name="exception">The exception that ocurred, or null if an unspecified error ocurred</param>
+		/// <param name="exception">The exception that occurred, or null if an unspecified error occurred</param>
 		public ErrorEventArgs( Exception exception )
 		{
 			this.exception = exception;

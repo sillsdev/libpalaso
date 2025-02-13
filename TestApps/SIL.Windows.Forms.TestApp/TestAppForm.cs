@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2024, SIL Global
+// Copyright (c) 2013-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
@@ -135,16 +135,6 @@ namespace SIL.Windows.Forms.TestApp
 				dialog.ShowDialog();
 		}
 
-		private void OnImageToolboxClicked(object sender, EventArgs e)
-		{
-			Application.EnableVisualStyles();
-			ThumbnailViewer.UseWebViewer = true;
-			using (var dlg = new ImageToolboxDialog(new PalasoImage(), null))
-			{
-				dlg.ShowDialog();
-			}
-		}
-
 		private void OnSilAboutBoxClicked(object sender, EventArgs e)
 		{
 			ShowSilAboutBox(XWebBrowser.BrowserType.Default, true);
@@ -162,7 +152,7 @@ namespace SIL.Windows.Forms.TestApp
 			{
 				File.WriteAllText(tempfile.Path,
 					@"<html><head><meta charset='UTF-8' /></head><body>" +
-					@"<h3>Copyright 2024 <a href=""http://sil.org"">SIL Global</a></h3>" +
+					@"<h3>Copyright 2025 <a href=""http://sil.org"">SIL Global</a></h3>" +
 					@"<p>Testing the <b>about box</b></p><ul>#DependencyAcknowledgements#</ul></body></html>");
 				var uri = new Uri(tempfile.Path);
 				using (var dlg = new SILAboutBox(uri.AbsoluteUri, useFullVersionNumber))
@@ -547,6 +537,13 @@ and displays it as HTML.
 			using var dlg = new ChooseProject();
 			if (dlg.ShowDialog(this) == DialogResult.OK)
 				MessageBox.Show("Got " + dlg.SelectedProject);
+		}
+
+		private static int s_FadingMessageCount = 1;
+		private void _btnShowFadingMessage_Click(object sender, EventArgs e)
+		{
+			var fadingMsgWindow = new FadingMessageWindow();
+			fadingMsgWindow.Show($"{s_FadingMessageCount++}) Fading message.", _btnShowFadingMessage.Location);
 		}
 	}
 }

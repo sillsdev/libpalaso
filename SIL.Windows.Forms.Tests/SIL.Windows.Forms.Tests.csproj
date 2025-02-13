@@ -4,6 +4,7 @@
     <RootNamespace>SIL.Windows.Forms.Tests</RootNamespace>
     <AssemblyTitle>SIL.Windows.Forms.Tests</AssemblyTitle>
     <Description>Unit tests for SIL.Windows.Forms</Description>
+    <TargetFrameworks>$(TargetFrameworks);net8.0-windows</TargetFrameworks>
     <UseWindowsForms>true</UseWindowsForms>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -18,12 +19,12 @@
     <ProjectReference Include="..\SIL.Windows.Forms\SIL.Windows.Forms.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" $(DefineConstants.Contains('NETFRAMEWORK')) ">
     <Reference Include="System.Configuration" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="L10NSharp" Version="7.0.0" />
+    <PackageReference Include="L10NSharp" Version="8.0.0-beta*" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Moq" Version="4.18.2" />

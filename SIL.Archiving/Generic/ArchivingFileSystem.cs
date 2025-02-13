@@ -1,4 +1,4 @@
-// Copyright (c) 2024 SIL Global
+// Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -13,7 +13,7 @@ namespace SIL.Archiving.Generic
 		internal const string kAccessProtocolFolderName = "Archiving";
 		private const string MacFolderRoot = "/Users/Shared";
 		internal const string LinuxFolderRoot = "/var/lib";
-  
+
 		/// <summary />
 		public static string SilCommonDataFolder
 		{

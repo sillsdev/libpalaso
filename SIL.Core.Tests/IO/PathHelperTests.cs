@@ -1,4 +1,4 @@
-// Copyright (c) 2024 SIL Global
+// Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using NUnit.Framework;
@@ -322,7 +322,7 @@ namespace SIL.Tests.IO
 		public void StripFilePrefix_EnsureFilePrefixIsRemoved_Windows()
 		{
 			var prefix = Uri.UriSchemeFile + ":";
-			var fullPathname = Assembly.GetExecutingAssembly().CodeBase;
+			const string fullPathname = "file:///C:/Users/source/";
 			Assert.IsTrue(fullPathname.StartsWith(prefix));
 
 			var reducedPathname = PathHelper.StripFilePrefix(fullPathname);
@@ -335,7 +335,7 @@ namespace SIL.Tests.IO
 		public void StripFilePrefix_EnsureFilePrefixIsRemoved_Linux()
 		{
 			var prefix = Uri.UriSchemeFile + ":";
-			var fullPathname = Assembly.GetExecutingAssembly().CodeBase;
+			const string fullPathname = "file:///usr/local/bin/";
 			Assert.IsTrue(fullPathname.StartsWith(prefix));
 
 			var reducedPathname = PathHelper.StripFilePrefix(fullPathname);

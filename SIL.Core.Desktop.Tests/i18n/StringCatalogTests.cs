@@ -10,6 +10,10 @@ namespace SIL.Tests.i18n
 {
 
 	[TestFixture]
+#if NET
+	[System.Runtime.Versioning.SupportedOSPlatform("windows")]
+#endif
+	[Platform(Include = "Win")]
 	public class StringCatalogTests
 	{
 		private string _poFile = Path.GetTempFileName();
@@ -28,7 +32,7 @@ namespace SIL.Tests.i18n
 msgid ''
 msgstr ''
 'Project-Id-Version: PACKAGE VERSION\n'
-'Report-Msgid-Bugs-To: blah balh\n'
+'Report-Msgid-Bugs-To: blah blah\n'
 'POT-Creation-Date: 2005-09-20 20:52+0200\n'
 'PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n'
 'Last-Translator: FULL NAME <EMAIL@ADDRESS>\n'
@@ -117,14 +121,14 @@ msgstr 'translated'
 		}
 
 		[Test]
-		public void MultiLines_EmtpyMsgStr_Concatenated()
+		public void MultiLines_EmptyMsgStr_Concatenated()
 		{
 			StringCatalog catalog = new StringCatalog(_poFile, null, 9);
 			Assert.AreEqual("This is a long sentence.", catalog["multi1"]);
 		}
 
 		[Test]
-		public void LongLines_NonEmtpyMsgStr_Concatenated()
+		public void LongLines_NonEmptyMsgStr_Concatenated()
 		{
 			StringCatalog catalog = new StringCatalog(_poFile, null, 9);
 			Assert.AreEqual("onetwothree", catalog["multi2"]);
@@ -216,7 +220,7 @@ msgstr 'aa'
 		}
 
 		[Test]
-		public void MultiLines_EmtpyMsgId_Concatenated()
+		public void MultiLines_EmptyMsgId_Concatenated()
 		{
 			StringCatalog catalog = new StringCatalog(_poFile, null, 9);
 			Assert.AreEqual("translated", catalog["Semantic Domains"]);

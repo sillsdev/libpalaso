@@ -8,7 +8,7 @@
         <authors>Jason Naylor</authors>
 		<license type="expression">MIT</license>
 		<projectUrl>https://github.com/sillsdev/libpalaso</projectUrl>
-		<copyright>Copyright © 2010-2023 SIL International</copyright>
+		<copyright>Copyright © 2010-2025 SIL Global</copyright>
     </metadata>
 	<files>
 	  <file src="**\Palaso.*.xlf" target="content" />

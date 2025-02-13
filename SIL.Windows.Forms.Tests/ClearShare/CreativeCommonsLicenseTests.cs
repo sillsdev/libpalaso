@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading;
+using L10NSharp;
 using NUnit.Framework;
 using SIL.Windows.Forms.ClearShare;
 
@@ -13,6 +14,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void Setup()
 		{
 			Thread.CurrentThread.CurrentCulture = new CultureInfo("sv-SE"); //sweden, which uses commas for decimal  point (regression test)
+			LocalizationManager.StrictInitializationMode = false;
 		}
 
 		[Test]
@@ -108,7 +110,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		}
 
 		[Test]
-		public void FromLicenseUrl_EmtpyString_Throws()
+		public void FromLicenseUrl_EmptyString_Throws()
 		{
 			Assert.Throws<ArgumentOutOfRangeException>(()=>CreativeCommonsLicense.FromLicenseUrl(""));
 		}

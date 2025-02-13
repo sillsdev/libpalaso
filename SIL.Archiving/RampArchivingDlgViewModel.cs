@@ -655,7 +655,7 @@ namespace SIL.Archiving
 		/// audience, the audience will already be correctly inferred from the stage. For
 		/// stages that can apply to more than one type of audience, either call SetAudience
 		/// directly or "OR" the appropriate AudienceType with the WorkStage when calling this
-		/// method. Not that some work stages can apply to a subset of the auidence types, so
+		/// method. Not that some work stages can apply to a subset of the audience types, so
 		/// pay attention to the comments for each work stage to avoid pairing it with an
 		/// invalid audience type.</param>
 		/// ------------------------------------------------------------------------------------

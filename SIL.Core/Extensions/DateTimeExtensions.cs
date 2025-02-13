@@ -99,7 +99,7 @@ namespace SIL.Extensions
 //		}
 
 		/// <summary>
-		/// We have this permsissive business because we released versions of SayMore which used the local
+		/// We have this permissive business because we released versions of SayMore which used the local
 		/// format, rather than a universal one.
 		/// </summary>
 		public static DateTime ParseDateTimePermissivelyWithException(string when)

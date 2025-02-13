@@ -1,4 +1,4 @@
-// Copyright (c) 2024 SIL Global
+// Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -54,8 +54,8 @@ namespace SIL.Tests.IO
 		{
 			Assert.IsTrue(DirectoryHelper.AreEquivalent(_srcFolder, _srcFolder));
 			Assert.IsTrue(DirectoryHelper.AreEquivalent(_dstFolder, _dstFolder));
-			const string nonExsistentFolderPath = @"c:\blah\BLAH\weird\..\funky\WhatEVer";
-			Assert.IsTrue(DirectoryHelper.AreEquivalent(nonExsistentFolderPath, nonExsistentFolderPath));
+			const string nonExistentFolderPath = @"c:\blah\BLAH\weird\..\funky\WhatEVer";
+			Assert.IsTrue(DirectoryHelper.AreEquivalent(nonExistentFolderPath, nonExistentFolderPath));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -63,8 +63,8 @@ namespace SIL.Tests.IO
 		public void AreEquivalent_TotallyDifferent_ReturnsFalse()
 		{
 			Assert.IsFalse(DirectoryHelper.AreEquivalent(_srcFolder, _dstFolder));
-			const string nonExsistentFolderPath = @"c:\blah\BLAH\weird\..\funky\WhatEVer";
-			Assert.IsFalse(DirectoryHelper.AreEquivalent(_srcFolder, nonExsistentFolderPath));
+			const string nonExistentFolderPath = @"c:\blah\BLAH\weird\..\funky\WhatEVer";
+			Assert.IsFalse(DirectoryHelper.AreEquivalent(_srcFolder, nonExistentFolderPath));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -308,7 +308,7 @@ namespace SIL.Tests.IO
 		[Platform(Exclude = "Win", Reason="Don't know how to test this on Windows")]
 		public void Move_MoveDirToDifferentVolume()
 		{
-			// On Linux, /tmp is typicall a ram disk and therefore a different partition from
+			// On Linux, /tmp is typically a ram disk and therefore a different partition from
 			// /var/tmp which is supposed to persist across reboots.
 			// On Mac, /tmp isn't usually a ram disk. However, it's possible to create and mount
 			// loop filesystems (disk images) without root privileges. So it would be possible
@@ -333,7 +333,7 @@ namespace SIL.Tests.IO
 		[Platform(Exclude = "Win", Reason="Don't know how to test this on Windows")]
 		public void Move_MoveFileToDifferentVolume()
 		{
-			// On Linux, /tmp is typicall a ram disk and therefore a different partition from
+			// On Linux, /tmp is typically a ram disk and therefore a different partition from
 			// /var/tmp which is supposed to persist across reboots.
 			// On Mac, /tmp isn't usually a ram disk. However, it's possible to create and mount
 			// loop filesystems (disk images) without root privileges. So it would be possible

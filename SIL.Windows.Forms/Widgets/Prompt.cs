@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Security.Permissions;
 using System.Windows.Forms;
+using SIL.Windows.Forms.Miscellaneous;
 
 namespace SIL.Windows.Forms.Widgets
 {
@@ -135,7 +136,6 @@ namespace SIL.Windows.Forms.Widgets
 
 		#region Nested type: PromptPainter
 
-		[PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
 		private class PromptPainter: NativeWindow, IDisposable
 		{
 			private readonly Control _control;

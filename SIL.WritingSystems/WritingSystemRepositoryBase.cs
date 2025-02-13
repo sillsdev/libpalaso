@@ -7,7 +7,7 @@ namespace SIL.WritingSystems
 {
 	/// <summary>
 	/// This class forms the bases for managing collections of WritingSystemDefinitions. WritingSystemDefinitions
-	/// can be registered and then retrieved and deleted by ID. The preferred use when editting a WritingSystemDefinition stored
+	/// can be registered and then retrieved and deleted by ID. The preferred use when editing a WritingSystemDefinition stored
 	/// in the WritingSystemRepository is to Get the WritingSystemDefinition in question and then to clone it via the
 	/// Clone method on WritingSystemDefinition. This allows
 	/// changes made to a WritingSystemDefinition to be registered back with the WritingSystemRepository via the Set method,

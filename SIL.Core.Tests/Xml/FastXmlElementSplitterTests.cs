@@ -281,7 +281,7 @@ namespace SIL.Tests.Xml
 		{
 			// FW no longer has the AdditionalFields element in the main file,
 			// but it is still a good test for the fast splitter, which does support optional first elements.
-			// LIFT still has its optional header element, which coudl be used here instead,
+			// LIFT still has its optional header element, which could be used here instead,
 			// but it is not worth it (to me [RandyR]) to switch it to a LIFT sample.
 			const string hasRecordsInput =
 				@"<?xml version='1.0' encoding='utf-8'?>
@@ -431,7 +431,7 @@ namespace SIL.Tests.Xml
 						<entry id='duplicate' guid='c1ed1f95-e382-11de-8a39-0800200c9a66' />
 						<entry id='duplicate' guid='c1ed1f95-e382-11de-8a39-0800200c9a66' />
 
-						<!-- everthing above this line was being merged, but not this -->
+						<!-- everything above this line was being merged, but not this -->
 						<entry id='lostBoy' guid='bbed1f95-e382-11de-8a39-0800200c9a66' />
 					</lift>";
 
@@ -477,7 +477,7 @@ namespace SIL.Tests.Xml
 						<entry id='duplicate' guid='c1ed1f95-e382-11de-8a39-0800200c9a66' />
 						<entry id='duplicate' guid='c1ed1f95-e382-11de-8a39-0800200c9a66' />
 
-						<!-- everthing above this line was being merged, but not this -->
+						<!-- everything above this line was being merged, but not this -->
 						<entry id='lostBoy' guid='bbed1f95-e382-11de-8a39-0800200c9a66' />
 					</lift>";
 

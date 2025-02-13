@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2024, SIL Global
+// Copyright (c) 2011-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -12,7 +12,9 @@ using SIL.Keyboarding;
 using SIL.ObjectModel;
 using SIL.PlatformUtilities;
 using SIL.Reporting;
+#if NETFRAMEWORK
 using SIL.Windows.Forms.Keyboarding.Linux;
+#endif
 using SIL.Windows.Forms.Keyboarding.Windows;
 
 namespace SIL.Windows.Forms.Keyboarding
@@ -217,10 +219,12 @@ namespace SIL.Windows.Forms.Keyboarding
 					}
 					: new IKeyboardRetrievingAdaptor[]
 					{
+#if NETFRAMEWORK
 						new XkbKeyboardRetrievingAdaptor(), new IbusKeyboardRetrievingAdaptor(),
 						new UnityXkbKeyboardRetrievingAdaptor(), new UnityIbusKeyboardRetrievingAdaptor(),
 						new CombinedIbusKeyboardRetrievingAdaptor(),
 						new GnomeShellIbusKeyboardRetrievingAdaptor()
+#endif
 					}
 			);
 		}

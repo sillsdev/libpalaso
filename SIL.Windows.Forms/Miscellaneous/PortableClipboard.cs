@@ -66,7 +66,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		{
 			if (control is TextBoxBase textBoxBase)
 			{
-				textBoxBase.ContextMenu = null;
+				textBoxBase.ContextMenuStrip = null;
 				return;
 			}
 
