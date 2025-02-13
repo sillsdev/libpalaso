@@ -185,7 +185,7 @@ namespace SIL.Tests.Extensions
 		}
 
 		[Test]
-		public void SplitLines_NoLineBreaks_ReturnsArrayWithSingleSting()
+		public void SplitLines_NoLineBreaks_ReturnsArrayWithSingleString()
 		{
 			Assert.That("just this".SplitLines(), Is.EquivalentTo(new [] {"just this"}));
 		}
@@ -201,7 +201,7 @@ namespace SIL.Tests.Extensions
 		[TestCase("line1\n\nline2")]
 		[TestCase("line1\n\r\n\rline2")]
 		[TestCase("line1\r\n\r\nline2")]
-		public void SplitLines_LineBreaks_ReturnsArrayWithSingleSting(string str)
+		public void SplitLines_LineBreaks_ReturnsArrayWithAStringForEachLine(string str)
 		{
 			var result = str.SplitLines();
 			Assert.That(result, Is.EquivalentTo(new [] {"line1", "line2"}));
