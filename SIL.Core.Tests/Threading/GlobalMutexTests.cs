@@ -1,11 +1,25 @@
-﻿using NUnit.Framework;
+using System;
+using NUnit.Framework;
 using SIL.Threading;
 
 namespace SIL.Tests.Threading
 {
-	[TestFixture]
+	[TestFixture(true)]
+	[TestFixture(false)]
 	public class GlobalMutexTests
 	{
+		public GlobalMutexTests(bool localOnly)
+		{
+			if (localOnly)
+			{
+				Environment.SetEnvironmentVariable("SIL_CORE_MAKE_GLOBAL_MUTEX_LOCAL_ONLY", "true");
+			}
+			else
+			{
+				Environment.SetEnvironmentVariable("SIL_CORE_MAKE_GLOBAL_MUTEX_LOCAL_ONLY", null);
+			}
+		}
+
 		[Test]
 		public void Initialize_CreatedNew_ReturnsTrue()
 		{
@@ -54,7 +68,7 @@ namespace SIL.Tests.Threading
 			}
 		}
 
-		[Test]
+		[Test, Timeout(1000)]
 		public void InitializeAndLock_Reentrancy_DoesNotBlock()
 		{
 			using (var mutex = new GlobalMutex("test"))
@@ -66,7 +80,7 @@ namespace SIL.Tests.Threading
 			}
 		}
 
-		[Test]
+		[Test, Timeout(1000)]
 		public void Lock_Reentrancy_DoesNotBlock()
 		{
 			using (var mutex = new GlobalMutex("test"))
