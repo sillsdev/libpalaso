@@ -80,7 +80,6 @@ namespace SIL.Progress
 			{
 				WriteStatus("    " + line);
 			}
-
 		}
 
 		public bool ShowVerbose

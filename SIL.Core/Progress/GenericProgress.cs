@@ -59,7 +59,6 @@ namespace SIL.Progress
 			var lines = message.FormatWithErrorStringInsteadOfException(args);
 			foreach (var line in lines.Split('\n'))
 			{
-
 				WriteMessage("   " + line);
 			}
 

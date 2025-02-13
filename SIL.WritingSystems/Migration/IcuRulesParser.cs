@@ -73,7 +73,7 @@ namespace SIL.WritingSystems.Migration
 
 		public bool ValidateIcuRules(string icuRules, out string message)
 		{
-			// I was going to run with no semantic actions and therefore no dom needed,
+			// I was going to run with no semantic actions and therefore no DOM needed,
 			// but some actions can throw (OnOptionVariableTop for one),
 			// so we need to run the actions as well for full validation.
 			_writer = null;
@@ -88,7 +88,7 @@ namespace SIL.WritingSystems.Migration
 			}
 			catch (ParserErrorException e)
 			{
-				string errString = sc.InputString.Split(new char[] {'\n'})[e.ParserError.Line - 1];
+				string errString = sc.InputString.Split('\n')[e.ParserError.Line - 1];
 				int startingPos = Math.Max((int) e.ParserError.Column - 2, 0);
 				errString = errString.Substring(startingPos, Math.Min(10, errString.Length - startingPos));
 				message = String.Format("{0}: '{1}'", e.ParserError.ErrorText, errString);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using SIL.Extensions;
 using SIL.ObjectModel;
 
 namespace SIL.WritingSystems
@@ -38,8 +39,7 @@ namespace SIL.WritingSystems
 			var variants = new List<VariantSubtag>();
 			foreach (string ianaSubtagAsString in ianaSubtagsAsStrings)
 			{
-				string[] subTagComponents = ianaSubtagAsString.Replace("\r\n", "\n").Split(new[] { "\n" },
-					StringSplitOptions.RemoveEmptyEntries);
+				string[] subTagComponents = ianaSubtagAsString.SplitLines();
 
 				if (subTagComponents[0].Contains("File-Date"))
 				{
@@ -282,17 +282,13 @@ namespace SIL.WritingSystems
 		public static IDictionary<string, string> TwoAndThreeMap(string twotothreecodes, bool reverse)
 		{
 			var twoAndThreeLetter = new Dictionary<string, string>();
-			foreach (string line in twotothreecodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
+			foreach (string line in twotothreecodes.SplitLines())
 			{
 				string[] items = line.Split('\t');
 				if (reverse)
-				{
 					twoAndThreeLetter[items[1].Trim()] = items[0].Trim();
-				}
 				else
-				{
 					twoAndThreeLetter[items[0].Trim()] = items[1].Trim();
-				}
 			}
 			return twoAndThreeLetter;
 		}
