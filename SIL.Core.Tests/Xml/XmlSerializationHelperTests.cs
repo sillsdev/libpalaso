@@ -6,6 +6,7 @@ using System.Text;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using NUnit.Framework;
+using SIL.Extensions;
 using SIL.IO;
 using SIL.TestUtilities;
 using static SIL.Xml.XmlSerializationHelper;
@@ -420,7 +421,7 @@ namespace SIL.Tests.Xml
 		public void SerializeToString_NoEncodingSpecified_XmlHeaderHasDefaultUtf16Encoding()
 		{
 			var result = SerializeToString(new TestObject("Fred"));
-			var lines = result.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList();
+			var lines = result.SplitLines().ToList();
 			Assert.IsTrue(lines[0].StartsWith("<?xml"));
 			Assert.That(lines[0].Contains("encoding=\"utf-16\""));
 			Assert.IsTrue(lines[1].StartsWith("<MyRoot"));
@@ -432,7 +433,7 @@ namespace SIL.Tests.Xml
 		{
 			var result = SerializeToString(new TestObject("Fred"),
 				Encoding.UTF8);
-			var lines = result.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList();
+			var lines = result.SplitLines().ToList();
 			Assert.IsTrue(lines[0].StartsWith("<?xml"));
 			Assert.That(lines[0].Contains("encoding=\"utf-8\""));
 			Assert.IsTrue(lines[1].StartsWith("<MyRoot"));
@@ -445,7 +446,7 @@ namespace SIL.Tests.Xml
 			var result = SerializeToString(new TestObject("Fred"),
 				true);
 			Assert.IsFalse(result.StartsWith("<?xml"));
-			var lines = result.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList();
+			var lines = result.SplitLines().ToList();
 			Assert.IsTrue(lines.First().StartsWith("<MyRoot"));
 			Assert.IsTrue(lines.Last().EndsWith("MyRoot>"));
 		}
@@ -499,11 +500,10 @@ namespace SIL.Tests.Xml
 		public void SerializeToString_GenericList_SerializedCorrectly()
 		{
 			var source = new[] {"List Item 1", "List Item 2", "List Item 3"};
-			var data = (from s in source
-				select new XmlTranslation
+			var data = source.Select(s => new XmlTranslation
 					{Reference = $"MAT {s.Last()}:6", PhraseKey = s, Translation = s.ToLower()}).ToList();
 			var result = SerializeToString(data, Encoding.UTF8);
-			var lines = result.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries).ToList();
+			var lines = result.SplitLines().ToList();
 			var i = 0;
 			Assert.That(lines[i], Does.StartWith("<?xml"));
 			Assert.That(lines[i], Does.Contain("encoding=\"utf-8\""));

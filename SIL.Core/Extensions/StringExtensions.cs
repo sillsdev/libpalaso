@@ -65,8 +65,20 @@ namespace SIL.Extensions
 		}
 
 		/// <summary>
-		/// normal string.format will throw if it can't do the format; this is dangerous if you're, for example
-		/// just logging stuff that might contain messed up strings (myWorkSafe paths)
+		/// Splits the string at any line break characters (\n and/or \r)
+		/// </summary>
+		/// <returns>An array of strings representing any non-empty lines</returns>
+		public static string[] SplitLines([NotNull] this string str)
+		{
+			return str.Split(new[] { "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+		}
+
+		/// <summary>
+		/// A normal call to <see cref="string.Format(string, object[])"/> will throw if it
+		/// can't do the format; this is dangerous if you're, for example, just logging stuff that
+		/// might contain messed up strings (myWorkSafe paths). This version handles any such
+		/// error and just includes the error message as part of the message with the information
+		/// from the params so that a person reading the log file can figure out what happened.
 		/// </summary>
 		public static string FormatWithErrorStringInsteadOfException(this string format,
 			params object[] args)
@@ -77,15 +89,8 @@ namespace SIL.Extensions
 			}
 			catch (Exception e)
 			{
-				string argList = "";
-				foreach (var arg in args)
-				{
-					argList = argList + arg + ",";
-				}
-
-				argList = argList.Trim(',');
-				return "FormatWithErrorStringInsteadOfException(" + format + "," + argList +
-					") Exception: " + e.Message;
+				var argList = string.Join(",", args);
+				return $"FormatWithErrorStringInsteadOfException({format},{argList}) Exception: {e.Message}";
 			}
 		}
 
@@ -136,9 +141,8 @@ namespace SIL.Extensions
 						false; // allow invalid characters in
 				}
 
-				if (_writerUsedForEscaping == null)
-					_writerUsedForEscaping =
-						XmlWriter.Create(_bldrUsedForEscaping, _settingsUsedForEscaping);
+				_writerUsedForEscaping ??=
+					XmlWriter.Create(_bldrUsedForEscaping, _settingsUsedForEscaping);
 
 				_writerUsedForEscaping.WriteString(text);
 				_writerUsedForEscaping.Flush();
@@ -147,7 +151,8 @@ namespace SIL.Extensions
 		}
 
 		/// <summary>
-		/// Similar to Path.Combine, but it combines as may parts as you have into a single, platform-appropriate path.
+		/// Similar to <see cref="Path.Combine(string,string)"/>, but it combines as may parts as
+		/// you have into a single, platform-appropriate path.
 		/// </summary>
 		/// <example> string path = "my".Combine("stuff", "toys", "ball.txt")</example>
 		[PublicAPI]
