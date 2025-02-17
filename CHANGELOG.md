@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.WritingSystems] Changed optional parameter of SLDR's Initialize from offlineMode to offlineTestMode (technically a breaking change).
 - [SIL.WritingSystems] Added optional parameter to InitializeLanguageTags: bool downloadLanguageTags (default true).
 - [SIL.WritingSystems] Download of langtags.json handled with ETag and If-None-Match headers instead of If-Modified-Since.
+- [SIL.WritingSystems] Added version number to the UserAgent string used for LDML and langtags.json requests.
 - [SIL.DictionaryServices] In class LiftLexEntryRepository, renamed private method GetTrimmedElementsSeperatedBySemiColon to GetTrimmedElementsSeparatedBySemiColon and private method CheckIfTokenHasAlreadyBeenReturnedForThisSemanticDomain parameter fieldsandValuesForRecordTokens to fieldsAndValuesForRecordTokens.
 - [SIL.DictionaryServices.Tests] Renamed test class LiftLexEntryRepositoryStateUnitializedTests to LiftLexEntryRepositoryStateUninitializedTests.
 - [SIL.DictionaryServices.Tests.Lift] Renamed test class LiftRepositoryStateUnitializedTests to LiftRepositoryStateUninitializedTests.
