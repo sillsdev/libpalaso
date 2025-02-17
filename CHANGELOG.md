@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Keyboarding.Windows] In internal interface ITfInputProcessorProfileMgr, renamed method RegisterProfile parameter hklsubstitute to hklSubstitute.
 - [SIL.Windows.Forms.Reporting] In class ProblemNotificationDialog, renamed internal property \_reoccurenceMessage to \_reoccurrenceMessage.
 - [SIL.WritingSystems] In class LanguageLookup changed private method AddLanguage parameter threelettercode to threeLetterCode.
+- [SIL.WritingSystems] Updated langtags.json and ianaSubtagRegistry.txt in Resources.
 - [SIL.Xml] BREAKING CHANGE: In class XmlUtils, renamed method GetIndendentedXml to GetIndentedXml.
 - [SIL.UsbDrive.Linux] BREAKING CHANGE: In interface IUDiskDevice renamed method DriveAtaSmartInitiateSelftest to DriveAtaSmartInitiateSelfTest and property DevicePresentationNopolicy to DevicePresentationNoPolicy.
 - [SIL.DictionaryServices.Model] BREAKING CHANGE: In class LexEntry, renamed WellKnownProperties.FlagSkipBaseform to WellKnownProperties.FlagSkipBaseForm and GetSomeMeaningToUseInAbsenseOfHeadWord to GetSomeMeaningToUseInAbsenceOfHeadWord.
@@ -54,7 +55,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Reporting] BREAKING CHANGE: In class ProblemNotificationDialog, renamed method ReoccurenceMessage to ReoccurrenceMessage.
 - [SIL.WritingSystems] BREAKING CHANGE: A new FontDefinition now has .Role default to FontRoles.None rather than FontRoles.Default. Likewise, the method LdmlDataMapper.Read now reads in a font with no type as FontRoles.None instead of FontRoles.Default.
 - [SIL.WritingSystems] Added UI to enum FontRoles; the methods LdmlDataMapper.Read and LdmlDataMapper.Write now support fonts with type "ui". Also, if the ldml file has a font type not covered in FontRoles, LdmlDataMapper.Read will add it as FontRoles.Default.
-- [SIL.WritingSystems] Updated langtags.json and ianaSubtagRegistry.txt in Resources.\
 
 ### Fixed
 
