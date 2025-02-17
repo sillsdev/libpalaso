@@ -1525,7 +1525,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			if (CurrentDefinition.DefaultCollation.Collator == null)
 				return testString;
 			var stringList = new List<SortKey>();
-			foreach (string str in testString.Split(new char[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries))
+			foreach (string str in testString.SplitLines())
 				stringList.Add(CurrentDefinition.DefaultCollation.Collator.GetSortKey(str));
 			stringList.Sort(SortKey.Compare);
 			string result = string.Empty;
