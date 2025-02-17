@@ -5,7 +5,7 @@
 	/// </summary>
 	public interface IStylesheet
 	{
-		/// <summary>Gets the style for specfiied ID</summary>
+		/// <summary>Gets the style for specified ID</summary>
 		IStyle GetStyle(string styleId);
 		string FontFamily { get; }
 		int FontSizeInPoints { get; }

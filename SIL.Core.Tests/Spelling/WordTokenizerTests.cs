@@ -6,7 +6,7 @@ using SIL.Spelling;
 namespace SIL.Tests.Spelling
 {
 	[TestFixture]
-	public class SpellingwordTokenizerTests
+	public class SpellingWordTokenizerTests
 	{
 		[Test]
 		public void PassNULL_Throws()
@@ -82,7 +82,7 @@ namespace SIL.Tests.Spelling
 			Assert.AreEqual(1, list.Count);
 			Assert.AreEqual("black,bird.flew!Home", list[0].Value);
 			Assert.AreEqual(1, list[0].Offset);
-			Assert.AreEqual(text.Length - 2, list[0].Length); //drop word previous and wordfinal punctuation
+			Assert.AreEqual(text.Length - 2, list[0].Length); //drop word-initial and word-final punctuation
 		}
 
 		[Test]
@@ -125,7 +125,7 @@ namespace SIL.Tests.Spelling
 
 
 		[Test]
-		public void PassMultipleSimpleWordsSeperatedByZeroWisthSpace_ReturnMultipleWords()
+		public void PassMultipleSimpleWordsSeparatedByZeroWidthSpace_ReturnMultipleWords()
 		{
 			string text = "Jesus\u200bwept";
 			List<WordTokenizer.Token> list = new List<WordTokenizer.Token>(WordTokenizer.TokenizeText(text));

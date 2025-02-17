@@ -56,7 +56,7 @@ namespace SIL.Reporting
 		// one source to saturate the receiver, but we also don't want to delay too much.
 		static int _minInterval = 125;	// 8 per second should be safe
 		static TimeSpan MinimumSpan = new TimeSpan(0,0,0,0,125);
-		public static int MinumumInterval
+		public static int MinimumInterval
 		{
 			get { return _minInterval; }
 			set { _minInterval = value; MinimumSpan = new TimeSpan(0,0,0,0,value); }

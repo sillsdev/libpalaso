@@ -16,7 +16,7 @@ namespace SIL.UsbDrive.Linux
 		[return: Argument("access_time_results")]
 		object[] DriveBenchmark(bool do_write_benchmark, string[] options, out object[] read_transfer_rate_results, out object[] write_transfer_rate_results);
 
-		void DriveAtaSmartInitiateSelftest(string test, string[] options);
+		void DriveAtaSmartInitiateSelfTest(string test, string[] options);
 
 		void DriveAtaSmartRefreshData(string cookie);
 
@@ -189,7 +189,7 @@ namespace SIL.UsbDrive.Linux
 		bool JobInProgress { get; }
 		string DevicePresentationIconName { get; }
 		string DevicePresentationName { get; }
-		bool DevicePresentationNopolicy { get; }
+		bool DevicePresentationNoPolicy { get; }
 		bool DevicePresentationHide { get; }
 		UInt64 DeviceBlockSize { get; }
 		UInt64 DeviceSize { get; }
@@ -267,7 +267,7 @@ namespace SIL.UsbDrive.Linux
 	  <arg name="write_transfer_rate_results" type="a(td)" direction="out"/>
 	  <arg name="access_time_results" type="a(td)" direction="out"/>
 	</method>
-	<method name="DriveAtaSmartInitiateSelftest">
+	<method name="DriveAtaSmartInitiateSelfTest">
 	  <arg name="test" type="s" direction="in"/>
 	  <arg name="options" type="as" direction="in"/>
 	</method>
@@ -482,7 +482,7 @@ namespace SIL.UsbDrive.Linux
 	<property name="JobInProgress" type="b" access="read"/>
 	<property name="DevicePresentationIconName" type="s" access="read"/>
 	<property name="DevicePresentationName" type="s" access="read"/>
-	<property name="DevicePresentationNopolicy" type="b" access="read"/>
+	<property name="DevicePresentationNoPolicy" type="b" access="read"/>
 	<property name="DevicePresentationHide" type="b" access="read"/>
 	<property name="DeviceBlockSize" type="t" access="read"/>
 	<property name="DeviceSize" type="t" access="read"/>

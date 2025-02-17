@@ -166,7 +166,7 @@ namespace SIL.Archiving.Tests
 		}
 
 		[Test]
-		public void AddSubjectLanguge_AddDuplicate_DuplicateNotAdded()
+		public void AddSubjectLanguage_AddDuplicate_DuplicateNotAdded()
 		{
 			IMDIPackage proj = new IMDIPackage(false, string.Empty);
 
@@ -181,7 +181,7 @@ namespace SIL.Archiving.Tests
 		}
 
 		[Test]
-		public void AddDocumentLanguge_AddDuplicate_DuplicateNotAdded()
+		public void AddDocumentLanguage_AddDuplicate_DuplicateNotAdded()
 		{
 			IMDIPackage proj = new IMDIPackage(false, string.Empty);
 

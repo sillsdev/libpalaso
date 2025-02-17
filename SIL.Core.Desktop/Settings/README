@@ -1,6 +1,6 @@
 Documentation for CrossPlatformSettingsProvider
 ===============================================
-The CrossPlatformSettings provider lets us avoid current (2013) inconsistancies in the mono and
+The CrossPlatformSettings provider lets us avoid current (2013) inconsistencies in the mono and
 windows implementations of the settings class. Currently the mono implementation is insufficient
 for our needs.
 
@@ -65,7 +65,7 @@ The following are the known differences:
 	Windows Example: C:\Users\naylor\AppData\Local\SIL\Fieldworks\8.0.5.6432\user.config
 	Linux Example:   /home/jnaylor/.local/share/SIL/Fieldworks/8.0.5.6432/user.config
 2. I've dropped a couple of attributes off of the section element (allowExeDefinition,
-	requirePermission) in the xml. I didn't know how to programatically determine them.
+	requirePermission) in the xml. I didn't know how to programmatically determine them.
 3. The custom settings provider gives us an upgrade path on Mono, but this hasn't been thoroughly
 	exercised (no need yet). The default settings Upgrade behaviour provided by the
 	CrossPlatformSettingsProvider class just copies the xml from the most recent previous version

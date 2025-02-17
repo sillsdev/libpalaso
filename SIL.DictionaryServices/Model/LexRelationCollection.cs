@@ -69,16 +69,16 @@ namespace SIL.DictionaryServices.Model
 		public void RemoveEmptyStuff()
 		{
 			//we do this in two passes because you can't remove items from a collection you are iterating over
-			List<LexRelation> condemed = new List<LexRelation>();
+			List<LexRelation> condemned = new List<LexRelation>();
 			foreach (LexRelation relation in Relations)
 			{
 				if (relation.ShouldBeRemovedFromParentDueToEmptiness)
 				{
-					condemed.Add(relation);
+					condemned.Add(relation);
 				}
 			}
 
-			foreach (LexRelation relation in condemed)
+			foreach (LexRelation relation in condemned)
 			{
 				Relations.Remove(relation);
 			}

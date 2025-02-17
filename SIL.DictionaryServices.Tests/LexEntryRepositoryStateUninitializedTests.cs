@@ -5,7 +5,7 @@ using SIL.IO;
 namespace SIL.DictionaryServices.Tests
 {
 	[TestFixture]
-	public class LiftLexEntryRepositoryStateUnitializedTests
+	public class LiftLexEntryRepositoryStateUninitializedTests
 	{
 
 		[Test]

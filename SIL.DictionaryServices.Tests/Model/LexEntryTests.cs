@@ -175,7 +175,7 @@ namespace SIL.DictionaryServices.Tests.Model
 		}
 
 		[Test]
-		public void LexSensePropertiesInUse_SenseAndMulitipleExampleSentencesHaveMultipleProperties_ReturnsAllProperties()
+		public void LexSensePropertiesInUse_SenseAndMultipleExampleSentencesHaveMultipleProperties_ReturnsAllProperties()
 		{
 			var ex1 = new LexExampleSentence();
 			ex1.GetOrCreateProperty<MultiText>("Ex1Prop1");
@@ -218,7 +218,7 @@ namespace SIL.DictionaryServices.Tests.Model
 		}
 
 		[Test]
-		public void LexEntryPropertiesInUse_EntryandMultipleSensesAndExampleSentencesHaveMultipleProperties_ReturnsAllProperties()
+		public void LexEntryPropertiesInUse_EntryAndMultipleSensesAndExampleSentencesHaveMultipleProperties_ReturnsAllProperties()
 		{
 			var ex1 = new LexExampleSentence();
 			ex1.GetOrCreateProperty<MultiText>("Ex1Prop1");
@@ -266,85 +266,85 @@ namespace SIL.DictionaryServices.Tests.Model
 		}
 
 		[Test]
-		public void GetSomeMeaningToUseInAbsenseOfHeadWord_NoGloss_GivesDefinition()
+		public void GetSomeMeaningToUseInAbsenceOfHeadWord_NoGloss_GivesDefinition()
 		{
 			var sense = new LexSense();
 			sense.Definition.SetAlternative("en", "blue");
 			var entry = new LexEntry();
 			entry.Senses.Add(sense);
-			Assert.AreEqual("blue",entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
+			Assert.AreEqual("blue",entry.GetSomeMeaningToUseInAbsenceOfHeadWord("en"));
 		}
 
 		[Test]
-		public void GetSomeMeaningToUseInAbsenseOfHeadWord_NoSenses_GivesMessage()
+		public void GetSomeMeaningToUseInAbsenceOfHeadWord_NoSenses_GivesMessage()
 		{
 			var entry = new LexEntry();
-			Assert.AreEqual("?NoMeaning?", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
+			Assert.AreEqual("?NoMeaning?", entry.GetSomeMeaningToUseInAbsenceOfHeadWord("en"));
 		}
 
 		[Test]
-		public void GetSomeMeaningToUseInAbsenseOfHeadWord_GlossAndDef_GivesGloss()
+		public void GetSomeMeaningToUseInAbsenceOfHeadWord_GlossAndDef_GivesGloss()
 		{
 			var sense = new LexSense();
 			sense.Gloss.SetAlternative("en", "red");
 			sense.Definition.SetAlternative("en", "blue");
 			var entry = new LexEntry();
 			entry.Senses.Add(sense);
-			Assert.AreEqual("red", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
+			Assert.AreEqual("red", entry.GetSomeMeaningToUseInAbsenceOfHeadWord("en"));
 		}
 
 
 		[Test]
-		public void GetSomeMeaningToUseInAbsenseOfHeadWord_NoDef_GivesGloss()
+		public void GetSomeMeaningToUseInAbsenceOfHeadWord_NoDef_GivesGloss()
 		{
 			var sense = new LexSense();
 			sense.Gloss.SetAlternative("en", "red");
 			var entry = new LexEntry();
 			entry.Senses.Add(sense);
-			Assert.AreEqual("red", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
+			Assert.AreEqual("red", entry.GetSomeMeaningToUseInAbsenceOfHeadWord("en"));
 		}
 		[Test]
-		public void GetSomeMeaningToUseInAbsenseOfHeadWord_MultipleGlosses_GivesRequestedOne()
+		public void GetSomeMeaningToUseInAbsenceOfHeadWord_MultipleGlosses_GivesRequestedOne()
 		{
 			var sense = new LexSense();
 			sense.Gloss.SetAlternative("en", "man");
 			sense.Gloss.SetAlternative("fr", "homme");
 			var entry = new LexEntry();
 			entry.Senses.Add(sense);
-			Assert.AreEqual("man", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
-			Assert.AreEqual("homme", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("fr"));
+			Assert.AreEqual("man", entry.GetSomeMeaningToUseInAbsenceOfHeadWord("en"));
+			Assert.AreEqual("homme", entry.GetSomeMeaningToUseInAbsenceOfHeadWord("fr"));
 		}
 		[Test]
-		public void GetSomeMeaningToUseInAbsenseOfHeadWord_NoGlossOrMeaningInLang_GivesMessage()
+		public void GetSomeMeaningToUseInAbsenceOfHeadWord_NoGlossOrMeaningInLang_GivesMessage()
 		{
 			var sense = new LexSense();
 			sense.Gloss.SetAlternative("en", "man");
 			var entry = new LexEntry();
 			entry.Senses.Add(sense);
-			Assert.AreEqual("man", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("en"));
-			Assert.AreEqual("?NoGlossOrDef?", entry.GetSomeMeaningToUseInAbsenseOfHeadWord("fr"));
+			Assert.AreEqual("man", entry.GetSomeMeaningToUseInAbsenceOfHeadWord("en"));
+			Assert.AreEqual("?NoGlossOrDef?", entry.GetSomeMeaningToUseInAbsenceOfHeadWord("fr"));
 		}
 
 		[Test]
-		public void Cleanup_HasBaseform_PropertyIsNotRemoved()
+		public void Cleanup_HasBaseForm_PropertyIsNotRemoved()
 		{
 			var target = new LexEntry();
 			_entry = new LexEntry();
 			_entry.LexicalForm["v"] = "hello";
 			_entry.AddRelationTarget(LexEntry.WellKnownProperties.BaseForm, target.GetOrCreateId(true));
-			_entry.CleanUpAfterEditting();
+			_entry.CleanUpAfterEditing();
 			Assert.IsNotNull(_entry.GetProperty<LexRelationCollection>(LexEntry.WellKnownProperties.BaseForm));
 		}
 
 		[Test]
-		public void Cleanup_HasEmptyBaseform_PropertyIsRemoved()
+		public void Cleanup_HasEmptyBaseForm_PropertyIsRemoved()
 		{
 			var target = new LexEntry();
 			_entry = new LexEntry();
 			_entry.LexicalForm["v"] = "hello";
 			_entry.AddRelationTarget(LexEntry.WellKnownProperties.BaseForm, string.Empty);
 			Assert.IsNotNull(_entry.GetProperty<LexRelationCollection>(LexEntry.WellKnownProperties.BaseForm));
-			_entry.CleanUpAfterEditting();
+			_entry.CleanUpAfterEditing();
 			Assert.IsNull(_entry.GetProperty<LexRelationCollection>(LexEntry.WellKnownProperties.BaseForm));
 		}
 
@@ -373,7 +373,7 @@ namespace SIL.DictionaryServices.Tests.Model
 			MultiText customFieldInExample =
 				_examples.GetOrCreateProperty<MultiText>("customFieldInExample");
 			customFieldInExample["th"] = string.Empty;
-			_entry.CleanUpAfterEditting();
+			_entry.CleanUpAfterEditing();
 		}
 
 		private void ClearSenseMeaning()
@@ -398,7 +398,7 @@ namespace SIL.DictionaryServices.Tests.Model
 			MultiText customFieldInSense =
 				_sense.GetOrCreateProperty<MultiText>("customFieldInSense");
 			customFieldInSense["th"] = string.Empty;
-			_entry.CleanUpAfterEditting();
+			_entry.CleanUpAfterEditing();
 		}
 
 		[Test]

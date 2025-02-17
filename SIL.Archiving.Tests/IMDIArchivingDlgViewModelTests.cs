@@ -317,7 +317,7 @@ namespace SIL.Archiving.Tests
 	{
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public async Task DisplayInitialSummary_OverridenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides()
+		public async Task DisplayInitialSummary_OverriddenPropertiesForDisplayInitialSummaryAreSet_MessagesReflectOverrides()
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
 

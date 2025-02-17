@@ -221,7 +221,7 @@ namespace SIL.IO
 			                                  "The error was: \n{2}",
 				EntryAssembly.ProductName, destinationPath, error.Message);
 			message = message.Replace("\n", Environment.NewLine);
-			//enhance: this would be clearer if the "OK" button read "Retry", but that's not easily changable.
+			//enhance: this would be clearer if the "OK" button read "Retry", but that's not easily changeable.
 			var result = ErrorReport.NotifyUserOfProblem(new ShowAlwaysPolicy(), "Give Up", ErrorResult.No,
 				message);
 			if (result == ErrorResult.No)

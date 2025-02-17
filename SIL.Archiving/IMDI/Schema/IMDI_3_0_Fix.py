@@ -1,7 +1,7 @@
 ###############################################################################
 #
 # This python script takes the output from xsd.exe and makes changes that
-# allow it to be used more easily and also makes it more acceptible to
+# allow it to be used more easily and also makes it more acceptable to
 # ReSharper.
 #
 ###############################################################################
@@ -239,12 +239,10 @@ def replace_text(line):
 	return line
 
 # open input and output files
-f1 = open('IMDI_3_0.cs', 'r')
-f2 = open('IMDI_3_0_Fixed.cs', 'w')
-s = f1.read()
-f2.write(replace_text(s))
-f1.close()
-f2.close()
+with open('IMDI_3_0.cs', 'r') as f1:
+	s = f1.read()
+	with open('IMDI_3_0_Fixed.cs', 'w') as f2:
+		f2.write(replace_text(s))
 
 # rename original file
 os.rename('IMDI_3_0.cs', 'IMDI_3_0.cs.original.' + time.strftime("%Y%m%d%H%M%S"))

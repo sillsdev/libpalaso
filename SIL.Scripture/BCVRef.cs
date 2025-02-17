@@ -656,19 +656,19 @@ namespace SIL.Scripture
 		/// number</param>
 		/// <param name="verseBridge">Character(s) used to connect two references, indicating a
 		/// range</param>
-		/// <param name="supressChapterForIntroMatter">Does not include the chapter number
+		/// <param name="suppressChapterForIntroMatter">Does not include the chapter number
 		/// when the start and end reference chapter and verse are the same and that
 		/// chapter and verse is 1:0</param>
 		/// <returns>The reference range as a formatted string.</returns>
 		/// ------------------------------------------------------------------------------------
 		[PublicAPI]
 		public static string MakeReferenceString(BCVRef startRef, BCVRef endRef,
-			string chapterVerseSeparator, string verseBridge, bool supressChapterForIntroMatter)
+			string chapterVerseSeparator, string verseBridge, bool suppressChapterForIntroMatter)
 		{
 			if (endRef == null || endRef.Book == -1 || startRef.Book == endRef.Book)
 			{
 				return MakeReferenceString(NumberToBookCode(startRef.Book), startRef, endRef,
-					chapterVerseSeparator, verseBridge, supressChapterForIntroMatter);
+					chapterVerseSeparator, verseBridge, suppressChapterForIntroMatter);
 			}
 
 			return startRef.ToString(RefStringFormat.General, chapterVerseSeparator) +
@@ -710,7 +710,7 @@ namespace SIL.Scripture
 		/// number</param>
 		/// <param name="verseBridge">Character(s) used to connect two references, indicating a
 		/// range</param>
-		/// <param name="supressChapterForIntroMatter">Does not include the chapter number
+		/// <param name="suppressChapterForIntroMatter">Does not include the chapter number
 		/// when the start and end reference chapter and verse are the same and that
 		/// chapter and verse is 1:0</param>
 		/// <returns>The reference range as a formatted string.</returns>
@@ -718,10 +718,10 @@ namespace SIL.Scripture
 		[PublicAPI]
 		public static string MakeReferenceString(string bookName, BCVRef startRef,
 			BCVRef endRef, string chapterVerseSeparator, string verseBridge,
-			bool supressChapterForIntroMatter)
+			bool suppressChapterForIntroMatter)
 		{
 			return MakeReferenceString(bookName, startRef, endRef, chapterVerseSeparator,
-				verseBridge, null, supressChapterForIntroMatter ? String.Empty : null);
+				verseBridge, null, suppressChapterForIntroMatter ? String.Empty : null);
 		}
 
 		/// ------------------------------------------------------------------------------------
