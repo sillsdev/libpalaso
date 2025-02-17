@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - [SIL.WritingSystems] Added public DownloadLanguageTags method for updating the cached langtags.json from the SLDR repository.
+- [SIL.Core] Add environment variable to disable `GlobalMutex` across processes. Helpful for snap packages in Linux.
+
 
 ### Changed
 
@@ -28,6 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.WritingSystems] Changed optional parameter of SLDR's Initialize from offlineMode to offlineTestMode (technically a breaking change).
 - [SIL.WritingSystems] Added optional parameter to InitializeLanguageTags: bool downloadLanguageTags (default true).
 - [SIL.WritingSystems] Download of langtags.json handled with ETag and If-None-Match headers instead of If-Modified-Since.
+- [SIL.WritingSystems] Added version number to the UserAgent string used for LDML and langtags.json requests.
 - [SIL.DictionaryServices] In class LiftLexEntryRepository, renamed private method GetTrimmedElementsSeperatedBySemiColon to GetTrimmedElementsSeparatedBySemiColon and private method CheckIfTokenHasAlreadyBeenReturnedForThisSemanticDomain parameter fieldsandValuesForRecordTokens to fieldsAndValuesForRecordTokens.
 - [SIL.DictionaryServices.Tests] Renamed test class LiftLexEntryRepositoryStateUnitializedTests to LiftLexEntryRepositoryStateUninitializedTests.
 - [SIL.DictionaryServices.Tests.Lift] Renamed test class LiftRepositoryStateUnitializedTests to LiftRepositoryStateUninitializedTests.
@@ -36,7 +39,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Tests.Text] In test class MultiTextBaseTests, renamed method AnnotationOfMisssingAlternative to AnnotationOfMissingAlternative.
 - [SIL.Windows.Forms.Keyboarding.Tests] In test class XkbKeyboardAdapterTests, renamed method Errorkeyboards to ErrorKeyboards.
 - [SIL.Windows.Forms.Keyboarding.Windows] In internal interface ITfInputProcessorProfileMgr, renamed method RegisterProfile parameter hklsubstitute to hklSubstitute.
-- [SIL.Windows.Forms.Reporting] In class ProblemNotificationDialog, renamed internal property _reoccurenceMessage to _reoccurrenceMessage.
+- [SIL.Windows.Forms.Reporting] In class ProblemNotificationDialog, renamed internal property \_reoccurenceMessage to \_reoccurrenceMessage.
 - [SIL.WritingSystems] In class LanguageLookup changed private method AddLanguage parameter threelettercode to threeLetterCode.
 - [SIL.Xml] BREAKING CHANGE: In class XmlUtils, renamed method GetIndendentedXml to GetIndentedXml.
 - [SIL.UsbDrive.Linux] BREAKING CHANGE: In interface IUDiskDevice renamed method DriveAtaSmartInitiateSelftest to DriveAtaSmartInitiateSelfTest and property DevicePresentationNopolicy to DevicePresentationNoPolicy.
@@ -51,6 +54,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Reporting] BREAKING CHANGE: In class ProblemNotificationDialog, renamed method ReoccurenceMessage to ReoccurrenceMessage.
 - [SIL.WritingSystems] BREAKING CHANGE: A new FontDefinition now has .Role default to FontRoles.None rather than FontRoles.Default. Likewise, the method LdmlDataMapper.Read now reads in a font with no type as FontRoles.None instead of FontRoles.Default.
 - [SIL.WritingSystems] Added UI to enum FontRoles; the methods LdmlDataMapper.Read and LdmlDataMapper.Write now support fonts with type "ui". Also, if the ldml file has a font type not covered in FontRoles, LdmlDataMapper.Read will add it as FontRoles.Default.
+- [SIL.WritingSystems] Updated langtags.json and ianaSubtagRegistry.txt in Resources.\
 
 ### Fixed
 
