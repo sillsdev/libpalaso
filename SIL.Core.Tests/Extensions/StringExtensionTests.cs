@@ -184,6 +184,29 @@ namespace SIL.Tests.Extensions
 			Assert.AreEqual(0, result.Length);
 		}
 
+		[Test]
+		public void SplitLines_NoLineBreaks_ReturnsArrayWithSingleString()
+		{
+			Assert.That("just this".SplitLines(), Is.EquivalentTo(new [] {"just this"}));
+		}
+		
+		[TestCase("line1\rline2")]
+		[TestCase("line1\nline2")]
+		[TestCase("line1\nline2\n")]
+		[TestCase("line1\nline2\n\r")]
+		[TestCase("line1\n\rline2")]
+		[TestCase("line1\n\rline2\r\n")]
+		[TestCase("line1\r\nline2")]
+		[TestCase("line1\r\rline2")]
+		[TestCase("line1\n\nline2")]
+		[TestCase("line1\n\r\n\rline2")]
+		[TestCase("line1\r\n\r\nline2")]
+		public void SplitLines_LineBreaks_ReturnsArrayWithAStringForEachLine(string str)
+		{
+			var result = str.SplitLines();
+			Assert.That(result, Is.EquivalentTo(new [] {"line1", "line2"}));
+		}
+
 		[TestCase("hello\u0300 world", "hello world")]
 		[TestCase("h\u00e9ll\u00f3 world", "hello world")]
 		[TestCase("hello world", "hello world")]
