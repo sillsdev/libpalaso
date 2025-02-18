@@ -115,7 +115,7 @@ namespace SIL.Windows.Forms.Widgets
 
 			Color theColor = (state == SpinnerState.Hot) ? hoverColor : arrowColor;
 			int facing = direction == ArrowDirection.Left ? 1 : -1;
-			PointF center = new PointF(bounds.X + bounds.Width / 2, bounds.Y + bounds.Height / 2);
+			PointF center = new PointF(bounds.X + bounds.Width / 2.0f, bounds.Y + bounds.Height / 2.0f);
 			// nudge center to account for button's 3-D optical illusion.
 			center.Y -= 1; center.X -= facing;
 			float arrowHeight = Math.Min(Width / 2.0f, Height) * scalingFactor;
