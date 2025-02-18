@@ -133,17 +133,7 @@ namespace SIL.Archiving.Tests
 		#region GetNameOfProgramToLaunch tests
 
 		[Test]
-		public void GetNameOfProgramToLaunch_ShortExeName_ReturnsExeNameWithoutExtension()
-		{
-			_model.ProgramPreset = "Arbil";
-
-			// AT THIS TIME WE ARE NOT SHOWING THE LAUNCH OPTION
-			//Assert.AreEqual("Arbil", _model.NameOfProgramToLaunch);
-			Assert.IsNull(_model.NameOfProgramToLaunch);
-		}
-
-		[Test]
-		public void GetNameOfProgramToLaunch_ExeNameContainsFolderName_ReturnsFolderName()
+		public void GetNameOfProgramToLaunch_IsNull()
 		{
 			_model.ProgramPreset = "Arbil";
 
@@ -243,17 +233,6 @@ namespace SIL.Archiving.Tests
 			}
 			Assert.AreEqual(0, descriptions.Count);
 		}
-
-		// We now accept languages not in the Arbil list
-		//[Test]
-		//public void SetAbstract_BogusLanguage_ThrowsException()
-		//{
-		//    _model.Initialize();
-		//    Dictionary<string, string> descriptions = new Dictionary<string, string>();
-		//    descriptions["eng"] = "Story about a frog";
-		//    descriptions["frn"] = "L'histoire d'une grenouille";
-		//    Assert.Throws(typeof (ArgumentException), () => _model.SetAbstract(descriptions));
-		//}
 
 		#endregion
 	}
