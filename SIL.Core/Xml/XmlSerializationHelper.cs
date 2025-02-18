@@ -56,16 +56,21 @@ namespace SIL.Xml
 
 			/// --------------------------------------------------------------------------------
 			/// <summary>
-			/// Gets the namespace URI (as defined in the W3C Namespace specification) of the
-			/// node on which the reader is positioned.
+			/// Base class gets the namespace URI (as defined in the W3C Namespace specification)
+			/// of the node on which the reader is positioned, but here it is overridden.
 			/// </summary>
-			/// <value></value>
-			/// <returns>The namespace URI of the current node; otherwise an empty string.</returns>
+			/// <returns>An empty string.</returns>
+			/// <remarks>REVIEW: Why was this overridden? My guess is that it maybe it was to avoid
+			/// an exception or other undesirable behavior in the case where we're dealing with a
+			/// whitespace node that we're keeping but the underlying implementation wouldn't have
+			/// kept, but that seems only barely plausible, and even then we could catch the
+			/// exception and return Empty only in that case. Since it's an internal class and
+			/// none of the code that uses it references this property, the only possible purpose
+			/// I can think of for overriding it would be to keep it from crashing, giving
+			/// unreliable information, or maybe timing out in the debugger's watch window.
+			/// </remarks>
 			/// --------------------------------------------------------------------------------
-			public override string NamespaceURI
-			{
-				get { return string.Empty; }
-			}
+			public override string NamespaceURI => string.Empty;
 
 			/// --------------------------------------------------------------------------------
 			/// <summary>
@@ -132,6 +137,7 @@ namespace SIL.Xml
 		/// Serializes an object to an XML represented in an array of UTF-8 bytes.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static byte[] SerializeToByteArray<T>(T data)
 		{
 			return SerializeToByteArray(data, false);
@@ -193,8 +199,7 @@ namespace SIL.Xml
 		/// ------------------------------------------------------------------------------------
 		private static string SerializeToString<T>(T data, bool omitXmlDeclaration, Encoding encoding)
 		{
-			if (encoding == null)
-				encoding = Encoding.Unicode;
+			encoding ??= Encoding.Unicode;
 			try
 			{
 				using (var strWriter = encoding.Equals(Encoding.Unicode) ? new StringWriter() : new StringWriterWithEncoding(encoding))
@@ -231,12 +236,14 @@ namespace SIL.Xml
 			return null;
 		}
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static bool SerializeToFile<T>(string filename, T data)
 		{
 			return SerializeToFile(filename, data, null);
 		}
 
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static bool SerializeToFile<T>(string filename, T data, out Exception e)
 		{
 			return SerializeToFile(filename, data, null, out e);
@@ -244,18 +251,17 @@ namespace SIL.Xml
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Serializes an object to a the specified file.
+		/// Serializes an object to the specified file.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static bool SerializeToFile<T>(string filename, T data, string rootElementName)
 		{
-			Exception e;
-			return SerializeToFile(filename, data, rootElementName, out e);
+			return SerializeToFile(filename, data, rootElementName, out _);
 		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Serializes an object to a the specified file.
+		/// Serializes an object to the specified file.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static bool SerializeToFile<T>(string filename, T data, string rootElementName,
@@ -331,11 +337,11 @@ namespace SIL.Xml
 		public static void SerializeToFileWithWriteThrough<T>(string path, T data)
 		{
 			// Note: RobustFile.Create() uses FileOptions.WriteThrough which causes the data to still be
-			//       written to the operating system cache but it is immediately flushed. If this doesn't
-			//       address the problem then a more thorough solution that completely bypasses the cache
-			//       is to use the c++ CreateFile() api and pass both FILE_FLAG_NO_BUFFERING and
-			//       FILE_FLAG_WRITE_THROUGH.
-			//       https://docs.microsoft.com/en-us/windows/win32/fileio/file-caching
+			// written to the operating system cache, but it is immediately flushed. If this doesn't
+			// address the problem then a more thorough solution that completely bypasses the cache
+			// is to use the c++ CreateFile() api and pass both FILE_FLAG_NO_BUFFERING and
+			// FILE_FLAG_WRITE_THROUGH.
+			// https://docs.microsoft.com/en-us/windows/win32/fileio/file-caching
 			using (var writer = RobustFile.Create(path))
 			{
 				XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
@@ -394,6 +400,7 @@ namespace SIL.Xml
 		/// assumption is the writer is expecting UTF8 data.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static bool SerializeDataAndWriteAsNode<T>(XmlWriter writer, T data)
 		{
 			string xmlData = SerializeToString(data);
@@ -427,8 +434,7 @@ namespace SIL.Xml
 		/// ------------------------------------------------------------------------------------
 		public static T DeserializeFromString<T>(string input)
 		{
-			Exception e;
-			return (DeserializeFromString<T>(input, out e));
+			return (DeserializeFromString<T>(input, out _));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -436,10 +442,10 @@ namespace SIL.Xml
 		/// Deserializes XML from the specified string to an object of the specified type.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static T DeserializeFromString<T>(string input, bool fKeepWhitespaceInElements)
 		{
-			Exception e;
-			return (DeserializeFromString<T>(input, fKeepWhitespaceInElements, out e));
+			return (DeserializeFromString<T>(input, fKeepWhitespaceInElements, out _));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -460,13 +466,13 @@ namespace SIL.Xml
 		public static T DeserializeFromString<T>(string input, bool fKeepWhitespaceInElements,
 			out Exception e)
 		{
-			T data = default(T);
+			T data = default;
 			e = null;
 
 			try
 			{
 				if (string.IsNullOrEmpty(input))
-					return default(T);
+					return default;
 
 				// Whitespace is not allowed before the XML declaration,
 				// so get rid of any that exists.
@@ -495,8 +501,7 @@ namespace SIL.Xml
 		/// ------------------------------------------------------------------------------------
 		public static T DeserializeFromFile<T>(string filename)
 		{
-			Exception e;
-			return DeserializeFromFile<T>(filename, false, out e);
+			return DeserializeFromFile<T>(filename, false, out _);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -504,10 +509,10 @@ namespace SIL.Xml
 		/// Deserializes XML from the specified file to an object of the specified type.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static T DeserializeFromFile<T>(string filename, string rootElementName)
 		{
-			Exception e;
-			return DeserializeFromFile<T>(filename, rootElementName, false, out e);
+			return DeserializeFromFile<T>(filename, rootElementName, false, out _);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -520,10 +525,10 @@ namespace SIL.Xml
 		/// will preserve and return elements that contain only whitespace, otherwise
 		/// these elements will be ignored during a deserialization.</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static T DeserializeFromFile<T>(string filename, bool fKeepWhitespaceInElements)
 		{
-			Exception e;
-			return DeserializeFromFile<T>(filename, fKeepWhitespaceInElements, out e);
+			return DeserializeFromFile<T>(filename, fKeepWhitespaceInElements, out _);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -538,11 +543,11 @@ namespace SIL.Xml
 		/// will preserve and return elements that contain only whitespace, otherwise
 		/// these elements will be ignored during a deserialization.</param>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static T DeserializeFromFile<T>(string filename, string rootElementName,
 			bool fKeepWhitespaceInElements)
 		{
-			Exception e;
-			return DeserializeFromFile<T>(filename, rootElementName, fKeepWhitespaceInElements, out e);
+			return DeserializeFromFile<T>(filename, rootElementName, fKeepWhitespaceInElements, out _);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -569,6 +574,7 @@ namespace SIL.Xml
 		/// <param name="e">The exception generated during the deserialization.</param>
 		/// <returns></returns>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static T DeserializeFromFile<T>(string filename, string rootElementName,
 			out Exception e)
 		{
@@ -670,9 +676,11 @@ namespace SIL.Xml
 				deserializer = new XmlSerializer(typeof(T));
 			else
 			{
-				var rootAttrib = new XmlRootAttribute();
-				rootAttrib.ElementName = rootElementName;
-				rootAttrib.IsNullable = true;
+				var rootAttrib = new XmlRootAttribute
+				{
+					ElementName = rootElementName,
+					IsNullable = true
+				};
 				deserializer = new XmlSerializer(typeof(T), rootAttrib);
 			}
 
