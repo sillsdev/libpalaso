@@ -11,6 +11,9 @@ defaults:
   run:
     shell: bash
 
+permissions:
+  contents: read
+
 jobs:
   build:
     timeout-minutes: 60
@@ -35,19 +38,19 @@ jobs:
     - name: Get Path to Tests
       run: echo "TEST_PATH=$(dotnet msbuild SIL.Core.Tests/ --getProperty:OutputPath -p:TargetFramework=${{ matrix.framework }} -p:Configuration=Release)" >> $GITHUB_ENV
 
-    # Several steps to set up FFmpeg and Scream and start Audio Service so that audio tests can run 
+    # Several steps to set up FFmpeg and Scream and start Audio Service so that audio tests can run
     - name: Install FFmpeg
       uses: FedericoCarboni/setup-ffmpeg@v3
       id: setup-ffmpeg
       with:
         ffmpeg-version: release
     - run: echo ffmpeg path ${{ steps.setup-ffmpeg.outputs.ffmpeg-path }}
-      
+
     - name: Verify FFmpeg Installation
       run: |
         echo $PATH
         ffmpeg -version
-    
+
     - name: Install Scream
       shell: powershell
       run: |
@@ -67,7 +70,7 @@ jobs:
         Import-Certificate -FilePath ScreamCertificate.cer -CertStoreLocation Cert:\LocalMachine\TrustedPublisher
         Scream\Install\helpers\devcon-x64.exe install Scream\Install\driver\x64\Scream.inf *Scream
       timeout-minutes: 5
-      
+
     - name: Start Windows Audio Service
       run: net start audiosrv
       shell: powershell
