@@ -42,17 +42,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Reporting] In class ProblemNotificationDialog, renamed internal property \_reoccurenceMessage to \_reoccurrenceMessage.
 - [SIL.WritingSystems] In class LanguageLookup changed private method AddLanguage parameter threelettercode to threeLetterCode.
 - [SIL.WritingSystems] Updated langtags.json and ianaSubtagRegistry.txt in Resources.
-- [SIL.Xml] (Breaking change!) In class XmlUtils, renamed method GetIndendentedXml to GetIndentedXml.
-- [SIL.UsbDrive.Linux] (Breaking change!) In interface IUDiskDevice renamed method DriveAtaSmartInitiateSelftest to DriveAtaSmartInitiateSelfTest and property DevicePresentationNopolicy to DevicePresentationNoPolicy.
-- [SIL.DictionaryServices.Model] (Breaking change!) In class LexEntry, renamed WellKnownProperties.FlagSkipBaseform to WellKnownProperties.FlagSkipBaseForm and GetSomeMeaningToUseInAbsenseOfHeadWord to GetSomeMeaningToUseInAbsenceOfHeadWord.
-- [SIL.DictionaryServices.Model] (Breaking change!) In classes LexEntry and LexSense, renamed method CleanUpAfterEditting to CleanUpAfterEditing.
-- [SIL.Lift] (Breaking change!) In abstract class PalasoDataObject, renamed method CleanUpAfterEditting to CleanUpAfterEditing.
-- [SIL.Reporting] (Breaking change!) In classes ErrorReport and ExceptionHelper, renamed methed GetHiearchicalExceptionInfo to GetHierarchicalExceptionInfo.
-- [SIL.Reporting] (Breaking change!) In interface IRepeatNoticePolicy and classes ShowAlwaysPolicy and ShowOncePerSessionBasedOnExactMessagePolicy, renamed property ReoccurenceMessage to ReoccurrenceMessage.
-- [SIL.Reporting] (Breaking change!) In class FontAnalytics, renamed property MinumumInterval to MinimumInterval.
-- [SIL.Scripture] (Breaking change!) In class BCVRef method MakeReferenceString, renamed parameter supressChapterForIntroMatter to suppressChapterForIntroMatter.
-- [SIL.Windows.Forms.ImageToolbox] (Breaking change!) Changed class PalsoImageNotDisposed to PalasoImageNotDisposed.
-- [SIL.Windows.Forms.Reporting] (Breaking change!) In class ProblemNotificationDialog, renamed method ReoccurenceMessage to ReoccurrenceMessage.
+- [SIL.Xml] BREAKING CHANGE: In class XmlUtils, renamed method GetIndendentedXml to GetIndentedXml.
+- [SIL.UsbDrive.Linux] BREAKING CHANGE: In interface IUDiskDevice renamed method DriveAtaSmartInitiateSelftest to DriveAtaSmartInitiateSelfTest and property DevicePresentationNopolicy to DevicePresentationNoPolicy.
+- [SIL.DictionaryServices.Model] BREAKING CHANGE: In class LexEntry, renamed WellKnownProperties.FlagSkipBaseform to WellKnownProperties.FlagSkipBaseForm and GetSomeMeaningToUseInAbsenseOfHeadWord to GetSomeMeaningToUseInAbsenceOfHeadWord.
+- [SIL.DictionaryServices.Model] BREAKING CHANGE: In classes LexEntry and LexSense, renamed method CleanUpAfterEditting to CleanUpAfterEditing.
+- [SIL.Lift] BREAKING CHANGE: In abstract class PalasoDataObject, renamed method CleanUpAfterEditting to CleanUpAfterEditing.
+- [SIL.Reporting] BREAKING CHANGE: In classes ErrorReport and ExceptionHelper, renamed methed GetHiearchicalExceptionInfo to GetHierarchicalExceptionInfo.
+- [SIL.Reporting] BREAKING CHANGE: In interface IRepeatNoticePolicy and classes ShowAlwaysPolicy and ShowOncePerSessionBasedOnExactMessagePolicy, renamed property ReoccurenceMessage to ReoccurrenceMessage.
+- [SIL.Reporting] BREAKING CHANGE: In class FontAnalytics, renamed property MinumumInterval to MinimumInterval.
+- [SIL.Scripture] BREAKING CHANGE: In class BCVRef method MakeReferenceString, renamed parameter supressChapterForIntroMatter to suppressChapterForIntroMatter.
+- [SIL.Windows.Forms.ImageToolbox] BREAKING CHANGE: Changed class PalsoImageNotDisposed to PalasoImageNotDisposed.
+- [SIL.Windows.Forms.Reporting] BREAKING CHANGE: In class ProblemNotificationDialog, renamed method ReoccurenceMessage to ReoccurrenceMessage.
+- [SIL.WritingSystems] BREAKING CHANGE: A new FontDefinition now has .Role default to FontRoles.None rather than FontRoles.Default. Likewise, the method LdmlDataMapper.Read now reads in a font with no type as FontRoles.None instead of FontRoles.Default.
+- [SIL.WritingSystems] Added UI to enum FontRoles; the methods LdmlDataMapper.Read and LdmlDataMapper.Write now support fonts with type "ui". Also, if the ldml file has a font type not covered in FontRoles, LdmlDataMapper.Read will add it as FontRoles.Default.
 
 ### Fixed
 

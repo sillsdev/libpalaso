@@ -93,9 +93,9 @@ namespace SIL.WritingSystems.Tests
 						</identity>
 						<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
 							<sil:external-resources>
-								<sil:font name='Amdo Classic 1' types='kaboom' />
+								<sil:font name='Amdo Classic 1' engines='kaboom' />
 							</sil:external-resources>
-						</special>	 
+						</special>
 					</ldml>";
 				File.WriteAllText(badFile, ldmlData);
 				var repo = GlobalWritingSystemRepository.InitializeWithBasePath(e.Path, null);
