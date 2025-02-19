@@ -218,18 +218,18 @@ namespace SIL.Windows.Forms.Widgets.Flying
 		/// <summary>
 		/// The number of frames per second
 		/// </summary>
-		public int FrameRate
+		public float FrameRate
 		{
-			get { return 1000 / _timer.Interval; }
+			get { return 1000.0f / _timer.Interval; }
 			set
 			{
-				if (value > 1000 || value < 1)
+				if (value > 1000 + float.Epsilon || value < 1 - float.Epsilon)
 				{
 					throw new ArgumentOutOfRangeException("value",
 														  value,
 														  "FrameRate must be between 1 and 1000, inclusive");
 				}
-				_timer.Interval = 1000 / value;
+				_timer.Interval = (int) (float.Epsilon + 1000.0f / value);
 			}
 		}
 
