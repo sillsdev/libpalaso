@@ -96,7 +96,8 @@ jobs:
 
   publish-test-results:
     permissions:
-      contents: write
+      checks: write
+      contents: read
     runs-on: ubuntu-latest
     needs: build
     if: always()
