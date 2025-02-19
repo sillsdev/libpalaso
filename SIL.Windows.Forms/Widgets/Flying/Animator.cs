@@ -41,7 +41,7 @@ namespace SIL.Windows.Forms.Widgets.Flying
 		/// <returns></returns>
 		private PointF GetPointFromInterval(float t)
 		{
-			float t_t = t * t; // interval squarred
+			float t_t = t * t; // interval squared
 			float t_t_t = t_t * t;
 
 			PointF result = new PointF();
@@ -184,7 +184,7 @@ namespace SIL.Windows.Forms.Widgets.Flying
 		}
 
 		/// <summary>
-		/// Duration in Miliseconds
+		/// Duration in Milliseconds
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">When negative value.</exception>
 		public int Duration
@@ -201,7 +201,7 @@ namespace SIL.Windows.Forms.Widgets.Flying
 		}
 
 		/// <summary>
-		/// Determines the rate at which the annimation travels along the curve.
+		/// Determines the rate at which the animation travels along the curve.
 		/// </summary>
 		public Speed SpeedFunction
 		{
@@ -218,18 +218,18 @@ namespace SIL.Windows.Forms.Widgets.Flying
 		/// <summary>
 		/// The number of frames per second
 		/// </summary>
-		public float FrameRate
+		public int FrameRate
 		{
 			get { return 1000 / _timer.Interval; }
 			set
 			{
-				if (value > 1000 || value <= 0)
+				if (value > 1000 || value < 1)
 				{
 					throw new ArgumentOutOfRangeException("value",
 														  value,
 														  "FrameRate must be between 1 and 1000, inclusive");
 				}
-				_timer.Interval = (int) (1000f / value);
+				_timer.Interval = 1000 / value;
 			}
 		}
 
