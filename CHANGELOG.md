@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Keyboarding.Tests] In test class XkbKeyboardAdapterTests, renamed method Errorkeyboards to ErrorKeyboards.
 - [SIL.Windows.Forms.Keyboarding.Windows] In internal interface ITfInputProcessorProfileMgr, renamed method RegisterProfile parameter hklsubstitute to hklSubstitute.
 - [SIL.Windows.Forms.Reporting] In class ProblemNotificationDialog, renamed internal property \_reoccurenceMessage to \_reoccurrenceMessage.
+- [SIL.Windows.Forms.Widgets] Fix loss of precision in drawing arrows within HorizontalSpinner.OnPaint.
 - [SIL.WritingSystems] In class LanguageLookup changed private method AddLanguage parameter threelettercode to threeLetterCode.
 - [SIL.WritingSystems] Updated langtags.json and ianaSubtagRegistry.txt in Resources.
 - [SIL.Xml] BREAKING CHANGE: In class XmlUtils, renamed method GetIndendentedXml to GetIndentedXml.
