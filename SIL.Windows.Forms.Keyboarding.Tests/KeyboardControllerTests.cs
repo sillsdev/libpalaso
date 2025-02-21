@@ -1,4 +1,4 @@
-// Copyright (c) 2024, SIL Global.
+// Copyright (c) 2025 SIL Global
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
 
 using System;

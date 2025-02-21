@@ -1,4 +1,4 @@
-// Copyright (c) 2010-2024 SIL Global
+// Copyright (c) 2010-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -59,7 +59,6 @@ namespace SIL.Progress
 			var lines = message.FormatWithErrorStringInsteadOfException(args);
 			foreach (var line in lines.Split('\n'))
 			{
-
 				WriteMessage("   " + line);
 			}
 

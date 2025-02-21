@@ -467,7 +467,7 @@ namespace SIL.Tests.Text
 		}
 
 		[Test]
-		public void AnnotationOfMisssingAlternative()
+		public void AnnotationOfMissingAlternative()
 		{
 			MultiTextBase multiTextBase = new MultiTextBase();
 			Assert.IsFalse(multiTextBase.GetAnnotationOfAlternativeIsStarred("zz"));
@@ -556,7 +556,7 @@ namespace SIL.Tests.Text
 		}
 
 		[Test]
-		public void SetAlternative_ThreeDifferentLanguages_LanguageFormsAreSortedbyWritingSystem()
+		public void SetAlternative_ThreeDifferentLanguages_LanguageFormsAreSortedByWritingSystem()
 		{
 
 			MultiTextBase multiTextBaseToPopulate = new MultiTextBase();

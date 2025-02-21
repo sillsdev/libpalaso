@@ -10,7 +10,7 @@ namespace SIL.Archiving.Tests
 	{
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void MakeKeyValuePair_BothAreEmtpy_ReturnsNull()
+		public void MakeKeyValuePair_BothAreEmpty_ReturnsNull()
 		{
 			Assert.IsNull(JSONUtils.MakeKeyValuePair("", ""));
 		}

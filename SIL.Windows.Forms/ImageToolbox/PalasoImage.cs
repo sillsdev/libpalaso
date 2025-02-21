@@ -175,7 +175,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			}
 			else
 			{
-				//nb: there are cases (notibly http://jira.palaso.org/issues/browse/WS-34711, after cropping a jpeg) where we get out of memory if we are not operating on a copy
+				//nb: there are cases (notably http://jira.palaso.org/issues/browse/WS-34711, after cropping a jpeg) where we get out of memory if we are not operating on a copy
 				using (var image = new Bitmap(Image))
 				{
 					image.Save(path, format);
@@ -501,7 +501,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		{
 			Dispose(true);
 			// This object will be cleaned up by the Dispose method.
-			// Therefore, you should call GC.SupressFinalize to
+			// Therefore, you should call GC.SuppressFinalize to
 			// take this object off the finalization queue
 			// and prevent finalization code for this object
 			// from executing a second time.
@@ -570,7 +570,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 					var message = "PalasoImage wasn't disposed of properly: " + imageLabel + ". LabelForDebugging=" + LabelForDebugging;
 					if (ThrowOnFailureToDisposeAnyPalasoImage)
 					{
-						throw new PalsoImageNotDisposed(message);
+						throw new PalasoImageNotDisposed(message);
 					}
 					else
 					{
@@ -580,9 +580,9 @@ namespace SIL.Windows.Forms.ImageToolbox
 			}
 		}
 	}
-	public class PalsoImageNotDisposed : ApplicationException
+	public class PalasoImageNotDisposed : ApplicationException
 	{
-		public PalsoImageNotDisposed(string message) : base(message)
+		public PalasoImageNotDisposed(string message) : base(message)
 		{
 		}
 	}

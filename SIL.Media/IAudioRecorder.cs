@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2024 SIL Global
+// Copyright (c) 2017-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.IO;
@@ -31,7 +31,7 @@ namespace SIL.Media
 		void Stop();
 		IRecordingDevice SelectedDevice { get; set; }
 		event EventHandler SelectedDeviceChanged;
-		[PublicAPI]		
+		[PublicAPI]
 		double MicrophoneLevel { get; set; }
 		RecordingState RecordingState { get; }
 		/// <summary>Fired when the transition from recording to monitoring is complete</summary>

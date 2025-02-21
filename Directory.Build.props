@@ -2,10 +2,10 @@
   <PropertyGroup>
     <TargetFrameworks>net462;net48</TargetFrameworks>
     <Configurations>Debug;Release</Configurations>
-    <Company>SIL International</Company>
-    <Authors>SIL International</Authors>
+    <Company>SIL Global</Company>
+    <Authors>SIL Global</Authors>
     <Product>libpalaso</Product>
-    <Copyright>Copyright © 2010-2024 SIL International</Copyright>
+    <Copyright>Copyright © 2010-2025 SIL Global</Copyright>
     <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

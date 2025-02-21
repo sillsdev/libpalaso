@@ -1,7 +1,7 @@
 // --------------------------------------------------------------------------------------------
-#region // Copyright 2024 SIL Global
-// <copyright from='2003' to='2024' company='SIL Global'>
-//		Copyright (c) 2024, SIL Global.
+#region // Copyright (c) 2025 SIL Global
+// <copyright from='2003' to='2025' company='SIL Global'>
+//		Copyright (c) 2025 SIL Global
 //
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
 // </copyright>
@@ -667,7 +667,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 		[Test]
         [Ignore("Not sure that it's really desirable to have the selected book and chapter be" +
         " retained if the user cancels or clicks away. Anyway, it doesn't actually behave that way now.")]
-        public void VerifyreferenceIsRetainedWhenDropdownCloses()
+        public void VerifyReferenceIsRetainedWhenDropdownCloses()
         {
             // Set control to really invalid reference.
             m_scp.Reference = "DAVID 100:100";
@@ -710,7 +710,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Tries the DoEvents a few times to give the DropDownWindow a chance to become active.
-		/// Tests were occassionally failing due to a null DropDownWindow reference.
+		/// Tests were occasionally failing due to a null DropDownWindow reference.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private static void WaitForDropDownWindow(DummyScrPassageControl spc, int expectedCount)

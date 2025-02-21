@@ -135,7 +135,7 @@ namespace SIL.WritingSystems
 			_collationRules.Act += OnCollationRules;
 			if (useDebugger)
 			{
-				// debuggger
+				// debugger
 				var debug = new Debugger(Console.Out);
 				debug += _collationRules;
 				debug += _collationLine;
@@ -196,13 +196,13 @@ namespace SIL.WritingSystems
 			}
 			catch (ParserErrorException e)
 			{
-				string[] lines = sc.InputString.Split(new char[] {'\n'});
+				string[] lines = sc.InputString.Split('\n');
 				if (e.ParserError.Line > 0 && e.ParserError.Line <= lines.Length)
 				{
 					string errString = lines[e.ParserError.Line - 1];
 					int startingPos = Math.Max((int) e.ParserError.Column - 2, 0);
 					errString = errString.Substring(startingPos, Math.Min(10, errString.Length - startingPos));
-					message = String.Format("{0}: '{1}'", e.ParserError.ErrorText, errString);
+					message = $"{e.ParserError.ErrorText}: '{errString}'";
 				}
 				else
 					message = e.ParserError.ErrorText;
@@ -273,8 +273,8 @@ namespace SIL.WritingSystems
 
 		private bool CollationElementIsUnique(ParserMatch match)
 		{
-			// we don't want to have an error if it didn't match
-			// only if it matched but we have already declared this collation element
+			// We don't want to have an error if it didn't match;
+			// only if it matched but we have already declared this collation element.
 			if (match.Success)
 			{
 				string collationElement = _currentCollationElement.ToString();

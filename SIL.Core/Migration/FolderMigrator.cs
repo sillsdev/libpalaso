@@ -42,7 +42,7 @@ namespace SIL.Migration
 		public class FolderMigratorProblem
 		{
 			///<summary>
-			/// The exceptions that was thrown by the migration stragegy.
+			/// The exceptions that was thrown by the migration strategy.
 			///</summary>
 			public Exception Exception { get; set; }
 
@@ -116,7 +116,7 @@ namespace SIL.Migration
 
 			string currentPath = BackupPath;
 			int lowestVersionInFolder;
-			int lowestVersoinInFolder1 = -1;
+			int lowestVersionInFolder1 = -1;
 			while ((lowestVersionInFolder = GetLowestVersionInFolder(currentPath)) != ToVersion)
 			{
 				//This guards against an empty Folder
@@ -124,13 +124,13 @@ namespace SIL.Migration
 				{
 					break;
 				}
-				if (lowestVersionInFolder == lowestVersoinInFolder1)
+				if (lowestVersionInFolder == lowestVersionInFolder1)
 				{
 					var fileNotMigrated = _versionCache.First(info => info.Version == lowestVersionInFolder).FileName;
 					throw new ApplicationException(
 						String.Format("The migration strategy for {0} failed to migrate the file '{1} from version {2}",
 						SearchPattern,fileNotMigrated,
-						lowestVersoinInFolder1)
+						lowestVersionInFolder1)
 					);
 				}
 				int currentVersion = lowestVersionInFolder;
@@ -189,7 +189,7 @@ namespace SIL.Migration
 
 				// Setup for the next iteration
 				currentPath = destinationPath;
-				lowestVersoinInFolder1 = lowestVersionInFolder;
+				lowestVersionInFolder1 = lowestVersionInFolder;
 			}
 
 			// Delete all the files in SourcePath matching SearchPattern

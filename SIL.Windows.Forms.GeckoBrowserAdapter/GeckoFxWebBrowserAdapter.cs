@@ -1,4 +1,4 @@
-// Copyright (c) 2024, SIL Global
+// Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -271,9 +271,9 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			}
 			catch(Exception e)
 			{
-				MessageBox.Show("Unable to load geckofx dependancy. Files may not have been included in the build.",
+				MessageBox.Show("Unable to load geckofx dependency. Files may not have been included in the build.",
 					"Failed to load geckofx", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				throw new ApplicationException("Unable to load geckofx dependancy", e);
+				throw new ApplicationException("Unable to load geckofx dependency", e);
 			}
 		}
 
@@ -294,7 +294,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		/// <summary>
 		/// Call a browser method which returns a specific type.
 		/// Looks up the method name by reflection and calls that method
-		/// on the given webbrowser instance and return the value.
+		/// on the given web browser instance and return the value.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="webBrowser"></param>
@@ -331,7 +331,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 
 		/// <summary>
 		/// Look up a method name from the browser that matches the method name and
-		/// the type of the parameters given and then call that on the given webbrowser
+		/// the type of the parameters given and then call that on the given web browser
 		/// instance.
 		/// </summary>
 		private bool CallBrowserMethod(object webBrowser, string methodName, object[] parameters)
@@ -403,7 +403,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		public void Dispose()
 		{
 			CallBrowserMethod(_webBrowser, "Dispose", null);
-			// Call GC.SupressFinalize to take this object off the finalization queue
+			// Call GC.SuppressFinalize to take this object off the finalization queue
 			// and prevent finalization code for this object from executing a second time.
 			GC.SuppressFinalize(this);
 		}
@@ -515,9 +515,9 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 					if(countLength > 0)
 					{
 						var lastChildProp = geckoNodeListType.GetProperty("Item"); // Magic
-						var lastchild = lastChildProp.GetValue(children, new object[] { countLength - 1 });
+						var lastChild = lastChildProp.GetValue(children, new object[] { countLength - 1 });
 						var scrollIntoView = geckoHtmlElementType.GetMethod("ScrollIntoView");
-						scrollIntoView.Invoke(lastchild, BindingFlags.Default, null, null, null);
+						scrollIntoView.Invoke(lastChild, BindingFlags.Default, null, null, null);
 					}
 				}
 			}

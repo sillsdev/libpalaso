@@ -110,7 +110,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		}
 
 		[Test]
-		public void FromLicenseUrl_EmtpyString_Throws()
+		public void FromLicenseUrl_EmptyString_Throws()
 		{
 			Assert.Throws<ArgumentOutOfRangeException>(()=>CreativeCommonsLicense.FromLicenseUrl(""));
 		}
