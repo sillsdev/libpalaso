@@ -10,8 +10,10 @@ concurrency:
   group: ${{ github.workflow }}-update-l10n
   cancel-in-progress: true
 
-jobs:
+permissions:
+  contents: read
 
+jobs:
   extract-and-upload-strings:
     strategy:
       fail-fast: false

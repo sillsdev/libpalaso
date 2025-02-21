@@ -10,8 +10,10 @@ concurrency:
   group: ${{ github.workflow }}-package-l10ns
   cancel-in-progress: true
 
-jobs:
+permissions:
+  contents: read
 
+jobs:
   package-l10n:
     strategy:
       fail-fast: false
