@@ -157,7 +157,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			// We have had some input languages get errors when trying to get the layout name, so just want to skip those
 			try
 			{
-				string test = inputLanguage.LayoutName;
+				_ = inputLanguage.LayoutName;
 				return false;
 			}
 			catch (Exception)

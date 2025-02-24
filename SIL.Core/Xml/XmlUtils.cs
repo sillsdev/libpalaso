@@ -838,7 +838,6 @@ namespace SIL.Xml
 		/// <returns></returns>
 		public static string GetIndentedXml(string xml)
 	  {
-		 string outXml = string.Empty;
 		 using(MemoryStream ms = new MemoryStream())
 		 // Create a XMLTextWriter that will send its output to a memory stream (file)
 		 using (XmlTextWriter xtw = new XmlTextWriter(ms, Encoding.Unicode))

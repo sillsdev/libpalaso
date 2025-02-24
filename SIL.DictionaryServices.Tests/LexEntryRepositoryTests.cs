@@ -784,7 +784,8 @@ namespace SIL.DictionaryServices.Tests
 		{
 			using (var env = new TestEnvironment())
 			{
-				LexEntry lexEntryWithoutSemanticDomain = env.Repository.CreateItem();
+				// Create a LexEntry with no semantic domain
+				env.Repository.CreateItem();
 				ResultSet<LexEntry> sortedResults = env.Repository.GetEntriesWithSemanticDomainSortedBySemanticDomain(LexSense.WellKnownProperties.SemanticDomainDdp4);
 				Assert.AreEqual(0, sortedResults.Count);
 			}
@@ -1217,7 +1218,7 @@ namespace SIL.DictionaryServices.Tests
 		{
 			using (var env = new TestEnvironment())
 			{
-				LexEntry entryOther = env.MakeEntryWithLexemeForm("en", "blue");
+				env.MakeEntryWithLexemeForm("en", "blue");
 				Assert.AreNotEqual("en", env.HeadwordWritingSystem.LanguageTag);
 				LexEntry[] entries = new LexEntry[3];
 				entries[0] = env.MakeEntryWithLexemeForm(env.HeadwordWritingSystem.LanguageTag, "blue");
@@ -1239,7 +1240,7 @@ namespace SIL.DictionaryServices.Tests
 		{
 			using (var env = new TestEnvironment())
 			{
-				LexEntry entryOther = env.MakeEntryWithLexemeForm("en", "blue");
+				env.MakeEntryWithLexemeForm("en", "blue");
 				Assert.AreNotEqual("en", env.HeadwordWritingSystem.LanguageTag);
 				LexEntry entry1 = env.MakeEntryWithLexemeForm(env.HeadwordWritingSystem.LanguageTag, "blue");
 				LexEntry entry2 = env.MakeEntryWithLexemeForm(env.HeadwordWritingSystem.LanguageTag, "blue");

@@ -47,7 +47,7 @@ namespace SIL.Lift.Tests.Merging
 			using (TempFile working = new TempFile(_originalLift))
 			{
 				int howManyEntries = 10000;
-				Debug.WriteLine("running test using "+howManyEntries.ToString()+" entries");
+				Debug.WriteLine("running test using " + howManyEntries.ToString() + " entries");
 				using (XmlWriter w = XmlWriter.Create(working.Path))
 				{
 					w.WriteStartElement("lift");
@@ -74,7 +74,7 @@ namespace SIL.Lift.Tests.Merging
 					timer.Start();
 					detector.Reset();
 					timer.Stop();
-					Debug.WriteLine("reset took "+timer.Elapsed.TotalSeconds+" seconds");
+					Debug.WriteLine("reset took " + timer.Elapsed.TotalSeconds + " seconds");
 
 					timer.Reset();
 					timer.Start();
@@ -88,8 +88,8 @@ namespace SIL.Lift.Tests.Merging
 					{
 						report.GetChangeType(i.ToString());
 					}
-				   timer.Stop();
-				   Debug.WriteLine("Time to inquire about each entry " + timer.Elapsed.TotalSeconds + " seconds");
+					timer.Stop();
+					Debug.WriteLine("Time to inquire about each entry " + timer.Elapsed.TotalSeconds + " seconds");
 
 				}
 			}
@@ -107,10 +107,10 @@ namespace SIL.Lift.Tests.Merging
 					detector.Reset();
 
 
-					 ILiftChangeReport report = detector.GetChangeReport(null);
-					 Assert.AreEqual(LiftChangeReport.ChangeType.None, report.GetChangeType("one"));
-					 Assert.AreEqual(LiftChangeReport.ChangeType.None, report.GetChangeType("two"));
-					 Assert.AreEqual(0, report.IdsOfDeletedEntries.Count);
+					ILiftChangeReport report = detector.GetChangeReport(null);
+					Assert.AreEqual(LiftChangeReport.ChangeType.None, report.GetChangeType("one"));
+					Assert.AreEqual(LiftChangeReport.ChangeType.None, report.GetChangeType("two"));
+					Assert.AreEqual(0, report.IdsOfDeletedEntries.Count);
 				}
 			}
 		}
@@ -157,9 +157,8 @@ namespace SIL.Lift.Tests.Merging
 			}
 			using (TempFile working = new TempFile("<lift version='0.12'/>"))
 			{
-				LiftChangeDetector detector = new LiftChangeDetector(working.Path, cache);
+				_ = new LiftChangeDetector(working.Path, cache);
 				Assert.IsFalse(Directory.Exists(cache));
-	//            Directory.Delete(cache,true);
 			}
 		}
 

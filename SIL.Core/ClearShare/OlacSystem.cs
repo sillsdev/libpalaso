@@ -37,9 +37,9 @@ namespace SIL.Core.ClearShare
 
 			foreach (var contributor in doc.Descendants((new XElement(s_nsDc + "contributor")).Name))
 			{
-				Role role = GetRoles().ElementAt(0);
 				var roleCode = contributor.Attributes().Single(a => a.Name == s_nsOlac + "code").Value;
-				TryGetRoleByCode(roleCode, out role);
+				if (!TryGetRoleByCode(roleCode, out var role))
+					role = GetRoles().ElementAt(0);
 				work.Contributions.Add(new Contribution(contributor.Value, role));
 			}
 		}
@@ -67,7 +67,7 @@ namespace SIL.Core.ClearShare
 		[PublicAPI]
 		public string GetXmlForWork(Work work)
 		{
-			var bldr =  new StringBuilder();
+			var bldr = new StringBuilder();
 
 			if (work != null)
 			{

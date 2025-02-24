@@ -190,7 +190,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 					SendKey(e);
 				else
 				{
-					if ((e.KeyCode == (uint) Keys.Tab) && !e.CtrlKey && !e.AltKey)
+					if ((e.KeyCode == (uint)Keys.Tab) && !e.CtrlKey && !e.AltKey)
 					{
 						e.Handled = true;
 						if (e.ShiftKey)
@@ -271,7 +271,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 					break;
 			}
 			string result = builder.ToString();
-			if (! String.IsNullOrEmpty(result))
+			if (!String.IsNullOrEmpty(result))
 			{
 				SendKeys.Send(result);
 			}
@@ -315,7 +315,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 
 			// Only handle DomFocus that occurs on a Element.
 			// This is Important or it will mess with IME keyboard focus.
-			if (e == null || e.Target == null || e.Target.CastToGeckoElement () == null)
+			if (e == null || e.Target == null || e.Target.CastToGeckoElement() == null)
 			{
 				return;
 			}
@@ -341,7 +341,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		}
 		protected virtual void OnDomDocumentCompleted(object sender, EventArgs ea)
 		{
-			GeckoDocumentCompletedEventArgs e = new GeckoDocumentCompletedEventArgs(ea);
+			_ = new GeckoDocumentCompletedEventArgs(ea);
 			_browserDocumentLoaded = true;  // Document loaded once
 			AdjustHeight();
 			if (_entered)
@@ -444,7 +444,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		/// </summary>
 		protected void EnsureFocusedGeckoControlHasInputFocus()
 		{
-			if ((_browser == null) || (_browser.HasInputFocus ()))
+			if ((_browser == null) || (_browser.HasInputFocus()))
 			{
 				return;
 			}
