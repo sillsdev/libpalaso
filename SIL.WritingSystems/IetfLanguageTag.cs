@@ -224,7 +224,7 @@ namespace SIL.WritingSystems
 				languageCode = icuLanguageCode.Substring(1);
 			else
 				languageCode = icuLanguageCode;
-			// Some very old projects may have codes with over-long identifiers. In desperation we truncate these.
+			// Some very old projects may have codes with over-long identifiers. In desperation, we truncate these.
 			// 4-letter codes starting with 'e' are a special case.
 			if (languageCode.Length > 3 && !(languageCode.Length == 4 && languageCode.StartsWith("e")))
 				languageCode = languageCode.Substring(0, 3);
@@ -894,7 +894,7 @@ namespace SIL.WritingSystems
 		/// qaa for the language expects the first private use code to be a 3 letter language name abbreviation
 		/// Qaaa in the Script expects the first remaining private use code to be a 4 letter script abbreviation
 		/// QM in the Region expects the first remaining private use code to be a 2 letter Region abbreviation
-		/// Any deviation from this will still parse, but it the subtags will not return info from the private use area.
+		/// Any deviation from this will still parse, but the subtags will not return info from the private use area.
 		/// </remarks>
 		/// <returns></returns>
 		public static bool TryGetSubtags(string langTag, out LanguageSubtag languageSubtag, out ScriptSubtag scriptSubtag,

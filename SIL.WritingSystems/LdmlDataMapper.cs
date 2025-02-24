@@ -814,7 +814,7 @@ namespace SIL.WritingSystems
 			{
 				CollationDefinition cd = null;
 				XElement specialElem = collationElem.NonAltElement("special");
-				if ((specialElem != null) && (specialElem.HasElements))
+				if (specialElem is { HasElements: true })
 				{
 					string specialType = (specialElem.Elements().First().Name.LocalName);
 					switch (specialType)
@@ -1225,17 +1225,17 @@ namespace SIL.WritingSystems
 
 			// Remove sil:quotation elements where type is blank or narrative. Also remove quotation continue elements.
 			// These will be repopulated later
-			XElement quotationmarksElem = null;
+			XElement quotationMarksElem = null;
 			if (specialElem != null)
 			{
-				quotationmarksElem = specialElem.NonAltElement(Sil + "quotation-marks");
-				if (quotationmarksElem != null)
+				quotationMarksElem = specialElem.NonAltElement(Sil + "quotation-marks");
+				if (quotationMarksElem != null)
 				{
-					quotationmarksElem.NonAltElements(Sil + "quotation").Where(e => string.IsNullOrEmpty((string) e.Attribute("type"))).Remove();
-					quotationmarksElem.NonAltElements(Sil + "quotation").Where(e => (string) e.Attribute("type") == "narrative").Remove();
-					quotationmarksElem.NonAltElements(Sil + "quotationContinue").Remove();
-					quotationmarksElem.NonAltElements(Sil + "alternateQuotationContinue").Remove();
-					RemoveIfEmpty(ref quotationmarksElem);
+					quotationMarksElem.NonAltElements(Sil + "quotation").Where(e => string.IsNullOrEmpty((string) e.Attribute("type"))).Remove();
+					quotationMarksElem.NonAltElements(Sil + "quotation").Where(e => (string) e.Attribute("type") == "narrative").Remove();
+					quotationMarksElem.NonAltElements(Sil + "quotationContinue").Remove();
+					quotationMarksElem.NonAltElements(Sil + "alternateQuotationContinue").Remove();
+					RemoveIfEmpty(ref quotationMarksElem);
 				}
 				RemoveIfEmpty(ref specialElem);
 			}
@@ -1244,15 +1244,15 @@ namespace SIL.WritingSystems
 			{
 				var level1ContinuerElem = new XElement(Sil + "quotationContinue", qm1.Continue);
 				specialElem = GetOrCreateSpecialElement(delimitersElem);
-				quotationmarksElem = specialElem.GetOrCreateElement(Sil + "quotation-marks");
-				quotationmarksElem.Add(level1ContinuerElem);
+				quotationMarksElem = specialElem.GetOrCreateElement(Sil + "quotation-marks");
+				quotationMarksElem.Add(level1ContinuerElem);
 			}
 			if (qm2 != null && !string.IsNullOrEmpty(qm2.Continue))
 			{
 				var level2ContinuerElem = new XElement(Sil + "alternateQuotationContinue", qm2.Continue);
 				specialElem = GetOrCreateSpecialElement(delimitersElem);
-				quotationmarksElem = specialElem.GetOrCreateElement(Sil + "quotation-marks");
-				quotationmarksElem.Add(level2ContinuerElem);
+				quotationMarksElem = specialElem.GetOrCreateElement(Sil + "quotation-marks");
+				quotationMarksElem.Add(level2ContinuerElem);
 			}
 
 			foreach (QuotationMark qm in ws.QuotationMarks)
@@ -1270,13 +1270,13 @@ namespace SIL.WritingSystems
 					quotationElem.SetOptionalAttributeValue("type", QuotationMarkingSystemTypesToQuotation[qm.Type]);
 
 					specialElem = GetOrCreateSpecialElement(delimitersElem);
-					quotationmarksElem = specialElem.GetOrCreateElement(Sil + "quotation-marks");
-					quotationmarksElem.Add(quotationElem);
+					quotationMarksElem = specialElem.GetOrCreateElement(Sil + "quotation-marks");
+					quotationMarksElem.Add(quotationElem);
 				}
 			}
-			if ((ws.QuotationParagraphContinueType != QuotationParagraphContinueType.None) && (quotationmarksElem != null))
+			if ((ws.QuotationParagraphContinueType != QuotationParagraphContinueType.None) && (quotationMarksElem != null))
 			{
-				quotationmarksElem.SetAttributeValue("paraContinueType",
+				quotationMarksElem.SetAttributeValue("paraContinueType",
 					QuotationParagraphContinueTypesToQuotation[ws.QuotationParagraphContinueType]);
 			}
 		}

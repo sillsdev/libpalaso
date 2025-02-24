@@ -547,7 +547,7 @@ namespace SIL.WritingSystems
 			// sldr -> isAvailable
 			// tags -> process to find implicitScript
 
-			List<AllTagEntry> rootObject = null;
+			List<AllTagEntry> rootObject;
 			try
 			{
 				if (cachedAllTagsPath != null && File.Exists(cachedAllTagsPath))
@@ -590,24 +590,28 @@ namespace SIL.WritingSystems
 
 		private static IKeyedCollection<string, SldrLanguageTagInfo> DeriveTagsFromJsonEntries(List<AllTagEntry> rootObject)
 		{
-			var tags = new KeyedList<string, SldrLanguageTagInfo>(info => info.LanguageTag, StringComparer.InvariantCultureIgnoreCase);
+			var tags = new KeyedList<string, SldrLanguageTagInfo>(info => info.LanguageTag,
+				StringComparer.InvariantCultureIgnoreCase);
 
 			foreach (var entry in rootObject)
 			{
-				// tags starting with x- have undefined structure so ignoring them
-				// tags starting with _ showed up in buggy data so we'll drop them also
-				if (entry.tag.StartsWith("x-") || entry.tag.StartsWith("_"))
+				var tag = entry.tag;
+
+				// Tags starting with x- have undefined structure so ignoring them.
+				// Tags starting with _ showed up in buggy data so we'll drop them also.
+				if (tag.StartsWith("x-") || tag.StartsWith("_"))
 					continue;
 
-				if (!entry.deprecated && !StandardSubtags.RegisteredLanguages.TryGet(entry.tag.Split('-')[0], out var languageTag))
+				if (!entry.deprecated)
 				{
-					if (entry.iso639_3 == null)
+					var langCode = tag.Split('-')[0];
+					if (!StandardSubtags.RegisteredLanguages.TryGet(langCode, out _))
 					{
-						StandardSubtags.AddLanguage(entry.tag.Split('-')[0], entry.name, false, entry.tag.Split('-')[0]);
-					}
-					else if (!StandardSubtags.RegisteredLanguages.TryGet(entry.iso639_3, out languageTag))
-					{
-						StandardSubtags.AddLanguage(entry.iso639_3, entry.name, false, entry.iso639_3);
+						var iso639_3 = entry.iso639_3;
+						if (iso639_3 == null)
+							StandardSubtags.AddLanguage(langCode, entry.name, false, langCode);
+						else if (!StandardSubtags.RegisteredLanguages.TryGet(iso639_3, out _))
+							StandardSubtags.AddLanguage(iso639_3, entry.name, false, iso639_3);
 					}
 				}
 				string implicitStringCode = null;
@@ -616,37 +620,39 @@ namespace SIL.WritingSystems
 				var scriptCode = entry.full.Split('-')[1];
 				if (scriptCode.Length == 4)
 				{
-					var tagComponents = entry.tag.Split('-');
+					var tagComponents = tag.Split('-');
 
-					if (!StandardSubtags.RegisteredScripts.TryGet(scriptCode, out var scriptTag))
+					if (!StandardSubtags.RegisteredScripts.TryGet(scriptCode, out _))
 					{
 						StandardSubtags.AddScript(scriptCode, scriptCode);
 					}
 
 					// if the script is also in the tag then it is explicit not implicit
 					if (tagComponents.Length == 1 || tagComponents[1] != scriptCode)
-					{
 						implicitStringCode = scriptCode;
-					}
 				}
-				tags.Add(new SldrLanguageTagInfo(entry.tag, implicitStringCode, entry.tag, entry.sldr));
+				tags.Add(new SldrLanguageTagInfo(tag, implicitStringCode, tag, entry.sldr));
 			}
 			return tags;
 		}
 
 		/// <summary>
-		/// Utility to read the SIL:Identity element and return the values to the revid and uid attributes.
+		/// Utility to read the SIL:Identity element and return the values of the revid and uid attributes.
 		/// Returns boolean if the LDML file exists.
 		/// </summary>
 		/// <param name="filePath">Full path to the LDML file to parse</param>
-		/// <param name="revid">This contains the SHA of the git revision that was current when the user pulled the LDML file.
+		/// <param name="revid">This contains the SHA of the git revision that was current when the
+		/// user pulled the LDML file.
 		/// This attribute is stripped from files before inclusion in the SLDR</param>
-		/// <param name="uid">This holds a unique id that identifies a particular editor of a file. Notice that no two uids will be the same even across LDML files.
-		/// Thus the uid is a unique identifier for an LDML file as edited by a user. If a user downloads a file and they don't already have a
-		/// uid for that file then they should use the given uid. On subsequent downloads they must update the uid to the existing uid for that file.
-		/// In implementation terms the UID is calculated as the 32-bit timestamp of the file request from the server,
-		/// with another 16-bit collision counter appended and represented in MIME64 as 8 characters.
-		/// This attribute is stripped from files before inclusion in the SLDR.</param>
+		/// <param name="uid">This holds a unique id that identifies a particular editor of a file.
+		/// Notice that no two uids will be the same even across LDML files. Thus, the uid is
+		/// a unique identifier for an LDML file as edited by a user. If a user downloads a file
+		/// and they don't already have a uid for that file then they should use the given uid. On
+		/// subsequent downloads they must update the uid to the existing uid for that file. In
+		/// implementation terms, the UID is calculated as the 32-bit timestamp of the file request
+		/// from the server, with another 16-bit collision counter appended and represented in
+		/// MIME64 as 8 characters. This attribute is stripped from files before inclusion in the
+		/// SLDR.</param>
 		/// <returns>Boolean if the LDML file exists</returns>
 		internal static bool ReadSilIdentity(string filePath, out string revid, out string uid)
 		{
@@ -679,7 +685,7 @@ namespace SIL.WritingSystems
 		/// Otherwise, tmp file is saved to cache as "filename + uid"
 		/// </summary>
 		/// <param name="filePath">Full path to the tmp LDML file</param>
-		/// <param name="originalUid">Uid read from the exisiting LDML file, before the SLDR query</param>
+		/// <param name="originalUid">Uid read from the existing LDML file, before the SLDR query</param>
 		/// <returns>Path to the LDML file in SLDR cache</returns>
 		internal static string MoveTmpToCache(string filePath, string originalUid)
 		{
