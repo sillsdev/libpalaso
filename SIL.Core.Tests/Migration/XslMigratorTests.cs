@@ -31,7 +31,7 @@ namespace SIL.Tests.Migration
 		public void Constructor_FromLessThanTo_Throws()
 		{
 			Assert.Throws<ArgumentException>(
-				() => { var migrator = new XslStringMigrator(5, 4, null); }
+				() => { _ = new XslStringMigrator(5, 4, null); }
 			);
 		}
 

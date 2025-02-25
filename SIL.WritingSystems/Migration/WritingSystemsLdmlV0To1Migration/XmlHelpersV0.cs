@@ -240,7 +240,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 						break;
 				}
 			}
-			int result = comparison(name, reader.Name);
 			return !reader.EOF && reader.NodeType == XmlNodeType.Element && name == reader.Name;
 		}
 

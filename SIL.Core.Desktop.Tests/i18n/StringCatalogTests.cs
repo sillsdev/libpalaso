@@ -93,7 +93,7 @@ msgstr 'translated'
 		[Test]
 		public void GetFormatted_FoundCorrectString_Formats()
 		{
-			StringCatalog catalog = new StringCatalog(_poFile, null, 9);
+			_ = new StringCatalog(_poFile, null, 9);
 			Assert.AreEqual("first=one", StringCatalog.GetFormatted("oneParam", "blah blah", "one"));
 		}
 
@@ -112,7 +112,7 @@ msgstr 'translated'
 		[Test]
 		public void GetFormatted_TooManyParamsInCatalog_ShowsMessageAndReturnRightMessage()
 		{
-			StringCatalog catalog = new StringCatalog(_poFile, null, 9);
+			_ = new StringCatalog(_poFile, null, 9);
 			using(new ErrorReport.NonFatalErrorReportExpected())
 			{
 				var answer = StringCatalog.GetFormatted("oneParam", "blah blah");
@@ -166,15 +166,15 @@ msgstr 'translated'
 		[Test]
 		public void FontsDoNotScaleUp()
 		{
-			StringCatalog catalog = new StringCatalog(_poFile, "Onyx", 30);
-			Font normal = new Font(System.Drawing.FontFamily.GenericSerif, 20);
+			_ = new StringCatalog(_poFile, "Onyx", 30);
+			Font normal = new Font(FontFamily.GenericSerif, 20);
 			Font localized = StringCatalog.ModifyFontForLocalization(normal);
 			Assert.AreEqual(20,Math.Floor(localized.SizeInPoints));
 		}
 		[Test]
 		public void FontsDoNotChange()
 		{
-			StringCatalog catalog = new StringCatalog(_poFile, FontFamily.GenericSansSerif.Name, 30);
+			_ = new StringCatalog(_poFile, FontFamily.GenericSansSerif.Name, 30);
 			Font normal = new Font(FontFamily.GenericSerif, 20);
 			Font localized = StringCatalog.ModifyFontForLocalization(normal);
 			Assert.AreEqual(FontFamily.GenericSerif.Name, localized.FontFamily.Name);
@@ -182,7 +182,7 @@ msgstr 'translated'
 		[Test]
 		public void ModifyFontForLocation_SmallFont_ValidFont()
 		{
-			StringCatalog catalog = new StringCatalog(_poFile, FontFamily.GenericSerif.Name, Single.Epsilon);
+			_ = new StringCatalog(_poFile, FontFamily.GenericSerif.Name, Single.Epsilon);
 			Font normal = new Font(FontFamily.GenericSerif, Single.Epsilon);
 			Font localized = StringCatalog.ModifyFontForLocalization(normal);
 			Assert.IsNotNull(localized);
@@ -190,7 +190,7 @@ msgstr 'translated'
 		[Test]
 		public void ModifyFontForLocation_HugeFont_ValidFont()
 		{
-			StringCatalog catalog = new StringCatalog(_poFile, FontFamily.GenericSerif.Name, Single.MaxValue);
+			_ = new StringCatalog(_poFile, FontFamily.GenericSerif.Name, Single.MaxValue);
 			Font normal = new Font(FontFamily.GenericSerif, Single.MaxValue);
 			Font localized = StringCatalog.ModifyFontForLocalization(normal);
 			Assert.IsNotNull(localized);

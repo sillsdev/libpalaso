@@ -22,17 +22,15 @@ namespace SIL.Windows.Forms.ImageToolbox
 		{ }
 
 	}
-	   public class WIA_Version2_MissingException : ApplicationException
-	{
-	}
+	public class WIA_Version2_MissingException : ApplicationException
+	{ }
 
 
 	public class ImageDeviceNotFoundException : ImageDeviceException
 	{
 		public ImageDeviceNotFoundException()
 			: base("Could not find a device. Is your device plugged in and turned on?")
-		{
-		}
+		{ }
 	}
 
 	public class ImageAcquisitionService
@@ -54,15 +52,13 @@ namespace SIL.Windows.Forms.ImageToolbox
 				CommonDialog dialog = new CommonDialog();
 
 				var type = WiaDeviceType.ScannerDeviceType;
-				if(_deviceKind==DeviceKind.Camera)
-						type = WiaDeviceType.CameraDeviceType;
+				if (_deviceKind == DeviceKind.Camera)
+					type = WiaDeviceType.CameraDeviceType;
 
 				var device = dialog.ShowSelectDevice(type, false, false);
 
-				foreach (var item in device.Items)
-				{
-
-				}
+				foreach (var _ in device.Items)
+				{ }
 				foreach (Property propertyItem in device.Properties)
 				{
 					//if (!propertyItem.IsReadOnly)
@@ -79,15 +75,15 @@ namespace SIL.Windows.Forms.ImageToolbox
 				//With the low-end canoscan I'm using, it just ignores these settings, so we just get a bitmap of whatever
 				//b&w / color the user requested
 
-				  var image = dialog.ShowAcquireImage(
-					  type,
-					  WiaImageIntent.GrayscaleIntent,
-					  WiaImageBias.MaximizeQuality,
-					  WIA.FormatID.wiaFormatBMP, //We'll automatically choose the format later depending on what we see
-					  false,
-					  true,
-					  false);
-				UsageReporter.SendNavigationNotice("AcquiredImage/" + (_deviceKind == DeviceKind.Camera?"Camera": "Scanner"));
+				var image = dialog.ShowAcquireImage(
+					type,
+					WiaImageIntent.GrayscaleIntent,
+					WiaImageBias.MaximizeQuality,
+					WIA.FormatID.wiaFormatBMP, //We'll automatically choose the format later depending on what we see
+					false,
+					true,
+					false);
+				UsageReporter.SendNavigationNotice("AcquiredImage/" + (_deviceKind == DeviceKind.Camera ? "Camera" : "Scanner"));
 
 				return image;
 			}

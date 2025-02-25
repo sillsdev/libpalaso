@@ -65,11 +65,11 @@ namespace SIL.Settings
 				GetFullSettingsPath());
 			// When running multiple builds in parallel we have to use separate directories for
 			// each build, otherwise some unit tests might fail.
-			var buildagentSubdir = Environment.GetEnvironmentVariable("BUILDAGENT_SUBKEY");
-			if (!string.IsNullOrEmpty(buildagentSubdir))
+			var buildAgentSubdir = Environment.GetEnvironmentVariable("BUILDAGENT_SUBKEY");
+			if (!string.IsNullOrEmpty(buildAgentSubdir))
 			{
-				UserRoamingLocation = Path.Combine(UserRoamingLocation, buildagentSubdir);
-				UserLocalLocation = Path.Combine(UserLocalLocation, buildagentSubdir);
+				UserRoamingLocation = Path.Combine(UserRoamingLocation, buildAgentSubdir);
+				UserLocalLocation = Path.Combine(UserLocalLocation, buildAgentSubdir);
 			}
 		}
 
@@ -85,7 +85,7 @@ namespace SIL.Settings
 				throw new ApplicationException("CrossPlatformSettingsProvider: Call Initialize() before CheckForErrorsInFile()");
 
 			_reportReadingErrorsDirectlyToUser = false;
-			var dummy =SettingsXml;
+			_ = SettingsXml;
 			return _lastReadingError;
 		}
 
@@ -167,7 +167,7 @@ namespace SIL.Settings
 				_settingsXml = null;
 
 				//Iterate through the settings to be stored, only dirty settings for this provider are in collection
-				foreach(SettingsPropertyValue propval in collection)
+				foreach(SettingsPropertyValue propVal in collection)
 				{
 					var groupName = context["GroupName"].ToString();
 					var groupNode = SettingsXml.SelectSingleNode("/configuration/userSettings/" + context["GroupName"]);
@@ -186,7 +186,7 @@ namespace SIL.Settings
 						section.SetAttribute("type", String.Format("{0}, {1}", typeof(ClientSettingsSection), Assembly.GetAssembly(typeof(ClientSettingsSection))));
 						parentNode.AppendChild(section);
 					}
-					SetValue(groupNode, propval);
+					SetValue(groupNode, propVal);
 				}
 				Directory.CreateDirectory(UserConfigLocation);
 				RobustIO.SaveXml(SettingsXml, Path.Combine(UserConfigLocation, UserConfigFileName));
