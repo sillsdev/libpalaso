@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using SIL.Core.ClearShare;
+using SIL.Reporting;
 using SIL.Windows.Forms.ClearShare;
 using SIL.Windows.Forms.ClearShare.WinFormsUI;
 using SIL.Windows.Forms.Widgets.BetterGrid;
@@ -13,6 +17,8 @@ namespace SIL.Windows.Forms.TestApp
 	public partial class ContributorsForm : Form
 	{
 		private ContributorsListControlViewModel _model;
+		private Role _authorRole = new Role("a", "Author", "someone who writes stuff");
+		private bool _doneTestingNonUiThreadAccess;
 
 		public ContributorsForm()
 		{
@@ -28,23 +34,33 @@ namespace SIL.Windows.Forms.TestApp
 
 			var autoCompleter = new AutoCompleter { Source = _contributorNames };
 			_model = new ContributorsListControlViewModel(autoCompleter, () => { });
+
+			// Initialize contributions
+			_model.SetContributionList(new ContributionCollection(new[]
+			{
+				new Contribution("Fred", _authorRole)
+			}));
+			_contributorsControl.Initialize(_model);
+
 			_contributorsControl.SetColumnAutoSizeMode(StandardColumns.Name, DataGridViewAutoSizeColumnMode.AllCells);
 			_contributorsControl.SetColumnAutoSizeMode(StandardColumns.Role, DataGridViewAutoSizeColumnMode.AllCells);
 			_contributorsControl.SetColumnAutoSizeMode(StandardColumns.Comments, DataGridViewAutoSizeColumnMode.Fill);
-
-			// Initialize contributions
-			var contribs = new ContributionCollection(new[]
-			{
-				new Contribution("Fred", new Role("a", "Author", "guy who writes stuff"))
-			});
-			_model.SetContributionList(contribs);
 
 			// Set column headers
 			string[] headerText = { "Name", "Role", "Date", "Comments" };
 			for (var i = 0; i < headerText.Length; i++)
 				_contributorsControl.SetColumnHeaderText(i, headerText[i]);
 
-			timerToTestNonUiThreadAccess.Start();
+			StartBackgroundTaskToTestNonUiThreadAccess();
+		}
+
+		private async void StartBackgroundTaskToTestNonUiThreadAccess()
+		{
+			while (!_doneTestingNonUiThreadAccess)
+			{
+				await Task.Delay(1500); // Space out additions of new contributors
+				await Task.Run(TestNonUiThreadAccessOnContributorsControl);
+			}
 		}
 
 		private void UpdateNames(object sender, EventArgs e)
@@ -52,13 +68,14 @@ namespace SIL.Windows.Forms.TestApp
 			if (!_contributorsControl.Validate())
 				return;
 
-			var contribs = _model.Contributions;
-			for (var i = 0; i < _contributorNames.RowCount && i < contribs.Count; i++)
+			var contributions = _model.Contributions;
+			for (var i = 0; i < _contributorNames.RowCount && i < contributions.Count; i++)
 			{
-				contribs[i].ContributorName = _contributorNames.Rows[i].Cells[0].Value as string;
+				contributions[i].ContributorName =
+					_contributorNames.Rows[i].Cells[0].Value as string;
 			}
 
-			_model.SetContributionList(contribs);
+			_model.SetContributionList(contributions);
 		}
 
 		private KeyValuePair<string, string> HandleValidatingContributor(ContributorsListControl sender,
@@ -99,12 +116,82 @@ namespace SIL.Windows.Forms.TestApp
 			}
 		}
 
-		private void timerToTestNonUiThreadAccess_Tick(object sender, EventArgs e)
+		private void TestNonUiThreadAccessOnContributorsControl()
 		{
-			timerToTestNonUiThreadAccess.Tick -= timerToTestNonUiThreadAccess_Tick;
+			try
+			{
+				if (_contributorsControl.InEditMode || _contributorsControl.InNewContributionRow)
+				{
+					_contributorsControl.SetColumnAutoSizeMode(StandardColumns.Date,
+						_model.Contributions.Count % 2 == 0 ?
+							DataGridViewAutoSizeColumnMode.DisplayedCells :
+							DataGridViewAutoSizeColumnMode.ColumnHeader);
+					return;
+				}
+			}
+			catch (ObjectDisposedException)
+			{
+				Logger.WriteEvent("User must have closed the form before we finished. " +
+					"That's fine. But if you think we're going to quit, you're mistaken...");
+			}
 
-			if (!_contributorsControl.InEditMode && !_contributorsControl.InNewContributionRow)
-				_contributorsControl.SetColumnAutoSizeMode(StandardColumns.Date, DataGridViewAutoSizeColumnMode.DisplayedCells);
+			var newList = _model.Contributions.ToList();
+			string newName;
+			switch (newList.Count)
+			{
+				case 1:
+					newName = "Marko";
+					break;
+				case 2:
+					newName = "Ralph";
+					break;
+				case 3:
+					newName = "Hank";
+					break;
+				case 4:
+					newName = "Fredrick";
+					break;
+				case 5:
+					newName = "Timoteo";
+					try
+					{
+						_contributorsControl.SetColumnHeaderText(0, "Nombre");
+						_contributorsControl.SetColumnHeaderText(1,
+							_contributorsControl.GetCurrentContribution()?.ContributorName ??
+							"Rol");
+						_contributorsControl.SetColumnHeaderText(2, "Fecha");
+					}
+					catch (ObjectDisposedException)
+					{
+						Logger.WriteEvent("And yet we keep going...");
+					}
+
+					break;
+				case 6:
+					newName = "Saul";
+					break;
+				case 7:
+					newName = "Gumby";
+					break;
+				case 8:
+					newName = "Serge";
+					break;
+				case 9:
+					newName = "Linda";
+					break;
+				default:
+					Invoke(new Action(() =>
+					{
+						_contributorsControl.Grid.DrawMessageInCenterOfGrid(
+							Graphics.FromHwnd(_contributorsControl.Grid.Handle), "All done blasting!", 0);
+					}));
+					_doneTestingNonUiThreadAccess = true;
+					return;
+			}
+
+			newList.Add(new Contribution(newName, _authorRole));
+
+			_model.SetContributionList(new ContributionCollection(newList));
 		}
 	}
 }

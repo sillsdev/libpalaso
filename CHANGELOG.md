@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.WritingSystems] Added public DownloadLanguageTags method for updating the cached langtags.json from the SLDR repository.
 - [SIL.Core] Add environment variable to disable `GlobalMutex` across processes. Helpful for snap packages in Linux.
 - [SIL.Core] Added string extension method SplitLines.
+- [SIL.Windows.Forms] Added ContributorsListControl.Initialize method to allow the model to be set later when using the (existing) parameterless constructor in Designer.
 
 ### Changed
 
@@ -61,6 +62,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [SIL.Windows.Forms] Changed build date in SILAboutBox to be computed using the last write time instead of creation time.
 - [SIL.Windows.Forms] Made FadingMessageWindow implement all UI logic on the main UI thread in a thread-safe way. Fixes crashes like SP-2340.
+- [SIL.Windows.Forms] Made ContributorsListControl more threadsafe. Possibly fixes crashes like SP-2353 or at least makes them less likely.
 
 ## [15.0.0] - 2025-01-06
 

@@ -19,14 +19,12 @@ namespace SIL.Windows.Forms.TestApp
 
 		private void InitializeComponent()
 		{
-			this.components = new System.ComponentModel.Container();
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
 			this._tableLayout = new System.Windows.Forms.TableLayoutPanel();
 			this._contributorsControl = new SIL.Windows.Forms.ClearShare.WinFormsUI.ContributorsListControl();
 			this._contributorNames = new SIL.Windows.Forms.Widgets.BetterGrid.BetterGrid();
 			this.colName = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.btnUpdateContributorNames = new System.Windows.Forms.Label();
-			this.timerToTestNonUiThreadAccess = new System.Windows.Forms.Timer(this.components);
 			this._tableLayout.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._contributorNames)).BeginInit();
 			this.SuspendLayout();
@@ -119,10 +117,6 @@ namespace SIL.Windows.Forms.TestApp
 			this.btnUpdateContributorNames.Text = "Hover over this text to Update Contributors";
 			this.btnUpdateContributorNames.MouseHover += new System.EventHandler(this.UpdateNames);
 			// 
-			// timerToTestNonUiThreadAccess
-			// 
-			this.timerToTestNonUiThreadAccess.Tick += new System.EventHandler(this.timerToTestNonUiThreadAccess_Tick);
-			// 
 			// ContributorsForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -146,6 +140,5 @@ namespace SIL.Windows.Forms.TestApp
 		private SIL.Windows.Forms.Widgets.BetterGrid.BetterGrid _contributorNames;
 		private System.Windows.Forms.Label btnUpdateContributorNames;
 		private System.Windows.Forms.DataGridViewTextBoxColumn colName;
-		private Timer timerToTestNonUiThreadAccess;
 	}
 }
