@@ -26,10 +26,7 @@ namespace SIL.Windows.Forms.ClearShare
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public IEnumerable<Role> OlacRoles
-		{
-			get { return _olacSystem.GetRoles(); }
-		}
+		public IEnumerable<Role> OlacRoles => _olacSystem.GetRoles();
 
 		/// ------------------------------------------------------------------------------------
 		public GridSettings ContributorsGridSettings
@@ -53,8 +50,7 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 			Contributions = (list ?? new ContributionCollection());
 
-			if (_saveAction != null)
-				_saveAction();
+			_saveAction?.Invoke();
 		}
 
 		/// ------------------------------------------------------------------------------------

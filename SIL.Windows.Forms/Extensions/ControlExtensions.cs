@@ -168,15 +168,15 @@ namespace SIL.Windows.Forms.Extensions
 					// between the time we invoke and the time the action is executed. All we really need from SafeInvoke is that little
 					// bit of code at the start that checks for IsDisposed, but re-using SafeInvoke for the delegate is probably better
 					// than repeating that bit of code. Rechecking InvokeRequired should be lightning fast.
-					var delgate = (Action)delegate
+					var actionToInvoke = (Action)delegate
 					{
 						treatInvalidOperationExceptionAsObjectDisposedException = false;
 						control.SafeInvoke(action, nameForErrorReporting, errorHandling, forceSynchronous);
 					};
 					if (forceSynchronous)
-						control.Invoke(delgate);
+						control.Invoke(actionToInvoke);
 					else
-						return control.BeginInvoke(delgate);
+						return control.BeginInvoke(actionToInvoke);
 				}
 				catch (InvalidOperationException e)
 				{

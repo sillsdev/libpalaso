@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Media;
@@ -10,14 +11,29 @@ using JetBrains.Annotations;
 using L10NSharp.UI;
 using SIL.Code;
 using SIL.Core.ClearShare;
+using SIL.Reporting;
 using SIL.Windows.Forms.Extensions;
 using SIL.Windows.Forms.Widgets.BetterGrid;
+using static System.String;
 
 namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 {
 	/// ----------------------------------------------------------------------------------------
 	public partial class ContributorsListControl : UserControl
 	{
+		private const string kNameColName = "name";
+		private const string kRoleColName = "role";
+		private const string kCommentsColName = "comments";
+		private const string kDateColName = "date";
+
+		public enum StandardColumns
+		{
+			Name,
+			Role,
+			Comments,
+			Date,
+		}
+
 		public delegate KeyValuePair<string, string> ValidatingContributorHandler(
 			ContributorsListControl sender, Contribution contribution, CancelEventArgs e);
 		public event ValidatingContributorHandler ValidatingContributor;
@@ -26,7 +42,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		public event ColumnHeaderMouseClickHandler ColumnHeaderMouseClick;
 
 		private FadingMessageWindow _msgWindow;
-		private readonly ContributorsListControlViewModel _model;
+		private ContributorsListControlViewModel _model;
 
 		/// ------------------------------------------------------------------------------------
 		public ContributorsListControl()
@@ -35,6 +51,13 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			_grid.DataError += _grid_DataError;
 		}
 
+		/// ------------------------------------------------------------------------------------
+		public ContributorsListControl(ContributorsListControlViewModel model) : this()
+		{
+			Initialize(model);
+		}
+
+		/// ------------------------------------------------------------------------------------
 		private void _grid_DataError(object sender, DataGridViewDataErrorEventArgs e)
 		{
 		    if (e.Exception != null &&
@@ -45,31 +68,41 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public ContributorsListControl(ContributorsListControlViewModel model) : this()
+		[PublicAPI]
+		public void Initialize(ContributorsListControlViewModel model)
 		{
+			Debug.Assert(_model == null);
+
 			_model = model;
 			_model.NewContributionListAvailable += HandleNewContributionListAvailable;
-			Initialize();
+
+			// Do not use SafeInvoke here because we want this to work even if called before the
+			// handle is created.
+			if (InvokeRequired)
+				Invoke(new Action(InitializeGrid));
+			else
+				InitializeGrid();
 		}
 
 		/// ------------------------------------------------------------------------------------
-		private void Initialize()
+		private void InitializeGrid()
 		{
 			_grid.Font = SystemFonts.MenuFont;
 
-			DataGridViewColumn col = BetterGrid.CreateTextBoxColumn("name", "Name");
+			DataGridViewColumn col = BetterGrid.CreateTextBoxColumn(kNameColName, "Name");
 			col.Width = 150;
 			_grid.Columns.Add(col);
 
-			col = BetterGrid.CreateDropDownListComboBoxColumn("role",
+			col = BetterGrid.CreateDropDownListComboBoxColumn(kRoleColName,
 				_model.OlacRoles.Select(r => r.ToString()));
 			col.HeaderText = @"Role";
 			col.Width = 120;
 			_grid.Columns.Add(col);
 
-			_grid.Columns.Add(BetterGrid.CreateCalendarControlColumn("date", "Date", null, CalendarCell.UserAction.CellMouseClick));
+			_grid.Columns.Add(BetterGrid.CreateCalendarControlColumn(kDateColName, "Date",
+				null, CalendarCell.UserAction.CellMouseClick));
 
-			col = BetterGrid.CreateTextBoxColumn("comments", "Comments");
+			col = BetterGrid.CreateTextBoxColumn(kCommentsColName, "Comments");
 			col.Width = 200;
 			_grid.Columns.Add(col);
 
@@ -90,8 +123,12 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			_grid.ColumnHeaderMouseClick += _grid_ColumnHeaderMouseClick;
 
 			_model.ContributorsGridSettings?.InitializeGrid(_grid);
+
+			if (_model.Contributions.Any())
+				HandleNewContributionListAvailable(_model, EventArgs.Empty);
 		}
 
+		/// ------------------------------------------------------------------------------------
 		// SP-874: Not able to open L10NSharp with Alt-Shift-click
 		private void _grid_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
 		{
@@ -111,8 +148,51 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			LicenseManager.UsageMode == LicenseUsageMode.Designtime;
 
 		/// ------------------------------------------------------------------------------------
+		public void SetColumnAutoSizeMode(StandardColumns col, DataGridViewAutoSizeColumnMode autoSizeMode)
+		{
+			if (_model == null)
+			{
+				if (IsDisposed)
+					throw new ObjectDisposedException(Name ?? GetType().Name);
+				throw new InvalidOperationException(
+					$"{nameof(Initialize)} must be called to set the model first.");
+			}
+
+			// Do not use SafeInvoke here because we want this to work even if called before the
+			// handle is created.
+			if (Grid.InvokeRequired)
+				Grid.Invoke(new Action(() => SetColumnAutoSizeMode_Internal(col, autoSizeMode)));
+			else
+				SetColumnAutoSizeMode_Internal(col, autoSizeMode);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		private void SetColumnAutoSizeMode_Internal(StandardColumns col, DataGridViewAutoSizeColumnMode autoSizeMode)
+		{
+			var column = col switch
+			{
+				StandardColumns.Name => Grid.Columns[kNameColName],
+				StandardColumns.Role => Grid.Columns[kRoleColName],
+				StandardColumns.Comments => Grid.Columns[kCommentsColName],
+				StandardColumns.Date => Grid.Columns[kDateColName],
+				_ => throw new ArgumentOutOfRangeException(nameof(col), col, null)
+			};
+
+			if (column != null)
+				column.AutoSizeMode = autoSizeMode;
+		}
+
+		/// ------------------------------------------------------------------------------------
 		[PublicAPI]
-		public bool InEditMode => _grid.IsCurrentRowDirty;
+		public bool InEditMode
+		{
+			get
+			{
+				if (InvokeRequired)
+					return (bool)_grid.Invoke(new Func<bool>(() => _grid.IsCurrentRowDirty));
+				return _grid.IsCurrentRowDirty;
+			}
+		}
 
 		/// ------------------------------------------------------------------------------------
 		[PublicAPI]
@@ -134,23 +214,50 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			base.OnHandleDestroyed(e);
 		}
 
-		/// ------------------------------------------------------------------------------------
 		private void HandleNewContributionListAvailable(object sender, EventArgs e)
 		{
-			Guard.AgainstNull(_model.Contributions, "Contributions");
+			if (InvokeRequired)
+			{
+				// Since BeginInvoke ensures the call is executed in the UI message loop (at a
+				// later time), it might avoid conflicts with UI state updates still in progress.
+				_grid.BeginInvoke(new Action(() => HandleNewContributionListAvailable(sender, e)));
+				return;
+			}
 
-			_grid.RowValidated -= HandleGridRowValidated;
-			_grid.RowsRemoved -= HandleGridRowsRemoved;
-			_grid.Rows.Clear();
+			Guard.AgainstNull(_model.Contributions, nameof(_model.Contributions));
 
-			foreach (var contribution in _model.Contributions)
-				_grid.Rows.Add(contribution.ContributorName, contribution.Role.Name, contribution.Date, contribution.Comments);
+			try
+			{
+				// Ensure any pending edits are committed or canceled before modifying rows
+				if (_grid.IsCurrentCellInEditMode)
+					_grid.EndEdit();
+				if (_grid.CurrentCell != null && _grid.CurrentRow?.IsNewRow == false)
+					_grid.CommitEdit(DataGridViewDataErrorContexts.Commit);
 
-			_grid.CurrentCell = _grid[0, 0];
-			_grid.IsDirty = false;
+				_grid.RowValidated -= HandleGridRowValidated;
+				_grid.RowsRemoved -= HandleGridRowsRemoved;
+        
+				_grid.SuspendLayout(); // Improve performance when modifying multiple rows
+				_grid.Rows.Clear();
 
-			_grid.RowValidated += HandleGridRowValidated;
-			_grid.RowsRemoved += HandleGridRowsRemoved;
+				foreach (var contribution in _model.Contributions)
+					_grid.Rows.Add(contribution.ContributorName, contribution.Role.Name, contribution.Date, contribution.Comments);
+
+				if (_grid.Rows.Count > 0)
+					_grid.CurrentCell = _grid[0, 0];
+
+				_grid.IsDirty = false;
+
+				_grid.ResumeLayout(); // Re-enable layout updates
+
+				_grid.RowValidated += HandleGridRowValidated;
+				_grid.RowsRemoved += HandleGridRowsRemoved;
+			}
+			catch (InvalidOperationException ex)
+			{
+				Logger.WriteError("Error updating contribution list", ex);
+				// REVIEW: Then what? Retry every second until this succeeds???
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -236,7 +343,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 			var kvp = ValidatingContributor(this, contribution, e);
 
-			if (!string.IsNullOrEmpty(kvp.Key))
+			if (!IsNullOrEmpty(kvp.Key))
 			{
 				_msgWindow ??= new FadingMessageWindow();
 
@@ -296,13 +403,14 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 			var contribution = new Contribution
 			{
-				ContributorName = row.Cells["name"].Value as string,
-				Role = _model.OlacRoles.FirstOrDefault(o => o.Name == row.Cells["role"].Value as string),
-				Comments = row.Cells["comments"].Value as string
+				ContributorName = row.Cells[kNameColName].Value as string,
+				Role = _model.OlacRoles.FirstOrDefault(o => o.Name == row.Cells[kRoleColName].Value as string),
+				Comments = row.Cells[kCommentsColName].Value as string
 			};
 
-			if (row.Cells["date"].Value != null)
-				contribution.Date = (DateTime)row.Cells["date"].Value;
+			var dateVal = row.Cells[kDateColName].Value;
+			if (dateVal != null)
+				contribution.Date = (DateTime)dateVal;
 
 			return contribution;
 		}
@@ -348,12 +456,12 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				// is the current text an exact match for the autocomplete list?
 				var list = txtBox.AutoCompleteCustomSource.Cast<object>().ToList();
 				var found = list.FirstOrDefault(item =>
-					String.Equals(item.ToString(), txtBox.Text, StringComparison.CurrentCulture));
+					string.Equals(item.ToString(), txtBox.Text, StringComparison.CurrentCulture));
 
 				if (found == null)
 				{
 					// is the current text a match except for case for the autocomplete list?
-					found = list.FirstOrDefault(item => String.Equals(item.ToString(),
+					found = list.FirstOrDefault(item => string.Equals(item.ToString(),
 						txtBox.Text, StringComparison.CurrentCultureIgnoreCase));
 					if (found != null)
 					{
@@ -400,7 +508,19 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		/// <remarks>SP-874: Localize column headers</remarks>
 		public void SetColumnHeaderText(int columnIndex, string headerText)
 		{
-			_grid.Columns[columnIndex].HeaderText = headerText;
+			if (_model == null)
+			{
+				if (IsDisposed)
+					throw new ObjectDisposedException(Name ?? GetType().Name);
+
+				throw new InvalidOperationException(
+					$"{nameof(Initialize)} must be called to set the model first.");
+			}
+
+			if (InvokeRequired)
+				BeginInvoke(new Action(() => { _grid.Columns[columnIndex].HeaderText = headerText; }));
+			else
+				_grid.Columns[columnIndex].HeaderText = headerText;
 		}
 
 		/// <remarks>SP-874: Localize column headers</remarks>
@@ -411,7 +531,9 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			extender.SetLocalizingId(_grid, "ContributorsEditorGrid");
 		}
 
-		/// <remarks>We need to be able to adjust the visual properties to match the hosting program</remarks>
+		/// <remarks>We need to be able to adjust the visual properties to match the hosting program.
+		/// If used in code that could run on a thread other than the main UI thread, caller is
+		/// responsible for invoking on UI thread if needed.</remarks>
 		public BetterGrid Grid => _grid;
 	}
 }

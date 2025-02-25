@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms;
+using System.Windows.Forms;
 using SIL.Windows.Forms.Widgets.BetterGrid;
 
 namespace SIL.Windows.Forms.ClearShare.WinFormsUI
@@ -16,9 +16,16 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && (components != null))
+			if (disposing)
 			{
-				components.Dispose();
+				if (_model != null)
+				{
+					_model.NewContributionListAvailable -= HandleNewContributionListAvailable;
+					_model = null;
+				}
+
+				if (components != null)
+					components.Dispose();
 			}
 			base.Dispose(disposing);
 		}
