@@ -18,6 +18,19 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 	/// ----------------------------------------------------------------------------------------
 	public partial class ContributorsListControl : UserControl
 	{
+		private const string kNameColName = "name";
+		private const string kRoleColName = "role";
+		private const string kCommentsColName = "comments";
+		private const string kDateColName = "date";
+
+		public enum StandardColumns
+		{
+			Name,
+			Role,
+			Comments,
+			Date,
+		}
+
 		public delegate KeyValuePair<string, string> ValidatingContributorHandler(
 			ContributorsListControl sender, Contribution contribution, CancelEventArgs e);
 		public event ValidatingContributorHandler ValidatingContributor;
@@ -49,27 +62,23 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		{
 			_model = model;
 			_model.NewContributionListAvailable += HandleNewContributionListAvailable;
-			Initialize();
-		}
 
-		/// ------------------------------------------------------------------------------------
-		private void Initialize()
-		{
 			_grid.Font = SystemFonts.MenuFont;
 
-			DataGridViewColumn col = BetterGrid.CreateTextBoxColumn("name", "Name");
+			DataGridViewColumn col = BetterGrid.CreateTextBoxColumn(kNameColName, "Name");
 			col.Width = 150;
 			_grid.Columns.Add(col);
 
-			col = BetterGrid.CreateDropDownListComboBoxColumn("role",
+			col = BetterGrid.CreateDropDownListComboBoxColumn(kRoleColName,
 				_model.OlacRoles.Select(r => r.ToString()));
 			col.HeaderText = @"Role";
 			col.Width = 120;
 			_grid.Columns.Add(col);
 
-			_grid.Columns.Add(BetterGrid.CreateCalendarControlColumn("date", "Date", null, CalendarCell.UserAction.CellMouseClick));
+			_grid.Columns.Add(BetterGrid.CreateCalendarControlColumn(kDateColName, "Date",
+				null, CalendarCell.UserAction.CellMouseClick));
 
-			col = BetterGrid.CreateTextBoxColumn("comments", "Comments");
+			col = BetterGrid.CreateTextBoxColumn(kCommentsColName, "Comments");
 			col.Width = 200;
 			_grid.Columns.Add(col);
 
@@ -110,9 +119,41 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			GetService(typeof(IDesignerHost)) != null ||
 			LicenseManager.UsageMode == LicenseUsageMode.Designtime;
 
+		public void SetColumnAutoSizeMode(StandardColumns col, DataGridViewAutoSizeColumnMode autoSizeMode)
+		{
+			DataGridViewColumn column;
+			switch (col)
+			{
+				case StandardColumns.Name:
+					column = Grid.Columns[kNameColName];
+					break;
+				case StandardColumns.Role:
+					column = Grid.Columns[kRoleColName];
+					break;
+				case StandardColumns.Comments:
+					column = Grid.Columns[kCommentsColName];
+					break;
+				case StandardColumns.Date:
+					column = Grid.Columns[kDateColName];
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(nameof(col), col, null);
+			}
+			if (column != null)
+				column.AutoSizeMode = autoSizeMode;
+		}
+
 		/// ------------------------------------------------------------------------------------
 		[PublicAPI]
-		public bool InEditMode => _grid.IsCurrentRowDirty;
+		public bool InEditMode
+		{
+			get
+			{
+				if (_grid.InvokeRequired)
+					return (bool)_grid.Invoke(new Func<bool>(() => _grid.IsCurrentRowDirty));
+				return _grid.IsCurrentRowDirty;
+			}
+		}
 
 		/// ------------------------------------------------------------------------------------
 		[PublicAPI]
@@ -296,13 +337,14 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 			var contribution = new Contribution
 			{
-				ContributorName = row.Cells["name"].Value as string,
-				Role = _model.OlacRoles.FirstOrDefault(o => o.Name == row.Cells["role"].Value as string),
-				Comments = row.Cells["comments"].Value as string
+				ContributorName = row.Cells[kNameColName].Value as string,
+				Role = _model.OlacRoles.FirstOrDefault(o => o.Name == row.Cells[kRoleColName].Value as string),
+				Comments = row.Cells[kCommentsColName].Value as string
 			};
 
-			if (row.Cells["date"].Value != null)
-				contribution.Date = (DateTime)row.Cells["date"].Value;
+			var dateVal = row.Cells[kDateColName].Value;
+			if (dateVal != null)
+				contribution.Date = (DateTime)dateVal;
 
 			return contribution;
 		}
