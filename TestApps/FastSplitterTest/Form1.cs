@@ -41,8 +41,7 @@ namespace FastSplitterTest
 					var optionalMarker = string.IsNullOrWhiteSpace(_tbOptionFirstElementMarker.Text)
 											 ? null
 											 : _tbOptionFirstElementMarker.Text;
-					bool foundOptionalFirstElement;
-					foreach (var record in fastSplitter.GetSecondLevelElementStrings(optionalMarker, repeatingElementMarker, out foundOptionalFirstElement))
+					_ = fastSplitter.GetSecondLevelElementStrings(optionalMarker, repeatingElementMarker, out _);
 					{ /* Do nothing with it. */ }
 				}
 			}
