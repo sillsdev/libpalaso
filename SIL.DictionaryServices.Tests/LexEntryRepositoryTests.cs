@@ -784,7 +784,7 @@ namespace SIL.DictionaryServices.Tests
 		{
 			using (var env = new TestEnvironment())
 			{
-				// Create a LexEntry with no semantic domain
+				// Create a LexEntry with no semantic domain.
 				env.Repository.CreateItem();
 				ResultSet<LexEntry> sortedResults = env.Repository.GetEntriesWithSemanticDomainSortedBySemanticDomain(LexSense.WellKnownProperties.SemanticDomainDdp4);
 				Assert.AreEqual(0, sortedResults.Count);

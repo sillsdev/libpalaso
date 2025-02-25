@@ -13,10 +13,10 @@ namespace SIL.Tests.Spelling
 		{
 			Assert.Throws<ArgumentNullException>(
 				() =>
-				 {
-					 foreach (var _ in WordTokenizer.TokenizeText(null))
-					 { }
-				 }
+				{
+					foreach (var _ in WordTokenizer.TokenizeText(null))
+					{ }
+				}
 			 );
 		}
 
