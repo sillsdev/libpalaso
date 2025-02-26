@@ -37,23 +37,7 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
-          queries: +security-and-quality
-          config: |
-            query-filters:
-              - exclude:
-                  id: cs/call-to-unmanaged-code
-              - exclude:
-                  id: cs/catch-of-all-exceptions
-              - exclude:
-                  id: cs/empty-catch-block
-              - exclude:
-                  id: cs/missed-readonly-modifier
-              - exclude:
-                  id: cs/string-concatenation-in-loop
-              - exclude:
-                  id: cs/unmanaged-code
-              - exclude:
-                  id: cs/xmldoc/missing-summary
+          queries: +security-extended
 
       - name: Build C#
         run: dotnet build -bl:build.binlog -c Release
