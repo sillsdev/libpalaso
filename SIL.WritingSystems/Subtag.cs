@@ -81,10 +81,7 @@ namespace SIL.WritingSystems
 		/// <returns>
 		/// 	<c>true</c> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <c>false</c>.
 		/// </returns>
-		/// <exception cref="T:System.NullReferenceException">
-		/// The <paramref name="obj"/> parameter is null.
-		/// </exception>
-		public override bool Equals(object obj) => Equals(obj as Subtag);
+		public override bool Equals(object obj) => obj is Subtag subtag && Equals(subtag);
 
 		/// <summary>
 		/// Determines whether the specified <see cref="T:Subtag"/> is equal to this instance.
