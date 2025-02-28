@@ -17,7 +17,7 @@ namespace SIL.Windows.Forms.TestApp
 	public partial class ContributorsForm : Form
 	{
 		private ContributorsListControlViewModel _model;
-		private Role _authorRole = new Role("a", "Author", "someone who writes stuff");
+		private readonly Role _authorRole = new Role("a", "Author", "someone who writes stuff");
 		private bool _doneTestingNonUiThreadAccess;
 
 		public ContributorsForm()
