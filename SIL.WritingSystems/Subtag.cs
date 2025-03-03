@@ -81,7 +81,7 @@ namespace SIL.WritingSystems
 		/// <returns>
 		/// 	<c>true</c> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <c>false</c>.
 		/// </returns>
-		public override bool Equals(object obj) => obj is Subtag subtag && Equals(subtag);
+		public override bool Equals(object obj) => Equals(obj as Subtag);
 
 		/// <summary>
 		/// Determines whether the specified <see cref="T:Subtag"/> is equal to this instance.
@@ -90,7 +90,10 @@ namespace SIL.WritingSystems
 		/// <returns></returns>
 		public bool Equals(Subtag other)
 		{
-			return other != null && other.Code.Equals(Code, StringComparison.InvariantCultureIgnoreCase) && other.Name == Name && other.IsPrivateUse == IsPrivateUse;
+			return other != null && GetType() == other.GetType() &&
+				other.Code.Equals(Code, StringComparison.InvariantCultureIgnoreCase) &&
+				other.Name == Name &&
+				other.IsPrivateUse == IsPrivateUse;
 		}
 
 		/// <summary>
