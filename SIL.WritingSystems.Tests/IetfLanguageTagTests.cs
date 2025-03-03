@@ -287,12 +287,12 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Equals_DifferentSubtagType_ReturnsFalse()
 		{
-			var languageSubTag = new LanguageSubtag("xmin", "mine", true, "xkal");
-			var scriptSubTag = new ScriptSubtag("xmin", "mine", true, false);
-			Assert.That(languageSubTag, Is.Not.EqualTo(scriptSubTag));
-			Assert.That(scriptSubTag, Is.Not.EqualTo(languageSubTag));
-			object obj = languageSubTag;
-			Assert.That(scriptSubTag, Is.Not.EqualTo(obj));
+			var languageSubtag = new LanguageSubtag("xmin", "mine", true, "xkal");
+			var scriptSubtag = new ScriptSubtag("xmin", "mine", true, false);
+			Assert.That(languageSubtag, Is.Not.EqualTo(scriptSubtag));
+			Assert.That(languageSubtag, Is.Not.EqualTo(scriptSubtag));
+			object obj = languageSubtag;
+			Assert.That(scriptSubtag, Is.Not.EqualTo(obj));
 		}
 
 		#region Canonicalize
