@@ -290,7 +290,7 @@ namespace SIL.WritingSystems.Tests
 			var languageSubtag = new LanguageSubtag("xmin", "mine", true, "xkal");
 			var scriptSubtag = new ScriptSubtag("xmin", "mine", true, false);
 			Assert.That(languageSubtag, Is.Not.EqualTo(scriptSubtag));
-			Assert.That(languageSubtag, Is.Not.EqualTo(scriptSubtag));
+			Assert.That(scriptSubtag, Is.Not.EqualTo(languageSubtag));
 			object obj = languageSubtag;
 			Assert.That(scriptSubtag, Is.Not.EqualTo(obj));
 		}
