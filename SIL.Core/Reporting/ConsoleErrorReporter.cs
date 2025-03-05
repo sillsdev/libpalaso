@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using static System.Environment;
 
 namespace SIL.Reporting
 {
@@ -41,8 +42,13 @@ namespace SIL.Reporting
 			throw new ErrorReport.ProblemNotificationSentToUserException(message);
 		}
 
+		/// <summary>
+		/// Notifies the user of problem by writing to console
+		/// </summary>
+		/// <param name="policy">The policy used to check if the message should be shown</param>
 		/// <param name="alternateButton1Label">N/A. You may pass null. This parameter will be ignored.</param>
 		/// <param name="resultIfAlternateButtonPressed">N/A. This parameter will be ignored.</param>
+		/// <param name="message">The message to print to console, if the policy allows</param>
 		public ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy, string alternateButton1Label,
 			ErrorResult resultIfAlternateButtonPressed, string message)
 		{
@@ -53,9 +59,7 @@ namespace SIL.Reporting
 		public void ReportNonFatalException(Exception exception, IRepeatNoticePolicy policy)
 		{
 			if (policy.ShouldShowErrorReportDialog(exception))
-			{
 				WriteExceptionToConsole(exception, null, Severity.NonFatal);
-			}
 		}
 
 		public void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args)
@@ -91,55 +95,45 @@ namespace SIL.Reporting
 			// that is usually the one we want the developer to read.
 			if (innerMostException != null)
 			{
-				textToReport += string.Format("Inner-most exception:{0}{1}{0}{0}Full, hierarchical exception contents:{0}{2}",
-					Environment.NewLine, ErrorReport.GetExceptionText(innerMostException), textToReport);
+				textToReport += $"Inner-most exception:{NewLine}" +
+					$"{ErrorReport.GetExceptionText(innerMostException)}{NewLine}" +
+					$"{NewLine}Full, hierarchical exception contents:" +
+					$"{NewLine}{textToReport}";
 			}
 
 			textToReport += ErrorReportingProperties;
 
 			if (!string.IsNullOrEmpty(message))
-			{
-				textToReport += "Message (not an exception): " + message + Environment.NewLine;
-				textToReport += Environment.NewLine;
-			}
+				textToReport += $"Message (not an exception): {message}{NewLine}{NewLine}";
 
 			if (innerMostException != null)
-			{
 				error = innerMostException;
-			}
 
 			try
 			{
-				Logger.WriteEvent("Got exception " + error.GetType().Name);
+				Logger.WriteEvent($"Got exception {error.GetType().Name}");
 			}
 			catch (Exception err)
 			{
 				// We have more than one report of dying while logging an exception.
-				textToReport += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
-				textToReport += "Was trying to log the exception: " + error.Message + Environment.NewLine;
-				textToReport += "Recent events:" + Environment.NewLine;
-				textToReport += Logger.MinorEventsLog;
+				textToReport += $"****Could not write to log ({err.Message}){NewLine}" +
+					$"Was trying to log the exception: {error.Message}{NewLine}" +
+					$"Recent events:{NewLine}{Logger.MinorEventsLog}";
 			}
 			Console.WriteLine(textToReport);
 		}
 
 		private static string GetErrorStamp(Severity severity)
 		{
-			var textToReport = $"{DateTime.UtcNow:r}:" + Environment.NewLine;
-			textToReport += "Severity: ";
+			var textToReport = $"{DateTime.UtcNow:r}:{NewLine}Severity: ";
 
-			switch (severity)
+			textToReport += severity switch
 			{
-				case Severity.Fatal:
-					textToReport += "Fatal";
-					break;
-				case Severity.NonFatal:
-					textToReport += "Warning";
-					break;
-				default:
-					throw new ArgumentOutOfRangeException(nameof(severity));
-			}
-			textToReport += Environment.NewLine;
+				Severity.Fatal => "Fatal",
+				Severity.NonFatal => "Warning",
+				_ => throw new ArgumentOutOfRangeException(nameof(severity))
+			};
+			textToReport += NewLine;
 			return textToReport;
 		}
 
@@ -147,12 +141,9 @@ namespace SIL.Reporting
 		{
 			get
 			{
-				var properties = "";
-				properties += Environment.NewLine + "--Error Reporting Properties--" + Environment.NewLine;
-				foreach (string label in ErrorReport.Properties.Keys)
-				{
-					properties += label + ": " + ErrorReport.Properties[label] + Environment.NewLine;
-				}
+				var properties = $"{NewLine}--Error Reporting Properties--{NewLine}";
+				foreach (var label in ErrorReport.Properties.Keys)
+					properties += $"{label}: {ErrorReport.Properties[label]}{NewLine}";
 				return properties;
 			}
 		}
@@ -163,21 +154,17 @@ namespace SIL.Reporting
 		{
 			var textToReport = GetErrorStamp(severity);
 
-			textToReport += "Message (not an exception): " + message + Environment.NewLine;
-			textToReport += Environment.NewLine;
-			textToReport += "--Stack--" + Environment.NewLine;
-			textToReport += stack + Environment.NewLine;
-			textToReport += ErrorReportingProperties;
+			textToReport += $"Message (not an exception): {message}{NewLine}{NewLine}" +
+				$"--Stack--{NewLine}{stack}{NewLine}{ErrorReportingProperties}";
 
 			try
 			{
-				Logger.WriteEvent("Got error message " + message);
+				Logger.WriteEvent($"Got error message {message}");
 			}
 			catch (Exception err)
 			{
 				// We have more than one report of dying while logging an exception.
-				textToReport +=
-					$"****Could not write to log ({err.Message}){Environment.NewLine}";
+				textToReport += $"****Could not write to log ({err.Message}){NewLine}";
 			}
 			Console.WriteLine(textToReport);
 		}
