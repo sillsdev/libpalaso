@@ -81,13 +81,7 @@ namespace SIL.WritingSystems
 		/// <returns>
 		/// 	<c>true</c> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <c>false</c>.
 		/// </returns>
-		/// <exception cref="T:System.NullReferenceException">
-		/// The <paramref name="obj"/> parameter is null.
-		/// </exception>
-		public override bool Equals(object obj)
-		{
-			return Equals(obj as Subtag);
-		}
+		public override bool Equals(object obj) => Equals(obj as Subtag);
 
 		/// <summary>
 		/// Determines whether the specified <see cref="T:Subtag"/> is equal to this instance.
@@ -96,7 +90,10 @@ namespace SIL.WritingSystems
 		/// <returns></returns>
 		public bool Equals(Subtag other)
 		{
-			return other != null && other.Code.Equals(Code, StringComparison.InvariantCultureIgnoreCase) && other.Name == Name && other.IsPrivateUse == IsPrivateUse;
+			return other != null && GetType() == other.GetType() &&
+				other.Code.Equals(Code, StringComparison.InvariantCultureIgnoreCase) &&
+				other.Name == Name &&
+				other.IsPrivateUse == IsPrivateUse;
 		}
 
 		/// <summary>
@@ -105,10 +102,7 @@ namespace SIL.WritingSystems
 		/// <returns>
 		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
 		/// </returns>
-		public override int GetHashCode()
-		{
-			return _hashCode;
-		}
+		public override int GetHashCode() => _hashCode;
 
 		/// <summary>
 		/// Returns a <see cref="T:System.String"/> that represents this instance.
@@ -142,14 +136,8 @@ namespace SIL.WritingSystems
 		/// <param name="x">The x.</param>
 		/// <param name="y">The y.</param>
 		/// <returns>The result of the operator.</returns>
-		public static bool operator !=(Subtag x, Subtag y)
-		{
-			return !(x == y);
-		}
+		public static bool operator !=(Subtag x, Subtag y) => !(x == y);
 
-		public static implicit operator string(Subtag subtag)
-		{
-			return subtag == null ? null : subtag.Code;
-		}
+		public static implicit operator string(Subtag subtag) => subtag?.Code;
 	}
 }
