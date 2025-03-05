@@ -7,6 +7,8 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using JetBrains.Annotations;
+using SIL.Windows.Forms.Extensions;
 using SIL.Windows.Forms.Properties;
 
 namespace SIL.Windows.Forms.Widgets.BetterGrid
@@ -14,6 +16,8 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 	/// ----------------------------------------------------------------------------------------
 	public class BetterGrid : DataGridView
 	{
+		private const string kRemoveRowCol = "removerow";
+
 		/// ------------------------------------------------------------------------------------
 		public delegate KeyValuePair<object, IEnumerable<object>> GetComboCellListHandler(object sender,
 			DataGridViewCell cell, DataGridViewEditingControlShowingEventArgs args);
@@ -78,14 +82,12 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// row until someone enters data into it).
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public int RowCountLessNewRow
-		{
-			get { return (NewRowIndex == RowCount - 1 && RowCount > 0 ? RowCount - 1 : RowCount); }
-		}
+		public int RowCountLessNewRow =>
+			(NewRowIndex == RowCount - 1 && RowCount > 0 ? RowCount - 1 : RowCount);
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets or sets a value indicating whether or not the grid's contents are dirty.
+		/// Gets or sets a value indicating whether the grid's contents are dirty.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Browsable(false)]
@@ -93,7 +95,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool IsDirty
 		{
-			get { return _isDirty; }
+			get => _isDirty;
 			set
 			{
 				_isDirty = value;
@@ -133,7 +135,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets or sets a value determining whether or not to draw a border around a text
+		/// Gets or sets a value determining whether to draw a border around a text
 		/// box cell's edit control when the cell is in the edit mode.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
@@ -194,13 +196,13 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		#region Watermark handling methods
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets or sets a value indicating whether or not a water mark is shown when the grid
+		/// Gets or sets a value indicating whether a watermark is shown when the grid
 		/// is dirty.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public bool ShowWaterMarkWhenDirty
 		{
-			get { return _showWaterMarkWhenDirty; }
+			get => _showWaterMarkWhenDirty;
 			set
 			{
 				_showWaterMarkWhenDirty = value;
@@ -211,12 +213,12 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets or sets the character displayed as the water mark.
+		/// Gets or sets the character displayed as the watermark.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public string WaterMark
 		{
-			get { return _waterMark; }
+			get => _waterMark;
 			set
 			{
 				_waterMark = value;
@@ -239,7 +241,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 				if (Rows.Count > 0 && Columns.Count > 0 && FirstDisplayedCell != null)
 				{
-					// Determine whether or not the vertical scroll bar is showing.
+					// Determine whether the vertical scroll bar is showing.
 					int visibleRows = Rows.GetRowCount(DataGridViewElementStates.Visible);
 					rc = GetCellDisplayRectangle(0, FirstDisplayedCell.RowIndex, false);
 					if (rc.Height * visibleRows >= ClientSize.Height)
@@ -270,7 +272,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets a R, G, or B value that is noticeably distinct (somewhat lighter or darker)
+		/// Gets an R, G, or B value that is noticeably distinct (somewhat lighter or darker)
 		/// from the given value.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
@@ -281,7 +283,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Update the water mark when the grid changes size.
+		/// Update the watermark when the grid changes size.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		protected override void OnSizeChanged(EventArgs e)
@@ -290,7 +292,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 			if (PaintWaterMark)
 			{
-				// Clear previous water mark.
+				// Clear previous watermark.
 				PaintWaterMark = false;
 				Invalidate();
 			}
@@ -326,6 +328,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		}
 
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public VScrollBar VScrollBar
 		{
 			get { return Controls.OfType<VScrollBar>().Select(ctrl => ctrl).FirstOrDefault(); }
@@ -351,7 +354,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 	    /// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Update the water mark when the grid scrolls.
+		/// Update the watermark when the grid scrolls.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		protected override void OnScroll(ScrollEventArgs e)
@@ -360,7 +363,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 			if (PaintWaterMark)
 			{
-				// Clear previous water mark.
+				// Clear previous watermark.
 				PaintWaterMark = false;
 				Invalidate();
 			}
@@ -402,7 +405,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Paints a water mark when the results are stale (i.e. the query settings have been
+		/// Paints a watermark when the results are stale (i.e. the query settings have been
 		/// changed since the results were shown).
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
@@ -418,7 +421,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 			FontFamily family = FontFamily.GenericSerif;
 
 			// Find the first font size equal to or smaller than 256 that
-			// fits in the water mark rectangle.
+			// fits in the watermark rectangle.
 			for (int size = 256; size >= 0; size -= 2)
 			{
 				using (Font fnt = FontHelper.MakeFont(family.Name, size, FontStyle.Bold))
@@ -463,10 +466,8 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 					return true;
 				}
 
-				if (EditingControl is TextBox)
+				if (EditingControl is TextBox txtBox)
 				{
-					var txtBox = ((TextBox)EditingControl);
-
 					// Only override the default behavior when all the text in the edit control is selected.
 					if (keyData == Keys.Home || keyData == Keys.End && txtBox.SelectedText == txtBox.Text)
 					{
@@ -596,7 +597,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 			if (Columns[e.ColumnIndex] is DataGridViewCheckBoxColumn)
 			{
-				// Force commital of the click's change.
+				// Force commit of the click's change.
 				CommitEdit(DataGridViewDataErrorContexts.Commit);
 				EndEdit();
 			}
@@ -789,7 +790,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 			AlwaysShowRemoveRowIcon = alwaysShowIcon;
 			GetRemoveRowToolTipText = getRemoveRowToolTipText;
 
-			var col = CreateImageColumn("removerow");
+			var col = CreateImageColumn(kRemoveRowCol);
 			col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
 			col.HeaderText = string.Empty;
 			col.SortMode = DataGridViewColumnSortMode.NotSortable;
@@ -805,7 +806,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 		private bool IsRemoveRowColumn(int columnIndex)
 		{
-			return GetColumnName(columnIndex) == "removerow";
+			return GetColumnName(columnIndex) == kRemoveRowCol;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -867,6 +868,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// heights automatically, then adds the extra amount specified.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void AdjustGridRows(int extraAmount)
 		{
 			try
@@ -905,12 +907,14 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		}
 
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public string GetCurrentColumnName()
 		{
 			return GetColumnName(CurrentCellAddress.X);
 		}
 
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void MakeFirstVisibleCellCurrentInRow(int rowIndex)
 		{
 			if (rowIndex < 0 || rowIndex >= RowCount)
@@ -941,7 +945,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 				// At this point, we know we're looking at a combo box column
 				// whose style is DropDown. Therefore, make sure the item is in
-				// it's list and if not, add it.
+				// its list and if not, add it.
 				if (items[i] != null && !col.Items.Contains(items[i]))
 					col.Items.Add(items[i]);
 			}
@@ -956,6 +960,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// the row.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void VerifyComboItemsFromRow(DataGridViewRow row)
 		{
 			foreach (DataGridViewCell cell in row.Cells)
@@ -964,9 +969,8 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 				if (col == null || (col.DefaultCellStyle.Tag as string) != kDropDownStyle)
 					continue;
 
-				// At this point, we know we're looking at a combo box column
-				// whose style is DropDown. Therefore, make sure the item is in
-				// it's list and if not, add it.
+				// At this point, we know we're looking at a combo box column whose style is
+				// DropDown. Therefore, make sure the item is in its list and if not, add it.
 				if (cell.Value != null && !col.Items.Contains(cell.Value))
 					col.Items.Add(cell.Value);
 			}
@@ -983,13 +987,14 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// Otherwise, false is returned.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public bool SelectAdjacentVisibleColumn(bool searchLeftFirst)
 		{
 			// Can't select a cell in the current row if there is no current row.
 			if (CurrentCellAddress.Y < 0)
 				return false;
 
-			int inc = (searchLeftFirst ? -1 : 1);
+			int inc = searchLeftFirst ? -1 : 1;
 
 			for (int pass = 0; pass < 2; pass++)
 			{
@@ -1023,8 +1028,9 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 				// invoked unless the handle is created. It's possible that somewhere
 				// down the road, a client will need it to be invoked before the handle
 				// is created. But I hope not.
-				if (IsHandleCreated && !Disposing)
-					BeginInvoke((Action<EventArgs>)OnCurrentRowChanged, EventArgs.Empty);
+				this.SafeInvoke(() => { OnCurrentRowChanged(EventArgs.Empty); },
+					nameof(OnCurrentCellChanged),
+					ControlExtensions.ErrorHandlingAction.IgnoreAll);
 			}
 		}
 
@@ -1054,7 +1060,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 			// Make sure the remove row cell in the new row (if there is a new row) doesn't
 			// contain the default no image, image (i.e. white square box containing a red x).
 			if (e.RowIndex == NewRowIndex && IsRemoveRowColumn(e.ColumnIndex))
-				e.Value = ((DataGridViewImageColumn)Columns["removerow"]).Image;
+				e.Value = ((DataGridViewImageColumn)Columns[kRemoveRowCol]).Image;
 
 			base.OnCellFormatting(e);
 		}
@@ -1066,6 +1072,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// client area the message is drawn.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public void DrawMessageInCenterOfGrid(Graphics g, string message, int verticalOffset)
 		{
 			using (var fnt = new Font(Font.FontFamily, 12f, FontStyle.Regular))
@@ -1276,7 +1283,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 				return;
 			}
 
-			// Determine whether or not there is any gap between the right edge of the last
+			// Determine whether there is any gap between the right edge of the last
 			// displayed cell and the right edge of the client area.
 			var sumOfColWidths = Columns.GetColumnsWidth(DataGridViewElementStates.Displayed);
 			if (sumOfColWidths > ClientSize.Width)
@@ -1324,12 +1331,12 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		{
 			if (!VirtualMode)
 			{
-				var col = Columns["removerow"];
+				var col = Columns[kRemoveRowCol];
 				if (col != null)
 					InvalidateColumn(col.Index);
 			}
-			if (CurrentRowChanged != null)
-				CurrentRowChanged(this, EventArgs.Empty);
+
+			CurrentRowChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		#region Static methods for creating various column types
@@ -1338,6 +1345,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// Creates a text box grid column.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static DataGridViewColumn CreateTextBoxColumn(string name)
 		{
 			return CreateTextBoxColumn(name, name);
@@ -1366,6 +1374,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// Creates a calendar control grid column that hosts calendar (date) cells.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static DataGridViewColumn CreateCalendarControlColumn(string name)
 		{
 			return CreateCalendarControlColumn(name, name);
@@ -1425,6 +1434,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// drop-down list.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static DataGridViewComboBoxColumn CreateDropDownListComboBoxColumn(string name,
 			ArrayList items)
 		{
@@ -1470,6 +1480,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// validated.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static DataGridViewComboBoxColumn CreateDropDownComboBoxColumn(string name, IEnumerable<string> items)
 		{
 			return CreateDropDownComboBoxColumn(name, items.Cast<object>());
@@ -1498,6 +1509,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// validated.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static DataGridViewComboBoxColumn CreateDropDownComboBoxColumn(string name,
 			ArrayList items)
 		{
@@ -1528,9 +1540,10 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Creates a check box grid column.
+		/// Creates a checkbox grid column.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static DataGridViewCheckBoxColumn CreateCheckBoxColumn(string name)
 		{
 			var col = new DataGridViewCheckBoxColumn();
@@ -1570,6 +1583,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// Creates a SilButtonColumn grid column.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public static PushButtonColumn CreatePushButtonColumn(string name)
 		{
 			var col = new PushButtonColumn(name);
@@ -1587,7 +1601,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Returns a value indicating whether or not visual style rendering is supported
+		/// Returns a value indicating whether visual style rendering is supported
 		/// in the application and if the specified element can be rendered.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
@@ -1598,7 +1612,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Returns a value indicating whether or not visual style rendering is supported
+		/// Returns a value indicating whether visual style rendering is supported
 		/// in the application.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
@@ -1614,7 +1628,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// <summary>
 		/// Creates a StringFormat object based on the GenericDefault string format but
 		/// includes vertical centering, EllipsisCharacter trimming and the NoWrap format
-		/// flag. Horizontal alignment is centered when horizontalCenter is true. Otherwise
+		/// flag. Horizontal alignment is centered when horizontalCenter is true. Otherwise,
 		/// horizontal alignment is near.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 
 namespace SIL.WritingSystems
@@ -8,10 +8,7 @@ namespace SIL.WritingSystems
 	/// </summary>
 	public abstract class Subtag
 	{
-		private readonly string _code;
 		private readonly string _name;
-		private readonly bool _isPrivateUse;
-		private readonly bool _isDeprecated;
 		private readonly int _hashCode;
 
 		protected Subtag(string code, bool isPrivateUse, bool isDeprecated)
@@ -29,19 +26,19 @@ namespace SIL.WritingSystems
 		protected Subtag(string code, string name, bool isPrivateUse, bool isDeprecated)
 		{
 			if (code == null)
-				throw new ArgumentNullException("code");
+				throw new ArgumentNullException(nameof(code));
 			if (code.Any(c => !IsValidChar(c)))
-				throw new ArgumentException("The code contains invalid characters.", "code");
+				throw new ArgumentException("The code contains invalid characters.", nameof(code));
 
-			_code = code;
+			Code = code;
 			_name = name;
-			_isPrivateUse = isPrivateUse;
-			_isDeprecated = isDeprecated;
+			IsPrivateUse = isPrivateUse;
+			IsDeprecated = isDeprecated;
 
 			_hashCode = 23;
-			_hashCode = _hashCode * 31 + _code.ToLowerInvariant().GetHashCode();
+			_hashCode = _hashCode * 31 + Code.ToLowerInvariant().GetHashCode();
 			_hashCode = _hashCode * 31 + Name.GetHashCode();
-			_hashCode = _hashCode * 31 + _isPrivateUse.GetHashCode();
+			_hashCode = _hashCode * 31 + IsPrivateUse.GetHashCode();
 		}
 
 		private static bool IsValidChar(char c)
@@ -55,19 +52,13 @@ namespace SIL.WritingSystems
 		/// Gets the code.
 		/// </summary>
 		/// <value>The code.</value>
-		public string Code
-		{
-			get { return _code; }
-		}
+		public string Code { get; }
 
 		/// <summary>
 		/// Gets the name.
 		/// </summary>
 		/// <value>The name.</value>
-		public string Name
-		{
-			get { return _name ?? string.Empty; }
-		}
+		public string Name => _name ?? string.Empty;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this instance is private use.
@@ -75,16 +66,13 @@ namespace SIL.WritingSystems
 		/// <value>
 		/// 	<c>true</c> if this instance is private use; otherwise, <c>false</c>.
 		/// </value>
-		public bool IsPrivateUse
-		{
-			get { return _isPrivateUse; }
-		}
+		public bool IsPrivateUse { get; }
 
 		/// <summary>
 		/// Gets a value indicating whether this tag is deprecated.
 		/// </summary>
 		/// <c>true</c> if this tag is deprecated and should not be used; otherwise, <c>false</c>.
-		public bool IsDeprecated { get {return _isDeprecated;} }
+		public bool IsDeprecated { get; }
 
 		/// <summary>
 		/// Determines whether the specified <see cref="T:System.Object"/> is equal to this instance.
@@ -93,13 +81,7 @@ namespace SIL.WritingSystems
 		/// <returns>
 		/// 	<c>true</c> if the specified <see cref="T:System.Object"/> is equal to this instance; otherwise, <c>false</c>.
 		/// </returns>
-		/// <exception cref="T:System.NullReferenceException">
-		/// The <paramref name="obj"/> parameter is null.
-		/// </exception>
-		public override bool Equals(object obj)
-		{
-			return Equals(obj as Subtag);
-		}
+		public override bool Equals(object obj) => Equals(obj as Subtag);
 
 		/// <summary>
 		/// Determines whether the specified <see cref="T:Subtag"/> is equal to this instance.
@@ -108,7 +90,10 @@ namespace SIL.WritingSystems
 		/// <returns></returns>
 		public bool Equals(Subtag other)
 		{
-			return other != null && other._code.Equals(_code, StringComparison.InvariantCultureIgnoreCase) && other.Name == Name && other._isPrivateUse == _isPrivateUse;
+			return other != null && GetType() == other.GetType() &&
+				other.Code.Equals(Code, StringComparison.InvariantCultureIgnoreCase) &&
+				other.Name == Name &&
+				other.IsPrivateUse == IsPrivateUse;
 		}
 
 		/// <summary>
@@ -117,10 +102,7 @@ namespace SIL.WritingSystems
 		/// <returns>
 		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
 		/// </returns>
-		public override int GetHashCode()
-		{
-			return _hashCode;
-		}
+		public override int GetHashCode() => _hashCode;
 
 		/// <summary>
 		/// Returns a <see cref="T:System.String"/> that represents this instance.
@@ -130,9 +112,7 @@ namespace SIL.WritingSystems
 		/// </returns>
 		public override string ToString()
 		{
-			if (!string.IsNullOrEmpty(_name))
-				return _name;
-			return _code;
+			return !string.IsNullOrEmpty(_name) ? _name : Code;
 		}
 
 		/// <summary>
@@ -156,14 +136,8 @@ namespace SIL.WritingSystems
 		/// <param name="x">The x.</param>
 		/// <param name="y">The y.</param>
 		/// <returns>The result of the operator.</returns>
-		public static bool operator !=(Subtag x, Subtag y)
-		{
-			return !(x == y);
-		}
+		public static bool operator !=(Subtag x, Subtag y) => !(x == y);
 
-		public static implicit operator string(Subtag subtag)
-		{
-			return subtag == null ? null : subtag._code;
-		}
+		public static implicit operator string(Subtag subtag) => subtag?.Code;
 	}
 }

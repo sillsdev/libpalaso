@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SIL.TestUtilities;
@@ -61,10 +61,10 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 
 
 		/// <summary>
-		/// For English, it's very unlikely that they'll want to add IPA, in a app like wesay
+		/// For English, it's very unlikely that they'll want to add IPA, in an app like WeSay
 		/// </summary>
 		[Test, Category("KnownMonoIssue")]
-		public void GetSuggestions_MajorWorlLanguage_SuggestsOnlyIfSuppressSuggesstionsForMajorWorldLanguagesIsFalse()
+		public void GetSuggestions_MajorWorldLanguage_SuggestsOnlyIfSuppressSuggestionsForMajorWorldLanguagesIsFalse()
 		{
 			var english = new WritingSystemDefinition("en", string.Empty, string.Empty, string.Empty, "eng", false);
 			var list = new List<WritingSystemDefinition>(new[] { english });
