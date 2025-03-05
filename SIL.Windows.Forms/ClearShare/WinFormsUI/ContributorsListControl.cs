@@ -142,7 +142,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 			_model.ContributorsGridSettings?.InitializeGrid(_grid);
 
-			if (_model.Contributions.Any())
+			if (_model.Contributions != null && _model.Contributions.Any())
 				HandleNewContributionListAvailable(_model, EventArgs.Empty);
 		}
 
