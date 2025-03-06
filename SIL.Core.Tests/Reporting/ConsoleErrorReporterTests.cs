@@ -17,6 +17,7 @@ namespace SIL.Reporting.Tests
 				RegexOptions.Compiled);
 		private ConsoleErrorReporter m_reporter;
 		private StringWriter m_consoleOutput;
+		private TextWriter m_originalConsoleOutput;
 
 		[SetUp]
 		public void SetUp()
@@ -24,6 +25,7 @@ namespace SIL.Reporting.Tests
 			ErrorReport.IsOkToInteractWithUser = true;
 			m_reporter = new ConsoleErrorReporter();
 			m_consoleOutput = new StringWriter();
+			m_originalConsoleOutput = Console.Out;
 			Console.SetOut(m_consoleOutput);
 		}
 
@@ -31,8 +33,8 @@ namespace SIL.Reporting.Tests
 		public void TearDown()
 		{
 			ErrorReport.IsOkToInteractWithUser = true;
+			Console.SetOut(m_originalConsoleOutput);
 			m_consoleOutput.Dispose();
-			Console.SetOut(Console.Out);
 		}
 
 		[Test]
