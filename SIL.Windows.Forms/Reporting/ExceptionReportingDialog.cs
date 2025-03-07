@@ -640,7 +640,7 @@ namespace SIL.Windows.Forms.Reporting
 			{
 				Exception innerMostException = null;
 				bldr.Append(ErrorReport.GetHierarchicalExceptionInfo(data.Error, ref innerMostException));
-				// If the exception had inner exceptions, show the inner-most exception first,
+				// If the exception had inner exceptions, show the innermost exception first,
 				// since that is likely to be the one most useful for the developer to read first.
 				if (innerMostException != null)
 				{

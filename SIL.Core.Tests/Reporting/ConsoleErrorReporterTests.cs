@@ -64,9 +64,9 @@ namespace SIL.Reporting.Tests
 			m_reporter.NotifyUserOfProblem(policy, null, message);
 
 			var output = m_consoleOutput.ToString().TrimEnd();
-			Assert.That(output,
-				Is.EqualTo($"Test message{NewLine}This message will be shown again.{NewLine}" +
-					$"Test message{NewLine}This message will be shown again."));
+			Assert.That(output, Is.EqualTo(
+				$"Test message{NewLine}{AlwaysShowPolicy.kReoccurrenceMessage}{NewLine}" +
+					$"Test message{NewLine}{AlwaysShowPolicy.kReoccurrenceMessage}"));
 		}
 
 		[Test]
@@ -156,9 +156,10 @@ namespace SIL.Reporting.Tests
 
 		private class AlwaysShowPolicy : IRepeatNoticePolicy
 		{
+			public const string kReoccurrenceMessage = "This message will be shown again.";
 			public bool ShouldShowErrorReportDialog(Exception exception) => true;
 			public bool ShouldShowMessage(string message) => true;
-			public string ReoccurrenceMessage => "This message will be shown again.";
+			public string ReoccurrenceMessage => kReoccurrenceMessage;
 		}
 
 		private class ShowOncePolicy : IRepeatNoticePolicy
