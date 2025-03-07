@@ -98,8 +98,8 @@ namespace SIL.Reporting.Tests
 
 			var output = m_consoleOutput.ToString().TrimEnd();
 			Assert.That(output,
-				Is.EqualTo($"{message1}{NewLine}This message will show once.{NewLine}" +
-					$"{message2}{NewLine}This message will show once."));
+				Is.EqualTo($"{message1}{NewLine}{ShowOncePolicy.kReoccurrenceMessage}{NewLine}" +
+					$"{message2}{NewLine}{ShowOncePolicy.kReoccurrenceMessage}"));
 		}
 
 		[TestCase(true)]
@@ -115,7 +115,7 @@ namespace SIL.Reporting.Tests
 
 			var output = m_consoleOutput.ToString().TrimEnd();
 			Assert.That(output,
-				Is.EqualTo($"{message}{NewLine}This message will show once."));
+				Is.EqualTo($"{message}{NewLine}{ShowOncePolicy.kReoccurrenceMessage}"));
 		}
 
 		[Test]
@@ -164,13 +164,14 @@ namespace SIL.Reporting.Tests
 
 		private class ShowOncePolicy : IRepeatNoticePolicy
 		{
+			public const string kReoccurrenceMessage = "{ShowOncePolicy.kReoccurrenceMessage}.";
 			private readonly HashSet<string> m_occurrences = new HashSet<string>();
 			public bool ShouldShowErrorReportDialog(Exception exception) =>
 				ShouldShowMessage(exception.Message);
 
 			public bool ShouldShowMessage(string message) => m_occurrences.Add(message);
 
-			public string ReoccurrenceMessage => "This message will show once.";
+			public string ReoccurrenceMessage => kReoccurrenceMessage;
 		}
 	}
 }

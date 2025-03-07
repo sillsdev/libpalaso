@@ -83,7 +83,7 @@ namespace SIL.Reporting
 		}
 
 		// This implementation is a stripped down version of what is found in
-		// Report(string, string, Exception, Form)
+		// ExceptionReportingDialog.Report(string, string, Exception, Form)
 		private static void WriteExceptionToConsole(Exception error, string message, Severity severity)
 		{
 			var textToReport = GetErrorStamp(severity);
