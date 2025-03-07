@@ -164,7 +164,7 @@ namespace SIL.Reporting.Tests
 
 		private class ShowOncePolicy : IRepeatNoticePolicy
 		{
-			public const string kReoccurrenceMessage = "{ShowOncePolicy.kReoccurrenceMessage}.";
+			public const string kReoccurrenceMessage = "This message will show once.";
 			private readonly HashSet<string> m_occurrences = new HashSet<string>();
 			public bool ShouldShowErrorReportDialog(Exception exception) =>
 				ShouldShowMessage(exception.Message);
