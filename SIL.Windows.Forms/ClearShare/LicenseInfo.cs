@@ -14,7 +14,7 @@ namespace SIL.Windows.Forms.ClearShare
 			if (properties.ContainsKey("license") && properties["license"].Contains("creativecommons"))
 				return CreativeCommonsLicense.FromMetadata(properties);
 
-			if ( properties.ContainsKey("rights (en)"))
+			if (properties.ContainsKey("rights (en)"))
 				return CustomLicense.FromMetadata(properties);
 			return new NullLicense();
 		}
@@ -73,18 +73,18 @@ namespace SIL.Windows.Forms.ClearShare
 		/// not legally enforceable if they are choosing a CC license. While not legally enforceable, they are not worthless, as they define
 		/// what is ethical. We expect that the vast majority of people are going to abide by them.
 		/// </summary>
-		public string RightsStatement {get; set; }
+		public string RightsStatement { get; set; }
 
 		protected virtual string GetBestLicenseTranslation(string idSuffix, string englishText, string comment,
 			IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
 		{
-			idSuffix = "MetadataDisplay.Licenses."+idSuffix;
+			idSuffix = "MetadataDisplay.Licenses." + idSuffix;
 			foreach (var targetLanguage in languagePriorityIds)
 			{
 				if (targetLanguage == "en")
 				{
 					//do the query to make sure the string is there to be translated someday
-					var unused = LocalizationManager.GetDynamicString("Palaso", idSuffix, englishText, comment);
+					LocalizationManager.GetDynamicString("Palaso", idSuffix, englishText, comment);
 					idOfLanguageUsed = "en";
 					return englishText;
 				}

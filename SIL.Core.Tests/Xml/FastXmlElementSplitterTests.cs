@@ -452,7 +452,7 @@ namespace SIL.Tests.Xml
 		{
 			const string emptyRoot =
 @"notes version='0'/>";
-			Assert.Throws<ArgumentException>(()=>CheckGoodFile(emptyRoot, 0, null, "annotation", Encoding.ASCII), @"Failed to detect bad ASCII file");
+			Assert.Throws<ArgumentException>(() => CheckGoodFile(emptyRoot, 0, null, "annotation", Encoding.ASCII), @"Failed to detect bad ASCII file");
 			Assert.Throws<ArgumentException>(() => CheckGoodFile(emptyRoot, 0, null, "annotation", Encoding.UTF8), @"Failed to detect bad UTF8 file");
 		}
 
@@ -558,7 +558,7 @@ namespace SIL.Tests.Xml
 			{
 				var curElement = elements[i];
 				Assert.AreEqual(curElement.Name, expectedNames[i]);
-				var el = XElement.Parse(curElement.BytesAsString);
+				XElement.Parse(curElement.BytesAsString);
 				if (i >= 3)  // parse the sublist for Analyses and Entries
 				{
 					using (var splitter = new FastXmlElementSplitter(curElement.Bytes))
@@ -610,14 +610,11 @@ namespace SIL.Tests.Xml
 		private static void ProcessContent(FastXmlElementSplitter fastXmlElementSplitter, int expectedCount, string firstElementMarker,
 			string recordMarker, Encoding enc)
 		{
-			bool foundOptionalFirstElement;
-			var elementBytes =
-				fastXmlElementSplitter.GetSecondLevelElementBytes(firstElementMarker, recordMarker, out foundOptionalFirstElement)
-										.ToList();
+			var elementBytes = fastXmlElementSplitter.GetSecondLevelElementBytes(
+				firstElementMarker, recordMarker, out _).ToList();
 			Assert.AreEqual(expectedCount, elementBytes.Count);
-			var elementStrings =
-				fastXmlElementSplitter.GetSecondLevelElementStrings(firstElementMarker, recordMarker,
-					out foundOptionalFirstElement).ToList();
+			var elementStrings = fastXmlElementSplitter.GetSecondLevelElementStrings(
+				firstElementMarker, recordMarker, out _).ToList();
 			Assert.AreEqual(expectedCount, elementStrings.Count);
 			for (var i = 0; i < elementStrings.Count; ++i)
 			{
@@ -625,7 +622,7 @@ namespace SIL.Tests.Xml
 				Assert.AreEqual(
 					currentStr,
 					enc.GetString(elementBytes[i]));
-				var el = XElement.Parse(currentStr);
+				XElement.Parse(currentStr);
 			}
 		}
 
