@@ -138,8 +138,8 @@ namespace SIL.Reporting
 		/// Gets the hierarchical exception info.
 		/// </summary>
 		/// <param name="error">The error.</param>
-		/// <param name="innerMostException">The inner most exception or null if the error is
-		/// the inner most exception</param>
+		/// <param name="innerMostException">The innermost exception or null if the error is
+		/// the innermost exception</param>
 		/// <returns>A string containing the text of the specified error</returns>
 		/// ------------------------------------------------------------------------------------
 		public static string GetHierarchicalExceptionInfo(Exception error,
