@@ -35,7 +35,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			this._image = new System.Windows.Forms.PictureBox();
 			this._checkVisibilityTmer = new System.Windows.Forms.Timer(this.components);
 			this.l10NSharpExtender1 = new L10NSharp.UI.L10NSharpExtender(this.components);
-			this.betterLinkLabel1 = new BetterLinkLabel();
+			this._linkLabel = new BetterLinkLabel();
 			((System.ComponentModel.ISupportInitialize)(this._image)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.l10NSharpExtender1)).BeginInit();
 			this.SuspendLayout();
@@ -64,30 +64,30 @@ namespace SIL.Windows.Forms.SettingProtection
 			//
 			// betterLinkLabel1
 			//
-			this.betterLinkLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			this._linkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 			| System.Windows.Forms.AnchorStyles.Left)
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this.betterLinkLabel1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.betterLinkLabel1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline);
-			this.betterLinkLabel1.ForeColor = System.Drawing.Color.Blue;
-			this.l10NSharpExtender1.SetLocalizableToolTip(this.betterLinkLabel1, null);
-			this.l10NSharpExtender1.SetLocalizationComment(this.betterLinkLabel1, null);
-			this.l10NSharpExtender1.SetLocalizingId(this.betterLinkLabel1, "SettingsLauncherButton.LauncherButtonLabel");
-			this.betterLinkLabel1.Location = new System.Drawing.Point(23, 3);
-			this.betterLinkLabel1.Multiline = true;
-			this.betterLinkLabel1.Name = "betterLinkLabel1";
-			this.betterLinkLabel1.ReadOnly = true;
-			this.betterLinkLabel1.Size = new System.Drawing.Size(171, 17);
-			this.betterLinkLabel1.TabIndex = 4;
-			this.betterLinkLabel1.TabStop = false;
-			this.betterLinkLabel1.Text = "Settings...";
-			this.betterLinkLabel1.URL = null;
+			this._linkLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this._linkLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline);
+			this._linkLabel.ForeColor = System.Drawing.Color.Blue;
+			this.l10NSharpExtender1.SetLocalizableToolTip(this._linkLabel, null);
+			this.l10NSharpExtender1.SetLocalizationComment(this._linkLabel, null);
+			this.l10NSharpExtender1.SetLocalizingId(this._linkLabel, "SettingsLauncherButton.LauncherButtonLabel");
+			this._linkLabel.Location = new System.Drawing.Point(23, 3);
+			this._linkLabel.Multiline = true;
+			this._linkLabel.Name = "betterLinkLabel1";
+			this._linkLabel.ReadOnly = true;
+			this._linkLabel.Size = new System.Drawing.Size(171, 17);
+			this._linkLabel.TabIndex = 4;
+			this._linkLabel.TabStop = false;
+			this._linkLabel.Text = "Settings...";
+			this._linkLabel.URL = null;
 			//
 			// SettingsLauncherButton
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this.betterLinkLabel1);
+			this.Controls.Add(this._linkLabel);
 			this.Controls.Add(this._image);
 			this.l10NSharpExtender1.SetLocalizableToolTip(this, null);
 			this.l10NSharpExtender1.SetLocalizationComment(this, null);
@@ -107,7 +107,7 @@ namespace SIL.Windows.Forms.SettingProtection
 		private System.Windows.Forms.PictureBox _image;
 		private System.Windows.Forms.Timer _checkVisibilityTmer;
 		private L10NSharp.UI.L10NSharpExtender l10NSharpExtender1;
-		private Widgets.BetterLinkLabel betterLinkLabel1;
+		private Widgets.BetterLinkLabel _linkLabel;
 
 	}
 }
