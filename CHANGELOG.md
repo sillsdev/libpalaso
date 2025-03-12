@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Add environment variable to disable `GlobalMutex` across processes. Helpful for snap packages in Linux.
 - [SIL.Core] Added string extension method SplitLines.
 - [SIL.Windows.Forms] Added ContributorsListControl.Initialize method to allow the model to be set later when using the (existing) parameterless constructor in Designer.
+- [SIL.Windows.Forms] In class SettingsLauncherButton, added property Link to expose the link label. This enables changing its color, font, etc.
 
 ### Changed
 
@@ -57,6 +58,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Reporting] BREAKING CHANGE: In class ProblemNotificationDialog, renamed method ReoccurenceMessage to ReoccurrenceMessage.
 - [SIL.WritingSystems] BREAKING CHANGE: A new FontDefinition now has .Role default to FontRoles.None rather than FontRoles.Default. Likewise, the method LdmlDataMapper.Read now reads in a font with no type as FontRoles.None instead of FontRoles.Default.
 - [SIL.WritingSystems] Added UI to enum FontRoles; the methods LdmlDataMapper.Read and LdmlDataMapper.Write now support fonts with type "ui". Also, if the ldml file has a font type not covered in FontRoles, LdmlDataMapper.Read will add it as FontRoles.Default.
+- [SIL.Windows.Forms] BREAKING CHANGE: Upgraded dependency on L10nSharp. See note regarding creating LocalizationManager before calling localization methods. In tests, it may be expedient to set `LocalizationManager.StrictInitializationMode` to false.
+- [SIL.Windows.Forms.Keyboarding] BREAKING CHANGE: Upgraded dependency on L10nSharp. See note regarding creating LocalizationManager before calling localization methods. In tests, it may be expedient to set `LocalizationManager.StrictInitializationMode` to false.
 
 ### Fixed
 
