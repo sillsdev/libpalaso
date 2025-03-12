@@ -62,7 +62,9 @@ namespace SIL.Windows.Forms.ImageToolbox
 				var device = dialog.ShowSelectDevice(type, false, false);
 
 				foreach (var _ in device.Items)
-				{ }
+				{
+				}
+
 				foreach (Property propertyItem in device.Properties)
 				{
 					//if (!propertyItem.IsReadOnly)
@@ -74,7 +76,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 				// This gives the UI we want (can select profiles), but there's no way for an application to get the
 				// results of the scan!!!! It just asks the user where to save the image. GRRRRRRR.
 				// object x = dialog.ShowAcquisitionWizard(device);
-
 
 				//With the low-end canoscan I'm using, it just ignores these settings, so we just get a bitmap of whatever
 				//b&w / color the user requested

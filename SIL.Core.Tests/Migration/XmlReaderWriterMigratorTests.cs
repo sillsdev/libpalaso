@@ -11,7 +11,6 @@ namespace SIL.Tests.Migration
 	[TestFixture]
 	public class XmlReaderWriterMigratorTests
 	{
-
 		class MigratorForTest : XmlReaderWriterMigrationStrategy
 		{
 			public MigratorForTest(int fromVersion, int toVersion) : base(fromVersion, toVersion)
@@ -62,6 +61,5 @@ namespace SIL.Tests.Migration
 				}
 			}
 		}
-
 	}
 }

@@ -15,7 +15,8 @@ namespace SIL.Tests.Spelling
 				() =>
 				{
 					foreach (var _ in WordTokenizer.TokenizeText(null))
-					{ }
+					{
+					}
 				}
 			 );
 		}

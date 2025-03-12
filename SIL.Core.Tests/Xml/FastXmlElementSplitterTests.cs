@@ -625,6 +625,5 @@ namespace SIL.Tests.Xml
 				XElement.Parse(currentStr);
 			}
 		}
-
 	}
 }

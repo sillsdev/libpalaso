@@ -1,5 +1,4 @@
 /* From http://xmlunit.sourceforge.net/ */
-
 using System.IO;
 using NUnit.Framework;
 using SIL.Lift.Merging.xmldiff;
@@ -133,6 +132,5 @@ namespace SIL.Lift.Tests.Merging.xmldiff
 			string[] input2 = {"<a>text<b/></a>", "<a><b>text</b>more text<c/></a>"};
 			AssertExpectedResult(input1, input2, false);
 		}
-
 	}
 }
