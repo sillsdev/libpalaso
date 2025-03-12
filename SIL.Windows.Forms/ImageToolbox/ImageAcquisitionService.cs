@@ -11,26 +11,30 @@ namespace SIL.Windows.Forms.ImageToolbox
 	{
 		public ImageDeviceException()
 			: base()
-		{ }
+		{
+		}
 
 		public ImageDeviceException(string message)
 			: base(message)
-		{ }
+		{
+		}
 
 		public ImageDeviceException(string message, Exception innerException)
 			: base(message, innerException)
-		{ }
-
+		{
+		}
 	}
-	public class WIA_Version2_MissingException : ApplicationException
-	{ }
 
+	public class WIA_Version2_MissingException : ApplicationException
+	{
+	}
 
 	public class ImageDeviceNotFoundException : ImageDeviceException
 	{
 		public ImageDeviceNotFoundException()
 			: base("Could not find a device. Is your device plugged in and turned on?")
-		{ }
+		{
+		}
 	}
 
 	public class ImageAcquisitionService
@@ -107,6 +111,5 @@ namespace SIL.Windows.Forms.ImageToolbox
 				throw new ImageDeviceException("COM Exception", ex);
 			}
 		}
-
 	}
 }

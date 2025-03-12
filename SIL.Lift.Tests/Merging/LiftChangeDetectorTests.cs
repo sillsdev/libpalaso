@@ -148,7 +148,7 @@ namespace SIL.Lift.Tests.Merging
 		}
 
 		[Test]
-		public void Constructor_CacheFolderDoesNotExist_DoesNothing()
+		public void Constructor_CacheFolderDoesNotExist_DoesNotCreateFolder()
 		{
 			string cache = Path.Combine(Path.GetTempPath(), "CreateForTest");
 			if (Directory.Exists(cache))
@@ -157,8 +157,9 @@ namespace SIL.Lift.Tests.Merging
 			}
 			using (TempFile working = new TempFile("<lift version='0.12'/>"))
 			{
-				_ = new LiftChangeDetector(working.Path, cache);
-				Assert.IsFalse(Directory.Exists(cache));
+				var detector = new LiftChangeDetector(working.Path, cache);
+				Assert.That(Directory.Exists(cache), Is.False);
+				Assert.That(detector.CanProvideChangeRecord, Is.False);
 			}
 		}
 

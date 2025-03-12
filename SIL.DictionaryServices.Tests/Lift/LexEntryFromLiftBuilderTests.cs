@@ -170,10 +170,11 @@ namespace SIL.DictionaryServices.Tests.Lift
 		{
 			Extensible extensibleInfo = new Extensible();
 			LexEntry e = _builder.GetOrMakeEntry(extensibleInfo, 0);
-			_builder.GetOrMakeSense(e, new Extensible(), string.Empty);
+			LexSense s = _builder.GetOrMakeSense(e, new Extensible(), string.Empty);
 			_builder.FinishEntry(e);
-			Assert.AreEqual(0, e.Senses[0].Gloss.Count);
-			Assert.AreEqual(0, e.Senses[0].Definition.Count);
+			Assert.That(e.Senses[0], Is.EqualTo(s));
+			Assert.That(s.Gloss, Is.Empty);
+			Assert.That(s.Definition, Is.Empty);
 		}
 
 		[Test]
