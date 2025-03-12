@@ -545,5 +545,11 @@ and displays it as HTML.
 			var fadingMsgWindow = new FadingMessageWindow();
 			fadingMsgWindow.Show($"{s_FadingMessageCount++}) Fading message.", _btnShowFadingMessage.Location);
 		}
+
+		private void btnRefRange_Click(object sender, EventArgs e)
+		{
+			using (var dlg = new ScrReferenceFilterDlg())
+				dlg.ShowDialog();
+		}
 	}
 }

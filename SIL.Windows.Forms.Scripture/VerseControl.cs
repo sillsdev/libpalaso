@@ -8,12 +8,14 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 using SIL.PlatformUtilities;
 using SIL.Scripture;
 using SIL.Extensions;
 using SIL.Linq;
 using SIL.Windows.Forms.Miscellaneous;
 using SIL.Windows.Forms.Widgets;
+using static System.Char;
 
 namespace SIL.Windows.Forms.Scripture
 {
@@ -31,19 +33,16 @@ namespace SIL.Windows.Forms.Scripture
 		private const FontStyle searchTextStyle = FontStyle.Bold;
 		private const string rtlMark = "\u200f";
 		private const string ltrMark = "\u200e";
-		const int AbbreviationLength = 3; // length of book abbreviation
-		BookSet booksPresentSet = new BookSet();
-		string abbreviations = "";
-		string searchText = "";
-		bool allowVerseSegments = true; //Allow LXX style lettered verse segments
-		bool showEmptyBooks = true;
-		IScrVerseRef curRef;
-		float abbreviationWidth = -1.0f; //starting width of book abbreviation, <0 signifies to recalculate
-		readonly BookListItem[] allBooks;
-		Font emptyBooksFont = SystemFonts.DefaultFont;
-		Color emptyBooksColor = SystemColors.GrayText;
-
-		bool advanceToEnd;
+		private const int AbbreviationLength = 3; // length of book abbreviation
+		private BookSet booksPresentSet = new BookSet();
+		private string abbreviations = "";
+		private string searchText = "";
+		private bool allowVerseSegments = true; //Allow LXX style lettered verse segments
+		private bool showEmptyBooks = true;
+		private IScrVerseRef curRef;
+		private float abbreviationWidth = -1.0f; //starting width of book abbreviation, <0 signifies to recalculate
+		private readonly BookListItem[] allBooks;
+		private Font emptyBooksFont = SystemFonts.DefaultFont;
 
 		/// <summary>Function that can be set to allow the control to get localized names for the books.</summary>
 		public Func<string, string> GetLocalizedBookName = Canon.BookIdToEnglishName;
@@ -61,10 +60,14 @@ namespace SIL.Windows.Forms.Scripture
 		public event EventHandler InvalidReferencePasted;
 		/// <summary>Fired when any textbox for the reference gets focus</summary>
 		public event EventHandler TextBoxGotFocus;
+		/// <summary>
+		/// Fired when the user presses Tab while in the verse portion of the control.
+		/// </summary>
+		public event EventHandler<KeyEventArgs> TabKeyPressedInVerseField;
 
 		// Used to temporarily ignore changes in the index of the book control
 		// when it is being updated internally
-		bool isUpdating;
+		private bool isUpdating;
 
 		public VerseControl()
 		{
@@ -76,7 +79,7 @@ namespace SIL.Windows.Forms.Scripture
 				// Set a smaller font on Linux. (Stops 'J''s being clipped)
 				uiBook.Font = new Font("Segoe UI", 8F, FontStyle.Regular, GraphicsUnit.Point, 0);
 
-				// Also increase the ItemHeight as to stop clipping of items in the drop down menu..
+				// Also increase the ItemHeight as to stop clipping of items in the dropdown menu.
 				uiBook.ItemHeight += 2;
 			}
 
@@ -92,8 +95,8 @@ namespace SIL.Windows.Forms.Scripture
 			uiChapter.GotFocus += control_GotFocus;
 			uiVerse.GotFocus += control_GotFocus;
 
-			// Cause Drop down list to be initally populated.
-			// (stop intial click on Combo box drop down beinging ignored on mono)
+			// Cause Drop down list to be initially populated.
+			// (stop initial click on Combo box drop down being ignored on mono)
 			// TODO: fix mono bug where dropdown isn't shown if list is empty even
 			// if dropdown event handlers populate list.
 			if (Platform.IsMono)
@@ -108,7 +111,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		#region Helpers and Initializers
 
-		void InitializeBooks()
+		private void InitializeBooks()
 		{
 			int i = 0;
 			StringBuilder abbrevs = new StringBuilder();
@@ -134,7 +137,7 @@ namespace SIL.Windows.Forms.Scripture
 			}
 		}
 
-		void PopulateBooks()
+		private void PopulateBooks()
 		{
 			Unfilter();
 		}
@@ -207,7 +210,7 @@ namespace SIL.Windows.Forms.Scripture
 				if (!allowVerseSegments)
 					curRef.Simplify();
 
-				if (advanceToEnd)
+				if (AdvanceToEnd)
 					curRef.AdvanceToLastSegment();
 
 				UpdateControls();
@@ -218,6 +221,7 @@ namespace SIL.Windows.Forms.Scripture
 		private string BookAbbreviation => curRef.Book;
 
 		[Browsable(false), ReadOnly(true)]
+		[PublicAPI]
 		public BookSet BooksPresentSet
 		{
 			set
@@ -227,6 +231,7 @@ namespace SIL.Windows.Forms.Scripture
 			}
 		}
 
+		[PublicAPI]
 		public Font EmptyBooksFont
 		{
 			get => emptyBooksFont;
@@ -239,15 +244,12 @@ namespace SIL.Windows.Forms.Scripture
 			}
 		}
 
-		public Color EmptyBooksColor
-		{
-			get { return emptyBooksColor; }
-			set { emptyBooksColor = value; }
-		}
+		[PublicAPI]
+		public Color EmptyBooksColor { get; set; } = SystemColors.GrayText;
 
 		public bool ShowEmptyBooks
 		{
-			get { return showEmptyBooks; }
+			get => showEmptyBooks;
 			set
 			{
 				if (showEmptyBooks == value) return;
@@ -261,15 +263,12 @@ namespace SIL.Windows.Forms.Scripture
 		/// a new book should go to the last verse of the last chapter. Choosing
 		/// a new chapter should go to the last verse of that chapter.
 		/// </summary>
-		public bool AdvanceToEnd
-		{
-			get { return advanceToEnd; }
-			set { advanceToEnd = value; }
-		}
+		public bool AdvanceToEnd { get; set; }
 
 		/// <summary> 
 		/// Set tooltip for the verse spinner and text field.
 		/// </summary>
+		[PublicAPI]
 		public string ToolTipVerseSelector
 		{
 			set
@@ -282,6 +281,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// <summary> 
 		/// Set tooltip for the chapter spinner and text field.
 		/// </summary>
+		[PublicAPI]
 		public string ToolTipChapterSelector
 		{
 			set
@@ -302,6 +302,7 @@ namespace SIL.Windows.Forms.Scripture
 			}
 		}
 
+		[PublicAPI]
 		public void SetContextMenuLabels(string copyLabel, string pasteLabel)
 		{
 			uiBook.SetContextMenuLabels(copyLabel, pasteLabel);
@@ -316,7 +317,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// <summary>
 		/// (Call whenever reference has been changed internally.) Update contents of controls.
 		/// </summary>
-		void UpdateControls()
+		private void UpdateControls()
 		{
 			try
 			{
@@ -335,7 +336,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// <summary>
 		/// Call whenever controls have changed to keep internal reference in sync with UI.
 		/// </summary>
-		void UpdateReference()
+		private void UpdateReference()
 		{
 			UpdateControls(); // Many controls change themselves by changing internal reference. Nice and clean.
 			OnVerseRefChanged(new PropertyChangedEventArgs("VerseRef"));
@@ -358,6 +359,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// Tries to move to Chapter 1 verse 1 of the previous book.
 		/// </summary>
 		/// <returns>true if the move was possible</returns>
+		[PublicAPI]
 		public void PrevBook()
 		{
 			bool result = showEmptyBooks ? curRef.PreviousBook() : curRef.PreviousBook(booksPresentSet);
@@ -365,6 +367,7 @@ namespace SIL.Windows.Forms.Scripture
 				UpdateReference();
 		}
 
+		[PublicAPI]
 		public void NextBook()
 		{
 			bool result = showEmptyBooks ? curRef.NextBook() : curRef.NextBook(booksPresentSet);
@@ -505,19 +508,19 @@ namespace SIL.Windows.Forms.Scripture
 
 		#region Book Owner Draw
 
-		void uiBook_FontChanged(object sender, EventArgs e)
+		private void uiBook_FontChanged(object sender, EventArgs e)
 		{
 			abbreviationWidth = -1.0f; //signal to recalculate default width for book
 		}
 
 		//move to events section after debugging nov2007
-		void uiBook_DropDown(object sender, EventArgs e)
+		private void uiBook_DropDown(object sender, EventArgs e)
 		{
 			uiBook.SelectAll();
 			Unfilter();
 		}
 
-		void uiBook_DrawItem(object sender, DrawItemEventArgs e)
+		private void uiBook_DrawItem(object sender, DrawItemEventArgs e)
 		{
 			// Get the data 
 			if (e.Index < 0)
@@ -529,7 +532,7 @@ namespace SIL.Windows.Forms.Scripture
 
 			// Get the drawing tools
 			Font theFont = GetBookFont(book);
-			Color theColor = book.isPresent ? e.ForeColor : emptyBooksColor;
+			Color theColor = book.isPresent ? e.ForeColor : EmptyBooksColor;
 
 			// Calculate field widths if necessary
 			CalcFieldWidths(e.Graphics);
@@ -543,12 +546,12 @@ namespace SIL.Windows.Forms.Scripture
 			}
 		}
 
-		Font GetBookFont(BookListItem book)
+		private Font GetBookFont(BookListItem book)
 		{
 			return book.isPresent ? Font : emptyBooksFont;
 		}
 
-		void CalcFieldWidths(Graphics g)
+		private void CalcFieldWidths(Graphics g)
 		{
 			const string measureText = "GEN";
 			if (abbreviationWidth >= 1f)
@@ -559,7 +562,7 @@ namespace SIL.Windows.Forms.Scripture
 			abbreviationWidth = Math.Max(normalWidth, notPresentWidth) * 2.2f;
 		}
 
-		void DrawBookParts(string[] parts, Graphics gr, Rectangle bounds, Color theColor, Font font1, Font font2)
+		private void DrawBookParts(string[] parts, Graphics gr, Rectangle bounds, Color theColor, Font font1, Font font2)
 		{
 			Font theFont = font1;
 			int right = bounds.Right;
@@ -611,7 +614,7 @@ namespace SIL.Windows.Forms.Scripture
 			}
 
 			var currentItems = uiBook.Items.Cast<BookListItem>();
-			// Only update list if we need too. (Impoves display of Dropdown list on Linux)
+			// Only update list if we need too. (Improves display of Dropdown list on Linux)
 			if (tempList.Except(currentItems, new BookListItemComparer()).Any() || currentItems.Except(tempList, new BookListItemComparer()).Any())
 			{
 				uiBook.BeginUpdate();
@@ -622,7 +625,7 @@ namespace SIL.Windows.Forms.Scripture
 				uiBook.Refresh();
 
 				// TODO: fix mono bug where Refresh doesn't invalidate and redraw dropdown list box.
-				// The following is a work around to force mono to redraw the list box.
+				// The following is a workaround to force mono to redraw the list box.
 				if (Platform.IsMono && uiBook.DroppedDown)
 				{
 					FieldInfo listBoxControlField = typeof(ComboBox).GetField("listbox_ctrl", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -644,7 +647,7 @@ namespace SIL.Windows.Forms.Scripture
 			Filter(); //removes books not present if hidden
 		}
 
-		void uiBook_TextUpdate(object sender, EventArgs e)
+		private void uiBook_TextUpdate(object sender, EventArgs e)
 		{
 			if (isUpdating) return;
 			if (searchText != uiBook.Text)
@@ -665,7 +668,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// Enter key updates scripture ref.
 		/// </summary>
 		/// <param name="e">Event args received by event handler.</param>
-		bool AcceptOnEnter(KeyEventArgs e)
+		private bool AcceptOnEnter(KeyEventArgs e)
 		{
 			if (e.KeyCode == Keys.Enter)
 			{
@@ -720,7 +723,7 @@ namespace SIL.Windows.Forms.Scripture
 			return true;
 		}
 
-		bool JumpOnSpace(KeyPressEventArgs e, Control nextField)
+		private bool JumpOnSpace(KeyPressEventArgs e, Control nextField)
 		{
 			const string jumpCharacters = " :.";
 			if (e.KeyChar == 13)
@@ -744,7 +747,7 @@ namespace SIL.Windows.Forms.Scripture
 			return false;
 		}
 
-		void uiBook_SelectionChangeCommitted(object sender, EventArgs e)
+		private void uiBook_SelectionChangeCommitted(object sender, EventArgs e)
 		{
 			if (isUpdating)
 				return;
@@ -760,7 +763,7 @@ namespace SIL.Windows.Forms.Scripture
 
 			VerseRef = curRef.Create(((BookListItem)uiBook.SelectedItem).Abbreviation, "1", "1");
 
-			if (advanceToEnd)
+			if (AdvanceToEnd)
 				AdvanceToLastChapterLastVerse();
 			// Save book (as focus stealing can blank this control)
 			string book = uiBook.Text;
@@ -768,7 +771,7 @@ namespace SIL.Windows.Forms.Scripture
 			uiBook.Text = book;
 		}
 
-		void uiBook_Enter(object sender, EventArgs e)
+		private void uiBook_Enter(object sender, EventArgs e)
 		{
 			// BeginInvoke helps Linux - otherwise clicking
 			// Text in book combo doesn't select all.
@@ -779,7 +782,7 @@ namespace SIL.Windows.Forms.Scripture
 			}));
 		}
 
-		void uiBook_KeyDown(object sender, KeyEventArgs e)
+		private void uiBook_KeyDown(object sender, KeyEventArgs e)
 		{
 			// Don't select all On Linux on Enter as combo text remains selected
 			// when focus moved to the TextForm.
@@ -863,11 +866,9 @@ namespace SIL.Windows.Forms.Scripture
 				// take first book that starts with the search text and has the right number of chapters
 				bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, chapterNum, VerseRef, true));
 				// take the first book that starts with the search text and has any number of chapters
-				if (bookItem == null)
-					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef, true));
+				bookItem ??= allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef, true));
 				// take the first book contains any match of search text and has any number of chapters
-				if (bookItem == null)
-					bookItem = allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef, false));
+				bookItem ??= allBooks.FirstOrDefault(b => b.BookMatchesSearch(searchBook, -1, VerseRef, false));
 			}
 
 			if (bookItem == null)
@@ -881,7 +882,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// Check whether it's okay to accept book field.
 		/// </summary>
 		/// <returns>True if current book field uniquely identifies a book.</returns>
-		bool IsBook()
+		private bool IsBook()
 		{
 			bool result = false;
 			try
@@ -899,7 +900,7 @@ namespace SIL.Windows.Forms.Scripture
 			return result;
 		}
 
-		bool IsBookChar(char c)
+		private bool IsBookChar(char c)
 		{
 			try
 			{
@@ -908,7 +909,7 @@ namespace SIL.Windows.Forms.Scripture
 					return true; //allow backspace
 				if (uiBook.Text.Length >= AbbreviationLength && uiBook.SelectionLength == 0)
 					return false;
-				if (Char.IsLetterOrDigit(c))
+				if (IsLetterOrDigit(c))
 					return true;
 			}
 			catch (ArgumentException)
@@ -917,14 +918,14 @@ namespace SIL.Windows.Forms.Scripture
 			return false;
 		}
 
-		void uiBook_KeyPress(object sender, KeyPressEventArgs e)
+		private void uiBook_KeyPress(object sender, KeyPressEventArgs e)
 		{
 			// FUTURE: accept menu and system key shortcuts (right now masks Alt-F4 for instance
-			e.KeyChar = Char.ToUpperInvariant(e.KeyChar); // force book names uppercase
+			e.KeyChar = ToUpperInvariant(e.KeyChar); // force book names uppercase
 			if (IsBook()) // Only allow movement to next field if book ok
 				if (JumpOnSpace(e, uiChapter))
 				{
-					if (advanceToEnd)
+					if (AdvanceToEnd)
 						AdvanceToLastChapterLastVerse();
 					return;
 				}
@@ -933,7 +934,7 @@ namespace SIL.Windows.Forms.Scripture
 				uiBook.Text = ((BookListItem)uiBook.Items[0]).Abbreviation;
 				uiBook.DroppedDown = false;
 				e.Handled = true;
-				if (advanceToEnd)
+				if (AdvanceToEnd)
 					AdvanceToLastChapterLastVerse();
 				uiChapter.Focus();
 				return;
@@ -950,7 +951,7 @@ namespace SIL.Windows.Forms.Scripture
 				uiBook.DroppedDown = true;
 		}
 
-		void AdvanceToLastChapterLastVerse()
+		private void AdvanceToLastChapterLastVerse()
 		{
 			IScrVerseRef vref = curRef.Create(uiBook.Text, "1", "1");
 			vref.ChapterNum = vref.LastChapter;
@@ -961,7 +962,7 @@ namespace SIL.Windows.Forms.Scripture
 			curRef = vref;
 		}
 
-		void AdvanceToLastVerse()
+		private void AdvanceToLastVerse()
 		{
 			IScrVerseRef vref = curRef.Create(uiBook.Text, uiChapter.Text, "1");
 			vref.VerseNum = vref.LastVerse;
@@ -970,13 +971,13 @@ namespace SIL.Windows.Forms.Scripture
 			curRef = vref;
 		}
 
-		void Revert()
+		private void Revert()
 		{
 			// revert book to previous value
 			UpdateControls();
 		}
 
-		void uiBook_Leave(object sender, EventArgs e)
+		private void uiBook_Leave(object sender, EventArgs e)
 		{
 			Unfilter();
 			if (!IsBook())
@@ -999,40 +1000,40 @@ namespace SIL.Windows.Forms.Scripture
 
 		#region Navigation Events (Chapter and Verse Event Handling)
 
-		void uiChapterPrev_Click(object sender, EventArgs e)
+		private void uiChapterPrev_Click(object sender, EventArgs e)
 		{
 			if (AcceptDataWithWarning())
 				return;
 			PrevChapter();
-			if (advanceToEnd)
+			if (AdvanceToEnd)
 				AdvanceToLastVerse();
 		}
 
-		void uiChapterNext_Click(object sender, EventArgs e)
+		private void uiChapterNext_Click(object sender, EventArgs e)
 		{
 			if (AcceptDataWithWarning())
 				return;
 			NextChapter();
-			if (advanceToEnd)
+			if (AdvanceToEnd)
 				AdvanceToLastVerse();
 		}
 
-		void uiChapter_Enter(object sender, EventArgs e)
+		private void uiChapter_Enter(object sender, EventArgs e)
 		{
 			uiChapter.SelectAll();
 		}
 
-		void uiChapter_KeyDown(object sender, KeyEventArgs e)
+		private void uiChapter_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (AcceptOnEnter(e))
 			{
 				uiChapter.SelectAll();
-				if (advanceToEnd)
+				if (AdvanceToEnd)
 					AdvanceToLastVerse();
 			}
 		}
 
-		void uiChapter_KeyPress(object sender, KeyPressEventArgs e)
+		private void uiChapter_KeyPress(object sender, KeyPressEventArgs e)
 		{
 			if (!OkChapterInput(uiChapter, e, uiVerse))
 				e.Handled = true;
@@ -1041,7 +1042,7 @@ namespace SIL.Windows.Forms.Scripture
 			//if (!OkNNN( e.KeyChar, uiChapter.Text)) e.Handled = true; //swallow key if not valid for chapter
 		}
 
-		void control_GotFocus(object sender, EventArgs e)
+		private void control_GotFocus(object sender, EventArgs e)
 		{
 			OnTextBoxGotFocus();
 		}
@@ -1053,7 +1054,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// <param name="e"></param>
 		/// <param name="nextField"></param>
 		/// <returns></returns>
-		bool OkChapterInput(TextBox textbox, KeyPressEventArgs e, Control nextField)
+		private bool OkChapterInput(TextBox textbox, KeyPressEventArgs e, Control nextField)
 		{
 			char c = e.KeyChar;
 			if (JumpOnSpace(e, nextField))
@@ -1061,7 +1062,7 @@ namespace SIL.Windows.Forms.Scripture
 			if (c == 8)
 				return true; //always allow backspace
 			//TODO: segmented verses allow letters as last char of verse
-			if (!Char.IsDigit(c))
+			if (!IsDigit(c))
 				return false; //expect digits from here on out
 			if (textbox.SelectionLength > 0)
 				return true; //allow overtype
@@ -1070,37 +1071,48 @@ namespace SIL.Windows.Forms.Scripture
 			return true;
 		}
 
-		void uiVersePrev_Click(object sender, EventArgs e)
+		private void uiVersePrev_Click(object sender, EventArgs e)
 		{
 			if (AcceptDataWithWarning())
 				return;
 			PrevVerse();
 		}
 
-		void uiVerseNext_Click(object sender, EventArgs e)
+		private void uiVerseNext_Click(object sender, EventArgs e)
 		{
 			if (AcceptDataWithWarning())
 				return;
 			NextVerse();
 		}
 
-		void uiVerse_Enter(object sender, EventArgs e)
+		private void uiVerse_Enter(object sender, EventArgs e)
 		{
 			uiVerse.SelectAll();
+			uiVerse.TreatTabAsInputKey = TabKeyPressedInVerseField != null;
 		}
 
-		void uiVerse_KeyDown(object sender, KeyEventArgs e)
+		private void uiVerse_KeyDown(object sender, KeyEventArgs e)
 		{
+			if (e.KeyCode == Keys.Tab)
+			{
+				TabKeyPressedInVerseField?.Invoke(this, e);
+				if (e.SuppressKeyPress)
+				{
+					e.Handled = true;
+					return;
+				}
+			}
+
 			if (AcceptOnEnter(e)) uiVerse.SelectAll();
 		}
 
-		void uiVerse_KeyPress(object sender, KeyPressEventArgs e)
+		private void uiVerse_KeyPress(object sender, KeyPressEventArgs e)
 		{
 			if (!OkVerseInput(uiVerse, e, uiBook))
 				e.Handled = true; //swallow key if not valid for verse
 		}
 
-		bool OkVerseInput(TextBox textbox, KeyPressEventArgs e, Control nextField)
+		private bool OkVerseInput(TextBox textbox, KeyPressEventArgs e, Control nextField)
 		{
 			char c = e.KeyChar;
 			if (JumpOnSpace(e, nextField))
@@ -1109,10 +1121,10 @@ namespace SIL.Windows.Forms.Scripture
 				return true; //always allow backspace
 			if (allowVerseSegments && VerseSegmentsAvailable)
 			{
-				if (!Char.IsLetterOrDigit(c))
+				if (!IsLetterOrDigit(c))
 					return false;
 			}
-			else if (!Char.IsDigit(c))
+			else if (!IsDigit(c))
 				return false;
 
 			if (textbox.SelectionLength > 0)
@@ -1121,10 +1133,10 @@ namespace SIL.Windows.Forms.Scripture
 				return false; // limit to 3 digits for ch and vs
 			if (textbox.Text.Length > 0)
 			{
-				if (Char.IsLetter(textbox.Text[textbox.Text.Length - 1]))
+				if (IsLetter(textbox.Text[textbox.Text.Length - 1]))
 					return false; //no typing if last char is a letter
 			}
-			else if (Char.IsLetter(c))
+			else if (IsLetter(c))
 				return false; //can't start with letter
 			return true;
 		}
@@ -1232,7 +1244,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		#region BookListItemComparer
 
-		class BookListItemComparer : IEqualityComparer<BookListItem>
+		private class BookListItemComparer : IEqualityComparer<BookListItem>
 		{
 			#region IEqualityComparer[BookListItem] implementation
 			public bool Equals(BookListItem x, BookListItem y)
@@ -1250,12 +1262,12 @@ namespace SIL.Windows.Forms.Scripture
 
 		#endregion
 
-		void uiChapter_MouseDown(object sender, MouseEventArgs e)
+		private void uiChapter_MouseDown(object sender, MouseEventArgs e)
 		{
 			uiChapter.SelectAll();
 		}
 
-		void uiVerse_MouseDown(object sender, MouseEventArgs e)
+		private void uiVerse_MouseDown(object sender, MouseEventArgs e)
 		{
 			uiVerse.SelectAll();
 		}
@@ -1308,6 +1320,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// Variant of the EnterTextBox that has a custom copy/paste context menu,
 		/// and that fires events when this context menu is opened,
 		/// and when a copy/paste action is triggered from it.
+		/// Also allows for the possibility of treating the Tab key as an input key.
 		/// </summary>
 		private class VCEnterTextBox : EnterTextBox
 		{
@@ -1329,6 +1342,8 @@ namespace SIL.Windows.Forms.Scripture
 				this.ContextMenu = contextMenu;
 			}
 
+			public bool TreatTabAsInputKey { get; set; }
+
 			private void PopUpContextMenu(Object s, EventArgs e)
 			{
 				this.ContextMenu.MenuItems[PASTE].Enabled = false;
@@ -1345,6 +1360,11 @@ namespace SIL.Windows.Forms.Scripture
 			{
 				this.ContextMenu.MenuItems[COPY].Text = copyLabel;
 				this.ContextMenu.MenuItems[PASTE].Text = pasteLabel;
+			}
+
+			protected override bool IsInputKey(Keys key)
+			{
+				return key == Keys.Tab && TreatTabAsInputKey || base.IsInputKey(key);
 			}
 		}
 	}
