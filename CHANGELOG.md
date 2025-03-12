@@ -67,7 +67,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Made FadingMessageWindow implement all UI logic on the main UI thread in a thread-safe way. Fixes crashes like SP-2340.
 - [SIL.Windows.Forms] Made ContributorsListControl more threadsafe. Possibly fixes crashes like SP-2353 or at least makes them less likely.
 - [SIL.WritingSystems] Added check to Subtag.Equals to ensure two subtags being compared are of same derived type. This could potentially be a subtle breaking change in the unlikely event that someone was intentionally relying on the previous errant behavior.
-- [SIL.Core.ClearShare] BREAKING CHANGE: Public method LoadWorkFromXml could possibly return a contribution with null role; in those cases, now falls back to the first role in the list of roles in the doc.
 
 ## [15.0.0] - 2025-01-06
 

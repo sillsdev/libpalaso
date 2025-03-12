@@ -38,8 +38,7 @@ namespace SIL.Core.ClearShare
 			foreach (var contributor in doc.Descendants((new XElement(s_nsDc + "contributor")).Name))
 			{
 				var roleCode = contributor.Attributes().Single(a => a.Name == s_nsOlac + "code").Value;
-				if (!TryGetRoleByCode(roleCode, out var role))
-					role = GetRoles().ElementAt(0);
+				TryGetRoleByCode(roleCode, out var role);
 				work.Contributions.Add(new Contribution(contributor.Value, role));
 			}
 		}
