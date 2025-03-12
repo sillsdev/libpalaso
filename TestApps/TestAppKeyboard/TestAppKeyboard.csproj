@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
+    <PackageReference Include="Markdig.Signed" Version="0.37.0" />
     <PackageReference Include="NDesk.DBus" Version="0.15.0" />
   </ItemGroup>
 
