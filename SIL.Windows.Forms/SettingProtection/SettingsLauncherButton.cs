@@ -15,9 +15,18 @@ namespace SIL.Windows.Forms.SettingProtection
 		{
 			this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
 			InitializeComponent();
-			betterLinkLabel1.Click += OnLinkClicked;
+			_linkLabel.Click += OnLinkClicked;
 			_helper = new SettingsProtectionHelper(Container);
 			_helper.SetSettingsProtection(this, true);
+		}
+
+		/// <summary>
+		/// Exposes the link label control used for displaying the settings launcher text.
+		/// Useful for changing its color, font, etc.
+		/// </summary>
+		public Widgets.BetterLinkLabel Link
+		{
+			get { return _linkLabel; }
 		}
 
 		/// <summary>
