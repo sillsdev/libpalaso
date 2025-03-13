@@ -1,8 +1,8 @@
-﻿using SIL.Windows.Forms.Widgets;
+using SIL.Windows.Forms.Widgets;
 
-namespace SIL.Media.Tests
+namespace SIL.Media.SoundFieldControlTestApp
 {
-	partial class Form1
+	partial class MainForm
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -33,46 +33,47 @@ namespace SIL.Media.Tests
 			this.components = new System.ComponentModel.Container();
 			System.Drawing.Imaging.ImageAttributes imageAttributes1 = new System.Drawing.Imaging.ImageAttributes();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
-			this.soundFieldControl1 = new SoundFieldControl();
-			this.shortSoundFieldControl1 = new ShortSoundFieldControl();
-			this.shortSoundFieldControl2 = new ShortSoundFieldControl();
-			this.bitmapButton1 = new BitmapButton();
+			this.soundFieldControl1 = new SIL.Media.SoundFieldControl();
+			this.shortSoundFieldControl1 = new SIL.Media.ShortSoundFieldControl();
+			this.shortSoundFieldControl2 = new SIL.Media.ShortSoundFieldControl();
+			this.bitmapButton1 = new SIL.Windows.Forms.Widgets.BitmapButton();
 			this.SuspendLayout();
-			//
+			// 
 			// soundFieldControl1
-			//
+			// 
 			this.soundFieldControl1.Location = new System.Drawing.Point(44, 21);
 			this.soundFieldControl1.Name = "soundFieldControl1";
-			this.soundFieldControl1.Path = null;
+			this.soundFieldControl1.Path = "";
 			this.soundFieldControl1.Size = new System.Drawing.Size(150, 34);
 			this.soundFieldControl1.TabIndex = 0;
-			//
+			// 
 			// shortSoundFieldControl1
-			//
+			// 
 			this.shortSoundFieldControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.shortSoundFieldControl1.Location = new System.Drawing.Point(44, 92);
 			this.shortSoundFieldControl1.Name = "shortSoundFieldControl1";
-			this.shortSoundFieldControl1.Path = null;
+			this.shortSoundFieldControl1.Path = "";
 			this.shortSoundFieldControl1.PlayOnly = false;
 			this.shortSoundFieldControl1.Size = new System.Drawing.Size(328, 22);
 			this.shortSoundFieldControl1.TabIndex = 1;
 			this.shortSoundFieldControl1.Load += new System.EventHandler(this.shortSoundFieldControl1_Load);
-			//
+			// 
 			// shortSoundFieldControl2
-			//
+			// 
 			this.shortSoundFieldControl2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.shortSoundFieldControl2.Location = new System.Drawing.Point(44, 150);
 			this.shortSoundFieldControl2.Name = "shortSoundFieldControl2";
-			this.shortSoundFieldControl2.Path = null;
+			this.shortSoundFieldControl2.Path = "";
 			this.shortSoundFieldControl2.PlayOnly = false;
 			this.shortSoundFieldControl2.Size = new System.Drawing.Size(328, 25);
 			this.shortSoundFieldControl2.TabIndex = 2;
 			this.shortSoundFieldControl2.Load += new System.EventHandler(this.shortSoundFieldControl2_Load);
-			//
+			// 
 			// bitmapButton1
-			//
+			// 
 			this.bitmapButton1.BackColor = System.Drawing.Color.Transparent;
 			this.bitmapButton1.BorderColor = System.Drawing.Color.DarkBlue;
+			this.bitmapButton1.DisabledTextColor = System.Drawing.Color.DimGray;
 			this.bitmapButton1.FlatAppearance.BorderSize = 0;
 			this.bitmapButton1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.bitmapButton1.FocusRectangleEnabled = true;
@@ -84,7 +85,7 @@ namespace SIL.Media.Tests
 			this.bitmapButton1.ImageFocused = null;
 			this.bitmapButton1.ImageInactive = null;
 			this.bitmapButton1.ImageMouseOver = null;
-			this.bitmapButton1.ImageNormal = global::SIL.Media.Tests.Properties.Resources.MP3_PLAYER;
+			this.bitmapButton1.ImageNormal = global::SIL.Media.SoundFieldControlTestApp.Properties.Resources.MP3_PLAYER;
 			this.bitmapButton1.ImagePressed = null;
 			this.bitmapButton1.InnerBorderColor = System.Drawing.Color.Transparent;
 			this.bitmapButton1.InnerBorderColor_Focus = System.Drawing.Color.LightBlue;
@@ -96,10 +97,11 @@ namespace SIL.Media.Tests
 			this.bitmapButton1.StretchImage = false;
 			this.bitmapButton1.TabIndex = 3;
 			this.bitmapButton1.TextDropShadow = true;
+			this.bitmapButton1.TextWordWrap = false;
 			this.bitmapButton1.UseVisualStyleBackColor = false;
-			//
-			// Form1
-			//
+			// 
+			// MainForm
+			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(461, 264);
@@ -109,7 +111,7 @@ namespace SIL.Media.Tests
 			this.Controls.Add(this.soundFieldControl1);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "Form1";
+			this.Name = "MainForm";
 			this.Text = "SIL.Media Sample App";
 			this.ResumeLayout(false);
 
