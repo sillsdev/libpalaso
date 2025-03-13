@@ -349,7 +349,7 @@ namespace SIL.Windows.Forms.TestApp
 			this._btnShowFadingMessage.TabIndex = 14;
 			this._btnShowFadingMessage.Text = "Show Fading Message";
 			this._btnShowFadingMessage.UseVisualStyleBackColor = true;
-			this._btnShowFadingMessage.Click += new System.EventHandler(this._btnShowFadingMessage_Click);
+			this._btnShowFadingMessage.Click += new System.EventHandler(this.OnShowFadingMessageClicked);
 			// 
 			// btnRefRange
 			// 

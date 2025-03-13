@@ -147,9 +147,10 @@ namespace SIL.Windows.Forms.Scripture
 		#region Properties
 
 		[Browsable(true)]
+		[PublicAPI]
 		public bool AllowVerseSegments
 		{
-			get { return allowVerseSegments; }
+			get => allowVerseSegments;
 			set
 			{
 				if (allowVerseSegments == value)
@@ -294,12 +295,10 @@ namespace SIL.Windows.Forms.Scripture
 		/// <summary> 
 		/// Set tooltip for the book selector.
 		/// </summary>
+		[PublicAPI]
 		public string ToolTipBookSelector
 		{
-			set
-			{
-				this.uiToolTip.SetToolTip(this.uiBook, value);
-			}
+			set => this.uiToolTip.SetToolTip(this.uiBook, value);
 		}
 
 		[PublicAPI]
@@ -613,13 +612,12 @@ namespace SIL.Windows.Forms.Scripture
 					tempList.Add(book);
 			}
 
-			var currentItems = uiBook.Items.Cast<BookListItem>();
 			// Only update list if we need too. (Improves display of Dropdown list on Linux)
-			if (tempList.Except(currentItems, new BookListItemComparer()).Any() || currentItems.Except(tempList, new BookListItemComparer()).Any())
+			if (!tempList.SequenceEqual(uiBook.Items.Cast<BookListItem>(), new BookListItemComparer()))
 			{
 				uiBook.BeginUpdate();
 				uiBook.Items.Clear();
-				uiBook.Items.AddRange(tempList.ToArray());
+				uiBook.Items.AddRange(tempList.Cast<object>().ToArray());
 				//ensure correct list selection?
 				uiBook.EndUpdate();
 				uiBook.Refresh();
@@ -629,6 +627,7 @@ namespace SIL.Windows.Forms.Scripture
 				if (Platform.IsMono && uiBook.DroppedDown)
 				{
 					FieldInfo listBoxControlField = typeof(ComboBox).GetField("listbox_ctrl", BindingFlags.Instance | BindingFlags.NonPublic);
+					Debug.Assert(listBoxControlField != null, "listbox_ctrl maybe got renamed!");
 					Control listBoxControl = (Control)listBoxControlField.GetValue(uiBook);
 					MethodInfo setTopItemMethod = listBoxControl.GetType().GetMethod("SetTopItem", BindingFlags.Instance | BindingFlags.Public);
 					setTopItemMethod.Invoke(listBoxControl, new object[] { 0 });

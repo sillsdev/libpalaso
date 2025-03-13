@@ -33,7 +33,8 @@ namespace SIL.Windows.Forms.TestApp
 			scrPsgTo.VerseControl.VerseRefChanged += ScrPassageChanged;
 			scrPsgFrom.VerseControl.VerseRefChanged += ScrPassageChanged;
 
-			//scrPsgFrom.VerseControl.BooksPresentSet = scrPsgTo.VerseControl.BooksPresentSet = bookSet;
+			scrPsgFrom.VerseControl.BooksPresentSet = scrPsgTo.VerseControl.BooksPresentSet =
+				new BookSet(1, MultilingScrBooks.LastBook);
 			scrPsgFrom.VerseControl.ShowEmptyBooks = false;
 			scrPsgTo.VerseControl.ShowEmptyBooks = false;
 			scrPsgFrom.VerseControl.VerseRef = new VerseRef(001001001, m_versification);
