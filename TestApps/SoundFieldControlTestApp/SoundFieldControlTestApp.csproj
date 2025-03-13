@@ -16,6 +16,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\MP3 PLAYER.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\MP3 PLAYER.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\SIL.Media\SIL.Media.csproj" />
     <ProjectReference Include="..\..\SIL.Windows.Forms\SIL.Windows.Forms.csproj" />
   </ItemGroup>
@@ -33,11 +43,5 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Resources\MP3 PLAYER.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>
