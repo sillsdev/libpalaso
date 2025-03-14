@@ -69,14 +69,12 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 						break;
 					case KeymanVersion.Keyman6:
 						var keymanLink = new KeymanLink.KeymanLink();
-							if (keymanLink.Initialize())
-							{
-								if (keymanLink.Keyboards != null && keymanLink.Keyboards.Length > 0)
-								{
-									return true;
-								}
-							}
-							break;
+						if (keymanLink.Initialize())
+						{
+							if (keymanLink.Keyboards != null && keymanLink.Keyboards.Length > 0)
+								return true;
+						}
+						break;
 					case KeymanVersion.NotInstalled:
 						return false;
 					default:
@@ -115,7 +113,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			// rest of the adaptor's lifetime
 			try
 			{
-				var keyman10 = new KeymanClass();
+				_ = new KeymanClass();
 				return KeymanVersion.Keyman10;
 			}
 			catch (COMException)
@@ -124,7 +122,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			}
 			try
 			{
-				var keyman = new TavultesoftKeymanClass();
+				_ = new TavultesoftKeymanClass();
 				return KeymanVersion.Keyman7to9;
 			}
 			catch (COMException)
@@ -133,7 +131,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			}
 			try
 			{
-				var keymanLink = new KeymanLink.KeymanLink();
+				_ = new KeymanLink.KeymanLink();
 				return KeymanVersion.Keyman6;
 			}
 			catch (COMException)
@@ -245,7 +243,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				if (keymanKey == null)
 					return null;
 
-				int[] versions = {9, 8, 7, 6, 5};
+				int[] versions = { 9, 8, 7, 6, 5 };
 				foreach (var vers in versions)
 				{
 					using (var rkApplication = keymanKey.OpenSubKey($"{vers}.0", false))
@@ -257,7 +255,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 								if (sKey == key)
 								{
 									version = vers;
-									return (string) rkApplication.GetValue(sKey);
+									return (string)rkApplication.GetValue(sKey);
 								}
 							}
 						}
@@ -280,12 +278,11 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					};
 				case KeymanVersion.Keyman7to9:
 				case KeymanVersion.Keyman6:
-				return () =>
-				{
-					string args;
-					var setupApp = GetKeyboardSetupApplication(out args);
-					Process.Start(setupApp, args);
-				};
+					return () =>
+					{
+						var setupApp = GetKeyboardSetupApplication(out var args);
+						Process.Start(setupApp, args);
+					};
 				default:
 					throw new NotSupportedException($"No keyboard setup action defined for keyman version {InstalledKeymanVersion}");
 			}

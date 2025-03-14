@@ -86,8 +86,6 @@ namespace SIL.Windows.Forms.Proxy
 		/// <returns></returns>
 		public static ICredentials GetCredentials(bool doTryStoredCredentials)
 		{
-			ProxyCredentialSettings settings = new ProxyCredentialSettings();
-
 			using (var dlg = new ProxyCredentialsRequestDialog())
 			{
 				string userName=string.Empty;
