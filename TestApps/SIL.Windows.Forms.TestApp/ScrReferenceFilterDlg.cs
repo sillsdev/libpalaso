@@ -1,3 +1,5 @@
+// Copyright (c) 2025 SIL Global
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -27,7 +29,7 @@ namespace SIL.Windows.Forms.TestApp
 		/// Initializes a new instance of the <see cref="T:ScrReferenceFilterDlg"/> class.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-        internal ScrReferenceFilterDlg()
+		internal ScrReferenceFilterDlg()
 		{
 			InitializeComponent();
 			scrPsgTo.VerseControl.VerseRefChanged += ScrPassageChanged;
@@ -43,14 +45,16 @@ namespace SIL.Windows.Forms.TestApp
 			scrPsgFrom.VerseControl.TabKeyPressedInVerseField += HandleTabKeyInVerseField;
 			scrPsgTo.VerseControl.TabKeyPressedInVerseField += HandleTabKeyInVerseField;
 
+			scrPsgTo.VerseControl.SetContextMenuLabels("Simulated Paratext Override of Copy",
+				"Simulated Paratext Override of Paste");
+
 			m_origWarningLabelColor = m_lblInvalidReference.ForeColor;
 			m_initialDelay = m_timerWarning.Interval;
 		}
 
 		private void HandleTabKeyInVerseField(object sender, KeyEventArgs e)
 		{
-			ToolStripVerseControl controlToFocus = sender == scrPsgFrom.VerseControl ?
-				scrPsgTo : scrPsgFrom;
+			var controlToFocus = sender == scrPsgFrom.VerseControl ? scrPsgTo : scrPsgFrom;
 			controlToFocus.Focus();
 			e.SuppressKeyPress = true;
 		}
@@ -59,7 +63,7 @@ namespace SIL.Windows.Forms.TestApp
 		#region Event handlers
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Handles leaving the to or from passage
+		/// Handles leaving the "to" or "from" passage
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private void OnScrPassageLeave(object sender, EventArgs e)

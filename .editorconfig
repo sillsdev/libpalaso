@@ -17,6 +17,10 @@ max_line_length = 98
 indent_style = tab
 tab_width = 4
 
+# Disable trimming for designer-generated files to avoid churn
+[*.Designer.cs]
+trim_trailing_whitespace = false
+
 # Settings Visual Studio uses for generated files
 [*.{csproj,resx,settings,targets,vcxproj*,vdproj,xml,yml,props,md}]
 indent_style = space

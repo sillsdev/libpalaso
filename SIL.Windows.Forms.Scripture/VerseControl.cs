@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
+using L10NSharp;
 using SIL.PlatformUtilities;
 using SIL.Scripture;
 using SIL.Extensions;
@@ -469,39 +470,33 @@ namespace SIL.Windows.Forms.Scripture
 		/// </summary>
 		private void OnVerseRefChanged(PropertyChangedEventArgs e)
 		{
-			if (VerseRefChanged != null)
-				VerseRefChanged(this, e);
+			VerseRefChanged?.Invoke(this, e);
 		}
 
 		private void OnBooksPresentChanged(PropertyChangedEventArgs e)
 		{
 			InitializeBooks();
-			if (BooksPresentChanged != null)
-				BooksPresentChanged(this, e);
+			BooksPresentChanged?.Invoke(this, e);
 		}
 
 		private void OnInvalidBook(EventArgs e)
 		{
-			if (InvalidBookEntered != null)
-				InvalidBookEntered(this, e);
+			InvalidBookEntered?.Invoke(this, e);
 		}
 
 		private void OnInvalidReference()
 		{
-			if (InvalidReferenceEntered != null)
-				InvalidReferenceEntered(this, EventArgs.Empty);
+			InvalidReferenceEntered?.Invoke(this, EventArgs.Empty);
 		}
 
 		private void OnInvalidPastedReference()
 		{
-			if (InvalidReferencePasted != null)
-				InvalidReferencePasted(this, EventArgs.Empty);
+			InvalidReferencePasted?.Invoke(this, EventArgs.Empty);
 		}
 
 		private void OnTextBoxGotFocus()
 		{
-			if (TextBoxGotFocus != null)
-				TextBoxGotFocus(this, EventArgs.Empty);
+			TextBoxGotFocus?.Invoke(this, EventArgs.Empty);
 		}
 		#endregion
 
@@ -1087,7 +1082,8 @@ namespace SIL.Windows.Forms.Scripture
 		private void uiVerse_Enter(object sender, EventArgs e)
 		{
 			uiVerse.SelectAll();
-			uiVerse.TreatTabAsInputKey = TabKeyPressedInVerseField != null;
+			uiVerse.OtherKeysToTreatAsInputKeys = TabKeyPressedInVerseField == null ? null :
+					new [] {Keys.Tab};
 		}
 
 		private void uiVerse_KeyDown(object sender, KeyEventArgs e)
@@ -1248,7 +1244,7 @@ namespace SIL.Windows.Forms.Scripture
 			#region IEqualityComparer[BookListItem] implementation
 			public bool Equals(BookListItem x, BookListItem y)
 			{
-				return (x.Abbreviation == y.Abbreviation && x.BaseName == y.BaseName);
+				return x.Abbreviation == y.Abbreviation && x.BaseName == y.BaseName;
 			}
 
 			public int GetHashCode(BookListItem obj)
@@ -1271,6 +1267,53 @@ namespace SIL.Windows.Forms.Scripture
 			uiVerse.SelectAll();
 		}
 
+		private class VCContextMenu : ContextMenu
+		{
+			private const int kCopy = 0;
+			private const int kPaste = 1;
+
+			public VCContextMenu(EventHandler copyHandler, EventHandler pasteHandler)
+			{
+				MenuItems.Add(new MenuItem(GetLocalizedMenuText(kCopy), copyHandler));
+				MenuItems.Add(new MenuItem(GetLocalizedMenuText(kPaste), pasteHandler));
+			}
+
+			public MenuItem CopyMenu => MenuItems[kCopy];
+
+			public MenuItem PasteMenu => MenuItems[kPaste];
+
+			private static string GetLocalizedMenuText(int menu)
+			{
+				// Don't want to break Paratext, which uses its own localization strategy.
+				var restore = LocalizationManager.StrictInitializationMode;
+				LocalizationManager.StrictInitializationMode = false;
+				string text;
+				try
+				{
+					switch (menu)
+					{
+						case kCopy:
+							text = LocalizationManager.GetString("VerseControl.ContextMenu.Copy",
+								"Copy");
+
+							break;
+						case kPaste:
+							text = LocalizationManager.GetString("VerseControl.ContextMenu.Paste",
+								"Paste");
+							break;
+						default:
+							throw new ArgumentOutOfRangeException(nameof(menu));
+					}
+				}
+				finally
+				{
+					LocalizationManager.StrictInitializationMode = restore;
+				}
+
+				return text;
+			}
+		}
+
 		/// <summary>
 		/// Variant of the SafeComboBox that has a custom copy/paste context menu,
 		/// and that fires events when this context menu is opened,
@@ -1283,35 +1326,42 @@ namespace SIL.Windows.Forms.Scripture
 			public event OneArgDelegate PopUpEvent;
 			public event NoArgsDelegate CollapseEvent;
 
-			private const int COPY = 0;
-			private const int PASTE = 1;
+			private readonly VCContextMenu _contextMenu;
 
 			public VCSafeComboBox()
 			{
-				ContextMenu contextMenu = new ContextMenu();
-				contextMenu.MenuItems.Add("Copy", (s, e) => CopyEvent?.Invoke());
-				contextMenu.MenuItems.Add("Paste", (s, e) => PasteEvent?.Invoke());
-				contextMenu.Popup += PopUpContextMenu;
-				contextMenu.Collapse += (s, e) => CollapseEvent?.Invoke();
-				this.ContextMenu = contextMenu;
+				_contextMenu = new VCContextMenu((s, e) => CopyEvent?.Invoke(),
+					(s, e) => PasteEvent?.Invoke());
+				_contextMenu.Popup += PopUpContextMenu;
+				_contextMenu.Collapse += (s, e) => CollapseEvent?.Invoke();
+			}
+
+			protected override void OnHandleCreated(EventArgs e)
+			{
+				base.OnHandleCreated(e);
+				ContextMenu = _contextMenu;
 			}
 
 			private void PopUpContextMenu(Object s, EventArgs e)
 			{
-				this.ContextMenu.MenuItems[PASTE].Enabled = false;
+				_contextMenu.PasteMenu.Enabled = false;
 
 				PopUpEvent?.Invoke(this);
 			}
 
 			public void EnablePaste()
 			{
-				this.ContextMenu.MenuItems[PASTE].Enabled = true;
+				_contextMenu.PasteMenu.Enabled = true;
 			}
 
+			/// <summary>
+			/// Gets or sets the text for the copy and paste menu items in the context menu. This
+			/// is mainly intended to allow for localization for clients that do not use L10nSharp.
+			/// </summary>
 			public void SetContextMenuLabels(string copyLabel, string pasteLabel)
 			{
-				this.ContextMenu.MenuItems[COPY].Text = copyLabel;
-				this.ContextMenu.MenuItems[PASTE].Text = pasteLabel;
+				_contextMenu.CopyMenu.Text = copyLabel;
+				_contextMenu.PasteMenu.Text = pasteLabel;
 			}
 		}
 
@@ -1328,42 +1378,39 @@ namespace SIL.Windows.Forms.Scripture
 			public event OneArgDelegate PopUpEvent;
 			public event NoArgsDelegate CollapseEvent;
 
-			private const int COPY = 0;
-			private const int PASTE = 1;
+			private readonly VCContextMenu _contextMenu;
 
 			public VCEnterTextBox()
 			{
-				ContextMenu contextMenu = new ContextMenu();
-				contextMenu.MenuItems.Add("Copy", (s, e) => CopyEvent?.Invoke());
-				contextMenu.MenuItems.Add("Paste", (s, e) => PasteEvent?.Invoke());
-				contextMenu.Popup += PopUpContextMenu;
-				contextMenu.Collapse += (s, e) => CollapseEvent?.Invoke();
-				this.ContextMenu = contextMenu;
+				_contextMenu = new VCContextMenu((s, e) => CopyEvent?.Invoke(),
+					(s, e) => PasteEvent?.Invoke());
+				_contextMenu.Popup += PopUpContextMenu;
+				_contextMenu.Collapse += (s, e) => CollapseEvent?.Invoke();
 			}
 
-			public bool TreatTabAsInputKey { get; set; }
+			protected override void OnHandleCreated(EventArgs e)
+			{
+				base.OnHandleCreated(e);
+				ContextMenu = _contextMenu;
+			}
+
 
 			private void PopUpContextMenu(Object s, EventArgs e)
 			{
-				this.ContextMenu.MenuItems[PASTE].Enabled = false;
+				_contextMenu.PasteMenu.Enabled = false;
 
 				PopUpEvent?.Invoke(this);
 			}
 
 			public void EnablePaste()
 			{
-				this.ContextMenu.MenuItems[PASTE].Enabled = true;
+				_contextMenu.PasteMenu.Enabled = true;
 			}
 
 			public void SetContextMenuLabels(string copyLabel, string pasteLabel)
 			{
-				this.ContextMenu.MenuItems[COPY].Text = copyLabel;
-				this.ContextMenu.MenuItems[PASTE].Text = pasteLabel;
-			}
-
-			protected override bool IsInputKey(Keys key)
-			{
-				return key == Keys.Tab && TreatTabAsInputKey || base.IsInputKey(key);
+				_contextMenu.CopyMenu.Text = copyLabel;
+				_contextMenu.PasteMenu.Text = pasteLabel;
 			}
 		}
 	}

@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Added ContributorsListControl.Initialize method to allow the model to be set later when using the (existing) parameterless constructor in Designer.
 - [SIL.Windows.Forms] In class SettingsLauncherButton, added property Link to expose the link label. This enables changing its color, font, etc.
 - [SIL.Windows.Forms.Scripture] Added VerseControl.TabKeyPressedInVerseField event to VerseControl to support tabbing out of the verse field of a VerseControl into the next control in the tab order rather than cycling back to the book field.
+- SIL.Windows.Forms Added OtherKeysToTreatAsInputKeys property to EnterTextBox.
 
 ### Changed
 
