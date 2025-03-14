@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms.Design;
+using System.Windows.Forms.Design;
 using System.Windows.Forms;
 
 namespace SIL.Windows.Forms.Scripture
@@ -9,14 +9,10 @@ namespace SIL.Windows.Forms.Scripture
 		| ToolStripItemDesignerAvailability.MenuStrip)]
 	public class ToolStripVerseControl : ToolStripControlHost
 	{
-		public ToolStripVerseControl()
-			: base(new VerseControl())
+		public ToolStripVerseControl() : base(new VerseControl())
 		{
 		}
 
-		public VerseControl VerseControl
-		{
-			get { return Control as VerseControl; }
-		}
+		public VerseControl VerseControl => Control as VerseControl;
 	}
 }
