@@ -18,7 +18,7 @@ indent_style = tab
 tab_width = 4
 
 # Disable trimming for designer-generated files to avoid churn
-[*.Designer.cs]
+[*.{Designer.cs,resx}]
 trim_trailing_whitespace = false
 
 # Settings Visual Studio uses for generated files
