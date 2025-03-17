@@ -947,22 +947,22 @@ namespace SIL.Windows.Forms.Scripture
 
 		private void AdvanceToLastChapterLastVerse()
 		{
-			IScrVerseRef vref = curRef.Create(uiBook.Text, "1", "1");
-			vref.ChapterNum = vref.LastChapter;
-			vref.VerseNum = vref.LastVerse;
-			vref.AdvanceToLastSegment();
-			uiChapter.Text = vref.Chapter;
-			uiVerse.Text = vref.Verse;
-			curRef = vref;
+			IScrVerseRef vRef = curRef.Create(uiBook.Text, "1", "1");
+			vRef.ChapterNum = vRef.LastChapter;
+			vRef.VerseNum = vRef.LastVerse;
+			vRef.AdvanceToLastSegment();
+			uiChapter.Text = vRef.Chapter;
+			uiVerse.Text = vRef.Verse;
+			curRef = vRef;
 		}
 
 		private void AdvanceToLastVerse()
 		{
-			IScrVerseRef vref = curRef.Create(uiBook.Text, uiChapter.Text, "1");
-			vref.VerseNum = vref.LastVerse;
-			vref.AdvanceToLastSegment();
-			uiVerse.Text = vref.Verse;
-			curRef = vref;
+			IScrVerseRef vRef = curRef.Create(uiBook.Text, uiChapter.Text, "1");
+			vRef.VerseNum = vRef.LastVerse;
+			vRef.AdvanceToLastSegment();
+			uiVerse.Text = vRef.Verse;
+			curRef = vRef;
 		}
 
 		private void Revert()
@@ -1090,15 +1090,15 @@ namespace SIL.Windows.Forms.Scripture
 		{
 			if (e.KeyCode == Keys.Tab)
 			{
-				TabKeyPressedInVerseField?.Invoke(this, e);
-				if (e.SuppressKeyPress)
+				if (TabKeyPressedInVerseField != null)
 				{
-					e.Handled = true;
-					return;
+					TabKeyPressedInVerseField.Invoke(this, e);
+					if (e.SuppressKeyPress)
+						e.Handled = true;
 				}
 			}
-
-			if (AcceptOnEnter(e)) uiVerse.SelectAll();
+			else if (AcceptOnEnter(e))
+				uiVerse.SelectAll();
 		}
 
 		private void uiVerse_KeyPress(object sender, KeyPressEventArgs e)
@@ -1267,18 +1267,19 @@ namespace SIL.Windows.Forms.Scripture
 			uiVerse.SelectAll();
 		}
 
-		private class VCContextMenu : ContextMenu
+		/// <summary>
+		/// ContextMenu with internationalized copy and paste menu items.
+		/// </summary>
+		private class CopyPasteContextMenu : ContextMenu
 		{
 			private const int kCopy = 0;
 			private const int kPaste = 1;
 
-			public VCContextMenu(EventHandler copyHandler, EventHandler pasteHandler)
+			public CopyPasteContextMenu(EventHandler copyHandler, EventHandler pasteHandler)
 			{
 				MenuItems.Add(new MenuItem(GetLocalizedMenuText(kCopy), copyHandler));
 				MenuItems.Add(new MenuItem(GetLocalizedMenuText(kPaste), pasteHandler));
 			}
-
-			public MenuItem CopyMenu => MenuItems[kCopy];
 
 			public MenuItem PasteMenu => MenuItems[kPaste];
 
@@ -1312,6 +1313,16 @@ namespace SIL.Windows.Forms.Scripture
 
 				return text;
 			}
+
+			/// <summary>
+			/// Gets or sets the text for the copy and paste menu items. This is mainly intended to
+			/// allow for localization for clients that do not use L10nSharp.
+			/// </summary>
+			public void SetMenuLabels(string copyLabel, string pasteLabel)
+			{
+				MenuItems[kCopy].Text = copyLabel;
+				PasteMenu.Text = pasteLabel;
+			}
 		}
 
 		/// <summary>
@@ -1326,11 +1337,11 @@ namespace SIL.Windows.Forms.Scripture
 			public event OneArgDelegate PopUpEvent;
 			public event NoArgsDelegate CollapseEvent;
 
-			private readonly VCContextMenu _contextMenu;
+			private readonly CopyPasteContextMenu _contextMenu;
 
 			public VCSafeComboBox()
 			{
-				_contextMenu = new VCContextMenu((s, e) => CopyEvent?.Invoke(),
+				_contextMenu = new CopyPasteContextMenu((s, e) => CopyEvent?.Invoke(),
 					(s, e) => PasteEvent?.Invoke());
 				_contextMenu.Popup += PopUpContextMenu;
 				_contextMenu.Collapse += (s, e) => CollapseEvent?.Invoke();
@@ -1360,8 +1371,7 @@ namespace SIL.Windows.Forms.Scripture
 			/// </summary>
 			public void SetContextMenuLabels(string copyLabel, string pasteLabel)
 			{
-				_contextMenu.CopyMenu.Text = copyLabel;
-				_contextMenu.PasteMenu.Text = pasteLabel;
+				_contextMenu.SetMenuLabels(copyLabel, pasteLabel);
 			}
 		}
 
@@ -1369,7 +1379,6 @@ namespace SIL.Windows.Forms.Scripture
 		/// Variant of the EnterTextBox that has a custom copy/paste context menu,
 		/// and that fires events when this context menu is opened,
 		/// and when a copy/paste action is triggered from it.
-		/// Also allows for the possibility of treating the Tab key as an input key.
 		/// </summary>
 		private class VCEnterTextBox : EnterTextBox
 		{
@@ -1378,11 +1387,11 @@ namespace SIL.Windows.Forms.Scripture
 			public event OneArgDelegate PopUpEvent;
 			public event NoArgsDelegate CollapseEvent;
 
-			private readonly VCContextMenu _contextMenu;
+			private readonly CopyPasteContextMenu _contextMenu;
 
 			public VCEnterTextBox()
 			{
-				_contextMenu = new VCContextMenu((s, e) => CopyEvent?.Invoke(),
+				_contextMenu = new CopyPasteContextMenu((s, e) => CopyEvent?.Invoke(),
 					(s, e) => PasteEvent?.Invoke());
 				_contextMenu.Popup += PopUpContextMenu;
 				_contextMenu.Collapse += (s, e) => CollapseEvent?.Invoke();
@@ -1409,8 +1418,7 @@ namespace SIL.Windows.Forms.Scripture
 
 			public void SetContextMenuLabels(string copyLabel, string pasteLabel)
 			{
-				_contextMenu.CopyMenu.Text = copyLabel;
-				_contextMenu.PasteMenu.Text = pasteLabel;
+				_contextMenu.SetMenuLabels(copyLabel, pasteLabel);
 			}
 		}
 	}
