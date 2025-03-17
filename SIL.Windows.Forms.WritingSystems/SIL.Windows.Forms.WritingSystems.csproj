@@ -14,8 +14,9 @@
     <PackageReference Include="JetBrains.Annotations" Version="2024.2.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Markdig.Signed" Version="0.37.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="3.1.0" PrivateAssets="All" />
     <PackageReference Include="System.Globalization" Version="4.3.0" />
   </ItemGroup>
 
