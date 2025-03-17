@@ -62,9 +62,17 @@ namespace SIL.Windows.Forms.Scripture
 		/// <summary>Fired when any textbox for the reference gets focus</summary>
 		public event EventHandler TextBoxGotFocus;
 		/// <summary>
-		/// Fired when the user presses Tab while in the verse portion of the control.
+		/// Fired when the user presses Tab while in the verse portion of the control. This will
+		/// fire even if the chapter or verse fields have values that are out of range for the
+		/// selected book, but if the handler causes this control to lose focus, those values will
+		/// be constrained to the valid ranges for the book/chapter.
 		/// </summary>
 		public event EventHandler<KeyEventArgs> TabKeyPressedInVerseField;
+		/// <summary>
+		/// Fired when the user presses Shift-Tab while in the book portion of the control iff book
+		/// is valid.
+		/// </summary>
+		public event EventHandler<KeyEventArgs> ShiftTabPressedInBookField;
 
 		// Used to temporarily ignore changes in the index of the book control
 		// when it is being updated internally
@@ -356,6 +364,15 @@ namespace SIL.Windows.Forms.Scripture
 		}
 
 		/// <summary>
+		/// Move cursor to verse field.
+		/// </summary>
+		[PublicAPI]
+		public void GoToVerseField()
+		{
+			uiVerse.Focus();
+		}
+
+		/// <summary>
 		/// Tries to move to Chapter 1 verse 1 of the previous book.
 		/// </summary>
 		/// <returns>true if the move was possible</returns>
@@ -407,9 +424,9 @@ namespace SIL.Windows.Forms.Scripture
 
 		#region Control Event Methods
 		/// <summary>
-		/// The verse control may be used in forms that have CTRL-V as a shortcut key on a menu item. Since the short
-		/// cut keys are processed before the control will get a KeyDown, ProcessCmdKey needs to be overwritten to
-		/// get the key first.
+		/// The verse control may be used in forms that have CTRL-V as a shortcut key on a menu
+		/// item. Since the shortcut keys are processed before the control will get a KeyDown,
+		/// ProcessCmdKey needs to be overwritten to get the key first.
 		/// </summary>
 		/// <param name="msg"></param>
 		/// <param name="keyData"></param>
@@ -428,6 +445,13 @@ namespace SIL.Windows.Forms.Scripture
 			{
 				PortableClipboard.SetText(VerseRef.ToString());
 				return true;
+			}
+
+			if (keyData == (Keys.Shift | Keys.Tab) && uiBook.ContainsFocus &&
+			    ShiftTabPressedInBookField != null && IsBook())
+			{
+				ShiftTabPressedInBookField.Invoke(this, new KeyEventArgs(keyData));
+				return true; // Mark as handled
 			}
 
 			return base.ProcessCmdKey(ref msg, keyData);
@@ -778,11 +802,13 @@ namespace SIL.Windows.Forms.Scripture
 
 		private void uiBook_KeyDown(object sender, KeyEventArgs e)
 		{
-			// Don't select all On Linux on Enter as combo text remains selected
-			// when focus moved to the TextForm.
 			if (IsBook())
+			{
+				// Don't select all On Linux on Enter as combo text remains selected
+				// when focus moved to the TextForm.
 				if (AcceptOnEnter(e) && !Platform.IsLinux)
 					uiBook.SelectAll();
+			}
 		}
 
 		private string GetCleanClipboardText()

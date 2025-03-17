@@ -30,8 +30,7 @@ namespace SIL.Windows.Forms.TestApp
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			this.btnOk = new System.Windows.Forms.Button();
-			this.btnCancel = new System.Windows.Forms.Button();
+			this.btnClose = new System.Windows.Forms.Button();
 			this.l10NSharpExtender1 = new L10NSharp.UI.L10NSharpExtender(this.components);
 			this.toolStripFrom = new System.Windows.Forms.ToolStrip();
 			this.toolStripLabelFrom = new System.Windows.Forms.ToolStripLabel();
@@ -39,41 +38,26 @@ namespace SIL.Windows.Forms.TestApp
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
 			this.toolStripLabelTo = new System.Windows.Forms.ToolStripLabel();
 			this.scrPsgTo = new SIL.Windows.Forms.Scripture.ToolStripVerseControl();
-			this.m_lblInvalidReference = new System.Windows.Forms.Label();
-			this.m_timerWarning = new System.Windows.Forms.Timer(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.l10NSharpExtender1)).BeginInit();
 			this.toolStripFrom.SuspendLayout();
 			this.toolStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// btnOk
+			// btnClose
 			// 
-			this.btnOk.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-			this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.l10NSharpExtender1.SetLocalizableToolTip(this.btnOk, null);
-			this.l10NSharpExtender1.SetLocalizationComment(this.btnOk, null);
-			this.l10NSharpExtender1.SetLocalizingId(this.btnOk, "Common.OK");
-			this.btnOk.Location = new System.Drawing.Point(96, 91);
-			this.btnOk.Name = "btnOk";
-			this.btnOk.Size = new System.Drawing.Size(75, 23);
-			this.btnOk.TabIndex = 5;
-			this.btnOk.Text = "OK";
-			this.btnOk.UseVisualStyleBackColor = true;
-			// 
-			// btnCancel
-			// 
-			this.btnCancel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnCancel.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-			this.l10NSharpExtender1.SetLocalizableToolTip(this.btnCancel, null);
-			this.l10NSharpExtender1.SetLocalizationComment(this.btnCancel, null);
-			this.l10NSharpExtender1.SetLocalizingId(this.btnCancel, "Common.Cancel");
-			this.btnCancel.Location = new System.Drawing.Point(177, 91);
-			this.btnCancel.Name = "btnCancel";
-			this.btnCancel.Size = new System.Drawing.Size(75, 23);
-			this.btnCancel.TabIndex = 6;
-			this.btnCancel.Text = "Cancel";
-			this.btnCancel.UseVisualStyleBackColor = true;
+			this.btnClose.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+			this.btnClose.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.btnClose.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+			this.l10NSharpExtender1.SetLocalizableToolTip(this.btnClose, null);
+			this.l10NSharpExtender1.SetLocalizationComment(this.btnClose, null);
+			this.l10NSharpExtender1.SetLocalizationPriority(this.btnClose, L10NSharp.LocalizationPriority.NotLocalizable);
+			this.l10NSharpExtender1.SetLocalizingId(this.btnClose, "ScrReferenceFilterDlg.btnClose");
+			this.btnClose.Location = new System.Drawing.Point(178, 78);
+			this.btnClose.Name = "btnClose";
+			this.btnClose.Size = new System.Drawing.Size(75, 23);
+			this.btnClose.TabIndex = 6;
+			this.btnClose.Text = "Close";
+			this.btnClose.UseVisualStyleBackColor = true;
 			// 
 			// l10NSharpExtender1
 			// 
@@ -152,36 +136,16 @@ namespace SIL.Windows.Forms.TestApp
 			this.scrPsgTo.Size = new System.Drawing.Size(191, 24);
 			this.scrPsgTo.Leave += new System.EventHandler(this.OnScrPassageLeave);
 			// 
-			// m_lblInvalidReference
-			// 
-			this.m_lblInvalidReference.AutoSize = true;
-			this.m_lblInvalidReference.ForeColor = System.Drawing.Color.Red;
-			this.l10NSharpExtender1.SetLocalizableToolTip(this.m_lblInvalidReference, null);
-			this.l10NSharpExtender1.SetLocalizationComment(this.m_lblInvalidReference, null);
-			this.l10NSharpExtender1.SetLocalizingId(this.m_lblInvalidReference, "ScrReferenceFilterDlg.m_lblInvalidReference");
-			this.m_lblInvalidReference.Location = new System.Drawing.Point(67, 68);
-			this.m_lblInvalidReference.Name = "m_lblInvalidReference";
-			this.m_lblInvalidReference.Size = new System.Drawing.Size(131, 13);
-			this.m_lblInvalidReference.TabIndex = 9;
-			this.m_lblInvalidReference.Text = "Invalid Scripture reference";
-			this.m_lblInvalidReference.Visible = false;
-			// 
-			// m_timerWarning
-			// 
-			this.m_timerWarning.Tick += new System.EventHandler(this.ResetOkButtonAndStartToFadeWarning);
-			// 
 			// ScrReferenceFilterDlg
 			// 
-			this.AcceptButton = this.btnOk;
+			this.AcceptButton = this.btnClose;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.CancelButton = this.btnCancel;
-			this.ClientSize = new System.Drawing.Size(264, 126);
-			this.Controls.Add(this.m_lblInvalidReference);
+			this.CancelButton = this.btnClose;
+			this.ClientSize = new System.Drawing.Size(264, 114);
 			this.Controls.Add(this.toolStrip1);
 			this.Controls.Add(this.toolStripFrom);
-			this.Controls.Add(this.btnCancel);
-			this.Controls.Add(this.btnOk);
+			this.Controls.Add(this.btnClose);
 			this.l10NSharpExtender1.SetLocalizableToolTip(this, null);
 			this.l10NSharpExtender1.SetLocalizationComment(this, null);
 			this.l10NSharpExtender1.SetLocalizingId(this, "ScrReferenceFilterDlg.WindowTitle");
@@ -206,9 +170,7 @@ namespace SIL.Windows.Forms.TestApp
 		}
 
 		#endregion
-
-		private System.Windows.Forms.Button btnOk;
-		private System.Windows.Forms.Button btnCancel;
+		private System.Windows.Forms.Button btnClose;
 		private L10NSharp.UI.L10NSharpExtender l10NSharpExtender1;
 		private System.Windows.Forms.ToolStrip toolStripFrom;
 		private System.Windows.Forms.ToolStripLabel toolStripLabelFrom;
@@ -216,7 +178,5 @@ namespace SIL.Windows.Forms.TestApp
 		private System.Windows.Forms.ToolStrip toolStrip1;
 		private System.Windows.Forms.ToolStripLabel toolStripLabelTo;
 		private Windows.Forms.Scripture.ToolStripVerseControl scrPsgTo;
-		private System.Windows.Forms.Label m_lblInvalidReference;
-		private System.Windows.Forms.Timer m_timerWarning;
 	}
 }

@@ -2,8 +2,6 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.ComponentModel;
-using System.Drawing;
-using System.Media;
 using System.Windows.Forms;
 using SIL.Scripture;
 using SIL.Windows.Forms.Scripture;
@@ -18,8 +16,6 @@ namespace SIL.Windows.Forms.TestApp
 	public partial class ScrReferenceFilterDlg : Form
 	{
 		#region Data members
-		private readonly Color m_origWarningLabelColor;
-		private readonly int m_initialDelay;
 		readonly ScrVers m_versification = ScrVers.English;
 		#endregion
 
@@ -41,21 +37,34 @@ namespace SIL.Windows.Forms.TestApp
 			scrPsgTo.VerseControl.ShowEmptyBooks = false;
 			scrPsgFrom.VerseControl.VerseRef = new VerseRef(001001001, m_versification);
 			scrPsgTo.VerseControl.VerseRef = new VerseRef(066005008, m_versification);
-
+			
 			scrPsgFrom.VerseControl.TabKeyPressedInVerseField += HandleTabKeyInVerseField;
 			scrPsgTo.VerseControl.TabKeyPressedInVerseField += HandleTabKeyInVerseField;
+			scrPsgFrom.VerseControl.ShiftTabPressedInBookField += HandleShiftTabInBookField;
+			scrPsgTo.VerseControl.ShiftTabPressedInBookField += HandleShiftTabInBookField;
 
 			scrPsgTo.VerseControl.SetContextMenuLabels("Simulated Paratext Override of Copy",
 				"Simulated Paratext Override of Paste");
+		}
 
-			m_origWarningLabelColor = m_lblInvalidReference.ForeColor;
-			m_initialDelay = m_timerWarning.Interval;
+		protected override void OnShown(EventArgs e)
+		{
+			base.OnShown(e);
+
+			scrPsgFrom.VerseControl.GotoBookField();
 		}
 
 		private void HandleTabKeyInVerseField(object sender, KeyEventArgs e)
 		{
 			var controlToFocus = sender == scrPsgFrom.VerseControl ? scrPsgTo : scrPsgFrom;
 			controlToFocus.Focus();
+			e.SuppressKeyPress = true;
+		}
+
+		private void HandleShiftTabInBookField(object sender, KeyEventArgs e)
+		{
+			var controlToFocus = sender == scrPsgFrom.VerseControl ? scrPsgTo : scrPsgFrom;
+			controlToFocus.VerseControl.GoToVerseField();
 			e.SuppressKeyPress = true;
 		}
 		#endregion
@@ -69,31 +78,13 @@ namespace SIL.Windows.Forms.TestApp
 		private void OnScrPassageLeave(object sender, EventArgs e)
 		{
 			var psgCtrl = (ToolStripVerseControl)sender;
-			try
-			{
-				psgCtrl.VerseControl.AcceptData();
-				ScrPassageChanged(sender, new PropertyChangedEventArgs(psgCtrl.Name));
-			}
-			catch (Exception)
-			{
-				btnOk.DialogResult = DialogResult.None;
-				btnOk.Enabled = false;
-
-				m_timerWarning.Stop();
-				SystemSounds.Beep.Play();
-				psgCtrl.VerseControl.VerseRef = psgCtrl.VerseControl.VerseRef;
-
-				// reset variables and kick off fade operation
-				m_lblInvalidReference.ForeColor = m_origWarningLabelColor;
-				m_timerWarning.Interval = m_initialDelay;
-				m_lblInvalidReference.Show();
-				m_timerWarning.Start();
-			}
+			psgCtrl.VerseControl.AcceptData();
+			ScrPassageChanged(sender, new PropertyChangedEventArgs(psgCtrl.Name));
 		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Handles change in the to or from passage
+		/// Handles change in the "to" or "from" passage
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private void ScrPassageChanged(object sender, PropertyChangedEventArgs e)
@@ -106,58 +97,6 @@ namespace SIL.Windows.Forms.TestApp
 					scrPsgTo.VerseControl.VerseRef = scrPsgFrom.VerseControl.VerseRef.Clone();
 				else
 					scrPsgFrom.VerseControl.VerseRef = scrPsgTo.VerseControl.VerseRef.Clone();
-			}
-		}
-
-		private void ResetOkButtonAndStartToFadeWarning(object sender, EventArgs e)
-		{
-			btnOk.DialogResult = DialogResult.OK;
-			btnOk.Enabled = true;
-
-			// timer interval set to 10 to ensure smooth fading
-			m_timerWarning.Interval = 10;
-			m_timerWarning.Tick -= ResetOkButtonAndStartToFadeWarning;
-			m_timerWarning.Tick += FadeWarning;
-
-			FadeWarning(sender, e);
-		}
-
-		private void FadeWarning(object sender, EventArgs e)
-		{
-			btnOk.DialogResult = DialogResult.OK;
-			btnOk.Enabled = true;
-
-			// timer interval set to 10 to ensure smooth fading
-			m_timerWarning.Interval = 10;
-
-			int r = m_lblInvalidReference.ForeColor.R;
-			int g = m_lblInvalidReference.ForeColor.G;
-			int b = m_lblInvalidReference.ForeColor.B;
-			var back = BackColor;
-
-			if (r < back.R)
-				r++;
-			else if (r > back.R)
-				r--;
-			if (g < back.G)
-				g++;
-			else if (g > back.G)
-				g--;
-			if (b < back.B)
-				b++;
-			else if (b > back.B)
-				b--;
-
-			m_lblInvalidReference.ForeColor = Color.FromArgb(255, r, g, b);
-
-			if (r == back.R && g == back.G && b == back.B) // arrived at target
-			{
-				// fade is complete
-				m_timerWarning.Stop();
-				m_timerWarning.Tick -= FadeWarning;
-				// For next time...
-				m_timerWarning.Tick += ResetOkButtonAndStartToFadeWarning;
-				m_lblInvalidReference.Visible = false;
 			}
 		}
 		#endregion
