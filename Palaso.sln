@@ -122,6 +122,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Archiving.Tests", "SIL.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArchivingTestApp", "TestApps\ArchivingTestApp\ArchivingTestApp.csproj", "{321BB622-8185-4173-8770-742CD620BC18}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoundFieldControlTestApp", "TestApps\SoundFieldControlTestApp\SoundFieldControlTestApp.csproj", "{184C738D-DFF6-421E-832A-AD7178F166A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -308,6 +310,10 @@ Global
 		{321BB622-8185-4173-8770-742CD620BC18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{321BB622-8185-4173-8770-742CD620BC18}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{321BB622-8185-4173-8770-742CD620BC18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{184C738D-DFF6-421E-832A-AD7178F166A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{184C738D-DFF6-421E-832A-AD7178F166A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{184C738D-DFF6-421E-832A-AD7178F166A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{184C738D-DFF6-421E-832A-AD7178F166A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -320,6 +326,7 @@ Global
 		{CA8F3657-3D85-4C97-81A6-5C212627B2F6} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
 		{6407C2F9-F62D-4568-B694-7A79C72582C9} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
 		{321BB622-8185-4173-8770-742CD620BC18} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
+		{184C738D-DFF6-421E-832A-AD7178F166A2} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0915B762-D4AE-4892-BF4F-AC428A687B02}
