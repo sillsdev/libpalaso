@@ -31,7 +31,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			{
 				IetfLanguageTag.SplitVariantAndPrivateUse(variant, out newVariant, out newPrivateUse);
 			}
-			var subtagsWithoutXs = StripXs(newPrivateUse).Union(StripXs(language))
+			var subtagsWithoutXs = StripXs(language).Union(StripXs(newPrivateUse))
 				.Where(str => !string.IsNullOrEmpty(str));
 			newPrivateUse = string.Join("-", subtagsWithoutXs);
 
