@@ -171,9 +171,10 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 			item.Children = new List<WritingSystemTreeItem>(
 							from suggestion in Suggestor.GetOtherLanguageSuggestions(
 								_setupModel.WritingSystemDefinitions)
-							select (WritingSystemTreeItem) new WritingSystemCreationTreeItem(suggestion, OnClickAddCertainDefinition));
-			if(item.Children.Count()>0)
-				items.Add(item );
+							select new WritingSystemCreationTreeItem(
+								suggestion, OnClickAddCertainDefinition));
+			if (item.Children.Any())
+				items.Add(item);
 		}
 
 		private void OnClickAddCertainDefinition(WritingSystemTreeItem treeItem)
