@@ -331,13 +331,13 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		[PublicAPI]
 		public VScrollBar VScrollBar
 		{
-			get { return Controls.OfType<VScrollBar>().Select(ctrl => ctrl).FirstOrDefault(); }
+			get { return Controls.OfType<VScrollBar>().FirstOrDefault(); }
 		}
 
 		/// ------------------------------------------------------------------------------------
 		public HScrollBar HScrollBar
 		{
-			get { return Controls.OfType<HScrollBar>().Select(ctrl => ctrl).FirstOrDefault(); }
+			get { return Controls.OfType<HScrollBar>().FirstOrDefault(); }
 		}
 
 		protected Image RemoveRowImageNormal { get; set; }
@@ -352,7 +352,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 		protected int PrevRowIndex { get; set; }
 
-	    /// ------------------------------------------------------------------------------------
+		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Update the watermark when the grid scrolls.
 		/// </summary>
@@ -630,7 +630,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		protected override void OnCurrentCellDirtyStateChanged(EventArgs e)
 		{
 			if (!IsDirty)
-				IsDirty  = IsCurrentCellDirty;
+				IsDirty = IsCurrentCellDirty;
 
 			base.OnCurrentCellDirtyStateChanged(e);
 		}
