@@ -41,33 +41,43 @@ namespace SIL.DictionaryServices.Tests.Model
 				var unequalSense = new LexSense();
 				unequalSense.AddRelationTarget("rel2", "targ2");
 				return new List<ValuesToSet>
-						   {
-							   new ValuesToSet("to be", "!(to be)"),
-							   new ValuesToSet(42, 7),
-							   new ValuesToSet(
-									 new MultiText{Forms=new[]{new LanguageForm("en", "en_form", null)}},
-									 new MultiText{Forms=new[]{new LanguageForm("de", "de_form", null)}}),
-							   new ValuesToSet(
-								   new BindingList<LexSense> {sense},
-								   new BindingList<LexSense> {unequalSense}
-								   ),
-							   new ValuesToSet(
-								   new BindingList<LexVariant>{new LexVariant{EmbeddedXmlElements = new List<string>(new[]{"to", "be"})}},
-								   new BindingList<LexVariant>{new LexVariant{EmbeddedXmlElements = new List<string>(new[]{"!", "to", "be"})}}),
-							   new ValuesToSet(new BindingList<LexNote> {new LexNote("note"), new LexNote("music")}, new BindingList<LexNote> {new LexNote("take no note"), new LexNote("heavy metal")}),
-							   new ValuesToSet(
-								   new BindingList<LexPhonetic> {new LexPhonetic{EmbeddedXmlElements = new List<string>(new[]{"to", "be"})}},
-								   new BindingList<LexPhonetic> {new LexPhonetic{EmbeddedXmlElements = new List<string>(new[]{"not", "to", "be"})}}),
-							   new ValuesToSet(new BindingList<LexEtymology> { new LexEtymology("one", "eins") }, new BindingList<LexEtymology> { new LexEtymology("two", "zwei") }),
-							   new ValuesToSet(true, false),
-							   new ValuesToSet(
-									new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]{
-											new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
-											new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote())}),
-									new List<KeyValuePair<string, IPalasoDataObjectProperty>>(new[]{
-											new KeyValuePair<string, IPalasoDataObjectProperty>("three", new LexNote()),
-											new KeyValuePair<string, IPalasoDataObjectProperty>("four", new LexNote())}))
-						   };
+				{
+					new ValuesToSet("to be", "!(to be)"),
+					new ValuesToSet(42, 7),
+					new ValuesToSet(
+						new MultiText { Forms = new[] { new LanguageForm("en", "en_form", null) } },
+						new MultiText { Forms = new[] { new LanguageForm("de", "de_form", null) } }),
+					new ValuesToSet(
+						new BindingList<LexSense> { sense },
+						new BindingList<LexSense> { unequalSense }),
+					new ValuesToSet(
+						new BindingList<LexVariant> { new LexVariant { EmbeddedXmlElements = new List<string> { "to", "be" } } },
+						new BindingList<LexVariant> { new LexVariant { EmbeddedXmlElements = new List<string> { "!", "to", "be" } } }),
+					new ValuesToSet(
+						new BindingList<LexNote> { new LexNote("note"), new LexNote("music") },
+						new BindingList<LexNote> { new LexNote("take no note"), new LexNote("heavy metal") }),
+					new ValuesToSet(
+						new BindingList<LexPhonetic> { new LexPhonetic { EmbeddedXmlElements = new List<string> { "to", "be" } } },
+						new BindingList<LexPhonetic> { new LexPhonetic { EmbeddedXmlElements = new List<string> { "not", "to", "be" } } }),
+					new ValuesToSet(
+						new BindingList<LexEtymology> { new LexEtymology("one", "eins") },
+						new BindingList<LexEtymology> { new LexEtymology("two", "zwei") }),
+					new ValuesToSet(
+						new BindingList<LexField> {
+							new LexField("OneType") { Forms = new[] { new LanguageForm("en", "first", null) } },
+							new LexField("TwoType") { Forms = new[] { new LanguageForm("en", "second", null) } } },
+						new BindingList<LexField> {
+							new LexField("RedType") { Traits = new List<LexTrait> { new LexTrait("color", "red") } },
+							new LexField("BlueType") { Traits = new List<LexTrait> { new LexTrait("color", "red") } } }),
+					new ValuesToSet(true, false),
+					new ValuesToSet(
+						new List<KeyValuePair<string, IPalasoDataObjectProperty>> {
+							new KeyValuePair<string, IPalasoDataObjectProperty>("one", new LexNote()),
+							new KeyValuePair<string, IPalasoDataObjectProperty>("two", new LexNote()) },
+						new List<KeyValuePair<string, IPalasoDataObjectProperty>> {
+							new KeyValuePair<string, IPalasoDataObjectProperty>("three", new LexNote()),
+							new KeyValuePair<string, IPalasoDataObjectProperty>("four", new LexNote()) })
+				};
 			}
 		}
 
