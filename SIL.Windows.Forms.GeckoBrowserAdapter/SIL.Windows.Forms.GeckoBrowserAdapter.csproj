@@ -9,8 +9,9 @@
 
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
+    <PackageReference Include="Markdig.Signed" Version="0.37.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="3.1.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
