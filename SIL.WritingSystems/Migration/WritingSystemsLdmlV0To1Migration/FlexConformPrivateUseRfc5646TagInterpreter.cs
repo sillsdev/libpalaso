@@ -115,25 +115,13 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 		}
 
-		public string Language
-		{
-			get { return _language; }
-		}
+		public string Language => _language;
 
-		public string Script
-		{
-			get { return _script; }
-		}
+		public string Script => _script;
 
-		public string Region
-		{
-			get { return _region; }
-		}
+		public string Region => _region;
 
-		public string Variant
-		{
-			get { return _variant; }
-		}
+		public string Variant => _variant;
 	}
 
 }
