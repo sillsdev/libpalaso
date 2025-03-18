@@ -12,7 +12,7 @@ using SIL.Text;
 namespace SIL.DictionaryServices.Tests.Model
 {
 	[TestFixture]
-	public class LexEntryCloneableTests:CloneableTests<LexEntry>
+	public class LexEntryCloneableTests : CloneableTests<LexEntry>
 	{
 		public override LexEntry CreateNewCloneable()
 		{
@@ -84,7 +84,7 @@ namespace SIL.DictionaryServices.Tests.Model
 		public void Clone_ClonedEntryHasId_NewIdIsCreatedForNewEntry()
 		{
 			var entry = new LexEntry();
-			entry.LexicalForm.SetAlternative("en","form");
+			entry.LexicalForm.SetAlternative("en", "form");
 			entry.GetOrCreateId(true);
 			var entry2 = entry.Clone();
 			Assert.That(entry2.Id, Is.Not.EqualTo(entry.Id));
@@ -115,7 +115,7 @@ namespace SIL.DictionaryServices.Tests.Model
 			_sense = new LexSense();
 			_entry.Senses.Add(_sense);
 #if GlossMeaning
-			this._sense.Gloss["th"] = "sense";
+			_sense.Gloss["th"] = "sense";
 #else
 			_sense.Definition["th"] = "sense";
 #endif
@@ -272,7 +272,7 @@ namespace SIL.DictionaryServices.Tests.Model
 			sense.Definition.SetAlternative("en", "blue");
 			var entry = new LexEntry();
 			entry.Senses.Add(sense);
-			Assert.AreEqual("blue",entry.GetSomeMeaningToUseInAbsenceOfHeadWord("en"));
+			Assert.AreEqual("blue", entry.GetSomeMeaningToUseInAbsenceOfHeadWord("en"));
 		}
 
 		[Test]
@@ -293,7 +293,6 @@ namespace SIL.DictionaryServices.Tests.Model
 			Assert.AreEqual("red", entry.GetSomeMeaningToUseInAbsenceOfHeadWord("en"));
 		}
 
-
 		[Test]
 		public void GetSomeMeaningToUseInAbsenceOfHeadWord_NoDef_GivesGloss()
 		{
@@ -303,6 +302,7 @@ namespace SIL.DictionaryServices.Tests.Model
 			entry.Senses.Add(sense);
 			Assert.AreEqual("red", entry.GetSomeMeaningToUseInAbsenceOfHeadWord("en"));
 		}
+
 		[Test]
 		public void GetSomeMeaningToUseInAbsenceOfHeadWord_MultipleGlosses_GivesRequestedOne()
 		{
@@ -314,6 +314,7 @@ namespace SIL.DictionaryServices.Tests.Model
 			Assert.AreEqual("man", entry.GetSomeMeaningToUseInAbsenceOfHeadWord("en"));
 			Assert.AreEqual("homme", entry.GetSomeMeaningToUseInAbsenceOfHeadWord("fr"));
 		}
+
 		[Test]
 		public void GetSomeMeaningToUseInAbsenceOfHeadWord_NoGlossOrMeaningInLang_GivesMessage()
 		{
@@ -379,7 +380,7 @@ namespace SIL.DictionaryServices.Tests.Model
 		private void ClearSenseMeaning()
 		{
 #if GlossMeaning
-			this._sense.Gloss["th"] = string.Empty;
+			_sense.Gloss["th"] = string.Empty;
 #else
 			_sense.Definition["th"] = string.Empty;
 #endif
