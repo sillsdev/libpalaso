@@ -424,13 +424,18 @@ namespace SIL.Windows.Forms.Scripture
 
 		#region Control Event Methods
 		/// <summary>
-		/// The verse control may be used in forms that have CTRL-V as a shortcut key on a menu
-		/// item. Since the shortcut keys are processed before the control will get a KeyDown,
-		/// ProcessCmdKey needs to be overwritten to get the key first.
+		/// The verse control may be used in forms that have Ctrl-V or Ctrl-C as a shortcut key on
+		/// a menu item. Since the shortcut keys are processed before the control will get a
+		/// KeyDown, ProcessCmdKey needs to be overwritten to get the key first. Also, some clients
+		/// may need to get a chance to handle a Shift-Tab in the book field (e.g., to navigate out
+		/// of this control).
 		/// </summary>
-		/// <param name="msg"></param>
-		/// <param name="keyData"></param>
-		/// <returns>true if CTRL-V was used, otherwise base method is called</returns>
+		/// <param name="msg">A <see cref="T:System.Windows.Forms.Message" />, passed by reference,
+		/// that represents the window message to process.</param>
+		/// <param name="keyData">One of the <see cref="T:System.Windows.Forms.Keys" /> values that
+		/// represents the key to process.</param>
+		/// <returns><see langword="true" /> if the character was processed by the control;
+		/// otherwise, <see langword="false" />.</returns>
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
 			const int WM_KEYDOWN = 0x100;
