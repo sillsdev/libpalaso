@@ -122,6 +122,13 @@ namespace SIL.DictionaryServices.Tests.Lift
 				.HasSpecifiedNumberOfMatchesForXpath(xpath, 1);
 		}
 
+		private static void AssertHasMatches(
+			string xpath, LiftExportTestSessionBase session, int count)
+		{
+			AssertThatXmlIn.String(session.StringBuilder.ToString())
+				.HasSpecifiedNumberOfMatchesForXpath(xpath, count);
+		}
+
 		private static void AssertHasAtLeastOneMatch(string xpath, LiftExportTestSessionBase session)
 		{
 			AssertThatXmlIn.String(session.StringBuilder.ToString())
@@ -319,6 +326,50 @@ namespace SIL.DictionaryServices.Tests.Lift
 				//handling of comments may change, the issue has been raised on the LIFT google group
 				AssertHasOneMatch("entry/etymology/field[@type='comment']/form[@lang='en' and text='metathesis?']", session);
 			}
+		}
+
+		[Test]
+		public void EntryWith2SimpleFields()
+		{
+			using var session = new LiftExportAsFragmentTestSession();
+			var e = session.CreateItem();
+			var field1 = new LexField("theType");
+			field1.SetAlternative("en", "one");
+			e.Fields.Add(field1);
+			var field2 = new LexField("theType");
+			field2.SetAlternative("es", "dos");
+			e.Fields.Add(field2);
+			session.LiftWriter.Add(e);
+			session.LiftWriter.End();
+
+			AssertHasMatches("entry/field[@type='theType']", session, 2);
+			AssertHasOneMatch("entry/field/form[@lang='en' and text='one']", session);
+			AssertHasOneMatch("entry/field/form[@lang='es' and text='dos']", session);
+		}
+
+		[Test]
+		public void EntryWithFullField()
+		{
+			using var session = new LiftExportAsFragmentTestSession();
+			var e = session.CreateItem();
+			var field = new LexField("theType");
+			field.Traits.Add(new LexTrait("givenName", "Joe"));
+			field.Traits.Add(new LexTrait("surname", "DiMaggio"));
+			field.SetAlternative("etr", "theProtoform");
+			field.SetAlternative("en", "enForm");
+			field.SetAlternative("fr", "frForm");
+			e.Fields.Add(field);
+			session.LiftWriter.Add(e);
+			session.LiftWriter.End();
+
+			AssertHasOneMatch("entry/field[@type='theType']", session);
+			AssertHasMatches("entry/field/trait", session, 2);
+			AssertHasOneMatch("entry/field/trait[@name='givenName' and @value='Joe']", session);
+			AssertHasOneMatch("entry/field/trait[@name='surname' and @value='DiMaggio']", session);
+			AssertHasMatches("entry/field/form", session, 3);
+			AssertHasOneMatch("entry/field/form[@lang='etr' and text='theProtoform']", session);
+			AssertHasOneMatch("entry/field/form[@lang='en' and text='enForm']", session);
+			AssertHasOneMatch("entry/field/form[@lang='fr' and text='frForm']", session);
 		}
 
 		[Test]

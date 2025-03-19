@@ -179,6 +179,10 @@ namespace SIL.DictionaryServices.Lift
 			{
 				AddEtymology(etymology);
 			}
+			foreach (var field in entry.Fields)
+			{
+				AddField(field);
+			}
 			foreach (var note in entry.Notes)
 			{
 				AddNote(note);
@@ -188,15 +192,29 @@ namespace SIL.DictionaryServices.Lift
 
 		private void AddEtymology(LexEtymology etymology)
 		{
-			// Ok if MultiTextBase.IsEmpty(etymology) is true.
 			Writer.WriteStartElement("etymology");
 			// Type is required, so add the attribute even if it's empty.
 			Writer.WriteAttributeString("type", etymology.Type.Trim());
 			// Source is required, so add the attribute even if it's empty.
 			Writer.WriteAttributeString("source", etymology.Source.Trim());
 			AddMultitextGlosses(string.Empty, etymology.Gloss);
+			// Ok if MultiTextBase.IsEmpty(etymology) is true.
 			WriteCustomMultiTextField("comment", etymology.Comment);
 			AddMultitextForms(string.Empty, etymology);
+			Writer.WriteEndElement();
+		}
+
+		private void AddField(LexField field)
+		{
+			Writer.WriteStartElement("field");
+			// Type is required, so add the attribute even if it's empty.
+			Writer.WriteAttributeString("type", field.Type.Trim());
+			foreach (var trait in field.Traits)
+			{
+				WriteTrait(trait);
+			}
+			// Ok if MultiTextBase.IsEmpty(field) is true.
+			AddMultitextForms(string.Empty, field);
 			Writer.WriteEndElement();
 		}
 
