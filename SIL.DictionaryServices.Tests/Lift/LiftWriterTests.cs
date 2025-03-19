@@ -333,14 +333,14 @@ namespace SIL.DictionaryServices.Tests.Lift
 		public void EntryWith2SimpleFields()
 		{
 			using var session = new LiftExportAsFragmentTestSession();
-			var e = session.CreateItem();
+			var entry = session.CreateItem();
 			var field1 = new LexField("theType");
 			field1.SetAlternative("en", "one");
-			e.Fields.Add(field1);
+			entry.Fields.Add(field1);
 			var field2 = new LexField("theType");
 			field2.SetAlternative("es", "dos");
-			e.Fields.Add(field2);
-			session.LiftWriter.Add(e);
+			entry.Fields.Add(field2);
+			session.LiftWriter.Add(entry);
 			session.LiftWriter.End();
 
 			AssertHasMatches("entry/field[@type='theType']", session, 2);
@@ -352,21 +352,22 @@ namespace SIL.DictionaryServices.Tests.Lift
 		public void EntryWithFullField()
 		{
 			using var session = new LiftExportAsFragmentTestSession();
-			var e = session.CreateItem();
+			var entry = session.CreateItem();
 			var field = new LexField("theType");
 			field.Traits.Add(new LexTrait("givenName", "Joe"));
 			field.Traits.Add(new LexTrait("surname", "DiMaggio"));
 			field.SetAlternative("etr", "theProtoform");
 			field.SetAlternative("en", "enForm");
 			field.SetAlternative("fr", "frForm");
-			e.Fields.Add(field);
-			session.LiftWriter.Add(e);
+			entry.Fields.Add(field);
+			session.LiftWriter.Add(entry);
 			session.LiftWriter.End();
 
 			AssertHasOneMatch("entry/field[@type='theType']", session);
 			AssertHasMatches("entry/field/trait", session, 2);
 			AssertHasOneMatch("entry/field/trait[@name='givenName' and @value='Joe']", session);
-			AssertHasOneMatch("entry/field/trait[@name='surname' and @value='DiMaggio']", session);
+			AssertHasOneMatch(
+				"entry/field/trait[@name='surname' and @value='DiMaggio']", session);
 			AssertHasMatches("entry/field/form", session, 3);
 			AssertHasOneMatch("entry/field/form[@lang='etr' and text='theProtoform']", session);
 			AssertHasOneMatch("entry/field/form[@lang='en' and text='enForm']", session);
