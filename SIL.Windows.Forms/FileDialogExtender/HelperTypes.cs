@@ -1,5 +1,5 @@
 //  Copyright (c) 2006, Gustavo Franco
-//  Copyright © Decebal Mihailescu 2007-2010
+//  Copyright Â© Decebal Mihailescu 2007-2010
 
 //  Email:  gustavo_franco@hotmail.com
 //  All rights reserved.
@@ -83,8 +83,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 						_CustomCtrl = null;
 					}
 				}
-				 DestroyHandle();
-
+				DestroyHandle();
 			}
 			#endregion
 
@@ -122,7 +121,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 									if (_CustomCtrl != null && _filterIndex != i)
 									{
 										_filterIndex = i;
-										_CustomCtrl.OnFilterChanged(this as IWin32Window, i);
+										_CustomCtrl.OnFilterChanged(this, i);
 									}
 								}
 								break;
@@ -134,7 +133,6 @@ namespace SIL.Windows.Forms.FileDialogExtender
 								break;
 							case (uint)DialogChangeStatus.CDN_INCLUDEITEM:
 								break;
-
 							case (uint)DialogChangeStatus.CDN_FILEOK://0xfffffda2:
 #pragma warning disable 1690, 0414
 								//NativeMethods.SetWindowPos(_CustomCtrl._hFileDialogHandle, IntPtr.Zero,
@@ -146,9 +144,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 								break;
 #pragma warning restore 1690, 0414
 							default:
-
 								break;
-
 						}
 						break;
 					case Msg.WM_COMMAND:
