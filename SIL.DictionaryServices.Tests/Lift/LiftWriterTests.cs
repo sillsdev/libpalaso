@@ -129,7 +129,8 @@ namespace SIL.DictionaryServices.Tests.Lift
 				.HasSpecifiedNumberOfMatchesForXpath(xpath, count);
 		}
 
-		private static void AssertHasAtLeastOneMatch(string xpath, LiftExportTestSessionBase session)
+		private static void AssertHasAtLeastOneMatch(
+			string xpath, LiftExportTestSessionBase session)
 		{
 			AssertThatXmlIn.String(session.StringBuilder.ToString())
 				.HasAtLeastOneMatchForXpath(xpath);
