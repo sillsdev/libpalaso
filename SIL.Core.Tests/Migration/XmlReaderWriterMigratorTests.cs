@@ -11,7 +11,6 @@ namespace SIL.Tests.Migration
 	[TestFixture]
 	public class XmlReaderWriterMigratorTests
 	{
-
 		class MigratorForTest : XmlReaderWriterMigrationStrategy
 		{
 			public MigratorForTest(int fromVersion, int toVersion) : base(fromVersion, toVersion)
@@ -25,7 +24,8 @@ namespace SIL.Tests.Migration
 					writer.WriteStartElement("configuration");
 					writer.WriteAttributeString("version", "2");
 					reader.Read();
-				} else
+				}
+				else
 				{
 					writer.WriteNode(reader, true);
 				}
@@ -36,7 +36,7 @@ namespace SIL.Tests.Migration
 		public void Constructor_FromLessThanTo_Throws()
 		{
 			Assert.Throws<ArgumentException>(
-				() => { var migrator = new MigratorForTest(5, 4); }
+				() => { _ = new MigratorForTest(5, 4); }
 			);
 		}
 
@@ -61,6 +61,5 @@ namespace SIL.Tests.Migration
 				}
 			}
 		}
-
 	}
 }

@@ -41,7 +41,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			try
 			{
 				var kmn = new KeymanClass();
-				foreach (IKeymanLanguage kl in kmn.Languages)
+				if (kmn.Languages.Count > 0)
 				{
 					foreach (IKeymanKeyboard kb in kmn.Keyboards)
 					{
@@ -52,7 +52,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					}
 				}
 			}
-			catch(COMException)
+			catch (COMException)
 			{
 				// Not a keyman keyboard
 			}

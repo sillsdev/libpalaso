@@ -554,7 +554,6 @@ namespace SIL.Windows.Forms.ClearShare
 						}
 						else
 						{
-							Type z = item.PropertyType;
 							item.SetValue(target, CloneObject(propertyValue), null);
 							//item.SetValue(target, CloneObject<LicenseInfo>(propertyValue as LicenseInfo), null);
 						}

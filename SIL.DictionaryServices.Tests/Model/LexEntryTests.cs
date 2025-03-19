@@ -12,7 +12,7 @@ using SIL.Text;
 namespace SIL.DictionaryServices.Tests.Model
 {
 	[TestFixture]
-	public class LexEntryCloneableTests:CloneableTests<LexEntry>
+	public class LexEntryCloneableTests : CloneableTests<LexEntry>
 	{
 		public override LexEntry CreateNewCloneable()
 		{
@@ -84,7 +84,7 @@ namespace SIL.DictionaryServices.Tests.Model
 		public void Clone_ClonedEntryHasId_NewIdIsCreatedForNewEntry()
 		{
 			var entry = new LexEntry();
-			entry.LexicalForm.SetAlternative("en","form");
+			entry.LexicalForm.SetAlternative("en", "form");
 			entry.GetOrCreateId(true);
 			var entry2 = entry.Clone();
 			Assert.That(entry2.Id, Is.Not.EqualTo(entry.Id));
@@ -272,7 +272,7 @@ namespace SIL.DictionaryServices.Tests.Model
 			sense.Definition.SetAlternative("en", "blue");
 			var entry = new LexEntry();
 			entry.Senses.Add(sense);
-			Assert.AreEqual("blue",entry.GetSomeMeaningToUseInAbsenceOfHeadWord("en"));
+			Assert.AreEqual("blue", entry.GetSomeMeaningToUseInAbsenceOfHeadWord("en"));
 		}
 
 		[Test]
@@ -339,7 +339,6 @@ namespace SIL.DictionaryServices.Tests.Model
 		[Test]
 		public void Cleanup_HasEmptyBaseForm_PropertyIsRemoved()
 		{
-			var target = new LexEntry();
 			_entry = new LexEntry();
 			_entry.LexicalForm["v"] = "hello";
 			_entry.AddRelationTarget(LexEntry.WellKnownProperties.BaseForm, string.Empty);

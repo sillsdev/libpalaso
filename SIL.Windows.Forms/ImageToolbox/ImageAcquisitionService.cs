@@ -11,21 +11,23 @@ namespace SIL.Windows.Forms.ImageToolbox
 	{
 		public ImageDeviceException()
 			: base()
-		{ }
+		{
+		}
 
 		public ImageDeviceException(string message)
 			: base(message)
-		{ }
+		{
+		}
 
 		public ImageDeviceException(string message, Exception innerException)
 			: base(message, innerException)
-		{ }
-
+		{
+		}
 	}
-	   public class WIA_Version2_MissingException : ApplicationException
+
+	public class WIA_Version2_MissingException : ApplicationException
 	{
 	}
-
 
 	public class ImageDeviceNotFoundException : ImageDeviceException
 	{
@@ -54,15 +56,15 @@ namespace SIL.Windows.Forms.ImageToolbox
 				CommonDialog dialog = new CommonDialog();
 
 				var type = WiaDeviceType.ScannerDeviceType;
-				if(_deviceKind==DeviceKind.Camera)
-						type = WiaDeviceType.CameraDeviceType;
+				if (_deviceKind == DeviceKind.Camera)
+					type = WiaDeviceType.CameraDeviceType;
 
 				var device = dialog.ShowSelectDevice(type, false, false);
 
-				foreach (var item in device.Items)
+				foreach (var _ in device.Items)
 				{
-
 				}
+
 				foreach (Property propertyItem in device.Properties)
 				{
 					//if (!propertyItem.IsReadOnly)
@@ -75,19 +77,18 @@ namespace SIL.Windows.Forms.ImageToolbox
 				// results of the scan!!!! It just asks the user where to save the image. GRRRRRRR.
 				// object x = dialog.ShowAcquisitionWizard(device);
 
-
 				//With the low-end canoscan I'm using, it just ignores these settings, so we just get a bitmap of whatever
 				//b&w / color the user requested
 
-				  var image = dialog.ShowAcquireImage(
-					  type,
-					  WiaImageIntent.GrayscaleIntent,
-					  WiaImageBias.MaximizeQuality,
-					  WIA.FormatID.wiaFormatBMP, //We'll automatically choose the format later depending on what we see
-					  false,
-					  true,
-					  false);
-				UsageReporter.SendNavigationNotice("AcquiredImage/" + (_deviceKind == DeviceKind.Camera?"Camera": "Scanner"));
+				var image = dialog.ShowAcquireImage(
+					type,
+					WiaImageIntent.GrayscaleIntent,
+					WiaImageBias.MaximizeQuality,
+					WIA.FormatID.wiaFormatBMP, //We'll automatically choose the format later depending on what we see
+					false,
+					true,
+					false);
+				UsageReporter.SendNavigationNotice("AcquiredImage/" + (_deviceKind == DeviceKind.Camera ? "Camera" : "Scanner"));
 
 				return image;
 			}
@@ -111,6 +112,5 @@ namespace SIL.Windows.Forms.ImageToolbox
 				throw new ImageDeviceException("COM Exception", ex);
 			}
 		}
-
 	}
 }

@@ -536,7 +536,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 			if (disposing)
 			{
-				string imageLabel = _image==null? "no-image":"with-image";
 				if (Image != null)
 				{
 					Image.Dispose();

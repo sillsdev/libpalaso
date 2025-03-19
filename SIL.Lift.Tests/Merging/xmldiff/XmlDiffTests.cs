@@ -1,5 +1,4 @@
 /* From http://xmlunit.sourceforge.net/ */
-
 using System.IO;
 using NUnit.Framework;
 using SIL.Lift.Merging.xmldiff;
@@ -8,7 +7,7 @@ namespace SIL.Lift.Tests.Merging.xmldiff
 {
 	[TestFixture]
 	public class XmlDiffTests {
-		private SIL.Lift.Merging.xmldiff.XmlDiff _xmlDiff;
+		private XmlDiff _xmlDiff;
 
 		[Test] public void EqualResultForSameReader() {
 			TextReader reader = new StringReader("<empty/>");
@@ -21,7 +20,6 @@ namespace SIL.Lift.Tests.Merging.xmldiff
 			DiffResult result1 = PerformDiff(reader, reader);
 			DiffResult result2 = _xmlDiff.Compare();
 			Assert.AreSame(result1, result2);
-
 		}
 
 		private void AssertExpectedResult(string input1, string input2, bool expected) {
@@ -29,7 +27,7 @@ namespace SIL.Lift.Tests.Merging.xmldiff
 			TextReader reader2 = new StringReader(input2);
 			DiffResult result = PerformDiff(reader1, reader2);
 			string msg = "comparing " + input1 + " to " + input2 + ": " + result.Difference;
-			Assert.AreEqual(expected, result.AreEqual);
+			Assert.AreEqual(expected, result.AreEqual, msg);
 		}
 
 		private void AssertExpectedResult(string[] inputs1, string[] inputs2, bool expected) {
@@ -43,7 +41,7 @@ namespace SIL.Lift.Tests.Merging.xmldiff
 		}
 
 		private DiffResult PerformDiff(TextReader reader1, TextReader reader2) {
-			_xmlDiff = new SIL.Lift.Merging.xmldiff.XmlDiff(reader1, reader2);
+			_xmlDiff = new XmlDiff(reader1, reader2);
 			DiffResult result = _xmlDiff.Compare();
 			return result;
 		}
@@ -127,7 +125,6 @@ namespace SIL.Lift.Tests.Merging.xmldiff
 			string[] input1 = {"<a><b>text</b></a>", "<a>text<b>more text</b></a>"};
 			string[] input2 = {"<a><b/>text</a>", "<a>text<b/>more text</a>"};
 			AssertExpectedResult(input1, input2, false);
-
 		}
 
 		[Test] public void NotEqualResultForDifferentLengthElements() {
@@ -135,6 +132,5 @@ namespace SIL.Lift.Tests.Merging.xmldiff
 			string[] input2 = {"<a>text<b/></a>", "<a><b>text</b>more text<c/></a>"};
 			AssertExpectedResult(input1, input2, false);
 		}
-
 	}
 }

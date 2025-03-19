@@ -7,14 +7,12 @@ namespace SIL.Tests.Network
 	[TestFixture]
 	public class RobustNetworkOperationTests
 	{
-
-
 		[Test, Ignore("Run by hand")]
-		public void DoHttpGetAndGetProxyInfo()
+		public void DoHttpGetAndGetProxyInfo_ReturnsFalseWhenNoProxy()
 		{
-			string host, userName, password;
-			bool gotProxy = RobustNetworkOperation.DoHttpGetAndGetProxyInfo("http://hg.palaso.org/", out host, out userName, out password, s=>Debug.WriteLine(s));
+			var gotProxy = RobustNetworkOperation.DoHttpGetAndGetProxyInfo(
+				"http://hg.palaso.org/", out _, out _, out _, s => Debug.WriteLine(s));
+			Assert.That(gotProxy, Is.False);
 		}
-
 	}
 }
