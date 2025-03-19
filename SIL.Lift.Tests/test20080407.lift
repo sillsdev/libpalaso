@@ -40,6 +40,7 @@
   </header>
   <entry dateCreated="2008-03-31T03:04:09-05:00" dateModified="2008-03-31T03:04:09-05:00" guid="6db30a98-530e-4614-86d4-237f6984db71" id="bird_6db30a98-530e-4614-86d4-237f6984db71">
     <lexical-unit><form lang="x-rtl"><text>bird</text></form></lexical-unit>
+    <field type="cv-pattern"><form lang="en"><text>CVC</text></form></field>
     <trait name="morph-type" value="stem"/>
     <trait name="entry-type" value="Main Entry"/>
     <sense id="bird_70ebf9a6-269f-4de3-854d-e983ad5b3c21">

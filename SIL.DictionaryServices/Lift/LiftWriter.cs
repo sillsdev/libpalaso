@@ -17,37 +17,33 @@ using SIL.Xml;
 
 namespace SIL.DictionaryServices.Lift
 {
-   public class LiftWriter : ILiftWriter<LexEntry>
+	public class LiftWriter : ILiftWriter<LexEntry>
 	{
 		private readonly XmlWriter _writer;
-		private readonly Dictionary<string, int> _allIdsExportedSoFar;
 
-		#if DEBUG
+#if DEBUG
 		private StackTrace _constructionStack;
-		#endif
+#endif
 
 		private LiftWriter()
 		{
-			#if DEBUG
+#if DEBUG
 			_constructionStack = new StackTrace();
-			#endif
-
-			_allIdsExportedSoFar = new Dictionary<string, int>();
+#endif
 		}
 
 		public enum ByteOrderStyle
 		{
 			BOM,
 			NoBOM
-		} ;
+		}
 
 		/// <summary>
 		///
 		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="byteOrderStyle">PrinceXML (at least v7 chokes if given a BOM, Lexique Pro chokes without it) </param>
-		public LiftWriter(string path, ByteOrderStyle byteOrderStyle)
-			: this()
+		public LiftWriter(string path, ByteOrderStyle byteOrderStyle) : this()
 		{
 			Disposed = true; // Just in case we throw in the constructor
 			var settings = CanonicalXmlSettings.CreateXmlWriterSettings();
@@ -57,7 +53,7 @@ namespace SIL.DictionaryServices.Lift
 			Disposed = false;
 		}
 
-		public LiftWriter(StringBuilder builder, bool produceFragmentOnly): this()
+		public LiftWriter(StringBuilder builder, bool produceFragmentOnly) : this()
 		{
 			_writer = XmlWriter.Create(builder, CanonicalXmlSettings.CreateXmlWriterSettings(
 				produceFragmentOnly ? ConformanceLevel.Fragment : ConformanceLevel.Document, NewLineHandling.None)
@@ -94,13 +90,13 @@ namespace SIL.DictionaryServices.Lift
 			get { return _writer; }
 		}
 
-		#if DEBUG
+#if DEBUG
 		protected StackTrace ConstructionStack
 		{
 			get { return _constructionStack; }
 			set { _constructionStack = value; }
 		}
-		#endif
+#endif
 
 		public void End()
 		{
@@ -137,7 +133,8 @@ namespace SIL.DictionaryServices.Lift
 			List<string> propertiesAlreadyOutput = new List<string>();
 
 			Writer.WriteStartElement("entry");
-			Writer.WriteAttributeString("id", GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, _allIdsExportedSoFar));
+			Writer.WriteAttributeString("id",
+										GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry));
 
 			if (order > 0)
 			{
@@ -182,6 +179,10 @@ namespace SIL.DictionaryServices.Lift
 			{
 				AddEtymology(etymology);
 			}
+			foreach (var field in entry.Fields)
+			{
+				AddField(field);
+			}
 			foreach (var note in entry.Notes)
 			{
 				AddNote(note);
@@ -191,20 +192,32 @@ namespace SIL.DictionaryServices.Lift
 
 		private void AddEtymology(LexEtymology etymology)
 		{
-//  ok if no form is given          if (!MultiTextBase.IsEmpty(etymology))
-//            {
-				Writer.WriteStartElement("etymology");
-				//type is required, so add the attribute even if it's empty
-				Writer.WriteAttributeString("type", etymology.Type.Trim());
-
-				//source is required, so add the attribute even if it's empty
-				Writer.WriteAttributeString("source", etymology.Source.Trim());
-				AddMultitextGlosses(string.Empty, etymology.Gloss);
-				WriteCustomMultiTextField("comment", etymology.Comment);
-				AddMultitextForms(string.Empty, etymology);
-				Writer.WriteEndElement();
-//           }
+			// Ok if MultiTextBase.IsEmpty(etymology) is true.
+			Writer.WriteStartElement("etymology");
+			// Type is required, so add the attribute even if it's empty.
+			Writer.WriteAttributeString("type", etymology.Type.Trim());
+			// Source is required, so add the attribute even if it's empty.
+			Writer.WriteAttributeString("source", etymology.Source.Trim());
+			AddMultitextGlosses(string.Empty, etymology.Gloss);
+			WriteCustomMultiTextField("comment", etymology.Comment);
+			AddMultitextForms(string.Empty, etymology);
+			Writer.WriteEndElement();
 		}
+
+		private void AddField(LexField field)
+		{
+			// Ok if MultiTextBase.IsEmpty(field) is true.
+			Writer.WriteStartElement("field");
+			// Type is required, so add the attribute even if it's empty.
+			Writer.WriteAttributeString("type", field.Type.Trim());
+			foreach (var trait in field.Traits)
+			{
+				WriteTrait(trait);
+			}
+			AddMultitextForms(string.Empty, field);
+			Writer.WriteEndElement();
+		}
+
 		private void AddPronunciation(LexPhonetic phonetic)
 		{
 			WriteMultiWithWrapperIfNonEmpty(string.Empty, "pronunciation", phonetic);
@@ -220,7 +233,7 @@ namespace SIL.DictionaryServices.Lift
 			if (!MultiTextBase.IsEmpty(note))
 			{
 				Writer.WriteStartElement("note");
-				if(!string.IsNullOrEmpty(note.Type))
+				if (!string.IsNullOrEmpty(note.Type))
 				{
 					Writer.WriteAttributeString("type", note.Type.Trim());
 				}
@@ -246,12 +259,21 @@ namespace SIL.DictionaryServices.Lift
 		/// <summary>
 		/// in the plift subclass, we add a pronunciation if we have an audio writing system alternative on the lexical unit
 		/// </summary>
-		 protected virtual void InsertPronunciationIfNeeded(LexEntry entry, List<string> propertiesAlreadyOutput)
+		protected virtual void InsertPronunciationIfNeeded(
+			LexEntry entry, List<string> propertiesAlreadyOutput)
 		{
-
 		}
 
-		protected virtual void WriteHeadword(LexEntry entry) {}
+		protected virtual void WriteHeadword(LexEntry entry) { }
+
+		/// <summary>
+		/// Get a human readable identifier for an entry.
+		/// </summary>
+		public static string GetHumanReadableIdWithAnyIllegalUnicodeEscaped(LexEntry entry)
+		{
+			string id = entry.GetOrCreateId(true);
+			return id.EscapeAnyUnicodeCharactersIllegalInXml();
+		}
 
 		/// <summary>
 		/// Get a human readable identifier for this entry taking into account all the rest of the
@@ -265,6 +287,7 @@ namespace SIL.DictionaryServices.Lift
 		/// idsAndCounts will produce different results each time it runs
 		/// </remarks>
 		/// <returns>A base id composed with its count</returns>
+		[Obsolete("Use GetHumanReadableIdWithAnyIllegalUnicodeEscaped(LexEntry) without the second parameter.")]
 		public static string GetHumanReadableIdWithAnyIllegalUnicodeEscaped(LexEntry entry, Dictionary<string, int> idsAndCounts)
 		{
 			string id = entry.GetOrCreateId(true);
@@ -499,9 +522,9 @@ namespace SIL.DictionaryServices.Lift
 
 			foreach (LexRelation relation in collection.Relations)
 			{
-				if(string.IsNullOrEmpty(relation.Key))
+				if (string.IsNullOrEmpty(relation.Key))
 					continue;
-				if(!EntryDoesExist(relation.TargetId))
+				if (!EntryDoesExist(relation.TargetId))
 					continue;
 
 				Writer.WriteStartElement("relation");
@@ -534,7 +557,7 @@ namespace SIL.DictionaryServices.Lift
 		/// <summary>
 		/// allows subclass to output a dereferenced target name, e.g., for plift
 		/// </summary>
-		protected virtual void WriteRelationTarget(LexRelation relation) {}
+		protected virtual void WriteRelationTarget(LexRelation relation) { }
 
 		private void WriteOptionRefCollection(string traitName, OptionRefCollection collection)
 		{
@@ -698,8 +721,6 @@ namespace SIL.DictionaryServices.Lift
 					doMarkTheFirst = false;
 					Writer.WriteAttributeString("first", "true"); //useful for headword
 				}
-//                string wrappedTextToExport = "<text>" + form.Form + "</text>";
-//                string wrappedTextToExport = form.Form;
 				XmlReaderSettings fragmentReaderSettings = new XmlReaderSettings();
 				fragmentReaderSettings.ConformanceLevel = ConformanceLevel.Fragment;
 
@@ -720,12 +741,13 @@ namespace SIL.DictionaryServices.Lift
 					isTextWellFormedXml = false;
 				}
 
-				if(isTextWellFormedXml)
+				if (isTextWellFormedXml)
 				{
 					Writer.WriteStartElement("text");
 					if (spans.Count > 0)
 					{
-						Writer.WriteString("");		// trick writer into knowing this is "mixed mode".
+						// Trick writer into knowing this is "mixed mode".
+						Writer.WriteString("");
 						int index = 0;
 						int count;
 						foreach (var span in spans)
@@ -765,7 +787,8 @@ namespace SIL.DictionaryServices.Lift
 					Writer.WriteStartElement("text");
 					if (spans.Count > 0)
 					{
-						Writer.WriteString("");		// trick writer into knowing this is "mixed mode".
+						// Trick writer into knowing this is "mixed mode".
+						Writer.WriteString("");
 						int index = 0;
 						int count;
 						foreach (var span in spans)
@@ -863,14 +886,15 @@ namespace SIL.DictionaryServices.Lift
 			}
 		}
 
-	   private bool WriteMultiWithWrapperIfNonEmpty(string propertyName,
-													 string wrapperName,
-													 MultiText text)  // review cp see WriteEmbeddedXmlCollection
+		// review cp see WriteEmbeddedXmlCollection
+		private bool WriteMultiWithWrapperIfNonEmpty(
+			string propertyName, string wrapperName, MultiText text)
 		{
 			if (!MultiTextBase.IsEmpty(text))
 			{
 				Writer.WriteStartElement(wrapperName);
-				AddMultitextForms(propertyName, text);  // review cp see WriteEmbeddedXmlCollection
+				// review cp see WriteEmbeddedXmlCollection
+				AddMultitextForms(propertyName, text);
 
 				if (text is IExtensible)
 				{
@@ -896,7 +920,8 @@ namespace SIL.DictionaryServices.Lift
 		public void AddDeletedEntry(LexEntry entry)
 		{
 			Writer.WriteStartElement("entry");
-			Writer.WriteAttributeString("id", GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, _allIdsExportedSoFar));
+			Writer.WriteAttributeString("id",
+										GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry));
 			Writer.WriteAttributeString("dateCreated",
 										entry.CreationTime.ToLiftDateTimeFormat());
 			Writer.WriteAttributeString("dateModified",
@@ -934,8 +959,7 @@ namespace SIL.DictionaryServices.Lift
 				if (disposing)
 				{
 					// dispose-only, i.e. non-finalizable logic
-					if(_writer !=null)
-						_writer.Close();
+					_writer?.Close();
 				}
 
 				// shared (dispose and finalizable) cleanup logic
@@ -952,6 +976,5 @@ namespace SIL.DictionaryServices.Lift
 		}
 
 		#endregion
-
 	}
 }

@@ -18,7 +18,7 @@ namespace SIL.DictionaryServices.Model
 	/// some languages/dictionaries, these will be indistinguishable from "words".
 	/// In others, words are made up of lexical entries.
 	/// </summary>
-	public class LexEntry: PalasoDataObject, ICloneable<LexEntry>, IEquatable<LexEntry>
+	public class LexEntry : PalasoDataObject, ICloneable<LexEntry>, IEquatable<LexEntry>
 	{
 		private MultiText _lexicalForm;
 		private Guid _guid;
@@ -35,17 +35,18 @@ namespace SIL.DictionaryServices.Model
 
 		private BindingList<LexSense> _senses;
 		//NB: to help with possible confusion: as of wesay 0.9 (oct 2010), wesay doesn't use these lists (it just shoves them in embedded xml), but SOLID does
-		private  BindingList<LexVariant> _variants;
-		private  BindingList<LexNote> _notes;
+		private BindingList<LexVariant> _variants;
+		private BindingList<LexNote> _notes;
 		private BindingList<LexPhonetic> _pronunciations;
 		private BindingList<LexEtymology> _etymologies;
+		private BindingList<LexField> _fields;
 
 		private DateTime _creationTime;
 		private DateTime _modificationTime;
 
 		//!!What!! Is this done this way so that we don't end up storing
 		//  the data in the object database?
-		public new class WellKnownProperties: PalasoDataObject.WellKnownProperties
+		public new class WellKnownProperties : PalasoDataObject.WellKnownProperties
 		{
 			public static string Citation = "citation";
 			public static string LexicalUnit = "EntryLexicalForm";
@@ -61,11 +62,11 @@ namespace SIL.DictionaryServices.Model
 					new List<string>(new string[] { LexicalUnit, Citation, BaseForm, CrossReference, Sense, LiteralMeaning });
 				return list.Contains(fieldName);
 			}
-		} ;
+		}
 
-		public LexEntry(): this(null, Guid.NewGuid()) {}
+		public LexEntry() : this(null, Guid.NewGuid()) { }
 
-		public LexEntry(string id, Guid guid): base(null)
+		public LexEntry(string id, Guid guid) : base(null)
 		{
 			DateTime now = PreciseDateTime.UtcNow;
 			IsDirty = true;
@@ -92,6 +93,7 @@ namespace SIL.DictionaryServices.Model
 			_notes = new BindingList<LexNote>();
 			_pronunciations = new BindingList<LexPhonetic>();
 			_etymologies = new BindingList<LexEtymology>();
+			_fields = new BindingList<LexField>();
 
 			CreationTime = creationTime;
 
@@ -103,9 +105,9 @@ namespace SIL.DictionaryServices.Model
 		public LexEntry Clone()
 		{
 			var clone = new LexEntry();
-			clone._lexicalForm = (MultiText) _lexicalForm.Clone();
+			clone._lexicalForm = (MultiText)_lexicalForm.Clone();
 			//_lexicalForm and Guid must have been set before _id is set
-			if(_id != null)
+			if (_id != null)
 			{
 				clone.GetOrCreateId(false);
 			}
@@ -117,19 +119,23 @@ namespace SIL.DictionaryServices.Model
 			}
 			foreach (var lexVariantToClone in Variants)
 			{
-				clone.Variants.Add((LexVariant) lexVariantToClone.Clone());
+				clone.Variants.Add((LexVariant)lexVariantToClone.Clone());
 			}
 			foreach (var lexNoteToClone in Notes)
 			{
-				clone.Notes.Add((LexNote) lexNoteToClone.Clone());
+				clone.Notes.Add((LexNote)lexNoteToClone.Clone());
 			}
 			foreach (var pronunciationToClone in _pronunciations)
 			{
-				clone._pronunciations.Add((LexPhonetic) pronunciationToClone.Clone());
+				clone._pronunciations.Add((LexPhonetic)pronunciationToClone.Clone());
 			}
 			foreach (var etymologyToClone in _etymologies)
 			{
 				clone._etymologies.Add((LexEtymology)etymologyToClone.Clone());
+			}
+			foreach (var fieldToClone in _fields)
+			{
+				clone._fields.Add((LexField)fieldToClone.Clone());
 			}
 			foreach (var keyValuePairToClone in Properties)
 			{
@@ -154,6 +160,7 @@ namespace SIL.DictionaryServices.Model
 			if (!_notes.SequenceEqual(other._notes)) return false;
 			if (!_pronunciations.SequenceEqual(other._pronunciations)) return false;
 			if (!_etymologies.SequenceEqual(other._etymologies)) return false;
+			if (!_fields.SequenceEqual(other._fields)) return false;
 			if (!base.Equals(other)) return false;
 			return true;
 		}
@@ -202,7 +209,7 @@ namespace SIL.DictionaryServices.Model
 
 		public override void NotifyPropertyChanged(string propertyName)
 		{
-			if(!IsBeingDeleted)
+			if (!IsBeingDeleted)
 				base.NotifyPropertyChanged(propertyName);
 		}
 
@@ -230,11 +237,6 @@ namespace SIL.DictionaryServices.Model
 			return _id;
 		}
 
-
-
-		/// <summary>
-		///
-		/// </summary>
 		/// <remarks>The signature here is MultiText rather than LexicalFormMultiText because we want
 		/// to hide this (hopefully temporary) performance implementation detail. </remarks>
 		public MultiText LexicalForm => _lexicalForm;
@@ -245,7 +247,6 @@ namespace SIL.DictionaryServices.Model
 			set
 			{
 				Debug.Assert(value.Kind == DateTimeKind.Utc);
-				//_creationTime = value;
 				//converting time to LiftFormatResolution
 				_creationTime = new DateTime(value.Year,
 											 value.Month,
@@ -275,7 +276,6 @@ namespace SIL.DictionaryServices.Model
 				if (!ModifiedTimeIsLocked)
 				{
 					Debug.Assert(value.Kind == DateTimeKind.Utc);
-					//_modificationTime = value;
 					//converting time to LiftFormatResolution
 					_modificationTime = new DateTime(value.Year,
 													 value.Month,
@@ -310,6 +310,8 @@ namespace SIL.DictionaryServices.Model
 		/// NOTE: in oct 2010, wesay does not yet use this field, but SOLID does
 		/// </summary>
 		public IList<LexEtymology> Etymologies => _etymologies;
+
+		public IList<LexField> Fields => _fields;
 
 		/// <summary>
 		/// Used to track this entry across programs, for the purpose of merging and such.
@@ -377,14 +379,14 @@ namespace SIL.DictionaryServices.Model
 			Logger.WriteMinorEvent("LexEntry CleanUpEmptyObjects()");
 			base.CleanUpEmptyObjects();
 
-			for (int i = 0;i < _senses.Count;i++)
+			for (int i = 0; i < _senses.Count; i++)
 			{
 				_senses[i].CleanUpEmptyObjects();
 			}
 
 			// remove any senses that are empty
 			int count = _senses.Count;
-			for (int i = count - 1;i >= 0;i--)
+			for (int i = count - 1; i >= 0; i--)
 			{
 				if (_senses[i].IsEmptyForPurposesOfDeletion)
 				{
@@ -498,10 +500,10 @@ namespace SIL.DictionaryServices.Model
 
 		public int OrderInFile
 		{
-			get => this._orderInFile;
+			get => _orderInFile;
 			set
 			{
-				this._orderInFile = value;
+				_orderInFile = value;
 				NotifyPropertyChanged("order");
 			}
 		}
@@ -564,30 +566,31 @@ namespace SIL.DictionaryServices.Model
 
 		public string GetSimpleFormForLogging()
 		{
-			string formForLogging ;
+			string formForLogging;
 			try
 			{
 				formForLogging = LexicalForm.GetFirstAlternative();
 			}
 			catch (Exception)
 			{
-				formForLogging="(unknown)";
+				formForLogging = "(unknown)";
 			}
 			return formForLogging;
 		}
+
 		/// <summary>
 		/// used by SILCAWL list
 		/// </summary>
 		public string GetSomeMeaningToUseInAbsenceOfHeadWord(string writingSystemId)
 		{
 			var s = Senses.FirstOrDefault();
-			if(s==null)
+			if (s == null)
 				return "?NoMeaning?";
-			var gloss=s.Gloss.GetExactAlternative(writingSystemId);
+			var gloss = s.Gloss.GetExactAlternative(writingSystemId);
 			if (string.IsNullOrEmpty(gloss))
 			{
 				var def = s.Definition.GetExactAlternative(writingSystemId);
-				if(string.IsNullOrEmpty(def))
+				if (string.IsNullOrEmpty(def))
 					return "?NoGlossOrDef?";
 				return def;
 			}
