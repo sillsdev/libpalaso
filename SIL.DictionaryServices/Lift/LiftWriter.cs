@@ -721,8 +721,6 @@ namespace SIL.DictionaryServices.Lift
 					doMarkTheFirst = false;
 					Writer.WriteAttributeString("first", "true"); //useful for headword
 				}
-				//string wrappedTextToExport = "<text>" + form.Form + "</text>";
-				//string wrappedTextToExport = form.Form;
 				XmlReaderSettings fragmentReaderSettings = new XmlReaderSettings();
 				fragmentReaderSettings.ConformanceLevel = ConformanceLevel.Fragment;
 

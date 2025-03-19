@@ -106,12 +106,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		{
 			LexEntry e = MakeSimpleEntry();
 
-			_builder.MergeInField(e,
-								  "color",
-								  default(DateTime),
-								  default(DateTime),
-								  MakeBasicLiftMultiText(),
-								  null);
+			_builder.MergeInField(e, "color", default, default, MakeBasicLiftMultiText(), null);
 			_builder.FinishEntry(e);
 
 			_liftWriter.Add(e);
@@ -123,9 +118,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		[Test, Ignore("apparently not possible in LIFT?")]
 		public void LexicalUnit_HasTrait_TraitRoundTripped()
 		{
-
 		}
-
 
 		[Test, Ignore("Need to wait for LiftIO API on this")]
 		public void Note_HasTrait_TraitRoundTripped()
@@ -162,7 +155,6 @@ namespace SIL.DictionaryServices.Tests.Lift
 			_liftWriter.End();
 			AssertHasAtLeastOneMatch(xpathToOwningElement + "[trait[@name='one' and @value='1'] and trait[@name='two' and @value='2']]");
 		}
-
 
 		[Test]
 		public void Entry_Order()
