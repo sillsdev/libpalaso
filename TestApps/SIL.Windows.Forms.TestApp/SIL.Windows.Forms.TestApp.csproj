@@ -22,7 +22,7 @@
     <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
     <PackageReference Include="Icu4c.Win.Min" Version="56.1.82" />
     <PackageReference Include="Markdig.Signed" Version="0.37.0" />
-    <PackageReference Include="SIL.libpalaso.l10ns" Version="15.0.0" GeneratePathProperty="true" />
+    <PackageReference Include="SIL.libpalaso.l10ns" Version="13.*-*" GeneratePathProperty="true" />
   </ItemGroup>
 
   <ItemGroup>
