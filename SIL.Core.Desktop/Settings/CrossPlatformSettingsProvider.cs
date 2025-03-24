@@ -84,7 +84,9 @@ namespace SIL.Settings
 			if(!_initialized)
 				throw new ApplicationException("CrossPlatformSettingsProvider: Call Initialize() before CheckForErrorsInFile()");
 
+			// If config file read error, assign to _lastReadingError rather than report to user.
 			_reportReadingErrorsDirectlyToUser = false;
+			// If settings are null, load them from the config file, reporting any error.
 			_ = SettingsXml;
 			return _lastReadingError;
 		}
@@ -449,6 +451,14 @@ namespace SIL.Settings
 		private bool _initialized;
 		private XmlException _lastReadingError;
 
+		/// <summary>
+		/// Get xml settings, loading them from the config file if they're null.
+		/// </summary>
+		/// <remarks>
+		/// If there's an error reading the config file, report the error,
+		/// make a copy of the corrupt file (with extension `.bad`), delete the file,
+		/// and create a new config file.
+		/// </remarks>
 		private XmlDocument SettingsXml
 		{
 			get

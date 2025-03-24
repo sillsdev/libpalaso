@@ -70,7 +70,7 @@ namespace SIL.Lift.Merging
 		}
 
 		/// <summary>
-		/// Checks if both the Lift file and a cached reference copy exit.
+		/// Checks if both the Lift file and a cached reference copy exist.
 		/// </summary>
 		public bool CanProvideChangeRecord
 		{
