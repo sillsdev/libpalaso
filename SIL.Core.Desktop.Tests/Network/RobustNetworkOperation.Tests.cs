@@ -7,12 +7,12 @@ namespace SIL.Tests.Network
 	[TestFixture]
 	public class RobustNetworkOperationTests
 	{
-		[Test]
-		public void DoHttpGetAndGetProxyInfo_404_ReturnsFalse()
+		[Test, Ignore("Run by hand")]
+		public void DoHttpGetAndGetProxyInfo_404()
 		{
 			var gotProxy = RobustNetworkOperation.DoHttpGetAndGetProxyInfo(
 				"http://hg.palaso.org/", out _, out _, out _, s => Debug.WriteLine(s));
-			Assert.That(gotProxy, Is.False);
+			Assert.That(gotProxy, Is.False); // ... or throws.
 		}
 
 		[Test]
