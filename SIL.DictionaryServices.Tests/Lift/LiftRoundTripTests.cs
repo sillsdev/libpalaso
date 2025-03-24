@@ -55,6 +55,12 @@ namespace SIL.DictionaryServices.Tests.Lift
 			AssertThatXmlIn.String(_stringBuilder.ToString()).HasAtLeastOneMatchForXpath(xpath);
 		}
 
+		private void AssertHasMatches(string xpath, int count)
+		{
+			AssertThatXmlIn.String(_stringBuilder.ToString())
+				.HasSpecifiedNumberOfMatchesForXpath(xpath, count);
+		}
+
 		[Test]
 		public void Subsense()
 		{
@@ -100,12 +106,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		{
 			LexEntry e = MakeSimpleEntry();
 
-			_builder.MergeInField(e,
-								  "color",
-								  default(DateTime),
-								  default(DateTime),
-								  MakeBasicLiftMultiText(),
-								  null);
+			_builder.MergeInField(e, "color", default, default, MakeBasicLiftMultiText(), null);
 			_builder.FinishEntry(e);
 
 			_liftWriter.Add(e);
@@ -117,9 +118,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		[Test, Ignore("apparently not possible in LIFT?")]
 		public void LexicalUnit_HasTrait_TraitRoundTripped()
 		{
-
 		}
-
 
 		[Test, Ignore("Need to wait for LiftIO API on this")]
 		public void Note_HasTrait_TraitRoundTripped()
@@ -138,9 +137,8 @@ namespace SIL.DictionaryServices.Tests.Lift
 		[Test]
 		public void Field_HasTrait_TraitRoundTripped()
 		{
-			TestTraitRoundTripped("//entry/field",
-								  (e, traits)=> _builder.MergeInField(e, "color", default(DateTime), default(DateTime), new LiftMultiText("v", "hello world"), traits));
-
+			TestTraitRoundTripped("//entry/field", (e, traits) => _builder.MergeInField(
+				e, "color", default, default, new LiftMultiText("v", "hello world"), traits));
 		}
 
 		public delegate void Proc<A0, A1>(A0 a0, A1 a1);
@@ -157,7 +155,6 @@ namespace SIL.DictionaryServices.Tests.Lift
 			_liftWriter.End();
 			AssertHasAtLeastOneMatch(xpathToOwningElement + "[trait[@name='one' and @value='1'] and trait[@name='two' and @value='2']]");
 		}
-
 
 		[Test]
 		public void Entry_Order()
@@ -323,8 +320,8 @@ namespace SIL.DictionaryServices.Tests.Lift
 			_builder.FinishEntry(e);
 			_liftWriter.Add(e);
 			_liftWriter.End();
-			AssertThatXmlIn.String(_stringBuilder.ToString()).HasSpecifiedNumberOfMatchesForXpath("//entry/variant/form/text[text()='baa']",1);
-			AssertThatXmlIn.String(_stringBuilder.ToString()).HasSpecifiedNumberOfMatchesForXpath("//entry/variant/form/text[text()='boo']", 1);
+			AssertHasMatches("//entry/variant/form/text[text()='baa']", 1);
+			AssertHasMatches("//entry/variant/form/text[text()='boo']", 1);
 		}
 
 		[Test]
