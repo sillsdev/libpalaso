@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using SIL.Spelling;
 
@@ -12,12 +13,7 @@ namespace SIL.Tests.Spelling
 		public void PassNULL_Throws()
 		{
 			Assert.Throws<ArgumentNullException>(
-				() =>
-				{
-					foreach (var _ in WordTokenizer.TokenizeText(null))
-					{
-					}
-				}
+				() => WordTokenizer.TokenizeText(null).ToArray() // ToArray forces enumeration.
 			 );
 		}
 
