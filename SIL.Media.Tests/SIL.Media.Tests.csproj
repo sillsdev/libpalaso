@@ -14,7 +14,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Markdig.Signed" Version="0.37.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.2" />
     <PackageReference Include="FFMpegCore" Version="5.0.0" />
     <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
