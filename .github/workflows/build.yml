@@ -87,6 +87,26 @@ jobs:
         name: Test results (${{ matrix.framework }})
         path: ./test-results
 
+    - name: Nuget Packaging
+      id: nuget
+      run: dotnet pack --include-symbols --no-restore --no-build -p:SymbolPackageFormat=snupkg --property:Platform="Any CPU" --output ./artifacts
+      if: matrix.framework == 'net8.0-windows'
+
+    - name: Upload Nuget Packages
+      id: nuget-temp
+      uses: actions/upload-artifact@v4
+      with:
+        name: Nuget Packages
+        path: |
+          ./artifacts/*.nupkg
+          ./artifacts/*.snupkg
+      if: github.event_name == 'pull_request' && matrix.framework == 'net8.0-windows'
+          
+    - name: Publish Nuget Packages
+      id: nuget-publish
+      run: dotnet nuget push artifacts/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.SILLSDEV_PUBLISH_NUGET_ORG}} --skip-duplicate
+      if: github.event_name == 'push' && matrix.framework == 'net8.0-windows'
+
     - name: Publish logs on failure
       if: failure()
       uses: actions/upload-artifact@v4
@@ -115,3 +135,5 @@ jobs:
           files: artifacts/**/*.trx
           action_fail: true
           action_fail_on_inconclusive: true
+  
+
