@@ -24,7 +24,7 @@
     <PackageReference Include="L10NSharp" Version="8.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Mono.Unix" Version="7.1.0-final.1.21458.1" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="3.1.0" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="3.1.1" PrivateAssets="All" />
     <PackageReference Include="KeymanLegacyBundle" Version="1.0.0" />
   </ItemGroup>
 
