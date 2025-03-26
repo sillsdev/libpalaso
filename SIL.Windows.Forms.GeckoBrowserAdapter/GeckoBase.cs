@@ -278,8 +278,8 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		}
 		public virtual bool InFocus
 		{
-			get { return _inFocus; }
-			set { _inFocus = value; }
+			get => _inFocus;
+			set => _inFocus = value;
 		}
 
 		public virtual bool Bold { get; set; }
@@ -299,10 +299,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			if (_inFocus)
 			{
 				_inFocus = false;
-				if (UserLostFocus != null)
-				{
-					UserLostFocus.Invoke(this, null);
-				}
+				UserLostFocus?.Invoke(this, null);
 			}
 		}
 		protected virtual void OnDomFocus(object sender, EventArgs ea)
@@ -313,30 +310,24 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 				return;
 			}
 
-			// Only handle DomFocus that occurs on a Element.
-			// This is Important or it will mess with IME keyboard focus.
+			// Only handle DomFocus that occurs on an Element.
+			// This is important, or it will mess with IME keyboard focus.
 			if (e == null || e.Target == null || e.Target.CastToGeckoElement () == null)
 			{
 				return;
 			}
 
 			var content = _browser.Document.GetElementById("main");
-			if (content != null)
+			if (content is GeckoHtmlElement geckoHtmlElement && !_inFocus)
 			{
-				if ((content is GeckoHtmlElement) && (!_inFocus))
-				{
-					// The following is required because we get two in focus events every time this
-					// is entered.  This is normal for Gecko.  But I don't want to be constantly
-					// refocussing.
-					_inFocus = true;
-					EnsureFocusedGeckoControlHasInputFocus();
-					if (_browser != null)
-					{
-						_browser.SetInputFocus();
-					}
-					_focusElement = (GeckoHtmlElement)content;
-					ChangeFocus();
-				}
+				// The following is required because we get two in focus events every time this
+				// is entered. This is normal for Gecko. But I don't want to be constantly
+				// refocusing.
+				_inFocus = true;
+				EnsureFocusedGeckoControlHasInputFocus();
+				_browser?.SetInputFocus();
+				_focusElement = geckoHtmlElement;
+				ChangeFocus();
 			}
 		}
 		protected virtual void OnDomDocumentCompleted(object sender, EventArgs ea)
@@ -350,7 +341,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 
 				IContainerControl containerControl = GetContainerControl();
 
-				if ((containerControl != null) && (containerControl != this) && (containerControl.ActiveControl != this))
+				if (containerControl != null && containerControl != this && containerControl.ActiveControl != this)
 					containerControl.ActiveControl = this;
 
 				_browser.WebBrowserFocus.Activate();
@@ -392,7 +383,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 				// and the mouse is over a gecko control.
 				Form.ActiveForm.ActiveControl = control;
 				EventHandler focusEvent = null;
-				// Attach a execute once only focus handler to the Non GeckoWebBrowser control focus is moving too...
+				// Attach an execute-once only focus handler to the Non GeckoWebBrowser control focus is moving too...
 				focusEvent = (object sender, EventArgs eventArg) =>
 				{
 					control.GotFocus -= focusEvent;

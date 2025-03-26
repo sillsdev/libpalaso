@@ -1,19 +1,25 @@
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using JetBrains.Annotations;
 
 namespace SIL.Windows.Forms.Widgets
 {
+	[PublicAPI]
 	public class HeaderLabel : EnhancedPanel
 	{
+		[Obsolete("Replace with correctly spelled ShowWindowBackgroundOnTopAndRightEdge")]
+		public bool ShowWindowBackgroudOnTopAndRightEdge { get; set; }
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets or sets a value indicating whether or not a one pixel line on the top and
-		/// right edge of the panel is painted the window background color. This is they
+		/// Gets or sets a value indicating whether a one-pixel line on the top and
+		/// right edge of the panel is painted the window background color. This is the
 		/// way a list view header is drawn... believe it or not.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public bool ShowWindowBackgroudOnTopAndRightEdge { get; set; }
+		public bool ShowWindowBackgroundOnTopAndRightEdge { get; set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -22,20 +28,20 @@ namespace SIL.Windows.Forms.Widgets
 		/// ------------------------------------------------------------------------------------
 		protected override void OnPaintBackground(PaintEventArgs e)
 		{
-			Rectangle rc = ClientRectangle;
+			var rc = ClientRectangle;
 			e.Graphics.FillRectangle(SystemBrushes.Window, rc);
 			VisualStyleElement element = VisualStyleElement.Header.Item.Normal;
 
-			// Draw the background, preferrably using visual styles.
+			// Draw the background, preferably using visual styles.
 			if (!PaintingHelper.CanPaintVisualStyle(element))
 				ControlPaint.DrawButton(e.Graphics, rc, ButtonState.Normal);
 			else
 			{
-				// Add 2 so the separator that's drawn at the right
+				// Add 2 so the separator that's drawn on the right
 				// side of normal list resultView header isn't visible.
 				rc.Width += 2;
 
-				if (ShowWindowBackgroudOnTopAndRightEdge)
+				if (ShowWindowBackgroundOnTopAndRightEdge)
 				{
 					// Shrink the rectangle so the top and left
 					// edge window background don't get clobbered.
@@ -47,7 +53,7 @@ namespace SIL.Windows.Forms.Widgets
 				VisualStyleRenderer renderer = new VisualStyleRenderer(element);
 				renderer.DrawBackground(e.Graphics, rc);
 
-				if (ShowWindowBackgroudOnTopAndRightEdge)
+				if (ShowWindowBackgroundOnTopAndRightEdge)
 				{
 					// Draw a window background color line down the right edge.
 					rc = ClientRectangle;
