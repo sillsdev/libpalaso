@@ -18,7 +18,6 @@ namespace SIL.DictionaryServices.Tests.Lift
 	[TestFixture]
 	public class LiftWriterTests
 	{
-
 		class LiftExportTestSessionBase : IDisposable
 		{
 			protected LiftWriter _liftWriter;
@@ -80,7 +79,6 @@ namespace SIL.DictionaryServices.Tests.Lift
 				AddTestLexEntry("flower");
 				LiftWriter.End();
 			}
-
 		}
 
 		class LiftExportAsFragmentTestSession : LiftExportTestSessionBase
@@ -89,7 +87,6 @@ namespace SIL.DictionaryServices.Tests.Lift
 			{
 				_liftWriter = new LiftWriter(StringBuilder, true);
 			}
-
 		}
 
 		class LiftExportAsFullDocumentTestSession : LiftExportTestSessionBase
@@ -106,7 +103,6 @@ namespace SIL.DictionaryServices.Tests.Lift
 			{
 				_liftWriter = new LiftWriter(_filePath, LiftWriter.ByteOrderStyle.BOM);
 			}
-
 		}
 
 		[SetUp]
@@ -122,13 +118,22 @@ namespace SIL.DictionaryServices.Tests.Lift
 
 		private static void AssertHasOneMatch(string xpath, LiftExportTestSessionBase session)
 		{
-			AssertThatXmlIn.String(session.StringBuilder.ToString()).
-				HasSpecifiedNumberOfMatchesForXpath(xpath,1);
+			AssertThatXmlIn.String(session.StringBuilder.ToString())
+				.HasSpecifiedNumberOfMatchesForXpath(xpath, 1);
 		}
 
-		private static void AssertHasAtLeastOneMatch(string xpath, LiftExportTestSessionBase session)
+		private static void AssertHasMatches(
+			string xpath, LiftExportTestSessionBase session, int count)
 		{
-			AssertThatXmlIn.String(session.StringBuilder.ToString()).HasAtLeastOneMatchForXpath(xpath);
+			AssertThatXmlIn.String(session.StringBuilder.ToString())
+				.HasSpecifiedNumberOfMatchesForXpath(xpath, count);
+		}
+
+		private static void AssertHasAtLeastOneMatch(
+			string xpath, LiftExportTestSessionBase session)
+		{
+			AssertThatXmlIn.String(session.StringBuilder.ToString())
+				.HasAtLeastOneMatchForXpath(xpath);
 		}
 
 		private static string GetSenseElement(LexSense sense, string innerXml)
@@ -274,7 +279,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 			{
 				var e = session.CreateItem();
 				var variant = new LexVariant();
-				variant.SetAlternative("etr","one");
+				variant.SetAlternative("etr", "one");
 				e.Variants.Add(variant);
 				variant = new LexVariant();
 				variant.SetAlternative("etr", "two");
@@ -285,7 +290,6 @@ namespace SIL.DictionaryServices.Tests.Lift
 				AssertHasOneMatch("entry/variant/form[@lang='etr' and text='two']", session);
 			}
 		}
-
 
 		[Test]
 		public void EntryWithSimpleEtymology()
@@ -324,6 +328,52 @@ namespace SIL.DictionaryServices.Tests.Lift
 				AssertHasOneMatch("entry/etymology/field[@type='comment']/form[@lang='en' and text='metathesis?']", session);
 			}
 		}
+
+		[Test]
+		public void EntryWith2SimpleFields()
+		{
+			using var session = new LiftExportAsFragmentTestSession();
+			var entry = session.CreateItem();
+			var field1 = new LexField("theType");
+			field1.SetAlternative("en", "one");
+			entry.Fields.Add(field1);
+			var field2 = new LexField("theType");
+			field2.SetAlternative("es", "dos");
+			entry.Fields.Add(field2);
+			session.LiftWriter.Add(entry);
+			session.LiftWriter.End();
+
+			AssertHasMatches("entry/field[@type='theType']", session, 2);
+			AssertHasOneMatch("entry/field/form[@lang='en' and text='one']", session);
+			AssertHasOneMatch("entry/field/form[@lang='es' and text='dos']", session);
+		}
+
+		[Test]
+		public void EntryWithFullField()
+		{
+			using var session = new LiftExportAsFragmentTestSession();
+			var entry = session.CreateItem();
+			var field = new LexField("theType");
+			field.Traits.Add(new LexTrait("givenName", "Joe"));
+			field.Traits.Add(new LexTrait("surname", "DiMaggio"));
+			field.SetAlternative("etr", "theProtoform");
+			field.SetAlternative("en", "enForm");
+			field.SetAlternative("fr", "frForm");
+			entry.Fields.Add(field);
+			session.LiftWriter.Add(entry);
+			session.LiftWriter.End();
+
+			AssertHasOneMatch("entry/field[@type='theType']", session);
+			AssertHasMatches("entry/field/trait", session, 2);
+			AssertHasOneMatch("entry/field/trait[@name='givenName' and @value='Joe']", session);
+			AssertHasOneMatch(
+				"entry/field/trait[@name='surname' and @value='DiMaggio']", session);
+			AssertHasMatches("entry/field/form", session, 3);
+			AssertHasOneMatch("entry/field/form[@lang='etr' and text='theProtoform']", session);
+			AssertHasOneMatch("entry/field/form[@lang='en' and text='enForm']", session);
+			AssertHasOneMatch("entry/field/form[@lang='fr' and text='frForm']", session);
+		}
+
 		[Test]
 		public void EntryWithBorrowedWord()
 		{
@@ -379,7 +429,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				var sense = new LexSense();
-				var reversal = new LexReversal {Type = "revType"};
+				var reversal = new LexReversal { Type = "revType" };
 				reversal.SetAlternative("en", "one");
 				sense.Reversals.Add(reversal);
 				var reversal2 = new LexReversal();
@@ -462,6 +512,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 				AssertHasOneMatch("variant/field[@type='a']/trait[@name='one' and @value='1']", session);
 			}
 		}
+
 		[Test]
 		public void CustomMultiTextOnEntry()
 		{
@@ -515,7 +566,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 				LexEntry entry = session.CreateItem();
 
 				var o = entry.GetOrCreateProperty<OptionRefCollection>("flubs");
-				o.AddRange(new[] {"orange", "blue"});
+				o.AddRange(new[] { "orange", "blue" });
 				//_lexEntryRepository.SaveItem(entry);
 				session.LiftWriter.Add(entry);
 				session.LiftWriter.End();
@@ -533,7 +584,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 				//_fieldToOptionListName.Add("flubs", "colors");
 				var example = new LexExampleSentence();
 				var o = example.GetOrCreateProperty<OptionRefCollection>("flubs");
-				o.AddRange(new[] {"orange", "blue"});
+				o.AddRange(new[] { "orange", "blue" });
 				session.LiftWriter.Add(example);
 				session.LiftWriter.End();
 				string expected = CanonicalXml.ToCanonicalStringFragment(
@@ -554,7 +605,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 				//_fieldToOptionListName.Add("flubs", "colors");
 				var sense = new LexSense();
 				var o = sense.GetOrCreateProperty<OptionRefCollection>("flubs");
-				o.AddRange(new[] {"orange", "blue"});
+				o.AddRange(new[] { "orange", "blue" });
 				session.LiftWriter.Add(sense);
 				string expected = CanonicalXml.ToCanonicalStringFragment(
 					GetSenseElement(sense, "<trait name=\"flubs\" value=\"orange\" /><trait name=\"flubs\" value=\"blue\" />")
@@ -827,11 +878,11 @@ namespace SIL.DictionaryServices.Tests.Lift
 				session.LiftWriter.Add(entry);
 				session.LiftWriter.End();
 
-				string expectedId = LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(
-					entry, new Dictionary<string, int>()
-				);
+				string expectedId =
+					LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry);
 				string result = session.StringBuilder.ToString();
-				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(String.Format("//entry[@id=\"{0}\"]", expectedId));
+				AssertThatXmlIn.String(result).HasAtLeastOneMatchForXpath(
+					string.Format("//entry[@id=\"{0}\"]", expectedId));
 			}
 		}
 
@@ -900,7 +951,8 @@ namespace SIL.DictionaryServices.Tests.Lift
 		[Test]
 		public void Add_CultureUsesPeriodForTimeSeparator_DateAttributesOutputWithColon([Values("en-US", "de-DE")] string culture)
 		{
-			Thread.CurrentThread.CurrentCulture = new CultureInfo(culture) {DateTimeFormat = {TimeSeparator = "."}};
+			Thread.CurrentThread.CurrentCulture =
+				new CultureInfo(culture) { DateTimeFormat = { TimeSeparator = "." } };
 
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1022,22 +1074,6 @@ namespace SIL.DictionaryServices.Tests.Lift
 			}
 		}
 
-		/* this is not relevant, as we are currently using form_guid as the id
-		[Test]
-		public void DuplicateFormsGetHomographNumbers()
-		{
-			LexEntry entry = new LexEntry();
-			entry.LexicalForm["blue"] = "ocean";
-			session.LiftWriter.Add(entry);
-			session.LiftWriter.Add(entry);
-			session.LiftWriter.Add(entry);
-		  session.LiftWriter.End();
-		  Assert.IsTrue(_stringBuilder.ToString().Contains("\"ocean\""), "ocean not contained in {0}", _stringBuilder.ToString());
-		  Assert.IsTrue(_stringBuilder.ToString().Contains("ocean_2"), "ocean_2 not contained in {0}", _stringBuilder.ToString());
-		  Assert.IsTrue(_stringBuilder.ToString().Contains("ocean_3"), "ocean_3 not contained in {0}", _stringBuilder.ToString());
-		}
-		*/
-
 		[Test]
 		public void GetHumanReadableId_EntryHasId_GivesId()
 		{
@@ -1045,134 +1081,20 @@ namespace SIL.DictionaryServices.Tests.Lift
 			{
 				LexEntry entry = session.CreateItem();
 				entry.Id = "my id";
-				//_lexEntryRepository.SaveItem(entry);
-				Assert.AreEqual(
-					"my id",
-					LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, new Dictionary<string, int>())
+				Assert.That(
+					LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry),
+					Is.EqualTo("my id")
 				);
 			}
 		}
-
-		/* this tests a particular implementation detail (idCounts), which isn't used anymore:
-		[Test]
-		public void GetHumanReadableId_EntryHasId_RegistersId()
-		{
-			LexEntry entry = new LexEntry("my id", Guid.NewGuid());
-			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
-			Assert.AreEqual(1, idCounts["my id"]);
-		}
-		*/
-
-		/* this is not relevant, as we are currently using form_guid as the id
-		[Test]
-		public void GetHumanReadableId_EntryHasAlreadyUsedId_GivesIncrementedId()
-		{
-			LexEntry entry = new LexEntry("my id", Guid.NewGuid());
-			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
-			Assert.AreEqual("my id_2", LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts));
-		}
-		*/
-		/* this is not relevant, as we are currently using form_guid as the id
-		[Test]
-		public void GetHumanReadableId_EntryHasAlreadyUsedId_IncrementsIdCount()
-		{
-			LexEntry entry = new LexEntry("my id", Guid.NewGuid());
-			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
-			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
-			Assert.AreEqual(2, idCounts["my id"]);
-		}
-		*/
-		/* this is not relevant, as we are currently using form_guid as the id
-		[Test]
-		public void GetHumanReadableId_EntryHasNoIdAndNoLexicalForms_GivesDefaultId()
-		{
-			LexEntry entry = new LexEntry();
-			Assert.AreEqual("NoForm", LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, new Dictionary<string, int>()));
-		}
-		*/
-
-		/*      this is not currently relevant, as we are now using form_guid as the id
-		[Test]
-		public void GetHumanReadableId_EntryHasNoIdAndNoLexicalFormsButAlreadyUsedId_GivesIncrementedDefaultId()
-		{
-			LexEntry entry = new LexEntry();
-			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
-			Assert.AreEqual("NoForm_2", LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts));
-		}
-		*/
-
-		/*      this is not currently relevant, as we are now using form_guid as the id
-		[Test]
-		public void GetHumanReadableId_EntryHasNoId_GivesIdMadeFromFirstLexicalForm()
-		{
-			LexEntry entry = new LexEntry();
-			entry.LexicalForm["green"] = "grass";
-			entry.LexicalForm["blue"] = "ocean";
-
-			Assert.AreEqual("grass", LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, new Dictionary<string, int>()));
-		}
-		*/
-
-		/*      this is not currently relevant, as we are now using form_guid as the id
-
-		[Test]
-		public void GetHumanReadableId_EntryHasNoId_RegistersIdMadeFromFirstLexicalForm()
-		{
-			LexEntry entry = new LexEntry();
-			entry.LexicalForm["green"] = "grass";
-			entry.LexicalForm["blue"] = "ocean";
-			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
-			Assert.AreEqual(1, idCounts["grass"]);
-		}
-		*/
-		/*      this is not currently relevant, as we are now using form_guid as the id
-		[Test]
-		public void GetHumanReadableId_EntryHasNoIdAndIsSameAsAlreadyEncountered_GivesIncrementedId()
-		{
-			LexEntry entry = new LexEntry();
-			entry.LexicalForm["green"] = "grass";
-			entry.LexicalForm["blue"] = "ocean";
-			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
-			Assert.AreEqual("grass_2", LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts));
-		}
-		*/
-		/*      this is not currently relevant, as we are now using form_guid as the id
-		[Test]
-		public void GetHumanReadableId_EntryHasNoIdAndIsSameAsAlreadyEncountered_IncrementsIdCount()
-		{
-			LexEntry entry = new LexEntry();
-			entry.LexicalForm["green"] = "grass";
-			entry.LexicalForm["blue"] = "ocean";
-			Dictionary<string, int> idCounts = new Dictionary<string, int>();
-			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
-			LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, idCounts);
-			Assert.AreEqual(2, idCounts["grass"]);
-		}
-		*/
-		/*      this is not currently relevant, as we are now using form_guid as the id
-		[Test]
-		public void GetHumanReadableId_IdsDifferByWhiteSpaceTypeOnly_WhitespaceTreatedAsSpaces()
-		{
-			LexEntry entry = new LexEntry();
-			entry.LexicalForm["green"] = "string\t1\n2\r3 4";
-			Assert.AreEqual("string 1 2 3 4", LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, new Dictionary<string, int>()));
-		}
-		*/
 
 		[Test]
 		public void GetHumanReadableId_IdIsSpace_NoForm()
 		{
 			var entry = new LexEntry(" ", Guid.NewGuid());
-			Assert.IsTrue(
-				LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(
-					entry, new Dictionary<string, int>()
-				).StartsWith("Id'dPrematurely_")
+			Assert.That(
+				LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry),
+				Does.StartWith("Id'dPrematurely_")
 			);
 		}
 
@@ -1181,9 +1103,10 @@ namespace SIL.DictionaryServices.Tests.Lift
 		{
 			var entry = new LexEntry(" ", Guid.NewGuid());
 			entry.LexicalForm["green"] = "string";
-			Assert.IsTrue(
-				LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry, new Dictionary<string, int>()).StartsWith
-					("string"));
+			Assert.That(
+				LiftWriter.GetHumanReadableIdWithAnyIllegalUnicodeEscaped(entry),
+				Does.StartWith("string")
+			);
 		}
 
 		[Test]
@@ -1601,6 +1524,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 				);
 			}
 		}
+
 		[Test]
 		public void SenseWithRelationWithEmbeddedXml()
 		{
@@ -1622,11 +1546,12 @@ namespace SIL.DictionaryServices.Tests.Lift
 				lexRelation.EmbeddedXmlElements.Add("<field id='z'><text>hello</text></field>");
 				relations.Relations.Add(lexRelation);
 
-
 				session.LiftWriter.Add(sense);
 				session.LiftWriter.End();
-				AssertThatXmlIn.String(session.StringBuilder.ToString()).HasSpecifiedNumberOfMatchesForXpath("//sense/relation/trait",1);
-				AssertThatXmlIn.String(session.StringBuilder.ToString()).HasSpecifiedNumberOfMatchesForXpath("//sense/relation/field", 1);
+				AssertThatXmlIn.String(session.StringBuilder.ToString())
+					.HasSpecifiedNumberOfMatchesForXpath("//sense/relation/trait", 1);
+				AssertThatXmlIn.String(session.StringBuilder.ToString())
+					.HasSpecifiedNumberOfMatchesForXpath("//sense/relation/field", 1);
 			}
 		}
 
@@ -1671,6 +1596,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 				Assert.AreEqual(expected, session.OutputString());
 			}
 		}
+
 		[Test]
 		public void Add_MultiTextWithScaryUnicodeChar_IsExported()
 		{
