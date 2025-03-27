@@ -1140,6 +1140,29 @@ namespace SIL.Lift.Tests.Parsing
 		}
 
 		[Test]
+		public void SimpleField()
+		{
+			var type = "custom";
+			var lang = "en";
+			var text = "This is a custom entry-level form.";
+			var form = $"<form lang='{lang}'><text>{text}</text></form>";
+			var content = $"<entry><field type='{type}'>{form}</field></entry>";
+			_doc.LoadXml(content);
+			ExpectGetOrMakeEntry();
+			_merger.Setup(m => m.MergeInField(
+				It.IsAny<Dummy>(),
+				type,
+				DateTime.MinValue,
+				DateTime.MinValue,
+				new LiftMultiText(lang, text),
+				It.IsAny<List<Trait>>()
+			));
+			ExpectFinishEntry();
+			_parser.ReadEntry(_doc.FirstChild);
+			_merger.VerifyAll();
+		}
+
+		[Test]
 		public void SimpleReversal()
 		{
 			string content = "<entry><sense><reversal><form lang='en'><text>sorghum</text></form></reversal></sense></entry>";
@@ -1256,6 +1279,7 @@ namespace SIL.Lift.Tests.Parsing
 				ExpectGetOrMakeSense();
 				_merger.Setup(m => m.MergeInGrammaticalInfo(It.IsAny<Dummy>(), "Noun", It.IsAny<List<Trait>>()));
 				_merger.Setup(m => m.MergeInGloss(It.IsAny<Dummy>(), new LiftMultiText("en", "bird")));
+				_merger.Setup(m => m.MergeInField(It.IsAny<Dummy>(), "cv-pattern", default, default, new LiftMultiText("en", "CVC"), It.IsAny<List<Trait>>()));
 				_merger.Setup(m => m.MergeInTrait(It.IsAny<Dummy>(), new Trait("morph-type", "stem")));
 				_merger.Setup(m => m.MergeInTrait(It.IsAny<Dummy>(), new Trait("entry-type", "Main Entry")));
 				ExpectFinishEntry();

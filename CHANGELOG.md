@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.WritingSystems] Added public DownloadLanguageTags method for updating the cached langtags.json from the SLDR repository.
 - [SIL.Core] Add environment variable to disable `GlobalMutex` across processes. Helpful for snap packages in Linux.
 - [SIL.Core] Added string extension method SplitLines.
+- [SIL.Windows.Forms] Added ContributorsListControl.Initialize method to allow the model to be set later when using the (existing) parameterless constructor in Designer.
+- [SIL.Windows.Forms] In class SettingsLauncherButton, added property Link to expose the link label. This enables changing its color, font, etc.
+- [SIL.Windows.Forms.Scripture] Added VerseControl.TabKeyPressedInVerseField event to VerseControl to support tabbing out of the verse field of a VerseControl into the next control in the tab order rather than cycling back to the book field.
+- [SIL.Windows.Forms] Added OtherKeysToTreatAsInputKeys property to EnterTextBox.
+- [SIL.DictionaryServices] Added Fields property to LexEntry. Modified LiftWriter.Add(LexEntry entry) to also write the content of entry.Fields.
 
 ### Changed
 
@@ -40,6 +45,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Keyboarding.Tests] In test class XkbKeyboardAdapterTests, renamed method Errorkeyboards to ErrorKeyboards.
 - [SIL.Windows.Forms.Keyboarding.Windows] In internal interface ITfInputProcessorProfileMgr, renamed method RegisterProfile parameter hklsubstitute to hklSubstitute.
 - [SIL.Windows.Forms.Reporting] In class ProblemNotificationDialog, renamed internal property \_reoccurenceMessage to \_reoccurrenceMessage.
+- [SIL.Windows.Forms.Widgets] Fix loss of precision in drawing arrows within HorizontalSpinner.OnPaint.
 - [SIL.WritingSystems] In class LanguageLookup changed private method AddLanguage parameter threelettercode to threeLetterCode.
 - [SIL.WritingSystems] Updated langtags.json and ianaSubtagRegistry.txt in Resources.
 - [SIL.Xml] BREAKING CHANGE: In class XmlUtils, renamed method GetIndendentedXml to GetIndentedXml.
@@ -55,11 +61,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Reporting] BREAKING CHANGE: In class ProblemNotificationDialog, renamed method ReoccurenceMessage to ReoccurrenceMessage.
 - [SIL.WritingSystems] BREAKING CHANGE: A new FontDefinition now has .Role default to FontRoles.None rather than FontRoles.Default. Likewise, the method LdmlDataMapper.Read now reads in a font with no type as FontRoles.None instead of FontRoles.Default.
 - [SIL.WritingSystems] Added UI to enum FontRoles; the methods LdmlDataMapper.Read and LdmlDataMapper.Write now support fonts with type "ui". Also, if the ldml file has a font type not covered in FontRoles, LdmlDataMapper.Read will add it as FontRoles.Default.
+- [SIL.Windows.Forms] BREAKING CHANGE: Upgraded dependency on L10nSharp. See note regarding creating LocalizationManager before calling localization methods. In tests, it may be expedient to set `LocalizationManager.StrictInitializationMode` to false.
+- [SIL.Windows.Forms.Keyboarding] BREAKING CHANGE: Upgraded dependency on L10nSharp. See note regarding creating LocalizationManager before calling localization methods. In tests, it may be expedient to set `LocalizationManager.StrictInitializationMode` to false.
 
 ### Fixed
 
 - [SIL.Windows.Forms] Changed build date in SILAboutBox to be computed using the last write time instead of creation time.
 - [SIL.Windows.Forms] Made FadingMessageWindow implement all UI logic on the main UI thread in a thread-safe way. Fixes crashes like SP-2340.
+- [SIL.Windows.Forms] Made ContributorsListControl more threadsafe. Possibly fixes crashes like SP-2353 or at least makes them less likely.
+- [SIL.WritingSystems] Added check to Subtag.Equals to ensure two subtags being compared are of same derived type. This could potentially be a subtle breaking change in the unlikely event that someone was intentionally relying on the previous errant behavior.
+
+### Deprecated
+
+- [SIL.DictionaryServices] Deprecated the second parameter of GetHumanReadableIdWithAnyIllegalUnicodeEscaped: Added GetHumanReadableIdWithAnyIllegalUnicodeEscaped(LexEntry entry) and marked GetHumanReadableIdWithAnyIllegalUnicodeEscaped(LexEntry entry, Dictionary<string, int> idsAndCounts) as [Obsolete].
 
 ## [15.0.0] - 2025-01-06
 

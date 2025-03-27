@@ -1,0 +1,57 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+  schedule:
+    - cron: "0 8 * * 6"
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: windows-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    timeout-minutes: 60
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [actions, csharp, javascript, python]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: "0"
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: +security-and-quality
+          config: |
+            query-filters:
+              - exclude:
+                  problem.severity: recommendation
+
+      - name: Build C#
+        run: dotnet build -bl:build.binlog -c Release
+        if: ${{ matrix.language == 'csharp' }}
+
+      - name: Autobuild everything else
+        uses: github/codeql-action/autobuild@v3
+        if: ${{ matrix.language != 'csharp' }}
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"

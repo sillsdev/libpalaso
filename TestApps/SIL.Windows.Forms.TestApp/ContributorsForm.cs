@@ -2,147 +2,82 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using SIL.Core.ClearShare;
+using SIL.Reporting;
 using SIL.Windows.Forms.ClearShare;
 using SIL.Windows.Forms.ClearShare.WinFormsUI;
 using SIL.Windows.Forms.Widgets.BetterGrid;
+using static SIL.Windows.Forms.ClearShare.WinFormsUI.ContributorsListControl;
 
 namespace SIL.Windows.Forms.TestApp
 {
-	public class ContributorsForm : Form
+	public partial class ContributorsForm : Form
 	{
-		private TableLayoutPanel _tableLayout;
-		private ContributorsListControl _contributorsControl;
 		private ContributorsListControlViewModel _model;
-		private BetterGrid _contributorNames;
-
-		private class AutoCompleter : IAutoCompleteValueProvider
-		{
-			public BetterGrid Source {get; set;}
-
-			public IEnumerable<string> GetValuesForKey(string key)
-			{
-				if (key == "person")
-				{
-					foreach (DataGridViewRow row in Source.Rows)
-					{
-						yield return row.Cells[0].Value as string;
-					}
-				}
-			}
-		}
+		private readonly Role _authorRole = new Role("a", "Author", "someone who writes stuff");
+		private bool _doneTestingNonUiThreadAccess;
 
 		public ContributorsForm()
 		{
-			var autoCompleter = new AutoCompleter();
-			_model = new ContributorsListControlViewModel(autoCompleter, () => { });
-
 			InitializeComponent();
-			autoCompleter.Source = _contributorNames;
-
-			var contribs = new ContributionCollection(new [] { new Contribution("Fred", new Role("a", "Author", "guy who writes stuff")) });
-			_model.SetContributionList(contribs);
-			
-			_contributorsControl.Grid.Columns["name"].AutoSizeMode =
-				DataGridViewAutoSizeColumnMode.AllCells;
-			_contributorsControl.Grid.Columns["role"].AutoSizeMode =
-				DataGridViewAutoSizeColumnMode.AllCells;
-			_contributorsControl.Grid.Columns["comments"].AutoSizeMode =
-				DataGridViewAutoSizeColumnMode.Fill;
 		}
 
-		private void InitializeComponent()
+		protected override void OnLoad(EventArgs e)
 		{
-			SuspendLayout();
-			AutoScaleDimensions = new SizeF(6F, 13F);
-			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(700, 350);
+			base.OnLoad(e);
 
-			_tableLayout = new TableLayoutPanel
+			if (DesignMode)
+				return;
+
+			var autoCompleter = new AutoCompleter { Source = _contributorNames };
+			_model = new ContributorsListControlViewModel(autoCompleter, () => { });
+
+			// Initialize contributions
+			_model.SetContributionList(new ContributionCollection(new[]
 			{
-				Name = "_tableLayout",
-				Dock = DockStyle.Top,
-				AutoSize = true,
-				BackColor = Color.Transparent,
-				ColumnCount = 2,
-				RowCount = 2
-			};
-			_tableLayout.SuspendLayout();
-			_tableLayout.ColumnStyles.Add(new ColumnStyle());
-			_tableLayout.Location = new Point(0, 0);
+				new Contribution("Fred", _authorRole)
+			}));
+			_contributorsControl.Initialize(_model);
 
-			var btnUpdateContributorNames = new Label();
-			btnUpdateContributorNames.Text = "Hover over this text to Update Contributors";
-			btnUpdateContributorNames.MouseEnter += UpdateNames;
-			btnUpdateContributorNames.AutoSize = true;
-			btnUpdateContributorNames.Anchor = AnchorStyles.Right;
+			_contributorsControl.SetColumnAutoSizeMode(StandardColumns.Name, DataGridViewAutoSizeColumnMode.AllCells);
+			_contributorsControl.SetColumnAutoSizeMode(StandardColumns.Role, DataGridViewAutoSizeColumnMode.AllCells);
+			_contributorsControl.SetColumnAutoSizeMode(StandardColumns.Comments, DataGridViewAutoSizeColumnMode.Fill);
 
-			_contributorNames = new BetterGrid();
-			((ISupportInitialize)_contributorNames).BeginInit();
-			_contributorNames.AllowUserToAddRows = false;
-			_contributorNames.AllowUserToDeleteRows = false;
-			_contributorNames.AllowUserToResizeRows = false;
-			_contributorNames.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-			_contributorNames.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			_contributorNames.Dock = System.Windows.Forms.DockStyle.Fill;
-			_contributorNames.DrawTextBoxEditControlBorder = false;
-			_contributorNames.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
-			_contributorNames.Location = new System.Drawing.Point(1, 1);
-			_contributorNames.Name = "_contributorNames";
-			_contributorNames.RowHeadersVisible = false;
-			var colName = new DataGridViewColumn(new DataGridViewTextBoxCell());
-			colName.HeaderText = "Name";
-			_contributorNames.Columns.Add(colName);
-			_contributorNames.RowCount = 3;
-			_contributorNames.Rows[0].Cells[0].Value = "Andrew";
-			_contributorNames.Rows[1].Cells[0].Value = "Fred";
-			_contributorNames.Rows[2].Cells[0].Value = "Tom";
-
-			_contributorsControl = new ContributorsListControl(_model)
-			{
-				Dock = DockStyle.Fill,
-				Location = new System.Drawing.Point(0, 0),
-				Name = "_contributorsControl"
-			};
-			_contributorsControl.ValidatingContributor += HandleValidatingContributor;
-
-			// set the column header text
-			string[] headerText =
-			{
-				"Name",
-				"Role",
-				"Date",
-				"Comments"
-			};
-
+			// Set column headers
+			string[] headerText = { "Name", "Role", "Date", "Comments" };
 			for (var i = 0; i < headerText.Length; i++)
 				_contributorsControl.SetColumnHeaderText(i, headerText[i]);
 
-			_tableLayout.Controls.Add(_contributorsControl, 0, 0);
-			_tableLayout.SetColumnSpan(_contributorsControl, 2);
-			_tableLayout.Controls.Add(_contributorNames, 0, 1);
-			_tableLayout.Controls.Add(btnUpdateContributorNames, 1, 1);
-			
-			_tableLayout.ColumnStyles[0].SizeType = SizeType.Percent;
-			_tableLayout.ColumnStyles.Add(new ColumnStyle { SizeType = SizeType.AutoSize });
-
-			_tableLayout.RowStyles.Add(new RowStyle { SizeType = SizeType.Percent, Height = 50 });
-			_tableLayout.RowStyles.Add(new RowStyle { SizeType = SizeType.Percent, Height = 50 });
-
-			_tableLayout.Dock = DockStyle.Fill;
-
-			Controls.Add(_tableLayout);
-
-			Name = "ContributorsForm";
-			Text = "Contributors";
-
-			((ISupportInitialize)_contributorNames).EndInit();
-			_tableLayout.ResumeLayout(true);
-			ResumeLayout(true);
+			StartBackgroundTaskToTestNonUiThreadAccess();
 		}
 
-		/// ------------------------------------------------------------------------------------
+		private async void StartBackgroundTaskToTestNonUiThreadAccess()
+		{
+			while (!_doneTestingNonUiThreadAccess)
+			{
+				await Task.Delay(1500); // Space out additions of new contributors
+				await Task.Run(TestNonUiThreadAccessOnContributorsControl);
+			}
+		}
+
+		private void UpdateNames(object sender, EventArgs e)
+		{
+			if (!_contributorsControl.Validate())
+				return;
+
+			var contributions = _model.Contributions;
+			for (var i = 0; i < _contributorNames.RowCount && i < contributions.Count; i++)
+			{
+				contributions[i].ContributorName =
+					_contributorNames.Rows[i].Cells[0].Value as string;
+			}
+
+			_model.SetContributionList(contributions);
+		}
+
 		private KeyValuePair<string, string> HandleValidatingContributor(ContributorsListControl sender,
 			Contribution contribution, CancelEventArgs e)
 		{
@@ -151,7 +86,6 @@ namespace SIL.Windows.Forms.TestApp
 			return kvp;
 		}
 
-		/// ------------------------------------------------------------------------------------
 		private static KeyValuePair<string, string> CheckIfContributorIsValid(Contribution contribution)
 		{
 			if (contribution != null)
@@ -166,21 +100,98 @@ namespace SIL.Windows.Forms.TestApp
 			return new KeyValuePair<string, string>();
 		}
 
-		/// ------------------------------------------------------------------------------------
-		private void UpdateNames(object sender, EventArgs e)
+		private class AutoCompleter : IAutoCompleteValueProvider
 		{
-			// The following illustrates how to avoid an InvalidOperationException when the
-			// grid is not in a state where it passes validation.
-			if (!_contributorsControl.Validate())
-				return;
+			public BetterGrid Source { get; set; }
 
-			var contribs = _model.Contributions;
-			for (var i = 0; i < _contributorNames.RowCount && i < contribs.Count; i++)
+			public IEnumerable<string> GetValuesForKey(string key)
 			{
-				contribs[i].ContributorName = (string)_contributorNames.Rows[i].Cells[0].Value;
+				if (key == "person")
+				{
+					foreach (DataGridViewRow row in Source.Rows)
+					{
+						yield return row.Cells[0].Value as string;
+					}
+				}
+			}
+		}
+
+		private void TestNonUiThreadAccessOnContributorsControl()
+		{
+			try
+			{
+				if (_contributorsControl.InEditMode || _contributorsControl.InNewContributionRow)
+				{
+					_contributorsControl.SetColumnAutoSizeMode(StandardColumns.Date,
+						_model.Contributions.Count % 2 == 0 ?
+							DataGridViewAutoSizeColumnMode.DisplayedCells :
+							DataGridViewAutoSizeColumnMode.ColumnHeader);
+					return;
+				}
+			}
+			catch (ObjectDisposedException)
+			{
+				Logger.WriteEvent("User must have closed the form before we finished. " +
+					"That's fine. But if you think we're going to quit, you're mistaken...");
 			}
 
-			_model.SetContributionList(contribs);
+			var newList = _model.Contributions.ToList();
+			string newName;
+			switch (newList.Count)
+			{
+				case 1:
+					newName = "Marko";
+					break;
+				case 2:
+					newName = "Ralph";
+					break;
+				case 3:
+					newName = "Hank";
+					break;
+				case 4:
+					newName = "Fredrick";
+					break;
+				case 5:
+					newName = "Timoteo";
+					try
+					{
+						_contributorsControl.SetColumnHeaderText(0, "Nombre");
+						_contributorsControl.SetColumnHeaderText(1,
+							_contributorsControl.GetCurrentContribution()?.ContributorName ??
+							"Rol");
+						_contributorsControl.SetColumnHeaderText(2, "Fecha");
+					}
+					catch (ObjectDisposedException)
+					{
+						Logger.WriteEvent("And yet we keep going...");
+					}
+
+					break;
+				case 6:
+					newName = "Saul";
+					break;
+				case 7:
+					newName = "Gumby";
+					break;
+				case 8:
+					newName = "Serge";
+					break;
+				case 9:
+					newName = "Linda";
+					break;
+				default:
+					Invoke(new Action(() =>
+					{
+						_contributorsControl.Grid.DrawMessageInCenterOfGrid(
+							Graphics.FromHwnd(_contributorsControl.Grid.Handle), "All done blasting!", 0);
+					}));
+					_doneTestingNonUiThreadAccess = true;
+					return;
+			}
+
+			newList.Add(new Contribution(newName, _authorRole));
+
+			_model.SetContributionList(new ContributionCollection(newList));
 		}
 	}
 }

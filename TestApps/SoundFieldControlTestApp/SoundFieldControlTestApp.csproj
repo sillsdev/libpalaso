@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>SIL.Media.SoundFieldControlTestApp</RootNamespace>
+    <AssemblyName>SoundFieldControlTestApp</AssemblyName>
+    <Description>Test app for SoundFieldControl and ShortSoundFieldControl</Description>
+    <OutputPath>../../output/$(Configuration)</OutputPath>
+    <!-- Unsigned because we reference SIL.Media which itself is unsigned because it depends on
+    irrKlang.NET4.dll which is a mixed-mode assembly -->
+    <SignAssembly>false</SignAssembly>
+    <IsPackable>false</IsPackable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+	<GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\MP3 PLAYER.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\MP3 PLAYER.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Markdig.Signed" Version="0.37.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\SIL.Media\SIL.Media.csproj" />
+    <ProjectReference Include="..\..\SIL.Windows.Forms\SIL.Windows.Forms.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

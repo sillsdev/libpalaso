@@ -284,6 +284,17 @@ namespace SIL.WritingSystems.Tests
 		}
 		#endregion
 
+		[Test]
+		public void Equals_DifferentSubtagType_ReturnsFalse()
+		{
+			var languageSubtag = new LanguageSubtag("xmin", "mine", true, "xkal");
+			var scriptSubtag = new ScriptSubtag("xmin", "mine", true, false);
+			Assert.That(languageSubtag, Is.Not.EqualTo(scriptSubtag));
+			Assert.That(scriptSubtag, Is.Not.EqualTo(languageSubtag));
+			object obj = languageSubtag;
+			Assert.That(scriptSubtag, Is.Not.EqualTo(obj));
+		}
+
 		#region Canonicalize
 		[Test]
 		public void Canonicalize_ImplicitScript_SuppressesScript()
