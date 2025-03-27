@@ -191,7 +191,7 @@ namespace SIL.Tests.UsbDrive
 			Assert.Throws<ArgumentOutOfRangeException>(
 				() =>
 					{
-						string s = usbDrives[0].RootDirectory.FullName;
+						_ = usbDrives[0].RootDirectory.FullName;
 					}
 				);
 		}
