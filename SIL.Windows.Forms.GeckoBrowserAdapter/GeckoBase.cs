@@ -190,7 +190,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 					SendKey(e);
 				else
 				{
-					if ((e.KeyCode == (uint) Keys.Tab) && !e.CtrlKey && !e.AltKey)
+					if ((e.KeyCode == (uint)Keys.Tab) && !e.CtrlKey && !e.AltKey)
 					{
 						e.Handled = true;
 						if (e.ShiftKey)
@@ -271,10 +271,8 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 					break;
 			}
 			string result = builder.ToString();
-			if (! String.IsNullOrEmpty(result))
-			{
+			if (!string.IsNullOrEmpty(result))
 				SendKeys.Send(result);
-			}
 		}
 		public virtual bool InFocus
 		{
@@ -299,26 +297,19 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			if (_inFocus)
 			{
 				_inFocus = false;
-				if (UserLostFocus != null)
-				{
-					UserLostFocus.Invoke(this, null);
-				}
+				UserLostFocus?.Invoke(this, null);
 			}
 		}
 		protected virtual void OnDomFocus(object sender, EventArgs ea)
 		{
 			DomEventArgs e = new DomEventArgs(ea);
 			if (!_browserDocumentLoaded)
-			{
 				return;
-			}
 
 			// Only handle DomFocus that occurs on a Element.
 			// This is Important or it will mess with IME keyboard focus.
-			if (e == null || e.Target == null || e.Target.CastToGeckoElement () == null)
-			{
+			if (e == null || e.Target == null || e.Target.CastToGeckoElement() == null)
 				return;
-			}
 
 			var content = _browser.Document.GetElementById("main");
 			if (content != null)
@@ -330,10 +321,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 					// refocussing.
 					_inFocus = true;
 					EnsureFocusedGeckoControlHasInputFocus();
-					if (_browser != null)
-					{
-						_browser.SetInputFocus();
-					}
+					_browser?.SetInputFocus();
 					_focusElement = (GeckoHtmlElement)content;
 					ChangeFocus();
 				}
@@ -341,7 +329,6 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		}
 		protected virtual void OnDomDocumentCompleted(object sender, EventArgs ea)
 		{
-			GeckoDocumentCompletedEventArgs e = new GeckoDocumentCompletedEventArgs(ea);
 			_browserDocumentLoaded = true;  // Document loaded once
 			AdjustHeight();
 			if (_entered)
@@ -363,13 +350,8 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 
 		protected override void OnLeave(EventArgs e)
 		{
-			if (_browser != null)
-			{
-				_browser.RemoveInputFocus();
-				if (_browser.WebBrowserFocus != null)
-					_browser.WebBrowserFocus.Deactivate();
-			}
-
+			_browser?.RemoveInputFocus();
+			_browser?.WebBrowserFocus?.Deactivate();
 			_entered = false;
 
 			base.OnLeave(e);
@@ -444,7 +426,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		/// </summary>
 		protected void EnsureFocusedGeckoControlHasInputFocus()
 		{
-			if ((_browser == null) || (_browser.HasInputFocus ()))
+			if ((_browser == null) || (_browser.HasInputFocus()))
 			{
 				return;
 			}

@@ -2,7 +2,8 @@
 using NUnit.Framework;
 using SIL.IO;
 
-namespace SIL.TestUtilities {
+namespace SIL.TestUtilities
+{
 	[TestFixture]
 	public class TemporaryFolderTests
 	{

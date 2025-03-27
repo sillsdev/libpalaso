@@ -13,7 +13,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 	{
 		[Test]
 		public void FileName_CreatedWithImageOnly_Null()
-		{ 
+		{
 			using (var pi = PalasoImage.FromImage(new Bitmap(10, 10)))
 			{
 				Assert.IsNull(pi.FileName);
@@ -105,7 +105,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 				// Note: Don't check against pi.Disposed. That belongs to the PalasoImage class.
 				// This test checks for if the PalasoImage's Image member has been disposed of,
 				// not whether or not the PalasoImage is disposed of.
-				Assert.DoesNotThrow(() => { int w = pi.Image.Width; });
+				Assert.DoesNotThrow(() => { _ = pi.Image.Width; });
 			}
 		}
 
@@ -113,7 +113,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 		public void LoadAndSave_DeleteAfter_NothingLocked()
 		{
 			var png = new Bitmap(10, 10);
-			using (var temp =  TempFile.WithExtension(".png"))
+			using (var temp = TempFile.WithExtension(".png"))
 			{
 				png.Save(temp.Path);
 				using (var pi = PalasoImage.FromFile(temp.Path))
@@ -182,7 +182,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 			RoundTripImageThenCheckPixelFormat(".png", ImageFormat.Png, PixelFormat.Format32bppArgb);
 		}
 
-		private static void RoundTripImageThenCheckPixelFormat(string  extension, ImageFormat imageFormat, PixelFormat pixelFormat)
+		private static void RoundTripImageThenCheckPixelFormat(string extension, ImageFormat imageFormat, PixelFormat pixelFormat)
 		{
 			using (var originalBitmap = new Bitmap(10, 10, pixelFormat))
 			using (var saved = TempFile.WithExtension(extension))

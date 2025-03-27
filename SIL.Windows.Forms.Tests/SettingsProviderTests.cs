@@ -251,7 +251,7 @@ namespace SIL.Windows.Forms.Tests
 				File.Delete(filePath);
 				using (new TempFile(filePath, true))
 				{
-					File.WriteAllText(filePath,"hello world");
+					File.WriteAllText(filePath, "hello world");
 					using (new ErrorReport.NonFatalErrorReportExpected())
 					{
 						var dummy = Registration.Registration.Default;
@@ -291,7 +291,7 @@ namespace SIL.Windows.Forms.Tests
 					//because we already did the check, we don't expect to see any error now
 					using (new ErrorReport.NoNonFatalErrorReportExpected())
 					{
-						var dummy = Registration.Registration.Default;
+						_ = Registration.Registration.Default;
 					}
 				}
 			}
