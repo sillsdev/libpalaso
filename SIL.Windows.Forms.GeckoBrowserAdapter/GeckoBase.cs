@@ -341,7 +341,6 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		}
 		protected virtual void OnDomDocumentCompleted(object sender, EventArgs ea)
 		{
-			_ = new GeckoDocumentCompletedEventArgs(ea);
 			_browserDocumentLoaded = true;  // Document loaded once
 			AdjustHeight();
 			if (_entered)
