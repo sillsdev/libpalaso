@@ -369,50 +369,43 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		internal event EventHandler<EventArgs> DocumentCompleted;
 		void OnDocumentCompleted(object sender, EventArgs e)
 		{
-			if (DocumentCompleted != null)
-				DocumentCompleted(this, e);
+			DocumentCompleted?.Invoke(this, e);
 		}
 
 		internal event EventHandler<EventArgs> DomFocus;
 		void OnDomFocus(object sender, EventArgs e)
 		{
-			if (DomFocus != null)
-				DomFocus(this, e);
+			DomFocus?.Invoke(this, e);
 		}
 
 		internal event EventHandler<EventArgs> DomBlur;
 		void OnDomBlur(object sender, EventArgs e)
 		{
-			if (DomBlur != null)
-				DomBlur(this, e);
+			DomBlur?.Invoke(this, e);
 		}
 
 		internal event EventHandler<EventArgs> DomKeyDown;
 		void OnDomKeyDown(object sender, EventArgs e)
 		{
-			if (DomKeyDown != null)
-				DomKeyDown(this, e);
+			DomKeyDown?.Invoke(this, e);
 		}
 
 		internal event EventHandler<EventArgs> DomKeyUp;
 		void OnDomKeyUp(object sender, EventArgs e)
 		{
-			if (DomKeyUp != null)
-				DomKeyUp(this, e);
+			DomKeyUp?.Invoke(this, e);
 		}
 
 		internal event EventHandler<EventArgs> DomClick;
 		void OnDomClick(object sender, EventArgs e)
 		{
-			if (DomClick != null)
-				DomClick(this, e);
+			DomClick?.Invoke(this, e);
 		}
 
 		internal event EventHandler<EventArgs> DomMouseDown;
 		void OnDomMouseDown(object sender, EventArgs e)
 		{
-			if (DomMouseDown != null)
-				DomMouseDown(this, e);
+			DomMouseDown?.Invoke(this, e);
 		}
 		#endregion
 	}
