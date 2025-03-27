@@ -38,7 +38,6 @@ namespace SIL.Windows.Forms.Widgets.Flying
 		/// Get Point on curve at parameter t
 		/// </summary>
 		/// <param name="t">the interval (varies between 0 and 1)</param>
-		/// <returns></returns>
 		private PointF GetPointFromInterval(float t)
 		{
 			float t_t = t * t; // interval squared
