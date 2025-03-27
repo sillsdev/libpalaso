@@ -69,7 +69,7 @@ namespace SIL.Windows.Forms.Widgets.Flying
 
 	public class Animator
 	{
-		public class AnimatorEventArgs: EventArgs
+		public class AnimatorEventArgs : EventArgs
 		{
 			private readonly PointF _point;
 
@@ -154,7 +154,7 @@ namespace SIL.Windows.Forms.Widgets.Flying
 			int elapsedTime;
 			Math.DivRem(_elapsedTime, Duration, out elapsedTime);
 
-			PointF pointF = PointFromDistanceFunction(SpeedFunction(elapsedTime / (float) Duration));
+			PointF pointF = PointFromDistanceFunction(SpeedFunction(elapsedTime / (float)Duration));
 			Animate(this, new AnimatorEventArgs(pointF));
 		}
 
@@ -223,13 +223,12 @@ namespace SIL.Windows.Forms.Widgets.Flying
 			get { return 1000.0f / _timer.Interval; }
 			set
 			{
-				if (value > 1000 + float.Epsilon || value < 1 - float.Epsilon)
+				if (value > 1000 || value < 1)
 				{
-					throw new ArgumentOutOfRangeException("value",
-														  value,
-														  "FrameRate must be between 1 and 1000, inclusive");
+					throw new ArgumentOutOfRangeException(
+						"value", value, "FrameRate must be between 1 and 1000, inclusive");
 				}
-				_timer.Interval = (int) (float.Epsilon + 1000.0f / value);
+				_timer.Interval = (int)(1000.0f / value);
 			}
 		}
 
@@ -266,7 +265,7 @@ namespace SIL.Windows.Forms.Widgets.Flying
 			/// <returns>a number which varies between 0 and 1</returns>
 			public static float SinSpeed(float t)
 			{
-				return (float) (Math.Sin(t * Math.PI - Math.PI / 2f) + 1f) / 2f;
+				return (float)(Math.Sin(t * Math.PI - Math.PI / 2f) + 1f) / 2f;
 			}
 		}
 
@@ -280,7 +279,7 @@ namespace SIL.Windows.Forms.Widgets.Flying
 
 		public static int GetValue(float proportion, int from, int to)
 		{
-			return (int) ((to - from) * proportion) + from;
+			return (int)((to - from) * proportion) + from;
 		}
 
 		public static T GetValue<T>(float proportion, IList<T> list)
@@ -293,7 +292,7 @@ namespace SIL.Windows.Forms.Widgets.Flying
 			{
 				throw new ArgumentOutOfRangeException("list", list, "list is empty");
 			}
-			int index = (int) (list.Count * proportion);
+			int index = (int)(list.Count * proportion);
 			return list[index];
 		}
 	}
