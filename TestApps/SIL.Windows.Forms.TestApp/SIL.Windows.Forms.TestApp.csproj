@@ -21,7 +21,8 @@
     <PackageReference Include="Geckofx45.64.Linux" Version="45.0.37" Condition="'$(OS)'=='Unix' And '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'=='X64'" GeneratePathProperty="true" />
     <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
     <PackageReference Include="Icu4c.Win.Min" Version="56.1.82" />
-    <PackageReference Include="SIL.libpalaso.l10ns" Version="13.*-*" GeneratePathProperty="true" />
+    <PackageReference Include="Markdig.Signed" Version="0.37.0" />
+    <PackageReference Include="SIL.libpalaso.l10ns" Version="15.0.0" GeneratePathProperty="true" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +34,7 @@
     <ProjectReference Include="..\..\SIL.Windows.Forms.DblBundle\SIL.Windows.Forms.DblBundle.csproj" />
     <ProjectReference Include="..\..\SIL.Windows.Forms.GeckoBrowserAdapter\SIL.Windows.Forms.GeckoBrowserAdapter.csproj" />
     <ProjectReference Include="..\..\SIL.Windows.Forms.Keyboarding\SIL.Windows.Forms.Keyboarding.csproj" />
+    <ProjectReference Include="..\..\SIL.Windows.Forms.Scripture\SIL.Windows.Forms.Scripture.csproj" />
     <ProjectReference Include="..\..\SIL.Windows.Forms.WritingSystems\SIL.Windows.Forms.WritingSystems.csproj" />
     <ProjectReference Include="..\..\SIL.Windows.Forms\SIL.Windows.Forms.csproj" />
     <ProjectReference Include="..\..\SIL.WritingSystems\SIL.WritingSystems.csproj" />

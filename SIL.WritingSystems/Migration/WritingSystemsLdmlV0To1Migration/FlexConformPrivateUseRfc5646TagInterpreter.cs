@@ -31,9 +31,9 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			{
 				IetfLanguageTag.SplitVariantAndPrivateUse(variant, out newVariant, out newPrivateUse);
 			}
-			IEnumerable<string> privateUseSubtagsWithoutXs = StripXs(newPrivateUse);
-			IEnumerable<string> languageSubtagsWithoutXs = StripXs(language);
-			newPrivateUse = String.Join("-", (languageSubtagsWithoutXs.Union(privateUseSubtagsWithoutXs)).Where(str=>!String.IsNullOrEmpty(str)).ToArray());
+			var subtagsWithoutXs = StripXs(language).Union(StripXs(newPrivateUse))
+				.Where(str => !string.IsNullOrEmpty(str));
+			newPrivateUse = string.Join("-", subtagsWithoutXs);
 
 			_variant = IetfLanguageTag.ConcatenateVariantAndPrivateUse(newVariant, newPrivateUse);
 
@@ -108,28 +108,20 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		public string Rfc5646Tag
 		{
-			get { return string.Join("-", new[] { Language, Script, Region, Variant }.Select(t => t).Where(str => !String.IsNullOrEmpty(str)).ToArray()); }
+			get
+			{
+				return string.Join("-", new[] { Language, Script, Region, Variant }
+					.Where(str => !string.IsNullOrEmpty(str)));
+			}
 		}
 
-		public string Language
-		{
-			get { return _language; }
-		}
+		public string Language => _language;
 
-		public string Script
-		{
-			get { return _script; }
-		}
+		public string Script => _script;
 
-		public string Region
-		{
-			get { return _region; }
-		}
+		public string Region => _region;
 
-		public string Variant
-		{
-			get { return _variant; }
-		}
+		public string Variant => _variant;
 	}
 
 }

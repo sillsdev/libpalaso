@@ -188,7 +188,8 @@ namespace SIL.WritingSystems
 		{
 			var languageTag = new LanguageSubtag(code, name, isPrivateUse, iso3Code);
 			RegisteredLanguages.Add(languageTag);
-			Iso3Languages = RegisteredLanguages.Where(l => !string.IsNullOrEmpty(l.Iso3Code)).ToDictionary(l => l.Iso3Code, StringComparer.InvariantCultureIgnoreCase);
+			if (!string.IsNullOrEmpty(iso3Code))
+				Iso3Languages[iso3Code] = languageTag;
 		}
 
 		internal static string SubTagComponentDescription(string component)

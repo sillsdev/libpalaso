@@ -14,6 +14,8 @@ defaults:
 jobs:
   build:
     timeout-minutes: 60
+    permissions:
+      contents: read
     runs-on: windows-latest
     strategy:
       fail-fast: false
@@ -35,19 +37,19 @@ jobs:
     - name: Get Path to Tests
       run: echo "TEST_PATH=$(dotnet msbuild SIL.Core.Tests/ --getProperty:OutputPath -p:TargetFramework=${{ matrix.framework }} -p:Configuration=Release)" >> $GITHUB_ENV
 
-    # Several steps to set up FFmpeg and Scream and start Audio Service so that audio tests can run 
+    # Several steps to set up FFmpeg and Scream and start Audio Service so that audio tests can run
     - name: Install FFmpeg
       uses: FedericoCarboni/setup-ffmpeg@v3
       id: setup-ffmpeg
       with:
         ffmpeg-version: release
     - run: echo ffmpeg path ${{ steps.setup-ffmpeg.outputs.ffmpeg-path }}
-      
+
     - name: Verify FFmpeg Installation
       run: |
         echo $PATH
         ffmpeg -version
-    
+
     - name: Install Scream
       shell: powershell
       run: |
@@ -67,7 +69,7 @@ jobs:
         Import-Certificate -FilePath ScreamCertificate.cer -CertStoreLocation Cert:\LocalMachine\TrustedPublisher
         Scream\Install\helpers\devcon-x64.exe install Scream\Install\driver\x64\Scream.inf *Scream
       timeout-minutes: 5
-      
+
     - name: Start Windows Audio Service
       run: net start audiosrv
       shell: powershell
@@ -85,6 +87,30 @@ jobs:
         name: Test results (${{ matrix.framework }})
         path: ./test-results
 
+    # Limit the packaging to a single matrix job
+    # The dotnet build above does not specify the framework, so all artifacts are available on each job for packaging
+    - name: Nuget Packaging
+      id: nuget
+      run: dotnet pack --include-symbols --no-restore --no-build -p:SymbolPackageFormat=snupkg --property:Platform="Any CPU" --output ./artifacts
+      if: matrix.framework == 'net8.0-windows'
+
+    # You might want to test out the PR packages, but the release should be pulled from nuget
+    - name: Upload Nuget Packages
+      id: nuget-temp
+      uses: actions/upload-artifact@v4
+      with:
+        name: Nuget Packages
+        path: |
+          ./artifacts/*.nupkg
+          ./artifacts/*.snupkg
+      if: github.event_name == 'pull_request' && matrix.framework == 'net8.0-windows'
+
+    # When refressing the Nuget publishing token make sure it covers all the libpalaso packages
+    - name: Publish Nuget Packages
+      id: nuget-publish
+      run: dotnet nuget push artifacts/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.SILLSDEV_PUBLISH_NUGET_ORG}} --skip-duplicate
+      if: github.ref_name == 'master' && matrix.framework == 'net8.0-windows'
+
     - name: Publish logs on failure
       if: failure()
       uses: actions/upload-artifact@v4
@@ -93,6 +119,10 @@ jobs:
         path: build.binlog
 
   publish-test-results:
+    permissions:
+      checks: write
+      contents: read
+      pull-requests: write
     runs-on: ubuntu-latest
     needs: build
     if: always()
