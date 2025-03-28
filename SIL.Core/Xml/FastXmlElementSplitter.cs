@@ -222,8 +222,8 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Given that _currentInput is at the first character of the marker of the opening XML tag
-		/// of an element, return the byte array that is the complete element.
+		/// Since <see cref="_currentOffset"/> is at the first character of the marker of the
+		/// opening XML tag of an element, return the byte array that is the complete element.
 		/// </summary>
 		private byte[] MakeElement(byte[] marker)
 		{
@@ -441,7 +441,7 @@ namespace SIL.Xml
 		/// </summary>
 		private void AdvanceToOpenAngleBracket()
 		{
-			for (; _currentOffset < _endOfRecordsOffset;_currentOffset++)
+			for (; _currentOffset < _endOfRecordsOffset; _currentOffset++)
 			{
 				if (_input[_currentOffset] == _openingAngleBracket)
 				{
@@ -566,7 +566,7 @@ namespace SIL.Xml
 			Length = (int)new FileInfo(_pathname).Length;
 			// Setting a high offset ensures that no byte we want will be in any buffer's range.
 			for (int i = 0; i < kBufferCount; i++)
-				buffers[i] = new Buffer() {Data = new byte[kbufLen], Offset = Length};
+				buffers[i] = new Buffer() { Data = new byte[kbufLen], Offset = Length };
 			_currentBuffer = -1; // no buffer is loaded
 			m_reader = new FileStream(_pathname, FileMode.Open, FileAccess.Read, FileShare.None, 4096, true);
 			// Read a block at the end of the file, which we happen to know we will want first.
