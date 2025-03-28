@@ -112,7 +112,7 @@ namespace SIL.Reflection
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Returns a integer value returned from a call to a private method.
+		/// Returns an integer value returned from a call to a private method.
 		/// </summary>
 		/// <param name="binding">This is either the Type of the object on which the method
 		/// is called or an instance of that type of object. When the method being called
@@ -127,7 +127,7 @@ namespace SIL.Reflection
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Returns a integer value returned from a call to a private method.
+		/// Returns an integer value returned from a call to a private method.
 		/// </summary>
 		/// <param name="binding">This is either the Type of the object on which the method
 		/// is called or an instance of that type of object. When the method being called

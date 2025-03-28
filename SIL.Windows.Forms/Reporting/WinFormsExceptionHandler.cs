@@ -49,7 +49,7 @@ namespace SIL.Windows.Forms.Reporting
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Catches and displays a otherwise unhandled exception.
+		/// Catches and displays an otherwise unhandled exception.
 		/// </summary>
 		/// <param name="sender">sender</param>
 		/// <param name="e">Exception</param>
@@ -64,7 +64,7 @@ namespace SIL.Windows.Forms.Reporting
 
 			if (DisplayError(e.Exception))
 			{
-				//Are we inside a Application.Run() statement?
+				// Are we inside an Application.Run() statement?
 				if (Application.MessageLoop)
 					Application.Exit();
 				else
