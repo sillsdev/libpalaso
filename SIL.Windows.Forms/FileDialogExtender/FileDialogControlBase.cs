@@ -26,6 +26,7 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using JetBrains.Annotations;
 
 namespace SIL.Windows.Forms.FileDialogExtender
 {
@@ -60,7 +61,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 		#endregion
 
 		#region Variables Declaration
-		FileDialog _MSdialog;
+
 		NativeWindow _dlgWrapper;
 		private AddonWindowLocation _StartLocation = AddonWindowLocation.Right;
 		IntPtr _hFileDialogHandle = IntPtr.Zero;
@@ -90,45 +91,28 @@ namespace SIL.Windows.Forms.FileDialogExtender
 		#endregion
 
 		#region Properties
-		static uint _originalDlgHeight, _originalDlgWidth;
 
-		internal static uint OriginalDlgWidth
-		{
-			get { return _originalDlgWidth; }
-			set { _originalDlgWidth = value; }
-		}
+		internal static uint OriginalDlgWidth { get; set; }
 
-		internal static uint OriginalDlgHeight
-		{
-			get { return _originalDlgHeight; }
-			set { _originalDlgHeight = value; }
-		}
+		internal static uint OriginalDlgHeight { get; set; }
 
 		[Browsable(false)]
-		public string[] FileDlgFileNames
-		{
-			get { return DesignMode ? null : MSDialog.FileNames; }
-		}
+		[PublicAPI]
+		public string[] FileDlgFileNames => DesignMode ? null : MSDialog.FileNames;
 
 		[Browsable(false)]
-		public FileDialog MSDialog
-		{
-			set { _MSdialog = value; }
-			get { return _MSdialog; }
-		}
+		public FileDialog MSDialog { set; get; }
 
 		[Category("FileDialogExtenders")]
 		[DefaultValue(AddonWindowLocation.Right)]
 		public AddonWindowLocation FileDlgStartLocation
 		{
-			get { return _StartLocation; }
+			get => _StartLocation;
 			set
 			{
 				_StartLocation = value;
 				if (DesignMode)
-				{
 					Refresh();
-				}
 			}
 		}
 
@@ -144,6 +128,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 
 		[Category("FileDialogExtenders")]
 		[DefaultValue("")]
+		[PublicAPI]
 		public string FileDlgInitialDirectory
 		{
 			get => DesignMode ? _InitialDirectory : MSDialog.InitialDirectory;
@@ -157,6 +142,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 
 		[Category("FileDialogExtenders")]
 		[DefaultValue("")]
+		[PublicAPI]
 		public string FileDlgFileName
 		{
 			get => DesignMode ? _FileName : MSDialog.FileName;
@@ -173,6 +159,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 
 		[Category("FileDialogExtenders")]
 		[DefaultValue("jpg")]
+		[PublicAPI]
 		public string FileDlgDefaultExt
 		{
 			get => DesignMode ? _DefaultExt : MSDialog.DefaultExt;
@@ -181,6 +168,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 
 		[Category("FileDialogExtenders")]
 		[DefaultValue("All files (*.*)|*.*")]
+		[PublicAPI]
 		public string FileDlgFilter
 		{
 			get => DesignMode ? _Filter : MSDialog.Filter;
@@ -189,6 +177,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 
 		[Category("FileDialogExtenders")]
 		[DefaultValue(1)]
+		[PublicAPI]
 		public int FileDlgFilterIndex
 		{
 			get => DesignMode ? _FilterIndex : MSDialog.FilterIndex;
@@ -197,6 +186,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 
 		[Category("FileDialogExtenders")]
 		[DefaultValue(true)]
+		[PublicAPI]
 		public bool FileDlgAddExtension
 		{
 			get => DesignMode ? _AddExtension : MSDialog.AddExtension;
@@ -218,6 +208,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 
 		[Category("FileDialogExtenders")]
 		[DefaultValue(true)]
+		[PublicAPI]
 		public bool FileDlgCheckFileExists
 		{
 			get => DesignMode ? _CheckFileExists : MSDialog.CheckFileExists;
@@ -226,6 +217,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 
 		[Category("FileDialogExtenders")]
 		[DefaultValue(false)]
+		[PublicAPI]
 		public bool FileDlgShowHelp
 		{
 			get => DesignMode ? _ShowHelp : MSDialog.ShowHelp;
@@ -234,6 +226,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 
 		[Category("FileDialogExtenders")]
 		[DefaultValue(true)]
+		[PublicAPI]
 		public bool FileDlgDereferenceLinks
 		{
 			get => DesignMode ? _DereferenceLinks : MSDialog.DereferenceLinks;
@@ -389,7 +382,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 				owner = wr;
 			}
 			OriginalCtrlSize = Size;
-			_MSdialog = FileDlgType == FileDialogType.OpenFileDlg ? new OpenFileDialog() : new SaveFileDialog() as FileDialog;
+			MSDialog = FileDlgType == FileDialogType.OpenFileDlg ? new OpenFileDialog() : new SaveFileDialog() as FileDialog;
 			_dlgWrapper = new WholeDialogWrapper(this);
 			OnPrepareMSDialog();
 			if (!_hasRunInitMSDialog)
@@ -399,7 +392,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 				System.Reflection.PropertyInfo AutoUpgradeInfo = MSDialog.GetType().GetProperty("AutoUpgradeEnabled");
 				if (AutoUpgradeInfo != null)
 					AutoUpgradeInfo.SetValue(MSDialog, false, null);
-				returnDialogResult = _MSdialog.ShowDialog(owner);
+				returnDialogResult = MSDialog.ShowDialog(owner);
 			}
 			// Sometimes if you open an animated .gif on the preview and the Form is closed, an
 			// exception is thrown. Let's ignore this exception and keep closing the form.
@@ -432,7 +425,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 				var autoUpgradeInfo = MSDialog.GetType().GetProperty("AutoUpgradeEnabled");
 				if (autoUpgradeInfo != null)
 					autoUpgradeInfo.SetValue(MSDialog, false, null);
-				returnDialogResult = _MSdialog.ShowDialog(owner);
+				returnDialogResult = MSDialog.ShowDialog(owner);
 			}
 			// Sometimes if you open an animated .gif on the preview and the Form is closed, an
 			// exception is thrown. Let's ignore this exception and keep closing the form.
@@ -476,15 +469,10 @@ namespace SIL.Windows.Forms.FileDialogExtender
 		{
 			public WindowWrapper(IntPtr handle)
 			{
-				_hwnd = handle;
+				Handle = handle;
 			}
 
-			public IntPtr Handle
-			{
-				get { return _hwnd; }
-			}
-
-			private IntPtr _hwnd;
+			public IntPtr Handle { get; }
 		}
 		#endregion
 	}
