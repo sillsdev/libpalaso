@@ -25,7 +25,7 @@ namespace SIL.Lift.Merging
 	///<summary></summary>
 	public class LiftChangeDetector : ILiftChangeDetector
 	{
-		 private readonly string _pathToLift;
+		private readonly string _pathToLift;
 		private readonly string _pathToCacheDir;
 
 		///<summary></summary>
@@ -33,7 +33,7 @@ namespace SIL.Lift.Merging
 		{
 			_pathToLift = pathToLift;
 			_pathToCacheDir = pathToCacheDir;
-		   //no no no! Reset();
+			//no no no! Reset();
 		}
 
 		/// <summary>
@@ -46,7 +46,7 @@ namespace SIL.Lift.Merging
 				if (!Directory.Exists(_pathToCacheDir))
 				{
 					return; //if they don't have a cache directory yet, then it's proper for us to NOT have a reference copy
-					//we'll get reset() again after they build the cache/load the db/whatever.
+							//we'll get reset() again after they build the cache/load the db/whatever.
 				}
 
 
@@ -69,7 +69,9 @@ namespace SIL.Lift.Merging
 			}
 		}
 
-		///<summary></summary>
+		/// <summary>
+		/// Checks if both the Lift file and a cached reference copy exist.
+		/// </summary>
 		public bool CanProvideChangeRecord
 		{
 			get { return File.Exists(PathToReferenceCopy) && File.Exists(_pathToLift); }
@@ -78,7 +80,7 @@ namespace SIL.Lift.Merging
 		///<summary></summary>
 		public ILiftChangeReport GetChangeReport(IProgress progress)
 		{
-			StreamReader reference=null;
+			StreamReader reference = null;
 			StreamReader working = null;
 			try
 			{
@@ -93,7 +95,7 @@ namespace SIL.Lift.Merging
 									  PathToReferenceCopy, error.Message));
 				}
 
-			   working = new StreamReader(_pathToLift);
+				working = new StreamReader(_pathToLift);
 
 				return LiftChangeReport.DetermineChanges(reference, working, progress);
 			}
@@ -158,14 +160,14 @@ namespace SIL.Lift.Merging
 		///<summary></summary>
 		public ChangeType GetChangeType(string entryId)
 		{
-			if(_idsOfEditedEntries.Contains(entryId))
+			if (_idsOfEditedEntries.Contains(entryId))
 				return ChangeType.Editted;
-			if (_idsOfAddedEntries .Contains(entryId))
+			if (_idsOfAddedEntries.Contains(entryId))
 				return ChangeType.New;
 
 			//a client is probably going to use the IdsOfDeletedEntries that to give us ids of the original file, but
 			//we do this here for completeness
-			if (_idsOfDeletedEntries .Contains(entryId))
+			if (_idsOfDeletedEntries.Contains(entryId))
 				return ChangeType.Deleted;
 
 			return ChangeType.None;
@@ -222,7 +224,7 @@ namespace SIL.Lift.Merging
 					string id = originalChildren.Current.GetAttribute("id", string.Empty);
 					_idsInOriginal.Add(id);
 
-					if(!idToContentsOfModifiedEntries.ContainsKey(id))
+					if (!idToContentsOfModifiedEntries.ContainsKey(id))
 					{
 						_idsOfDeletedEntries.Add(id);
 					}
@@ -239,7 +241,7 @@ namespace SIL.Lift.Merging
 			}
 			foreach (string id in idToContentsOfModifiedEntries.Keys)
 			{
-				if(!_idsInOriginal.Contains(id))
+				if (!_idsInOriginal.Contains(id))
 					_idsOfAddedEntries.Add(id);
 			}
 		}
@@ -254,7 +256,6 @@ namespace SIL.Lift.Merging
 		/// Get/set the status message for a progress report.
 		///</summary>
 		string Status { set; get; }
-
 	}
 
 	///<summary>

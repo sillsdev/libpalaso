@@ -219,10 +219,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			// Remove the previous composition text starting at preeditStart
 			m_TextBox.Text = RemoveChars(m_TextBox.Text, preeditStart, m_PreeditLength);
 			if (preeditStart >= m_TextBox.Text.Length)
-			{
-				preeditStart = m_TextBox.Text.Length;
 				m_TextBox.AppendText(compositionText);
-			}
 			else
 				m_TextBox.Text = m_TextBox.Text.Insert(preeditStart, compositionText);
 

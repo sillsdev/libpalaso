@@ -113,11 +113,11 @@ namespace SIL.Reporting
 		{
 			try
 			{
-				DateTime dummy = _settings.PreviousLaunchDate;
+				_ = _settings.PreviousLaunchDate;
 			}
 			catch
 			{
-				_settings.PreviousLaunchDate = default(DateTime);
+				_settings.PreviousLaunchDate = default;
 			}
 		}
 /*

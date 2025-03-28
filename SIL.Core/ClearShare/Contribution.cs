@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 
 namespace SIL.Core.ClearShare
 {
@@ -27,7 +28,7 @@ namespace SIL.Core.ClearShare
 		public Role Role { get; set; }
 
 		/// <summary>
-		/// The date the contribution was made. Seems like it would be rarely used,
+		/// The date the contribution was made. Seems like it would rarely be used,
 		/// but an early SayMore user asked for this specifically.
 		/// </summary>
 		public DateTime Date { get; set; }
@@ -54,15 +55,8 @@ namespace SIL.Core.ClearShare
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public bool IsEmpty
-		{
-			get
-			{
-				return (string.IsNullOrEmpty(ContributorName) && Role == null &&
-					ApprovedLicense == null &&
-					string.IsNullOrEmpty(Comments));
-			}
-		}
+		public bool IsEmpty => string.IsNullOrEmpty(ContributorName) && Role == null &&
+			ApprovedLicense == null && string.IsNullOrEmpty(Comments);
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -70,12 +64,12 @@ namespace SIL.Core.ClearShare
 		/// This returns true if Role is successfully set. Otherwise, false.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
+		[PublicAPI]
 		public bool SetRoleByCode(string roleCode)
 		{
 			if (roleCode != null)
 			{
-				Role role;
-				if ((new OlacSystem()).TryGetRoleByCode(roleCode, out role))
+				if (new OlacSystem().TryGetRoleByCode(roleCode, out var role))
 				{
 					Role = role;
 					return true;
@@ -90,7 +84,7 @@ namespace SIL.Core.ClearShare
 		{
 			// TODO: Deal with license if necessary.
 			return new Contribution(ContributorName,
-				(Role != null ? Role.Clone() : null)) { Date = Date, Comments = Comments };
+				Role?.Clone()) { Date = Date, Comments = Comments };
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -125,15 +119,15 @@ namespace SIL.Core.ClearShare
 			if (other == null)
 				return false;
 
-			bool rolesEqual = ((Role == null && other.Role == null) ||
-				(Role != null && Role.Equals(other.Role)));
+			bool rolesEqual = (Role == null && other.Role == null) ||
+				(Role != null && Role.Equals(other.Role));
 
-			bool licensesEqual = ((ApprovedLicense == null && other.ApprovedLicense == null) ||
-				(ApprovedLicense != null && ApprovedLicense.Equals(other.ApprovedLicense)));
+			bool licensesEqual = (ApprovedLicense == null && other.ApprovedLicense == null) ||
+				(ApprovedLicense != null && ApprovedLicense.Equals(other.ApprovedLicense));
 
-			return (rolesEqual && licensesEqual &&
+			return rolesEqual && licensesEqual &&
 				ContributorName == other.ContributorName &&
-				Date == other.Date && Comments == other.Comments);
+				Date == other.Date && Comments == other.Comments;
 		}
 
 		/// ------------------------------------------------------------------------------------

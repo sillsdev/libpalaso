@@ -240,7 +240,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 						break;
 				}
 			}
-			int result = comparison(name, reader.Name);
+			// Check name == reader.Name rather than comparison(name, reader.Name) == 0 per
+			// https://github.com/sillsdev/libpalaso/commit/4c25530181a9efd067aa9f19d8b6963954ab54b4#diff-d690228068a257662f55483f00f1146212e724bae33cb94af98533e1e4edd7b5
 			return !reader.EOF && reader.NodeType == XmlNodeType.Element && name == reader.Name;
 		}
 

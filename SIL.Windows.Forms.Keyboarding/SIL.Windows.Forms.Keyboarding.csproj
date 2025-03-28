@@ -17,14 +17,14 @@
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
     <PackageReference Include="ibusdotnet" Version="2.0.3" />
-    <PackageReference Include="icu.net" Version="3.0.0-beta.296" />
-    <PackageReference Include="JetBrains.Annotations" Version="2024.2.0">
+    <PackageReference Include="icu.net" Version="3.0.1" />
+    <PackageReference Include="JetBrains.Annotations" Version="2024.3.0">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="L10NSharp" Version="8.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Mono.Unix" Version="7.1.0-final.1.21458.1" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="2.5.0" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="3.1.1" PrivateAssets="All" />
     <PackageReference Include="KeymanLegacyBundle" Version="1.0.0" />
   </ItemGroup>
 
