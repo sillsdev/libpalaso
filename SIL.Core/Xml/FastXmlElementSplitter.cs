@@ -12,7 +12,6 @@ namespace SIL.Xml
 	/// and return byte arrays of each element for further processing.
 	/// This version works entirely with byte arrays, except for the GetSecondLevelElementStrings
 	/// methods, which should only be used for testing or small files.
-	///
 	///</summary>
 	public class FastXmlElementSplitter : IDisposable
 	{
@@ -172,7 +171,6 @@ namespace SIL.Xml
 			return result;
 		}
 
-
 		/// <summary>
 		/// Return the second level elements that are in the input file, including an optional first element.
 		/// </summary>
@@ -227,8 +225,6 @@ namespace SIL.Xml
 		/// Given that _currentInput is at the first character of the marker of the opening XML tag
 		/// of an element, return the byte array that is the complete element.
 		/// </summary>
-		/// <param name="marker"></param>
-		/// <returns></returns>
 		private byte[] MakeElement(byte[] marker)
 		{
 			int start = _currentOffset - 1; // including the opening angle bracket
@@ -237,7 +233,8 @@ namespace SIL.Xml
 			{
 				bool gotOpenBracket = AdvanceToAngleBracket();
 				if (_currentOffset > _endOfRecordsOffset)
-					throw new ArgumentException("Unmatched opening tag " + marker);
+					throw new ArgumentException(
+						"Unmatched opening tag " + string.Join("", marker));
 				// We have to distinguish these cases:
 				// 1. <x... : depth++ (start of opening marker)
 				// 2: ...> : no change (end of opening or closing marker)
@@ -259,9 +256,7 @@ namespace SIL.Xml
 						continue;
 					}
 					else
-					{
 						depth++; // case 1 (or 6)
-					}
 				}
 				else
 				{
@@ -278,16 +273,20 @@ namespace SIL.Xml
 						// case 3, advance past opening slash
 						_currentOffset++;
 						if (!MatchMarker(marker))
-							throw new ArgumentException("Unmatched opening tag " + marker); // wrong close marker
+							// Wrong close marker.
+							throw new ArgumentException(
+								"Unmatched opening tag " + string.Join("", marker));
 						AdvanceToClosingAngleBracket();
 					}
 					// We matched the marker we started with, output the chunk.
 					if (_input[_currentOffset - 1] != _closingAngleBracket)
-						throw new ArgumentException("Unmatched opening tag " + marker);
+						throw new ArgumentException(
+							"Unmatched opening tag " + string.Join("", marker));
 					return _input.SubArray(start, _currentOffset - start);
 				}
 				if (_currentOffset == _endOfRecordsOffset)
-					throw new ArgumentException("Unmatched opening tag " + marker);
+					throw new ArgumentException(
+						"Unmatched opening tag " + string.Join("", marker));
 			}
 		}
 
@@ -310,19 +309,16 @@ namespace SIL.Xml
 		/// Enhance JohnT: technically I think there could be white space between the opening angle bracket and the
 		/// marker. We can make that enhancement if we need it.
 		/// </summary>
-		/// <param name="marker"></param>
-		/// <returns></returns>
 		bool MatchMarker(byte[] marker)
 		{
-			if (!Match(marker)) return false;
+			if (!Match(marker))
+				return false;
 			return Terminators.Contains(_input[_currentOffset + marker.Length]);
 		}
 
 		/// <summary>
 		/// Return true if the bytes starting at _currentPosition match the specified marker. No termination is required.
 		/// </summary>
-		/// <param name="marker"></param>
-		/// <returns></returns>
 		private bool Match(byte[] marker)
 		{
 			if (_currentOffset + marker.Length >= _endOfRecordsOffset)
@@ -501,8 +497,7 @@ namespace SIL.Xml
 			GC.SuppressFinalize(this);
 		}
 
-		private bool IsDisposed
-		{ get; set; }
+		private bool IsDisposed { get; set; }
 
 		private void Dispose(bool disposing)
 		{
@@ -511,8 +506,7 @@ namespace SIL.Xml
 
 			if (disposing)
 			{
-				if (_input != null)
-					_input.Close();
+				_input?.Close();
 				_input = null;
 			}
 
@@ -622,8 +616,6 @@ namespace SIL.Xml
 		/// <summary>
 		/// This makes the class function like a byte array, allowing [n] to get the nth byte.
 		/// </summary>
-		/// <param name="n"></param>
-		/// <returns></returns>
 		public byte this[int n]
 		{
 			get
@@ -714,15 +706,9 @@ namespace SIL.Xml
 			// nothing to do
 		}
 
-		public byte this[int index]
-		{
-			get { return _bytes[index]; }
-		}
+		public byte this[int index] => _bytes[index];
 
-		public int Length
-		{
-			get { return _bytes.Length; }
-		}
+		public int Length => _bytes.Length;
 
 		public byte[] SubArray(int start, int count)
 		{
@@ -746,9 +732,6 @@ namespace SIL.Xml
 			Bytes = bytes;
 		}
 
-		public string BytesAsString
-		{
-			get { return Encoding.UTF8.GetString(Bytes); }
-		}
+		public string BytesAsString => Encoding.UTF8.GetString(Bytes);
 	}
 }
