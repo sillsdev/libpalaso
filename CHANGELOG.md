@@ -71,6 +71,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Made FadingMessageWindow implement all UI logic on the main UI thread in a thread-safe way. Fixes crashes like SP-2340.
 - [SIL.Windows.Forms] Made ContributorsListControl more threadsafe. Possibly fixes crashes like SP-2353 or at least makes them less likely.
 - [SIL.WritingSystems] Added check to Subtag.Equals to ensure two subtags being compared are of same derived type. This could potentially be a subtle breaking change in the unlikely event that someone was intentionally relying on the previous errant behavior.
+- [SIL.Windows.Forms] Fix loss of precision in Animator.FrameRate getter.
 - [SIL.Core] Changed ReplaceSubstringInAttr.Visit to use StringComparison.Ordinal rather than the default (StringComparison.CurrentCulture), and also made it correctly return true when the replacement was made successfully. Although either of these could potentially be a BREAKING CHANGE, in practice, it seems unlikely that anyone would have been relying on CurrentCulture comparisons, and although the return value is used, it seems to be used merely to set a flag that is returned from the callers, and the callers I could find for those methods all appear to ignore the returned value. In any case, if someone were relying on the return value, it's unlikely they could have found it helpful to have it return false unconditionally.
 
 ### Deprecated
