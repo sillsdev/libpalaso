@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using SIL.Extensions;
 using SIL.UiBindings;
+using static System.String;
 
 namespace SIL.Lift.Options
 {
@@ -13,7 +14,7 @@ namespace SIL.Lift.Options
 		private MultiText _description;
 		private string _humanReadableKey;
 
-		public Option(): this(string.Empty, new MultiText()) {}
+		public Option(): this(Empty, new MultiText()) {}
 
 		public Option(string humanReadableKey, MultiText name) //, Guid guid)
 		{
@@ -33,7 +34,7 @@ namespace SIL.Lift.Options
 		{
 			get
 			{
-				if (String.IsNullOrEmpty(_humanReadableKey))
+				if (IsNullOrEmpty(_humanReadableKey))
 					return GetDefaultKey(); //don't actually save it yet
 
 				return _humanReadableKey;
@@ -41,7 +42,7 @@ namespace SIL.Lift.Options
 
 			set
 			{
-				if (String.IsNullOrEmpty(value))
+				if (IsNullOrEmpty(value))
 				{
 					_humanReadableKey = GetDefaultKey();
 				}
@@ -77,9 +78,7 @@ namespace SIL.Lift.Options
 		{
 			get
 			{
-				if (_description == null)
-					_description = new MultiText();
-
+				_description ??= new MultiText();
 				return _description;
 			}
 			set => _description = value;
@@ -92,11 +91,7 @@ namespace SIL.Lift.Options
 		private string GetDefaultKey()
 		{
 			string name = Name.GetFirstAlternative();
-			if (!String.IsNullOrEmpty(name))
-			{
-				return name;
-			}
-			return Guid.NewGuid().ToString();
+			return !IsNullOrEmpty(name) ? name : Guid.NewGuid().ToString();
 		}
 
 		//        [ReflectorProperty("guid", Required = false)]

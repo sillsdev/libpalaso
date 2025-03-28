@@ -10,7 +10,11 @@ namespace SIL.Windows.Forms.Widgets
 	public class HeaderLabel : EnhancedPanel
 	{
 		[Obsolete("Replace with correctly spelled ShowWindowBackgroundOnTopAndRightEdge")]
-		public bool ShowWindowBackgroudOnTopAndRightEdge { get; set; }
+		public bool ShowWindowBackgroudOnTopAndRightEdge
+		{
+			get => ShowWindowBackgroundOnTopAndRightEdge;
+			set => ShowWindowBackgroundOnTopAndRightEdge = value;
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
