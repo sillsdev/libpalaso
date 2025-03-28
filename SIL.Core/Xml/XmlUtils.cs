@@ -330,7 +330,7 @@ namespace SIL.Xml
 		/// </summary>
 		/// <param name="node">The XmlNode to look in.</param>
 		/// <param name="attrName">The attribute to find.</param>
-		/// <returns>The value of the attribute, or null, if not found.</returns>
+		/// <returns>The value of the attribute, or <c>null</c>, if not found.</returns>
 		public static string GetOptionalAttributeValue(XPathNavigator node, string attrName)
 		{
 			return GetOptionalAttributeValue(node, attrName, null);
@@ -341,20 +341,13 @@ namespace SIL.Xml
 		/// </summary>
 		/// <param name="node">The XmlNode to look in.</param>
 		/// <param name="attrName">The attribute to find.</param>
-		/// <returns>The value of the attribute, or null, if not found.</returns>
-		/// <param name="defaultString"></param>
+		/// <param name="defaultString">The value to return if the attribute is not found</param>
+		/// <returns>The value of the attribute, or <see cref="defaultString"/>, if not found.
+		/// </returns>
 		public static string GetOptionalAttributeValue(XmlNode node, string attrName,
 			string defaultString)
 		{
-			if (node is { Attributes: { } })
-			{
-				XmlAttribute xa = node.Attributes[attrName];
-				if (xa != null)
-				{
-					return xa.Value;
-				}
-			}
-			return defaultString;
+			return node?.Attributes?[attrName]?.Value ?? defaultString;
 		}
 
 		/// <summary>
@@ -369,8 +362,7 @@ namespace SIL.Xml
 		{
 			if (element == null || !element.Attributes().Any())
 				return defaultString;
-			var attribute = element.Attribute(attrName);
-			return attribute != null ? attribute.Value : defaultString;
+			return element.Attribute(attrName)?.Value ?? defaultString;
 		}
 
 		/// <summary>
@@ -383,9 +375,9 @@ namespace SIL.Xml
 		public static string GetOptionalAttributeValue(XPathNavigator node, string attrName,
 			string defaultString)
 		{
-			if (node is { HasAttributes: true })
+			if (node?.HasAttributes == true)
 			{
-				string s = node.GetAttribute(attrName, string.Empty);
+				var s = node.GetAttribute(attrName, string.Empty);
 				if (!string.IsNullOrEmpty(s))
 					return s;
 			}
