@@ -191,10 +191,10 @@ namespace SIL.Lift.Parsing
 		{
 			_merger.MergeInField(
 				extensible,
-				Utilities.GetOptionalAttributeString(node, "type"),
+				Utilities.GetStringAttribute(node, "type"),
 				GetOptionalDate(node, "dateCreated", default),
 				GetOptionalDate(node, "dateModified", default),
-				LocateAndReadMultiText(node, null),
+				ReadMultiText(node),
 				GetTraitList(node)
 			);
 		}
