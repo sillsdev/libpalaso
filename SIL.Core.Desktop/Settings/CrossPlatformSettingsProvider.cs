@@ -65,11 +65,11 @@ namespace SIL.Settings
 				GetFullSettingsPath());
 			// When running multiple builds in parallel we have to use separate directories for
 			// each build, otherwise some unit tests might fail.
-			var buildagentSubdir = Environment.GetEnvironmentVariable("BUILDAGENT_SUBKEY");
-			if (!string.IsNullOrEmpty(buildagentSubdir))
+			var buildAgentSubdir = Environment.GetEnvironmentVariable("BUILDAGENT_SUBKEY");
+			if (!string.IsNullOrEmpty(buildAgentSubdir))
 			{
-				UserRoamingLocation = Path.Combine(UserRoamingLocation, buildagentSubdir);
-				UserLocalLocation = Path.Combine(UserLocalLocation, buildagentSubdir);
+				UserRoamingLocation = Path.Combine(UserRoamingLocation, buildAgentSubdir);
+				UserLocalLocation = Path.Combine(UserLocalLocation, buildAgentSubdir);
 			}
 		}
 
@@ -84,8 +84,10 @@ namespace SIL.Settings
 			if(!_initialized)
 				throw new ApplicationException("CrossPlatformSettingsProvider: Call Initialize() before CheckForErrorsInFile()");
 
+			// If config file read error, assign to _lastReadingError rather than report to user.
 			_reportReadingErrorsDirectlyToUser = false;
-			var dummy =SettingsXml;
+			// If settings are null, load them from the config file, reporting any error.
+			_ = SettingsXml;
 			return _lastReadingError;
 		}
 
@@ -167,7 +169,7 @@ namespace SIL.Settings
 				_settingsXml = null;
 
 				//Iterate through the settings to be stored, only dirty settings for this provider are in collection
-				foreach(SettingsPropertyValue propval in collection)
+				foreach(SettingsPropertyValue propVal in collection)
 				{
 					var groupName = context["GroupName"].ToString();
 					var groupNode = SettingsXml.SelectSingleNode("/configuration/userSettings/" + context["GroupName"]);
@@ -186,7 +188,7 @@ namespace SIL.Settings
 						section.SetAttribute("type", String.Format("{0}, {1}", typeof(ClientSettingsSection), Assembly.GetAssembly(typeof(ClientSettingsSection))));
 						parentNode.AppendChild(section);
 					}
-					SetValue(groupNode, propval);
+					SetValue(groupNode, propVal);
 				}
 				Directory.CreateDirectory(UserConfigLocation);
 				RobustIO.SaveXml(SettingsXml, Path.Combine(UserConfigLocation, UserConfigFileName));
@@ -449,6 +451,14 @@ namespace SIL.Settings
 		private bool _initialized;
 		private XmlException _lastReadingError;
 
+		/// <summary>
+		/// Get xml settings, loading them from the config file if they're null.
+		/// </summary>
+		/// <remarks>
+		/// If there's an error reading the config file, report the error,
+		/// make a copy of the corrupt file (with extension `.bad`), delete the file,
+		/// and create a new config file.
+		/// </remarks>
 		private XmlDocument SettingsXml
 		{
 			get

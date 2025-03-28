@@ -17,18 +17,21 @@ namespace SIL.i18n
 		private static bool _inInternationalizationTestMode;
 
 		/// <summary>
-		/// Construct with no actual string file
+		/// Construct with no actual string file and with empty font name.
 		/// </summary>
-		public StringCatalog(): this(String.Empty, 9)
+		/// <remarks> The constructor reassigns the singleton StringCatalog. </remarks>
+		public StringCatalog() : this(String.Empty, 9)
 		{
 		}
+
 		/// <summary>
-		/// Construct with no actual string file
+		/// Construct with no actual string file.
 		/// </summary>
+		/// <remarks> The constructor reassigns the singleton StringCatalog. </remarks>
 		public StringCatalog(string labelFontName, float labelFontSizeInPoints)
 		{
 			Init();
-			SetupUIFont(labelFontName, labelFontSizeInPoints );
+			SetupUIFont(labelFontName, labelFontSizeInPoints);
 		}
 
 		private enum State
@@ -36,8 +39,12 @@ namespace SIL.i18n
 			InMsgId,
 			InMsgStr,
 			Reset
-		} ;
+		}
 
+		/// <summary>
+		/// Construct with a string file.
+		/// </summary>
+		/// <remarks> The constructor reassigns the singleton StringCatalog. </remarks>
 		public StringCatalog(string pathToPoFile, string labelFontName, float labelFontSizeInPoints)
 		{
 			Init();
@@ -101,7 +108,7 @@ namespace SIL.i18n
 				}
 			}
 
-			SetupUIFont(labelFontName,  labelFontSizeInPoints);
+			SetupUIFont(labelFontName, labelFontSizeInPoints);
 		}
 
 		private void SetupUIFont(string labelFontName, float labelFontSizeInPoints)
@@ -112,8 +119,8 @@ namespace SIL.i18n
 				return;
 			}
 
-			LabelFont = new Font(FontFamily.GenericSansSerif, (float) 8.25, FontStyle.Regular);
-			if(!String.IsNullOrEmpty(labelFontName ))
+			LabelFont = new Font(FontFamily.GenericSansSerif, (float)8.25, FontStyle.Regular);
+			if (!String.IsNullOrEmpty(labelFontName))
 			{
 				try
 				{
@@ -130,7 +137,7 @@ namespace SIL.i18n
 
 		public static string Get(string id)
 		{
-			return Get(id,  String.Empty);
+			return Get(id, String.Empty);
 		}
 
 		/// <summary>
@@ -155,15 +162,15 @@ namespace SIL.i18n
 					s = String.Format(s, args);
 					return s;
 				}
-				catch(Exception e)
+				catch (Exception e)
 				{
 					Reporting.ErrorReport.NotifyUserOfProblem(
 						"There was a problem localizing\r\n'{0}'\r\ninto this UI language... check number of parameters. The code expects there to be {1}.  The current localized string is\r\n'{2}'.\r\nThe error was {3}", id, args.Length, s, e.Message);
 
-					return "!!"+s; // show it without the formatting
+					return "!!" + s; // show it without the formatting
 				}
 			}
-			catch(Exception)
+			catch (Exception)
 			{
 				return "Error localizing string '" + id + "' to this UI language";
 			}
@@ -182,7 +189,7 @@ namespace SIL.i18n
 
 			if (_inInternationalizationTestMode)
 			{
-				return "*"+_singleton[id];
+				return "*" + _singleton[id];
 			}
 			else
 			{
@@ -213,7 +220,7 @@ namespace SIL.i18n
 					return _catalog[id];
 				}
 				//REVIEW: What's this about?  It was   id = id.Replace("&&", "&");  which was removing the && we need when it gets to the UI
-				var idWithSingleAmpersand  =id.Replace("&&", "&");
+				var idWithSingleAmpersand = id.Replace("&&", "&");
 				if (_catalog.ContainsKey(idWithSingleAmpersand))
 				{
 					return _catalog[idWithSingleAmpersand];

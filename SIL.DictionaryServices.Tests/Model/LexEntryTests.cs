@@ -350,7 +350,6 @@ namespace SIL.DictionaryServices.Tests.Model
 		[Test]
 		public void Cleanup_HasEmptyBaseForm_PropertyIsRemoved()
 		{
-			var target = new LexEntry();
 			_entry = new LexEntry();
 			_entry.LexicalForm["v"] = "hello";
 			_entry.AddRelationTarget(LexEntry.WellKnownProperties.BaseForm, string.Empty);

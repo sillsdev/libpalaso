@@ -30,7 +30,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 	{
 		private static Assembly GeckoCoreAssembly;
 		private static Assembly GeckoWinAssembly;
-		private readonly Control _webBrowser;	// actually a Gecko.GeckoWebBrowser control
+		private readonly Control _webBrowser; // Actually a Gecko.GeckoWebBrowser control.
 		private const string GeckoBrowserType = "Gecko.GeckoWebBrowser";
 		private const string XpcomType = "Gecko.Xpcom";
 
@@ -58,13 +58,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		/// tries hard to mimic being a Gecko.GeckoWebBrowser in all other ways that are
 		/// needed.
 		/// </remarks>
-		internal Control BrowserControl
-		{
-			get
-			{
-				return _webBrowser;
-			}
-		}
+		internal Control BrowserControl => _webBrowser;
 
 		private static int XulRunnerVersion
 		{
@@ -145,7 +139,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 					GeckoWinAssembly = Assembly.LoadFrom("Geckofx-Winforms-14.dll");
 				}
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				MessageBox.Show("Unable to load geckofx dependency. Files may not have been included in the build.",
 					"Failed to load geckofx", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -158,8 +152,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			get
 			{
-				if (_browserType == null)
-					_browserType = GeckoWinAssembly.GetType(GeckoBrowserType);
+				_browserType ??= GeckoWinAssembly.GetType(GeckoBrowserType);
 				return _browserType;
 			}
 		}
@@ -205,8 +198,8 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		private static void InitializeXpcom(string xulRunnerPath)
 		{
 			var xpcomType = GeckoCoreAssembly.GetType(XpcomType);
-			var initMethod = xpcomType.GetMethod("Initialize", new [] { typeof(string) });
-			initMethod.Invoke(null, new object[] {xulRunnerPath});
+			var initMethod = xpcomType.GetMethod("Initialize", new[] { typeof(string) });
+			initMethod.Invoke(null, new object[] { xulRunnerPath });
 		}
 
 		private static void ShutdownXpcom()
@@ -233,14 +226,12 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			get
 			{
-				if (_dockProp == null)
-					_dockProp = BrowserType.GetProperty("Dock");
+				_dockProp ??= BrowserType.GetProperty("Dock");
 				return (DockStyle)_dockProp.GetValue(_webBrowser, null);
 			}
 			set
 			{
-				if (_dockProp == null)
-					_dockProp = BrowserType.GetProperty("Dock");
+				_dockProp ??= BrowserType.GetProperty("Dock");
 				_dockProp.SetValue(_webBrowser, value, BindingFlags.Default, null, null, null);
 			}
 		}
@@ -250,14 +241,12 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			get
 			{
-				if (_parentProp == null)
-					_parentProp = BrowserType.GetProperty("Parent");
+				_parentProp ??= BrowserType.GetProperty("Parent");
 				return _parentProp.GetValue(_webBrowser, null) as Control;
 			}
 			set
 			{
-				if (_parentProp == null)
-					_parentProp = BrowserType.GetProperty("Parent");
+				_parentProp ??= BrowserType.GetProperty("Parent");
 				_parentProp.SetValue(_webBrowser, value, BindingFlags.Default, null, null, null);
 			}
 		}
@@ -267,14 +256,12 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			get
 			{
-				if (_noDefaultContextMenuProp == null)
-					_noDefaultContextMenuProp = BrowserType.GetProperty("NoDefaultContextMenu");
+				_noDefaultContextMenuProp ??= BrowserType.GetProperty("NoDefaultContextMenu");
 				return (bool)_noDefaultContextMenuProp.GetValue(_webBrowser, null);
 			}
 			set
 			{
-				if (_noDefaultContextMenuProp == null)
-					_noDefaultContextMenuProp = BrowserType.GetProperty("NoDefaultContextMenu");
+				_noDefaultContextMenuProp ??= BrowserType.GetProperty("NoDefaultContextMenu");
 				_noDefaultContextMenuProp.SetValue(_webBrowser, value, BindingFlags.Default, null, null, null);
 			}
 		}
@@ -284,8 +271,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			get
 			{
-				if (_documentProp == null)
-					_documentProp = BrowserType.GetProperty("Document");
+				_documentProp ??= BrowserType.GetProperty("Document");
 				return new GeckoDocument(_documentProp.GetValue(_webBrowser, null));
 			}
 		}
@@ -295,8 +281,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			get
 			{
-				if (_webBrowserFocusProp == null)
-					_webBrowserFocusProp = BrowserType.GetProperty("WebBrowserFocus");
+				_webBrowserFocusProp ??= BrowserType.GetProperty("WebBrowserFocus");
 				return new nsWebBrowserFocus(_webBrowserFocusProp.GetValue(_webBrowser, null));
 			}
 		}
@@ -306,14 +291,12 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			get
 			{
-				if (_containsFocusProp == null)
-					_containsFocusProp = BrowserType.GetProperty("ContainsFocus");
+				_containsFocusProp ??= BrowserType.GetProperty("ContainsFocus");
 				return (bool)_containsFocusProp.GetValue(_webBrowser, null);
 			}
 			set
 			{
-				if (_containsFocusProp == null)
-					_containsFocusProp = BrowserType.GetProperty("ContainsFocus");
+				_containsFocusProp ??= BrowserType.GetProperty("ContainsFocus");
 				_containsFocusProp.SetValue(_webBrowser, value, BindingFlags.Default, null, null, null);
 			}
 		}
@@ -323,14 +306,12 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			get
 			{
-				if (_widthProp == null)
-					_widthProp = BrowserType.GetProperty("Width");
+				_widthProp ??= BrowserType.GetProperty("Width");
 				return (int)_widthProp.GetValue(_webBrowser, null);
 			}
 			set
 			{
-				if (_widthProp == null)
-					_widthProp = BrowserType.GetProperty("Width");
+				_widthProp ??= BrowserType.GetProperty("Width");
 				_widthProp.SetValue(_webBrowser, value, BindingFlags.Default, null, null, null);
 			}
 		}
@@ -340,48 +321,42 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		static MethodInfo _disposeMethod;
 		internal void Dispose()
 		{
-			if (_disposeMethod == null)
-				_disposeMethod = BrowserType.GetMethod("Dispose");
+			_disposeMethod ??= BrowserType.GetMethod("Dispose");
 			_disposeMethod.Invoke(_webBrowser, null);
 		}
 
 		static MethodInfo _focusMethod;
 		internal bool Focus()
 		{
-			if (_focusMethod == null)
-				_focusMethod = BrowserType.GetMethod("Focus");
+			_focusMethod ??= BrowserType.GetMethod("Focus");
 			return (bool)_focusMethod.Invoke(_webBrowser, null);
 		}
 
 		static MethodInfo _setInputFocusMethod;
 		internal void SetInputFocus()
 		{
-			if (_setInputFocusMethod == null)
-				_setInputFocusMethod = BrowserType.GetMethod("SetInputFocus");
+			_setInputFocusMethod ??= BrowserType.GetMethod("SetInputFocus");
 			_setInputFocusMethod.Invoke(_webBrowser, null);
 		}
 
 		static MethodInfo _removeInputFocusMethod;
 		internal void RemoveInputFocus()
 		{
-			if (_removeInputFocusMethod == null)
-				_removeInputFocusMethod = BrowserType.GetMethod("RemoveInputFocus");
+			_removeInputFocusMethod ??= BrowserType.GetMethod("RemoveInputFocus");
 			_removeInputFocusMethod.Invoke(_webBrowser, null);
 		}
 
 		static MethodInfo _hasInputFocusMethod;
 		internal bool HasInputFocus()
 		{
-			if (_hasInputFocusMethod == null)
-				_hasInputFocusMethod = BrowserType.GetMethod("HasInputFocus");
+			_hasInputFocusMethod ??= BrowserType.GetMethod("HasInputFocus");
 			return (bool)_hasInputFocusMethod.Invoke(_webBrowser, null);
 		}
 
 		static MethodInfo _loadHtmlMethod;
 		internal void LoadHtml(string html)
 		{
-			if (_loadHtmlMethod == null)
-				_loadHtmlMethod = BrowserType.GetMethod("LoadHtml", new Type[] { typeof(String) });
+			_loadHtmlMethod ??= BrowserType.GetMethod("LoadHtml", new Type[] { typeof(string) });
 			_loadHtmlMethod.Invoke(_webBrowser, new object[] { html });
 		}
 		#endregion
@@ -394,50 +369,43 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		internal event EventHandler<EventArgs> DocumentCompleted;
 		void OnDocumentCompleted(object sender, EventArgs e)
 		{
-			if (DocumentCompleted != null)
-				DocumentCompleted(this, e);
+			DocumentCompleted?.Invoke(this, e);
 		}
 
 		internal event EventHandler<EventArgs> DomFocus;
 		void OnDomFocus(object sender, EventArgs e)
 		{
-			if (DomFocus != null)
-				DomFocus(this, e);
+			DomFocus?.Invoke(this, e);
 		}
 
 		internal event EventHandler<EventArgs> DomBlur;
 		void OnDomBlur(object sender, EventArgs e)
 		{
-			if (DomBlur != null)
-				DomBlur(this, e);
+			DomBlur?.Invoke(this, e);
 		}
 
 		internal event EventHandler<EventArgs> DomKeyDown;
 		void OnDomKeyDown(object sender, EventArgs e)
 		{
-			if (DomKeyDown != null)
-				DomKeyDown(this, e);
+			DomKeyDown?.Invoke(this, e);
 		}
 
 		internal event EventHandler<EventArgs> DomKeyUp;
 		void OnDomKeyUp(object sender, EventArgs e)
 		{
-			if (DomKeyUp != null)
-				DomKeyUp(this, e);
+			DomKeyUp?.Invoke(this, e);
 		}
 
 		internal event EventHandler<EventArgs> DomClick;
 		void OnDomClick(object sender, EventArgs e)
 		{
-			if (DomClick != null)
-				DomClick(this, e);
+			DomClick?.Invoke(this, e);
 		}
 
 		internal event EventHandler<EventArgs> DomMouseDown;
 		void OnDomMouseDown(object sender, EventArgs e)
 		{
-			if (DomMouseDown != null)
-				DomMouseDown(this, e);
+			DomMouseDown?.Invoke(this, e);
 		}
 		#endregion
 	}
@@ -459,9 +427,10 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 
 		internal GeckoElement GetElementById(string id)
 		{
-			if (_getElementByIdMethod == null)
-				_getElementByIdMethod = _type.GetMethod("GetElementById", new Type[] { typeof(String) });
-			return new GeckoBodyElement(_getElementByIdMethod.Invoke (_document, new object[] { id }));
+			_getElementByIdMethod ??=
+				_type.GetMethod("GetElementById", new Type[] { typeof(string) });
+			var element = _getElementByIdMethod.Invoke(_document, new object[] { id });
+			return new GeckoBodyElement(element);
 		}
 	}
 
@@ -485,14 +454,12 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			get
 			{
-				if (_textContentProp == null)
-					_textContentProp = _type.GetProperty("TextContent");
+				_textContentProp ??= _type.GetProperty("TextContent");
 				return _textContentProp.GetValue(_element, null) as string;
 			}
 			set
 			{
-				if (_textContentProp == null)
-					_textContentProp = _type.GetProperty("TextContent");
+				_textContentProp ??= _type.GetProperty("TextContent");
 				_textContentProp.SetValue(_element, value, BindingFlags.Default, null, null, null);
 			}
 		}
@@ -501,8 +468,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			get
 			{
-				if (_scrollHeightProp == null)
-					_scrollHeightProp = _type.GetProperty("ScrollHeight");
+				_scrollHeightProp ??= _type.GetProperty("ScrollHeight");
 				return (int)_scrollHeightProp.GetValue(_element, null);
 			}
 		}
@@ -522,8 +488,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 
 		internal void Focus()
 		{
-			if (_focusMethod == null)
-				_focusMethod = _type.GetMethod("Focus");
+			_focusMethod ??= _type.GetMethod("Focus");
 			_focusMethod.Invoke(_element, null);
 		}
 
@@ -531,8 +496,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			get
 			{
-				if (_parentProp == null)
-					_parentProp = _type.GetProperty("Parent");
+				_parentProp ??= _type.GetProperty("Parent");
 				return new GeckoHtmlElement(_parentProp.GetValue(_element, null));
 			}
 		}
@@ -584,13 +548,16 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		internal object Window { get; private set; }
 		internal bool IsTopLevel { get; private set; }
 
+		/// <summary>
+		/// Constructor extracts Uri, Window, IsTopLevel properties from the EventArgs's type.
+		/// </summary>
 		internal GeckoDocumentCompletedEventArgs(EventArgs e)
 		{
 			Type eventArgsType = e.GetType();
 			PropertyInfo uriProp = eventArgsType.GetProperty("Uri");
 			Uri = (Uri)uriProp.GetValue(e, null);
 			PropertyInfo windowProp = eventArgsType.GetProperty("Window");
-			Window = windowProp.GetValue(e, null);		// GeckoWindow
+			Window = windowProp.GetValue(e, null); // GeckoWindow
 			PropertyInfo topLevelProp = eventArgsType.GetProperty("IsTopLevel");
 			IsTopLevel = (bool)topLevelProp.GetValue(e, null);
 		}
@@ -619,8 +586,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			get
 			{
-				if (_targetProp == null)
-					_targetProp = _eventArgsType.GetProperty("Target");
+				_targetProp ??= _eventArgsType.GetProperty("Target");
 				return new DomEventTarget(_targetProp.GetValue(_eventArgs, null));
 			}
 		}
@@ -629,14 +595,12 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			get
 			{
-				if (_handleProp == null)
-					_handleProp = _eventArgsType.GetProperty("Handled");
+				_handleProp ??= _eventArgsType.GetProperty("Handled");
 				return (bool)_handleProp.GetValue(_eventArgs, null);
 			}
 			set
 			{
-				if (_handleProp == null)
-					_handleProp = _eventArgsType.GetProperty("Handled");
+				_handleProp ??= _eventArgsType.GetProperty("Handled");
 				_handleProp.SetValue(_eventArgs, value, BindingFlags.Default, null, null, null);
 			}
 		}
@@ -660,8 +624,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 
 		internal GeckoElement CastToGeckoElement()
 		{
-			if (_castToGeckoElementMethod == null)
-				_castToGeckoElementMethod = _targetType.GetMethod("CastToGeckoElement");
+			_castToGeckoElementMethod ??= _targetType.GetMethod("CastToGeckoElement");
 			return new GeckoElement(_castToGeckoElementMethod.Invoke(_target, null));
 		}
 	}
@@ -684,8 +647,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			get
 			{
-				if (_keyCodeProp == null)
-					_keyCodeProp = _eventArgsType.GetProperty("KeyCode");
+				_keyCodeProp ??= _eventArgsType.GetProperty("KeyCode");
 				return (uint)_keyCodeProp.GetValue(_eventArgs, null);
 			}
 		}
@@ -694,8 +656,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			get
 			{
-				if (_altKeyProp == null)
-					_altKeyProp = _eventArgsType.GetProperty("AltKey");
+				_altKeyProp ??= _eventArgsType.GetProperty("AltKey");
 				return (bool)_altKeyProp.GetValue(_eventArgs, null);
 			}
 		}
@@ -704,8 +665,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			get
 			{
-				if (_ctrlKeyProp == null)
-					_ctrlKeyProp = _eventArgsType.GetProperty("CtrlKey");
+				_ctrlKeyProp ??= _eventArgsType.GetProperty("CtrlKey");
 				return (bool)_ctrlKeyProp.GetValue(_eventArgs, null);
 			}
 		}
@@ -714,8 +674,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			get
 			{
-				if (_shiftKeyProp == null)
-					_shiftKeyProp = _eventArgsType.GetProperty("ShiftKey");
+				_shiftKeyProp ??= _eventArgsType.GetProperty("ShiftKey");
 				return (bool)_shiftKeyProp.GetValue(_eventArgs, null);
 			}
 		}
