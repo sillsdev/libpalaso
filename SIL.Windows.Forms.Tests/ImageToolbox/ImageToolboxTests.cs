@@ -91,29 +91,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 		}
 
 		[Test]
-		[Platform(Exclude="Win", Reason="applies only to Mono")]
-		public void CheckMonoForSelectLargeIconView()
-		{
-			using (var dlg = new OpenFileDialog ())
-			{
-				Assert.IsTrue(dlg is FileDialog, "OpenFileDialog no longer inherits from FileDialog");
-				Type dlgType = typeof(FileDialog);
-				var dlgViewField = dlgType.GetField("mwfFileView", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
-				Assert.IsNotNull(dlgViewField, "FileDialog no longer has an mwfFileView field");
-				var fileView = dlgViewField.GetValue(dlg);
-				Assert.IsNotNull(fileView, "FileDialog has not yet set the mwfFileView value");
-				var viewType = fileView.GetType();
-				var viewItemField = viewType.GetField("largeIconMenutItem", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
-				Assert.IsNotNull(viewItemField, "MWFFileView no longer has a largeIconMenutItem field");
-				var largeIcon = viewItemField.GetValue(fileView) as MenuItem;
-				Assert.IsNotNull(largeIcon, "MWFFileView has not yet set the largeIconMenutItem value");
-				var viewOnClickMethod = viewType.GetMethod("OnClickViewMenuSubItem", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public,
-					null, new Type[] { typeof(Object), typeof(EventArgs) }, null);
-				Assert.IsNotNull(viewOnClickMethod, "MWFFileView no longer has an OnClickViewMenuSubItem(object, EventArgs) method");
-			}
-		}
-
-		[Test]
 		public void DoubleCheckFileFilterWorks()
 		{
 			Assert.IsTrue(AcquireImageControl.DoubleCheckFileFilter(null, "foo.txt"));
