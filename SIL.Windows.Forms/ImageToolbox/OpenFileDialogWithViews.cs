@@ -224,14 +224,15 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		public DialogResult ShowDialog(IWin32Window owner)
 		{
-			StartWatching();
-
-			DialogResult dialogResult = OpenFileDialog.ShowDialog(owner);
-
-			StopWatching();
-
-			return dialogResult;
-
+			try
+			{
+				StartWatching();
+				return OpenFileDialog.ShowDialog(owner);
+			}
+			finally
+			{
+				StopWatching();
+			}
 		}
 
 		private void StopWatching()
