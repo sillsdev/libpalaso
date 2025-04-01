@@ -57,7 +57,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		private bool m_IsWatching = false;
 		private DialogViewTypes m_DialogViewTypes;
 		private const int WM_COMMAND = 0x0111;
-		private DialogAdapters.OpenFileDialogAdapter m_OpenFileDialog;
+		private OpenFileDialog m_OpenFileDialog;
 
 		public OpenFileDialogWithViews()
 		{
@@ -77,25 +77,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			set { m_DialogViewTypes = value; }
 		}
 
-		private DialogAdapters.OpenFileDialogAdapter OpenFileDialog
-		{
-			get
-			{
-				if (m_OpenFileDialog == null)
-				{
-					m_OpenFileDialog = new DialogAdapters.OpenFileDialogAdapter();
-					if (DialogAdapters.CommonDialogAdapter.UseGtkDialogs)
-					{
-						DialogAdapters.CommonDialogAdapter.WindowType = Platform.IsCinnamon ?
-							DialogAdapters.CommonDialogAdapter.WindowTypeHintAdaptor.Dialog :
-							DialogAdapters.CommonDialogAdapter.WindowTypeHintAdaptor.Utility;
-						DialogAdapters.CommonDialogAdapter.ForceKeepAbove = true;
-					}
-				}
-				return m_OpenFileDialog;
-			}
-
-		}
+		private OpenFileDialog OpenFileDialog => m_OpenFileDialog ??= new OpenFileDialog();
 
 		public bool Multiselect
 		{
