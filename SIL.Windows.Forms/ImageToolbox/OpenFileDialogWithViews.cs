@@ -13,7 +13,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 {
 	/// <summary>
 	/// Acts like a normal OpenFileDialog, but with the addition of letting you set the initial view (e.g. to Large_Icons)
-	/// On Linux, this will use the GTK file open dialog instead of the WinForms dialog.
 	/// </summary>
 	public class OpenFileDialogWithViews : Component
 	{
