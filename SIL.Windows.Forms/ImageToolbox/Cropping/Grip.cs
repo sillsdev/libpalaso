@@ -147,16 +147,18 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 		private void DrawOneRowGrip(Graphics graphics, Rectangle r, int row, int offset)
 		{
+			using var controlLightPen = new Pen(SystemColors.ControlLightLight);
+			using var controlDarkPen = new Pen(SystemColors.ControlDark);
 			for (int column = 0; column < r.Width; column += 4)
 			{
 				// light dot
-				graphics.DrawRectangle(new Pen(SystemColors.ControlLightLight),
+				graphics.DrawRectangle(controlLightPen,
 									   r.X + offset + column,
 									   r.Y + 1 + (row * GripDotSpacing),
 									   1,
 									   1);
 				// dark dot
-				graphics.DrawRectangle(new Pen(SystemColors.ControlDark),
+				graphics.DrawRectangle(controlDarkPen,
 									   r.X + offset + column - 1,
 									   r.Y + (row * GripDotSpacing),
 									   1,
