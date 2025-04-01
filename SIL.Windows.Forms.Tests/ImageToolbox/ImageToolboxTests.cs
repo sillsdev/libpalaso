@@ -3,7 +3,9 @@ using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
+using L10NSharp;
 using NUnit.Framework;
 using SIL.Windows.Forms.ClearShare;
 using SIL.Windows.Forms.ImageToolbox;
@@ -11,11 +13,25 @@ using SIL.Windows.Forms.ImageToolbox.ImageGallery;
 
 namespace SIL.Windows.Forms.Tests.ImageToolbox
 {
-	class ImageToolboxTests
+	[Apartment(ApartmentState.STA)]
+	public class ImageToolboxTests
 	{
+		private bool previousInitializationMode;
+		[OneTimeSetUp]
+		public void Setup()
+		{
+			previousInitializationMode = LocalizationManager.StrictInitializationMode;
+			LocalizationManager.StrictInitializationMode = false;
+		}
+
+		[OneTimeTearDown]
+		public void TearDown()
+		{
+			LocalizationManager.StrictInitializationMode = previousInitializationMode;
+		}
+
 		[Test]
 		[Explicit("By hand only")]
-		[STAThread]
 		public void ShowToolbox()
 		{
 			Application.EnableVisualStyles();
@@ -36,7 +52,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 
 		[Test]
 		[Explicit("By hand only")]
-		[STAThread]
 		public void ShowGeckoToolbox()
 		{
 			Application.EnableVisualStyles();
@@ -56,7 +71,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 
 		[Test]
 		[Explicit("By hand only")]
-		[STAThread]
 		public void ShowToolboxWith_PreExisting_Image_WithMetadata()
 		{
 			Application.EnableVisualStyles();
@@ -77,7 +91,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 
 		[Test]
 		[Explicit("By hand only")]
-		[STAThread]
 		public void ShowToolboxWith_PreExisting_EnsureRawFormatUnchanged()
 		{
 			Application.EnableVisualStyles();
