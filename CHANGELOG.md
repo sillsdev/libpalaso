@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Added OtherKeysToTreatAsInputKeys property to EnterTextBox.
 - [SIL.DictionaryServices] Added Fields property to LexEntry. Modified LiftWriter.Add(LexEntry entry) to also write the content of entry.Fields.
 - [SIL.Windows.Forms] Added correctly spelled HeaderLabel.ShowWindowBackgroundOnTopAndRightEdge.
+- [SIL.Core]Added correctly spelled XmlUtils.ConvertMultiParagraphToSafeXml.
 
 ### Changed
 
@@ -64,6 +65,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.WritingSystems] Added UI to enum FontRoles; the methods LdmlDataMapper.Read and LdmlDataMapper.Write now support fonts with type "ui". Also, if the ldml file has a font type not covered in FontRoles, LdmlDataMapper.Read will add it as FontRoles.Default.
 - [SIL.Windows.Forms] BREAKING CHANGE: Upgraded dependency on L10nSharp. See note regarding creating LocalizationManager before calling localization methods. In tests, it may be expedient to set `LocalizationManager.StrictInitializationMode` to false.
 - [SIL.Windows.Forms.Keyboarding] BREAKING CHANGE: Upgraded dependency on L10nSharp. See note regarding creating LocalizationManager before calling localization methods. In tests, it may be expedient to set `LocalizationManager.StrictInitializationMode` to false.
+- [SIL.Core] Improved efficiency in XmlUtils methods: MakeSafeXml and ConvertMultiParagraphToSafeXml (name corrected), and MakeSafeXmlAttribute.
 
 ### Fixed
 
@@ -78,6 +80,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [SIL.DictionaryServices] Deprecated the second parameter of GetHumanReadableIdWithAnyIllegalUnicodeEscaped: Added GetHumanReadableIdWithAnyIllegalUnicodeEscaped(LexEntry entry) and marked GetHumanReadableIdWithAnyIllegalUnicodeEscaped(LexEntry entry, Dictionary<string, int> idsAndCounts) as [Obsolete].
 - [SIL.Windows.Forms] Marked the misspelled HeaderLabel.ShowWindowBackgroudOnTopAndRightEdge as [Obsolete] in favor of correctly spelled ShowWindowBackgroundOnTopAndRightEdge.
+- [SIL.Core] Marked the misspelled XmlUtils.ConvertMultiparagraphToSafeXml as [Obsolete] in favor of correctly spelled ConvertMultiParagraphToSafeXml.
 
 ## [15.0.0] - 2025-01-06
 
