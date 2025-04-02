@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
@@ -680,9 +681,8 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Return the first child of the node that is not a comment (or null).
+		/// Return the first child of <paramref name="node"/> that is not a comment (or null).
 		/// </summary>
-		/// <param name="node"></param>
 		[PublicAPI]
 		public static XmlNode GetFirstNonCommentChild(XmlNode node)
 		{
@@ -701,10 +701,8 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Return the first child of the node that is not a comment (or null).
+		/// Return the first child of <paramref name="element"/> that is not a comment (or null).
 		/// </summary>
-		/// <param name="element"></param>
-		/// <returns></returns>
 		[PublicAPI]
 		public static XElement GetFirstNonCommentChild(XElement element)
 		{
@@ -714,59 +712,97 @@ namespace SIL.Xml
 		/// <summary>
 		/// Fix the string to be safe in a text region of XML.
 		/// </summary>
-		/// <param name="sInput"></param>
-		/// <returns></returns>
-		public static string MakeSafeXml(string sInput)
-		{
-			string sOutput = sInput;
+		/// <param name="sInput">The string within which to escape invalid characters.</param>
+		/// <returns>The input string with invalid characters replaced.</returns>
+		/// <remarks>Since multi-paragraph content is not expected, carriage return and newline
+		/// characters will not be escaped. As a result, they will be treated as whitespace,
+		/// though their  exact handling during serialization may depend on XML writer settings.
+		/// </remarks>
+		/// <seealso cref="ConvertMultiParagraphToSafeXml"/>
+		/// <seealso cref="MakeSafeXmlAttribute"/>
+		public static string MakeSafeXml(string sInput) => MakeSafeXml(sInput, false);
 
-			if (!string.IsNullOrEmpty(sOutput))
+		/// <summary>
+		/// Efficient single-pass implementation for <see cref="MakeSafeXml"/> and
+		/// <see cref="ConvertMultiParagraphToSafeXml"/>.
+		/// </summary>
+		private static string MakeSafeXml(string sInput, bool multiPara)
+		{
+			if (sInput == null)
+				return null;
+			StringBuilder stringBuilder = null;
+
+			for (int i = 0; i < sInput.Length; i++)
 			{
-				sOutput = sOutput.Replace("&", "&amp;");
-				sOutput = sOutput.Replace("<", "&lt;");
-				sOutput = sOutput.Replace(">", "&gt;");
+				void AddToBuilder(string escSequence)
+				{
+					if (stringBuilder == null)
+					{
+						var capacity = sInput.Length + escSequence.Length;
+						stringBuilder = i > 1
+							? new StringBuilder(sInput.Substring(0, i), capacity)
+							: new StringBuilder(capacity);
+					}
+
+					stringBuilder.Append(escSequence);
+				}
+
+				switch (sInput[i])
+				{
+					// Ideally, we should be able to make use of System.Security rather than having
+					// to hardcode these replacements. However, it doesn't expose exactly what we need.
+					case '<': AddToBuilder("&lt;"); break;
+					case '>': AddToBuilder("&gt;"); break;
+					case '&': AddToBuilder("&amp;"); break;
+					case '\r':
+						if (!multiPara)
+							goto default;
+						AddToBuilder("\u2028");
+						break;
+					case '\n':
+						if (!multiPara)
+							goto default;
+						if (i > 1 && Environment.NewLine.Length > 1 &&
+						    Environment.NewLine[0] == sInput[i - 1])
+							break;
+						AddToBuilder("\u2028");
+						break;
+
+					default:
+						stringBuilder?.Append(sInput[i]);
+						break;
+				}
 			}
-			return sOutput;
+
+			return stringBuilder == null ? sInput : stringBuilder.ToString();
 		}
 
 		/// <summary>
-		/// Convert a possibly multi-paragraph string to a form that is safe to store both in an XML file.
+		/// Convert a possibly multi-paragraph string to a form that is safe to store both in an
+		/// XML file.
 		/// </summary>
+		/// <seealso cref="MakeSafeXml"/>
 		[PublicAPI]
-		public static string ConvertMultiparagraphToSafeXml(string sInput)
-		{
-			var sOutput = sInput;
+		public static string ConvertMultiParagraphToSafeXml(string sInput) =>
+			MakeSafeXml(sInput, true);
 
-			if (!string.IsNullOrEmpty(sOutput))
-			{
-				sOutput = sOutput.Replace(Environment.NewLine, "\u2028");
-				sOutput = sOutput.Replace("\n", "\u2028");
-				sOutput = sOutput.Replace("\r", "\u2028");
-				sOutput = MakeSafeXml(sOutput);
-			}
-			return sOutput;
-		}
+		/// <summary>
+		/// Convert a possibly multi-paragraph string to a form that is safe to store both in an
+		/// XML file.
+		/// </summary>
+		[Obsolete("Use ConvertMultiParagraphToSafeXml")]
+		public static string ConvertMultiparagraphToSafeXml(string sInput) =>
+			ConvertMultiParagraphToSafeXml(sInput);
 
 		/// <summary>
 		/// Fix the string to be safe in an attribute value of XML.
 		/// </summary>
-		/// <param name="sInput"></param>
-		/// <returns></returns>
+		/// <param name="sInput">The string within which to escape invalid characters.</param>
+		/// <returns>The input string with invalid characters replaced.</returns>
+		/// <seealso cref="MakeSafeXml"/>
 		[PublicAPI]
-		public static string MakeSafeXmlAttribute(string sInput)
-		{
-			string sOutput = sInput;
-
-			if (!string.IsNullOrEmpty(sOutput))
-			{
-				sOutput = sOutput.Replace("&", "&amp;");
-				sOutput = sOutput.Replace("\"", "&quot;");
-				sOutput = sOutput.Replace("'", "&apos;");
-				sOutput = sOutput.Replace("<", "&lt;");
-				sOutput = sOutput.Replace(">", "&gt;");
-			}
-			return sOutput;
-		}
+		public static string MakeSafeXmlAttribute(string sInput)=> 
+			SecurityElement.Escape(sInput);
 
 		/// <summary>
 		/// Convert an encoded attribute string into plain text.
@@ -817,7 +853,7 @@ namespace SIL.Xml
 		/// <returns></returns>
 		public static string GetIndentedXml(string xml)
 		{
-			using(MemoryStream ms = new MemoryStream())
+			using (MemoryStream ms = new MemoryStream())
 			// Create a XMLTextWriter that will send its output to a memory stream (file)
 			using (XmlTextWriter xtw = new XmlTextWriter(ms, Encoding.Unicode))
 			{
@@ -833,8 +869,8 @@ namespace SIL.Xml
 				 // the text writer is where the indenting will be performed
 				 xtw.Formatting = Formatting.Indented;
 
-				 // write dom xml to the xmltextwriter
-				 doc.WriteContentTo(xtw);
+				// write DOM XML to the XmlTextWriter
+				doc.WriteContentTo(xtw);
 				 // Flush the contents of the text writer
 				 // to the memory stream, which is simply a memory file
 				 xtw.Flush();
