@@ -81,6 +81,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DictionaryServices] Deprecated the second parameter of GetHumanReadableIdWithAnyIllegalUnicodeEscaped: Added GetHumanReadableIdWithAnyIllegalUnicodeEscaped(LexEntry entry) and marked GetHumanReadableIdWithAnyIllegalUnicodeEscaped(LexEntry entry, Dictionary<string, int> idsAndCounts) as [Obsolete].
 - [SIL.Windows.Forms] Marked the misspelled HeaderLabel.ShowWindowBackgroudOnTopAndRightEdge as [Obsolete] in favor of correctly spelled ShowWindowBackgroundOnTopAndRightEdge.
 - [SIL.Core] Marked the misspelled XmlUtils.ConvertMultiparagraphToSafeXml as [Obsolete] in favor of correctly spelled ConvertMultiParagraphToSafeXml.
+- [SIL.Core] Marked GetAttributeValue as deprecated in favor of GetOptionalAttributeValue. (According to the summary, this has been deprecated for a long time, but it was not officially marked as obsolete.)
 
 ## [15.0.0] - 2025-01-06
 

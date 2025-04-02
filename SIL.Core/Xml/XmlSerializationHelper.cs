@@ -572,7 +572,6 @@ namespace SIL.Xml
 		/// <param name="rootElementName">Name to expect for the root element. This is
 		/// good when T is a generic list of some type (e.g. List of string).</param>
 		/// <param name="e">The exception generated during the deserialization.</param>
-		/// <returns></returns>
 		/// ------------------------------------------------------------------------------------
 		[PublicAPI]
 		public static T DeserializeFromFile<T>(string filename, string rootElementName,
@@ -610,7 +609,6 @@ namespace SIL.Xml
 		/// will preserve and return elements that contain only whitespace, otherwise
 		/// these elements will be ignored during a deserialization.</param>
 		/// <param name="e">The exception generated during the deserialization.</param>
-		/// <returns></returns>
 		/// --------------------------------------------------------------------------------
 		public static T DeserializeFromFile<T>(string filename, string rootElementName,
 			bool fKeepWhitespaceInElements, out Exception e)
