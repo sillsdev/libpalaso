@@ -15,11 +15,11 @@ namespace SIL.Xml
 	///</summary>
 	public class FastXmlElementSplitter : IDisposable
 	{
-		private readonly static Encoding EncUtf8 = Encoding.UTF8;
-		private readonly static byte _openingAngleBracket = EncUtf8.GetBytes("<")[0];
-		private readonly static byte _closingAngleBracket = EncUtf8.GetBytes(">")[0];
-		private readonly static byte _slash = EncUtf8.GetBytes("/")[0];
-		private readonly static byte _hyphen = EncUtf8.GetBytes("-")[0];
+		private static readonly Encoding EncUtf8 = Encoding.UTF8;
+		private static readonly byte _openingAngleBracket = EncUtf8.GetBytes("<")[0];
+		private static readonly byte _closingAngleBracket = EncUtf8.GetBytes(">")[0];
+		private static readonly byte _slash = EncUtf8.GetBytes("/")[0];
+		private static readonly byte _hyphen = EncUtf8.GetBytes("-")[0];
 		private static byte[] cdataStart = EncUtf8.GetBytes("![CDATA[");
 		private static byte[] cdataEnd = EncUtf8.GetBytes("]]>");
 		private static byte[] startComment = EncUtf8.GetBytes("!--");
@@ -303,11 +303,11 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Return true if the bytes starting at _currentPosition match the specified marker.
-		/// The following character must not be part of a marker name.
+		/// Return true if the bytes starting at <see cref="_currentOffset"/> match the specified
+		/// marker. The following character must not be part of a marker name.
 		///
-		/// Enhance JohnT: technically I think there could be white space between the opening angle bracket and the
-		/// marker. We can make that enhancement if we need it.
+		/// Enhance JohnT: technically I think there could be white space between the opening
+		/// angle bracket and the marker. We can make that enhancement if we need it.
 		/// </summary>
 		bool MatchMarker(byte[] marker)
 		{
@@ -317,7 +317,8 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Return true if the bytes starting at _currentPosition match the specified marker. No termination is required.
+		/// Return true if the bytes starting at <see cref="_currentOffset"/> match the specified
+		/// marker. No termination is required.
 		/// </summary>
 		private bool Match(byte[] marker)
 		{
@@ -343,10 +344,10 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// This method adjusts _currentPosition to the offset of the first record,
+		/// This method adjusts <see cref="_currentOffset"/> to the offset of the first record,
 		/// and adjusts _endOfRecordsOffset to the end of the last record.
-		/// If there are no records they will end up equal, at the index of the last open angle bracket
-		/// in the file. Throws exception if there is no top-level element in the file.
+		/// If there are no records they will end up equal, at the index of the last open angle
+		/// bracket in the file. Throws exception if there is no top-level element in the file.
 		/// </summary>
 		private void InitializeOffsets()
 		{
@@ -413,7 +414,8 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Move _currentOffset to the character following the next angle bracket of either type, or to _endOfRecordOffset if that comes first.
+		/// Move <see cref="_currentOffset"/> to the character following the next angle bracket of
+		/// either type, or to <see cref="_endOfRecordsOffset"/> if that comes first.
 		/// Answer true if what we got was an opening bracket
 		/// </summary>
 		private bool AdvanceToAngleBracket()
@@ -436,8 +438,8 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Move _currentOffset to the character following the next angle bracket, or to _endOfRecordOffset if that comes first.
-		/// Skip comments.
+		/// Move <see cref="_currentOffset"/> to the character following the next angle bracket, or
+		/// to <see cref="_endOfRecordOffset"/> if that comes first. Skip comments.
 		/// </summary>
 		private void AdvanceToOpenAngleBracket()
 		{
@@ -459,7 +461,8 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Move _currentOffset to the character following the next closing angle bracket, or to _endOfRecordOffset if that comes first.
+		/// Move <see cref="_currentOffset"/> to the character following the next closing angle
+		/// bracket, or to <see cref="_endOfRecordOffset"/> if that comes first.
 		/// </summary>
 		private void AdvanceToClosingAngleBracket()
 		{
