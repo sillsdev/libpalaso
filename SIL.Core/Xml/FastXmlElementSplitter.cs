@@ -322,7 +322,6 @@ namespace SIL.Xml
 		/// Return true if the bytes starting at _currentPosition match the specified marker. No termination is required.
 		/// </summary>
 		/// <param name="marker"></param>
-		/// <returns></returns>
 		private bool Match(byte[] marker)
 		{
 			if (_currentOffset + marker.Length >= _endOfRecordsOffset)
@@ -622,8 +621,7 @@ namespace SIL.Xml
 		/// <summary>
 		/// This makes the class function like a byte array, allowing [n] to get the nth byte.
 		/// </summary>
-		/// <param name="n"></param>
-		/// <returns></returns>
+		/// <param name="n">byte index</param>
 		public byte this[int n]
 		{
 			get

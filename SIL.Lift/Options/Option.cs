@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml.Serialization;
 using SIL.Extensions;
 using SIL.UiBindings;
+using static System.String;
 
 namespace SIL.Lift.Options
 {
@@ -12,23 +13,19 @@ namespace SIL.Lift.Options
 		private MultiText _abbreviation;
 		private MultiText _description;
 		private string _humanReadableKey;
-		private MultiText _name;
 
-		public Option(): this(string.Empty, new MultiText()) {}
+		public Option(): this(Empty, new MultiText()) {}
 
 		public Option(string humanReadableKey, MultiText name) //, Guid guid)
 		{
 			_humanReadableKey = humanReadableKey;
-			_name = name;
+			Name = name;
 			//SearchKeys = new List<string>();
 		}
 
 		#region IChoice Members
 
-		public string Label
-		{
-			get { return _name.GetFirstAlternative(); }
-		}
+		public string Label => Name.GetFirstAlternative();
 
 		#endregion
 
@@ -37,25 +34,21 @@ namespace SIL.Lift.Options
 		{
 			get
 			{
-				if (String.IsNullOrEmpty(_humanReadableKey))
-				{
+				if (IsNullOrEmpty(_humanReadableKey))
 					return GetDefaultKey(); //don't actually save it yet
-				}
 
-				else
-				{
-					return _humanReadableKey;
-				}
+				return _humanReadableKey;
 			}
 
 			set
 			{
-				if (String.IsNullOrEmpty(value))
+				if (IsNullOrEmpty(value))
 				{
 					_humanReadableKey = GetDefaultKey();
 				}
-						//the idea here is, we're delaying setting the key in concrete for as long as possible
-						//this allows the ui to continue to auto-create the key during a ui session.
+
+				// The idea here is, we're delaying setting the key in concrete for as long as
+				// possible to allow the UI to continue to auto-create the key during a UI session.
 				else if (value != GetDefaultKey())
 				{
 					_humanReadableKey = value.Trim();
@@ -66,26 +59,15 @@ namespace SIL.Lift.Options
 		//        [ReflectorProperty("name", typeof (MultiTextSerializorFactory),
 		//            Required = true)]
 		[XmlElement("name")]
-		public MultiText Name
-		{
-			get { return _name; }
-			set { _name = value; }
-		}
+		public MultiText Name { get; set; }
 
 		//        [ReflectorProperty("abbreviation", typeof (MultiTextSerializorFactory),
 		//            Required = false)]
 		[XmlElement("abbreviation")]
 		public MultiText Abbreviation
 		{
-			get
-			{
-				if (_abbreviation == null)
-				{
-					return Name;
-				}
-				return _abbreviation;
-			}
-			set { _abbreviation = value; }
+			get => _abbreviation ?? Name;
+			set => _abbreviation = value;
 		}
 
 		//
@@ -96,13 +78,10 @@ namespace SIL.Lift.Options
 		{
 			get
 			{
-				if (_description == null)
-				{
-					_description = new MultiText();
-				}
+				_description ??= new MultiText();
 				return _description;
 			}
-			set { _description = value; }
+			set => _description = value;
 		}
 
 		[XmlElement("searchKeys")]
@@ -112,11 +91,7 @@ namespace SIL.Lift.Options
 		private string GetDefaultKey()
 		{
 			string name = Name.GetFirstAlternative();
-			if (!String.IsNullOrEmpty(name))
-			{
-				return name;
-			}
-			return Guid.NewGuid().ToString();
+			return !IsNullOrEmpty(name) ? name : Guid.NewGuid().ToString();
 		}
 
 		//        [ReflectorProperty("guid", Required = false)]
@@ -135,7 +110,7 @@ namespace SIL.Lift.Options
 
 		public override string ToString()
 		{
-			return _name.GetFirstAlternative();
+			return Name.GetFirstAlternative();
 		}
 
 		public object GetDisplayProxy(string writingSystemId)
@@ -181,10 +156,10 @@ namespace SIL.Lift.Options
 		public IList<string> GetSearchKeys(string writingSystemId)
 		{
 			var keys = SearchKeys;
-			if(keys==null)
+			if (keys == null)
 				return new List<string>();
 			var alt = SearchKeys.GetExactAlternative(writingSystemId);
-			if(alt==null)
+			if (alt == null)
 				return new List<string>();
 
 			return alt.SplitTrimmed(',');

@@ -145,10 +145,7 @@ namespace SIL.Xml
 		/// <summary>
 		/// Deprecated: use GetOptionalAttributeValue instead.
 		/// </summary>
-		/// <param name="node"></param>
-		/// <param name="attrName"></param>
-		/// <param name="defaultValue"></param>
-		/// <returns></returns>
+		[Obsolete("Use GetOptionalAttributeValue")]
 		public static string GetAttributeValue(XmlNode node, string attrName, string defaultValue)
 		{
 			return GetOptionalAttributeValue(node, attrName, defaultValue);

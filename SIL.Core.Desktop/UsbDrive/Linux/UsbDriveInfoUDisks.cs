@@ -1,4 +1,4 @@
-﻿#if !NETSTANDARD
+#if !NETSTANDARD
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,7 +30,7 @@ namespace SIL.UsbDrive.Linux
 				{
 					string mountPath = String.Empty;
 					//When a device is present but not mounted, this method will throw an ArgumentException.
-					//In particular this can be the case just after inserting a UsbDevice.
+					//In particular this can be the case just after inserting a USB device.
 					//The loop here tries to mitigate such an occurrence.
 					string[] paths = _device.MountPaths;
 					while (_device.IsMounted && paths == null || paths.Length == 0)
@@ -43,15 +43,9 @@ namespace SIL.UsbDrive.Linux
 			}
 		}
 
-		public override string VolumeLabel
-		{
-			get { return _device.VolumeLabel; }
-		}
+		public override string VolumeLabel => _device.VolumeLabel;
 
-		public override ulong TotalSize
-		{
-			get { return _device.TotalSize; }
-		}
+		public override ulong TotalSize => _device.TotalSize;
 
 		public override ulong AvailableFreeSpace
 		{

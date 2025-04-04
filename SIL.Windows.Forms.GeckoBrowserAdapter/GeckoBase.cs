@@ -50,10 +50,12 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 
 			_inFocus = false;
 			_handleEnter = true;
-			_browser = new ReflectiveGeckoBrowser();
-			_browser.Dock = DockStyle.Fill;
-			_browser.Parent = this;
-			_browser.NoDefaultContextMenu = true;
+			_browser = new ReflectiveGeckoBrowser
+			{
+				Dock = DockStyle.Fill,
+				Parent = this,
+				NoDefaultContextMenu = true,
+			};
 
 			SelectionStart = 0;  // Initialize value;
 
@@ -133,18 +135,11 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		}
 		public virtual WritingSystemDefinition WritingSystem
 		{
-			get
-			{
-				return _writingSystem;
-			}
+			get => _writingSystem;
 
 			set
 			{
-				if (value == null)
-				{
-					throw new ArgumentNullException();
-				}
-				_writingSystem = value;
+				_writingSystem = value ?? throw new ArgumentNullException();
 				Font = _writingSystem.CreateDefaultFont();
 			}
 		}
@@ -164,7 +159,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		/// </summary>
 		public void PretendLostFocus()
 		{
-			OnLostFocus(new EventArgs());
+			OnLostFocus(EventArgs.Empty);
 		}
 
 		/// <summary>
@@ -190,22 +185,18 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 					SendKey(e);
 				else
 				{
-					if ((e.KeyCode == (uint)Keys.Tab) && !e.CtrlKey && !e.AltKey)
+					if (e.KeyCode == (uint)Keys.Tab && !e.CtrlKey && !e.AltKey)
 					{
 						e.Handled = true;
 						if (e.ShiftKey)
 						{
 							if (!ParentForm.SelectNextControl(this, false, true, true, true))
-							{
 								Debug.WriteLine("Failed to advance");
-							}
 						}
 						else
 						{
 							if (!ParentForm.SelectNextControl(this, true, true, true, true))
-							{
 								Debug.WriteLine("Failed to advance");
-							}
 						}
 						e.Handled = true;
 						return;
@@ -276,8 +267,8 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		}
 		public virtual bool InFocus
 		{
-			get { return _inFocus; }
-			set { _inFocus = value; }
+			get => _inFocus;
+			set => _inFocus = value;
 		}
 
 		public virtual bool Bold { get; set; }
@@ -306,25 +297,22 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			if (!_browserDocumentLoaded)
 				return;
 
-			// Only handle DomFocus that occurs on a Element.
-			// This is Important or it will mess with IME keyboard focus.
+			// Only handle DomFocus that occurs on an Element.
+			// This is important, or it will mess with IME keyboard focus.
 			if (e == null || e.Target == null || e.Target.CastToGeckoElement() == null)
 				return;
 
 			var content = _browser.Document.GetElementById("main");
-			if (content != null)
+			if (content is GeckoHtmlElement geckoHtmlElement && !_inFocus)
 			{
-				if ((content is GeckoHtmlElement) && (!_inFocus))
-				{
-					// The following is required because we get two in focus events every time this
-					// is entered.  This is normal for Gecko.  But I don't want to be constantly
-					// refocussing.
-					_inFocus = true;
-					EnsureFocusedGeckoControlHasInputFocus();
-					_browser?.SetInputFocus();
-					_focusElement = (GeckoHtmlElement)content;
-					ChangeFocus();
-				}
+				// The following is required because we get two in focus events every time this
+				// is entered. This is normal for Gecko. But I don't want to be constantly
+				// refocusing.
+				_inFocus = true;
+				EnsureFocusedGeckoControlHasInputFocus();
+				_browser?.SetInputFocus();
+				_focusElement = geckoHtmlElement;
+				ChangeFocus();
 			}
 		}
 		protected virtual void OnDomDocumentCompleted(object sender, EventArgs ea)
@@ -333,11 +321,11 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			AdjustHeight();
 			if (_entered)
 			{
-				this.Focus();
+				Focus();
 
 				IContainerControl containerControl = GetContainerControl();
 
-				if ((containerControl != null) && (containerControl != this) && (containerControl.ActiveControl != this))
+				if (containerControl != null && containerControl != this && containerControl.ActiveControl != this)
 					containerControl.ActiveControl = this;
 
 				_browser.WebBrowserFocus.Activate();
@@ -369,13 +357,13 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 				MoveInputFocusBackToAWinFormsControl();
 
 				// Setting the ActiveControl ensure a Focus event occurs on the control focus is moving to.
-				// And this allows us to call RemoveinputFocus at the necessary time.
-				// This prevents keypress still going to the gecko controls when a winform TextBox has focus
+				// And this allows us to call RemoveInputFocus at the necessary time.
+				// This prevents keypress still going to the gecko controls when a WinForm TextBox has focus
 				// and the mouse is over a gecko control.
 				Form.ActiveForm.ActiveControl = control;
 				EventHandler focusEvent = null;
-				// Attach a execute once only focus handler to the Non GeckoWebBrowser control focus is moving too...
-				focusEvent = (object sender, EventArgs eventArg) =>
+				// Attach an execute-once only focus handler to the Non GeckoWebBrowser control focus is moving too...
+				focusEvent = (sender, eventArg) =>
 				{
 					control.GotFocus -= focusEvent;
 					MoveInputFocusBackToAWinFormsControl();
@@ -391,10 +379,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		protected void ChangeFocus()
 		{
 			_focusElement.Focus();
-			if (UserGotFocus != null)
-			{
-				UserGotFocus.Invoke(this, null);
-			}
+			UserGotFocus?.Invoke(this, null);
 		}
 
 		protected override void OnEnter(EventArgs e)
@@ -410,33 +395,24 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			base.OnEnter(e);
 		}
 		/// <summary>
-		/// This gives a move sensible result than the default winform implementation.
+		/// This gives a move sensible result than the default WinForm implementation.
 		/// </summary>
 		/// <value><c>true</c> if focused; otherwise, <c>false</c>.</value>
-		public override bool Focused
-		{
-			get
-			{
-				return base.Focused || ContainsFocus;
-			}
-		}
+		public override bool Focused => base.Focused || ContainsFocus;
+
 		/// <summary>
-		/// If Browser control doesn't have X11 input focus.
-		/// then Ensure that it does..
+		/// If Browser control doesn't have X11 input focus, then Ensure that it does.
 		/// </summary>
 		protected void EnsureFocusedGeckoControlHasInputFocus()
 		{
-			if ((_browser == null) || (_browser.HasInputFocus()))
-			{
+			if (_browser == null || _browser.HasInputFocus())
 				return;
-			}
 
 			// Attempt to do it right away.
-			this._browser.SetInputFocus();
+			_browser.SetInputFocus();
 
 			// Otherwise do it on the first idle event.
-			Action setInputFocus = null;
-			setInputFocus = () =>
+			void SetInputFocus()
 			{
 				ProgressUtils.InvokeLaterOnIdle(() =>
 				{
@@ -444,6 +420,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 					{
 						return;
 					}
+
 					if (Form.ActiveForm == null || _browser.ContainsFocus == false)
 					{
 						MoveInputFocusBackToAWinFormsControl();
@@ -451,13 +428,14 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 					}
 
 					if (!_browser.HasInputFocus())
-						this._browser.SetInputFocus();
+						_browser.SetInputFocus();
 					if (!_browser.HasInputFocus())
-						setInputFocus();
+						SetInputFocus();
 				}, null);
-			};
+			}
+
 			if (!_browser.HasInputFocus())
-				setInputFocus();
+				SetInputFocus();
 		}
 
 		public string GetLanguageHtml(WritingSystemDefinition ws)
@@ -473,10 +451,10 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		}
 
 		/// <summary>
-		/// Set InputFocus to a WinForm controls using Mono winforms connection to the X11 server.
+		/// Set InputFocus to a WinForm controls using Mono WinForms connection to the X11 server.
 		/// GeckoWebBrowser.RemoveInputFocus uses the Gecko/Gtk connection to the X11 server.
 		/// The undoes the call to _browser.SetInputFocus.
-		/// Call this method when a winform control has gained focus, and X11 Input focus is still on the Gecko control.
+		/// Call this method when a WinForm control has gained focus, and X11 Input focus is still on the Gecko control.
 		/// </summary>
 		protected static void MoveInputFocusBackToAWinFormsControl()
 		{
@@ -486,7 +464,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			IntPtr newTargetHandle = NativeReplacements.MonoGetFocus();
 			IntPtr displayHandle = NativeReplacements.MonoGetDisplayHandle();
 
-			// Remove the Focus from a Gtk window back to a mono winform X11 window.
+			// Remove the Focus from a Gtk window back to a mono WinForm X11 window.
 			NativeX11Methods.XSetInputFocus(displayHandle, NativeReplacements.MonoGetX11Window(newTargetHandle), NativeX11Methods.RevertTo.None, IntPtr.Zero);
 		}
 		// Making these empty handlers rather than abstract so the class only

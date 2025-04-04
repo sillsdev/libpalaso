@@ -104,14 +104,14 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		static bool runningInvokeLaterOnUIThreadAction;
 
 		/// <summary>
-		/// If Reentry occurs while processing a InvokeLaterOnUIThread action, then the second action gets moved
+		/// If Reentry occurs while processing an InvokeLaterOnUIThread action, then the second action gets moved
 		/// into this List. When the original action is finished then the saved actions are reposted to the
 		/// synchronization context, and this list is cleared.
 		/// </summary>
 		static List<ThreadStart> postponedInvokeLaterOnUIThreadActions = new List<ThreadStart>();
 
 		/// <summary>
-		/// Check whether or not we have a UI Synchronization Context, and if so whether or not the current
+		/// Check whether we have a UI Synchronization Context, and if so whether the current
 		/// thread is the main UI thread.
 		/// </summary>
 		/// <returns>
@@ -208,7 +208,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			if (caughtException == null)
 				return;
 
-			// FB25127 - if a UnhandledThreadException handler is present use that rather than
+			// FB25127 - if an UnhandledThreadException handler is present use that rather than
 			// rethrowing the exception.
 			if (UnhandledThreadException != null)
 				UnhandledThreadException(caughtException);
@@ -309,8 +309,6 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		}
 
 		public delegate void ExceptionHandlerDelegate(Exception exception);
-
-
 
 		/// <summary>
 		/// Saves stack trace in the Data property of the exception.
