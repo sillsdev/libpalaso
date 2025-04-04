@@ -420,8 +420,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 			try
 			{
 				var autoUpgradeInfo = MSDialog.GetType().GetProperty("AutoUpgradeEnabled");
-				if (autoUpgradeInfo != null)
-					autoUpgradeInfo.SetValue(MSDialog, false, null);
+				autoUpgradeInfo?.SetValue(MSDialog, false, null);
 				returnDialogResult = MSDialog.ShowDialog(owner);
 			}
 			catch (ObjectDisposedException)

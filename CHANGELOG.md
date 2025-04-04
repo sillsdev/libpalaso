@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Added OtherKeysToTreatAsInputKeys property to EnterTextBox.
 - [SIL.DictionaryServices] Added Fields property to LexEntry. Modified LiftWriter.Add(LexEntry entry) to also write the content of entry.Fields.
 - [SIL.Windows.Forms] Added correctly spelled HeaderLabel.ShowWindowBackgroundOnTopAndRightEdge.
-- [SIL.Core]Added correctly spelled XmlUtils.ConvertMultiParagraphToSafeXml.
+- [SIL.Core] Added correctly spelled XmlUtils.ConvertMultiParagraphToSafeXml.
 
 ### Changed
 

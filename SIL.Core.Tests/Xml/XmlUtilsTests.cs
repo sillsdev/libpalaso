@@ -508,6 +508,7 @@ namespace SIL.Tests.Xml
 
 		[TestCase("<tag> & \" ' </tag>", ExpectedResult = "&lt;tag&gt; &amp; \" ' &lt;/tag&gt;")]
 		[TestCase("this & that", ExpectedResult = "this &amp; that")]
+		[TestCase("1<2", ExpectedResult = "1&lt;2")]
 		// REVIEW: This matches the previous behavior, but it's not 100% clear that it's correct.
 		[TestCase("Should this &amp; get replaced?", ExpectedResult = "Should this &amp;amp; get replaced?")]
 		public string MakeSafeXml_SpecialCharacters_ReturnsEscapedString(string input)

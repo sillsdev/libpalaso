@@ -177,7 +177,7 @@ namespace SIL.Xml
 
 		/// <summary>
 		/// Retrieve an array of integers, given an attribute whose value consists of a
-		///  comma-separated list of integers.
+		/// comma-separated list of integers.
 		/// </summary>
 		/// <param name="node">The XML node representing the element that contains the attribute
 		/// </param>
@@ -224,7 +224,8 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Retrieve an array, given an attribute consisting of a comma-separated list of integers
+		/// Retrieve an array, given an attribute whose value consists of a comma-separated list of
+		/// integers.
 		/// </summary>
 		/// <param name="node">The XML node representing the element that contains the attribute
 		/// </param>
@@ -749,7 +750,7 @@ namespace SIL.Xml
 		/// <returns>The input string with invalid characters replaced.</returns>
 		/// <remarks>Since multi-paragraph content is not expected, carriage return and newline
 		/// characters will not be escaped. As a result, they will be treated as whitespace,
-		/// though their  exact handling during serialization may depend on XML writer settings.
+		/// though their exact handling during serialization may depend on XML writer settings.
 		/// </remarks>
 		/// <seealso cref="ConvertMultiParagraphToSafeXml"/>
 		/// <seealso cref="MakeSafeXmlAttribute"/>
@@ -772,9 +773,7 @@ namespace SIL.Xml
 					if (stringBuilder == null)
 					{
 						var capacity = sInput.Length + escSequence.Length;
-						stringBuilder = i > 1
-							? new StringBuilder(sInput.Substring(0, i), capacity)
-							: new StringBuilder(capacity);
+						stringBuilder = new StringBuilder(sInput.Substring(0, i), capacity);
 					}
 
 					stringBuilder.Append(escSequence);
