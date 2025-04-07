@@ -836,7 +836,7 @@ namespace SIL.Xml
 		/// <returns>The input string with invalid characters replaced.</returns>
 		/// <seealso cref="MakeSafeXml"/>
 		[PublicAPI]
-		public static string MakeSafeXmlAttribute(string sInput)=> 
+		public static string MakeSafeXmlAttribute(string sInput) =>
 			SecurityElement.Escape(sInput);
 
 		/// <summary>
