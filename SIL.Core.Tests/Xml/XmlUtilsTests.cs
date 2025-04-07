@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
@@ -191,8 +192,7 @@ namespace SIL.Tests.Xml
 				+ "	</text>\r\n"
 				+ "</root>";
 			var output = new StringBuilder();
-			var preserveNamespace = new HashSet<string>();
-			preserveNamespace.Add("xml");
+			var preserveNamespace = new HashSet<string> { "xml" };
 			using (var writer = XmlWriter.Create(output, CanonicalXmlSettings.CreateXmlWriterSettings()))
 			{
 				writer.WriteStartDocument();
@@ -209,10 +209,7 @@ namespace SIL.Tests.Xml
 		{
 			string input = @"<text><span class='bold' xmlns:fw='http://software.sil.org/fieldworks' fw:special='yes' xml:space='preserve'> </span></text>";
 			var output = new StringBuilder();
-			var preserveNamespace = new HashSet<string>();
-			preserveNamespace.Add("xml");
-			preserveNamespace.Add("xmlns");
-			preserveNamespace.Add("fw");
+			var preserveNamespace = new HashSet<string> { "xml" , "xmlns", "fw" };
 			using (var writer = XmlWriter.Create(output, CanonicalXmlSettings.CreateXmlWriterSettings()))
 			{
 				writer.WriteStartDocument();
@@ -498,6 +495,60 @@ namespace SIL.Tests.Xml
 			var element = new XElement("element", new XAttribute("oldAttr", "oldAttrValue"));
 			XmlUtils.SetAttribute(element, "oldAttr", "oldAttrValue");
 			Assert.AreEqual("oldAttrValue", element.Attribute("oldAttr").Value);
+		}
+
+		[TestCase(null)]
+		[TestCase("")]
+		[TestCase("This is a test string.")]
+		[TestCase("this\r\nthat")]
+		public void MakeSafeXml_NoSpecialCharacters_ReturnsSameString(string input)
+		{
+			Assert.That(XmlUtils.MakeSafeXml(input), Is.EqualTo(input));
+		}
+
+		[TestCase("<tag> & \" ' </tag>", ExpectedResult = "&lt;tag&gt; &amp; \" ' &lt;/tag&gt;")]
+		[TestCase("this & that", ExpectedResult = "this &amp; that")]
+		[TestCase("1<2", ExpectedResult = "1&lt;2")]
+		// REVIEW: This matches the previous behavior, but it's not 100% clear that it's correct.
+		[TestCase("Should this &amp; get replaced?", ExpectedResult = "Should this &amp;amp; get replaced?")]
+		public string MakeSafeXml_SpecialCharacters_ReturnsEscapedString(string input)
+		{
+			return XmlUtils.MakeSafeXml(input);
+		}
+
+		[TestCase(null)]
+		[TestCase("")]
+		[TestCase("This is a test string.")]
+		[TestCase("this\r\nthat")]
+		public void MakeSafeXmlAttribute_NoSpecialCharacters_ReturnsSameString(string input)
+		{
+			Assert.That(XmlUtils.MakeSafeXmlAttribute(input), Is.EqualTo(input));
+		}
+
+		[TestCase("<tag> & \" ' </tag>", ExpectedResult = "&lt;tag&gt; &amp; &quot; &apos; &lt;/tag&gt;")]
+		[TestCase("this & that", ExpectedResult = "this &amp; that")]
+		[TestCase("Should this &amp; get replaced?", ExpectedResult = "Should this &amp;amp; get replaced?")]
+		public string MakeSafeXmlAttribute_SpecialCharacters_ReturnsEscapedString(string input)
+		{
+			return XmlUtils.MakeSafeXmlAttribute(input);
+		}
+
+		[TestCase(null)]
+		[TestCase("")]
+		[TestCase("This is a test string.")]
+		public void ConvertMultiParagraphToSafeXml_NoSpecialCharacters_ReturnsSameString(string input)
+		{
+			string result = XmlUtils.ConvertMultiParagraphToSafeXml(input);
+			Assert.That(result, Is.EqualTo(input));
+		}
+
+		[TestCase("Line1\nLine2\rLine3\r\nLine4",
+			ExpectedResult = "Line1\u2028Line2\u2028Line3\u2028Line4")]
+		[TestCase("<tag>\n & \r \" ' \r\n</tag>",
+			ExpectedResult = "&lt;tag&gt;\u2028 &amp; \u2028 \" ' \u2028&lt;/tag&gt;")]
+		public string ConvertMultiParagraphToSafeXml_NewLines_ReturnsEscapedString(string input)
+		{
+			return XmlUtils.ConvertMultiParagraphToSafeXml(input);
 		}
 	}
 }

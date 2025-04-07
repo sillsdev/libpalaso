@@ -510,11 +510,13 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Used by IWritingSystemRepository to identify writing systems. This is an IETF language tag, but does not necessarily
-		/// correspond to the writing system's current language tag. Id and LanguageTag can be different if the language
-		/// tag has changed, but IWritingSystemRepository.Set() hasn't been called on it yet. Only change this if you would like
-		/// to replace a writing system with the same Id already contained in the repo. This is useful creating a temporary copy
-		/// of a writing system that you may or may not care to persist to the IWritingSystemRepository.
+		/// Used by IWritingSystemRepository to identify writing systems. This is an IETF language
+		/// tag, but does not necessarily correspond to the writing system's current language tag.
+		/// <see cref="Id"/> and <see cref="LanguageTag"/> can be different if the language tag has
+		/// changed, but IWritingSystemRepository.Set() hasn't been called on it yet. Only change
+		/// this if you would like to replace a writing system with the same Id already contained
+		/// in the repo. This is useful creating a temporary copy of a writing system that you may
+		/// or may not care to persist to the IWritingSystemRepository.
 		/// Typical use would therefore be:
 		/// ws.Clone(wsorig);
 		/// ws.Id = wsOrig.Id;
@@ -524,7 +526,7 @@ namespace SIL.WritingSystems
 		public string Id { get; set; }
 
 		/// <summary>
-		/// A automatically generated descriptive label for the writing system definition.
+		/// An automatically generated descriptive label for the writing system definition.
 		/// </summary>
 		public virtual string DisplayLabel
 		{
@@ -630,7 +632,7 @@ namespace SIL.WritingSystems
 				{
 					// remove trailing dash
 					details.Remove(details.Length - 1, 1);
-					return string.Format("{0} ({1})", name, details);
+					return $"{name} ({details})";
 				}
 				return name;
 			}
@@ -664,26 +666,22 @@ namespace SIL.WritingSystems
 			set
 			{
 				if (value == null)
-					throw new ArgumentNullException("value");
+					throw new ArgumentNullException(nameof(value));
 				if (!IetfLanguageTag.IsValid(value))
-					throw new ArgumentException("The language tag is invalid.", "value");
+					throw new ArgumentException("The language tag is invalid.", nameof(value));
 
 				string newLangTag = IetfLanguageTag.Canonicalize(value);
 				if (!newLangTag.Equals(_languageTag, StringComparison.InvariantCultureIgnoreCase))
 				{
-					LanguageSubtag language;
-					ScriptSubtag script;
-					RegionSubtag region;
-					IEnumerable<VariantSubtag> variantSubtags;
-					IetfLanguageTag.TryGetSubtags(newLangTag, out language, out script, out region, out variantSubtags);
+					IetfLanguageTag.TryGetSubtags(newLangTag, out var language, out var script,
+						out var region, out var variantSubtags);
 					Set(() => Language, ref _language, language);
 					Set(() => Script, ref _script, script);
 					Set(() => Region, ref _region, region);
 					using (_ignoreVariantChanges.Enter())
 						_variants.ReplaceAll(variantSubtags);
-					string message;
-					if (!ValidateLanguageTag(out message))
-						throw new ArgumentException(message, "value");
+					if (!ValidateLanguageTag(out var message))
+						throw new ArgumentException(message, nameof(value));
 					Set(() => LanguageTag, ref _languageTag, newLangTag);
 				}
 			}
@@ -954,41 +952,31 @@ namespace SIL.WritingSystems
 			return layoutName;
 		}
 
-		public IKeyboardDefinition RawLocalKeyboard
-		{
-			get { return _localKeyboard; }
-		}
+		public IKeyboardDefinition RawLocalKeyboard => _localKeyboard;
 
 		/// <summary>
 		/// Keyboards known to have been used with this writing system. Not all may be available on this system.
 		/// Enhance: document (or add to this class?) a way of getting available keyboards.
 		/// </summary>
-		public KeyedBulkObservableList<string, IKeyboardDefinition> KnownKeyboards
-		{
-			get { return _knownKeyboards; }
-		}
+		public KeyedBulkObservableList<string, IKeyboardDefinition> KnownKeyboards =>
+			_knownKeyboards;
 
 		/// <summary>
 		/// Returns the available keyboards (known to Keyboard.Controller) that are not KnownKeyboards for this writing system.
 		/// </summary>
-		public IEnumerable<IKeyboardDefinition> OtherAvailableKeyboards
-		{
-			get
-			{
-				return Keyboarding.Keyboard.Controller.AvailableKeyboards.Except(KnownKeyboards);
-			}
-		}
+		public IEnumerable<IKeyboardDefinition> OtherAvailableKeyboards =>
+			Keyboarding.Keyboard.Controller.AvailableKeyboards.Except(KnownKeyboards);
 
 		/// <summary>
 		/// the preferred font size to use for data encoded in this writing system.
 		/// </summary>
 		public virtual float DefaultFontSize
 		{
-			get { return _defaultFontSize; }
+			get => _defaultFontSize;
 			set
 			{
 				if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
-					throw new ArgumentOutOfRangeException("value");
+					throw new ArgumentOutOfRangeException(nameof(value));
 
 				Set(() => DefaultFontSize, ref _defaultFontSize, value);
 			}
@@ -1012,19 +1000,15 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				FontDefinition font = _defaultFont;
-				if (font == null)
-					font = _fonts.FirstOrDefault(fd => fd.Roles.HasFlag(FontRoles.Default));
-				if (font == null)
-					font = _fonts.FirstOrDefault();
-				return font;
+				FontDefinition font = _defaultFont ??
+					_fonts.FirstOrDefault(fd => fd.Roles.HasFlag(FontRoles.Default));
+				return font ?? _fonts.FirstOrDefault();
 			}
 			set
 			{
 				if (Set(() => DefaultFont, ref _defaultFont, value) && value != null)
 				{
-					FontDefinition fd;
-					if (_fonts.TryGet(value.Name, out fd))
+					if (_fonts.TryGet(value.Name, out var fd))
 					{
 						if (fd == value)
 							return;
@@ -1041,10 +1025,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		public KeyedBulkObservableList<string, FontDefinition> Fonts
-		{
-			get { return _fonts; }
-		}
+		public KeyedBulkObservableList<string, FontDefinition> Fonts => _fonts;
 
 		/// <summary>
 		/// The Id used to select the spell checker.
@@ -1055,10 +1036,8 @@ namespace SIL.WritingSystems
 			set { Set(() => SpellCheckingId, ref _spellCheckingId, value); }
 		}
 
-		public KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition> SpellCheckDictionaries
-		{
-			get { return _spellCheckDictionaries; }
-		}
+		public KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition> SpellCheckDictionaries =>
+			_spellCheckDictionaries;
 
 		public virtual string DefaultRegion
 		{
@@ -1066,24 +1045,15 @@ namespace SIL.WritingSystems
 			set { Set(() => DefaultRegion, ref _defaultRegion, value); }
 		}
 
-		public IObservableSet<MatchedPair> MatchedPairs
-		{
-			get { return _matchedPairs; }
-		}
+		public IObservableSet<MatchedPair> MatchedPairs => _matchedPairs;
 
-		public IObservableSet<PunctuationPattern> PunctuationPatterns
-		{
-			get { return _punctuationPatterns; }
-		}
+		public IObservableSet<PunctuationPattern> PunctuationPatterns => _punctuationPatterns;
 
-		public BulkObservableList<QuotationMark> QuotationMarks
-		{
-			get { return _quotationMarks; }
-		}
+		public BulkObservableList<QuotationMark> QuotationMarks => _quotationMarks;
 
 		public QuotationParagraphContinueType QuotationParagraphContinueType
 		{
-			get { return _quotationParagraphContinueType; }
+			get => _quotationParagraphContinueType;
 			set { Set(() => QuotationParagraphContinueType, ref _quotationParagraphContinueType, value); }
 		}
 
@@ -1093,7 +1063,7 @@ namespace SIL.WritingSystems
 		/// <value>The legacy mapping.</value>
 		public string LegacyMapping
 		{
-			get { return _legacyMapping ?? string.Empty; }
+			get => _legacyMapping ?? string.Empty;
 			set { Set(() => LegacyMapping, ref _legacyMapping, value); }
 		}
 
@@ -1103,7 +1073,7 @@ namespace SIL.WritingSystems
 		/// <value><c>true</c> if Graphite is enabled, otherwise <c>false</c>.</value>
 		public bool IsGraphiteEnabled
 		{
-			get { return _isGraphiteEnabled; }
+			get => _isGraphiteEnabled;
 			set { Set(() => IsGraphiteEnabled, ref _isGraphiteEnabled, value); }
 		}
 
@@ -1238,8 +1208,7 @@ namespace SIL.WritingSystems
 				return false;
 			foreach (CharacterSetDefinition csd in _characterSets)
 			{
-				CharacterSetDefinition otherCsd;
-				if (!other._characterSets.TryGet(csd.Type, out otherCsd) || !csd.ValueEquals(otherCsd))
+				if (!other._characterSets.TryGet(csd.Type, out var otherCsd) || !csd.ValueEquals(otherCsd))
 					return false;
 			}
 			if (!_numberingSystem.ValueEquals(other._numberingSystem))

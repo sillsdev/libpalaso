@@ -1580,7 +1580,7 @@ namespace SIL.Archiving.IMDI.Schema
 		public QualityType Quality { get; set; }
 
 		/// <summary>
-		/// Position (start (+end) ) on a old fashioned tape without time indication
+		/// Position (start (+end) ) on an old-fashioned tape without time indication
 		/// </summary>
 		[PublicAPI]
 		public CounterPositionType CounterPosition { get; set; }
