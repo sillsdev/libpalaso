@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Scripture] Added VerseControl.TabKeyPressedInVerseField event to VerseControl to support tabbing out of the verse field of a VerseControl into the next control in the tab order rather than cycling back to the book field.
 - [SIL.Windows.Forms] Added OtherKeysToTreatAsInputKeys property to EnterTextBox.
 - [SIL.DictionaryServices] Added Fields property to LexEntry. Modified LiftWriter.Add(LexEntry entry) to also write the content of entry.Fields.
+- [SIL.Windows.Forms] Added correctly spelled HeaderLabel.ShowWindowBackgroundOnTopAndRightEdge.
+- [SIL.Core] Added correctly spelled XmlUtils.ConvertMultiParagraphToSafeXml.
 
 ### Changed
 
@@ -63,6 +65,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.WritingSystems] Added UI to enum FontRoles; the methods LdmlDataMapper.Read and LdmlDataMapper.Write now support fonts with type "ui". Also, if the ldml file has a font type not covered in FontRoles, LdmlDataMapper.Read will add it as FontRoles.Default.
 - [SIL.Windows.Forms] BREAKING CHANGE: Upgraded dependency on L10nSharp. See note regarding creating LocalizationManager before calling localization methods. In tests, it may be expedient to set `LocalizationManager.StrictInitializationMode` to false.
 - [SIL.Windows.Forms.Keyboarding] BREAKING CHANGE: Upgraded dependency on L10nSharp. See note regarding creating LocalizationManager before calling localization methods. In tests, it may be expedient to set `LocalizationManager.StrictInitializationMode` to false.
+- [SIL.Core] Improved efficiency in XmlUtils methods: MakeSafeXml and ConvertMultiParagraphToSafeXml (name corrected), and MakeSafeXmlAttribute.
 
 ### Fixed
 
@@ -71,10 +74,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Made ContributorsListControl more threadsafe. Possibly fixes crashes like SP-2353 or at least makes them less likely.
 - [SIL.WritingSystems] Added check to Subtag.Equals to ensure two subtags being compared are of same derived type. This could potentially be a subtle breaking change in the unlikely event that someone was intentionally relying on the previous errant behavior.
 - [SIL.Windows.Forms] Fix loss of precision in Animator.FrameRate getter.
+- [SIL.Core] Changed ReplaceSubstringInAttr.Visit to use StringComparison.Ordinal rather than the default (StringComparison.CurrentCulture), and also made it correctly return true when the replacement was made successfully. Although either of these could potentially be a BREAKING CHANGE, in practice, it seems unlikely that anyone would have been relying on CurrentCulture comparisons, and although the return value is used, it seems to be used merely to set a flag that is returned from the callers, and the callers I could find for those methods all appear to ignore the returned value. In any case, if someone were relying on the return value, it's unlikely they could have found it helpful to have it return false unconditionally.
 
 ### Deprecated
 
 - [SIL.DictionaryServices] Deprecated the second parameter of GetHumanReadableIdWithAnyIllegalUnicodeEscaped: Added GetHumanReadableIdWithAnyIllegalUnicodeEscaped(LexEntry entry) and marked GetHumanReadableIdWithAnyIllegalUnicodeEscaped(LexEntry entry, Dictionary<string, int> idsAndCounts) as [Obsolete].
+- [SIL.Windows.Forms] Marked the misspelled HeaderLabel.ShowWindowBackgroudOnTopAndRightEdge as [Obsolete] in favor of correctly spelled ShowWindowBackgroundOnTopAndRightEdge.
+- [SIL.Core] Marked the misspelled XmlUtils.ConvertMultiparagraphToSafeXml as [Obsolete] in favor of correctly spelled ConvertMultiParagraphToSafeXml.
+- [SIL.Core] Marked GetAttributeValue as deprecated in favor of GetOptionalAttributeValue. (According to the summary, this has been deprecated for a long time, but it was not officially marked as obsolete.)
 
 ## [15.0.0] - 2025-01-06
 

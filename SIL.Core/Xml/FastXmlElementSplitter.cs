@@ -619,6 +619,7 @@ namespace SIL.Xml
 		/// <summary>
 		/// This makes the class function like a byte array, allowing [n] to get the nth byte.
 		/// </summary>
+		/// <param name="n">byte index</param>
 		public byte this[int n]
 		{
 			get

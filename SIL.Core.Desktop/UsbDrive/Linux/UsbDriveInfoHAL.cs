@@ -1,4 +1,4 @@
-﻿#if !NETSTANDARD
+#if !NETSTANDARD
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,7 +28,7 @@ namespace SIL.UsbDrive.Linux
 			{
 				string devicePath = TryGetDevicePropertyString(_volumeDevice, "volume.mount_point");
 				//When a device is present but not mounted. This method will throw an ArgumentException.
-				//In particular this can be the case just after inserting a UsbDevice
+				//In particular this can be the case just after inserting a USB device
 				return new DirectoryInfo(devicePath);
 			}
 		}

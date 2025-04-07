@@ -18,35 +18,32 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Returns a collection of the child elements of this element.  Only elements that have
+		/// Returns a collection of the child elements of this element. Only elements that have
 		/// a matching XName and don't have an "alt" attribute are included in the collection
 		/// </summary>
 		/// <param name="element">The element.</param>
 		/// <param name="name">The name.</param>
-		/// <returns></returns>
 		public static IEnumerable<XElement> NonAltElements(this XElement element, XName name)
 		{
 			return element.Elements(name).Where(e => e.Attribute("alt") == null);
 		}
 
 		/// <summary>
-		/// Returns a collection of the child elements of this element.  Only elements that
+		/// Returns a collection of the child elements of this element. Only elements that
 		/// don't have an "alt" attribute are included in the collection
 		/// </summary>
 		/// <param name="element">The element.</param>
-		/// <returns></returns>
 		public static IEnumerable<XElement> NonAltElements(this XElement element)
 		{
 			return element.Elements().Where(e => e.Attribute("alt") == null);
 		}
 
 		/// <summary>
-		/// Returns a collection of the child elements of this element.  Only elements that have a matching XName
+		/// Returns a collection of the child elements of this element. Only elements that have a matching XName
 		/// and don't have an "alt" attribute or a "draft" attribute are included in the collection
 		/// </summary>
 		/// <param name="element">The element.</param>
 		/// <param name="name">The name.</param>
-		/// <returns></returns>
 		public static IEnumerable<XElement> NonAltNonDraftElements(this XElement element, XName name)
 		{
 			return element.Elements(name).Where(e => e.Attribute("alt") == null && e.Attribute("draft") == null);
@@ -89,7 +86,8 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Get the child element that doesn't have the alt attribute.  If it doesn't exist, create one
+		/// Get the child element that doesn't have the alt attribute. If it doesn't exist, create
+		/// one.
 		/// </summary>
 		/// <param name="element">parent element</param>
 		/// <param name="child">string name of the child element</param>
@@ -106,7 +104,8 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Get the child element that doesn't have the alt attribute.  If it doesn't exist, create one
+		/// Get the child element that doesn't have the alt attribute. If it doesn't exist, create
+		/// one.
 		/// </summary>
 		/// <param name="element">parent element</param>
 		/// <param name="child">XName of the child element</param>
@@ -205,7 +204,7 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Get an xml string for the given XElement.
+		/// Get an XML string for the given XElement.
 		/// </summary>
 		/// <returns>Equivalent of "OuterXml" for an XmlNode</returns>
 		public static string GetOuterXml(this XElement element)
@@ -214,7 +213,7 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Get an xml string for all children.
+		/// Get an XML string for all children.
 		/// </summary>
 		/// <returns>Equivalent of "InnerText" for an XmlNode</returns>
 		public static string GetInnerText(this XElement element)
@@ -223,7 +222,7 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Get an xml string for all children.
+		/// Get an XML string for all children.
 		/// </summary>
 		/// <returns>Equivalent of "InnerText" for an XmlNode</returns>
 		public static string GetInnerXml(this XElement element)
