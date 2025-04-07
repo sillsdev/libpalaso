@@ -348,7 +348,7 @@ namespace SIL.Xml
 		/// </summary>
 		/// <param name="node">The XmlNode to look in.</param>
 		/// <param name="attrName">The attribute to find.</param>
-		/// <returns>The value of the attribute, or null, if not found.</returns>
+		/// <returns>The value of the attribute, or <c>null</c>, if not found.</returns>
 		public static string GetOptionalAttributeValue(XmlNode node, string attrName)
 		{
 			return GetOptionalAttributeValue(node, attrName, null);
@@ -359,7 +359,7 @@ namespace SIL.Xml
 		/// </summary>
 		/// <param name="element">The XElement to look in.</param>
 		/// <param name="attrName">The attribute to find.</param>
-		/// <returns>The value of the attribute, or null, if not found.</returns>
+		/// <returns>The value of the attribute, or <c>null</c>, if not found.</returns>
 		public static string GetOptionalAttributeValue(XElement element, string attrName)
 		{
 			return GetOptionalAttributeValue(element, attrName, null);
@@ -396,7 +396,7 @@ namespace SIL.Xml
 		/// <param name="element">The XElement to look in.</param>
 		/// <param name="attrName">The attribute to find.</param>
 		/// <param name="defaultString">The value to return if the attribute is not found.</param>
-		/// <returns>The value of the attribute, or null, if not found.</returns>
+		/// <returns>The value of the attribute, or <c>null</c>, if not found.</returns>
 		public static string GetOptionalAttributeValue(XElement element, string attrName,
 			string defaultString)
 		{
@@ -410,7 +410,7 @@ namespace SIL.Xml
 		/// </summary>
 		/// <param name="node">The XmlNode to look in.</param>
 		/// <param name="attrName">The attribute to find.</param>
-		/// <returns>The value of the attribute, or null, if not found.</returns>
+		/// <returns>The value of the attribute, or <c>null</c>, if not found.</returns>
 		/// <param name="defaultString">The value to return if the attribute is not found.</param>
 		public static string GetOptionalAttributeValue(XPathNavigator node, string attrName,
 			string defaultString)
@@ -625,9 +625,10 @@ namespace SIL.Xml
 			{
 				XmlNode child1 = node1.ChildNodes[iChild1];
 
-				// Note that we must defer doing the 'continue' until after we have checked to see if both children are comments
-				// If we continue immediately and the last node of both elements is a comment, the second node will not have
-				// iChild2 incremented and the final test will fail.
+				// Note that we must defer doing the 'continue' until after we have checked to see
+				// if both children are comments If we continue immediately and the last node of
+				// both elements is a comment, the second node will not have iChild2 incremented
+				// and the final test will fail.
 				bool foundComment = false;
 
 				if (child1 is XmlComment)
@@ -715,7 +716,8 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Return the first child of <paramref name="node"/> that is not a comment (or null).
+		/// Return the first child of <paramref name="node"/> that is not a comment (or
+		/// <c>null</c>).
 		/// </summary>
 		[PublicAPI]
 		public static XmlNode GetFirstNonCommentChild(XmlNode node)
@@ -735,7 +737,8 @@ namespace SIL.Xml
 		}
 
 		/// <summary>
-		/// Return the first child of <paramref name="element"/> that is not a comment (or null).
+		/// Return the first child of <paramref name="element"/> that is not a comment (or
+		/// <c>null</c>).
 		/// </summary>
 		[PublicAPI]
 		public static XElement GetFirstNonCommentChild(XElement element)
