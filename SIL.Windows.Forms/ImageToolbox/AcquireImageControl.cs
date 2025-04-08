@@ -109,9 +109,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 						{
 							// Simulate having a FileOk event handler that can cancel the OK button click.
 							// We would prefer to actually use the event handler since that can prevent the
-							// dialog from closing, but we can't do that because of using DialogAdapters for
-							// cross-platform compatibility.  It's not worth messing with DialogAdapters at
-							// this point just to get this feature, which might not be cross-platform.
+							// dialog from closing. The event handler wasn't used because of using DialogAdapters for
+							// cross-platform compatibility. However, they aren't used anymore, so that event could be used now.
 							if (!DoubleCheckFileFilter(dlg.Filter, dlg.FileName))
 							{
 								invalidFileChosen = true;
