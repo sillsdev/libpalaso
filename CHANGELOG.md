@@ -66,7 +66,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] BREAKING CHANGE: Upgraded dependency on L10nSharp. See note regarding creating LocalizationManager before calling localization methods. In tests, it may be expedient to set `LocalizationManager.StrictInitializationMode` to false.
 - [SIL.Windows.Forms.Keyboarding] BREAKING CHANGE: Upgraded dependency on L10nSharp. See note regarding creating LocalizationManager before calling localization methods. In tests, it may be expedient to set `LocalizationManager.StrictInitializationMode` to false.
 - [SIL.Core] Improved efficiency in XmlUtils methods: MakeSafeXml and ConvertMultiParagraphToSafeXml (name corrected), and MakeSafeXmlAttribute.
-- [SIL.Windows.Forms] BREAKING CHANGE: ImageToolbox Removed support for Linux due to no longer using DialogAdapters. Effects `OpenFileDialogWithViews`
+- [SIL.Windows.Forms] BREAKING CHANGE: ImageToolbox Removed support for Linux due to no longer using DialogAdapters. Affects `OpenFileDialogWithViews`
 
 ### Fixed
 
