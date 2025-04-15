@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Threading;
 using NUnit.Framework;
@@ -20,12 +20,40 @@ namespace SIL.Tests.Extensions
 		[TestCase(DateTimeKind.Local)]
 		[TestCase(DateTimeKind.Utc)]
 		[TestCase(DateTimeKind.Unspecified)]
-		public void ToISO8601TimeFormatWithUTCString_DifferentInputKind_ReturnsTimeInUTC(DateTimeKind kind)
+		public void ToISO8601TimeFormatWithUTCString_DifferentInputKind_ReturnsTimeInUTC(
+			DateTimeKind kind)
 		{
 			var dateTime = new DateTime(2017, 02, 20, 17, 18, 19, kind);
 			Assert.That(dateTime.ToISO8601TimeFormatWithUTCString(),
 				Is.EqualTo(dateTime.ToUniversalTime()
 					.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture)));
+		}
+
+		[TestCase(1482)]
+		[TestCase(0939)]
+		[NonParallelizable]
+		public void ToISO8601TimeFormatWithUTCString_BuddhistDate_ReturnsTimeInUTC(int year)
+		{
+			var originalCulture = Thread.CurrentThread.CurrentCulture;
+			try
+			{
+				// Temporarily set system locale to use Buddhist date system
+				var buddhistCulture = new CultureInfo("th-TH");
+				buddhistCulture.DateTimeFormat.Calendar = new ThaiBuddhistCalendar();
+				Thread.CurrentThread.CurrentCulture = buddhistCulture;
+
+				// Create a DateTime in the Buddhist calendar
+				var dateTime = new DateTime(year, 3, 9, 10, 28, 39, DateTimeKind.Local);
+
+				Assert.That(dateTime.ToISO8601TimeFormatWithUTCString(),
+					Is.EqualTo(dateTime.ToUniversalTime()
+						.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture)));
+			}
+			finally
+			{
+				// Reset system locale to the original culture
+				Thread.CurrentThread.CurrentCulture = originalCulture;
+			}
 		}
 
 		[Test]
@@ -107,6 +135,52 @@ namespace SIL.Tests.Extensions
 		{
 			Assert.That(DateTimeExtensions.ParseISO8601DateTime(dateTime),
 				Is.EqualTo(new DateTime(2012, 02, 29, 12, 30, 45)));
+		}
+
+		[TestCase("9/3/2025 0:00:00", ExpectedResult = "1482-03-09")]
+		[TestCase("14/4/1482", ExpectedResult = "0939-04-14")]
+		[TestCase("9/3/1800 0:01:00", ExpectedResult = "1257-03-09")]
+		[NonParallelizable]
+		public string ParseDateTimePermissivelyWithException_WithThaiBuddhistCalendar_ReturnsDateWithCorrectYear(string input)
+		{
+			var originalCulture = Thread.CurrentThread.CurrentCulture;
+			try
+			{
+				// Temporarily set system locale to use Buddhist date system
+				var buddhistCulture = new CultureInfo("th-TH");
+				buddhistCulture.DateTimeFormat.Calendar = new ThaiBuddhistCalendar();
+				Thread.CurrentThread.CurrentCulture = buddhistCulture;
+
+				return input.ParseDateTimePermissivelyWithException()
+					.ToISO8601TimeFormatDateOnlyString();
+			}
+			finally
+			{
+				// Reset system locale to the original culture
+				Thread.CurrentThread.CurrentCulture = originalCulture;
+			}
+		}
+
+		[TestCase("19/10/2025 0:00:00", ExpectedResult = "2025-10-19")]
+		[TestCase("14/4/1482", ExpectedResult = "1482-04-14")]
+		[TestCase("13/3/1800 0:01:00", ExpectedResult = "1800-03-13")]
+		public string ParseDateTimePermissivelyWithException_WithGregorianCalendar_ReturnsDateWithCorrectYear(string input)
+		{
+			// First, make sure we're using a Gregorian calendar
+			if (!(Thread.CurrentThread.CurrentCulture.DateTimeFormat.Calendar is GregorianCalendar))
+				Assert.Ignore("This test requires the current culture to use a Gregorian calendar.");
+
+			return input.ParseDateTimePermissivelyWithException()
+				.ToISO8601TimeFormatDateOnlyString();
+		}
+
+		[TestCase("19102025 0:00:00")]
+		[TestCase("14&4&1482")]
+		[TestCase("@13:00.T")]
+		public void ParseDateTimePermissivelyWithException_UnknownFormat_ThrowsApplicationException(string input)
+		{
+			Assert.That(input.ParseDateTimePermissivelyWithException,
+				Throws.TypeOf<ApplicationException>().With.InnerException.TypeOf<FormatException>());
 		}
 	}
 }
