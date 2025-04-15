@@ -520,7 +520,7 @@ namespace SIL.Media.AlsaAudio
 			snd_pcm_hw_params_get_buffer_size(_hwparams, ref _bufferSize);
 			if (_chunkSize == _bufferSize)
 			{
-				ShowError(String.Format("Can't use period equal to buffer size (%lu == %lu)", _chunkSize, _bufferSize));
+				ShowError($"Can't use period equal to buffer size ({_chunkSize} == {_bufferSize})");
 				Cleanup();
 				return false;
 			}
