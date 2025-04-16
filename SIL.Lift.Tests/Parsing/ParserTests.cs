@@ -662,17 +662,16 @@ namespace SIL.Lift.Tests.Parsing
 			ExpectGetOrMakeEntry();
 			//ExpectMergeInLexemeForm(Is.Anything);
 			ExpectGetOrMakeSense();
-			string when= new DateTime(2000,1,1).ToUniversalTime().ToString(Extensible.LiftTimeFormatWithUTC);
 			ExpectMergeInTrait(t => new TraitMatcher("dummy", "blah", 2).Equals(t));
 			//ExpectMergeDefinition();
 
-			ParseEntryAndCheck(string.Format(@"
+			ParseEntryAndCheck(@"
 			<entry>
 				<sense>
 					<trait name='dummy' value ='blah'>
 						<annotation name='first'/>
 						<annotation name='second'/>
-				</trait></sense></entry>", when));
+				</trait></sense></entry>");
 		}
 
 		[Test]
