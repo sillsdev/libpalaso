@@ -1283,11 +1283,7 @@ namespace SIL.Scripture
 					i++;
 					continue;
 				}
-				else if (ch == '.')
-				{
-					// ignore periods
-				}
-				else
+				else if (ch != '.') // ignore periods
 				{
 					// all other characters (including space) terminate the verse number
 					stringSplitPos = i;
