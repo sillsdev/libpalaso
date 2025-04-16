@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -44,7 +44,7 @@ namespace SIL.Extensions
 
 		public static DateTime ParseISO8601DateTime(string when)
 		{
-			var formats = new string[]
+			var formats = new []
 								  {
 									  ISO8601TimeFormatNoTimeZone,
 									  ISO8601TimeFormatWithTimeZone,
@@ -102,7 +102,7 @@ namespace SIL.Extensions
 		/// We have this permissive business because we released versions of SayMore which used the local
 		/// format, rather than a universal one.
 		/// </summary>
-		public static DateTime ParseDateTimePermissivelyWithException(string when)
+		public static DateTime ParseDateTimePermissivelyWithException(this string when)
 		{
 			try
 			{
@@ -113,16 +113,15 @@ namespace SIL.Extensions
 				// Up-until mid-version 1.1, we were accidentally saving locale-specific dates
 
 				// First try a few common cultures
-				DateTime date;
-				List<CultureInfo> culturesToTry = new List<CultureInfo>(new[]
-																			{
-																				Thread.CurrentThread.CurrentCulture,
-																				CultureInfo.CurrentCulture,
-																				CultureInfo.CreateSpecificCulture("en-US"),
-																				CultureInfo.CreateSpecificCulture("en-GB"),
-																				CultureInfo.CreateSpecificCulture("ru")
-																			});
-				if (TryParseWithTheseCultures(when, out date, culturesToTry))
+				var culturesToTry = new List<CultureInfo>(new[]
+					{
+						Thread.CurrentThread.CurrentCulture,
+						CultureInfo.CurrentCulture,
+						CultureInfo.CreateSpecificCulture("en-US"),
+						CultureInfo.CreateSpecificCulture("en-GB"),
+						CultureInfo.CreateSpecificCulture("ru")
+					});
+				if (TryParseWithTheseCultures(when, out var date, culturesToTry))
 					return date;
 
 				// If not found, try more
@@ -158,8 +157,7 @@ namespace SIL.Extensions
 
 			if (!m.Success) return false;
 
-			DateTime testDate;
-			return (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out testDate));
+			return DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out _);
 		}
 
 		/// <summary>
@@ -179,8 +177,7 @@ namespace SIL.Extensions
 				!Regex.IsMatch(value, @"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:?\d{2}$"))
 				return false;
 
-			DateTime testDate;
-			return (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out testDate));
+			return DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out _);
 		}
 	}
 }
