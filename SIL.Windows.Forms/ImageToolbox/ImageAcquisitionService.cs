@@ -63,6 +63,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 				foreach (var _ in device.Items)
 				{
+					// Iterate to force enumeration of Items?
 				}
 
 				foreach (Property propertyItem in device.Properties)

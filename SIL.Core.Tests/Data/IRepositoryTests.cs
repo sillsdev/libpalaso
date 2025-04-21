@@ -46,7 +46,6 @@ namespace SIL.Tests.Data
 		}
 
 		[Test]
-
 		public void DeleteItem_Null_Throws()
 		{
 			Assert.Throws<ArgumentNullException>(() =>
@@ -62,7 +61,6 @@ namespace SIL.Tests.Data
 		}
 
 		[Test]
-
 		public void DeleteItemById_Null_Throws()
 		{
 			Assert.Throws<ArgumentNullException>(() =>
@@ -70,7 +68,6 @@ namespace SIL.Tests.Data
 		}
 
 		[Test]
-
 		public void DeleteItemById_ItemDoesNotExist_Throws()
 		{
 			MyRepositoryId id = new MyRepositoryId();
@@ -97,7 +94,6 @@ namespace SIL.Tests.Data
 		}
 
 		[Test]
-
 		public void GetId_ItemNotInRepository_Throws()
 		{
 			T item = new T();
@@ -105,7 +101,6 @@ namespace SIL.Tests.Data
 		}
 
 		[Test]
-
 		public void GetItem_IdNotInRepository_Throws()
 		{
 			MyRepositoryId id = new MyRepositoryId();
@@ -113,7 +108,6 @@ namespace SIL.Tests.Data
 		}
 
 		[Test]
-
 		public void GetItemsMatchingQuery_CanQueryIsFalse_Throws()
 		{
 			if (!DataMapperUnderTest.CanQuery)
@@ -147,7 +141,6 @@ namespace SIL.Tests.Data
 		}
 
 		[Test]
-
 		public void Save_Null_Throws()
 		{
 			Assert.Throws<ArgumentNullException>(() =>
@@ -155,7 +148,6 @@ namespace SIL.Tests.Data
 		}
 
 		[Test]
-
 		public void Save_ItemDoesNotExist_Throws()
 		{
 			T item = new T();
@@ -163,7 +155,6 @@ namespace SIL.Tests.Data
 		}
 
 		[Test]
-
 		public void SaveItems_Null_Throws()
 		{
 			Assert.Throws<ArgumentNullException>(() =>
@@ -171,7 +162,6 @@ namespace SIL.Tests.Data
 		}
 
 		[Test]
-
 		public void SaveItems_ItemDoesNotExist_Throws()
 		{
 			T item = new T();
@@ -206,8 +196,6 @@ namespace SIL.Tests.Data
 	public abstract class IRepositoryCreateItemTransitionTests<T> where T : class, new()
 	{
 		private IDataMapper<T> dataMapperUnderTest;
-		private T item;
-		private RepositoryId id;
 
 		protected bool _hasPersistOnCreate;
 
@@ -230,17 +218,9 @@ namespace SIL.Tests.Data
 			set { dataMapperUnderTest = value; }
 		}
 
-		protected T Item
-		{
-			get { return item; }
-			set { item = value; }
-		}
+		protected T Item { get; set; }
 
-		protected RepositoryId Id
-		{
-			get { return id; }
-			set { id = value; }
-		}
+		protected RepositoryId Id { get; set; }
 
 		public void SetState()
 		{
@@ -272,6 +252,7 @@ namespace SIL.Tests.Data
 			SetState();
 			if (!DataMapperUnderTest.CanPersist)
 			{
+				Assert.Ignore("Repository cannot be persisted.");
 			}
 			else
 			{
@@ -283,7 +264,8 @@ namespace SIL.Tests.Data
 					//Would be nice if this worked.. but it doesn't because we have equals for LexEntry is still by reference
 					//T itemFromPersistedData = DataMapperUnderTest.GetItem(listOfItems[0]);
 					//Assert.AreEqual(item, itemFromPersistedData);
-				} else
+				}
+				else
 				{
 					Assert.Ignore("This repository does not persist on CreateItem");
 				}
@@ -362,7 +344,7 @@ namespace SIL.Tests.Data
 			SetState();
 			if (!DataMapperUnderTest.CanPersist)
 			{
-				Assert.Ignore("Repository can not be persisted");
+				Assert.Ignore("Repository cannot be persisted.");
 			}
 			else
 			{
@@ -400,7 +382,7 @@ namespace SIL.Tests.Data
 			SetState();
 			if (!DataMapperUnderTest.CanPersist)
 			{
-				Assert.Ignore("Repository can not be persisted");
+				Assert.Ignore("Repository cannot be persisted.");
 			}
 			else
 			{
@@ -415,8 +397,6 @@ namespace SIL.Tests.Data
 	public abstract class IRepositoryPopulateFromPersistedTests<T> where T : class, new()
 	{
 		private IDataMapper<T> dataMapperUnderTest;
-		private T item;
-		private RepositoryId id;
 
 		public IDataMapper<T> DataMapperUnderTest
 		{
@@ -432,17 +412,9 @@ namespace SIL.Tests.Data
 			set { dataMapperUnderTest = value; }
 		}
 
-		protected T Item
-		{
-			get { return item; }
-			set { item = value; }
-		}
+		protected T Item { get; set; }
 
-		protected RepositoryId Id
-		{
-			get { return id; }
-			set { id = value; }
-		}
+		protected RepositoryId Id { get; set; }
 
 		public void SetState()
 		{
@@ -473,7 +445,10 @@ namespace SIL.Tests.Data
 		public void CreatedItemHasBeenPersisted()
 		{
 			SetState();
-			if (!DataMapperUnderTest.CanPersist) {}
+			if (!DataMapperUnderTest.CanPersist)
+			{
+				Assert.Ignore("Repository cannot be persisted.");
+			}
 			else
 			{
 				CreateNewRepositoryFromPersistedData();
@@ -546,7 +521,7 @@ namespace SIL.Tests.Data
 		{
 			if (!DataMapperUnderTest.CanPersist)
 			{
-				Assert.Ignore("Repository can not be persisted");
+				Assert.Ignore("Repository cannot be persisted.");
 			}
 			else
 			{
@@ -608,7 +583,6 @@ namespace SIL.Tests.Data
 	public abstract class IRepositoryDeleteItemTransitionTests<T> where T : class, new()
 	{
 		private IDataMapper<T> dataMapperUnderTest;
-		private T item;
 		private RepositoryId id;
 
 		public IDataMapper<T> DataMapperUnderTest
@@ -625,10 +599,7 @@ namespace SIL.Tests.Data
 			set { dataMapperUnderTest = value; }
 		}
 
-		public T Item
-		{
-			get { return item; }
-		}
+		public T Item { get; private set; }
 
 		//This method is used to test whether data has been persisted.
 		//This method should dispose of the current repository and reload it from persisted data
@@ -654,12 +625,11 @@ namespace SIL.Tests.Data
 
 		private void CreateInitialItem()
 		{
-			item = DataMapperUnderTest.CreateItem();
+			Item = DataMapperUnderTest.CreateItem();
 			id = DataMapperUnderTest.GetId(Item);
 		}
 
 		[Test]
-
 		public void DeleteItem_ItemDoesNotExist_Throws()
 		{
 			SetState();
@@ -673,7 +643,7 @@ namespace SIL.Tests.Data
 			SetState();
 			if (!DataMapperUnderTest.CanPersist)
 			{
-				Assert.Ignore("Repository can not be persisted.");
+				Assert.Ignore("Repository cannot be persisted.");
 			}
 			else
 			{
@@ -744,7 +714,6 @@ namespace SIL.Tests.Data
 
 		//This test is virtual because LexEntryRepository needs to override it
 		[Test]
-
 		public virtual void SaveItem_ItemDoesNotExist_Throws()
 		{
 			SetState();
@@ -766,7 +735,6 @@ namespace SIL.Tests.Data
 	public abstract class IRepositoryDeleteIdTransitionTests<T> where T : class, new()
 	{
 		private IDataMapper<T> dataMapperUnderTest;
-		private T item;
 		private RepositoryId id;
 
 		public IDataMapper<T> DataMapperUnderTest
@@ -783,10 +751,7 @@ namespace SIL.Tests.Data
 			set { dataMapperUnderTest = value; }
 		}
 
-		public T Item
-		{
-			get { return item; }
-		}
+		public T Item { get; private set; }
 
 		//This method is used to test whether data has been persisted.
 		//This method should dispose of the current repository and reload it from persisted data
@@ -812,7 +777,7 @@ namespace SIL.Tests.Data
 
 		private void CreateItemToTest()
 		{
-			this.item = DataMapperUnderTest.CreateItem();
+			Item = DataMapperUnderTest.CreateItem();
 			this.id = DataMapperUnderTest.GetId(Item);
 		}
 
@@ -824,13 +789,12 @@ namespace SIL.Tests.Data
 		}
 
 		[Test]
-
 		public void DeleteItem_HasBeenPersisted()
 		{
 			SetState();
 			if (!DataMapperUnderTest.CanPersist)
 			{
-				Assert.Ignore("Repository can not be persisted.");
+				Assert.Ignore("Repository cannot be persisted.");
 			}
 			else
 			{
@@ -901,7 +865,6 @@ namespace SIL.Tests.Data
 
 		//This test is virtual because LexEntryRepository needs to override it
 		[Test]
-
 		public virtual void SaveItem_ItemDoesNotExist_Throws()
 		{
 			SetState();
@@ -981,7 +944,7 @@ namespace SIL.Tests.Data
 			SetState();
 			if (!DataMapperUnderTest.CanPersist)
 			{
-				Assert.Ignore("Repository can not be persisted.");
+				Assert.Ignore("Repository cannot be persisted.");
 			}
 			else
 			{
@@ -1047,7 +1010,6 @@ namespace SIL.Tests.Data
 			SetState();
 			Assert.AreEqual(DateTimeKind.Utc, DataMapperUnderTest.LastModified.Kind);
 		}
-
 
 		[Test]
 		[Category("FailsDueToSomeTeamCityProblemWhenInvokeFromWeSayTest")]

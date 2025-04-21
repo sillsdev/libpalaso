@@ -823,7 +823,7 @@ namespace SIL.Scripture
 			string sLiteral = null;
 			switch (startRef.Chapter)
 			{
-				case 0: sLiteral =  literalTitleText; break;
+				case 0: sLiteral = literalTitleText; break;
 				case 1: sLiteral = literalIntroText; break;
 			}
 
@@ -1283,10 +1283,7 @@ namespace SIL.Scripture
 					i++;
 					continue;
 				}
-				else if (ch == '.')
-				{
-				}
-				else
+				else if (ch != '.') // ignore periods
 				{
 					// all other characters (including space) terminate the verse number
 					stringSplitPos = i;
