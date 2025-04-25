@@ -65,8 +65,7 @@ namespace SIL.Media.Naudio
 					_selectedDevice = value;
 					if (RecordingState != RecordingState.NotYetStarted && _selectedDevice != null)
 						BeginMonitoring();
-					if (SelectedDeviceChanged != null)
-						SelectedDeviceChanged(this, new EventArgs());
+					SelectedDeviceChanged?.Invoke(this, new EventArgs());
 				}
 			}
 		}
@@ -103,8 +102,7 @@ namespace SIL.Media.Naudio
 			SampleAggregator.MaximumCalculated += delegate
 			{
 				_peakLevelEventArgs.Level = SampleAggregator.maxValue;
-				if (PeakLevelChanged != null)
-					PeakLevelChanged.BeginInvoke(this, _peakLevelEventArgs, null, null);
+				PeakLevelChanged?.BeginInvoke(this, _peakLevelEventArgs, null, null);
 			};
 
 			RecordingFormat = new WaveFormat(44100, 1);
@@ -115,8 +113,7 @@ namespace SIL.Media.Naudio
 		{
 			lock (this)
 			{
-				if (_fileWriterThread != null)
-					_fileWriterThread.Stop();
+				_fileWriterThread?.Stop();
 				CloseWaveIn();
 				RecordingState = RecordingState.NotYetStarted;
 			}
@@ -188,15 +185,15 @@ namespace SIL.Media.Naudio
 		/// </summary>
 		/// <exception cref="InvalidOperationException">Called when in an invalid state. It is
 		/// only valid to call this method when the <see cref="RecordingState"/> is
-		/// <see cref="Media.RecordingState.NotYetStarted"/> or
-		/// <see cref="SIL.Media.RecordingState.Stopped"/>. In other words, this
+		/// <see cref="RecordingState.NotYetStarted"/> or
+		/// <see cref="RecordingState.Stopped"/>. In other words, this
 		/// should be called (either directly or as a side-effect of setting the
 		/// <see cref="SelectedDevice"/> or calling <see cref="BeginRecording(string)"/> only
 		/// once to create and initialize a new WaveIn device. For example, if merely setting
 		/// <see cref="SelectedDevice"/> for an <see cref="AudioRecorder"/> that is already
 		/// monitoring, do not call this method again. Likewise, when completing a recording
 		/// normally or aborting it (at the caller's request), this will automatically go back
-		/// into a <see cref="SIL.Media.RecordingState.Monitoring"/> state.
+		/// into a <see cref="RecordingState.Monitoring"/> state.
 		/// <see cref="BeginRecording(string)"/> also begins monitoring, so if that is called
 		/// directly, this method should not be called.</exception>
 		/// <param name="catchAndReportExceptions"> If true, any unhandled exception
@@ -206,7 +203,7 @@ namespace SIL.Media.Naudio
 		/// ------------------------------------------------------------------------------------
 		public virtual void BeginMonitoring(bool catchAndReportExceptions)
 		{
-			bool monitoringStarted = false;
+			bool monitoringStarted;
 			try
 			{
 				monitoringStarted = BeginMonitoringIfNeeded();
@@ -217,7 +214,7 @@ namespace SIL.Media.Naudio
 				{
 					ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(),
 						e, "There was a problem starting up volume monitoring.");
-					return;	
+					return;
 				}
 				else
 				{
@@ -240,7 +237,7 @@ namespace SIL.Media.Naudio
 			lock (this)
 			{
 				if (_waveIn != null || (_recordingState != RecordingState.NotYetStarted &&
-					    _recordingState != RecordingState.Stopped))
+					_recordingState != RecordingState.Stopped))
 				{
 					return false;
 				}
@@ -351,8 +348,7 @@ namespace SIL.Media.Naudio
 			RecordedTime = _fileWriterThread.RecordedTimeInSeconds;
 			_fileWriterThread = null;
 			RecordingState = RecordingState.Monitoring;
-			if (Stopped != null)
-				Stopped(this, null);
+			Stopped?.Invoke(this, null);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -435,8 +431,7 @@ namespace SIL.Media.Naudio
 					RecordingState = RecordingState.Recording;
 				}
 
-				if (RecordingStarted != null)
-					RecordingStarted(this, EventArgs.Empty);
+				RecordingStarted?.Invoke(this, EventArgs.Empty);
 			}
 			catch (InvalidOperationException e)
 			{
@@ -541,7 +536,7 @@ namespace SIL.Media.Naudio
 					//REVIEW: was this (from original author). This would boost us to the max (as the original code had a 100 for _microphoneLevel)
 					//MicrophoneLevel = _microphoneLevel;
 					//Now, we do the opposite. Give preference to the system volume. If your application supports independent volume setting, that's
-					//fine, but you'll have to explicity set it via the MicrophoneLevel property.
+					//fine, but you'll have to explicitly set it via the MicrophoneLevel property.
 
 					_microphoneLevel = _volumeControl.Percent;
 
@@ -705,25 +700,25 @@ namespace SIL.Media.Naudio
 		{
 			using (var reader = new WaveFileReader(inPath))
 			{
-				long totalMilliseconds = 1000*reader.Length/reader.WaveFormat.AverageBytesPerSecond;
+				long totalMilliseconds = 1000 * reader.Length / reader.WaveFormat.AverageBytesPerSecond;
 
 				//we  can't trim more than we have, and more than the stated minimum size
 				var cutFromStartMilliseconds = (long)Math.Min(totalMilliseconds - minimumDesiredDuration.TotalMilliseconds, cutFromStart.TotalMilliseconds);
-				cutFromStartMilliseconds = (long) Math.Max(0, cutFromStartMilliseconds); // has to be 0 or positive
+				cutFromStartMilliseconds = Math.Max(0, cutFromStartMilliseconds); // has to be 0 or positive
 
 				totalMilliseconds -= cutFromStartMilliseconds;
 				var cutFromEndMilliseconds = (long)Math.Min(totalMilliseconds - minimumDesiredDuration.TotalMilliseconds, cutFromEnd.TotalMilliseconds);
-				cutFromEndMilliseconds = (long)Math.Max(0, cutFromEndMilliseconds); // has to be 0 or positive
+				cutFromEndMilliseconds = Math.Max(0, cutFromEndMilliseconds); // has to be 0 or positive
 
 				//from https://stackoverflow.com/a/6488629/723299
 				using (var writer = new WaveFileWriter(outPath, reader.WaveFormat))
 				{
 					var bytesPerMillisecond = reader.WaveFormat.AverageBytesPerSecond / 1000;
 					var startPos = cutFromStartMilliseconds * bytesPerMillisecond;
-					startPos = startPos - startPos % reader.WaveFormat.BlockAlign;
+					startPos -= startPos % reader.WaveFormat.BlockAlign;
 
 					var endBytes = cutFromEndMilliseconds * bytesPerMillisecond;
-					endBytes = endBytes - endBytes % reader.WaveFormat.BlockAlign;
+					endBytes -= endBytes % reader.WaveFormat.BlockAlign;
 					var endPos = reader.Length - endBytes;
 					TrimWavFileInternal(reader, writer, startPos, endPos);
 				}
