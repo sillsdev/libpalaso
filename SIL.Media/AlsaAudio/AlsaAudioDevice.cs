@@ -63,7 +63,7 @@ namespace SIL.Media.AlsaAudio
 		[DllImport ("libasound.so.2")]
 		static extern int snd_pcm_sw_params_set_avail_min(IntPtr pcm, IntPtr swparams, ulong val);
 		[DllImport ("libasound.so.2")]
-		static extern int snd_pcm_sw_params_set_start_threshold(IntPtr pcm,	IntPtr swparams, ulong val);
+		static extern int snd_pcm_sw_params_set_start_threshold(IntPtr pcm, IntPtr swparams, ulong val);
 		[DllImport ("libasound.so.2")]
 		static extern int snd_pcm_sw_params_set_stop_threshold(IntPtr pcm, IntPtr swparams, ulong val);
 		[DllImport ("libasound.so.2")]
@@ -239,7 +239,7 @@ namespace SIL.Media.AlsaAudio
 		#region Construction and Destruction
 
 		/// <summary>
-		/// Initialize a new instance of the <see cref="SIL.Media.AlsaAudio.AlsaAudioDevice"/> class.
+		/// Initialize a new instance of the <see cref="AlsaAudioDevice"/> class.
 		/// </summary>
 		public AlsaAudioDevice()
 		{
@@ -374,11 +374,11 @@ namespace SIL.Media.AlsaAudio
 			writer.WriteFileHeader((int)fi.Length);
 			WaveFormatChunk format = new WaveFormatChunk();
 			format.chunkId = "fmt ";
-			format.chunkSize = 16;				// size of the struct in bytes - 8
+			format.chunkSize = 16; // size of the struct in bytes - 8
 			format.audioFormat = WAV_FMT_PCM;
 			format.channelCount = _channelCount;
 			format.sampleRate = _sampleRate;
-			format.byteRate = (uint)(_sampleRate * _channelCount * _bitsPerFrame / 8);
+			format.byteRate = _sampleRate * _channelCount * _bitsPerFrame / 8;
 			format.blockAlign = (ushort)(_channelCount * _bitsPerFrame / 8);
 			format.bitsPerSample = _bitsPerFrame;
 			writer.WriteFormatChunk(format);
@@ -506,7 +506,7 @@ namespace SIL.Media.AlsaAudio
 			uint rate = _sampleRate;
 			int dir = 0;
 			res = snd_pcm_hw_params_set_rate_near(_hpcm, _hwparams, ref rate, ref dir);
-			System.Diagnostics.Debug.Assert(res >= 0);
+			Debug.Assert(res >= 0);
 			_sampleRate = rate;
 
 			res = snd_pcm_hw_params(_hpcm, _hwparams);
@@ -533,13 +533,9 @@ namespace SIL.Media.AlsaAudio
 			n = (ulong)_bufferSize;
 			ulong start_threshold;
 			if (_startDelay <= 0)
-			{
-				start_threshold = n + (ulong)((double) rate * _startDelay / 1000000);
-			}
+				start_threshold = n + (ulong)((double)rate * _startDelay / 1000000);
 			else
-			{
-				start_threshold = (ulong)((double) rate * _startDelay / 1000000);
-			}
+				start_threshold = (ulong)((double)rate * _startDelay / 1000000);
 			if (start_threshold < 1)
 				start_threshold = 1;
 			if (start_threshold > n)
@@ -604,14 +600,14 @@ namespace SIL.Media.AlsaAudio
 
 			_tempfile = Path.GetTempFileName();
 			var file = File.Create(_tempfile);
-			int rest = Int32.MaxValue;
+			int rest = int.MaxValue;
 			_cbWritten = 0;
 			while (rest > 0 && !_fAsyncQuit)
 			{
 				int byteCount = (rest < _chunkBytes) ? rest : _chunkBytes;
 				int frameCount = byteCount * 8 / _bitsPerFrame;
 				Debug.Assert(frameCount == _chunkSize);
-				int count = (int)snd_pcm_readi(_hpcm, _audiobuf, (long)frameCount);
+				int count = (int)snd_pcm_readi(_hpcm, _audiobuf, frameCount);
 				if (count < 0)
 				{
 					Console.WriteLine("AlsaAudioDevice: stopping because returned count ({0}) signals an error", count);
@@ -620,7 +616,7 @@ namespace SIL.Media.AlsaAudio
 				if (count != frameCount)
 				{
 					Debug.WriteLine(String.Format("AlsaAudioDevice: short read ({0} < requested {1} frames)", count, frameCount));
-					byteCount = (count * _bitsPerFrame) / 8;
+					byteCount = count * _bitsPerFrame / 8;
 				}
 				file.Write(_audiobuf, 0, byteCount);
 				rest -= byteCount;
@@ -765,7 +761,7 @@ namespace SIL.Media.AlsaAudio
 			/// <summary>The chunk identifier (four 8-bit chars in the file)</summary>
 			public string chunkId;
 			/// <summary>The size of the chunk following this header</summary>
-			public UInt32 chunkSize;
+			public uint chunkSize;
 		}
 
 		/// <summary>
@@ -774,17 +770,17 @@ namespace SIL.Media.AlsaAudio
 		public class WaveFormatChunk : WaveChunk
 		{
 			/// <summary>must == 1 (PCM) for us to work with this file</summary>
-			public UInt16 audioFormat;
+			public ushort audioFormat;
 			/// <summary>number of channels (tracks) in the recording</summary>
-			public UInt16 channelCount;
+			public ushort channelCount;
 			/// <summary>number of samples per second</summary>
-			public UInt32 sampleRate;
+			public uint sampleRate;
 			/// <summary>number of bytes consumed per second</summary>
-			public UInt32 byteRate;
+			public uint byteRate;
 			/// <summary>number of bytes per sample</summary>
-			public UInt16 blockAlign;
+			public ushort blockAlign;
 			/// <summary>number of bits per sample (better be a small multiple of 8!)</summary>
-			public UInt16 bitsPerSample;
+			public ushort bitsPerSample;
 			/// <summary>extra information found in some files</summary>
 			public byte[] extraInfo;
 		}
@@ -797,7 +793,7 @@ namespace SIL.Media.AlsaAudio
 			BinaryWriter _writer;
 
 			/// <summary>
-			/// Initializes a new instance of the <see cref="SIL.Media.AlsaAudio.AlsaAudioDevice.WaveFileWriter"/> class.
+			/// Initializes a new instance of the <see cref="WaveFileWriter"/> class.
 			/// </summary>
 			public WaveFileWriter(string filename)
 			{
@@ -815,7 +811,7 @@ namespace SIL.Media.AlsaAudio
 				_writer.Write((byte)'I');
 				_writer.Write((byte)'F');
 				_writer.Write((byte)'F');
-				_writer.Write((Int32)(dataSize + 4 + 24 + 8));
+				_writer.Write(dataSize + 4 + 24 + 8);
 				_writer.Write((byte)'W');
 				_writer.Write((byte)'A');
 				_writer.Write((byte)'V');
