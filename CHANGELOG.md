@@ -66,6 +66,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] BREAKING CHANGE: Upgraded dependency on L10nSharp. See note regarding creating LocalizationManager before calling localization methods. In tests, it may be expedient to set `LocalizationManager.StrictInitializationMode` to false.
 - [SIL.Windows.Forms.Keyboarding] BREAKING CHANGE: Upgraded dependency on L10nSharp. See note regarding creating LocalizationManager before calling localization methods. In tests, it may be expedient to set `LocalizationManager.StrictInitializationMode` to false.
 - [SIL.Core] Improved efficiency in XmlUtils methods: MakeSafeXml and ConvertMultiParagraphToSafeXml (name corrected), and MakeSafeXmlAttribute.
+- [SIL.Core] BREAKING CHANGE (potentially): Made ParseDateTimePermissivelyWithException into an extension method (on string).
 
 ### Fixed
 
