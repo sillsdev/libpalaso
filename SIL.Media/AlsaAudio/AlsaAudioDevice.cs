@@ -531,11 +531,9 @@ namespace SIL.Media.AlsaAudio
 
 			/* round up to closest transfer boundary */
 			n = (ulong)_bufferSize;
-			ulong start_threshold;
+			var start_threshold = (ulong)((double)rate * _startDelay / 1000000);
 			if (_startDelay <= 0)
-				start_threshold = n + (ulong)((double)rate * _startDelay / 1000000);
-			else
-				start_threshold = (ulong)((double)rate * _startDelay / 1000000);
+				start_threshold += n;
 			if (start_threshold < 1)
 				start_threshold = 1;
 			if (start_threshold > n)
