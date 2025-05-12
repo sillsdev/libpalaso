@@ -218,7 +218,7 @@ namespace SIL.Media
 			short formatType = 1;
 			var numChannels = _recorder.AudioFormat.ChannelCount;
 			var sampleRate = _recorder.AudioFormat.SampleRate;
-			var bitsPerChannel = _recorder.AudioFormat.SampleSize*8;
+			var bitsPerChannel = _recorder.AudioFormat.SampleSize * 8;
 			var bytesPerSample = _recorder.AudioFormat.FrameSize;
 			var bytesPerSecond = _recorder.AudioFormat.BytesPerSecond;
 			var dataLen = _recorder.AudioFormat.SampleDataSize;
@@ -239,18 +239,18 @@ namespace SIL.Media
 
 					bw.Write(new [] {'W', 'A', 'V', 'E', 'f', 'm', 't', ' '});
 
-					bw.Write((int) fmtChunkLen);
+					bw.Write(fmtChunkLen);
 
-					bw.Write((short) formatType);
-					bw.Write((short) numChannels);
+					bw.Write(formatType);
+					bw.Write((short)numChannels);
 
-					bw.Write((int) sampleRate);
+					bw.Write(sampleRate);
 
-					bw.Write((int) bytesPerSecond);
+					bw.Write(bytesPerSecond);
 
-					bw.Write((short) bytesPerSample);
+					bw.Write((short)bytesPerSample);
 
-					bw.Write((short) bitsPerChannel);
+					bw.Write((short)bitsPerChannel);
 
 					bw.Write(new [] {'d', 'a', 't', 'a'});
 					bw.Write(_recorder.RecordedAudioData.Length);
