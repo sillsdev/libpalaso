@@ -9,9 +9,9 @@ using SIL.Lift.Validation;
 namespace SIL.Lift.Parsing
 {
 	/// <summary>
-	/// This class takes a file or DOM of lift and makes calls on a supplied "merger" object for what it finds there.
-	/// This design allows the same parser to be used for WeSay, FLEx, and unit tests, which all have different
-	/// domain models which they populate based on these calls.
+	/// This class takes a file or DOM of LIFT and makes calls on a supplied "merger" object for
+	/// what it finds there. This design allows the same parser to be used for FLEx, The Combine,
+	/// WeSay, and unit tests, which have different domain models populated based on these calls.
 	/// </summary>
 	public class LiftParser<TBase, TEntry, TSense, TExample>
 		where TBase : class
@@ -335,8 +335,9 @@ namespace SIL.Lift.Parsing
 				// REVIEW(SRMc): If you don't think the note element should be valid
 				// inside an example, then remove the next line and the corresponding
 				// chunk from the rng file.
-				// JH says: LIFT ver 0.13 is going to make notes available to all extensibles
-				// todo: remove this when that is true
+				// Note is not part of Example as of v0.13 (April 2009):
+				// https://code.google.com/archive/p/lift-standard/downloads
+				// TODO: Remove this line and its rng chuck if nobody is depending on it.
 				ReadNotes(node, example);
 
 				ReadExtensibleElementDetails(example, node);
@@ -385,11 +386,12 @@ namespace SIL.Lift.Parsing
 		{
 			var extensible = new Extensible
 			{
-				// Actually not part of extensible (as of 8/1/2007).
+				// Id is not part of Extensible as of v0.13 (April 2009):
+				// https://code.google.com/archive/p/lift-standard/downloads
 				Id = Utilities.GetOptionalAttributeString(node, "id")
 			};
 
-			//todo: figure out how to actually look it up:
+			// TODO: figure out how to actually look it up:
 			//string flexPrefix = node.OwnerDocument.GetPrefixOfNamespace("http://fieldworks.sil.org");
 			//if (flexPrefix != null && flexPrefix != string.Empty)
 			{
@@ -415,7 +417,7 @@ namespace SIL.Lift.Parsing
 
 		/// <summary>
 		/// Once we have the thing we're creating/merging with, we can read in any details,
-		/// i.e. traits, fields, and annotations
+		/// i.e., traits, fields, and (not yet implemented) annotations.
 		/// </summary>
 		private void ReadExtensibleElementDetails(TBase target, XmlNode node)
 		{
@@ -426,7 +428,7 @@ namespace SIL.Lift.Parsing
 					ReadField(fieldNode, target);
 			}
 			ReadTraits(node, target);
-			//todo: read annotations
+			// TODO: read annotations
 		}
 
 		private void ReadTraits(XmlNode node, TBase target)
@@ -441,7 +443,7 @@ namespace SIL.Lift.Parsing
 
 
 		/// <summary>
-		/// careful, can't return null, so give MinValue
+		/// Parses specified attribute of the given node as a date.
 		/// </summary>
 		/// <param name="xmlNode"></param>
 		/// <param name="attributeName"></param>
@@ -601,7 +603,7 @@ namespace SIL.Lift.Parsing
 		}
 
 		/// <summary>
-		/// Read a LIFT file. Must be the current lift version.
+		/// Read a LIFT file. Must be the current LIFT version.
 		/// </summary>
 		public int ReadLiftFile(string pathToLift)
 		{
@@ -614,12 +616,12 @@ namespace SIL.Lift.Parsing
 
 			if (Validator.GetLiftVersion(pathToLift) != Validator.LiftVersion)
 				throw new LiftFormatException(
-					"Programmer should migrate the lift file before calling this method.");
+					"Programmer should migrate the LIFT file before calling this method.");
 
 			int numberOfEntriesRead;
 			if (ChangeDetector != null && ChangeDetector.CanProvideChangeRecord)
 			{
-				ProgressMessage = "Detecting Changes To Lift File...";
+				ProgressMessage = "Detecting changes to the LIFT file...";
 				ChangeReport = ChangeDetector.GetChangeReport(new NullProgress());
 			}
 
@@ -631,7 +633,7 @@ namespace SIL.Lift.Parsing
 			}
 			if (ChangeReport != null && ChangeReport.IdsOfDeletedEntries.Count > 0)
 			{
-				ProgressMessage = "Removing entries that were removed from the Lift file...";
+				ProgressMessage = "Removing entries that were removed from the LIFT file...";
 				foreach (string id in ChangeReport.IdsOfDeletedEntries)
 					_merger.EntryWasDeleted(new Extensible { Id = id }, default);
 			}
@@ -789,7 +791,7 @@ namespace SIL.Lift.Parsing
 				pathToRangeFile = pathToRangeFile.Substring(7);
 			if (!File.Exists(pathToRangeFile))
 			{
-				// try to find range file next to the lift file (may have been copied to another
+				// Try to find range file next to the LIFT file (may have been copied to another
 				// directory or another machine)
 				string dir = Path.GetDirectoryName(_pathToLift);
 				string file = Path.GetFileName(pathToRangeFile);
@@ -897,7 +899,8 @@ namespace SIL.Lift.Parsing
 		public ILiftChangeReport ChangeReport { get; set; }
 
 		/// <summary>
-		/// NB: This will always convert the exception to a LiftFormatException, if it isn't already.
+		/// NB: This will always convert the exception to a <see cref="LiftFormatException">,
+		/// if it isn't already.
 		/// </summary>
 		private void NotifyFormatError(Exception error)
 		{
