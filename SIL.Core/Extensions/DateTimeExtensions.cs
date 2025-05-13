@@ -102,15 +102,19 @@ namespace SIL.Extensions
 		/// We have this permissive business because we released versions of SayMore which used the local
 		/// format, rather than a universal one.
 		/// </summary>
-		public static DateTime ParseDateTimePermissivelyWithException(this string when)
+		public static DateTime ParseDateTimePermissivelyWithException(this string when,
+			int oldestReasonablyExpectedYear = 1900, int numberOfDaysIntoFutureReasonablyExpected = 1)
 		{
+			var reasonableMin = new DateTime(oldestReasonablyExpectedYear, 1, 1);
+			var reasonableMax = DateTime.Today +
+			    TimeSpan.FromDays(numberOfDaysIntoFutureReasonablyExpected);
 			try
 			{
 				return ParseISO8601DateTime(when);
 			}
 			catch (Exception)
 			{
-				// Up-until mid-version 1.1, we were accidentally saving locale-specific dates
+				// Up-until mid-version SayMore 1.1, we were accidentally saving locale-specific dates
 
 				// First try a few common cultures
 				var culturesToTry = new List<CultureInfo>(new[]
@@ -121,11 +125,8 @@ namespace SIL.Extensions
 						CultureInfo.CreateSpecificCulture("en-GB"),
 						CultureInfo.CreateSpecificCulture("ru")
 					});
-				if (TryParseWithTheseCultures(when, out var date, culturesToTry))
-					return date;
-
-				// If not found, try more
-				if (TryParseWithTheseCultures(when, out date, CultureInfo.GetCultures(CultureTypes.SpecificCultures)))
+				culturesToTry.AddRange(CultureInfo.GetCultures(CultureTypes.SpecificCultures));
+				if (TryParseWithTheseCultures(when, reasonableMin, reasonableMax, out var date, culturesToTry))
 					return date;
 
 				// If still not found, give up and re-throw the exception.
@@ -133,17 +134,62 @@ namespace SIL.Extensions
 			}
 		}
 
-		private static bool TryParseWithTheseCultures(string when, out DateTime parsed, IEnumerable<CultureInfo> cultures)
+		private static bool TryParseWithTheseCultures(string when, DateTime reasonableMin,
+			DateTime reasonableMax, out DateTime result, IEnumerable<CultureInfo> cultures)
 		{
+			result = DateTime.MinValue;
+			bool success = false;
 			foreach (var cultureInfo in cultures)
 			{
-				if (DateTime.TryParse(when, cultureInfo.DateTimeFormat, DateTimeStyles.None, out parsed))
-					return true;
+				if (DateTime.TryParse(when, cultureInfo.DateTimeFormat, DateTimeStyles.None,
+				    out var parsed))
+				{
+					if (!success)
+					{
+						result = parsed;
+						success = true;
+					}
+
+					if (parsed >= reasonableMin && parsed <= reasonableMax)
+						return true;
+					
+					// Try switching calendar
+					var altCulture = (CultureInfo)cultureInfo.Clone();
+					var originalCalendar = altCulture.DateTimeFormat.Calendar;
+					try
+					{
+						if (originalCalendar is ThaiBuddhistCalendar)
+						{
+							altCulture.DateTimeFormat.Calendar = new GregorianCalendar();
+						}
+						else if (originalCalendar is GregorianCalendar)
+						{
+							altCulture.DateTimeFormat.Calendar = new ThaiBuddhistCalendar();
+						}
+						else
+						{
+							// Unsupported calendar switch. Consider other options.
+							continue;
+						}
+					}
+					catch (ArgumentOutOfRangeException)
+					{
+						// Couldn't switch to alternate calendar.
+						continue;
+					}
+
+					// Try again with adjusted calendar
+					if (DateTime.TryParse(when, altCulture.DateTimeFormat, DateTimeStyles.None, out parsed)
+					    && parsed >= reasonableMin && parsed <= reasonableMax)
+					{
+						result = parsed;
+						return true;
+					}
+				}
 			}
 
 			// not found, return failure
-			parsed = DateTime.MinValue;
-			return false;
+			return success;
 		}
 
 		/// <summary />

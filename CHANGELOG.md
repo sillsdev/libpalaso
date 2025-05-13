@@ -67,6 +67,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Keyboarding] BREAKING CHANGE: Upgraded dependency on L10nSharp. See note regarding creating LocalizationManager before calling localization methods. In tests, it may be expedient to set `LocalizationManager.StrictInitializationMode` to false.
 - [SIL.Core] Improved efficiency in XmlUtils methods: MakeSafeXml and ConvertMultiParagraphToSafeXml (name corrected), and MakeSafeXmlAttribute.
 - [SIL.Core] BREAKING CHANGE (potentially): Made ParseDateTimePermissivelyWithException into an extension method (on string).
+- [SIL.Core] BREAKING CHANGE (potentially): Added optional parameters to DateTimeExtensions.ParseDateTimePermissivelyWithException: `oldestReasonablyExpectedYear` and `numberOfDaysIntoFutureReasonablyExpected`. Also, changed behavior of this method to try to interpret the date according to either the Gregorian calendar or the Buddhist calender in order to get the date to fall within the reasonably expected range. This means that depending on the current culture, dates might be interpreted differently from before.
 
 ### Fixed
 
