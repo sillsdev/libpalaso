@@ -61,17 +61,17 @@ namespace SIL.Tests.IO
 			Assert.IsNull(FileLocationUtilities.LocateInProgramFiles("msinfo32.exe", false));
 		}
 
-		[Test]
+		[Test, Timeout(10000)] // On CI build (GHA) this can time out
 		public void LocateInProgramFiles_SendValidProgramDeepSearch_ReturnsProgramPath()
 		{
-			var findFile = (Platform.IsMono ? "bash" : "msinfo32.exe");
+			var findFile = Platform.IsMono ? "bash" : "msinfo32.exe";
 			Assert.IsNotNull(FileLocationUtilities.LocateInProgramFiles(findFile, true));
 		}
 
-		[Test]
+		[Test, Timeout(10000)] // On CI build (GHA) this can time out
 		public void LocateInProgramFiles_SendValidProgramDeepSearch_SubFolderSpecified_ReturnsProgramPath()
 		{
-			var findFile = (Platform.IsMono ? "bash" : "msinfo32.exe");
+			var findFile = Platform.IsMono ? "bash" : "msinfo32.exe";
 
 			// this will work on Mono because it ignores the subFoldersToSearch parameter
 			Assert.IsNotNull(FileLocationUtilities.LocateInProgramFiles(findFile, true, "Common Files"));
@@ -80,7 +80,7 @@ namespace SIL.Tests.IO
 		[Test]
 		public void LocateInProgramFiles_SendInValidSubFolder_DoesNotThrow()
 		{
-			var findFile = (Platform.IsMono ? "bash" : "msinfo32.exe");
+			var findFile = Platform.IsMono ? "bash" : "msinfo32.exe";
 			Assert.DoesNotThrow(() => FileLocationUtilities.LocateInProgramFiles(findFile, true, "!~@blah"));
 		}
 
