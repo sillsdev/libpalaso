@@ -621,7 +621,7 @@ namespace SIL.Lift.Parsing
 			int numberOfEntriesRead;
 			if (ChangeDetector != null && ChangeDetector.CanProvideChangeRecord)
 			{
-				ProgressMessage = "Detecting changes to the LIFT file...";
+				ProgressMessage = "Detecting Changes To Lift File...";
 				ChangeReport = ChangeDetector.GetChangeReport(new NullProgress());
 			}
 
@@ -633,7 +633,7 @@ namespace SIL.Lift.Parsing
 			}
 			if (ChangeReport != null && ChangeReport.IdsOfDeletedEntries.Count > 0)
 			{
-				ProgressMessage = "Removing entries that were removed from the LIFT file...";
+				ProgressMessage = "Removing entries that were removed from the Lift file...";
 				foreach (string id in ChangeReport.IdsOfDeletedEntries)
 					_merger.EntryWasDeleted(new Extensible { Id = id }, default);
 			}
