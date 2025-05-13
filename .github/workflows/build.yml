@@ -79,6 +79,15 @@ jobs:
     - name: Test project
       id: test
       run: dotnet test "$TEST_PATH"/SIL*Tests.dll --filter "(TestCategory != SkipOnTeamCity) & (TestCategory != RequiresAudioInputDevice)" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
+      
+    - name: Upload hang dump (if any)
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Hang dumps (${{ matrix.framework }})
+        path: |
+          **/testhost_*.dmp
+          **/sequence.xml
 
     - name: Upload test results
       if: always()
