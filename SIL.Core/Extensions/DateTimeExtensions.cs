@@ -99,15 +99,62 @@ namespace SIL.Extensions
 //		}
 
 		/// <summary>
-		/// We have this permissive business because we released versions of SayMore which used the local
-		/// format, rather than a universal one.
+		/// The one day in the future is an attempt to avoid off-by-one problems with time
+		/// zones, which can cause a local date representing today to appear to be in the future.
 		/// </summary>
-		public static DateTime ParseDateTimePermissivelyWithException(this string when,
-			int oldestReasonablyExpectedYear = 1900, int numberOfDaysIntoFutureReasonablyExpected = 1)
+		private static DateTime MaxPermissivePastDate => DateTime.Today + TimeSpan.FromDays(1);
+
+		[Obsolete("Use ParseModernPastDateTimePermissivelyWithException (or one of the other specific permissive parsing methods as appropriate).")]
+		public static DateTime ParseDateTimePermissivelyWithException(this string when)
 		{
-			var reasonableMin = new DateTime(oldestReasonablyExpectedYear, 1, 1);
-			var reasonableMax = DateTime.Today +
-			    TimeSpan.FromDays(numberOfDaysIntoFutureReasonablyExpected);
+			return when.ParseModernPastDateTimePermissivelyWithException();
+		}
+		
+		/// <summary>
+		/// This method parses dates permissively to handle cases where the caller either has no
+		/// control over the origin of the date to be parsed or needs to deal with a past mistake
+		/// of storing dates in a local format, rather than a universal one. This overload should
+		/// work well when dates are expected to be in the recent past (i.e., modern times), as it
+		/// prefers a parse which lands the date in the range from 1/1/1900 through one day in the
+		/// future. (The one day in the future is an attempt to avoid off-by-one problems with time
+		/// zones, which can cause a local date representing today to appear to be in the future.)
+		/// </summary>
+		/// <remarks>We originally released versions of SayMore which used the local format,
+		/// rather than a universal one.</remarks>
+		public static DateTime ParseModernPastDateTimePermissivelyWithException(this string when)
+		{
+			var reasonableMin = new DateTime(1900, 1, 1);
+			return when.ParseDateTimePermissivelyWithException(reasonableMin, MaxPermissivePastDate);
+		}
+		
+		/// <summary>
+		/// This method parses dates permissively to handle cases where the caller either has no
+		/// control over the origin of the date to be parsed or needs to deal with a past mistake
+		/// of storing dates in a local format, rather than a universal one. This overload should
+		/// work well when dates are expected to be in the recent past (i.e., modern times), as it
+		/// prefers a parse which lands the date in the range from 1/1/1900 through one day in the
+		/// future. (The one day in the future is an attempt to avoid off-by-one problems with time
+		/// zones, which can cause a local date representing today to appear to be in the future.)
+		/// </summary>
+		public static DateTime ParsePastDateTimePermissivelyWithException(this string when)
+		{
+			return when.ParseDateTimePermissivelyWithException(DateTime.MinValue, MaxPermissivePastDate);
+		}
+
+		/// <summary>
+		/// This method parses dates permissively to handle cases where the caller either has no
+		/// control over the origin of the date to be parsed or needs to deal with a past mistake
+		/// of storing dates in a local format, rather than a universal one. Note that the returned
+		/// date is not guaranteed to fall within the specified range, but a parse which lands the
+		/// date within that range will be preferred over one that does not. Supplying a reasonable
+		/// range can help disambiguate between month and day, as well as between years, when
+		/// different calendar systems are used.
+		/// </summary>
+		/// <remarks>Current implementation only attempt to deal with Gregorian vs. Buddhist
+		/// calendar differences. It does not deal with lunar calendars.</remarks>
+		public static DateTime ParseDateTimePermissivelyWithException(this string when,
+			DateTime reasonableMin, DateTime reasonableMax)
+		{
 			try
 			{
 				return ParseISO8601DateTime(when);

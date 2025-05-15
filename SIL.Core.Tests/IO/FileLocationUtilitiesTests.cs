@@ -111,7 +111,7 @@ namespace SIL.Tests.IO
 		}
 
 		[Test]
-		public void LocateInProgramFiles_SendInValidSubFolder_DoesNotThrow()
+		public void LocateInProgramFiles_SendInvalidSubFolder_DoesNotThrow()
 		{
 			Assert.DoesNotThrow(() => LocateInProgramFiles(SystemProgramFileThatShouldExist,
 				true, "!~@blah"));
@@ -233,7 +233,7 @@ namespace SIL.Tests.IO
 		}
 
 		[Test]
-		public void LocateExecutable_NonexistentFileFileThrows()
+		public void LocateExecutable_NonexistentFileThrows()
 		{
 			Assert.That(() => LocateExecutable("dummy", "__nonexistent.exe"),
 				Throws.Exception.TypeOf<ApplicationException>());

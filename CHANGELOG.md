@@ -28,6 +28,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DictionaryServices] Added Fields property to LexEntry. Modified LiftWriter.Add(LexEntry entry) to also write the content of entry.Fields.
 - [SIL.Windows.Forms] Added correctly spelled HeaderLabel.ShowWindowBackgroundOnTopAndRightEdge.
 - [SIL.Core] Added correctly spelled XmlUtils.ConvertMultiParagraphToSafeXml.
+- [SIL.Core] Added DateTimeExtensions.ParseModernPastDateTimePermissivelyWithException (as the most probable replacement for the deprecated version of ParseDateTimePermissivelyWithException).
+- [SIL.Core] Added DateTimeExtensions.ParsePastDateTimePermissivelyWithException as a convenience method.
+- [SIL.Core] Added overload of DateTimeExtensions.ParseDateTimePermissivelyWithException that takes parameters `reasonableMin` and `reasonableMax`.
 
 ### Changed
 
@@ -67,8 +70,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Keyboarding] BREAKING CHANGE: Upgraded dependency on L10nSharp. See note regarding creating LocalizationManager before calling localization methods. In tests, it may be expedient to set `LocalizationManager.StrictInitializationMode` to false.
 - [SIL.Core] Improved efficiency in XmlUtils methods: MakeSafeXml and ConvertMultiParagraphToSafeXml (name corrected), and MakeSafeXmlAttribute.
 - [SIL.Core] BREAKING CHANGE (potentially): Made ParseDateTimePermissivelyWithException into an extension method (on string).
-- [SIL.Core] BREAKING CHANGE (potentially): Added optional parameters to DateTimeExtensions.ParseDateTimePermissivelyWithException: `oldestReasonablyExpectedYear` and `numberOfDaysIntoFutureReasonablyExpected`. Also, changed behavior of this method to try to interpret the date according to either the Gregorian calendar or the Buddhist calender in order to get the date to fall within the reasonably expected range. This means that depending on the current culture, dates might be interpreted differently from before.
-
+- [SIL.Core] BREAKING CHANGE (potentially): Changed behavior of DateTimeExtensions.ParseDateTimePermissivelyWithException (now deprecated) to try to interpret the date according to either the Gregorian calendar or the Buddhist calender in order to get the date to fall within a reasonable expected range (from 1/1/1900 through one day in the future). This means that depending on the current culture, dates might be interpreted differently from before. The known places in SIL code where this method is used seems to be for dates in the recent past (modern times); hence the default range. A new overload was added that will allow callers with other needs to specify a different range.
+ 
 ### Fixed
 
 - [SIL.Windows.Forms] Changed build date in SILAboutBox to be computed using the last write time instead of creation time.
@@ -84,6 +87,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Marked the misspelled HeaderLabel.ShowWindowBackgroudOnTopAndRightEdge as [Obsolete] in favor of correctly spelled ShowWindowBackgroundOnTopAndRightEdge.
 - [SIL.Core] Marked the misspelled XmlUtils.ConvertMultiparagraphToSafeXml as [Obsolete] in favor of correctly spelled ConvertMultiParagraphToSafeXml.
 - [SIL.Core] Marked GetAttributeValue as deprecated in favor of GetOptionalAttributeValue. (According to the summary, this has been deprecated for a long time, but it was not officially marked as obsolete.)
+- [SIL.Core] Marked DateTimeExtensions.ParseDateTimePermissivelyWithException as [Obsolete] in favor of ParseModernPastDateTimePermissivelyWithException (or ParsePastDateTimePermissivelyWithException or the new overload of ParseDateTimePermissivelyWithException).
 
 ## [15.0.0] - 2025-01-06
 
