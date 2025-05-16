@@ -89,7 +89,7 @@ namespace SIL.Tests.IO
 				Assert.IsNotNull(LocateInProgramFiles(findFile, true));
 		}
 
-		[Test] // On CI build (GHA) this can time out
+		[Test]
 		public void LocateInProgramFiles_SendValidProgramDeepSearch_SubFolderSpecified_ReturnsProgramPath()
 		{
 			// This should work on Mono because it ignores the subFoldersToSearch parameter.

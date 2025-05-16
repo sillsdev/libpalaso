@@ -189,7 +189,7 @@ namespace SIL.Tests.Extensions
 		/// </param>
 		/// <param name="expectedResultFormattedAsBuddhistDate"></param>
 		[TestCase("9/3/2025 0:00:00", true, "9/3/2568")]
-		[TestCase("2-2-1920", true, "2/2/2463")] // 
+		[TestCase("2-2-1920", true, "2/2/2463")]
 		[TestCase("14/4/1543", false, "14/4/1543")]
 		[TestCase("3/9/1257 0:01:00", false, "3/9/1257")]
 		[TestCase("9/3/2568 0:01:00", false, "9/3/2568")]
@@ -231,7 +231,7 @@ namespace SIL.Tests.Extensions
 		}
 
 		/// <summary>
-		/// For these test cases, well will supply a future date (beyond reasonableMax) and pass
+		/// For these test cases, we will supply a future date (beyond reasonableMax) and pass
 		/// a reasonableMin that is more than 543 years ago. Thus, we expect the algorithm to guess
 		/// that these are (ancient) Buddhist dates as opposed to future Gregorian dates.
 		/// </summary>
@@ -270,7 +270,7 @@ namespace SIL.Tests.Extensions
 		}
 
 		/// <summary>
-		/// For these test cases, well will supply a future date and pass a reasonableMin that is
+		/// For these test cases, we will supply a future date and pass a reasonableMin that is
 		/// more than 543 years ago. Thus, we expect the algorithm to guess that these are
 		/// (ancient) Buddhist dates as opposed to future Gregorian dates.
 		/// </summary>
@@ -306,7 +306,7 @@ namespace SIL.Tests.Extensions
 		}
 
 		/// <summary>
-		/// For these test cases, well will supply a future date (beyond reasonableMax). However,
+		/// For these test cases, we will supply a future date (beyond reasonableMax). However,
 		/// these are date formats that cannot be parsed in Thai/Buddhist culture, so we expect
 		/// them to be interpreted as Gregorian dates.
 		/// </summary>
