@@ -9,9 +9,9 @@ using SIL.Lift.Validation;
 namespace SIL.Lift.Parsing
 {
 	/// <summary>
-	/// This class takes a file or DOM of lift and makes calls on a supplied "merger" object for what it finds there.
-	/// This design allows the same parser to be used for WeSay, FLEx, and unit tests, which all have different
-	/// domain models which they populate based on these calls.
+	/// This class takes a file or DOM of LIFT and makes calls on a supplied "merger" object for
+	/// what it finds there. This design allows the same parser to be used for FLEx, The Combine,
+	/// WeSay, and unit tests, which have different domain models populated based on these calls.
 	/// </summary>
 	public class LiftParser<TBase, TEntry, TSense, TExample>
 		where TBase : class
@@ -20,24 +20,15 @@ namespace SIL.Lift.Parsing
 		where TExample : class, TBase
 	{
 		// Parsing Errors should throw an exception
-		///<summary></summary>
 		public event EventHandler<ErrorArgs> ParsingWarning;
-		///<summary></summary>
 		public event EventHandler<StepsArgs> SetTotalNumberSteps;
-		///<summary></summary>
 		public event EventHandler<ProgressEventArgs> SetStepsCompleted;
-		///<summary></summary>
 		public event EventHandler<MessageArgs> SetProgressMessage;
 
 		private readonly ILexiconMerger<TBase, TEntry, TSense, TExample> _merger;
-	  //  private readonly ILimittedMerger<TBase, TEntry, TSense, TExample> _limitedMerger;
 		private const string _wsAttributeLabel = "lang";
-
 		private string _pathToLift;
 		private bool _cancelNow;
-		private DateTime _defaultCreationModificationUTC=default(DateTime);
-		private ILiftChangeDetector _changeDetector;
-		private ILiftChangeReport _changeReport;
 
 		///<summary>
 		/// Constructor.
@@ -45,36 +36,7 @@ namespace SIL.Lift.Parsing
 		public LiftParser(ILexiconMerger<TBase, TEntry, TSense, TExample> merger)
 		{
 			_merger = merger;
-		 //   _limitedMerger = _merger as ILimittedMerger<TBase, TEntry, TSense, TExample>;
 		}
-
-		/// <summary>
-		///
-		/// </summary>
-//        public virtual void ReadLiftDom(XmlDocument doc, DateTime defaultCreationModificationUTC)
-//        {
-//            DefaultCreationModificationUTC = defaultCreationModificationUTC;
-//
-//            XmlNodeList entryNodes = doc.SelectNodes("/lift/entry");
-//            int numberOfEntriesRead = 0;
-//            const int kProgressReportingInterval = 50;
-//            int nextProgressPoint = numberOfEntriesRead + kProgressReportingInterval;
-//            ProgressTotalSteps = entryNodes.Count;
-//            foreach (XmlNode node in entryNodes)
-//            {
-//                ReadEntry(node);
-//                numberOfEntriesRead++;
-//                if (numberOfEntriesRead >= nextProgressPoint)
-//                {
-//                    ProgressStepsCompleted = numberOfEntriesRead;
-//                    nextProgressPoint = numberOfEntriesRead + kProgressReportingInterval;
-//                }
-//                if (_cancelNow)
-//                {
-//                    break;
-//                }
-//            }
-//        }
 
 		internal void ReadRangeElement(string range, XmlNode node)
 		{
@@ -96,45 +58,37 @@ namespace SIL.Lift.Parsing
 
 		internal TEntry ReadEntry(XmlNode node)
 		{
-			if (_changeReport != null)
+			if (ChangeReport != null)
 			{
 				string id = Utilities.GetOptionalAttributeString(node, "id");
 				if (ChangeReport.GetChangeType(id) == LiftChangeReport.ChangeType.None)
-					return default(TEntry);
+					return default;
 			}
 
 			Extensible extensible = ReadExtensibleElementBasics(node);
-			DateTime dateDeleted = GetOptionalDate(node, "dateDeleted", default(DateTime));
-			if(dateDeleted != default(DateTime))
+			DateTime dateDeleted = GetOptionalDate(node, "dateDeleted", default);
+			if (dateDeleted != default)
 			{
 				_merger.EntryWasDeleted(extensible, dateDeleted);
-				return default(TEntry);
+				return default;
 			}
 
 			int homograph = 0;
 			string order = Utilities.GetOptionalAttributeString(node, "order");
-			if (!String.IsNullOrEmpty(order))
-			{
-				if (!Int32.TryParse(order, out homograph))
-					homograph = 0;
-			}
+			if (!string.IsNullOrEmpty(order) && !int.TryParse(order, out homograph))
+				homograph = 0;
+
 			TEntry entry = _merger.GetOrMakeEntry(extensible, homograph);
 			if (entry == null)// pruned
-			{
 				return entry;
-			}
-
 
 			LiftMultiText lexemeForm = LocateAndReadMultiText(node, "lexical-unit");
 			if (!lexemeForm.IsEmpty)
-			{
 				_merger.MergeInLexemeForm(entry, lexemeForm);
-			}
+
 			LiftMultiText citationForm = LocateAndReadMultiText(node, "citation");
 			if (!citationForm.IsEmpty)
-			{
 				_merger.MergeInCitationForm(entry, citationForm);
-			}
 
 			ReadNotes(node, entry);
 
@@ -200,12 +154,6 @@ namespace SIL.Lift.Parsing
 
 		private void ReadPronunciation(XmlNode node, TEntry entry)
 		{
-//            if (_limitedMerger != null && _limitedMerger.DoesPreferXmlForPhonetic)
-//            {
-//                _limitedMerger.MergeInPronunciation(entry, node.OuterXml);
-//                return;
-//            }
-
 			LiftMultiText contents = ReadMultiText(node);
 			TBase pronunciation = _merger.MergeInPronunciation(entry, contents, node.OuterXml);
 			if (pronunciation != null)
@@ -230,12 +178,6 @@ namespace SIL.Lift.Parsing
 
 		private void ReadEtymology(XmlNode node, TEntry entry)
 		{
-//            if (_limitedMerger != null && _limitedMerger.DoesPreferXmlForEtymology)
-//            {
-//                _limitedMerger.MergeInEtymology(entry, node.OuterXml);
-//                return;
-//            }
-
 			string source = Utilities.GetOptionalAttributeString(node, "source");
 			string type = Utilities.GetOptionalAttributeString(node, "type");
 			LiftMultiText form = LocateAndReadMultiText(node, null);
@@ -245,14 +187,24 @@ namespace SIL.Lift.Parsing
 				ReadExtensibleElementDetails(etymology, node);
 		}
 
+		private void ReadField(XmlNode node, TBase extensible)
+		{
+			_merger.MergeInField(
+				extensible,
+				Utilities.GetStringAttribute(node, "type"),
+				GetOptionalDate(node, "dateCreated", default),
+				GetOptionalDate(node, "dateModified", default),
+				ReadMultiText(node),
+				GetTraitList(node)
+			);
+		}
+
 		private void ReadPicture(XmlNode n, TSense parent)
 		{
 			string href = Utilities.GetStringAttribute(n, "href");
 			LiftMultiText caption = LocateAndReadMultiText(n, "label");
-			if(caption.IsEmpty)
-			{
+			if (caption.IsEmpty)
 				caption = null;
-			}
 			_merger.MergeInPicture(parent, href, caption);
 		}
 
@@ -261,9 +213,7 @@ namespace SIL.Lift.Parsing
 			string href = Utilities.GetStringAttribute(n, "href");
 			LiftMultiText caption = LocateAndReadMultiText(n, "label");
 			if (caption.IsEmpty)
-			{
 				caption = null;
-			}
 			_merger.MergeInMedia(parent, href, caption);
 		}
 
@@ -283,8 +233,6 @@ namespace SIL.Lift.Parsing
 		/// <summary>
 		/// Used for elements with traits that are not top level objects (extensibles) or forms.
 		/// </summary>
-		/// <param name="node"></param>
-		/// <returns></returns>
 		private List<Trait> GetTraitList(XmlNode node)
 		{
 			List<Trait> traits = new List<Trait>();
@@ -359,9 +307,7 @@ namespace SIL.Lift.Parsing
 		{
 			TSense subsense = _merger.GetOrMakeSubsense(sense, ReadExtensibleElementBasics(node), node.OuterXml);
 			if (subsense != null)//wesay can't handle these in April 2008
-			{
 				FinishReadingSense(node, subsense);
-			}
 		}
 
 		private void ReadExample(XmlNode node, TSense sense)
@@ -371,9 +317,7 @@ namespace SIL.Lift.Parsing
 			{
 				LiftMultiText exampleSentence = LocateAndReadMultiText(node, null);
 				if (!exampleSentence.IsEmpty)
-				{
 					_merger.MergeInExampleForm(example, exampleSentence);
-				}
 				var nodes = node.SelectNodes("translation");
 				if (nodes != null)
 				{
@@ -386,15 +330,14 @@ namespace SIL.Lift.Parsing
 				}
 				string source = Utilities.GetOptionalAttributeString(node, "source");
 				if (source != null)
-				{
 					_merger.MergeInSource(example, source);
-				}
 
 				// REVIEW(SRMc): If you don't think the note element should be valid
 				// inside an example, then remove the next line and the corresponding
 				// chunk from the rng file.
-				// JH says: LIFT ver 0.13 is going to make notes available to all extensibles
-				// todo: remove this when that is true
+				// Note is not part of Example as of v0.13 (April 2009):
+				// https://code.google.com/archive/p/lift-standard/downloads
+				// TODO: Remove this line and its rng chuck if nobody is depending on it.
 				ReadNotes(node, example);
 
 				ReadExtensibleElementDetails(example, node);
@@ -405,14 +348,14 @@ namespace SIL.Lift.Parsing
 		private void ReadReversal(XmlNode node, TSense sense)
 		{
 			string type = Utilities.GetOptionalAttributeString(node, "type");
-			XmlNodeList nodelist = node.SelectNodes("main");
-			if (nodelist != null && nodelist.Count > 1)
-			{
-				NotifyFormatError(new LiftFormatException(String.Format("Only one <main> element is allowed inside a <reversal> element:\r\n{0}", node.OuterXml)));
-			}
+			var nodeList = node.SelectNodes("main");
+			if (nodeList != null && nodeList.Count > 1)
+				NotifyFormatError(new LiftFormatException(
+					$"Only one <main> element is allowed inside a <reversal> element:\r\n{node.OuterXml}"
+				));
 			TBase parent = null;
-			if (nodelist != null && nodelist.Count == 1)
-				parent = ReadParentReversal(type, nodelist[0]);
+			if (nodeList != null && nodeList.Count == 1)
+				parent = ReadParentReversal(type, nodeList[0]);
 			LiftMultiText text = ReadMultiText(node);
 			TBase reversal = _merger.MergeInReversal(sense, parent, text, type, node.OuterXml);
 			if (reversal != null)
@@ -421,14 +364,14 @@ namespace SIL.Lift.Parsing
 
 		private TBase ReadParentReversal(string type, XmlNode node)
 		{
-			XmlNodeList nodelist = node.SelectNodes("main");
-			if (nodelist != null && nodelist.Count > 1)
-			{
-				NotifyFormatError(new LiftFormatException(String.Format("Only one <main> element is allowed inside a <main> element:\r\n{0}", node.OuterXml)));
-			}
+			var nodeList = node.SelectNodes("main");
+			if (nodeList != null && nodeList.Count > 1)
+				NotifyFormatError(new LiftFormatException(
+					$"Only one <main> element is allowed inside a <main> element:\r\n{node.OuterXml}"
+				));
 			TBase parent = null;
-			if (nodelist != null && nodelist.Count == 1)
-				parent = ReadParentReversal(type, nodelist[0]);
+			if (nodeList != null && nodeList.Count == 1)
+				parent = ReadParentReversal(type, nodeList[0]);
 			LiftMultiText text = ReadMultiText(node);
 			TBase reversal = _merger.GetOrMakeParentReversal(parent, text, type);
 			if (reversal != null)
@@ -439,17 +382,18 @@ namespace SIL.Lift.Parsing
 		/// <summary>
 		/// read enough for finding a potential match to merge with
 		/// </summary>
-		/// <param name="node"></param>
-		/// <returns></returns>
 		private Extensible ReadExtensibleElementBasics(XmlNode node)
 		{
-			Extensible extensible = new Extensible();
-			extensible.Id = Utilities.GetOptionalAttributeString(node, "id");//actually not part of extensible (as of 8/1/2007)
+			var extensible = new Extensible
+			{
+				// Id is not part of Extensible as of v0.13 (April 2009):
+				// https://code.google.com/archive/p/lift-standard/downloads
+				Id = Utilities.GetOptionalAttributeString(node, "id")
+			};
 
-			//todo: figure out how to actually look it up:
-			//      string flexPrefix = node.OwnerDocument.GetPrefixOfNamespace("http://fieldworks.sil.org");
-//            string flexPrefix = "flex";
-//            if (flexPrefix != null && flexPrefix != string.Empty)
+			// TODO: figure out how to actually look it up:
+			//string flexPrefix = node.OwnerDocument.GetPrefixOfNamespace("http://fieldworks.sil.org");
+			//if (flexPrefix != null && flexPrefix != string.Empty)
 			{
 				string guidString = Utilities.GetOptionalAttributeString(node, /*flexPrefix + ":guid"*/"guid");
 				if (guidString != null)
@@ -460,7 +404,8 @@ namespace SIL.Lift.Parsing
 					}
 					catch (Exception)
 					{
-						NotifyFormatError(new LiftFormatException(String.Format("{0} is not a valid GUID", guidString)));
+						NotifyFormatError(
+							new LiftFormatException($"{guidString} is not a valid GUID"));
 					}
 				}
 			}
@@ -472,37 +417,18 @@ namespace SIL.Lift.Parsing
 
 		/// <summary>
 		/// Once we have the thing we're creating/merging with, we can read in any details,
-		/// i.e. traits, fields, and annotations
+		/// i.e., traits, fields, and (not yet implemented) annotations.
 		/// </summary>
-		/// <param name="target"></param>
-		/// <param name="node"></param>
-		/// <returns></returns>
 		private void ReadExtensibleElementDetails(TBase target, XmlNode node)
 		{
 			var nodes = node.SelectNodes("field");
 			if (nodes != null)
 			{
 				foreach (XmlNode fieldNode in nodes)
-				{
-					string fieldType = Utilities.GetStringAttribute(fieldNode, "type");
-					//string priorFieldWithSameTag = String.Format("preceding-sibling::field[@type='{0}']", fieldType);
-					//    JH removed this Oct 2010... I can't figure out why this limitation, which is not supported logicall
-					//                or by the schema, was in here.  It was preventing, for example, multiple variants.
-					//                if(fieldNode.SelectSingleNode(priorFieldWithSameTag) != null)
-					//                {
-					// a fatal error
-					//                    throw new LiftFormatException(String.Format("Field with same type ({0}) as sibling not allowed. Context:{1}", fieldType, fieldNode.ParentNode.OuterXml));
-					//                }
-					_merger.MergeInField(target,
-										 fieldType,
-										 GetOptionalDate(fieldNode, "dateCreated", default(DateTime)),
-										 GetOptionalDate(fieldNode, "dateModified", default(DateTime)),
-										 ReadMultiText(fieldNode),
-										 GetTraitList(fieldNode));
-				}
+					ReadField(fieldNode, target);
 			}
 			ReadTraits(node, target);
-			//todo: read annotations
+			// TODO: read annotations
 		}
 
 		private void ReadTraits(XmlNode node, TBase target)
@@ -511,18 +437,17 @@ namespace SIL.Lift.Parsing
 			if (nodes != null)
 			{
 				foreach (XmlNode traitNode in nodes)
-					_merger.MergeInTrait(target,GetTrait(traitNode));
+					_merger.MergeInTrait(target, GetTrait(traitNode));
 			}
 		}
 
 
 		/// <summary>
-		/// careful, can't return null, so give MinValue
+		/// Parses specified attribute of the given node as a date.
 		/// </summary>
 		/// <param name="xmlNode"></param>
 		/// <param name="attributeName"></param>
 		/// <param name="defaultDateTime">the time to use if this attribute isn't found</param>
-		/// <returns></returns>
 		private DateTime GetOptionalDate(XmlNode xmlNode, string attributeName, DateTime defaultDateTime)
 		{
 			if (xmlNode.Attributes != null)
@@ -549,9 +474,7 @@ namespace SIL.Lift.Parsing
 		{
 			XmlNode element;
 			if (query == null)
-			{
 				element = node;
-			}
 			else
 			{
 				element = node.SelectSingleNode(query);
@@ -566,21 +489,9 @@ namespace SIL.Lift.Parsing
 			}
 
 			if (element != null)
-			{
 				return ReadMultiText(element);
-			}
 			return new LiftMultiText();
 		}
-//
-//        private List<LiftMultiText> LocateAndReadOneOrMoreMultiText(XmlNode node, string query)
-//        {
-//            List<LiftMultiText> results = new List<LiftMultiText>();
-//            foreach (XmlNode n in node.SelectNodes(query))
-//            {
-//                results.Add(ReadMultiText(n));
-//            }
-//            return results;
-//        }
 
 		private LiftMultiText LocateAndReadOneElementPerFormData(XmlNode node, string query)
 		{
@@ -590,7 +501,7 @@ namespace SIL.Lift.Parsing
 			return text;
 		}
 
-		internal  LiftMultiText ReadMultiText(XmlNode node)
+		internal LiftMultiText ReadMultiText(XmlNode node)
 		{
 			LiftMultiText text = new LiftMultiText();
 			ReadFormNodes(node.SelectNodes("form"), text);
@@ -604,7 +515,7 @@ namespace SIL.Lift.Parsing
 				try
 				{
 					string lang = Utilities.GetStringAttribute(formNode, _wsAttributeLabel);
-					XmlNode textNode= formNode.SelectSingleNode("text");
+					XmlNode textNode = formNode.SelectSingleNode("text");
 					if (textNode != null)
 					{
 						// Add the separator if we need it.
@@ -622,15 +533,13 @@ namespace SIL.Lift.Parsing
 								ReadSpanContent(text, lang, span, node);
 							}
 							else
-							{
 								text.AddOrAppend(lang, node.InnerText, "");
-							}
 						}
 					}
-					var nodelist = formNode.SelectNodes("annotation");
-					if (nodelist != null)
+					var nodeList = formNode.SelectNodes("annotation");
+					if (nodeList != null)
 					{
-						foreach (XmlNode annotationNode in nodelist)
+						foreach (XmlNode annotationNode in nodeList)
 						{
 							Annotation annotation = GetAnnotation(annotationNode);
 							annotation.LanguageHint = lang;
@@ -665,10 +574,7 @@ namespace SIL.Lift.Parsing
 					ReadSpanContent(text, lang, spanInner, xn);
 				}
 				else
-				{
 					text.AddOrAppend(lang, xn.InnerText, "");
-				}
-
 			}
 		}
 
@@ -676,10 +582,10 @@ namespace SIL.Lift.Parsing
 		{
 			Trait t = new Trait(Utilities.GetStringAttribute(traitNode, "name"),
 								Utilities.GetStringAttribute(traitNode, "value"));
-			var nodelist = traitNode.SelectNodes("annotation");
-			if (nodelist != null)
+			var nodeList = traitNode.SelectNodes("annotation");
+			if (nodeList != null)
 			{
-				foreach (XmlNode annotationNode in nodelist)
+				foreach (XmlNode annotationNode in nodeList)
 				{
 					Annotation annotation = GetAnnotation(annotationNode);
 					t.Annotations.Add(annotation);
@@ -688,56 +594,35 @@ namespace SIL.Lift.Parsing
 			return t;
 		}
 
-		private  Annotation GetAnnotation(XmlNode annotationNode)
+		private Annotation GetAnnotation(XmlNode annotationNode)
 		{
 			return new Annotation(Utilities.GetOptionalAttributeString(annotationNode, "name"),
 								  Utilities.GetOptionalAttributeString(annotationNode, "value"),
-								  GetOptionalDate(annotationNode, "when", default(DateTime)),
+								  GetOptionalDate(annotationNode, "when", default),
 								  Utilities.GetOptionalAttributeString(annotationNode, "who"));
 		}
 
-		//private static bool NodeContentIsJustAString(XmlNode node)
-		//{
-		//    return node.InnerText != null
-		//                        && (node.ChildNodes.Count == 1)
-		//                        && (node.ChildNodes[0].NodeType == XmlNodeType.Text)
-		//                        && node.InnerText.Trim() != string.Empty;
-		//}
-
-//        public LexExampleSentence ReadExample(XmlNode xmlNode)
-//        {
-//            LexExampleSentence example = new LexExampleSentence();
-//            LocateAndReadMultiText(xmlNode, "source", example.Sentence);
-//            //NB: will only read in one translation
-//            LocateAndReadMultiText(xmlNode, "trans", example.Translation);
-//            return example;
-//        }
-//
-
 		/// <summary>
-		/// Read a LIFT file. Must be the current lift version.
+		/// Read a LIFT file. Must be the current LIFT version.
 		/// </summary>
 		public int ReadLiftFile(string pathToLift)
 		{
-			_pathToLift = pathToLift;	// may need this to find its ranges file.
-			if (_defaultCreationModificationUTC == default(DateTime))
-			{
-				_defaultCreationModificationUTC = File.GetLastWriteTimeUtc(pathToLift);
-			}
+			_pathToLift = pathToLift; // May need this to find its ranges file.
+			if (DefaultCreationModificationUTC == default)
+				DefaultCreationModificationUTC = File.GetLastWriteTimeUtc(pathToLift);
 
 			ProgressTotalSteps = GetEstimatedNumberOfEntriesInFile(pathToLift);
 			ProgressStepsCompleted = 0;
 
 			if (Validator.GetLiftVersion(pathToLift) != Validator.LiftVersion)
-			{
-				throw new LiftFormatException("Programmer should migrate the lift file before calling this method.");
-			}
+				throw new LiftFormatException(
+					"Programmer should migrate the LIFT file before calling this method.");
 
 			int numberOfEntriesRead;
-			if (_changeDetector != null && _changeDetector.CanProvideChangeRecord)
+			if (ChangeDetector != null && ChangeDetector.CanProvideChangeRecord)
 			{
 				ProgressMessage = "Detecting Changes To Lift File...";
-				_changeReport = _changeDetector.GetChangeReport(new NullProgress());
+				ChangeReport = ChangeDetector.GetChangeReport(new NullProgress());
 			}
 
 			using (XmlReader reader = XmlReader.Create(pathToLift, NormalReaderSettings))
@@ -746,24 +631,18 @@ namespace SIL.Lift.Parsing
 				ReadHeader(reader);
 				numberOfEntriesRead = ReadEntries(reader);
 			}
-			if (_changeReport != null && _changeReport.IdsOfDeletedEntries.Count > 0)
+			if (ChangeReport != null && ChangeReport.IdsOfDeletedEntries.Count > 0)
 			{
 				ProgressMessage = "Removing entries that were removed from the Lift file...";
-				foreach (string id in _changeReport.IdsOfDeletedEntries)
-				{
-					Extensible eInfo = new Extensible();
-					eInfo.Id = id;
-					_merger.EntryWasDeleted(eInfo, default(DateTime) /* we don't know... why is this part of the interface, anyhow? */);
-				}
+				foreach (string id in ChangeReport.IdsOfDeletedEntries)
+					_merger.EntryWasDeleted(new Extensible { Id = id }, default);
 			}
 			return numberOfEntriesRead;
 		}
 
 		/// <summary>
-		/// Intended to be fast, and only (probably) acurate
+		/// Intended to be fast, and only (probably) accurate.
 		/// </summary>
-		/// <param name="pathToLift"></param>
-		/// <returns></returns>
 		internal static int GetEstimatedNumberOfEntriesInFile(string pathToLift)
 		{
 			int count = 0;
@@ -782,24 +661,18 @@ namespace SIL.Lift.Parsing
 			return count;
 		}
 
-		private static XmlReaderSettings NormalReaderSettings
+		private static XmlReaderSettings NormalReaderSettings => new XmlReaderSettings
 		{
-			get
-			{
-				XmlReaderSettings readerSettings = new XmlReaderSettings();
-				readerSettings.ValidationType = ValidationType.None;
-				readerSettings.IgnoreComments = true;
-				return readerSettings;
-			}
-		}
-
+			ValidationType = ValidationType.None,
+			IgnoreComments = true
+		};
 
 		private int ReadEntries(XmlReader reader)
 		{
-// Process all of the entry elements, reading them into memory one at a time.
+			// Process all of the entry elements, reading them into memory one at a time.
 			ProgressMessage = "Reading entries from LIFT file";
 			if (!reader.IsStartElement("entry"))
-				reader.ReadToFollowing("entry");	// not needed if no <header> element.
+				reader.ReadToFollowing("entry"); // Not needed if no <header> element.
 
 			const int kProgressReportingInterval = 50;
 			int numberOfEntriesRead = 0;
@@ -808,10 +681,8 @@ namespace SIL.Lift.Parsing
 			while (reader.IsStartElement("entry"))
 			{
 				string entryXml = reader.ReadOuterXml();
-				if (!String.IsNullOrEmpty(entryXml))
-				{
+				if (!string.IsNullOrEmpty(entryXml))
 					ReadEntry(GetNodeFromString(entryXml));
-				}
 				numberOfEntriesRead++;
 				if (numberOfEntriesRead >= nextProgressPoint)
 				{
@@ -819,9 +690,7 @@ namespace SIL.Lift.Parsing
 					nextProgressPoint = numberOfEntriesRead + kProgressReportingInterval;
 				}
 				if (_cancelNow)
-				{
 					break;
-				}
 			}
 			return numberOfEntriesRead;
 		}
@@ -831,8 +700,8 @@ namespace SIL.Lift.Parsing
 		/// </summary>
 		private static XmlNode GetNodeFromString(string xml)
 		{
-			XmlDocument document = new XmlDocument();
-			document.PreserveWhitespace = true;	// needed to preserve newlines in "multiparagraph" forms.
+			// Need to preserve newlines in "multiparagraph" forms.
+			var document = new XmlDocument { PreserveWhitespace = true };
 			document.LoadXml(xml);
 			return document.FirstChild;
 		}
@@ -856,10 +725,8 @@ namespace SIL.Lift.Parsing
 							while (reader.IsStartElement("field"))
 							{
 								string fieldXml = reader.ReadOuterXml();
-								if (!String.IsNullOrEmpty(fieldXml))
-								{
+								if (!string.IsNullOrEmpty(fieldXml))
 									ReadFieldDefinition(GetNodeFromString(fieldXml));
-								}
 							}
 							Debug.Assert(reader.LocalName == "fields");
 							reader.ReadEndElement(); // </fields>
@@ -890,7 +757,6 @@ namespace SIL.Lift.Parsing
 
 						string id = reader.GetAttribute("id");
 						string href = reader.GetAttribute("href");
-						string guid = reader.GetAttribute("guid");
 						ProgressMessage = string.Format("Reading LIFT range {0}", id);
 						reader.ReadStartElement();
 						if (string.IsNullOrEmpty(href))
@@ -898,16 +764,12 @@ namespace SIL.Lift.Parsing
 							while (reader.IsStartElement("range-element"))
 							{
 								string rangeXml = reader.ReadOuterXml();
-								if (!String.IsNullOrEmpty(rangeXml))
-								{
+								if (!string.IsNullOrEmpty(rangeXml))
 									ReadRangeElement(id, GetNodeFromString(rangeXml));
-								}
 							}
 						}
 						else
-						{
-							ReadExternalRange(href, id, guid);
-						}
+							ReadExternalRange(href, id);
 						if (!rangeIsEmpty)
 						{
 							reader.MoveToContent();
@@ -915,42 +777,28 @@ namespace SIL.Lift.Parsing
 						}
 					}
 					Debug.Assert(reader.LocalName == "ranges");
-					reader.ReadEndElement();	// </ranges>
+					reader.ReadEndElement(); // </ranges>
 				}
 			}
 		}
 
-//        /// <summary>
-//        /// Return the number of entries processed from the most recent file.
-//        /// </summary>
-//		this was a confusing way to return the results of a parse operation.
-//        the parser should really return this value, if flex
-//      needs it
-//            public int EntryCount
-//		{
-//			get { return _count; }
-//		}
-
 		/// <summary>
 		/// Read a range from a separate file.
 		/// </summary>
-		/// <param name="pathToRangeFile"></param>
-		/// <param name="rangeId"></param>
-		/// <param name="rangeGuid"></param>
-		private void ReadExternalRange(string pathToRangeFile, string rangeId, string rangeGuid)
+		private void ReadExternalRange(string pathToRangeFile, string rangeId)
 		{
 			if (pathToRangeFile.StartsWith("file://"))
 				pathToRangeFile = pathToRangeFile.Substring(7);
 			if (!File.Exists(pathToRangeFile))
 			{
-				// try to find range file next to the lift file (may have been copied to another
+				// Try to find range file next to the LIFT file (may have been copied to another
 				// directory or another machine)
 				string dir = Path.GetDirectoryName(_pathToLift);
 				string file = Path.GetFileName(pathToRangeFile);
 				if (dir != null && file != null)
 					pathToRangeFile = Path.Combine(dir, file);
 				if (!File.Exists(pathToRangeFile))
-					return;		// ignore missing range file without error.
+					return; // Ignore missing range file without error.
 			}
 			using (XmlReader reader = XmlReader.Create(pathToRangeFile, NormalReaderSettings))
 			{
@@ -967,20 +815,17 @@ namespace SIL.Lift.Parsing
 						while (reader.IsStartElement("range-element"))
 						{
 							string rangeElementXml = reader.ReadOuterXml();
-							if (foundDesiredRange && !String.IsNullOrEmpty(rangeElementXml))
-							{
+							if (foundDesiredRange && !string.IsNullOrEmpty(rangeElementXml))
 								ReadRangeElement(id, GetNodeFromString(rangeElementXml));
-							}
 						}
 						Debug.Assert(reader.LocalName == "range");
 						reader.ReadEndElement(); // </range>
 					}
 					if (foundDesiredRange)
-						return;		// we've seen the range we wanted from this file.
+						return; // We've seen the range we wanted from this file.
 				}
 			}
 		}
-
 
 		#region Progress
 
@@ -989,16 +834,10 @@ namespace SIL.Lift.Parsing
 		///</summary>
 		public class StepsArgs : EventArgs
 		{
-			private int _steps;
-
 			///<summary>
 			/// Get/set the current state of the progress bar in number of steps.
 			///</summary>
-			public int Steps
-			{
-				get { return _steps; }
-				set { _steps = value; }
-			}
+			public int Steps { get; set; }
 		}
 
 		///<summary>
@@ -1006,16 +845,10 @@ namespace SIL.Lift.Parsing
 		///</summary>
 		public class ErrorArgs : EventArgs
 		{
-			private Exception _exception;
-
 			///<summary>
 			/// Get/set the Exception object being passed.
 			///</summary>
-			public Exception Exception
-			{
-				get { return _exception; }
-				set { _exception = value; }
-			}
+			public Exception Exception { get; set; }
 		}
 
 		///<summary>
@@ -1023,16 +856,10 @@ namespace SIL.Lift.Parsing
 		///</summary>
 		public class MessageArgs : EventArgs
 		{
-			private string _msg;
-
 			///<summary>
 			/// Get/set the status message string.
 			///</summary>
-			public string Message
-			{
-				get { return _msg; }
-				set { _msg = value; }
-			}
+			public string Message { get; set; }
 		}
 
 		private int ProgressStepsCompleted
@@ -1050,74 +877,40 @@ namespace SIL.Lift.Parsing
 
 		private int ProgressTotalSteps
 		{
-			set
-			{
-				if (SetTotalNumberSteps != null)
-				{
-					StepsArgs e = new StepsArgs();
-					e.Steps = value;
-					SetTotalNumberSteps.Invoke(this, e);
-				}
-			}
+			set => SetTotalNumberSteps?.Invoke(this, new StepsArgs { Steps = value });
 		}
 
 		private string ProgressMessage
 		{
-			set
-			{
-				if (SetProgressMessage != null)
-				{
-					MessageArgs e = new MessageArgs();
-					e.Message = value;
-					SetProgressMessage.Invoke(this, e);
-				}
-			}
+			set => SetProgressMessage?.Invoke(this, new MessageArgs { Message = value });
 		}
 
 		///<summary>
 		/// Get/set the default DateTime value use for creation or modification times.
 		///</summary>
-		public DateTime DefaultCreationModificationUTC
-		{
-			get { return _defaultCreationModificationUTC; }
-			set { _defaultCreationModificationUTC = value; }
-		}
+		public DateTime DefaultCreationModificationUTC { get; set; } = default;
 
 		/// <summary>
 		/// Optional object that will tell us which entries actually need parsing/adding.
 		/// NB: it is up to the client of this class to do any deleting that the detector says is needed
 		/// </summary>
-		public ILiftChangeDetector ChangeDetector
-		{
-			get { return _changeDetector; }
-			set { _changeDetector = value; }
-		}
+		public ILiftChangeDetector ChangeDetector { get; set; }
 
-		///<summary></summary>
-		public ILiftChangeReport ChangeReport
-		{
-			get { return _changeReport; }
-			set { _changeReport = value; }
-		}
+		public ILiftChangeReport ChangeReport { get; set; }
 
 		/// <summary>
-		/// NB: this will always conver the exception to a LiftFormatException, if it isn't already
+		/// NB: This will always convert the exception to a <see cref="LiftFormatException">,
+		/// if it isn't already.
 		/// </summary>
-		/// <param name="error"></param>
 		private void NotifyFormatError(Exception error)
 		{
 			if (ParsingWarning != null)
 			{
-
 				//it's important to pass this on as a format error, which the client should be expecting
 				//to report without crashing.
 				if (!(error is LiftFormatException))
-				{
 					error = new LiftFormatException(error.Message, error);
-				}
-				ErrorArgs e = new ErrorArgs();
-				e.Exception = error;
-				ParsingWarning.Invoke(this, e);
+				ParsingWarning.Invoke(this, new ErrorArgs { Exception = error });
 			}
 		}
 
@@ -1127,7 +920,6 @@ namespace SIL.Lift.Parsing
 		public class ProgressEventArgs : EventArgs
 		{
 			private readonly int _progress;
-			private bool _cancel;
 
 			///<summary>
 			/// Constructor.
@@ -1140,19 +932,12 @@ namespace SIL.Lift.Parsing
 			///<summary>
 			/// Get the progress value for this event.
 			///</summary>
-			public int Progress
-			{
-				get { return _progress; }
-			}
+			public int Progress => _progress;
 
 			///<summary>
 			/// Get/set the cancel flag for this event.
 			///</summary>
-			public bool Cancel
-			{
-				get { return _cancel; }
-				set { _cancel = value; }
-			}
+			public bool Cancel { get; set; }
 		}
 
 		#endregion

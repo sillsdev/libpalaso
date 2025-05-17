@@ -8,6 +8,7 @@ using Icu;
 using JetBrains.Annotations;
 using SIL.Code;
 using SIL.Extensions;
+using SIL.Reporting;
 using static System.String;
 using static SIL.Unicode.CharacterUtils;
 using static SIL.WritingSystems.WellKnownSubtags;
@@ -1385,7 +1386,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		/// <remarks>
 		/// This might be easier to implement reliably with Full ICU for a larger set of languages,
-		/// but we if only the Min ICU DLL is included, that information is definitely not
+		/// but if only the Min ICU DLL is included, that information is definitely not
 		/// available.
 		/// This method is suitable to generate menu labels in the UI language chooser menu, which
 		/// are most likely to be major languages known to both Windows and Linux.
@@ -1442,7 +1443,8 @@ namespace SIL.WritingSystems
 			}
 			catch (Exception e)
 			{
-				// ignore exception, but log on terminal.
+				// ignore exception, but log it.
+				Logger.WriteError(e);
 				System.Diagnostics.Debug.WriteLine($"GetNativeLanguageNameWithEnglishSubtitle ignoring exception: {e.Message}");
 			}
 			// We get here after either an exception was thrown or the returned CultureInfo
