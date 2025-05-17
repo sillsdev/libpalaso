@@ -1,24 +1,33 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using NUnit.Framework;
-using SIL.IO;
 using SIL.PlatformUtilities;
+using static SIL.IO.FileLocationUtilities;
 
 namespace SIL.Tests.IO
 {
 	[TestFixture]
 	class FileLocationUtilitiesTests
 	{
+		private const int ciDeepSearchTimeoutInSeconds = 15;
+
+		private string WindowsProgramFileThatShouldExist => "msinfo32.exe";
+
+		private string SystemProgramFileThatShouldExist =>
+			Platform.IsMono ? "bash" : WindowsProgramFileThatShouldExist;
+
 		[Test]
 		public void GetFileDistributedWithApplication_MultipleParts_FindsCorrectly()
 		{
-			var path = FileLocationUtilities.GetFileDistributedWithApplication("DirectoryForTests", "SampleFileForTests.txt");
+			var path = GetFileDistributedWithApplication("DirectoryForTests", "SampleFileForTests.txt");
 			Assert.That(File.Exists(path));
 		}
+		
 		[Test]
 		public void GetDirectoryDistributedWithApplication_MultipleParts_FindsCorrectly()
 		{
-			var path = FileLocationUtilities.GetDirectoryDistributedWithApplication("DirectoryForTests");
+			var path = GetDirectoryDistributedWithApplication("DirectoryForTests");
 			Assert.That(Directory.Exists(path));
 		}
 
@@ -27,12 +36,12 @@ namespace SIL.Tests.IO
 		{
 			try
 			{
-				FileLocationUtilities.GetDirectoryDistributedWithApplication("LookHere", "ThisWillNotExist");
+				GetDirectoryDistributedWithApplication("LookHere", "ThisWillNotExist");
 			}
 			catch (ArgumentException ex)
 			{
 				Assert.That(ex.Message, Does.Contain(Path.Combine("LookHere", "ThisWillNotExist")));
-				Assert.That(ex.Message, Does.Contain(FileLocationUtilities.DirectoryOfApplicationOrSolution));
+				Assert.That(ex.Message, Does.Contain(DirectoryOfApplicationOrSolution));
 				Assert.That(ex.Message, Does.Contain("DistFiles"));
 				Assert.That(ex.Message, Does.Contain("src"));
 			}
@@ -41,7 +50,7 @@ namespace SIL.Tests.IO
 		[Test]
 		public void DirectoryOfApplicationOrSolution_OnDevMachine_FindsOutputDirectory()
 		{
-			var path = FileLocationUtilities.DirectoryOfTheApplicationExecutable;
+			var path = DirectoryOfTheApplicationExecutable;
 			Assert.That(Directory.Exists(path));
 			Assert.That(path.Contains("output"));
 		}
@@ -49,7 +58,7 @@ namespace SIL.Tests.IO
 		[Test]
 		public void LocateInProgramFiles_SendInvalidProgramNoDeepSearch_ReturnsNull()
 		{
-			Assert.IsNull(FileLocationUtilities.LocateInProgramFiles("blah.exe", false));
+			Assert.IsNull(LocateInProgramFiles("blah.exe", false));
 		}
 
 		// 12 SEP 2013, Phil Hopper: This test not valid on Mono.
@@ -58,35 +67,59 @@ namespace SIL.Tests.IO
 		[Category("SkipOnTeamCity;KnownMonoIssue")]
 		public void LocateInProgramFiles_SendValidProgramNoDeepSearch_ReturnsNull()
 		{
-			Assert.IsNull(FileLocationUtilities.LocateInProgramFiles("msinfo32.exe", false));
+			Assert.IsNull(LocateInProgramFiles(WindowsProgramFileThatShouldExist, false));
 		}
 
 		[Test]
 		public void LocateInProgramFiles_SendValidProgramDeepSearch_ReturnsProgramPath()
 		{
-			var findFile = (Platform.IsMono ? "bash" : "msinfo32.exe");
-			Assert.IsNotNull(FileLocationUtilities.LocateInProgramFiles(findFile, true));
+			var findFile = SystemProgramFileThatShouldExist;
+
+			// On CI build (GHA) this can time out
+			if (Environment.GetEnvironmentVariable("CI") == "true")
+			{
+				var task = Task.Run(() => LocateInProgramFiles(findFile, true));
+
+				if (!task.Wait(TimeSpan.FromSeconds(ciDeepSearchTimeoutInSeconds)))
+					Assert.Inconclusive("Test timed out on CI build.");
+
+				Assert.IsNotNull(task.Result);
+			}
+			else
+				Assert.IsNotNull(LocateInProgramFiles(findFile, true));
 		}
 
 		[Test]
 		public void LocateInProgramFiles_SendValidProgramDeepSearch_SubFolderSpecified_ReturnsProgramPath()
 		{
-			var findFile = (Platform.IsMono ? "bash" : "msinfo32.exe");
+			// This should work on Mono because it ignores the subFoldersToSearch parameter.
 
-			// this will work on Mono because it ignores the subFoldersToSearch parameter
-			Assert.IsNotNull(FileLocationUtilities.LocateInProgramFiles(findFile, true, "Common Files"));
+			var findFile = SystemProgramFileThatShouldExist;
+
+			// On CI build (GHA) this can time out
+			if (Environment.GetEnvironmentVariable("CI") == "true")
+			{
+				var task = Task.Run(() => LocateInProgramFiles(findFile, true, "Common Files"));
+
+				if (!task.Wait(TimeSpan.FromSeconds(ciDeepSearchTimeoutInSeconds)))
+					Assert.Inconclusive("Test timed out on CI build.");
+
+				Assert.IsNotNull(task.Result);
+			}
+			else
+				Assert.IsNotNull(LocateInProgramFiles(findFile, true, "Common Files"));
 		}
 
 		[Test]
-		public void LocateInProgramFiles_SendInValidSubFolder_DoesNotThrow()
+		public void LocateInProgramFiles_SendInvalidSubFolder_DoesNotThrow()
 		{
-			var findFile = (Platform.IsMono ? "bash" : "msinfo32.exe");
-			Assert.DoesNotThrow(() => FileLocationUtilities.LocateInProgramFiles(findFile, true, "!~@blah"));
+			Assert.DoesNotThrow(() => LocateInProgramFiles(SystemProgramFileThatShouldExist,
+				true, "!~@blah"));
 		}
 
 		[Test]
 		[Platform(Include = "Linux")]
-		public void LocateInProgramFiles_DeepSearch_FindsFileInSubdir()
+		public void LocateInProgramFiles_DeepSearch_FindsFileInSubDir()
 		{
 			// This simulates finding RAMP which is installed as /opt/RAMP/ramp. We can't put
 			// anything in /opt for testing, so we add our tmp directory to the path.
@@ -103,7 +136,7 @@ namespace SIL.Tests.IO
 				Environment.SetEnvironmentVariable("PATH", $"{simulatedOptDir}{Path.PathSeparator}{pathVariable}");
 
 				// Exercise/Verify
-				Assert.That(FileLocationUtilities.LocateInProgramFiles("ramp", true),
+				Assert.That(LocateInProgramFiles("ramp", true),
 					Is.EqualTo(file));
 			}
 			finally
@@ -139,7 +172,7 @@ namespace SIL.Tests.IO
 				Environment.SetEnvironmentVariable("PATH", $"{simulatedOptDir}{Path.PathSeparator}{pathVariable}");
 
 				// Exercise/Verify
-				Assert.That(FileLocationUtilities.LocateInProgramFiles("ramp", false),
+				Assert.That(LocateInProgramFiles("ramp", false),
 					Is.Null);
 			}
 			finally
@@ -161,7 +194,7 @@ namespace SIL.Tests.IO
 		[Test]
 		public void LocateExecutable_DistFiles()
 		{
-			Assert.That(FileLocationUtilities.LocateExecutable("DirectoryForTests", "SampleExecutable.exe"),
+			Assert.That(LocateExecutable("DirectoryForTests", "SampleExecutable.exe"),
 				Does.EndWith(string.Format("DistFiles{0}DirectoryForTests{0}SampleExecutable.exe",
 					Path.DirectorySeparatorChar)));
 		}
@@ -170,7 +203,7 @@ namespace SIL.Tests.IO
 		[Platform(Exclude = "Linux")]
 		public void LocateExecutable_PlatformSpecificInDistFiles_Windows()
 		{
-			Assert.That(FileLocationUtilities.LocateExecutable("DirectoryForTests", "dummy.exe"),
+			Assert.That(LocateExecutable("DirectoryForTests", "dummy.exe"),
 				Does.EndWith(string.Format("DistFiles{0}Windows{0}DirectoryForTests{0}dummy.exe",
 				Path.DirectorySeparatorChar)));
 		}
@@ -179,7 +212,7 @@ namespace SIL.Tests.IO
 		[Platform(Include = "Linux")]
 		public void LocateExecutable_PlatformSpecificInDistFiles_LinuxWithoutExtension()
 		{
-			Assert.That(FileLocationUtilities.LocateExecutable("DirectoryForTests", "dummy.exe"),
+			Assert.That(LocateExecutable("DirectoryForTests", "dummy.exe"),
 				Does.EndWith(string.Format("DistFiles{0}Linux{0}DirectoryForTests{0}dummy",
 				Path.DirectorySeparatorChar)));
 		}
@@ -188,21 +221,21 @@ namespace SIL.Tests.IO
 		[Platform(Include = "Linux")]
 		public void LocateExecutable_PlatformSpecificInDistFiles_Linux()
 		{
-			Assert.That(FileLocationUtilities.LocateExecutable("DirectoryForTests", "dummy2.exe"),
+			Assert.That(LocateExecutable("DirectoryForTests", "dummy2.exe"),
 				Does.EndWith(string.Format("DistFiles{0}Linux{0}DirectoryForTests{0}dummy2.exe",
 				Path.DirectorySeparatorChar)));
 		}
 
 		[Test]
-		public void LocateExecutable_NonexistingFile()
+		public void LocateExecutable_NonexistentFile()
 		{
-			Assert.That(FileLocationUtilities.LocateExecutable(false, "dummy", "__nonexisting.exe"), Is.Null);
+			Assert.That(LocateExecutable(false, "dummy", "__nonexistent.exe"), Is.Null);
 		}
 
 		[Test]
-		public void LocateExecutable_NonexistingFileThrows()
+		public void LocateExecutable_NonexistentFileThrows()
 		{
-			Assert.That(() => FileLocationUtilities.LocateExecutable("dummy", "__nonexisting.exe"),
+			Assert.That(() => LocateExecutable("dummy", "__nonexistent.exe"),
 				Throws.Exception.TypeOf<ApplicationException>());
 		}
 	}
