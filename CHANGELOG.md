@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [16.0.0] - 2025-05-20
+
 ### Added
 
 - [SIL.WritingSystems] Added public DownloadLanguageTags method for updating the cached langtags.json from the SLDR repository.
@@ -72,7 +74,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] BREAKING CHANGE (potentially): Made ParseDateTimePermissivelyWithException into an extension method (on string).
 - [SIL.Core] BREAKING CHANGE (potentially): Changed behavior of DateTimeExtensions.ParseDateTimePermissivelyWithException (now deprecated) to try to interpret the date according to either the Gregorian calendar or the Buddhist calender in order to get the date to fall within a reasonable expected range (from 1/1/1900 through one day in the future). This means that depending on the current culture, dates might be interpreted differently from before. The known places in SIL code where this method is used seems to be for dates in the recent past (modern times); hence the default range. A new overload was added that will allow callers with other needs to specify a different range.
 - [SIL.Windows.Forms] BREAKING CHANGE: ImageToolbox Removed support for Linux due to no longer using DialogAdapters. Affects `OpenFileDialogWithViews`
- 
+
 ### Fixed
 
 - [SIL.Windows.Forms] Changed build date in SILAboutBox to be computed using the last write time instead of creation time.
@@ -573,7 +575,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
   projects
 
-[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v14.1.1...master
+[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v16.0.0...master
+[16.0.0]: https://github.com/sillsdev/libpalaso/compare/v15.0.0...v16.0.0
 [15.0.0]: https://github.com/sillsdev/libpalaso/compare/v14.1.1...v15.0.0
 [14.1.1]: https://github.com/sillsdev/libpalaso/compare/v14.1.0...v14.1.1
 [14.1.0]: https://github.com/sillsdev/libpalaso/compare/v14.0.0...v14.1.0
