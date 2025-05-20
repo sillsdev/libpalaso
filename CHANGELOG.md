@@ -74,7 +74,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] BREAKING CHANGE (potentially): Made ParseDateTimePermissivelyWithException into an extension method (on string).
 - [SIL.Core] BREAKING CHANGE (potentially): Changed behavior of DateTimeExtensions.ParseDateTimePermissivelyWithException (now deprecated) to try to interpret the date according to either the Gregorian calendar or the Buddhist calender in order to get the date to fall within a reasonable expected range (from 1/1/1900 through one day in the future). This means that depending on the current culture, dates might be interpreted differently from before. The known places in SIL code where this method is used seems to be for dates in the recent past (modern times); hence the default range. A new overload was added that will allow callers with other needs to specify a different range.
 - [SIL.Windows.Forms] BREAKING CHANGE: ImageToolbox Removed support for Linux due to no longer using DialogAdapters. Affects `OpenFileDialogWithViews`
- 
+
 ### Fixed
 
 - [SIL.Windows.Forms] Changed build date in SILAboutBox to be computed using the last write time instead of creation time.
