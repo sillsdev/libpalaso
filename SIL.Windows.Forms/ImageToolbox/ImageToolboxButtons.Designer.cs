@@ -83,26 +83,6 @@ namespace SIL.Windows.Forms.ImageToolbox {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap camera64x64 {
-            get {
-                object obj = ResourceManager.GetObject("camera64x64", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap credits {
-            get {
-                object obj = ResourceManager.GetObject("credits", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap crop {
             get {
                 object obj = ResourceManager.GetObject("crop", resourceCulture);
@@ -116,16 +96,6 @@ namespace SIL.Windows.Forms.ImageToolbox {
         internal static System.Drawing.Bitmap scanner {
             get {
                 object obj = ResourceManager.GetObject("scanner", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap scanner64x64 {
-            get {
-                object obj = ResourceManager.GetObject("scanner64x64", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
