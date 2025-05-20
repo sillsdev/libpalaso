@@ -114,11 +114,11 @@ jobs:
           ./artifacts/*.snupkg
       if: github.event_name == 'pull_request' && matrix.framework == 'net8.0-windows'
 
-    # When refressing the Nuget publishing token make sure it covers all the libpalaso packages
+    # When refreshing the Nuget publishing token, make sure it covers all the libpalaso packages
     - name: Publish Nuget Packages
       id: nuget-publish
       run: dotnet nuget push artifacts/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{secrets.SILLSDEV_PUBLISH_NUGET_ORG}} --skip-duplicate
-      if: github.ref_name == 'master' && matrix.framework == 'net8.0-windows'
+      if: (github.ref_name == 'master' || startsWith(github.ref, 'refs/tags/v')) && matrix.framework == 'net8.0-windows'
 
     - name: Publish logs on failure
       if: failure()
