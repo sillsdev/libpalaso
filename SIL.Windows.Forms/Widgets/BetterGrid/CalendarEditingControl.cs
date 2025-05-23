@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
+using SIL.Windows.Forms.Extensions;
 
 namespace SIL.Windows.Forms.Widgets.BetterGrid
 {
@@ -114,21 +115,8 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		public bool EditingControlWantsInputKey(Keys key, bool dataGridViewWantsInputKey)
 		{
-			// Let the DateTimePicker handle the keys listed.
-			switch (key & Keys.KeyCode)
-			{
-				case Keys.Left:
-				case Keys.Up:
-				case Keys.Down:
-				case Keys.Right:
-				case Keys.Home:
-				case Keys.End:
-				case Keys.PageDown:
-				case Keys.PageUp:
-					return true;
-				default:
-					return !dataGridViewWantsInputKey;
-			}
+			// Let the DateTimePicker handle navigation keys.
+			return key.IsNavigationKey() || !dataGridViewWantsInputKey;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -138,10 +126,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public bool RepositionEditingControlOnValueChange
-		{
-			get { return false; }
-		}
+		public bool RepositionEditingControlOnValueChange => false;
 
 		#endregion
 	}
