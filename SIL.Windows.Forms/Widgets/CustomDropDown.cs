@@ -185,6 +185,7 @@ namespace SIL.Windows.Forms.Widgets
 			{
 				Opacity += 0.1;
 				if (Opacity > .99)
+					Opacity = 1f;
 					timer.Stop();
 			};
 
