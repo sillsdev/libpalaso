@@ -184,8 +184,11 @@ namespace SIL.Windows.Forms.Widgets
 			timer.Tick += delegate
 			{
 				Opacity += 0.1;
-				if (Opacity == 1f)
+				if (Opacity > .99)
+				{
+					Opacity = 1f;
 					timer.Stop();
+				}
 			};
 
 			timer.Start();

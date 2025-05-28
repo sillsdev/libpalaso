@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- [SIL.Windows.Forms] In `CustomDropDown.OnOpening`, fixed check that triggers timer to stop.
+
 ## [16.0.0] - 2025-05-20
 
 ### Added
