@@ -16,6 +16,7 @@ using SIL.Lexicon;
 using SIL.PlatformUtilities;
 using SIL.Reporting;
 using SIL.Windows.Forms.ClearShare;
+using SIL.Core.ClearShare;
 using SIL.Windows.Forms.ClearShare.WinFormsUI;
 using SIL.Windows.Forms.HtmlBrowser;
 using SIL.Windows.Forms.Keyboarding;

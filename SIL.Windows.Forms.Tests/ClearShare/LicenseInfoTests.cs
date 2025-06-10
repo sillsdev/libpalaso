@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using SIL.Windows.Forms.ClearShare;
+using SIL.Core.ClearShare;
 
 namespace SIL.Windows.Forms.Tests.ClearShare
 {

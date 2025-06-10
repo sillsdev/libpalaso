@@ -65,7 +65,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				}
 				else
 				{
-					var licenseImage = metaData.License.GetImage();
+					var licenseImage = ((ILicenseWithImage)metaData.License).GetImage();
 					PictureBox pictureBox = null;
 					if (licenseImage != null)
 					{
