@@ -25,6 +25,8 @@ namespace SIL.Windows.Forms.Miscellaneous
 		public static void SetText(string text) => _Clipboard.SetText(text);
 		public static void SetText(string text, TextDataFormat format) => _Clipboard.SetText(text, format);
 		public static bool ContainsImage() => _Clipboard.ContainsImage();
+
+		public static bool CanGetImage() => _Clipboard.CanGetImage();
 		public static Image GetImage() => _Clipboard.GetImage();
 		public static void CopyImageToClipboard(PalasoImage image) => _Clipboard.CopyImageToClipboard(image);
 

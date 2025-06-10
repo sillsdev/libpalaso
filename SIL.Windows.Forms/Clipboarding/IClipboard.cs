@@ -15,6 +15,8 @@ namespace SIL.Windows.Forms.Clipboarding
 		void SetText(string text);
 		void SetText(string text, TextDataFormat format);
 		bool ContainsImage();
+
+		bool CanGetImage();
 		Image GetImage();
 		void CopyImageToClipboard(PalasoImage image);
 		PalasoImage GetImageFromClipboard();

@@ -32,6 +32,11 @@ namespace SIL.Windows.Forms.Clipboarding
 			return gtk_clipboard_wait_is_image_available(Clipboard);
 		}
 
+		public bool CanGetImage()
+		{
+			throw new NotImplementedException();
+		}
+
 		public Image GetImage()
 		{
 			var pixBuf = gtk_clipboard_wait_for_image(Clipboard);
