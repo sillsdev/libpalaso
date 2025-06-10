@@ -17,7 +17,7 @@ using TagLib.Image;
 using TagLib.Xmp;
 using static System.String;
 
-namespace SIL.Windows.Forms.ClearShare
+namespace SIL.Core.ClearShare
 {
 	/// <summary>
 	/// Provides reading and writing of metadata, currently for any file which TagLib can read AND write (images, pdf).
@@ -185,6 +185,7 @@ namespace SIL.Windows.Forms.ClearShare
 				if (rights != null)
 					licenseProperties["rights (en)"] = rights;
 			}
+
 			destinationMetadata.License = LicenseInfo.FromXmp(licenseProperties);
 
 			//NB: we're losing non-ascii somewhere... the copyright symbol is just the most obvious
@@ -497,7 +498,7 @@ namespace SIL.Windows.Forms.ClearShare
 		public void SetupReasonableLicenseDefaultBeforeEditing()
 		{
 			if (IsLicenseNotSet) {
-				License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
+				License = new CreativeCommonsLicenseWithoutImage(true, true, CreativeCommonsLicenseWithoutImage.DerivativeRules.Derivatives);
 			}
 		}
 
@@ -847,7 +848,7 @@ namespace SIL.Windows.Forms.ClearShare
 
 		public void SetCopyrightNotice(string year, string by)
 		{
-			if ((License is CreativeCommonsLicense) && !((CreativeCommonsLicense) License).AttributionRequired)
+			if ((License is CreativeCommonsLicenseWithoutImage) && !((CreativeCommonsLicenseWithoutImage) License).AttributionRequired)
 			{
 				// Public Domain, no copyright as such.
 				if (!IsNullOrEmpty(year))
