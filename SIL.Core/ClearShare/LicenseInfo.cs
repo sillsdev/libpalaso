@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using JetBrains.Annotations;
 using L10NSharp;
 
-namespace SIL.Windows.Forms.ClearShare
+namespace SIL.Core.ClearShare
 {
 	/// <summary/>
 	public abstract class LicenseInfo
@@ -12,10 +11,10 @@ namespace SIL.Windows.Forms.ClearShare
 		public static LicenseInfo FromXmp(Dictionary<string, string> properties)
 		{
 			if (properties.ContainsKey("license") && properties["license"].Contains("creativecommons"))
-				return CreativeCommonsLicense.FromMetadata(properties);
+				return CreativeCommonsLicenseWithoutImage.FromMetadata(properties);
 
 			if (properties.ContainsKey("rights (en)"))
-				return CustomLicense.FromMetadata(properties);
+				return CustomLicenseWithoutImage.FromMetadata(properties);
 			return new NullLicense();
 		}
 
@@ -39,15 +38,10 @@ namespace SIL.Windows.Forms.ClearShare
 			switch (abbr)
 			{
 				case "ask": return new NullLicense();
-				case "custom": return new CustomLicense();
+				case "custom": return new CustomLicenseWithoutImage();
 				default:
-					return CreativeCommonsLicense.FromToken(abbr);
+					return CreativeCommonsLicenseWithoutImage.FromToken(abbr);
 			}
-		}
-
-		public virtual Image GetImage()
-		{
-			return null;
 		}
 
 		/// <summary>
@@ -135,68 +129,6 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 			get => "";
 			set { }
-		}
-	}
-
-
-	public class CustomLicense : LicenseInfo
-	{
-//        public void SetDescription(string iso639_3LanguageCode, string description)
-//        {
-//			RightsStatement = description;
-//        }
-
-		public override string ToString()
-		{
-			return "Custom License";
-		}
-
-		public override string GetMinimalFormForCredits(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
-		{
-			return GetDescription(languagePriorityIds, out idOfLanguageUsed);
-		}
-
-		///<summary></summary>
-		/// <remarks>
-		/// Currently, we don't know the language of custom license strings, so we the ISO 639-2 code for undetermined, "und"
-		/// </remarks>
-		/// <param name="languagePriorityIds"></param>
-		/// <param name="idOfLanguageUsed"></param>
-		/// <returns></returns>
-		public override string GetDescription(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
-		{
-			//if we're empty, we're equivalent to a NullLicense
-			if (string.IsNullOrEmpty(RightsStatement))
-			{
-				return new NullLicense().GetDescription(languagePriorityIds, out idOfLanguageUsed);
-			}
-
-			//We don't actually have a way of knowing what language this is, so we use "und", from http://www.loc.gov/standards/iso639-2/faq.html#25
-			//I hereby coin "Zook's First Law": Eventually any string entered by a user will wish it had been tagged with a language identifier
-			//"Zook's Second Law" can be: Eventually any string entered by a user will wish it was a multi-string (multiple (language,value) pairs)
-			idOfLanguageUsed = "und";
-			return RightsStatement;
-		}
-
-		public override string Token =>
-			//do not think of changing this, there is data out there that could get messed up
-			"custom";
-
-		public override Image GetImage()
-		{
-			return null;
-		}
-
-		public override string Url { get; set; }
-
-		public static LicenseInfo FromMetadata(Dictionary<string, string> properties)
-		{
-			if (!properties.ContainsKey("rights (en)"))
-				throw new ApplicationException("A license property is required in order to make a  Custom License from metadata.");
-
-			var license = new CustomLicense();
-			license.RightsStatement = properties["rights (en)"];
-			return license;
 		}
 	}
 }
