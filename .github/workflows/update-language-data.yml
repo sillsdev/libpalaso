@@ -1,0 +1,175 @@
+name: Update Embedded Writing System Data
+permissions:
+  contents: write
+  pull-requests: write
+on:
+  workflow_dispatch:
+    inputs:
+      use_staging:
+        description: 'Use SLDR staging data for testing'
+        required: false
+        default: false
+        type: boolean
+      update_langtags:
+        description: 'Update langtags.json'
+        required: false
+        default: true
+        type: boolean
+      update_iana:
+        description: 'Update ianaSubtagRegistry.txt'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  LANGTAGS_PRODUCTION_URL: "https://ldml.api.sil.org/index.html?query=langtags&ext=json"
+  LANGTAGS_STAGING_URL: "https://ldml.api.sil.org/index.html?query=langtags&ext=json&staging=1"
+  IANA_URL: "https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry"
+
+jobs:
+  update-langtags:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'  # Adjust version as needed
+
+    - name: Download latest langtags.json
+      id: langtags
+      shell: bash
+      run: |
+        if [[ "${{ github.event.inputs.use_staging }}" == "true" ]]; then
+          url="$LANGTAGS_STAGING_URL"
+        else
+          url="$LANGTAGS_PRODUCTION_URL"
+        fi
+        echo "Downloading from: $url"
+        curl -f -o "langtags.json.new" "$url"
+        
+        # Validate JSON format
+        if ! jq empty "langtags.json.new" 2>/dev/null; then
+          echo "Error: Downloaded file is not valid JSON"
+          exit 1
+        fi
+        
+        echo "Successfully downloaded and validated JSON file"
+        echo "url=$url" >> $GITHUB_OUTPUT
+
+    - name: Download latest iana language-subtag-registry
+      id: subtagregistry
+      shell: bash
+      run: |
+        echo "Downloading from: ${{ env.IANA_URL }}"
+        curl -f -o "ianaSubtagRegistry.txt.new" "$IANA_URL"
+        
+        # Validate JSON format
+        if ! jq empty "langtags.json.new" 2>/dev/null; then
+          echo "Error: Downloaded file is not valid JSON"
+          exit 1
+        fi
+        
+        echo "Successfully downloaded and validated JSON file"
+
+    - name: Check for changes
+      id: changes
+      shell: bash
+      run: |
+        if ! cmp -s "SIL.WritingSystems/Resources/langtags.json" "langtags.json.new"; then
+          echo "Changes detected in langtags.json"
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+        fi
+        if ! cmp -s "SIL.WritingSystems/Resources/ianaSubtagRegistry.txt" "ianaSubtagRegistry.txt.new"; then
+          echo "Changes detected in ianaSubtagRegistry.txt"
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Update data files
+      if: steps.changes.outputs.has_changes == 'true'
+      shell: bash
+      run: |
+        mv "langtags.json.new" "SIL.WritingSystems/Resources/langtags.json"
+        mv "ianaSubtagRegistry.txt.new" "SIL.WritingSystems/Resources/ianaSubtagRegistry.txt"
+
+    - name: Restore & Build SIL.WritingSystems.Tests
+      if: steps.changes.outputs.has_changes == 'true'
+      shell: bash
+      run: |
+        dotnet build SIL.WritingSystems.Tests -p:TargetFramework=net8.0 -p:Configuration=Release
+        echo "TEST_PATH=$(dotnet msbuild SIL.WritingSystems.Tests/ --getProperty:OutputPath -p:TargetFramework=net8.0 -p:Configuration=Release)" >> $GITHUB_ENV
+      
+    - name: Test SIL.WritingSystems.Tests
+      if: steps.changes.outputs.has_changes == 'true'
+      shell: bash
+      run: |
+        echo "## Test Summary" >> $GITHUB_STEP_SUMMARY
+        echo "Executing SIL.WritingSystems.Tests..." >> $GITHUB_STEP_SUMMARY
+
+        dotnet test "$TEST_PATH"/SIL.WritingSystems.Tests.dll \
+          --no-build \
+          --filter "TestCategory!=SkipOnTeamCity" \
+          --blame-hang-timeout 5m \
+          --logger:"trx;LogFilePrefix=results" \
+          --results-directory ./test-results
+
+        EXIT_CODE=$?
+        if [ $EXIT_CODE -eq 0 ]; then
+          echo "✅ Tests passed." >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Tests failed." >> $GITHUB_STEP_SUMMARY
+          exit $EXIT_CODE
+        fi
+
+    - name: Create Pull Request
+      if: steps.changes.outputs.has_changes == 'true'
+      uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: |
+          Update embedded writing system data
+          
+          - Updated: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          - langtags.json: ${{ github.event.inputs.update_langtags == 'true' && 'Updated' || 'No changes' }}
+          - ianaSubtagRegistry.txt: ${{ github.event.inputs.update_iana == 'true' && 'Updated' || 'No changes' }}
+          - SLDR staging: ${{ github.event.inputs.use_staging }}
+        title: "Update embedded writing system data"
+        body: |
+          ## Automated Writing System Data Update
+          
+          This PR updates the embedded writing system data files as described in `SIL.WritingSystems/Readme.md`.
+          
+          **Workflow Run:** [View Summary](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          
+          **Files Updated:**
+          - langtags.json: ${{ github.event.inputs.update_langtags == 'true' && format('✅ Updated from {0}', steps.langtags.outputs.url) || '⏭️ Skipped' }}
+          - ianaSubtagRegistry.txt: ${{ github.event.inputs.update_iana == 'true' && '✅ Updated from https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry' || '⏭️ Skipped' }}
+          
+          **Next Steps:**
+          - Review the changes
+          - Run any additional manual tests if needed
+          - Merge when ready
+        branch: update-writing-system-data
+        delete-branch: true
+
+    - name: Create summary
+      if: always()
+      shell: bash
+      run: |
+        echo "## Writing System Data Update Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **SLDR Staging Mode**: ${{ github.event.inputs.use_staging }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Changes Detected**: ${{ steps.changes.outputs.has_changes }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Update langtags.json**: ${{ github.event.inputs.update_langtags }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Update ianaSubtagRegistry.txt**: ${{ github.event.inputs.update_iana }}" >> $GITHUB_STEP_SUMMARY
+        
+        if [[ "${{ steps.changes.outputs.has_changes }}" == "true" ]]; then
+          echo "- **Action Taken**: Files updated, tests run, PR created" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "- **Action Taken**: No changes detected, no updates needed" >> $GITHUB_STEP_SUMMARY
+        fi
