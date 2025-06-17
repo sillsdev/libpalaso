@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 <!-- Available types of changes:
 ### Added
-### Changed
 ### Fixed
+### Changed
 ### Deprecated
 ### Removed
 ### Security
