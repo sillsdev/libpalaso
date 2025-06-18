@@ -92,6 +92,20 @@ jobs:
           echo "has_iana_changes=true" >> $GITHUB_OUTPUT
         fi
 
+    - name: Restore & Build SIL.WritingSystems.Tests
+      if: steps.changes.outputs.has_changes == 'true'
+      shell: bash
+      run: |
+        dotnet build SIL.WritingSystems.Tests -p:TargetFramework=net8.0 -p:Configuration=Release
+        echo "TEST_PATH=$(dotnet msbuild SIL.WritingSystems.Tests/ --getProperty:OutputPath -p:TargetFramework=net8.0 -p:Configuration=Release)" >> $GITHUB_ENV
+
+    - name: Test SIL.WritingSystems.Tests
+      if: steps.changes.outputs.has_changes == 'true'
+      shell: bash
+      run: |
+        echo "## Test Summary" >> $GITHUB_STEP_SUMMARY
+        echo "Executing SIL.WritingSystems.Tests..." >> $GITHUB_STEP_SUMMARY
+
     - name: Update data files
       if: steps.changes.outputs.has_changes == 'true'
       shell: bash
