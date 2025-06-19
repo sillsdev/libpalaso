@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       use_staging:
-        description: 'Use SLDR staging data for testing'
+        description: 'Use SLDR staging data for testing - run tests'
         required: false
         default: false
         type: boolean
