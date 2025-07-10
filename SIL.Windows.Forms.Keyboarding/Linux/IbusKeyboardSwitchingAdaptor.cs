@@ -283,7 +283,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			if (!_ibusComm.Connected)
 				return;
 
-			var control = sender as Control;
+			var control = (Control)sender;
 			var eventHandler = GetEventHandlerForControl(control);
 			if (eventHandler == null)
 				return;
