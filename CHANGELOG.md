@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 <!-- Available types of changes:
 ### Added
-### Changed
 ### Fixed
+### Changed
 ### Deprecated
 ### Removed
 ### Security
@@ -18,12 +18,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- [SIL.Windows.Forms] Added PortableClipboard.CanGetImage()
+- [ClipboardTestApp] Restored this test program and added tests for PortableClipboard.CanGetImage() and GetImageFromClipboard()
 - [SIL.Windows.Forms] Added KeysExtensions class with the IsNavigationKey extension method.
 
 ### Fixed
 
+- [SIL.Windows.Forms] In `CustomDropDown.OnOpening`, fixed check that triggers timer to stop.
 - [SIL.Windows.Kwyboarding] Fixed a subtle bug in IbusKeyboardSwitchingAdaptor when determining whether IBus would have handled a key event while a pre-edit is active. The code now accounts for the possibility of modifier keys (particularly Ctrl), which IBus would presumably have handled when in combination with navigation keys, Backspace, and Delete.
-- 
+
 ## [16.0.0] - 2025-05-20
 
 ### Added
@@ -82,6 +85,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] BREAKING CHANGE (potentially): Made ParseDateTimePermissivelyWithException into an extension method (on string).
 - [SIL.Core] BREAKING CHANGE (potentially): Changed behavior of DateTimeExtensions.ParseDateTimePermissivelyWithException (now deprecated) to try to interpret the date according to either the Gregorian calendar or the Buddhist calender in order to get the date to fall within a reasonable expected range (from 1/1/1900 through one day in the future). This means that depending on the current culture, dates might be interpreted differently from before. The known places in SIL code where this method is used seems to be for dates in the recent past (modern times); hence the default range. A new overload was added that will allow callers with other needs to specify a different range.
 - [SIL.Windows.Forms] BREAKING CHANGE: ImageToolbox Removed support for Linux due to no longer using DialogAdapters. Affects `OpenFileDialogWithViews`
+- [SIL.Windows.Forms.Keyboarding] BREAKING CHANGE: Moved Keyman legacy libraries to Nuget to fix runtime errors in modern .NET builds.
 
 ### Fixed
 
@@ -184,6 +188,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] Made MediaInfo.FFprobeFolder look for and return the folder when first accessed, even if no prior call to the setter or other action had caused it t be found.
 - [SIL.Core] Made GetSafeDirectories not crash and simply not return any subdirectory the user does not have permission to access.
 - [SIL.Core] In GetDirectoryDistributedWithApplication, prevented a failure in accessing one of the specified subfolders from allowing it to try the others.
+- [SIL.Window.Forms] When choosing a file in the ImageToolbox.AcquireImageControl, a FileOk handler is simulated that verifies the selected file passes the given filter. Users can defeat the filter mechanism by pasting or typing the file name. While the returned filename does not pass the filter, the dialog is reopened until the user either chooses a proper filename or cancels the dialog. The native FileOk handler can prevent the dialog from closing: we can't achieve that. (See BL-13552.)
 
 ### Removed
 
@@ -197,10 +202,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Removed protected fields (made private) from ArchivingFile: \_fullName, \_fileName, \_fileSize, \_mimeType, \_descriptions, \_accessProtocol
 - [SIL.Archiving] Removed public methods CreateMetsFile and CreateRampPackage from RampArchivingDlgViewModel (made internal).
 - [SIL.Archiving] Removed ArchivingPackage and AddSession from ArchivingDlgViewModel and RampArchivingDlgViewModel (where they threw NotImplementedExceptions)
-
-### Fixed
-
-- [SIL.Window.Forms] When choosing a file in the ImageToolbox.AcquireImageControl, a FileOk handler is simulated that verifies the selected file passes the given filter. Users can defeat the filter mechanism by pasting or typing the file name. While the returned filename does not pass the filter, the dialog is reopened until the user either chooses a proper filename or cancels the dialog. The native FileOk handler can prevent the dialog from closing: we can't achieve that. (See BL-13552.)
 
 ## [14.1.1] - 2024-05-23
 

@@ -2,6 +2,7 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Drawing;
 using System.IO;
@@ -21,6 +22,82 @@ namespace SIL.Windows.Forms.Clipboarding
 		public void SetText(string text) => Clipboard.SetText(text);
 		public void SetText(string text, TextDataFormat format) => Clipboard.SetText(text, format);
 		public bool ContainsImage() => Clipboard.ContainsImage();
+
+		// Extensions which indicate a reasonable expectation that Image.fromFile will be able to
+		// make an image from it. svg is not included here because it is not supported by System.Drawing.Image.
+		static HashSet<string> _imageExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+		{
+			".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".tif"
+		};
+
+		/// <summary>
+		/// This attempts to answer whether GetImageFromClipboard() will find something,
+		/// without actually duplicating image files or filling memory with images or throwing.
+		/// The idea is to have something that is fast enough to be reasonably used when polling
+		/// to decide whether a Paste button should be enabled or not. Since we don't actually
+		/// attempt to load files, it is not totally reliable (e.g., it will return true if the
+		/// clipboard contains the text of a path to a file that claims to be
+		/// a jpg but whose contents are not really), but it is a better basis for enabling a
+		/// Paste button (where Paste will call CopyImageToClipboard) than ContainsImage().
+		/// </summary>
+		public bool CanGetImage()
+		{
+			try
+			{
+				var dataObject = Clipboard.GetDataObject();
+				if (dataObject == null)
+					return false;
+				if (Clipboard.ContainsImage())
+				{
+					return true;
+				}
+
+				// the ContainsImage() returns false when copying a PNG from MS Word
+				// so here we explicitly ask for a PNG.
+				if (dataObject.GetDataPresent("PNG"))
+				{
+					return true;
+				}
+
+				// People can do a "copy" from the Windows Photo Viewer but what it puts on the System.Windows.Forms.Clipboard is a path, not an image
+				// This is also what makes it work when the user has simply "copied" an image file in Windows Explorer.
+				if (dataObject.GetDataPresent(DataFormats.FileDrop))
+				{
+					// This line gets all the file paths that were selected in explorer
+					string[] files = dataObject.GetData(DataFormats.FileDrop) as string[];
+					if (files == null)
+						return false;
+
+					return files.Any(f => _imageExtensions.Contains(Path.GetExtension(f))
+					                      && RobustFile.Exists(f));
+				}
+
+				if (Clipboard.ContainsText())
+				{
+					var text = Clipboard.GetText();
+					var badChars = Path.GetInvalidPathChars();
+					// if path contains invalid characters, we can't get an image from it
+					// We could just let Path.GetExtension() throw an exception and catch it below, but it's a
+					// perfectly valid situation for the clipboard to contain text that is not
+					// in any way intended to be a file path, and I don't like throwing exceptions
+					// for non-exceptional situations.
+					if (text.Any(c => badChars.Contains(c)))
+						return false;
+					return !String.IsNullOrEmpty(text) && _imageExtensions.Contains(
+						                                   Path.GetExtension(text))
+					                                   && RobustFile.Exists(text);
+
+				}
+			}
+			catch (Exception)
+			{
+				// If anything goes wrong, we'll just treat it as not having an image.
+				// GetImageFromClipboard would probably fail too.
+				return false;
+			}
+			return false;
+		}
+
 		public Image GetImage() => Clipboard.GetImage();
 
 		public void CopyImageToClipboard(PalasoImage image)
@@ -54,6 +131,7 @@ namespace SIL.Windows.Forms.Clipboarding
 		// Try to get an image from the System.Windows.Forms.Clipboard. If there simply isn't anything on the System.Windows.Forms.Clipboard that
 		// can reasonably be interpreted as an image, return null. If there is something that makes sense
 		// as an image, but trying to load it causes an exception, let the exception propagate.
+		// Try to keep CanGetImage() consistent with this method, so that iff CanGetImage() returns true, this method will return an image.
 		public PalasoImage GetImageFromClipboard()
 		{
 			// N.B.: PalasoImage does not handle .svg files
@@ -110,6 +188,7 @@ namespace SIL.Windows.Forms.Clipboarding
 			}
 
 			// People can do a "copy" from the Windows Photo Viewer but what it puts on the System.Windows.Forms.Clipboard is a path, not an image
+			// This is also what makes it work when the user has simply "copied" an image file in Windows Explorer.
 			if (dataObject.GetDataPresent(DataFormats.FileDrop))
 			{
 				// This line gets all the file paths that were selected in explorer
