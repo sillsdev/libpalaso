@@ -17,12 +17,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
-    - [SIL.Windows.Forms] Added PortableClipboard.CanGetImage()
+
+- [SIL.Windows.Forms] Added PortableClipboard.CanGetImage()
     - [ClipboardTestApp] Restored this test program and added tests for PortableClipboard.CanGetImage() and GetImageFromClipboard()
 
 ### Fixed
 
 - [SIL.Windows.Forms] In `CustomDropDown.OnOpening`, fixed check that triggers timer to stop.
+
+### Changed
+
+- [SIL.WritingSystems] Updated embedded langtags.json
+- [SIL.WritingSystems] Updated embedded ianaSubtagRegistry.txt
+
 
 ## [16.0.0] - 2025-05-20
 
@@ -41,6 +48,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Added DateTimeExtensions.ParseModernPastDateTimePermissivelyWithException (as the most probable replacement for the deprecated version of ParseDateTimePermissivelyWithException).
 - [SIL.Core] Added DateTimeExtensions.ParsePastDateTimePermissivelyWithException as a convenience method.
 - [SIL.Core] Added overload of DateTimeExtensions.ParseDateTimePermissivelyWithException that takes parameters `reasonableMin` and `reasonableMax`.
+
+### Fixed
+
+- [SIL.Windows.Forms] Changed build date in SILAboutBox to be computed using the last write time instead of creation time.
+- [SIL.Windows.Forms] Made FadingMessageWindow implement all UI logic on the main UI thread in a thread-safe way. Fixes crashes like SP-2340.
+- [SIL.Windows.Forms] Made ContributorsListControl more threadsafe. Possibly fixes crashes like SP-2353 or at least makes them less likely.
+- [SIL.WritingSystems] Added check to Subtag.Equals to ensure two subtags being compared are of same derived type. This could potentially be a subtle breaking change in the unlikely event that someone was intentionally relying on the previous errant behavior.
+- [SIL.Windows.Forms] Fix loss of precision in Animator.FrameRate getter.
+- [SIL.Core] Changed ReplaceSubstringInAttr.Visit to use StringComparison.Ordinal rather than the default (StringComparison.CurrentCulture), and also made it correctly return true when the replacement was made successfully. Although either of these could potentially be a BREAKING CHANGE, in practice, it seems unlikely that anyone would have been relying on CurrentCulture comparisons, and although the return value is used, it seems to be used merely to set a flag that is returned from the callers, and the callers I could find for those methods all appear to ignore the returned value. In any case, if someone were relying on the return value, it's unlikely they could have found it helpful to have it return false unconditionally.
 
 ### Changed
 
@@ -84,15 +100,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] BREAKING CHANGE: ImageToolbox Removed support for Linux due to no longer using DialogAdapters. Affects `OpenFileDialogWithViews`
 - [SIL.Windows.Forms.Keyboarding] BREAKING CHANGE: Moved Keyman legacy libraries to Nuget to fix runtime errors in modern .NET builds.
 
-### Fixed
-
-- [SIL.Windows.Forms] Changed build date in SILAboutBox to be computed using the last write time instead of creation time.
-- [SIL.Windows.Forms] Made FadingMessageWindow implement all UI logic on the main UI thread in a thread-safe way. Fixes crashes like SP-2340.
-- [SIL.Windows.Forms] Made ContributorsListControl more threadsafe. Possibly fixes crashes like SP-2353 or at least makes them less likely.
-- [SIL.WritingSystems] Added check to Subtag.Equals to ensure two subtags being compared are of same derived type. This could potentially be a subtle breaking change in the unlikely event that someone was intentionally relying on the previous errant behavior.
-- [SIL.Windows.Forms] Fix loss of precision in Animator.FrameRate getter.
-- [SIL.Core] Changed ReplaceSubstringInAttr.Visit to use StringComparison.Ordinal rather than the default (StringComparison.CurrentCulture), and also made it correctly return true when the replacement was made successfully. Although either of these could potentially be a BREAKING CHANGE, in practice, it seems unlikely that anyone would have been relying on CurrentCulture comparisons, and although the return value is used, it seems to be used merely to set a flag that is returned from the callers, and the callers I could find for those methods all appear to ignore the returned value. In any case, if someone were relying on the return value, it's unlikely they could have found it helpful to have it return false unconditionally.
-
 ### Deprecated
 
 - [SIL.DictionaryServices] Deprecated the second parameter of GetHumanReadableIdWithAnyIllegalUnicodeEscaped: Added GetHumanReadableIdWithAnyIllegalUnicodeEscaped(LexEntry entry) and marked GetHumanReadableIdWithAnyIllegalUnicodeEscaped(LexEntry entry, Dictionary<string, int> idsAndCounts) as [Obsolete].
@@ -100,6 +107,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Marked the misspelled XmlUtils.ConvertMultiparagraphToSafeXml as [Obsolete] in favor of correctly spelled ConvertMultiParagraphToSafeXml.
 - [SIL.Core] Marked GetAttributeValue as deprecated in favor of GetOptionalAttributeValue. (According to the summary, this has been deprecated for a long time, but it was not officially marked as obsolete.)
 - [SIL.Core] Marked DateTimeExtensions.ParseDateTimePermissivelyWithException as [Obsolete] in favor of ParseModernPastDateTimePermissivelyWithException (or ParsePastDateTimePermissivelyWithException or the new overload of ParseDateTimePermissivelyWithException).
+
 
 ## [15.0.0] - 2025-01-06
 
@@ -132,6 +140,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Added the following properties to ArchivingDlgViewModel as an alternative way to customize the initial summary displayed: GetOverriddenPreArchivingMessages, InitialFileGroupDisplayMessageType, OverrideGetFileGroupDisplayMessage
 - [SIL.Media] Added FFmpegRunner.MinimumVersion property (also used by MediaInfo for FFprobe).
 - [SIL.Windows.Forms.WritingSystems] Added Caption property to LanguageLookupDialog.
+
+### Fixed
+
+- [SIL.Archiving] Fixed typo in RampArchivingDlgViewModel for Ethnomusicology performance collection.
+- [SIL.Archiving] Changed URLs that used http: to https: in resource EmptyMets.xml.
+- [SIL.Core.Desktop] Implemented GetDefaultProgramForFileType (as trenamed) in a way that works on Windows 11, Mono (probably) and MacOS (untested).
+- [SIL.Media] MediaInfo.HaveNecessaryComponents properly returns true if FFprobe is on the system path.
+- [SIL.Media] Made MediaInfo.FFprobeFolder look for and return the folder when first accessed, even if no prior call to the setter or other action had caused it t be found.
+- [SIL.Core] Made GetSafeDirectories not crash and simply not return any subdirectory the user does not have permission to access.
+- [SIL.Core] In GetDirectoryDistributedWithApplication, prevented a failure in accessing one of the specified subfolders from allowing it to try the others.
+- [SIL.Window.Forms] When choosing a file in the ImageToolbox.AcquireImageControl, a FileOk handler is simulated that verifies the selected file passes the given filter. Users can defeat the filter mechanism by pasting or typing the file name. While the returned filename does not pass the filter, the dialog is reopened until the user either chooses a proper filename or cancels the dialog. The native FileOk handler can prevent the dialog from closing: we can't achieve that. (See BL-13552.)
 
 ### Changed
 
@@ -176,17 +195,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] Made FFmpegRunner look for the exe on the path before trying to find a version installed for Audacity (which is unlikely to succeed anyway).
 - [SIL.Media] Made MediaInfo look for the FFprobe exe in the same location as FFmpeg when the application has specified the location for it or when it was previously located in one of the expected locations. Also made it more robust by making it more likely to find FFprobe (when it is on the system path).
 
-### Fixed
-
-- [SIL.Archiving] Fixed typo in RampArchivingDlgViewModel for Ethnomusicology performance collection.
-- [SIL.Archiving] Changed URLs that used http: to https: in resource EmptyMets.xml.
-- [SIL.Core.Desktop] Implemented GetDefaultProgramForFileType (as trenamed) in a way that works on Windows 11, Mono (probably) and MacOS (untested).
-- [SIL.Media] MediaInfo.HaveNecessaryComponents properly returns true if FFprobe is on the system path.
-- [SIL.Media] Made MediaInfo.FFprobeFolder look for and return the folder when first accessed, even if no prior call to the setter or other action had caused it t be found.
-- [SIL.Core] Made GetSafeDirectories not crash and simply not return any subdirectory the user does not have permission to access.
-- [SIL.Core] In GetDirectoryDistributedWithApplication, prevented a failure in accessing one of the specified subfolders from allowing it to try the others.
-- [SIL.Window.Forms] When choosing a file in the ImageToolbox.AcquireImageControl, a FileOk handler is simulated that verifies the selected file passes the given filter. Users can defeat the filter mechanism by pasting or typing the file name. While the returned filename does not pass the filter, the dialog is reopened until the user either chooses a proper filename or cancels the dialog. The native FileOk handler can prevent the dialog from closing: we can't achieve that. (See BL-13552.)
-
 ### Removed
 
 - Support for .Net Framework 4.6.1
@@ -200,11 +208,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Removed public methods CreateMetsFile and CreateRampPackage from RampArchivingDlgViewModel (made internal).
 - [SIL.Archiving] Removed ArchivingPackage and AddSession from ArchivingDlgViewModel and RampArchivingDlgViewModel (where they threw NotImplementedExceptions)
 
+
 ## [14.1.1] - 2024-05-23
 
 ### Fixed
 
 - [SIL.Windows.Forms.DblBundle] Fixed bug in ProjectsListBase that made it impossible to select a project after double-clicking a column header. (See HT-475)
+
 
 ## [14.1.0] - 2024-05-13
 
@@ -215,6 +225,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - [SIL.Windows.Forms] Fixed backwards logic for LocalizationIncompleteViewModel.ShouldShowDialog (Technically this is a breaking contractual change, since effectively the behavior is the opposite of the original implementation, but the name so clearly indicates the desired behavior that it seems unlikely any subclass implementation would have implemented the logic according to the previously expected backwards behavior.)
+
 
 ## [14.0.0] - 2024-04-09
 
@@ -227,12 +238,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.WritingSystems] Upgraded to L10nSharp 7.0.0
 - [SIL.Core] `RaiseExceptionIfFailed` no longer throws an exception if user cancelled
 
+
 ## [13.0.1] - 2024-01-09
 
 ### Fixed
 
 - [SIL.Core] Fixed bug in extension method GetLongestUsefulCommonSubstring when string ends with an Object replacement character
 - [SIL.Core] LogBox: Checked for disposed log box or caller-requested cancel in SafeInvoke so we don't try to write messages or scroll.
+
 
 ## [13.0.0] - 2023-12-07
 
@@ -251,16 +264,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] several constructors and `Restore` method to `WaitCursor`
 - [SIL.Media.NAudio] added an overload to `BeginMonitoring` with `catchAndReportExceptions` parameter
 
-### Changed
-
-- [SIL.DictionaryServices] Renamed parameter of LiftWriter.WriteHeader from headerConentsNotIncludingHeaderElement to headerContentsNotIncludingHeaderElement
-- [SIL.WritingSystems] Updated langtags.json and ianaSubtagRegistry.txt
-- [SIL.Core] Enhanced ErrorReport.GetOperatingSystemLabel method to report Windows 11+ and list the version as well.
-- [SIL.Core] Enhanced RetryUtility.Retry methods to optionally improve debugging messages, and fixed existing RobustFile and RobustIO methods to use the new optional debugging parameter
-- [SIL.Media] Changed the FrameRate reported in VideoInfo from FrameRate to AvgFrameRate.
-- [SIL.Windows.Forms] Fixed spelling error in ImageGalleryControl, renaming SetIntialSearchTerm to SetInitialSearchTerm.
-- [SIL.Windows.Forms] Made `WaitCursor` class (which used to contain only static methods) implement IDisposable
-
 ### Fixed
 
 - [SIL.Windows.Forms.ClearShare] Fixed Metadata.LoadProperties to catch the ArgumentOutOfRangeException thrown by TagLib.File.Create when unknown data is found in the IPTC profile segment. The rest of the metadata (Exif / XMP) is likely to be okay, but won't be available until TagLib is fixed to allow this. Not having the metadata available shouldn't prevent using the image. Note that clients can now read the exception caught while loading if so desired.
@@ -274,10 +277,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Fix 4 img metadata methods that could fail due to cloud or scanning interference
 - [SIL.Windows.Forms] Fixed error in BetterGrid.OnCellContentClick to make it so the delete button works correctly if there is no "new row."
 
+### Changed
+
+- [SIL.DictionaryServices] Renamed parameter of LiftWriter.WriteHeader from headerConentsNotIncludingHeaderElement to headerContentsNotIncludingHeaderElement
+- [SIL.WritingSystems] Updated langtags.json and ianaSubtagRegistry.txt
+- [SIL.Core] Enhanced ErrorReport.GetOperatingSystemLabel method to report Windows 11+ and list the version as well.
+- [SIL.Core] Enhanced RetryUtility.Retry methods to optionally improve debugging messages, and fixed existing RobustFile and RobustIO methods to use the new optional debugging parameter
+- [SIL.Media] Changed the FrameRate reported in VideoInfo from FrameRate to AvgFrameRate.
+- [SIL.Windows.Forms] Fixed spelling error in ImageGalleryControl, renaming SetIntialSearchTerm to SetInitialSearchTerm.
+- [SIL.Windows.Forms] Made `WaitCursor` class (which used to contain only static methods) implement IDisposable
+
 ### Removed
 
 - [SIL.Windows.Forms] ImageGalleryControl.InSomeoneElesesDesignMode (seemingly unused and misspelled)
 - [SIL.Windows.Forms] Checkbox for `IntergovernmentalOrganizationQualifier` from `MetadataEditorControl`
+
 
 ## [12.0.1] - 2023-05-26
 
@@ -286,6 +300,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Make `PalasoImage.FromFile(Robustly)` methods more robust
 - [SIL.Windows.Forms] Update dll to `libdl.so.2` to make compatible with Ubuntu 22.x. Affects multiple projects.
 - [SIL.Core] Fixed `BulkObservableList.MoveRange` method when moving a single item forward.
+
 
 ## [12.0.0] - 2023-02-14
 
@@ -306,11 +321,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [SIL.Media] MediaInfo.RawData property (replaced by AnalysisData)
 
+
 ## [11.0.1] - 2023-01-27
 
 ### Fixed
 
 - [SIL.Windows.Forms] Prevent changing row in ContributorsListControl if the row is dirty and is not in a valid state to commit edit (SP-2297)
+
 
 ## [11.0.0] - 2023-01-19
 
@@ -384,6 +401,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   `MetaData`.
 - [SIL.Windows.Forms] Removed deprecated `UseComboButtonStyle` from PushButtonColumn`.
 
+
 ## [10.1.0] - 2022-08-26
 
 ### Added
@@ -399,6 +417,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Scripture] Fixed SIL.Scripture.MultilingScrBooks.VerseRefRegex to make punctuation more specific
 - [SIL.Windows.Forms] Fixed ImageToolbox.ImageGallery.ImageCollectionManager.FromStandardLocations to work in a flatpak environment.
 - [SIL.WritingSystems] Fixed SLDR initialization for users with European number formats.
+
 
 ## [10.0.0] - 2022-08-04
 
@@ -423,6 +442,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Removed
 
 - Removed the "new" DisplayMember property from CheckedComboBox (which overrode the base class member). I don't believe this is a breaking change.
+
 
 ## [9.0.0] - 2022-06-03
 
@@ -457,6 +477,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.WritingSystems] Added extension method InitializeWithAvailableUILocales
 - [SIL.WritingSystems] Added WellKnownSubtag zh-TW.
 
+### Fixed
+
+- [SIL.Windows.Forms] Fix bug where changing `ImageCollection` search language too soon could crash.
+- [SIL.Windows.Forms] Fix bug where image license could not be changed from Creative Commons.
+- [SIL.Windows.Forms] Fix bug where `PalasoImage` disposes of its `Image` prematurely
+- [SIL.Windows.Forms] Save non-CC licenses properly in images
+- [SIL.Windows.Forms.Keyboarding] Avoid crashes in cases where Ibus connection dropped
+- [SIL.Windows.Forms.Keyboarding] Copy `SIL.Windows.Forms.Keyboarding.dll.config` to output directory
+- [SIL.WritingSystems] Fix case mismatch with `needsCompiling` attribute
+- [SIL.Windows.Forms.ClearShare.WinFormsUI] Restore default version (4.0) for CC licenses after CC0 was used
+- [SIL.Windows.Forms] Layout issues in the ExceptionReportingDialog to prevent overlapping text.
+
 ### Changed
 
 - [SIL.WritingSystems] Update `langtags.json` to the latest
@@ -483,17 +515,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core, SIL.Windows.Forms] If WinFormsErrorReporter is set as the ErrorReporter, and ErrorReporter.NotifyUserOfProblem(IRepeatNoticePolicy, Exception, String, params object[]) is passed null for the exception, the "Details" button will no longer appear, making this consistent with the no-Exception overload of this method
 - [SIL.WritingSystems] Changed behavior of IetfLanguageTag to better handle zh-TW.
 
-### Fixed
-
-- [SIL.Windows.Forms] Fix bug where changing `ImageCollection` search language too soon could crash.
-- [SIL.Windows.Forms] Fix bug where image license could not be changed from Creative Commons.
-- [SIL.Windows.Forms] Fix bug where `PalasoImage` disposes of its `Image` prematurely
-- [SIL.Windows.Forms] Save non-CC licenses properly in images
-- [SIL.Windows.Forms.Keyboarding] Avoid crashes in cases where Ibus connection dropped
-- [SIL.Windows.Forms.Keyboarding] Copy `SIL.Windows.Forms.Keyboarding.dll.config` to output directory
-- [SIL.WritingSystems] Fix case mismatch with `needsCompiling` attribute
-- [SIL.Windows.Forms.ClearShare.WinFormsUI] Restore default version (4.0) for CC licenses after CC0 was used
-- [SIL.Windows.Forms] Layout issues in the ExceptionReportingDialog to prevent overlapping text.
 
 ## [8.0.0] - 2021-03-04
 
@@ -511,6 +532,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] `Platform.IsGnomeShell` to detect if executing in a Gnome Shell
 - [SIL.Core] `XmlSerializationHelper.SerializeToString<T>` overload to allow caller to specify encoding.
 - [SIL.Core] Additional parameter to `ProcessExtensions.RunProcess` to allow redirecting stderr.
+
+### Fixed
+
+- [SIL.Windows.Forms.Keyboarding] Use signed version of `Keyman*Interop.dll` (#865)
+- [SIL.Windows.Forms.Keyboarding] Fixed keyboard switching for Ubuntu 18.04 (#887)
+- [SIL.Windows.Forms] Use signed versions of `ibusdotnet.dll`, `Interop.WIA.dll`,
+  `DialogAdapters.dll`, and `MarkdownDeep.dll` (#865)
+- [SIL.Media] Fix missing `irrKlang.NET4.dll` exception by copying it to `lib` folder in output
 
 ### Changed
 
@@ -539,14 +568,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Use [Markdig](https://github.com/lunet-io/markdig) instead of
   [MarkdownDeep.NET](https://www.toptensoftware.com/markdowndeep/)
 
-### Fixed
-
-- [SIL.Windows.Forms.Keyboarding] Use signed version of `Keyman*Interop.dll` (#865)
-- [SIL.Windows.Forms.Keyboarding] Fixed keyboard switching for Ubuntu 18.04 (#887)
-- [SIL.Windows.Forms] Use signed versions of `ibusdotnet.dll`, `Interop.WIA.dll`,
-  `DialogAdapters.dll`, and `MarkdownDeep.dll` (#865)
-- [SIL.Media] Fix missing `irrKlang.NET4.dll` exception by copying it to `lib` folder in output
-
 ### Deprecated
 
 - [SIL.Core] Deprecate `ExceptionHandler.Init()` method in favor of more explicit version
@@ -559,20 +580,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [SIL.NUnit3Compatibility] Remove this project because we're using NUnit 3 now.
 
+
 ## [7.0.0] - 2019-08-29
-
-### Changed
-
-- Create nuget packages
-- [SIL.Media] `IAudioRecorder.SelectedDevice` now returns a `IRecordingDevice` which both the
-  NAudio and AlsaAudio `RecordingDevice` implement. This allows to use the same assembly
-  on both Windows and Linux (although the limitations what works and what doesn't work remain the
-  same)
-- [SIL.Media] cleanup of `AudioSession` API: rename `AudioIrrKlangSession` to `WindowsAudioSession`.
-  `AudioAlsaSession` and `WindowsAudioSession` are now internal (they were never intended to
-  be used directly)
-- [SIL.Media] move some interfaces around so that they live in `SIL.Media` instead of
-  `SIL.Media.Naudio`: `IAudioRecorder`, `RecordingState`, `IAudioPlayer`
 
 ### Added
 
@@ -598,3 +607,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [9.0.0]: https://github.com/sillsdev/libpalaso/compare/v8.0.0...v9.0.0
 [8.0.0]: https://github.com/sillsdev/libpalaso/compare/v7.0.0...v8.0.0
 [7.0.0]: https://github.com/sillsdev/libpalaso/compare/v5.0...v7.0.0
+
+### Changed
+
+- Create nuget packages
+- [SIL.Media] `IAudioRecorder.SelectedDevice` now returns a `IRecordingDevice` which both the
+  NAudio and AlsaAudio `RecordingDevice` implement. This allows to use the same assembly
+  on both Windows and Linux (although the limitations what works and what doesn't work remain the
+  same)
+- [SIL.Media] cleanup of `AudioSession` API: rename `AudioIrrKlangSession` to `WindowsAudioSession`.
+  `AudioAlsaSession` and `WindowsAudioSession` are now internal (they were never intended to
+  be used directly)
+- [SIL.Media] move some interfaces around so that they live in `SIL.Media` instead of
+  `SIL.Media.Naudio`: `IAudioRecorder`, `RecordingState`, `IAudioPlayer`
