@@ -6,12 +6,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 using L10NSharp;
 using SIL.Acknowledgements;
 using SIL.IO;
 using SIL.Windows.Forms.Widgets;
+using static System.Text.RegularExpressions.RegexOptions;
 
 namespace SIL.Windows.Forms.Miscellaneous
 {
@@ -20,9 +22,63 @@ namespace SIL.Windows.Forms.Miscellaneous
 		private readonly Assembly _assembly;
 		private readonly string _pathToAboutBoxHtml;
 		private TempFile _tempAboutBoxHtmlFile; // after update by AcknowledgementsProvider
+		private WebBrowserNavigatingEventHandler _navigatingHandlers;
 
+		/// <summary>
+		/// Event that occurs when the user clicks the "Check for Updates" button in the About
+		/// dialog box. If the hosting application has subscribed to this event, then that
+		/// button will be visible in the UI. Applications should respond by checking whether an
+		/// update is available.
+		/// </summary>
 		public event EventHandler CheckForUpdatesClicked;
+
+		/// <summary>
+		/// Event that occurs when the user clicks the "Release Notes" button in the About
+		/// dialog box. If the hosting application has subscribed to this event, then that
+		/// button will be visible in the UI. Applications should respond by displaying the
+		/// release notes.
+		/// </summary>
 		public event EventHandler ReleaseNotesClicked;
+
+		/// <summary>
+		/// Occurs before browser control navigation occurs within the HTML browser control in the
+		/// About dialog box. This event fires before browser navigation occurs. It allows
+		/// navigation to be canceled by setting <see cref="WebBrowserNavigatingEventArgs.Cancel"/>
+		/// to false.
+		/// </summary>
+		public event WebBrowserNavigatingEventHandler Navigating
+		{
+			add
+			{
+				_navigatingHandlers += value;
+				_browser.Navigating += value;
+			}
+			remove
+			{
+				_navigatingHandlers -= value;
+				_browser.Navigating -= value;
+			}
+		}
+
+		/// <summary>
+		/// Occurs when the HTML browser control in the About dialog box has navigated to a new
+		/// document and has begun loading it.
+		/// </summary>
+		public event WebBrowserNavigatedEventHandler Navigated
+		{
+			add => _browser.Navigated += value;
+			remove => _browser.Navigated -= value;
+		}
+
+		/// <summary>
+		/// Flag indicating whether external links in the HTML presented in the About dialog box
+		/// should open inside the browser control or in the default web browser. Previously, they
+		/// would always open inside the browser control unless the HTML explicitly set the target
+		/// attribute, but this is generally not desirable, especially if any of the links are to
+		/// content with Javascript, so the default behavior is now to try to open them in the
+		/// default browser as configured on the user's system.
+		/// </summary>
+		public bool AllowExternalLinksToOpenInsideAboutBox { get; set; } = false;
 
 		/// <summary>
 		/// Creates a project AboutBox. There is now a DependencyMarker (see comments for usage) that can be added to
@@ -210,8 +266,11 @@ namespace SIL.Windows.Forms.Miscellaneous
 			{
 				// Without a charset='UTF-8' meta tag attribute, things like copyright symbols don't show up correctly.
 				Debug.Assert(aboutBoxHtml.Contains(" charset"), "At a minimum, the About Box html should contain a meta charset='UTF-8' tag.");
+
 				var insertableAcknowledgements = AcknowledgementsProvider.AssembleAcknowledgements();
 				var newHtmlContents = aboutBoxHtml.Replace(DependencyMarker, insertableAcknowledgements);
+				if (!AllowExternalLinksToOpenInsideAboutBox)
+					newHtmlContents = HandleMissingLinkTargets(newHtmlContents);
 				// Create a temporary file with the DependencyMarker replaced with our collected Acknowledgements.
 				// This file will be deleted OnClosed.
 				// This means that if your project uses the DependencyMarker in your html file, you will not be able to
@@ -234,6 +293,38 @@ namespace SIL.Windows.Forms.Miscellaneous
 				_tempAboutBoxHtmlFile = new TempFile(newHtmlContents);
 				_browser.Navigate(_tempAboutBoxHtmlFile.Path);
 			}
+		}
+
+		private string HandleMissingLinkTargets(string html)
+		{
+			if (_navigatingHandlers != null)
+				return html;
+			
+			var regexHtmlHasExtLinks =
+				new Regex(@"<a\s+[^>]*href\s*=\s*['""](?!#)[^'""]+['""][^>]*>", IgnoreCase);
+			if (!regexHtmlHasExtLinks.IsMatch(html))
+				return html;
+			
+			var regexHasTargetBlank = new Regex(@"\btarget\s*=\s*['""]?_blank['""]?", IgnoreCase);
+			if (regexHasTargetBlank.IsMatch(html))
+				return html;
+
+			Debug.Fail(
+				@"About box HTML has links but has neither a base target in the head element (`<base target=""_blank""> element`) nor explicit `target=""_blank""` attributes for any of the links. Additionally, you have not handled the Navigating event to customize the navigation behavior in your application.
+This means links may open directly in the About browser window and will probably not behave as expected.
+Easy fix: consider adding <base target=""_blank"" rel=""noopener noreferrer""> inside your HTML head.
+If you need to suppress this debug-only warning and allow all external links to open inside the About box, use " +
+				nameof(AllowExternalLinksToOpenInsideAboutBox) + @".
+If you do nothing, then a reasonable effort will be made to tweak the HTML to force external links to target the default browser");
+
+			if (html.Contains("<head>"))
+				return html.Replace("<head>", "<head><base target=\"_blank\" rel=\"noopener noreferrer\">");
+			if (html.Contains("<head/>"))
+				return html.Replace("<head/>", "<head><base target=\"_blank\" rel=\"noopener noreferrer\"></head>");
+			if (!html.Contains("<head") && html.Contains("<body"))
+				return html.Replace("<body", "<head><base target=\"_blank\" rel=\"noopener noreferrer\"></head><body");
+
+			return html;
 		}
 
 		protected override void OnClosed(EventArgs e)

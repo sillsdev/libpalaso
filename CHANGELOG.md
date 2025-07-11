@@ -17,12 +17,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
-    - [SIL.Windows.Forms] Added PortableClipboard.CanGetImage()
-    - [ClipboardTestApp] Restored this test program and added tests for PortableClipboard.CanGetImage() and GetImageFromClipboard()
 
+- [SIL.Windows.Forms] Added PortableClipboard.CanGetImage()
+- [ClipboardTestApp] Restored this test program and added tests for PortableClipboard.CanGetImage() and GetImageFromClipboard()
+- [SIL.Windows.Forms] Check in debug mode to alert developer when using the SILAboutBox to display HTML that has links but has neither a base target in the head element (`<base target=""_blank""> element`) nor explicit `target=""_blank""` attributes for any of the links when they have not handled the Navigating event to customize the navigation behavior. In this situation links will likely open directly in the About browser window and will probably not behave as expected.
+- [SIL.Windows.Forms] Added SILAboutBox.Navigating and SILAboutBox.Navigated events to allow callers to customize how HTML links in the embedded browser are handled.
+- [SIL.Windows.Forms] Added SILAboutBox.AllowExternalLinksToOpenInsideAboutBox property to control whether a <base target="_blank" rel="noopener noreferrer"> line is automatically added to the HTML (if missing) to ensure links open in the system browser rather than within the About dialog box.
+- 
 ### Fixed
 
 - [SIL.Windows.Forms] In `CustomDropDown.OnOpening`, fixed check that triggers timer to stop.
+- [SIL.Windows.Forms] Fixed HtmlBrowserHandled.OnNewWindow to open external URLs (target="_blank") in the system’s default browser instead of Internet Explorer. This improves behavior in SILAboutBox and other components that use the embedded browser.
 
 ## [16.0.0] - 2025-05-20
 
