@@ -281,28 +281,39 @@ namespace SIL.Tests.Extensions
 		[TestCase("dd/MM/yyyy")] // Thai/European-style numeric date, zero-padded (e.g. 14/05/2025)
 		[TestCase("d/M/yyyy")] // Thai/European-style numeric date (e.g. 14/5/2025)
 		[TestCase("d-M-yyyy")] // Thai/European-style numeric date with dashes (e.g. 14-5-2025)
-		[NonParallelizable]
 		public void ParsePastDateTimePermissivelyWithException_NearFutureDatesWithThaiBuddhistCalendar_ReturnsDateWithPastYear(string inputFormat)
 		{
+			// Set the calendar in an isolated thread to avoid any cross test effects
 			var futureDate = DateTime.Today.AddDays(2);
-			string input = futureDate.ToString(inputFormat);
-			int expectedYear = futureDate.Year - 543;
-			var originalCulture = Thread.CurrentThread.CurrentCulture;
-			try
+			var input = futureDate.ToString(inputFormat);
+			var expectedYear = futureDate.Year - 543;
+			Exception isolatedTestException = null;
+			DateTime? result = null;
+			var thread = new Thread(() =>
 			{
-				// Temporarily set system locale to use Buddhist date system
-				var buddhistCulture = new CultureInfo("th-TH");
-				buddhistCulture.DateTimeFormat.Calendar = new ThaiBuddhistCalendar();
-				Thread.CurrentThread.CurrentCulture = buddhistCulture;
+				try
+				{
+					// Temporarily set system locale to use Buddhist date system
+					var buddhistCulture = new CultureInfo("th-TH")
+					{
+						DateTimeFormat = {
+							Calendar = new ThaiBuddhistCalendar()
+						}
+					};
+					Thread.CurrentThread.CurrentCulture = buddhistCulture;
 
-				var result = input.ParsePastDateTimePermissivelyWithException();
-				Assert.That(result.Year, Is.EqualTo(expectedYear));
-			}
-			finally
-			{
-				// Reset system locale to the original culture
-				Thread.CurrentThread.CurrentCulture = originalCulture;
-			}
+					result = input.ParsePastDateTimePermissivelyWithException();
+				}
+				catch (Exception e)
+				{
+					isolatedTestException = e;
+				}
+			});
+			thread.Start();
+			thread.Join();
+			Assert.That(isolatedTestException, Is.Null, $"Test failed with exception: {isolatedTestException?.Message}");
+			Assert.That(result?.Year, Is.EqualTo(expectedYear), $"Should have returned a past year");
+
 		}
 
 		/// <summary>
