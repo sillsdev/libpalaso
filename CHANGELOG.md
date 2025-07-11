@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 <!-- Available types of changes:
 ### Added
-### Changed
 ### Fixed
+### Changed
 ### Deprecated
 ### Removed
 ### Security
@@ -190,6 +190,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] Made MediaInfo.FFprobeFolder look for and return the folder when first accessed, even if no prior call to the setter or other action had caused it t be found.
 - [SIL.Core] Made GetSafeDirectories not crash and simply not return any subdirectory the user does not have permission to access.
 - [SIL.Core] In GetDirectoryDistributedWithApplication, prevented a failure in accessing one of the specified subfolders from allowing it to try the others.
+- [SIL.Window.Forms] When choosing a file in the ImageToolbox.AcquireImageControl, a FileOk handler is simulated that verifies the selected file passes the given filter. Users can defeat the filter mechanism by pasting or typing the file name. While the returned filename does not pass the filter, the dialog is reopened until the user either chooses a proper filename or cancels the dialog. The native FileOk handler can prevent the dialog from closing: we can't achieve that. (See BL-13552.)
 
 ### Removed
 
@@ -203,10 +204,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Removed protected fields (made private) from ArchivingFile: \_fullName, \_fileName, \_fileSize, \_mimeType, \_descriptions, \_accessProtocol
 - [SIL.Archiving] Removed public methods CreateMetsFile and CreateRampPackage from RampArchivingDlgViewModel (made internal).
 - [SIL.Archiving] Removed ArchivingPackage and AddSession from ArchivingDlgViewModel and RampArchivingDlgViewModel (where they threw NotImplementedExceptions)
-
-### Fixed
-
-- [SIL.Window.Forms] When choosing a file in the ImageToolbox.AcquireImageControl, a FileOk handler is simulated that verifies the selected file passes the given filter. Users can defeat the filter mechanism by pasting or typing the file name. While the returned filename does not pass the filter, the dialog is reopened until the user either chooses a proper filename or cancels the dialog. The native FileOk handler can prevent the dialog from closing: we can't achieve that. (See BL-13552.)
 
 ## [14.1.1] - 2024-05-23
 
