@@ -11,7 +11,7 @@ namespace SIL.Windows.Forms.HtmlBrowser
 	/// This class is an adapter for System.Windows.Forms.WebBrowser class. It is used by
 	/// SIL.Windows.Forms.HtmlBrowser.XWebBrowser.
 	///
-	/// Clients should NOT use this class directly. Instead they should use the XWebBrowser
+	/// Clients should NOT use this class directly. Instead, they should use the XWebBrowser
 	/// class.
 	/// </summary>
 	internal class WinFormsBrowserAdapter: IWebBrowser

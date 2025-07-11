@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using L10NSharp;
 using SIL.Extensions;
 using SIL.IO;
 using SIL.Lexicon;
@@ -17,8 +18,6 @@ using SIL.Reporting;
 using SIL.Windows.Forms.ClearShare;
 using SIL.Windows.Forms.ClearShare.WinFormsUI;
 using SIL.Windows.Forms.HtmlBrowser;
-using SIL.Windows.Forms.ImageToolbox;
-using SIL.Windows.Forms.ImageToolbox.ImageGallery;
 using SIL.Windows.Forms.Keyboarding;
 using SIL.Windows.Forms.Miscellaneous;
 using SIL.Windows.Forms.ReleaseNotes;
@@ -57,6 +56,7 @@ namespace SIL.Windows.Forms.TestApp
 			_uiLanguageMenu.InitializeWithAvailableUILocales(l => true, Program.PrimaryL10NManager,
 				_localizationIncompleteViewModel, additionalNamedLocales:new Dictionary<string, string> {
 					{ "Some untranslated language", WellKnownSubtags.UnlistedLanguage } });
+			_cboAboutHTML.SelectedIndex = 0;
 		}
 
 		private void IssueAnalyticsRequest()
@@ -145,18 +145,95 @@ namespace SIL.Windows.Forms.TestApp
 			ShowSilAboutBox(XWebBrowser.BrowserType.GeckoFx, false);
 		}
 
-		private static void ShowSilAboutBox(XWebBrowser.BrowserType browserType, bool useFullVersionNumber)
+		private void ShowSilAboutBox(XWebBrowser.BrowserType browserType, bool useFullVersionNumber)
 		{
+			const string internalLinkHtmlContent = @"
+						  <p>Testing the about box with an <a href='#internal'>internal link</a>.</p>
+						  <p>Some ipsums and maybe a lorum or two.</p>
+						  <p>Here is a place where a quick brown fox might jump.</p>
+						  <p>He could be running from a hunter.</p>
+						  <p>Or it is possible that he would be chasing the cow and calf.</p>
+						  <p>It is possible that they would be chasing the pig.</p>
+						  <p>And the pig could be chasing the dog.</p>
+						  <p>The dog may or may not be chasing the cat.</p>
+						  <p>The cat seems to be chasing the frog.</p>
+						  <p>And I think we all know how much frogs are tempted to chase flies.</p>
+						  <p>So the only surprise is the scary, loud noise that has the otherwise brave hunter on the run.</p>
+						  <p>Is the suspense killing you yet?</p>
+						  <hr />
+						  <h4 id='internal'>This is the internal section</h4>
+						  <p>You jumped here using an internal anchor link just to find out it was a lamb with a tin can on its tail.</p>
+						</body></html>";
 			XWebBrowser.DefaultBrowserType = browserType;
-			using (var tempfile = TempFile.WithExtension("html"))
+			string html;
+			var handleNavigation = false;
+			var allowExtLinksInsideAbout = false;
+			switch (_cboAboutHTML.SelectedIndex)
 			{
-				File.WriteAllText(tempfile.Path,
-					@"<html><head><meta charset='UTF-8' /></head><body>" +
-					@"<h3>Copyright 2025 <a href=""http://sil.org"">SIL Global</a></h3>" +
-					@"<p>Testing the <b>about box</b></p><ul>#DependencyAcknowledgements#</ul></body></html>");
-				var uri = new Uri(tempfile.Path);
+				default: // Links without target attribute
+					html = @"<html><head><meta charset='UTF-8' /></head>
+						<body>
+						  <h3>Copyright 2025 <a href=""http://sil.org"">SIL Global</a></h3>
+						  <p>Testing the <b>about box</b></p>
+						  <ul>#DependencyAcknowledgements#</ul>
+						</body></html>";
+					break;
+				case 1: // HTML head includes <base target = "_blank" rel = "noopener noreferrer">
+					html = @"<html><head>
+						<base target = ""_blank"" rel = ""noopener noreferrer"">
+						</head><meta charset='UTF-8' /></head>
+						<body>
+						  <h3>Copyright 2025 <a href=""http://sil.org"">SIL Global</a></h3>
+						  <p>Testing the <b>about box</b></p>
+						  <ul>#DependencyAcknowledgements#</ul>
+						</body></html>";
+					break;
+				case 2: // Individual link has target = "_blank"
+					html = @"<html>
+						<head>
+						  <meta charset='UTF-8' />
+						</head>
+						<body>
+						  <h3>Copyright 2025 <a href='http://sil.org' target='_blank'>SIL Global</a></h3>
+						  <p>This <a href='https://example.com/'>link</a> is still going to open inside About.</p>" +
+						internalLinkHtmlContent;
+					break;
+				case 3: // Navigating is handled
+					handleNavigation = true;
+					goto default;
+				case 4: // Simple HTML with no external links
+					html = @"<html><head><meta charset='UTF-8' /></head>
+						<body>
+						  <h3>Copyright 2025, SIL Global</a></h3>" +
+					       internalLinkHtmlContent;
+					break;
+				case 5: // Allow external links to open in About dialog
+					allowExtLinksInsideAbout = true;
+					goto default;
+			}
+			using (var tempFile = TempFile.WithExtension("html"))
+			{
+				File.WriteAllText(tempFile.Path, html);
+					
+				var uri = new Uri(tempFile.Path);
 				using (var dlg = new SILAboutBox(uri.AbsoluteUri, useFullVersionNumber))
 				{
+					bool firstNav = true;
+					if (handleNavigation)
+						dlg.Navigating += (sender, args) =>
+						{
+							if (firstNav)
+							{
+								firstNav = false;
+								return;
+							}
+							args.Cancel = DialogResult.Cancel == MessageBox.Show(
+								string.Format(LocalizationManager.GetString("About.ExternalNavigationConfirmationMsg",
+								"Request to navigate to {0} with target frame {1}"), args.Url, args.TargetFrameName),
+								LocalizationManager.GetString("About.ExternalNavigationConfirmationTitle",
+									"External navigation request"), MessageBoxButtons.OKCancel);
+						};
+					dlg.AllowExternalLinksToOpenInsideAboutBox = allowExtLinksInsideAbout;
 					dlg.ShowDialog();
 				}
 			}

@@ -61,8 +61,16 @@ namespace SIL.Windows.Forms.TestApp
 			SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper superToolTipInfoWrapper2 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper();
 			SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo superToolTipInfo2 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TestAppForm));
+			this._cboAboutHTML = new System.Windows.Forms.ComboBox();
+			this.btnRefRange = new System.Windows.Forms.Button();
+			this._btnShowFadingMessage = new System.Windows.Forms.Button();
+			this.btnOpenProject = new System.Windows.Forms.Button();
+			this.btnShowFileOverwriteDlg = new System.Windows.Forms.Button();
+			this.btnMediaFileInfo = new System.Windows.Forms.Button();
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
 			this._uiLanguageMenu = new System.Windows.Forms.ToolStripDropDownButton();
+			this.label1 = new System.Windows.Forms.Label();
+			this.label2 = new System.Windows.Forms.Label();
 			this.btnThrowException = new System.Windows.Forms.Button();
 			this.btnShowFormWithModalChild = new System.Windows.Forms.Button();
 			this.btnTestContributorsList = new System.Windows.Forms.Button();
@@ -70,8 +78,6 @@ namespace SIL.Windows.Forms.TestApp
 			this.btnFlexibleMessageBox = new System.Windows.Forms.Button();
 			this.btnSettingProtectionDialog = new System.Windows.Forms.Button();
 			this._silAboutBoxGecko = new System.Windows.Forms.Button();
-			this.label1 = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
 			this.btnSelectFile = new System.Windows.Forms.Button();
 			this.btnMetaDataEditor = new System.Windows.Forms.Button();
 			this.btnShowReleaseNotes = new System.Windows.Forms.Button();
@@ -82,18 +88,84 @@ namespace SIL.Windows.Forms.TestApp
 			this.btnFolderBrowserControl = new System.Windows.Forms.Button();
 			this.superToolTip1 = new SIL.Windows.Forms.SuperToolTip.SuperToolTip(this.components);
 			this.superToolTip2 = new SIL.Windows.Forms.SuperToolTip.SuperToolTip(this.components);
-			this.btnMediaFileInfo = new System.Windows.Forms.Button();
-			this.btnShowFileOverwriteDlg = new System.Windows.Forms.Button();
-			this.btnOpenProject = new System.Windows.Forms.Button();
-			this._btnShowFadingMessage = new System.Windows.Forms.Button();
-			this.btnRefRange = new System.Windows.Forms.Button();
 			this.toolStrip1.SuspendLayout();
 			this.SuspendLayout();
+			// 
+			// _cboAboutHTML
+			// 
+			this._cboAboutHTML.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this._cboAboutHTML.DropDownWidth = 250;
+			this._cboAboutHTML.FormattingEnabled = true;
+			this._cboAboutHTML.Items.AddRange(new object[] {
+			"Links without target attribute",
+			"HTML head includes <base target=\"_blank\" rel=\"noopener noreferrer\">",
+			"Individual link has target=\"_blank\"",
+			"Navigating is handled",
+			"Simple HTML with no external links",
+			"Allow external links to open in About dialog"});
+			this._cboAboutHTML.Location = new System.Drawing.Point(101, 150);
+			this._cboAboutHTML.Name = "_cboAboutHTML";
+			this._cboAboutHTML.Size = new System.Drawing.Size(68, 21);
+			this._cboAboutHTML.TabIndex = 16;
+			// 
+			// btnRefRange
+			// 
+			this.btnRefRange.Location = new System.Drawing.Point(12, 550);
+			this.btnRefRange.Margin = new System.Windows.Forms.Padding(2);
+			this.btnRefRange.Name = "btnRefRange";
+			this.btnRefRange.Size = new System.Drawing.Size(157, 23);
+			this.btnRefRange.TabIndex = 15;
+			this.btnRefRange.Text = "Set Reference Range";
+			this.btnRefRange.UseVisualStyleBackColor = true;
+			this.btnRefRange.Click += new System.EventHandler(this.btnRefRange_Click);
+			// 
+			// _btnShowFadingMessage
+			// 
+			this._btnShowFadingMessage.Location = new System.Drawing.Point(12, 121);
+			this._btnShowFadingMessage.Name = "_btnShowFadingMessage";
+			this._btnShowFadingMessage.Size = new System.Drawing.Size(157, 23);
+			this._btnShowFadingMessage.TabIndex = 14;
+			this._btnShowFadingMessage.Text = "Show Fading Message";
+			this._btnShowFadingMessage.UseVisualStyleBackColor = true;
+			this._btnShowFadingMessage.Click += new System.EventHandler(this.OnShowFadingMessageClicked);
+			// 
+			// btnOpenProject
+			// 
+			this.btnOpenProject.Location = new System.Drawing.Point(12, 523);
+			this.btnOpenProject.Margin = new System.Windows.Forms.Padding(2);
+			this.btnOpenProject.Name = "btnOpenProject";
+			this.btnOpenProject.Size = new System.Drawing.Size(157, 23);
+			this.btnOpenProject.TabIndex = 12;
+			this.btnOpenProject.Text = "Open Project";
+			this.btnOpenProject.UseVisualStyleBackColor = true;
+			this.btnOpenProject.Click += new System.EventHandler(this.btnOpenProject_Click);
+			// 
+			// btnShowFileOverwriteDlg
+			// 
+			this.btnShowFileOverwriteDlg.Location = new System.Drawing.Point(12, 496);
+			this.btnShowFileOverwriteDlg.Margin = new System.Windows.Forms.Padding(2);
+			this.btnShowFileOverwriteDlg.Name = "btnShowFileOverwriteDlg";
+			this.btnShowFileOverwriteDlg.Size = new System.Drawing.Size(157, 23);
+			this.btnShowFileOverwriteDlg.TabIndex = 11;
+			this.btnShowFileOverwriteDlg.Text = "Show File Overwrite Dialog";
+			this.btnShowFileOverwriteDlg.UseVisualStyleBackColor = true;
+			this.btnShowFileOverwriteDlg.Click += new System.EventHandler(this.btnShowFileOverwriteDlg_Click);
+			// 
+			// btnMediaFileInfo
+			// 
+			this.btnMediaFileInfo.Location = new System.Drawing.Point(12, 468);
+			this.btnMediaFileInfo.Margin = new System.Windows.Forms.Padding(2);
+			this.btnMediaFileInfo.Name = "btnMediaFileInfo";
+			this.btnMediaFileInfo.Size = new System.Drawing.Size(157, 23);
+			this.btnMediaFileInfo.TabIndex = 10;
+			this.btnMediaFileInfo.Text = "Get Media File Info";
+			this.btnMediaFileInfo.UseVisualStyleBackColor = true;
+			this.btnMediaFileInfo.Click += new System.EventHandler(this.btnMediaFileInfo_Click);
 			// 
 			// toolStrip1
 			// 
 			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this._uiLanguageMenu});
+			this._uiLanguageMenu});
 			this.toolStrip1.Location = new System.Drawing.Point(0, 0);
 			this.toolStrip1.Name = "toolStrip1";
 			this.toolStrip1.Size = new System.Drawing.Size(187, 25);
@@ -108,6 +180,49 @@ namespace SIL.Windows.Forms.TestApp
 			this._uiLanguageMenu.Size = new System.Drawing.Size(58, 22);
 			this._uiLanguageMenu.Text = "English";
 			this._uiLanguageMenu.ToolTipText = "User-interface Language";
+			// 
+			// label1
+			// 
+			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(12, 583);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(149, 13);
+			superToolTipInfo1.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+			superToolTipInfo1.BackgroundGradientEnd = System.Drawing.Color.Blue;
+			superToolTipInfo1.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
+			superToolTipInfo1.BodyText = "This is the body text";
+			superToolTipInfo1.FooterForeColor = System.Drawing.Color.Lime;
+			superToolTipInfo1.FooterText = "And this is the footer";
+			superToolTipInfo1.HeaderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+			superToolTipInfo1.HeaderText = "The header can serve as a title";
+			superToolTipInfo1.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
+			superToolTipInfo1.ShowFooter = true;
+			superToolTipInfo1.ShowFooterSeparator = true;
+			superToolTipInfoWrapper1.SuperToolTipInfo = superToolTipInfo1;
+			superToolTipInfoWrapper1.UseSuperToolTip = true;
+			this.superToolTip1.SetSuperStuff(this.label1, superToolTipInfoWrapper1);
+			this.label1.TabIndex = 1;
+			this.label1.Text = "Hover over me to see a tooltip";
+			// 
+			// label2
+			// 
+			this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(12, 603);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(140, 13);
+			superToolTipInfo2.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+			superToolTipInfo2.BackgroundGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(202)))), ((int)(((byte)(218)))), ((int)(((byte)(239)))));
+			superToolTipInfo2.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
+			superToolTipInfo2.BodyText = resources.GetString("superToolTipInfo2.BodyText");
+			superToolTipInfo2.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
+			superToolTipInfo2.ShowHeader = false;
+			superToolTipInfoWrapper2.SuperToolTipInfo = superToolTipInfo2;
+			superToolTipInfoWrapper2.UseSuperToolTip = true;
+			this.superToolTip2.SetSuperStuff(this.label2, superToolTipInfoWrapper2);
+			this.label2.TabIndex = 1;
+			this.label2.Text = "Hover for simple, long tooltip";
 			// 
 			// btnThrowException
 			// 
@@ -180,49 +295,6 @@ namespace SIL.Windows.Forms.TestApp
 			this._silAboutBoxGecko.UseVisualStyleBackColor = true;
 			this._silAboutBoxGecko.Click += new System.EventHandler(this.OnSilAboutBoxGeckoClicked);
 			// 
-			// label1
-			// 
-			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(12, 583);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(149, 13);
-			superToolTipInfo1.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-			superToolTipInfo1.BackgroundGradientEnd = System.Drawing.Color.Blue;
-			superToolTipInfo1.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
-			superToolTipInfo1.BodyText = "This is the body text";
-			superToolTipInfo1.FooterForeColor = System.Drawing.Color.Lime;
-			superToolTipInfo1.FooterText = "And this is the footer";
-			superToolTipInfo1.HeaderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-			superToolTipInfo1.HeaderText = "The header can serve as a title";
-			superToolTipInfo1.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
-			superToolTipInfo1.ShowFooter = true;
-			superToolTipInfo1.ShowFooterSeparator = true;
-			superToolTipInfoWrapper1.SuperToolTipInfo = superToolTipInfo1;
-			superToolTipInfoWrapper1.UseSuperToolTip = true;
-			this.superToolTip1.SetSuperStuff(this.label1, superToolTipInfoWrapper1);
-			this.label1.TabIndex = 1;
-			this.label1.Text = "Hover over me to see a tooltip";
-			// 
-			// label2
-			// 
-			this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(12, 603);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(140, 13);
-			superToolTipInfo2.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-			superToolTipInfo2.BackgroundGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(202)))), ((int)(((byte)(218)))), ((int)(((byte)(239)))));
-			superToolTipInfo2.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
-			superToolTipInfo2.BodyText = resources.GetString("superToolTipInfo2.BodyText");
-			superToolTipInfo2.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
-			superToolTipInfo2.ShowHeader = false;
-			superToolTipInfoWrapper2.SuperToolTipInfo = superToolTipInfo2;
-			superToolTipInfoWrapper2.UseSuperToolTip = true;
-			this.superToolTip2.SetSuperStuff(this.label2, superToolTipInfoWrapper2);
-			this.label2.TabIndex = 1;
-			this.label2.Text = "Hover for simple, long tooltip";
-			// 
 			// btnSelectFile
 			// 
 			this.btnSelectFile.Location = new System.Drawing.Point(12, 265);
@@ -255,9 +327,10 @@ namespace SIL.Windows.Forms.TestApp
 			// 
 			// btnSilAboutBox
 			// 
+			this.btnSilAboutBox.AutoSize = true;
 			this.btnSilAboutBox.Location = new System.Drawing.Point(12, 150);
 			this.btnSilAboutBox.Name = "btnSilAboutBox";
-			this.btnSilAboutBox.Size = new System.Drawing.Size(157, 23);
+			this.btnSilAboutBox.Size = new System.Drawing.Size(83, 23);
 			this.btnSilAboutBox.TabIndex = 0;
 			this.btnSilAboutBox.Text = "SIL AboutBox";
 			this.btnSilAboutBox.UseVisualStyleBackColor = true;
@@ -308,65 +381,12 @@ namespace SIL.Windows.Forms.TestApp
 			// 
 			this.superToolTip2.FadingInterval = 10;
 			// 
-			// btnMediaFileInfo
-			// 
-			this.btnMediaFileInfo.Location = new System.Drawing.Point(12, 468);
-			this.btnMediaFileInfo.Margin = new System.Windows.Forms.Padding(2);
-			this.btnMediaFileInfo.Name = "btnMediaFileInfo";
-			this.btnMediaFileInfo.Size = new System.Drawing.Size(157, 23);
-			this.btnMediaFileInfo.TabIndex = 10;
-			this.btnMediaFileInfo.Text = "Get Media File Info";
-			this.btnMediaFileInfo.UseVisualStyleBackColor = true;
-			this.btnMediaFileInfo.Click += new System.EventHandler(this.btnMediaFileInfo_Click);
-			// 
-			// btnShowFileOverwriteDlg
-			// 
-			this.btnShowFileOverwriteDlg.Location = new System.Drawing.Point(12, 496);
-			this.btnShowFileOverwriteDlg.Margin = new System.Windows.Forms.Padding(2);
-			this.btnShowFileOverwriteDlg.Name = "btnShowFileOverwriteDlg";
-			this.btnShowFileOverwriteDlg.Size = new System.Drawing.Size(157, 23);
-			this.btnShowFileOverwriteDlg.TabIndex = 11;
-			this.btnShowFileOverwriteDlg.Text = "Show File Overwrite Dialog";
-			this.btnShowFileOverwriteDlg.UseVisualStyleBackColor = true;
-			this.btnShowFileOverwriteDlg.Click += new System.EventHandler(this.btnShowFileOverwriteDlg_Click);
-			// 
-			// btnOpenProject
-			// 
-			this.btnOpenProject.Location = new System.Drawing.Point(12, 523);
-			this.btnOpenProject.Margin = new System.Windows.Forms.Padding(2);
-			this.btnOpenProject.Name = "btnOpenProject";
-			this.btnOpenProject.Size = new System.Drawing.Size(157, 23);
-			this.btnOpenProject.TabIndex = 12;
-			this.btnOpenProject.Text = "Open Project";
-			this.btnOpenProject.UseVisualStyleBackColor = true;
-			this.btnOpenProject.Click += new System.EventHandler(this.btnOpenProject_Click);
-			// 
-			// _btnShowFadingMessage
-			// 
-			this._btnShowFadingMessage.Location = new System.Drawing.Point(12, 121);
-			this._btnShowFadingMessage.Name = "_btnShowFadingMessage";
-			this._btnShowFadingMessage.Size = new System.Drawing.Size(157, 23);
-			this._btnShowFadingMessage.TabIndex = 14;
-			this._btnShowFadingMessage.Text = "Show Fading Message";
-			this._btnShowFadingMessage.UseVisualStyleBackColor = true;
-			this._btnShowFadingMessage.Click += new System.EventHandler(this.OnShowFadingMessageClicked);
-			// 
-			// btnRefRange
-			// 
-			this.btnRefRange.Location = new System.Drawing.Point(12, 550);
-			this.btnRefRange.Margin = new System.Windows.Forms.Padding(2);
-			this.btnRefRange.Name = "btnRefRange";
-			this.btnRefRange.Size = new System.Drawing.Size(157, 23);
-			this.btnRefRange.TabIndex = 15;
-			this.btnRefRange.Text = "Set Reference Range";
-			this.btnRefRange.UseVisualStyleBackColor = true;
-			this.btnRefRange.Click += new System.EventHandler(this.btnRefRange_Click);
-			// 
 			// TestAppForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(187, 627);
+			this.Controls.Add(this._cboAboutHTML);
 			this.Controls.Add(this.btnRefRange);
 			this.Controls.Add(this._btnShowFadingMessage);
 			this.Controls.Add(this.btnOpenProject);
@@ -427,5 +447,6 @@ namespace SIL.Windows.Forms.TestApp
 		private System.Windows.Forms.Button btnOpenProject;
 		private System.Windows.Forms.Button _btnShowFadingMessage;
 		private System.Windows.Forms.Button btnRefRange;
+		private System.Windows.Forms.ComboBox _cboAboutHTML;
 	}
 }
