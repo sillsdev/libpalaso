@@ -147,6 +147,8 @@ namespace SIL.Windows.Forms.TestApp
 
 		private void ShowSilAboutBox(XWebBrowser.BrowserType browserType, bool useFullVersionNumber)
 		{
+			// Long enough text to push the internal link off the screen, so we can confirm that
+			// clicking the link takes us to the right place.
 			const string internalLinkHtmlContent = @"
 						  <p>Testing the about box with an <a href='#internal'>internal link</a>.</p>
 						  <p>Some ipsums and maybe a lorum or two.</p>

@@ -42,9 +42,8 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 		/// <summary>
 		/// Occurs before browser control navigation occurs within the HTML browser control in the
-		/// About dialog box. This event fires before browser navigation occurs. It allows
-		/// navigation to be canceled by setting <see cref="WebBrowserNavigatingEventArgs.Cancel"/>
-		/// to false.
+		/// About dialog box. It allows navigation to be canceled by setting
+		/// <see cref="WebBrowserNavigatingEventArgs.Cancel"/> to false.
 		/// </summary>
 		public event WebBrowserNavigatingEventHandler Navigating
 		{
