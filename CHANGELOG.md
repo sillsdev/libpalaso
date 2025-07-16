@@ -36,7 +36,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [SIL.WritingSystems] Updated embedded langtags.json
 - [SIL.WritingSystems] Updated embedded ianaSubtagRegistry.txt
-
+- [SIL.Windows.Forms] Documented previously undocumented feature: SILAboutBox constructor can accept either a filename or a file URI.
 
 ## [16.0.0] - 2025-05-20
 
@@ -598,7 +598,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   projects
 
 [Unreleased]: https://github.com/sillsdev/libpalaso/compare/v16.1.0...master
-[16.1.0]: https://github.com/sillsdev/libpalaso/compare/v16.0.0...master
+[16.1.0]: https://github.com/sillsdev/libpalaso/compare/v16.0.0...v16.1.0
 [16.0.0]: https://github.com/sillsdev/libpalaso/compare/v15.0.0...v16.0.0
 [15.0.0]: https://github.com/sillsdev/libpalaso/compare/v14.1.1...v15.0.0
 [14.1.1]: https://github.com/sillsdev/libpalaso/compare/v14.1.0...v14.1.1
