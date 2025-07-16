@@ -218,6 +218,10 @@ namespace SIL.Tests.Html
 		[TestCase("www.example.com")]
 		[TestCase("http://www.example.com")]
 		[TestCase("https://www.example.com")]
+		[TestCase("file:help.html")] // malformed - ambiguous
+		[TestCase("file://help.html")] // will probably be treated as a "download"
+		[TestCase("file:///C:/Help/home.html")] // will probably be treated as a "download"
+		[TestCase("")] // This will resolve to the current folder (=> external)
 		public void IsExternalHref_IsExternal_ReturnsTrue(string href)
 		{
 			Assert.That(HtmlUtils.IsExternalHref(href), Is.True);
@@ -226,7 +230,6 @@ namespace SIL.Tests.Html
 		[TestCase("#internal")]
 		[TestCase("mailto:someone@example.com")]
 		[TestCase("tel:8008008000")]
-		[TestCase("")]
 		[TestCase(null)]
 		public void IsExternalHref_IsNotExternal_ReturnsFalse(string href)
 		{
@@ -301,7 +304,7 @@ namespace SIL.Tests.Html
 		public void MultipleSimpleAssets_AllCopied(string prefix)
 		{
 			const string cssName = "style.css";
-			const string jsName = "script.js";
+			const string jsName = "my_src_code.js";
 			const string logoName = "hawai'i.png";
 			File.WriteAllText(Combine(_testDir, cssName), "css");
 			File.WriteAllText(Combine(_testDir, jsName), "js");

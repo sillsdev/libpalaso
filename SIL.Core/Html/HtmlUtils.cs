@@ -12,7 +12,7 @@ namespace SIL.Core
 	public static class HtmlUtils
 	{
 		private static readonly Regex regexTarget =
-			new Regex(@"target\s*=\s*(['""])(?<target>[^'""]*?)\1", IgnoreCase | Compiled);
+			new Regex(@"target\s*=\s*(['""])(?<target>.*?)\1", IgnoreCase | Compiled);
 		
 		private static readonly Regex regexHasBaseTarget =
 			new Regex(@"<base\s+[^>]*\b" + regexTarget, IgnoreCase | Compiled);
@@ -27,7 +27,7 @@ namespace SIL.Core
 			new Regex(@"<head\b[^>]*>", IgnoreCase | Compiled);
 
 		private static readonly Regex regexLocalAssetReferences =
-			new Regex(@"(?:src|href)\s*=\s*(['""])\s*(./)?(?<filename>[^/>\s\\]+?)\1",
+			new Regex(@"(?:src|href)\s*=\s*(['""])\s*(?:./)?(?<filename>[^/>\s\\]+?)\1",
 			IgnoreCase | Compiled);
 
 		/// <summary>
@@ -136,7 +136,9 @@ If you do nothing, then a reasonable effort will be made to tweak the HTML to fo
 
 			return href.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
 			        href.StartsWith("https://", StringComparison.OrdinalIgnoreCase) ||
-			        href.StartsWith("www.", StringComparison.OrdinalIgnoreCase);
+			        href.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ||
+			        href.StartsWith("file:", StringComparison.OrdinalIgnoreCase) ||
+			        href == Empty;
 		}
 
 		internal static string InjectBaseTarget(string html)
@@ -214,10 +216,12 @@ If you do nothing, then a reasonable effort will be made to tweak the HTML to fo
 					continue;
 
 				var sourceFile = originalFolder != null ? Path.Combine(originalFolder, fileName) : fileName;
-				var destFile = Path.Combine(tempFolder, fileName);
 
 				if (File.Exists(sourceFile))
+				{
+					var destFile = Path.Combine(tempFolder, fileName);
 					File.Copy(sourceFile, destFile, overwrite: true);
+				}
 			}
 
 			return tempFile;

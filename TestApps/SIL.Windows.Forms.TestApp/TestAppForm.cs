@@ -204,7 +204,9 @@ namespace SIL.Windows.Forms.TestApp
 						</head>
 						<body>
 						  <h3>Copyright 2025 <a href='http://sil.org' target='_blank'>SIL Global</a></h3>
-						  <p>This <a href='https://example.com/'>link</a> is still going to open inside About.</p>" +
+						  <p>This <a href='https://example.com/'>link</a> is still going to open inside About.</p>
+						  <p>This <a name='CurrentFolder' href=''>link</a> is blank and will take you to a folder!</p>
+						  <p>This <a href='file://notexist.md'>changelog</a> is a broken link to a local file!</p>" +
 						internalLinkHtmlContent;
 					break;
 				case 3: // Navigating is handled
