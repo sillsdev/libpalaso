@@ -12,7 +12,7 @@ namespace SIL.Core
 	public static class HtmlUtils
 	{
 		private static readonly Regex regexTarget =
-			new Regex(@"target\s*=\s*['""](?<target>[^'""]*)['""]", IgnoreCase | Compiled);
+			new Regex(@"target\s*=\s*(['""])(?<target>[^'""]*?)\1", IgnoreCase | Compiled);
 		
 		private static readonly Regex regexHasBaseTarget =
 			new Regex(@"<base\s+[^>]*\b" + regexTarget, IgnoreCase | Compiled);
@@ -21,13 +21,13 @@ namespace SIL.Core
 			new Regex(@"<a\s+(?<attrs>[^>]+)>", IgnoreCase | Compiled);
 
 		private static readonly Regex regexHref =
-			new Regex(@"href\s*=\s*['""](?<href>[^'""]+)['""]", IgnoreCase | Compiled);
+			new Regex(@"href\s*=\s*(['""])(?<href>.+?)\1", IgnoreCase | Compiled);
 
 		private static readonly Regex regexHeadTag =
 			new Regex(@"<head\b[^>]*>", IgnoreCase | Compiled);
 
 		private static readonly Regex regexLocalAssetReferences =
-			new Regex(@"(?:src|href)\s*=\s*['""]\s*(./)?(?<filename>[^/'"">\s\\]+)['""]",
+			new Regex(@"(?:src|href)\s*=\s*(['""])\s*(./)?(?<filename>[^/>\s\\]+?)\1",
 			IgnoreCase | Compiled);
 
 		/// <summary>

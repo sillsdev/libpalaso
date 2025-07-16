@@ -40,7 +40,7 @@ namespace SIL.Tests.Html
 </body>
 </html>")]
 		[TestCase(@"<html>
-<head><base target=""_blank""></head>
+<head><base target='_blank'></head>
 <body>
 	<p>Stuff.</p>
 </body>
@@ -93,7 +93,7 @@ namespace SIL.Tests.Html
 </body>
 </html>";
 			if (useDoubleQuotes)
-				html = html.Replace("'", @"""");
+				html = html.Replace("'", "\"");
 			var origBody = html.Substring(html.IndexOf("<body>", Ordinal));
 			var result = HtmlUtils.HandleMissingLinkTargets(html);
 			Assert.That(HtmlUtils.HasBaseTarget(result), Is.True);
@@ -113,7 +113,7 @@ namespace SIL.Tests.Html
 </body>
 </html>";
 			if (useDoubleQuotes)
-				html = html.Replace("'", @"""");
+				html = html.Replace("'", "\"");
 			var result = HtmlUtils.HandleMissingLinkTargets(html);
 			Assert.That(result, Is.Null, "No need to modify; explicit target already present");
 		}
@@ -133,7 +133,7 @@ namespace SIL.Tests.Html
 </body>
 </html>";
 			if (useDoubleQuotes)
-				html = html.Replace("'", @"""");
+				html = html.Replace("'", "\"");
 			var result = HtmlUtils.HandleMissingLinkTargets(html);
 			Assert.That(result, Is.Null, "No need to modify; all links are internal/special");
 		}
@@ -141,7 +141,7 @@ namespace SIL.Tests.Html
 		[Test]
 		public void HandleMissingLinkTargets_InternalAnchor_GetsTargetSelf()
 		{
-			var html = @"<html><head></head><body><a href=""#section1"">Jump</a> and 
+			var html = @"<html><head></head><body><a href=""#section'1'"">Jump</a> and 
 				<a href='http://example.com'>Go</a>!</body></html>";
 
 			var origTail = html.Substring(html.IndexOf("Jump</a> and", Ordinal));
@@ -149,8 +149,35 @@ namespace SIL.Tests.Html
 			var result = HtmlUtils.HandleMissingLinkTargets(html);
 
 			Assert.That(HtmlUtils.HasBaseTarget(result), Is.True);
-			Assert.That(result, Does.Contain(@"<a href=""#section1"" target=""_self"">Jump</a>"));
+			Assert.That(result, Does.Contain(@"<a href=""#section'1'"" target=""_self"">Jump</a>"));
 			Assert.That(result, Does.EndWith(origTail));
+		}
+
+		[Test]
+		public void HandleMissingLinkTargets_HrefContainsExternalLinkWithInternalQuote_OnlyBaseTargetAdded()
+		{
+			var html = @"<html><body>
+<a href=""https://example.com/page?title=John'sBook"">Link</a>
+</body></html>";
+
+			var origBody = html.Substring(html.IndexOf("<body>", Ordinal));
+			var result = HtmlUtils.HandleMissingLinkTargets(html);
+			Assert.That(HtmlUtils.HasBaseTarget(result), Is.True);
+			Assert.That(result.Substring(result.IndexOf("<body>", Ordinal)),
+				Is.EqualTo(origBody));
+		}
+
+		/// <summary>
+		/// Not really sure how much we care what this method does with malformed HTML.
+		/// </summary>
+		[Test]
+		public void HandleMissingLinkTargets_MalformedHref_ReturnsNull()
+		{
+			var html = @"<html><body>
+<a href=""https://example.com'>Link</a>
+</body></html>";
+
+			Assert.That(HtmlUtils.HandleMissingLinkTargets(html), Is.Null);
 		}
 
 		[Test]
@@ -216,8 +243,8 @@ namespace SIL.Tests.Html
 		}
 
 		[TestCase("")]
-		[TestCase(@"<p><a name=""gumby""/></p>")]
-		[TestCase(@"<p><a href=""https://www.example.com""/></p>")]
+		[TestCase(@"<p><a name='gumby'/></p>")]
+		[TestCase(@"<p><a href='https://www.example.com'/></p>")]
 		public void InjectBaseTarget_AlreadyHasBaseTarget_ReturnsOriginalHtml(string body)
 		{
 			var html = $"<html><head><base target='_blank'></head><body>{body}</body></html>";
@@ -275,7 +302,7 @@ namespace SIL.Tests.Html
 		{
 			const string cssName = "style.css";
 			const string jsName = "script.js";
-			const string logoName = "logo.png";
+			const string logoName = "hawai'i.png";
 			File.WriteAllText(Combine(_testDir, cssName), "css");
 			File.WriteAllText(Combine(_testDir, jsName), "js");
 			File.WriteAllText(Combine(_testDir, logoName), "png");
@@ -298,7 +325,7 @@ namespace SIL.Tests.Html
 		public void ExternalLinks_Ignored()
 		{
 			const string html = @"<html><head>
-<link rel=""stylesheet"" href=""https://example.com/style.css"">
+<link rel='stylesheet' href=""https://example.com/style.css"">
 </head><body>hello</body></html>";
 			File.WriteAllText(_htmlPath, html);
 
