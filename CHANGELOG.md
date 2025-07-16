@@ -16,13 +16,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-## [16.1.0] - 2025-07-16
+## [16.1.0] - 2025-07-17
 
 ### Added
 
 - [SIL.Windows.Forms] Added PortableClipboard.CanGetImage()
 - [ClipboardTestApp] Restored this test program and added tests for PortableClipboard.CanGetImage() and GetImageFromClipboard()
-- [SIL.Windows.Forms] Check in debug mode to alert developer when using the SILAboutBox to display HTML that has links but has neither a base target in the head element (`<base target="_blank"> element`) nor explicit `target="_blank"` attributes for any of the links when they have not handled the Navigating event to customize the navigation behavior. In this situation links will likely open directly in the About browser window and will probably not behave as expected.
 - [SIL.Windows.Forms] Added SILAboutBox.Navigating and SILAboutBox.Navigated events to allow callers to customize how HTML links in the embedded browser are handled.
 - [SIL.Windows.Forms] Added SILAboutBox.AllowExternalLinksToOpenInsideAboutBox property to control whether a `<base target="_blank" rel="noopener noreferrer">` line is automatically added to the HTML (if missing) to ensure links open in the system browser rather than within the About dialog box.
 - [SIL.Core] Added static HtmlUtils class with methods for handling HTML to be displayed in browser controls (e.g., `SILAboutBox`), including support for fixing missing target attributes on links and copying simple asset files when creating a temp HTML file to display.
@@ -36,6 +35,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [SIL.WritingSystems] Updated embedded langtags.json
 - [SIL.WritingSystems] Updated embedded ianaSubtagRegistry.txt
+- [SIL.Windows.Forms] Improved SILAboutBox to help prevent navigation issues when the supplied HTML contains links but lacks both a <base target="_blank"> element and explicit target="_blank" attributes on the links. If the Navigating event is not handled, such links would otherwise open within the About box itself, often resulting in unexpected behavior. A sensible fallback is now applied automatically to the HTML, and in debug mode, a developer warning is shown.
 - [SIL.Windows.Forms] Documented previously undocumented feature: SILAboutBox constructor can accept either a filename or a file URI.
 
 ## [16.0.0] - 2025-05-20

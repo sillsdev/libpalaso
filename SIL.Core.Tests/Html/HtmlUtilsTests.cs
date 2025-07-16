@@ -59,6 +59,10 @@ namespace SIL.Tests.Html
 		[TestCase(htmlWithNoHead)]
 		[TestCase(htmlWithSelfClosingEmptyHead)]
 		[TestCase(htmlWithNonEmptyHeadButNoTarget)]
+		[TestCase(@"<html>
+<head><base href='http://example.com/'></head>
+<body><p>Stuff.</p></body>
+</html>")]
 		public void HasBaseTarget_No_ReturnsFalse(string html)
 		{
 			Assert.That(HtmlUtils.HasBaseTarget(html), Is.False);
@@ -141,8 +145,9 @@ namespace SIL.Tests.Html
 		[Test]
 		public void HandleMissingLinkTargets_InternalAnchor_GetsTargetSelf()
 		{
-			var html = @"<html><head></head><body><a href=""#section'1'"">Jump</a> and 
-				<a href='http://example.com'>Go</a>!</body></html>";
+			var html = @"<html><head></head><body>
+					<a href=""#section'1'"">Jump</a> and <a href='http://example.com'>Go</a>!
+				</body></html>";
 
 			var origTail = html.Substring(html.IndexOf("Jump</a> and", Ordinal));
 
