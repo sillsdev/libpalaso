@@ -6,14 +6,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 using L10NSharp;
 using SIL.Acknowledgements;
+using SIL.Core;
 using SIL.IO;
 using SIL.Windows.Forms.Widgets;
-using static System.Text.RegularExpressions.RegexOptions;
 
 namespace SIL.Windows.Forms.Miscellaneous
 {
@@ -257,19 +256,34 @@ namespace SIL.Windows.Forms.Miscellaneous
 			// through, regardless.
 			var filePath = AcknowledgementsProvider.GetFullNonUriFileName(_pathToAboutBoxHtml);
 			var aboutBoxHtml = File.ReadAllText(filePath);
-			if (!aboutBoxHtml.Contains(DependencyMarker))
+			// Without a charset='UTF-8' meta tag attribute, things like copyright symbols don't show up correctly.
+			Debug.Assert(aboutBoxHtml.Contains(" charset"), "At a minimum, the About Box html should contain a meta charset='UTF-8' tag.");
+
+			string newHtmlContents = null;
+			
+			if (aboutBoxHtml.Contains(DependencyMarker))
 			{
-				_browser.Navigate(_pathToAboutBoxHtml);
+				var insertableAcknowledgements = AcknowledgementsProvider.AssembleAcknowledgements();
+				newHtmlContents = aboutBoxHtml.Replace(DependencyMarker, insertableAcknowledgements);
 			}
+
+			if (!AllowExternalLinksToOpenInsideAboutBox || _navigatingHandlers != null)
+			{
+				var fixedContents = HtmlUtils.HandleMissingLinkTargets(newHtmlContents ?? aboutBoxHtml,
+					"About box", Environment.NewLine + "If you need to suppress this debug - only " +
+					"warning and allow all external links to open inside the About box, use " +
+					nameof(AllowExternalLinksToOpenInsideAboutBox) + ".  Alternatively, you could " +
+					"handle the Navigating event to customize the navigation behavior in your application.");
+				if (fixedContents != null)
+					newHtmlContents = fixedContents;
+			}
+
+			if (newHtmlContents == null) // No changes made to original HTML
+				_browser.Navigate(_pathToAboutBoxHtml);
 			else
 			{
-				// Without a charset='UTF-8' meta tag attribute, things like copyright symbols don't show up correctly.
-				Debug.Assert(aboutBoxHtml.Contains(" charset"), "At a minimum, the About Box html should contain a meta charset='UTF-8' tag.");
-
-				var insertableAcknowledgements = AcknowledgementsProvider.AssembleAcknowledgements();
-				var newHtmlContents = aboutBoxHtml.Replace(DependencyMarker, insertableAcknowledgements);
-				if (!AllowExternalLinksToOpenInsideAboutBox)
-					newHtmlContents = HandleMissingLinkTargets(newHtmlContents);
+				// Note: the following comment also applies to the case where HandleMissingLinkTargets tweaks
+				// the HTML, but hopefully that will be rare in production code.
 				// Create a temporary file with the DependencyMarker replaced with our collected Acknowledgements.
 				// This file will be deleted OnClosed.
 				// This means that if your project uses the DependencyMarker in your html file, you will not be able to
@@ -292,38 +306,6 @@ namespace SIL.Windows.Forms.Miscellaneous
 				_tempAboutBoxHtmlFile = new TempFile(newHtmlContents);
 				_browser.Navigate(_tempAboutBoxHtmlFile.Path);
 			}
-		}
-
-		private string HandleMissingLinkTargets(string html)
-		{
-			if (_navigatingHandlers != null)
-				return html;
-			
-			var regexHtmlHasExtLinks =
-				new Regex(@"<a\s+[^>]*href\s*=\s*['""](?!#)[^'""]+['""][^>]*>", IgnoreCase);
-			if (!regexHtmlHasExtLinks.IsMatch(html))
-				return html;
-			
-			var regexHasTargetBlank = new Regex(@"\btarget\s*=\s*['""]?_blank['""]?", IgnoreCase);
-			if (regexHasTargetBlank.IsMatch(html))
-				return html;
-
-			Debug.Fail(
-				@"About box HTML has links but has neither a base target in the head element (`<base target=""_blank""> element`) nor explicit `target=""_blank""` attributes for any of the links. Additionally, you have not handled the Navigating event to customize the navigation behavior in your application.
-This means links may open directly in the About browser window and will probably not behave as expected.
-Easy fix: consider adding <base target=""_blank"" rel=""noopener noreferrer""> inside your HTML head.
-If you need to suppress this debug-only warning and allow all external links to open inside the About box, use " +
-				nameof(AllowExternalLinksToOpenInsideAboutBox) + @".
-If you do nothing, then a reasonable effort will be made to tweak the HTML to force external links to target the default browser");
-
-			if (html.Contains("<head>"))
-				return html.Replace("<head>", "<head><base target=\"_blank\" rel=\"noopener noreferrer\">");
-			if (html.Contains("<head/>"))
-				return html.Replace("<head/>", "<head><base target=\"_blank\" rel=\"noopener noreferrer\"></head>");
-			if (!html.Contains("<head") && html.Contains("<body"))
-				return html.Replace("<body", "<head><base target=\"_blank\" rel=\"noopener noreferrer\"></head><body");
-
-			return html;
 		}
 
 		protected override void OnClosed(EventArgs e)

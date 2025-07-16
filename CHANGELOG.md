@@ -16,18 +16,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [16.1.0] - 2025-07-16
+
 ### Added
 
 - [SIL.Windows.Forms] Added PortableClipboard.CanGetImage()
 - [ClipboardTestApp] Restored this test program and added tests for PortableClipboard.CanGetImage() and GetImageFromClipboard()
-- [SIL.Windows.Forms] Check in debug mode to alert developer when using the SILAboutBox to display HTML that has links but has neither a base target in the head element (`<base target=""_blank""> element`) nor explicit `target=""_blank""` attributes for any of the links when they have not handled the Navigating event to customize the navigation behavior. In this situation links will likely open directly in the About browser window and will probably not behave as expected.
+- [SIL.Windows.Forms] Check in debug mode to alert developer when using the SILAboutBox to display HTML that has links but has neither a base target in the head element (`<base target="_blank"> element`) nor explicit `target="_blank"` attributes for any of the links when they have not handled the Navigating event to customize the navigation behavior. In this situation links will likely open directly in the About browser window and will probably not behave as expected.
 - [SIL.Windows.Forms] Added SILAboutBox.Navigating and SILAboutBox.Navigated events to allow callers to customize how HTML links in the embedded browser are handled.
-- [SIL.Windows.Forms] Added SILAboutBox.AllowExternalLinksToOpenInsideAboutBox property to control whether a <base target="_blank" rel="noopener noreferrer"> line is automatically added to the HTML (if missing) to ensure links open in the system browser rather than within the About dialog box.
-- 
+- [SIL.Windows.Forms] Added SILAboutBox.AllowExternalLinksToOpenInsideAboutBox property to control whether a `<base target="_blank" rel="noopener noreferrer">` line is automatically added to the HTML (if missing) to ensure links open in the system browser rather than within the About dialog box.
+- [SIL.Core] Added static HtmlUtils class with methods for handling HTML to be displayed in browser controls (e.g., `SILAboutBox`), including support for fixing missing target attributes on links and copying simple asset files when creating a temp HTML file to display.
+
 ### Fixed
 
 - [SIL.Windows.Forms] In `CustomDropDown.OnOpening`, fixed check that triggers timer to stop.
-- [SIL.Windows.Forms] Fixed HtmlBrowserHandled.OnNewWindow to open external URLs (target="_blank") in the system’s default browser instead of Internet Explorer. This improves behavior in SILAboutBox and other components that use the embedded browser.
+- [SIL.Windows.Forms] Fixed HtmlBrowserHandled.OnNewWindow to open external URLs (`target="_blank"`) in the system’s default browser instead of Internet Explorer. This improves behavior in SILAboutBox and other components that use the embedded browser.
 
 ### Changed
 
@@ -594,7 +597,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
   projects
 
-[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v16.0.0...master
+[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v16.1.0...master
+[16.1.0]: https://github.com/sillsdev/libpalaso/compare/v16.0.0...master
 [16.0.0]: https://github.com/sillsdev/libpalaso/compare/v15.0.0...v16.0.0
 [15.0.0]: https://github.com/sillsdev/libpalaso/compare/v14.1.1...v15.0.0
 [14.1.1]: https://github.com/sillsdev/libpalaso/compare/v14.1.0...v14.1.1

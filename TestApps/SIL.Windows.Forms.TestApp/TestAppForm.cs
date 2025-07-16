@@ -165,6 +165,7 @@ namespace SIL.Windows.Forms.TestApp
 						  <hr />
 						  <h4 id='internal'>This is the internal section</h4>
 						  <p>You jumped here using an internal anchor link just to find out it was a lamb with a tin can on its tail.</p>
+						  <p><a href='mailto:someone@example.com'>Email Tom</a></p>
 						</body></html>";
 			XWebBrowser.DefaultBrowserType = browserType;
 			string html;
