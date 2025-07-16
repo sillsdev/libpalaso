@@ -171,10 +171,16 @@ namespace SIL.Windows.Forms.TestApp
 			string html;
 			var handleNavigation = false;
 			var allowExtLinksInsideAbout = false;
+			var createCss = false;
 			switch (_cboAboutHTML.SelectedIndex)
 			{
 				default: // Links without target attribute
-					html = @"<html><head><meta charset='UTF-8' /></head>
+					createCss = true;
+					html = @"<html>
+						<head>
+							<meta charset='UTF-8' />
+							<link rel=""stylesheet"" type=""text/css"" href=""aboutBox.css"" />
+						</head>
 						<body>
 						  <h3>Copyright 2025 <a href=""http://sil.org"">SIL Global</a></h3>
 						  <p>Testing the <b>about box</b></p>
@@ -214,10 +220,33 @@ namespace SIL.Windows.Forms.TestApp
 					allowExtLinksInsideAbout = true;
 					goto default;
 			}
-			using (var tempFile = TempFile.WithExtension("html"))
+
+			using var tempFile = TempFile.WithExtension("html");
+			File.WriteAllText(tempFile.Path, html);
+
+			TempFile cssFile = null;
+			if (createCss)
 			{
-				File.WriteAllText(tempFile.Path, html);
-					
+				cssFile = TempFile.WithFilename("aboutBox.css");
+				File.WriteAllText(cssFile.Path, @"
+						body {
+							font-family: sans-serif;
+						}
+						a {
+							color: orange;
+							text-decoration: underline;
+						}
+						a:visited {
+							color: green;
+						}
+						a:hover {
+							text-decoration: none;
+						}
+					");
+			}
+
+			try
+			{
 				var uri = new Uri(tempFile.Path);
 				using (var dlg = new SILAboutBox(uri.AbsoluteUri, useFullVersionNumber))
 				{
@@ -230,15 +259,24 @@ namespace SIL.Windows.Forms.TestApp
 								firstNav = false;
 								return;
 							}
+
 							args.Cancel = DialogResult.Cancel == MessageBox.Show(
-								string.Format(LocalizationManager.GetString("About.ExternalNavigationConfirmationMsg",
-								"Request to navigate to {0} with target frame {1}"), args.Url, args.TargetFrameName),
-								LocalizationManager.GetString("About.ExternalNavigationConfirmationTitle",
+								string.Format(LocalizationManager.GetString(
+										"About.ExternalNavigationConfirmationMsg",
+										"Request to navigate to {0} with target frame {1}"),
+									args.Url,
+									args.TargetFrameName),
+								LocalizationManager.GetString(
+									"About.ExternalNavigationConfirmationTitle",
 									"External navigation request"), MessageBoxButtons.OKCancel);
 						};
 					dlg.AllowExternalLinksToOpenInsideAboutBox = allowExtLinksInsideAbout;
 					dlg.ShowDialog();
 				}
+			}
+			finally
+			{
+				cssFile?.Dispose();
 			}
 		}
 

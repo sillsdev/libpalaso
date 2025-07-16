@@ -87,7 +87,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		/// </summary>
 		/// <param name="pathToAboutBoxHtml">For example, use
 		/// <see cref="FileLocationUtilities.GetFileDistributedWithApplication(string[])"/>(
-		/// "DistFiles", "AboutBox.htm")</param>
+		/// "DistFiles", "AboutBox.htm"). This also can accept a file URI.</param>
 		/// <param name="useFullVersionNumber"><c>false</c> to display only the first three
 		/// parts of the version number, i.e. "MajorVersion.MinorVersion.Build",
 		/// <c>true</c> to display the full version number as found in Application.ProductVersion.
@@ -99,7 +99,10 @@ namespace SIL.Windows.Forms.Miscellaneous
 			SilLogoVariant logoVariant = SilLogoVariant.Random)
 		{
 			_assembly = Assembly.GetEntryAssembly(); // assembly;
-			_pathToAboutBoxHtml = pathToAboutBoxHtml;
+			_pathToAboutBoxHtml =
+				Uri.TryCreate(pathToAboutBoxHtml, UriKind.Absolute, out var uri) && uri.IsFile
+					? uri.LocalPath
+					: pathToAboutBoxHtml;
 			InitializeComponent();
 			_versionNumber.Text = useFullVersionNumber ? Application.ProductVersion :
 				GetShortVersionInfo();
@@ -282,28 +285,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 				_browser.Navigate(_pathToAboutBoxHtml);
 			else
 			{
-				// Note: the following comment also applies to the case where HandleMissingLinkTargets tweaks
-				// the HTML, but hopefully that will be rare in production code.
-				// Create a temporary file with the DependencyMarker replaced with our collected Acknowledgements.
-				// This file will be deleted OnClosed.
-				// This means that if your project uses the DependencyMarker in your html file, you will not be able to
-				// link to a file on a relative path for css styles or images.
-				// ----------
-				// Comments on possible ways around this limitation from John Thomson:
-				//		1.Document that an About Box HTML file which uses dependency injection must live in its own folder
-				// with all dependent files, and copy the whole folder to a temp folder.
-				// (could work but is a nuisance, especially for anyone who doesn't need any dependencies)
-				//		2.Document that an About Box HTML file which uses dependency injection may only use a few common kinds
-				// of relative links, search for matching links, and copy the appropriate files to a temp directory along
-				// with the temp file.
-				// (I rather like this idea. A fairly simple regular expression will search for src or rel followed by a value
-				// with no path separators...something like(src | rel) = (['"])([^/\]*)\1 (or something similar...
-				// handle white space...). That will catch all references to images, stylesheets, and scripts,
-				// and if the bit of the RegEx that matches the filename corresponds to an existing file in the same folder
-				// as the HTML we can just copy it. Unless they're doing relative paths to different folders that will do it,
-				// and I think it's reasonable to have SOME restrictions in the interests of simplicity.
-				// ----------
-				_tempAboutBoxHtmlFile = new TempFile(newHtmlContents);
+				_tempAboutBoxHtmlFile = HtmlUtils.CreatePatchedTempHtmlFile(newHtmlContents, _pathToAboutBoxHtml);
 				_browser.Navigate(_tempAboutBoxHtmlFile.Path);
 			}
 		}

@@ -36,7 +36,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [SIL.WritingSystems] Updated embedded langtags.json
 - [SIL.WritingSystems] Updated embedded ianaSubtagRegistry.txt
-
+- [SIL.Windows.Forms] Documented previously undocumented feature: SILAboutBox constructor can accept either a filename or a file URI.
 
 ## [16.0.0] - 2025-05-20
 
