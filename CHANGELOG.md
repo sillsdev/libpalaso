@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [SIL.WritingSystems] Updated embedded langtags.json
 - [SIL.WritingSystems] Updated embedded ianaSubtagRegistry.txt
-- [SIL.Windows.Forms] Improved SILAboutBox to help prevent navigation issues when the supplied HTML contains links but lacks both a <base target="_blank"> element and explicit target="_blank" attributes on the links. If the Navigating event is not handled, such links would otherwise open within the About box itself, often resulting in unexpected behavior. A sensible fallback is now applied automatically to the HTML, and in debug mode, a developer warning is shown.
+- [SIL.Windows.Forms] Improved SILAboutBox to help prevent navigation issues when the supplied HTML contains links but lacks both a `<base target="_blank">` element and explicit `target="_blank"` attributes on the links. If the Navigating event is not handled, such links would otherwise open within the About box itself, often resulting in unexpected behavior. A sensible fallback is now applied automatically to the HTML, and in debug mode, a developer warning is shown.
 - [SIL.Windows.Forms] Documented previously undocumented feature: SILAboutBox constructor can accept either a filename or a file URI.
 
 ## [16.0.0] - 2025-05-20

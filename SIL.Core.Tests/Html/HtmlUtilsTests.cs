@@ -223,10 +223,21 @@ namespace SIL.Tests.Html
 		[TestCase("www.example.com")]
 		[TestCase("http://www.example.com")]
 		[TestCase("https://www.example.com")]
-		[TestCase("file:help.html")] // malformed - ambiguous
 		[TestCase("file://help.html")] // will probably be treated as a "download"
 		[TestCase("file:///C:/Help/home.html")] // will probably be treated as a "download"
 		[TestCase("")] // This will resolve to the current folder (=> external)
+		[TestCase("ftp://example.txt")]
+		[TestCase("ftps://example.txt")]
+		[TestCase("ssh://example.txt")]
+		// The following are potentially ambiguous (Is this a bare domain or a file?),
+		// but presumably the developer will have intended them as external links
+		// (regardless of what the browser control actually does with them).
+		[TestCase("example.com")] 
+		[TestCase("example.org")] 
+		[TestCase("example.net")]
+		// A couple malformed cases that are really ambiguous, but best to treat as external
+		[TestCase("https:")]
+		[TestCase("file:help.html")]
 		public void IsExternalHref_IsExternal_ReturnsTrue(string href)
 		{
 			Assert.That(HtmlUtils.IsExternalHref(href), Is.True);
@@ -236,6 +247,12 @@ namespace SIL.Tests.Html
 		[TestCase("mailto:someone@example.com")]
 		[TestCase("tel:8008008000")]
 		[TestCase(null)]
+		[TestCase("/help/index.htm")]
+		// The following are potentially ambiguous (Is this a bare domain or a file?),
+		// but presumably the developer will have intended them as internal links
+		// (regardless of what the browser control actually does with them).
+		[TestCase("help.htm")] 
+		[TestCase("help.html")]
 		public void IsExternalHref_IsNotExternal_ReturnsFalse(string href)
 		{
 			Assert.That(HtmlUtils.IsExternalHref(href), Is.False);
@@ -251,8 +268,8 @@ namespace SIL.Tests.Html
 		}
 
 		[TestCase("")]
-		[TestCase(@"<p><a name='gumby'/></p>")]
-		[TestCase(@"<p><a href='https://www.example.com'/></p>")]
+		[TestCase("<p><a name='gumby'/></p>")]
+		[TestCase("<p><a href='https://www.example.com'/></p>")]
 		public void InjectBaseTarget_AlreadyHasBaseTarget_ReturnsOriginalHtml(string body)
 		{
 			var html = $"<html><head><base target='_blank'></head><body>{body}</body></html>";
@@ -285,11 +302,11 @@ namespace SIL.Tests.Html
 		[TestCase("")]
 		[TestCase("./")]
 		[TestCase(" ")]
+		[TestCase(" ./")]
 		public void SimpleCssLink_AssetCopied(string prefix)
 		{
 			const string cssName = "style.css";
-			var cssPath = Combine(_testDir, cssName);
-			File.WriteAllText(cssPath, "body { background: black; }");
+			File.WriteAllText(Combine(_testDir, cssName), "body { background: black; }");
 
 			var html = $@"<html><head>
 <link rel=""stylesheet"" href=""{prefix}{cssName}""></head><body>hello</body></html>";

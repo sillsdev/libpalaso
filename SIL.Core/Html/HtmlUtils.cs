@@ -11,23 +11,26 @@ namespace SIL.Core
 {
 	public static class HtmlUtils
 	{
-		private static readonly Regex regexTarget =
+		public static readonly Regex RegexTarget =
 			new Regex(@"target\s*=\s*(['""])(?<target>.*?)\1", IgnoreCase | Compiled);
-		
-		private static readonly Regex regexHasBaseTarget =
-			new Regex(@"<base\s+[^>]*\b" + regexTarget, IgnoreCase | Compiled);
 
-		private static readonly Regex regexLinkTags =
+		public static readonly Regex RegexHasBaseTarget =
+			new Regex(@"<base\s+[^>]*\b" + RegexTarget, IgnoreCase | Compiled);
+
+		public static readonly Regex RegexLinkTags =
 			new Regex(@"<a\s+(?<attrs>[^>]+)>", IgnoreCase | Compiled);
 
-		private static readonly Regex regexHref =
+		public static readonly Regex RegexHref =
 			new Regex(@"href\s*=\s*(['""])(?<href>.+?)\1", IgnoreCase | Compiled);
 
-		private static readonly Regex regexHeadTag =
+		public static readonly Regex RegexHeadTag =
 			new Regex(@"<head\b[^>]*>", IgnoreCase | Compiled);
 
-		private static readonly Regex regexLocalAssetReferences =
+		public static readonly Regex RegexLocalAssetReferences =
 			new Regex(@"(?:src|href)\s*=\s*(['""])\s*(?:./)?(?<filename>[^/>\s\\]+?)\1",
+			IgnoreCase | Compiled);
+
+		public static readonly Regex RegexUriSchemeLike = new Regex(@"^[a-zA-Z][a-zA-Z0-9+\-.]*:",
 			IgnoreCase | Compiled);
 
 		/// <summary>
@@ -35,7 +38,7 @@ namespace SIL.Core
 		/// </summary>
 		public static bool HasBaseTarget(string html)
 		{
-			return regexHasBaseTarget.IsMatch(html);
+			return RegexHasBaseTarget.IsMatch(html);
 		}
 
 		/// <summary>
@@ -52,7 +55,9 @@ namespace SIL.Core
 		/// displayed.</param>
 		/// <param name="additionalDebugInfo">Any additional information to be appended to the
 		/// debug message for the developer.</param>
-		/// <returns></returns>
+		/// <returns>
+		/// Updated HTML with proposed fixes, or <c>null></c> if no changes were made.
+		/// </returns>
 		public static string HandleMissingLinkTargets(string html, string contextDescription = null,
 			string additionalDebugInfo = null)
 		{
@@ -64,15 +69,15 @@ namespace SIL.Core
 			StringBuilder sb = null;
 			int lastIndex = 0;
 
-			foreach (Match match in regexLinkTags.Matches(html))
+			foreach (Match match in RegexLinkTags.Matches(html))
 			{
 				var attrGroup = match.Groups["attrs"];
 				
-				var hrefMatch = regexHref.Match(attrGroup.Value);
+				var hrefMatch = RegexHref.Match(attrGroup.Value);
 				if (!hrefMatch.Success)
 					continue; // Not really a link. Irrelevant.
 				string href = hrefMatch.Groups["href"].Value;
-				var hasTarget = regexTarget.IsMatch(attrGroup.Value);
+				var hasTarget = RegexTarget.IsMatch(attrGroup.Value);
 
 				if (IsExternalHref(href))
 				{
@@ -108,9 +113,9 @@ namespace SIL.Core
 			if (contextDescription != null)
 			{
 				Debug.Fail(Format(
-					@"{0} HTML has links but has neither a base target in the head element (`<base target=""_blank""> element`) nor explicit `target=""_blank""` attributes for any of the links.
+					@"{0} HTML has links but has neither a base target in the head element nor explicit target attributes for any of the links.
 Unless you override the default Navigating behavior, links may open directly in the {0} browser window and will probably not behave as expected.
-Easy fix: consider adding <base target=""_blank"" rel=""noopener noreferrer""> inside your HTML head if your HTML does not use internal or mailto links.
+Easy fix: consider adding `<base target=""_blank"" rel=""noopener noreferrer"">` inside your HTML head if your HTML does not use internal or mailto links.
 If you do nothing, then a reasonable effort will be made to tweak the HTML to force external links to target the default browser.", contextDescription) +
 					additionalDebugInfo);
 			}
@@ -134,37 +139,45 @@ If you do nothing, then a reasonable effort will be made to tweak the HTML to fo
 
 			href = href.TrimStart();
 
-			return href.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
-			        href.StartsWith("https://", StringComparison.OrdinalIgnoreCase) ||
-			        href.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ||
-			        href.StartsWith("file:", StringComparison.OrdinalIgnoreCase) ||
-			        href == Empty;
+			if (href.StartsWith("mailto:") ||
+			    href.StartsWith("tel:"))
+				return false;
+
+			// An empty string gets turned into a link to the current base folder. The browser
+			// control will happily open that in the current window, displaying a
+			// Windows-Explorer-like view, but then the user has no way to get back, so that's
+			// probably not what we want.
+			return href.Length == 0 || 
+					RegexUriSchemeLike.IsMatch(href) ||
+			        href.StartsWith("www.") ||
+					// Obviously, not an exhaustive list, but these are the most common and are
+					// probably never going to be used as file extensions that would be likely to
+					// be used in an HTML link.
+					href.EndsWith(".com") ||
+			        href.EndsWith(".org") ||
+			        href.EndsWith(".net");
 		}
 
 		internal static string InjectBaseTarget(string html)
 		{
 			// In production use, we've already verified that it doesn't but for the sake of
 			// unit tests, we check again. It's just too weird to have it inject another.
-			if (regexHasBaseTarget.IsMatch(html))
+			if (RegexHasBaseTarget.IsMatch(html))
 				return html;
 
-			if (regexHeadTag.IsMatch(html))
+			var match = RegexHeadTag.Match(html);
+			if (match.Success)
 			{
-				// Insert <base> just after the <head> opening tag
-				return regexHeadTag.Replace(
-					html,
-					match => match.Value + "<base target=\"_blank\" rel=\"noopener noreferrer\">",
-					count: 1);
+				return html.Insert(match.Index + match.Length,
+					"<base target=\"_blank\" rel=\"noopener noreferrer\">");
 			}
 
 			// Fallback: inject entire head element before <body>
-			if (html.Contains("<body"))
+			var iInsertionPoint = html.IndexOf("<body", StringComparison.OrdinalIgnoreCase);
+			if (iInsertionPoint >= 0)
 			{
-				return Regex.Replace(
-					html,
-					"<body",
-					"<head><base target=\"_blank\" rel=\"noopener noreferrer\"></head><body",
-					IgnoreCase);
+				return html.Insert(iInsertionPoint,
+					"<head><base target=\"_blank\" rel=\"noopener noreferrer\"></head>");
 			}
 
 			// No <head> or <body> found — we probably shouldn't be modifying this
@@ -208,7 +221,7 @@ If you do nothing, then a reasonable effort will be made to tweak the HTML to fo
 				"should have created the temp file in a temp directory.");
 
 
-			foreach (Match match in regexLocalAssetReferences.Matches(modifiedHtml))
+			foreach (Match match in RegexLocalAssetReferences.Matches(modifiedHtml))
 			{
 				var fileName = match.Groups["filename"].Value;
 
