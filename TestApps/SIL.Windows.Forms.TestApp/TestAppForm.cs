@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using L10NSharp;
 using SIL.Extensions;
 using SIL.IO;
 using SIL.Lexicon;
@@ -17,8 +18,6 @@ using SIL.Reporting;
 using SIL.Windows.Forms.ClearShare;
 using SIL.Windows.Forms.ClearShare.WinFormsUI;
 using SIL.Windows.Forms.HtmlBrowser;
-using SIL.Windows.Forms.ImageToolbox;
-using SIL.Windows.Forms.ImageToolbox.ImageGallery;
 using SIL.Windows.Forms.Keyboarding;
 using SIL.Windows.Forms.Miscellaneous;
 using SIL.Windows.Forms.ReleaseNotes;
@@ -29,6 +28,7 @@ using SIL.Media;
 using SIL.Windows.Forms.Extensions;
 using SIL.Windows.Forms.FileSystem;
 using SIL.Windows.Forms.LocalizationIncompleteDlg;
+using static System.Windows.Forms.MessageBoxButtons;
 
 namespace SIL.Windows.Forms.TestApp
 {
@@ -57,6 +57,7 @@ namespace SIL.Windows.Forms.TestApp
 			_uiLanguageMenu.InitializeWithAvailableUILocales(l => true, Program.PrimaryL10NManager,
 				_localizationIncompleteViewModel, additionalNamedLocales:new Dictionary<string, string> {
 					{ "Some untranslated language", WellKnownSubtags.UnlistedLanguage } });
+			_cboAboutHTML.SelectedIndex = 0;
 		}
 
 		private void IssueAnalyticsRequest()
@@ -145,20 +146,142 @@ namespace SIL.Windows.Forms.TestApp
 			ShowSilAboutBox(XWebBrowser.BrowserType.GeckoFx, false);
 		}
 
-		private static void ShowSilAboutBox(XWebBrowser.BrowserType browserType, bool useFullVersionNumber)
+		private void ShowSilAboutBox(XWebBrowser.BrowserType browserType, bool useFullVersionNumber)
 		{
+			// Long enough text to push the internal link off the screen, so we can confirm that
+			// clicking the link takes us to the right place.
+			const string internalLinkHtmlContent = @"
+						  <p>Testing the about box with an <a href='#internal'>internal link</a>.</p>
+						  <p>Some ipsums and maybe a lorum or two.</p>
+						  <p>Here is a place where a quick brown fox might jump.</p>
+						  <p>He could be running from a hunter.</p>
+						  <p>Or it is possible that he would be chasing the cow and calf.</p>
+						  <p>It is possible that they would be chasing the pig.</p>
+						  <p>And the pig could be chasing the dog.</p>
+						  <p>The dog may or may not be chasing the cat.</p>
+						  <p>The cat seems to be chasing the frog.</p>
+						  <p>And I think we all know how much frogs are tempted to chase flies.</p>
+						  <p>So the only surprise is the scary, loud noise that has the otherwise brave hunter on the run.</p>
+						  <p>Is the suspense killing you yet?</p>
+						  <hr />
+						  <h4 id='internal'>This is the internal section</h4>
+						  <p>You jumped here using an internal anchor link just to find out it was a lamb with a tin can on its tail.</p>
+						  <p><a href='mailto:someone@example.com'>Email Tom</a></p>
+						</body></html>";
 			XWebBrowser.DefaultBrowserType = browserType;
-			using (var tempfile = TempFile.WithExtension("html"))
+			string html;
+			var handleNavigation = false;
+			var allowExtLinksInsideAbout = false;
+			var createCss = false;
+			switch (_cboAboutHTML.SelectedIndex)
 			{
-				File.WriteAllText(tempfile.Path,
-					@"<html><head><meta charset='UTF-8' /></head><body>" +
-					@"<h3>Copyright 2025 <a href=""http://sil.org"">SIL Global</a></h3>" +
-					@"<p>Testing the <b>about box</b></p><ul>#DependencyAcknowledgements#</ul></body></html>");
-				var uri = new Uri(tempfile.Path);
+				default: // Links without target attribute
+					createCss = true;
+					html = @"<html>
+						<head>
+							<meta charset='UTF-8' />
+							<link rel=""stylesheet"" type=""text/css"" href=""aboutBox.css"" />
+						</head>
+						<body>
+						  <h3>Copyright 2025 <a href=""http://sil.org"">SIL Global</a></h3>
+						  <p>Testing the <b>about box</b></p>
+						  <ul>#DependencyAcknowledgements#</ul>
+						</body></html>";
+					break;
+				case 1: // HTML head includes <base target = "_blank" rel = "noopener noreferrer">
+					html = @"<html><head>
+						<base target = ""_blank"" rel = ""noopener noreferrer"">
+						</head><meta charset='UTF-8' /></head>
+						<body>
+						  <h3>Copyright 2025 <a href=""http://sil.org"">SIL Global</a></h3>
+						  <p>Testing the <b>about box</b></p>
+						  <ul>#DependencyAcknowledgements#</ul>
+						</body></html>";
+					break;
+				case 2: // Individual link has target = "_blank"
+					html = @"<html>
+						<head>
+						  <meta charset='UTF-8' />
+						</head>
+						<body>
+						  <h3>Copyright 2025 <a href='http://sil.org' target='_blank'>SIL Global</a></h3>
+						  <p>This <a href='https://example.com/'>link</a> is still going to open inside About.</p>
+						  <p>This <a name='CurrentFolder' href=''>link</a> is blank and will take you to a folder!</p>
+						  <p>This <a href='file://notexist.md'>changelog</a> is a broken link to a local file!</p>" +
+						internalLinkHtmlContent;
+					break;
+				case 3: // Navigating is handled
+					handleNavigation = true;
+					goto default;
+				case 4: // Simple HTML with no external links
+					html = @"<html><head><meta charset='UTF-8' /></head>
+						<body>
+						  <h3>Copyright 2025, SIL Global</a></h3>" +
+					       internalLinkHtmlContent;
+					break;
+				case 5: // Allow external links to open in About dialog
+					allowExtLinksInsideAbout = true;
+					goto default;
+			}
+
+			using var tempFile = TempFile.WithExtension("html");
+			File.WriteAllText(tempFile.Path, html);
+
+			TempFile cssFile = null;
+			if (createCss)
+			{
+				cssFile = TempFile.WithFilename("aboutBox.css");
+				File.WriteAllText(cssFile.Path, @"
+						body {
+							font-family: sans-serif;
+						}
+						a {
+							color: orange;
+							text-decoration: underline;
+						}
+						a:visited {
+							color: green;
+						}
+						a:hover {
+							text-decoration: none;
+						}
+					");
+			}
+
+			try
+			{
+				var uri = new Uri(tempFile.Path);
 				using (var dlg = new SILAboutBox(uri.AbsoluteUri, useFullVersionNumber))
 				{
+					bool firstNav = true;
+					if (handleNavigation)
+						dlg.Navigating += (sender, args) =>
+						{
+							if (firstNav)
+							{
+								firstNav = false;
+								return;
+							}
+
+							var msg = string.Format(LocalizationManager.GetString(
+									"About.ExternalNavigationConfirmationMsg",
+									"Request to navigate to {0} with target frame {1}",
+									"Param 0: URL; Param 1: Target frame name"),
+								args.Url,
+								args.TargetFrameName);
+							var title = LocalizationManager.GetString(
+								"About.ExternalNavigationConfirmationTitle",
+								"External navigation request");
+							var dlgResult = MessageBox.Show(msg, title, OKCancel);
+							args.Cancel = DialogResult.Cancel == dlgResult;
+						};
+					dlg.AllowExternalLinksToOpenInsideAboutBox = allowExtLinksInsideAbout;
 					dlg.ShowDialog();
 				}
+			}
+			finally
+			{
+				cssFile?.Dispose();
 			}
 		}
 
@@ -280,14 +403,14 @@ and displays it as HTML.
 					FlexibleMessageBox.Show(this, msg, caption, handler);
 					break;
 				case 2:
-					FlexibleMessageBox.Show(this, msg, caption, MessageBoxButtons.OKCancel, handler);
+					FlexibleMessageBox.Show(this, msg, caption, OKCancel, handler);
 					break;
 				case 3:
 					msg += "\nClick Retry to display another version of the message box.";
-					return FlexibleMessageBox.Show(this, msg, caption, MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Warning, handler) == DialogResult.Retry;
+					return FlexibleMessageBox.Show(this, msg, caption, AbortRetryIgnore, MessageBoxIcon.Warning, handler) == DialogResult.Retry;
 				case 4:
 					msg += "\nWould you like to display another version of the message box?";
-					return FlexibleMessageBox.Show(this, msg, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+					return FlexibleMessageBox.Show(this, msg, caption, YesNo, MessageBoxIcon.Question,
 							defaultButton, handler) == DialogResult.Yes;
 				case 5:
 					FlexibleMessageBox.Show(msg, handler);
@@ -297,14 +420,14 @@ and displays it as HTML.
 					break;
 				case 7:
 					msg += "\nClick Retry to display another version of the message box.";
-					return FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.RetryCancel, handler) == DialogResult.Retry;
+					return FlexibleMessageBox.Show(msg, caption, RetryCancel, handler) == DialogResult.Retry;
 				case 8:
 					msg += "\nThis message box is always on top!";
-					FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.OK, MessageBoxIcon.Stop, handler, FlexibleMessageBoxOptions.AlwaysOnTop);
+					FlexibleMessageBox.Show(msg, caption, OK, MessageBoxIcon.Stop, handler, FlexibleMessageBoxOptions.AlwaysOnTop);
 					break;
 				default:
 					msg += "\nWould you like to display another version of the message box?";
-					return FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question,
+					return FlexibleMessageBox.Show(msg, caption, YesNoCancel, MessageBoxIcon.Question,
 						defaultButton, handler) == DialogResult.Yes;
 			}
 			return false;

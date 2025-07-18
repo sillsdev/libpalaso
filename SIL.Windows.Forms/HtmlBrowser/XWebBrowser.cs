@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using SIL.PlatformUtilities;
 using SIL.Reporting;
+using static System.String;
 
 namespace SIL.Windows.Forms.HtmlBrowser
 {
@@ -330,8 +331,27 @@ namespace SIL.Windows.Forms.HtmlBrowser
 
 		void IWebBrowserCallbacks.OnNewWindow(CancelEventArgs e)
 		{
-			if (NewWindow != null)
-				NewWindow(this, e);
+			NewWindow?.Invoke(this, e);
+
+			if (e.Cancel)
+				return;
+			
+			if (m_WebBrowserAdapter.NativeBrowser is WebBrowser web)
+			{
+				try
+				{
+					var url = web.Document?.ActiveElement?.GetAttribute("href");
+					if (!IsNullOrEmpty(url))
+					{
+						Program.Process.SafeStart(url); // opens with default browser
+						e.Cancel = true;
+					}
+				}
+				catch (Exception ex)
+				{
+					Logger.WriteError("Failed to open external link", ex);
+				}
+			}
 		}
 
 		void IWebBrowserCallbacks.OnProgressChanged(WebBrowserProgressChangedEventArgs e)

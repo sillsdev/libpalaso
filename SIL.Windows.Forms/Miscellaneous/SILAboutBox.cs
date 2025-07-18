@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using JetBrains.Annotations;
 using L10NSharp;
 using SIL.Acknowledgements;
+using SIL.Core;
 using SIL.IO;
 using SIL.Windows.Forms.Widgets;
 
@@ -20,9 +21,62 @@ namespace SIL.Windows.Forms.Miscellaneous
 		private readonly Assembly _assembly;
 		private readonly string _pathToAboutBoxHtml;
 		private TempFile _tempAboutBoxHtmlFile; // after update by AcknowledgementsProvider
+		private WebBrowserNavigatingEventHandler _navigatingHandlers;
 
+		/// <summary>
+		/// Event that occurs when the user clicks the "Check for Updates" button in the About
+		/// dialog box. If the hosting application has subscribed to this event, then that
+		/// button will be visible in the UI. Applications should respond by checking whether an
+		/// update is available.
+		/// </summary>
 		public event EventHandler CheckForUpdatesClicked;
+
+		/// <summary>
+		/// Event that occurs when the user clicks the "Release Notes" button in the About
+		/// dialog box. If the hosting application has subscribed to this event, then that
+		/// button will be visible in the UI. Applications should respond by displaying the
+		/// release notes.
+		/// </summary>
 		public event EventHandler ReleaseNotesClicked;
+
+		/// <summary>
+		/// Occurs before browser control navigation occurs within the HTML browser control in the
+		/// About dialog box. It allows navigation to be canceled by setting
+		/// <see cref="WebBrowserNavigatingEventArgs.Cancel"/> to false.
+		/// </summary>
+		public event WebBrowserNavigatingEventHandler Navigating
+		{
+			add
+			{
+				_navigatingHandlers += value;
+				_browser.Navigating += value;
+			}
+			remove
+			{
+				_navigatingHandlers -= value;
+				_browser.Navigating -= value;
+			}
+		}
+
+		/// <summary>
+		/// Occurs when the HTML browser control in the About dialog box has navigated to a new
+		/// document and has begun loading it.
+		/// </summary>
+		public event WebBrowserNavigatedEventHandler Navigated
+		{
+			add => _browser.Navigated += value;
+			remove => _browser.Navigated -= value;
+		}
+
+		/// <summary>
+		/// Flag indicating whether external links in the HTML presented in the About dialog box
+		/// should open inside the browser control or in the default web browser. Previously, they
+		/// would always open inside the browser control unless the HTML explicitly set the target
+		/// attribute, but this is generally not desirable, especially if any of the links are to
+		/// content with Javascript, so the default behavior is now to try to open them in the
+		/// default browser as configured on the user's system.
+		/// </summary>
+		public bool AllowExternalLinksToOpenInsideAboutBox { get; set; } = false;
 
 		/// <summary>
 		/// Creates a project AboutBox. There is now a DependencyMarker (see comments for usage) that can be added to
@@ -33,7 +87,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		/// </summary>
 		/// <param name="pathToAboutBoxHtml">For example, use
 		/// <see cref="FileLocationUtilities.GetFileDistributedWithApplication(string[])"/>(
-		/// "DistFiles", "AboutBox.htm")</param>
+		/// "DistFiles", "AboutBox.htm"). This also can accept a file URI.</param>
 		/// <param name="useFullVersionNumber"><c>false</c> to display only the first three
 		/// parts of the version number, i.e. "MajorVersion.MinorVersion.Build",
 		/// <c>true</c> to display the full version number as found in Application.ProductVersion.
@@ -45,7 +99,10 @@ namespace SIL.Windows.Forms.Miscellaneous
 			SilLogoVariant logoVariant = SilLogoVariant.Random)
 		{
 			_assembly = Assembly.GetEntryAssembly(); // assembly;
-			_pathToAboutBoxHtml = pathToAboutBoxHtml;
+			_pathToAboutBoxHtml =
+				Uri.TryCreate(pathToAboutBoxHtml, UriKind.Absolute, out var uri) && uri.IsFile
+					? uri.LocalPath
+					: pathToAboutBoxHtml;
 			InitializeComponent();
 			_versionNumber.Text = useFullVersionNumber ? Application.ProductVersion :
 				GetShortVersionInfo();
@@ -202,36 +259,36 @@ namespace SIL.Windows.Forms.Miscellaneous
 			// through, regardless.
 			var filePath = AcknowledgementsProvider.GetFullNonUriFileName(_pathToAboutBoxHtml);
 			var aboutBoxHtml = File.ReadAllText(filePath);
-			if (!aboutBoxHtml.Contains(DependencyMarker))
+			// Without a charset='UTF-8' meta tag attribute, things like copyright symbols don't show up correctly.
+			Debug.Assert(aboutBoxHtml.Contains(" charset"), "At a minimum, the About Box html should contain a meta charset='UTF-8' tag.");
+
+			string newHtmlContents = null;
+			
+			if (aboutBoxHtml.Contains(DependencyMarker))
 			{
-				_browser.Navigate(_pathToAboutBoxHtml);
+				var insertableAcknowledgements = AcknowledgementsProvider.AssembleAcknowledgements();
+				newHtmlContents = aboutBoxHtml.Replace(DependencyMarker, insertableAcknowledgements);
 			}
+
+			if (!AllowExternalLinksToOpenInsideAboutBox || _navigatingHandlers != null)
+			{
+				var fixedContents = HtmlUtils.HandleMissingLinkTargets(
+					newHtmlContents ?? aboutBoxHtml,
+					"About box",
+					Environment.NewLine + "If you need to suppress this debug-only " +
+					"warning and allow all external links to open inside the About box, use " +
+					nameof(AllowExternalLinksToOpenInsideAboutBox) + ".  Alternatively, you " +
+					$"could handle the {nameof(Navigating)} event to customize the navigation " +
+					"behavior in your application.");
+				if (fixedContents != null)
+					newHtmlContents = fixedContents;
+			}
+
+			if (newHtmlContents == null) // No changes made to original HTML
+				_browser.Navigate(_pathToAboutBoxHtml);
 			else
 			{
-				// Without a charset='UTF-8' meta tag attribute, things like copyright symbols don't show up correctly.
-				Debug.Assert(aboutBoxHtml.Contains(" charset"), "At a minimum, the About Box html should contain a meta charset='UTF-8' tag.");
-				var insertableAcknowledgements = AcknowledgementsProvider.AssembleAcknowledgements();
-				var newHtmlContents = aboutBoxHtml.Replace(DependencyMarker, insertableAcknowledgements);
-				// Create a temporary file with the DependencyMarker replaced with our collected Acknowledgements.
-				// This file will be deleted OnClosed.
-				// This means that if your project uses the DependencyMarker in your html file, you will not be able to
-				// link to a file on a relative path for css styles or images.
-				// ----------
-				// Comments on possible ways around this limitation from John Thomson:
-				//		1.Document that an About Box HTML file which uses dependency injection must live in its own folder
-				// with all dependent files, and copy the whole folder to a temp folder.
-				// (could work but is a nuisance, especially for anyone who doesn't need any dependencies)
-				//		2.Document that an About Box HTML file which uses dependency injection may only use a few common kinds
-				// of relative links, search for matching links, and copy the appropriate files to a temp directory along
-				// with the temp file.
-				// (I rather like this idea. A fairly simple regular expression will search for src or rel followed by a value
-				// with no path separators...something like(src | rel) = (['"])([^/\]*)\1 (or something similar...
-				// handle white space...). That will catch all references to images, stylesheets, and scripts,
-				// and if the bit of the RegEx that matches the filename corresponds to an existing file in the same folder
-				// as the HTML we can just copy it. Unless they're doing relative paths to different folders that will do it,
-				// and I think it's reasonable to have SOME restrictions in the interests of simplicity.
-				// ----------
-				_tempAboutBoxHtmlFile = new TempFile(newHtmlContents);
+				_tempAboutBoxHtmlFile = HtmlUtils.CreatePatchedTempHtmlFile(newHtmlContents, _pathToAboutBoxHtml);
 				_browser.Navigate(_tempAboutBoxHtmlFile.Path);
 			}
 		}
