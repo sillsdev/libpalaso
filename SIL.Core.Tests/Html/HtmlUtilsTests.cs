@@ -403,7 +403,7 @@ namespace SIL.Tests.Html
 
 			var tempDir = GetDirectoryName(tempFile.Path);
 			Assert.That(Directory.GetFiles(tempDir).Length, Is.EqualTo(1),
-				"Subdirectory assets should not be copied.");
+				"No assets should have been found or copied.");
 		}
 
 		[TestCase(null)]

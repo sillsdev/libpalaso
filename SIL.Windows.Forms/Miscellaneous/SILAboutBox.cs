@@ -274,7 +274,8 @@ namespace SIL.Windows.Forms.Miscellaneous
 			{
 				var fixedContents = HtmlUtils.HandleMissingLinkTargets(
 					newHtmlContents ?? aboutBoxHtml,
-					"About box", Environment.NewLine + "If you need to suppress this debug-only " +
+					"About box",
+					Environment.NewLine + "If you need to suppress this debug-only " +
 					"warning and allow all external links to open inside the About box, use " +
 					nameof(AllowExternalLinksToOpenInsideAboutBox) + ".  Alternatively, you " +
 					$"could handle the {nameof(Navigating)} event to customize the navigation " +

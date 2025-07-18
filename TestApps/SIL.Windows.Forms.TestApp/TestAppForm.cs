@@ -28,6 +28,7 @@ using SIL.Media;
 using SIL.Windows.Forms.Extensions;
 using SIL.Windows.Forms.FileSystem;
 using SIL.Windows.Forms.LocalizationIncompleteDlg;
+using static System.Windows.Forms.MessageBoxButtons;
 
 namespace SIL.Windows.Forms.TestApp
 {
@@ -262,17 +263,17 @@ namespace SIL.Windows.Forms.TestApp
 								return;
 							}
 
-							args.Cancel = DialogResult.Cancel == MessageBox.Show(
-								string.Format(LocalizationManager.GetString(
-										"About.ExternalNavigationConfirmationMsg",
-										"Request to navigate to {0} with target frame {1}",
-										"Param 0: URL; Param 1: Target frame name"),
-									args.Url,
-									args.TargetFrameName),
-								LocalizationManager.GetString(
-									"About.ExternalNavigationConfirmationTitle",
-									"External navigation request"),
-								MessageBoxButtons.OKCancel);
+							var msg = string.Format(LocalizationManager.GetString(
+									"About.ExternalNavigationConfirmationMsg",
+									"Request to navigate to {0} with target frame {1}",
+									"Param 0: URL; Param 1: Target frame name"),
+								args.Url,
+								args.TargetFrameName);
+							var title = LocalizationManager.GetString(
+								"About.ExternalNavigationConfirmationTitle",
+								"External navigation request");
+							var dlgResult = MessageBox.Show(msg, title, OKCancel);
+							args.Cancel = DialogResult.Cancel == dlgResult;
 						};
 					dlg.AllowExternalLinksToOpenInsideAboutBox = allowExtLinksInsideAbout;
 					dlg.ShowDialog();
@@ -402,14 +403,14 @@ and displays it as HTML.
 					FlexibleMessageBox.Show(this, msg, caption, handler);
 					break;
 				case 2:
-					FlexibleMessageBox.Show(this, msg, caption, MessageBoxButtons.OKCancel, handler);
+					FlexibleMessageBox.Show(this, msg, caption, OKCancel, handler);
 					break;
 				case 3:
 					msg += "\nClick Retry to display another version of the message box.";
-					return FlexibleMessageBox.Show(this, msg, caption, MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Warning, handler) == DialogResult.Retry;
+					return FlexibleMessageBox.Show(this, msg, caption, AbortRetryIgnore, MessageBoxIcon.Warning, handler) == DialogResult.Retry;
 				case 4:
 					msg += "\nWould you like to display another version of the message box?";
-					return FlexibleMessageBox.Show(this, msg, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+					return FlexibleMessageBox.Show(this, msg, caption, YesNo, MessageBoxIcon.Question,
 							defaultButton, handler) == DialogResult.Yes;
 				case 5:
 					FlexibleMessageBox.Show(msg, handler);
@@ -419,14 +420,14 @@ and displays it as HTML.
 					break;
 				case 7:
 					msg += "\nClick Retry to display another version of the message box.";
-					return FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.RetryCancel, handler) == DialogResult.Retry;
+					return FlexibleMessageBox.Show(msg, caption, RetryCancel, handler) == DialogResult.Retry;
 				case 8:
 					msg += "\nThis message box is always on top!";
-					FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.OK, MessageBoxIcon.Stop, handler, FlexibleMessageBoxOptions.AlwaysOnTop);
+					FlexibleMessageBox.Show(msg, caption, OK, MessageBoxIcon.Stop, handler, FlexibleMessageBoxOptions.AlwaysOnTop);
 					break;
 				default:
 					msg += "\nWould you like to display another version of the message box?";
-					return FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question,
+					return FlexibleMessageBox.Show(msg, caption, YesNoCancel, MessageBoxIcon.Question,
 						defaultButton, handler) == DialogResult.Yes;
 			}
 			return false;

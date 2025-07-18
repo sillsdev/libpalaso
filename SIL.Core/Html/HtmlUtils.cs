@@ -164,7 +164,8 @@ If you do nothing, then a reasonable effort will be made to tweak the HTML to fo
 				return true;
 
 			// Strip off any path
-			var host = href.Split(new[] { '/' }, 2)[0];
+			int slashIndex = href.IndexOf('/');
+			var host = slashIndex >= 0 ? href.Substring(0, slashIndex) : href;
 
 			var lastDotIndex = host.LastIndexOf('.');
 			// Must contain at least one dot to have a top-level domain
