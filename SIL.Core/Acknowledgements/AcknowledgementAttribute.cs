@@ -13,7 +13,7 @@ namespace SIL.Acknowledgements
 	/// will be able to collect your project's dependencies and display them in your project's SILAboutBox.
 	/// You just need to add the string #DependencyAcknowledgements# (probably surrounded by a &lt;ul&gt; element)
 	/// to your project's about box html file and the AcknowledgementsProvider will replace it
-	/// with the each collected Acknowledgement set within a &lt;li&gt; element.
+	/// with each collected Acknowledgement set within a &lt;li&gt; element.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
 	public class AcknowledgementAttribute : Attribute
@@ -41,7 +41,7 @@ namespace SIL.Acknowledgements
 		/// Key should be something that will be unique and stable (as much as possible),
 		/// but not version-based, so we can eliminate duplicates. This is a required field.
 		///
-		/// For now we are just using the Name of the Reference as listed in Visual Studio. In the .csproj file,
+		/// For now, we are just using the Name of the Reference as listed in Visual Studio. In the .csproj file,
 		/// this can be found in the Include attribute of the Reference element up until the first comma.
 		/// </summary>
 		public string Key { get; }
@@ -102,7 +102,7 @@ namespace SIL.Acknowledgements
 
 		/// <summary>
 		/// If we can't find the file using the Location, return null.
-		/// Otherwise returns the located executable file's FileVersionInfo.
+		/// Otherwise, returns the located executable file's FileVersionInfo.
 		/// </summary>
 		private FileVersionInfo ExtractExecutableVersionInfo()
 		{

@@ -16,20 +16,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [16.1.0] - 2025-07-18
+
 ### Added
 
 - [SIL.Windows.Forms] Added PortableClipboard.CanGetImage()
 - [ClipboardTestApp] Restored this test program and added tests for PortableClipboard.CanGetImage() and GetImageFromClipboard()
+- [SIL.Windows.Forms] Added SILAboutBox.Navigating and SILAboutBox.Navigated events to allow callers to customize how HTML links in the embedded browser are handled.
+- [SIL.Windows.Forms] Added SILAboutBox.AllowExternalLinksToOpenInsideAboutBox property to control whether a `<base target="_blank" rel="noopener noreferrer">` line is automatically added to the HTML (if missing) to ensure links open in the system browser rather than within the About dialog box.
+- [SIL.Core] Added static HtmlUtils class with methods for handling HTML to be displayed in browser controls (e.g., `SILAboutBox`), including support for fixing missing target attributes on links and copying simple asset files when creating a temp HTML file to display.
 
 ### Fixed
 
 - [SIL.Windows.Forms] In `CustomDropDown.OnOpening`, fixed check that triggers timer to stop.
+- [SIL.Windows.Forms] Fixed HtmlBrowserHandled.OnNewWindow to open external URLs (`target="_blank"`) in the system’s default browser instead of Internet Explorer. This improves behavior in SILAboutBox and other components that use the embedded browser.
 
 ### Changed
 
 - [SIL.WritingSystems] Updated embedded langtags.json
 - [SIL.WritingSystems] Updated embedded ianaSubtagRegistry.txt
-
+- [SIL.Windows.Forms] Improved SILAboutBox to help prevent navigation issues when the supplied HTML contains links but lacks both a `<base target="_blank">` element and explicit `target="_blank"` attributes on the links. If the Navigating event is not handled, such links would otherwise open within the About box itself, often resulting in unexpected behavior. A sensible fallback is now applied automatically to the HTML, and in debug mode, a developer warning is shown.
+- [SIL.Windows.Forms] Documented previously undocumented feature: SILAboutBox constructor can accept either a filename or a file URI.
 
 ## [16.0.0] - 2025-05-20
 
@@ -590,7 +597,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
   projects
 
-[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v16.0.0...master
+[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v16.1.0...master
+[16.1.0]: https://github.com/sillsdev/libpalaso/compare/v16.0.0...v16.1.0
 [16.0.0]: https://github.com/sillsdev/libpalaso/compare/v15.0.0...v16.0.0
 [15.0.0]: https://github.com/sillsdev/libpalaso/compare/v14.1.1...v15.0.0
 [14.1.1]: https://github.com/sillsdev/libpalaso/compare/v14.1.0...v14.1.1

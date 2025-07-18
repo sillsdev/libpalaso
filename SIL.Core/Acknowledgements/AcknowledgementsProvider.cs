@@ -84,7 +84,7 @@ namespace SIL.Acknowledgements
 			{
 				if (ackAttrDict.TryGetValue(acknowledgement.Key, out var ackRetained))
 				{
-					Debug.WriteLine("Duplicate Acknowledgement key skipped. Key="+ acknowledgement.Key + " Html=" + acknowledgement.Html);
+					Debug.WriteLine("Duplicate Acknowledgement key skipped. Key=" + acknowledgement.Key + " Html=" + acknowledgement.Html);
 					Debug.WriteLine("  Kept first Acknowledgement Key=" + ackRetained.Key + " Html=" + ackRetained.Html);
 				}
 				else
