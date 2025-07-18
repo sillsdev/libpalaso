@@ -16,6 +16,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- [SIL.Windows.Forms] Added KeysExtensions class with the IsNavigationKey extension method.
+
+### Fixed
+
+- [SIL.Windows.Keyboarding] Fixed a subtle bug in IbusKeyboardSwitchingAdaptor when determining whether IBus would have handled a key event while a pre-edit is active. The code now accounts for the possibility of modifier keys (particularly Ctrl), which IBus would presumably have handled when in combination with navigation keys, Backspace, and Delete.
+
 ## [16.1.0] - 2025-07-18
 
 ### Added
