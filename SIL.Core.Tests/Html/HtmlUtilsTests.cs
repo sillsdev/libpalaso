@@ -229,15 +229,21 @@ namespace SIL.Tests.Html
 		[TestCase("ftp://example.txt")]
 		[TestCase("ftps://example.txt")]
 		[TestCase("ssh://example.txt")]
+		[TestCase("https://secure.example.com:8443/login")]
+		[TestCase("http://www.example.com:8080/path")]
+		[TestCase("https://www.example.com/search?q=term")]
+		[TestCase("https://www.example.com/docs#section2")]
+		[TestCase("https://www.example.com/page?lang=en#top")]
 		// The following are potentially ambiguous (Is this a bare domain or a file?),
 		// but presumably the developer will have intended them as external links
 		// (regardless of what the browser control actually does with them).
-		[TestCase("example.com")] 
-		[TestCase("example.org")] 
-		[TestCase("example.net")]
-		// A couple malformed cases that are really ambiguous, but best to treat as external
+		[TestCase("example.com")]
+		[TestCase("example.org/faq/server")] 
+		[TestCase("example.net/license")]
+		// A couple malformed cases that are best to treat as external
 		[TestCase("https:")]
 		[TestCase("file:help.html")]
+		[TestCase("example.com:3000")]
 		public void IsExternalHref_IsExternal_ReturnsTrue(string href)
 		{
 			Assert.That(HtmlUtils.IsExternalHref(href), Is.True);
@@ -384,6 +390,38 @@ namespace SIL.Tests.Html
 			var tempDir = GetDirectoryName(tempFile.Path);
 			Assert.That(Directory.GetFiles(tempDir).Length, Is.EqualTo(1),
 				"Subdirectory assets should not be copied.");
+		}
+
+		[Test]
+		public void EmptyHref_NothingCopiedAndNoError()
+		{
+			var html = @"<html><head>
+<link rel=""stylesheet"" href=""""></head><body>hello</body></html>";
+			File.WriteAllText(_htmlPath, html);
+
+			using var tempFile = HtmlUtils.CreatePatchedTempHtmlFile(html, _htmlPath);
+
+			var tempDir = GetDirectoryName(tempFile.Path);
+			Assert.That(Directory.GetFiles(tempDir).Length, Is.EqualTo(1),
+				"Subdirectory assets should not be copied.");
+		}
+
+		[TestCase(null)]
+		[TestCase("")]
+		public void NullOrEmptyHtml_ThrowsArgumentException(string html)
+		{
+			Assert.That(() => HtmlUtils.CreatePatchedTempHtmlFile(html, _htmlPath),
+				Throws.ArgumentException);
+		}
+
+		[TestCase(null)]
+		[TestCase("")]
+		public void NullOrEmptyOrigHtmlPath_ThrowsArgumentException(string htmlPath)
+		{
+			var html = @"<html><body>hello</body></html>";
+			
+			Assert.That(() => HtmlUtils.CreatePatchedTempHtmlFile(html, htmlPath),
+				Throws.ArgumentException);
 		}
 	}
 }

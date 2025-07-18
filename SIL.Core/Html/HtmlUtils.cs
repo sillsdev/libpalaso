@@ -1,5 +1,6 @@
 using SIL.IO;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -11,6 +12,8 @@ namespace SIL.Core
 {
 	public static class HtmlUtils
 	{
+		private const string kBaseTarget = "<base target=\"_blank\" rel=\"noopener noreferrer\">";
+
 		public static readonly Regex RegexTarget =
 			new Regex(@"target\s*=\s*(['""])(?<target>.*?)\1", IgnoreCase | Compiled);
 
@@ -30,8 +33,17 @@ namespace SIL.Core
 			new Regex(@"(?:src|href)\s*=\s*(['""])\s*(?:./)?(?<filename>[^/>\s\\]+?)\1",
 			IgnoreCase | Compiled);
 
-		public static readonly Regex RegexUriSchemeLike = new Regex(@"^[a-zA-Z][a-zA-Z0-9+\-.]*:",
+		public static readonly Regex RegexUriSchemeLike = new Regex(@"^(?<scheme>[a-z][a-z0-9+\-.]*):",
 			IgnoreCase | Compiled);
+
+		private static readonly HashSet<string> s_internalSchemes =
+			new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "mailto", "tel" };
+
+		// Obviously, nowhere near an exhaustive list, but these are the most common and are
+		// probably never going to be used as file extensions that would be likely to
+		// be used in an HTML link.
+		private static readonly HashSet<string> s_commonTopLevelDomains =
+			new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".com", ".net", ".org", ".edu", ".gov" };
 
 		/// <summary>
 		/// Returns whether the given HTML has a head element that specifies a base target.
@@ -112,11 +124,11 @@ namespace SIL.Core
 
 			if (contextDescription != null)
 			{
-				Debug.Fail(Format(
-					@"{0} HTML has links but has neither a base target in the head element nor explicit target attributes for any of the links.
-Unless you override the default Navigating behavior, links may open directly in the {0} browser window and will probably not behave as expected.
-Easy fix: consider adding `<base target=""_blank"" rel=""noopener noreferrer"">` inside your HTML head if your HTML does not use internal or mailto links.
-If you do nothing, then a reasonable effort will be made to tweak the HTML to force external links to target the default browser.", contextDescription) +
+				Debug.Fail(
+					$@"{contextDescription} HTML has links but has neither a base target in the head element nor explicit target attributes for any of the links.
+Unless you override the default Navigating behavior, links may open directly in the {contextDescription} browser window and will probably not behave as expected.
+Easy fix: consider adding `{kBaseTarget}` inside your HTML head if your HTML does not use internal or mailto links.
+If you do nothing, then a reasonable effort will be made to tweak the HTML to force external links to target the default browser." +
 					additionalDebugInfo);
 			}
 
@@ -139,23 +151,25 @@ If you do nothing, then a reasonable effort will be made to tweak the HTML to fo
 
 			href = href.TrimStart();
 
-			if (href.StartsWith("mailto:") ||
-			    href.StartsWith("tel:"))
-				return false;
+			var match = RegexUriSchemeLike.Match(href);
+
+			if (match.Success)
+				return !s_internalSchemes.Contains(match.Groups["scheme"].Value);
 
 			// An empty string gets turned into a link to the current base folder. The browser
 			// control will happily open that in the current window, displaying a
 			// Windows-Explorer-like view, but then the user has no way to get back, so that's
 			// probably not what we want.
-			return href.Length == 0 || 
-					RegexUriSchemeLike.IsMatch(href) ||
-			        href.StartsWith("www.") ||
-					// Obviously, not an exhaustive list, but these are the most common and are
-					// probably never going to be used as file extensions that would be likely to
-					// be used in an HTML link.
-					href.EndsWith(".com") ||
-			        href.EndsWith(".org") ||
-			        href.EndsWith(".net");
+			if (href.Length == 0 || href.StartsWith("www."))
+				return true;
+
+			// Strip off any path
+			var host = href.Split(new[] { '/' }, 2)[0];
+
+			var lastDotIndex = host.LastIndexOf('.');
+			// Must contain at least one dot to have a top-level domain
+			return lastDotIndex >= 0 && lastDotIndex < host.Length - 1 &&
+				s_commonTopLevelDomains.Contains(host.Substring(lastDotIndex));
 		}
 
 		internal static string InjectBaseTarget(string html)
@@ -167,18 +181,12 @@ If you do nothing, then a reasonable effort will be made to tweak the HTML to fo
 
 			var match = RegexHeadTag.Match(html);
 			if (match.Success)
-			{
-				return html.Insert(match.Index + match.Length,
-					"<base target=\"_blank\" rel=\"noopener noreferrer\">");
-			}
+				return html.Insert(match.Index + match.Length, kBaseTarget);
 
 			// Fallback: inject entire head element before <body>
 			var iInsertionPoint = html.IndexOf("<body", StringComparison.OrdinalIgnoreCase);
 			if (iInsertionPoint >= 0)
-			{
-				return html.Insert(iInsertionPoint,
-					"<head><base target=\"_blank\" rel=\"noopener noreferrer\"></head>");
-			}
+				return html.Insert(iInsertionPoint, $"<head>{kBaseTarget}</head>");
 
 			// No <head> or <body> found — we probably shouldn't be modifying this
 			Debug.Fail("HTML has no <head> or <body> — skipping base target injection");
@@ -225,8 +233,7 @@ If you do nothing, then a reasonable effort will be made to tweak the HTML to fo
 			{
 				var fileName = match.Groups["filename"].Value;
 
-				if (IsNullOrEmpty(fileName))
-					continue;
+				Debug.Assert(!IsNullOrEmpty(fileName));
 
 				var sourceFile = originalFolder != null ? Path.Combine(originalFolder, fileName) : fileName;
 

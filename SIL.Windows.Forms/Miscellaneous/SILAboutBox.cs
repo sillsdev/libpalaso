@@ -272,11 +272,13 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 			if (!AllowExternalLinksToOpenInsideAboutBox || _navigatingHandlers != null)
 			{
-				var fixedContents = HtmlUtils.HandleMissingLinkTargets(newHtmlContents ?? aboutBoxHtml,
-					"About box", Environment.NewLine + "If you need to suppress this debug - only " +
+				var fixedContents = HtmlUtils.HandleMissingLinkTargets(
+					newHtmlContents ?? aboutBoxHtml,
+					"About box", Environment.NewLine + "If you need to suppress this debug-only " +
 					"warning and allow all external links to open inside the About box, use " +
-					nameof(AllowExternalLinksToOpenInsideAboutBox) + ".  Alternatively, you could " +
-					"handle the Navigating event to customize the navigation behavior in your application.");
+					nameof(AllowExternalLinksToOpenInsideAboutBox) + ".  Alternatively, you " +
+					$"could handle the {nameof(Navigating)} event to customize the navigation " +
+					"behavior in your application.");
 				if (fixedContents != null)
 					newHtmlContents = fixedContents;
 			}

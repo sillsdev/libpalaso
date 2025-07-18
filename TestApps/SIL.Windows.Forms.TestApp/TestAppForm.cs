@@ -265,12 +265,14 @@ namespace SIL.Windows.Forms.TestApp
 							args.Cancel = DialogResult.Cancel == MessageBox.Show(
 								string.Format(LocalizationManager.GetString(
 										"About.ExternalNavigationConfirmationMsg",
-										"Request to navigate to {0} with target frame {1}"),
+										"Request to navigate to {0} with target frame {1}",
+										"Param 0: URL; Param 1: Target frame name"),
 									args.Url,
 									args.TargetFrameName),
 								LocalizationManager.GetString(
 									"About.ExternalNavigationConfirmationTitle",
-									"External navigation request"), MessageBoxButtons.OKCancel);
+									"External navigation request"),
+								MessageBoxButtons.OKCancel);
 						};
 					dlg.AllowExternalLinksToOpenInsideAboutBox = allowExtLinksInsideAbout;
 					dlg.ShowDialog();
