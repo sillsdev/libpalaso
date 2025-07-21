@@ -1,9 +1,12 @@
 // Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
+using SIL.Acknowledgements;
 
 namespace SIL.ExtractCopyright
 {
@@ -18,7 +21,7 @@ namespace SIL.ExtractCopyright
 			NoDebianFolder,
 			NoAssemblyFolder,
 			NoPrefixFolder
-		};
+		}
 
 		public CopyrightFile()
 		{
@@ -33,7 +36,6 @@ namespace SIL.ExtractCopyright
 		/// Create or update the copyright file in the given debian folder.
 		/// </summary>
 		/// <param name="debianFolder">Debian folder.</param>
-		/// <param name="assemblyFolder">Assembly folder.</param>
 		/// <param name="prefixFolder">Prefix folder.</param>
 		public static int CreateOrUpdateCopyrightFile(string debianFolder, string prefixFolder)
 		{
@@ -70,7 +72,7 @@ namespace SIL.ExtractCopyright
 				Console.WriteLine("ExtractCopyright: updating existing file at \"{0}\"", copyrights._filepath);
 			}
 
-			var ackDict = SIL.Acknowledgements.AcknowledgementsProvider.CollectAcknowledgements();
+			var ackDict = AcknowledgementsProvider.CollectAcknowledgements();
 			foreach (var key in ackDict.Keys)
 				copyrights.AddOrUpdateParagraphFromAcknowledgement(ackDict[key], prefixFolder);
 
@@ -101,11 +103,9 @@ namespace SIL.ExtractCopyright
 				// 1) Vcs-Browser (url to see source code repository in the browser), or if that isn't provided
 				// 2) HomePage (url to see some sort of project home page in the browser), or if that isn't provided
 				// 3) Vcs-Git (url to clone git repository on local machine)
-				var urlField = sourcePara.FindField("Vcs-Browser");
-				if (urlField == null)
-					urlField = sourcePara.FindField("HomePage");
-				if (urlField == null)
-					urlField = sourcePara.FindField("Vcs-Git");
+				var urlField = sourcePara.FindField("Vcs-Browser") ??
+					sourcePara.FindField("HomePage") ??
+					sourcePara.FindField("Vcs-Git");
 				if (urlField != null)
 					sourceUrl = urlField.Value;
 			}
@@ -120,7 +120,7 @@ namespace SIL.ExtractCopyright
 				// "bloom-desktop-alpha (3.9.0) stable; urgency=medium"
 				if (String.IsNullOrEmpty(programName) && lines[i].Contains(" urgency=") && lines[i].Contains(";"))
 				{
-					var headerPieces = lines[i].Trim().Split(new char[]{' '});
+					var headerPieces = lines[i].Trim().Split(' ');
 					programName = headerPieces[i];
 				}
 				// The closing line of an entry in the changelog looks like this:
@@ -129,7 +129,7 @@ namespace SIL.ExtractCopyright
 				else if (String.IsNullOrEmpty(contactEmail) && lines[i].StartsWith(" -- ") && lines[i].Contains("@"))
 				{
 					var line = lines[i].Substring(4).Trim();
-					var idx = line.IndexOf("  ");
+					var idx = line.IndexOf("  ", StringComparison.Ordinal);
 					if (idx > 0)
 						contactEmail = line.Substring(0, idx);
 				}
@@ -170,9 +170,9 @@ namespace SIL.ExtractCopyright
 			return copyrights;
 		}
 
-		internal void AddOrUpdateParagraphFromAcknowledgement(Acknowledgements.AcknowledgementAttribute ack, string prefix)
+		internal void AddOrUpdateParagraphFromAcknowledgement(AcknowledgementAttribute ack, string prefix)
 		{
-			string fileSpec = null;
+			string fileSpec;
 			if (!string.IsNullOrEmpty(ack.Location))
 			{
 				fileSpec = ack.Location;
@@ -207,15 +207,11 @@ namespace SIL.ExtractCopyright
 			Paragraphs.Add(para);
 			para.Fields.Add(new DebianField("Files", fileSpec));
 
-			string person;
-			string year;
-			ExtractCopyrightInformation(ack.Copyright, out person, out year);
+			ExtractCopyrightInformation(ack.Copyright, out var person, out var year);
 			var copyright = year + " " + person;
 			para.Fields.Add(new DebianField("Copyright", copyright));
 
-			string shortLicense;
-			List<string> longLicense;
-			ExtractLicenseInformation(ack.LicenseUrl, out shortLicense, out longLicense);
+			ExtractLicenseInformation(ack.LicenseUrl, out var shortLicense, out var longLicense);
 			para.Fields.Add(new DebianField("License", shortLicense));
 
 			if (!string.IsNullOrEmpty(ack.Url))
@@ -227,7 +223,7 @@ namespace SIL.ExtractCopyright
 			}
 		}
 
-		private bool IsWindowsSpecific(string name)
+		private static bool IsWindowsSpecific(string name)
 		{
 			switch (name)
 			{
@@ -261,19 +257,15 @@ namespace SIL.ExtractCopyright
 		}
 
 		private void UpdateParagraphFromAcknowledgement(DebianParagraph para,
-			Acknowledgements.AcknowledgementAttribute ack)
+			AcknowledgementAttribute ack)
 		{
-			string person;
-			string year;
-			ExtractCopyrightInformation(ack.Copyright, out person, out year);
+			ExtractCopyrightInformation(ack.Copyright, out var person, out var year);
 			if (year == "????")
 				return;			// we don't know if this information is newer or not
 			var copyrightField = para.FindField("Copyright");
 			if (copyrightField != null)
 			{
-				string prevYear;
-				string prevPerson;
-				ExtractCopyrightInformation(copyrightField.Value, out prevYear, out prevPerson);
+				ExtractCopyrightInformation(copyrightField.Value, out var prevYear, out _);
 				if (prevYear == "????" || prevYear.CompareTo(year) < 0)
 				{
 					copyrightField.Value = year + " " + person;
@@ -284,9 +276,7 @@ namespace SIL.ExtractCopyright
 				}
 			}
 
-			string shortLicense;
-			List<string> longLicense;
-			ExtractLicenseInformation(ack.LicenseUrl, out shortLicense, out longLicense);
+			ExtractLicenseInformation(ack.LicenseUrl, out var shortLicense, out var longLicense);
 			if (shortLicense != "????")
 			{
 				var licenseField = para.FindField("License");
@@ -318,7 +308,7 @@ namespace SIL.ExtractCopyright
 			copyright = copyright.Replace("(c)", "");
 			copyright = copyright.Replace("©", "");
 			// extract year and person if present
-			var match = System.Text.RegularExpressions.Regex.Match(copyright, "([0-9][0-9][0-9][0-9][-0-9]*)");
+			var match = Regex.Match(copyright, "([0-9][0-9][0-9][0-9][-0-9]*)");
 			if (match.Success)
 			{
 				year = copyright.Substring(match.Index, match.Length);
@@ -362,7 +352,7 @@ namespace SIL.ExtractCopyright
 		/// <summary>
 		/// The standard MIT license used for SIL software.
 		/// </summary>
-		public static string[] StandardMITLicense = new string[] {
+		public static string[] StandardMITLicense = {
 			"Permission is hereby granted, free of charge, to any person obtaining a",
 			"copy of this software and associated documentation files (the \"Software\"),",
 			"to deal in the Software without restriction, including without limitation",
