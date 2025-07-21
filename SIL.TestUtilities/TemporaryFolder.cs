@@ -1,7 +1,10 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Xml;
+using JetBrains.Annotations;
+using NUnit.Framework;
 using SIL.IO;
 using SIL.Xml;
 
@@ -19,7 +22,7 @@ namespace SIL.TestUtilities
 		}
 
 		public TempLiftFile(TemporaryFolder parentFolder, string xmlOfEntries, string claimedLiftVersion)
-			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
+			: base(true) // True means "I'll set the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 			if (parentFolder != null)
 			{
@@ -30,27 +33,30 @@ namespace SIL.TestUtilities
 				Path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName() + ".lift");
 			}
 
-			string liftContents = string.Format("<?xml version='1.0' encoding='utf-8'?><lift version='{0}'>{1}</lift>", claimedLiftVersion, xmlOfEntries);
+			string liftContents =
+				$"<?xml version='1.0' encoding='utf-8'?><lift version='{claimedLiftVersion}'>{xmlOfEntries}</lift>";
 			RobustFile.WriteAllText(Path, liftContents);
 		}
 
 		public TempLiftFile(string fileName, TemporaryFolder parentFolder, string xmlOfEntries, string claimedLiftVersion)
-			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
+			: base(true) // True means "I'll set the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 			Path = parentFolder.Combine(fileName);
 
-			string liftContents = string.Format("<?xml version='1.0' encoding='utf-8'?><lift version='{0}'>{1}</lift>", claimedLiftVersion, xmlOfEntries);
+			string liftContents =
+				$"<?xml version='1.0' encoding='utf-8'?><lift version='{claimedLiftVersion}'>{xmlOfEntries}</lift>";
 			RobustFile.WriteAllText(Path, liftContents);
 		}
 
 		private TempLiftFile()
-			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
+			: base(true) // True means "I'll set the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 		}
 
 		/// <summary>
 		/// Create a TempLiftFile based on a pre-existing file, which will be deleted when this is disposed.
 		/// </summary>
+		[PublicAPI]
 		public new static TempLiftFile TrackExisting(string path)
 		{
 			Debug.Assert(File.Exists(path));
@@ -68,21 +74,22 @@ namespace SIL.TestUtilities
 	public class TempFileFromFolder : TempFile
 	{
 		/// <summary>
-		/// Create a tempfile within the given parent folder
+		/// Create a temp file within the given parent folder
 		/// </summary>
 		public TempFileFromFolder(TemporaryFolder parentFolder)
-			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
+			: base(true) // True means "I'll set the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 			Path = parentFolder != null ? parentFolder.GetPathForNewTempFile(true) : System.IO.Path.GetTempFileName();
 		}
 
 		public TempFileFromFolder(TemporaryFolder parentFolder, string name, string contents)
-			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
+			: base(true) // True means "I'll set the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 			Path = parentFolder.Combine(name);
 			RobustFile.WriteAllText(Path, contents);
 		}
 
+		[PublicAPI]
 		public static TempFile CreateXmlFileWithContents(string fileName, TemporaryFolder folder, string xmlBody)
 		{
 			string path = folder.Combine(fileName);
@@ -112,18 +119,19 @@ namespace SIL.TestUtilities
 	{
 		private string _path;
 
-
 		/// <summary>
 		/// Create a TemporaryFolder based on a pre-existing directory, which will be deleted when this is disposed.
 		/// </summary>
 		public static TemporaryFolder TrackExisting(string path)
 		{
-			Debug.Assert(Directory.Exists(path), @"TrackExisting given non existant folder to track.");
+			Debug.Assert(Directory.Exists(path), @"TrackExisting given non-existent folder to track.");
 			var f = new TemporaryFolder(false);
 			f._path = path;
 			return f;
 		}
 
+		private static string SystemTempPath => System.IO.Path.GetTempPath();
+		
 		/// <summary>
 		/// Private constructor that doesn't create a file. Used when tracking a pre-existing
 		/// directory.
@@ -134,7 +142,7 @@ namespace SIL.TestUtilities
 
 		public TemporaryFolder(string name)
 		{
-			_path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), name);
+			_path = System.IO.Path.Combine(SystemTempPath, name);
 			if (Directory.Exists(_path))
 			{
 				TestUtilities.DeleteFolderThatMayBeInUse(_path);
@@ -152,14 +160,28 @@ namespace SIL.TestUtilities
 			Directory.CreateDirectory(_path);
 		}
 
+
 		/// <summary>
-		/// Same as FolderPath, but I repent of that poor name
+		/// Create a TemporaryFolder with a unique name based on the given test context.
 		/// </summary>
-		public string Path
+		public static TemporaryFolder Create(TestContext testContext)
 		{
-			get { return _path; }
+			string methodName = testContext.Test.MethodName;
+			string pid = Process.GetCurrentProcess().Id.ToString();
+			string guid = Guid.NewGuid().ToString();
+
+			// For readability, we prefer the test name, but if it is too long, we use the test ID.
+			string folderName = $"test-{methodName}-{pid}-{guid}";
+			if (System.IO.Path.Combine(SystemTempPath, folderName).Length > 200)
+				folderName = $"test-{testContext.Test.ID}-{pid}-{guid}";
+
+			return new TemporaryFolder(folderName);
 		}
 
+		/// <summary>
+		/// Full path of the temp folder.
+		/// </summary>
+		public string Path => _path;
 
 		public void Dispose()
 		{
@@ -189,17 +211,13 @@ namespace SIL.TestUtilities
 		}
 
 		/// <summary>
-		/// Similar to Path.Combine, but you don't have to specify the location of the temporaryfolder itself, and you can add multiple parts to combine.
+		/// Similar to <see cref="System.IO.Path.Combine(string[])"/>, but you don't have to
+		/// specify the location of the temporary folder itself.
 		/// </summary>
 		/// <example> string path = t.Combine("stuff", "toys", "ball.txt")</example>
 		public string Combine(params string[] partsOfThePath)
 		{
-			string result = _path;
-			foreach (var s in partsOfThePath)
-			{
-				result = System.IO.Path.Combine(result, s);
-			}
-			return result;
+			return partsOfThePath.Aggregate(_path, System.IO.Path.Combine);
 		}
 	}
 }

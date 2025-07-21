@@ -223,7 +223,7 @@ namespace SIL.IO
 		/// <summary>
 		/// Use this one when it's important to have a certain file extension. See comment on <see cref="NamePrefix"/>.
 		/// </summary>
-		/// <param name="extension">with or with out '.', will work the same</param>
+		/// <param name="extension">with or without '.', will work the same</param>
 		public static TempFile WithExtension(string extension)
 		{
 			return TrackExisting(MakeFileAtRandomPath(extension));
@@ -232,7 +232,7 @@ namespace SIL.IO
 		/// <summary>
 		/// Use this one when it's important to have a certain file name (with, or without extension).
 		/// </summary>
-		/// <param name="filename">with or with out an extension, will work the same</param>
+		/// <param name="filename">with or without an extension, will work the same</param>
 		public static TempFile WithFilename(string filename)
 		{
 			if (filename == null) throw new ArgumentNullException(nameof(filename));
@@ -281,7 +281,7 @@ namespace SIL.IO
 		/// Used to make a real file out of a resource for the purpose of testing
 		/// </summary>
 		/// <param name="resource">e.g., a video resource</param>
-		/// <param name="extension">with or with out '.', will work the same</param>
+		/// <param name="extension">with or without '.', will work the same</param>
 		public static TempFile FromResource(byte[] resource, string extension)
 		{
 			var f = WithExtension(extension);
