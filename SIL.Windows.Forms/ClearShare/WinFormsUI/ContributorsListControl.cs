@@ -230,6 +230,11 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		[PublicAPI]
 		public Contribution GetCurrentContribution()
 		{
+			if (_grid.CurrentCellAddress.Y < 0 || _grid.CurrentCellAddress.Y >= _grid.RowCount)
+			{
+				// No valid row selected
+				return null;
+			}
 			return GetContributionFromRow(_grid.CurrentCellAddress.Y);
 		}
 
@@ -382,7 +387,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 			var contribution = GetContributionFromRow(e.RowIndex);
 
-			if (ValidatingContributor == null)
+			if (contribution == null || ValidatingContributor == null)
 				return;
 
 			var kvp = ValidatingContributor(this, contribution, e);

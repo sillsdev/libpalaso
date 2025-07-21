@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,6 +32,8 @@ namespace SIL.Windows.Forms.TestApp
 
 			if (DesignMode)
 				return;
+
+			Debug.Assert(_contributorsControl.GetCurrentContribution() == null);
 
 			var autoCompleter = new AutoCompleter { Source = _contributorNames };
 			_model = new ContributorsListControlViewModel(autoCompleter, () => { });
