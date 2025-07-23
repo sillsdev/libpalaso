@@ -7,66 +7,10 @@ using JetBrains.Annotations;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.Xml;
+using static System.IO.Path;
 
 namespace SIL.TestUtilities
 {
-	public class TempLiftFile : TempFile
-	{
-		public TempLiftFile(string xmlOfEntries)
-			: this(xmlOfEntries, /*LiftIO.Validation.Validator.LiftVersion*/ "0.12")
-		{
-		}
-		public TempLiftFile(string xmlOfEntries, string claimedLiftVersion)
-			: this(null, xmlOfEntries, claimedLiftVersion)
-		{
-		}
-
-		public TempLiftFile(TemporaryFolder parentFolder, string xmlOfEntries, string claimedLiftVersion)
-			: base(true) // True means "I'll set the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
-		{
-			if (parentFolder != null)
-			{
-				Path = parentFolder.GetPathForNewTempFile(false) + ".lift";
-			}
-			else
-			{
-				Path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName() + ".lift");
-			}
-
-			string liftContents =
-				$"<?xml version='1.0' encoding='utf-8'?><lift version='{claimedLiftVersion}'>{xmlOfEntries}</lift>";
-			RobustFile.WriteAllText(Path, liftContents);
-		}
-
-		public TempLiftFile(string fileName, TemporaryFolder parentFolder, string xmlOfEntries, string claimedLiftVersion)
-			: base(true) // True means "I'll set the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
-		{
-			Path = parentFolder.Combine(fileName);
-
-			string liftContents =
-				$"<?xml version='1.0' encoding='utf-8'?><lift version='{claimedLiftVersion}'>{xmlOfEntries}</lift>";
-			RobustFile.WriteAllText(Path, liftContents);
-		}
-
-		private TempLiftFile()
-			: base(true) // True means "I'll set the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
-		{
-		}
-
-		/// <summary>
-		/// Create a TempLiftFile based on a pre-existing file, which will be deleted when this is disposed.
-		/// </summary>
-		[PublicAPI]
-		public new static TempLiftFile TrackExisting(string path)
-		{
-			Debug.Assert(File.Exists(path));
-			TempLiftFile t = new TempLiftFile();
-			t.Path = path;
-			return t;
-		}
-
-	}
-
 	/// <summary>
 	/// This is useful for unit tests.  When it is disposed, it will delete the file.
 	/// </summary>
@@ -79,7 +23,7 @@ namespace SIL.TestUtilities
 		public TempFileFromFolder(TemporaryFolder parentFolder)
 			: base(true) // True means "I'll set the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
-			Path = parentFolder != null ? parentFolder.GetPathForNewTempFile(true) : System.IO.Path.GetTempFileName();
+			Path = parentFolder != null ? parentFolder.GetPathForNewTempFile(true) : GetTempFileName();
 		}
 
 		public TempFileFromFolder(TemporaryFolder parentFolder, string name, string contents)
@@ -130,19 +74,17 @@ namespace SIL.TestUtilities
 			return f;
 		}
 
-		private static string SystemTempPath => System.IO.Path.GetTempPath();
-		
 		/// <summary>
 		/// Private constructor that doesn't create a file. Used when tracking a pre-existing
 		/// directory.
 		/// </summary>
-		private TemporaryFolder(bool ignored)
+		private TemporaryFolder(bool _)
 		{
 		}
 
 		public TemporaryFolder(string name)
 		{
-			_path = System.IO.Path.Combine(SystemTempPath, name);
+			_path = System.IO.Path.Combine(GetTempPath(), name);
 			if (Directory.Exists(_path))
 			{
 				TestUtilities.DeleteFolderThatMayBeInUse(_path);
@@ -167,12 +109,12 @@ namespace SIL.TestUtilities
 		public static TemporaryFolder Create(TestContext testContext)
 		{
 			string methodName = testContext.Test.MethodName;
-			string pid = Process.GetCurrentProcess().Id.ToString();
+			var pid = Process.GetCurrentProcess().Id;
 			string guid = Guid.NewGuid().ToString();
 
 			// For readability, we prefer the test name, but if it is too long, we use the test ID.
 			string folderName = $"test-{methodName}-{pid}-{guid}";
-			if (System.IO.Path.Combine(SystemTempPath, folderName).Length > 200)
+			if (System.IO.Path.Combine(GetTempPath(), folderName).Length > 200)
 				folderName = $"test-{testContext.Test.ID}-{pid}-{guid}";
 
 			return new TemporaryFolder(folderName);
@@ -190,7 +132,7 @@ namespace SIL.TestUtilities
 
 		public string GetPathForNewTempFile(bool doCreateTheFile)
 		{
-			string s = System.IO.Path.GetRandomFileName();
+			string s = GetRandomFileName();
 			s = System.IO.Path.Combine(_path, s);
 			if (doCreateTheFile)
 			{
@@ -201,7 +143,7 @@ namespace SIL.TestUtilities
 
 		public TempFile GetNewTempFile(bool doCreateTheFile)
 		{
-			string s = System.IO.Path.GetRandomFileName();
+			string s = GetRandomFileName();
 			s = System.IO.Path.Combine(_path, s);
 			if (doCreateTheFile)
 			{

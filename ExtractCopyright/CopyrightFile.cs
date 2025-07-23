@@ -7,6 +7,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using SIL.Acknowledgements;
+using static System.String;
 
 namespace SIL.ExtractCopyright
 {
@@ -27,8 +28,7 @@ namespace SIL.ExtractCopyright
 		{
 		}
 
-		public CopyrightFile(string filename)
-			: base(filename)
+		public CopyrightFile(string filename) : base(filename)
 		{
 		}
 
@@ -49,17 +49,17 @@ namespace SIL.ExtractCopyright
 				var controlFile = new DebianControl(Path.Combine(debianFolder, "control"));
 				ParseControlContentForValues(controlFile, ref programName, ref contactEmail, ref sourceUrl);
 				// If necessary, try to read some primary information from the changelog file.
-				if (String.IsNullOrEmpty(programName) || String.IsNullOrEmpty(contactEmail))
+				if (IsNullOrEmpty(programName) || IsNullOrEmpty(contactEmail))
 				{
 					var lines = File.ReadAllLines(Path.Combine(debianFolder, "changelog"), Encoding.UTF8);
 					ParseChangelogContentForValues(lines, ref programName, ref contactEmail);
 				}
 				// If we can't derive any information, flag it as unknown.
-				if (String.IsNullOrEmpty(programName))
+				if (IsNullOrEmpty(programName))
 					programName = "UNKNOWN";
-				if (String.IsNullOrEmpty(contactEmail))
+				if (IsNullOrEmpty(contactEmail))
 					contactEmail = "UNKNOWN";
-				if (String.IsNullOrEmpty(sourceUrl))
+				if (IsNullOrEmpty(sourceUrl))
 					sourceUrl = "UNKNOWN";
 				copyrights = CreateNewCopyrightFile(programName, contactEmail, sourceUrl);
 				copyrights._filepath = Path.Combine(debianFolder, "copyright");
@@ -118,7 +118,7 @@ namespace SIL.ExtractCopyright
 			{
 				// The first line of an entry in the changelog looks like this:
 				// "bloom-desktop-alpha (3.9.0) stable; urgency=medium"
-				if (String.IsNullOrEmpty(programName) && lines[i].Contains(" urgency=") && lines[i].Contains(";"))
+				if (IsNullOrEmpty(programName) && lines[i].Contains(" urgency=") && lines[i].Contains(";"))
 				{
 					var headerPieces = lines[i].Trim().Split(' ');
 					programName = headerPieces[i];
@@ -126,14 +126,14 @@ namespace SIL.ExtractCopyright
 				// The closing line of an entry in the changelog looks like this:
 				// " -- Stephen McConnel <stephen_mcconnel@sil.org>  Wed, 18 Jan 2017 11:38:31 -0600"
 				// the two spaces following the <email@address> are significant
-				else if (String.IsNullOrEmpty(contactEmail) && lines[i].StartsWith(" -- ") && lines[i].Contains("@"))
+				else if (IsNullOrEmpty(contactEmail) && lines[i].StartsWith(" -- ") && lines[i].Contains("@"))
 				{
 					var line = lines[i].Substring(4).Trim();
 					var idx = line.IndexOf("  ", StringComparison.Ordinal);
 					if (idx > 0)
 						contactEmail = line.Substring(0, idx);
 				}
-				if (!String.IsNullOrEmpty(programName) && !String.IsNullOrEmpty(contactEmail))
+				if (!IsNullOrEmpty(programName) && !IsNullOrEmpty(contactEmail))
 					return;
 			}
 		}
@@ -156,7 +156,7 @@ namespace SIL.ExtractCopyright
 			para.Fields.Add(new DebianField("Source", sourceUrl));
 
 			// REVIEW: can we assume these values?
-			var programCopyright = String.Format("{0} SIL Global", DateTime.Now.Year);
+			var programCopyright = Format("{0} SIL Global", DateTime.Now.Year);
 			var programLicense = "MIT";
 
 			para = new DebianParagraph();
@@ -173,7 +173,7 @@ namespace SIL.ExtractCopyright
 		internal void AddOrUpdateParagraphFromAcknowledgement(AcknowledgementAttribute ack, string prefix)
 		{
 			string fileSpec;
-			if (!string.IsNullOrEmpty(ack.Location))
+			if (!IsNullOrEmpty(ack.Location))
 			{
 				fileSpec = ack.Location;
 				if (!fileSpec.StartsWith("/"))
@@ -183,7 +183,7 @@ namespace SIL.ExtractCopyright
 			{
 				fileSpec = ack.Key;
 			}
-			if (!String.IsNullOrEmpty(prefix))
+			if (!IsNullOrEmpty(prefix))
 				fileSpec = Path.Combine(prefix, fileSpec);
 
 			if (IsWindowsSpecific(Path.GetFileName(fileSpec)))
@@ -214,7 +214,7 @@ namespace SIL.ExtractCopyright
 			ExtractLicenseInformation(ack.LicenseUrl, out var shortLicense, out var longLicense);
 			para.Fields.Add(new DebianField("License", shortLicense));
 
-			if (!string.IsNullOrEmpty(ack.Url))
+			if (!IsNullOrEmpty(ack.Url))
 				para.Fields.Add(new DebianField("Comment", "URL = " + ack.Url));
 
 			if (shortLicense != "????" && longLicense.Count > 0)
@@ -286,7 +286,7 @@ namespace SIL.ExtractCopyright
 					AddLicenseParagraphIfNeeded(shortLicense, longLicense);
 			}
 
-			if (!string.IsNullOrEmpty(ack.Url))
+			if (!IsNullOrEmpty(ack.Url))
 			{
 				var commentField = para.FindField("Comment");
 				if (commentField == null)
@@ -319,7 +319,7 @@ namespace SIL.ExtractCopyright
 				person = copyright;
 			}
 			person = person.Trim();
-			if (string.IsNullOrEmpty(person))
+			if (IsNullOrEmpty(person))
 				person = "????";
 		}
 
@@ -327,7 +327,7 @@ namespace SIL.ExtractCopyright
 		{
 			shortLicense = "????";
 			longLicense = new List<string>();
-			if (!string.IsNullOrEmpty(original))
+			if (!IsNullOrEmpty(original))
 			{
 				shortLicense = original;
 				var idx = shortLicense.LastIndexOf('/');

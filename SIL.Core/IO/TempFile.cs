@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using JetBrains.Annotations;
+using static System.IO.Path;
 
 namespace SIL.IO
 {
@@ -32,7 +33,7 @@ namespace SIL.IO
 		/// possible file names are already in use.</remarks>
 		public TempFile()
 		{
-			Path = NamePrefix == null ? System.IO.Path.GetTempFileName() : MakeFileAtRandomPath();
+			Path = NamePrefix == null ? GetTempFileName() : MakeFileAtRandomPath();
 		}
 
 		/// <summary>
@@ -50,10 +51,10 @@ namespace SIL.IO
 			string result = "";
 			while (needMoreTries)
 			{
-				result = System.IO.Path.Combine(System.IO.Path.GetTempPath(), (NamePrefix??"") + System.IO.Path.GetRandomFileName());
+				result = Combine(GetTempPath(), (NamePrefix??"") + GetRandomFileName());
 				if (extension != null)
 				{
-					result = System.IO.Path.ChangeExtension(result, extension);
+					result = ChangeExtension(result, extension);
 				}
 				try
 				{
@@ -68,7 +69,7 @@ namespace SIL.IO
 				{
 					// IOException occurs if the file exists. Just try again.
 				}
-			};
+			}
 			return result;
 		}
 
@@ -76,7 +77,7 @@ namespace SIL.IO
 		{
 			if(!dontMakeMeAFileAndDontSetPath)
 			{
-				Path = System.IO.Path.GetTempFileName();
+				Path = GetTempFileName();
 			}
 		}
 
@@ -128,8 +129,7 @@ namespace SIL.IO
 		{
 			if (string.IsNullOrEmpty(NamePrefix))
 				return; // or throw?
-			foreach (var path in System.IO.Directory.EnumerateFiles(System.IO.Path.GetTempPath(),
-				         NamePrefix + "*"))
+			foreach (var path in Directory.EnumerateFiles(GetTempPath(), NamePrefix + "*"))
 			{
 				try
 				{
@@ -143,8 +143,7 @@ namespace SIL.IO
 				}
 			}
 
-			foreach (var dir in System.IO.Directory.EnumerateDirectories(
-				         System.IO.Path.GetTempPath(), NamePrefix + "*"))
+			foreach (var dir in Directory.EnumerateDirectories(GetTempPath(), NamePrefix + "*"))
 			{
 				try
 				{
@@ -215,8 +214,7 @@ namespace SIL.IO
 			// it's safer to use GetRandomFileName here because otherwise we might end up with
 			// identical files with the same name if the app creates temp files quickly enough
 			// while deleting the created file.
-			var t = new TempFile(System.IO.Path.Combine(System.IO.Path.GetTempPath(),
-				System.IO.Path.GetRandomFileName()), false);
+			var t = new TempFile(Combine(GetTempPath(), GetRandomFileName()), false);
 			return t;
 		}
 
@@ -242,7 +240,7 @@ namespace SIL.IO
 			if (filename == string.Empty)
 				throw new ArgumentException("Filename has only whitespace", nameof(filename));
 
-			var pathname = System.IO.Path.Combine(System.IO.Path.GetTempPath(), filename);
+			var pathname = Combine(GetTempPath(), filename);
 			File.Create(pathname).Close();
 			return TrackExisting(pathname);
 		}
@@ -255,9 +253,9 @@ namespace SIL.IO
 		/// <returns></returns>
 		public static TempFile WithFilenameInTempFolder(string fileName)
 		{
-			var tempFolder = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName());
+			var tempFolder = Combine(GetTempPath(), GetRandomFileName());
 			Directory.CreateDirectory(tempFolder);
-			var path = System.IO.Path.Combine(tempFolder, fileName);
+			var path = Combine(tempFolder, fileName);
 			var result = TrackExisting(path);
 			result._folderToDelete = tempFolder;
 			return result;
@@ -307,10 +305,10 @@ namespace SIL.IO
 		{
 			try
 			{
-				var folder = System.IO.Path.GetDirectoryName(inputPath);
+				var folder = GetDirectoryName(inputPath);
 				if (String.IsNullOrEmpty(folder))
 					folder = ".";
-				var path = System.IO.Path.Combine(folder, System.IO.Path.GetRandomFileName());
+				var path = Combine(folder, GetRandomFileName());
 				return TrackExisting(path);
 			}
 			catch (Exception e)
