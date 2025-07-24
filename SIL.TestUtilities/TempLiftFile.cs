@@ -2,12 +2,13 @@ using System.Diagnostics;
 using System.IO;
 using JetBrains.Annotations;
 using SIL.IO;
+using static System.IO.Path;
 
 namespace SIL.TestUtilities
 {
 	public class TempLiftFile : TempFile
 	{
-		private const string LiftFileExt = ".lift";
+		private const string kLiftFileExt = ".lift";
 		
 		public TempLiftFile(string xmlOfEntries)
 			: this(xmlOfEntries, /*LiftIO.Validation.Validator.LiftVersion*/ "0.12")
@@ -19,34 +20,25 @@ namespace SIL.TestUtilities
 		}
 
 		public TempLiftFile(TemporaryFolder parentFolder, string xmlOfEntries, string claimedLiftVersion)
-			: base(true) // True means "I'll set the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
+			: base(dontMakeMeAFileAndDontSetPath: true)
 		{
-			if (parentFolder != null)
-			{
-				Path = parentFolder.GetPathForNewTempFile(false) + LiftFileExt;
-			}
-			else
-			{
-				Path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName() + LiftFileExt);
-			}
+			Path = parentFolder != null
+				? parentFolder.GetPathForNewTempFile(false) + kLiftFileExt
+				: Combine(GetTempPath(), GetRandomFileName() + kLiftFileExt);
 
-			string liftContents =
-				$"<?xml version='1.0' encoding='utf-8'?><lift version='{claimedLiftVersion}'>{xmlOfEntries}</lift>";
-			RobustFile.WriteAllText(Path, liftContents);
+			WriteContents(xmlOfEntries, claimedLiftVersion);
 		}
 
 		public TempLiftFile(string fileName, TemporaryFolder parentFolder, string xmlOfEntries, string claimedLiftVersion)
-			: base(true) // True means "I'll set the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
+			: base(dontMakeMeAFileAndDontSetPath: true)
 		{
 			Path = parentFolder.Combine(fileName);
 
-			string liftContents =
-				$"<?xml version='1.0' encoding='utf-8'?><lift version='{claimedLiftVersion}'>{xmlOfEntries}</lift>";
-			RobustFile.WriteAllText(Path, liftContents);
+			WriteContents(xmlOfEntries, claimedLiftVersion);
 		}
 
 		private TempLiftFile()
-			: base(true) // True means "I'll set the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
+			: base(dontMakeMeAFileAndDontSetPath: true)
 		{
 		}
 
@@ -60,6 +52,13 @@ namespace SIL.TestUtilities
 			TempLiftFile t = new TempLiftFile();
 			t.Path = path;
 			return t;
+		}
+
+		private void WriteContents(string xmlOfEntries, string claimedLiftVersion)
+		{
+			var liftContents = "<?xml version='1.0' encoding='utf-8'?>" +
+				$"<lift version='{claimedLiftVersion}'>{xmlOfEntries}</lift>";
+			RobustFile.WriteAllText(Path, liftContents);
 		}
 	}
 }

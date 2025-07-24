@@ -51,7 +51,7 @@ namespace SIL.IO
 			string result = "";
 			while (needMoreTries)
 			{
-				result = Combine(GetTempPath(), (NamePrefix??"") + GetRandomFileName());
+				result = Combine(GetTempPath(), (NamePrefix ?? "") + GetRandomFileName());
 				if (extension != null)
 				{
 					result = ChangeExtension(result, extension);
@@ -73,12 +73,21 @@ namespace SIL.IO
 			return result;
 		}
 
+		/// <summary>
+		/// Use this constructor to set the path manually later. If
+		/// <paramref name="dontMakeMeAFileAndDontSetPath"/> is <c>false</c>, a temporary file will
+		/// be created and assigned to <see cref="Path"/> (similar to the default constructor,
+		/// except <see cref="NamePrefix"/> is ignored). If <c>true</c>, no file is created and
+		/// <see cref="Path"/> remains unset.
+		/// </summary>
+		/// <param name="dontMakeMeAFileAndDontSetPath">
+		/// Pass <c>true</c> to skip creating a temp file and leave <see cref="Path"/> unset.
+		/// Caller is responsible for setting it later.
+		/// </param>
 		public TempFile(bool dontMakeMeAFileAndDontSetPath)
 		{
-			if(!dontMakeMeAFileAndDontSetPath)
-			{
+			if (!dontMakeMeAFileAndDontSetPath)
 				Path = GetTempFileName();
-			}
 		}
 
 		/// <summary>
