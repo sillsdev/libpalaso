@@ -385,10 +385,10 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 			_grid.IsDirty = true;
 
-			var contribution = GetContributionFromRow(e.RowIndex);
-
-			if (contribution == null || ValidatingContributor == null)
+			if (ValidatingContributor == null)
 				return;
+
+			var contribution = GetContributionFromRow(e.RowIndex);
 
 			var kvp = ValidatingContributor(this, contribution, e);
 
