@@ -17,6 +17,7 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.3.2" PrivateAssets="All" />
     <PackageReference Include="SIL.ReleaseTasks" Version="3.1.1" PrivateAssets="All" />
     <PackageReference Include="System.Resources.Extensions" Version="6.0.0" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
   </ItemGroup>
 
   <ItemGroup>
