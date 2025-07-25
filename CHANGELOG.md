@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- [SIL.TestUtilities] Added a Create method to TemporaryFolder that takes a TestContext
+
 ## [16.1.0] - 2025-07-18
 
 ### Added
