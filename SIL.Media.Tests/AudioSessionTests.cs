@@ -106,7 +106,7 @@ namespace SIL.Media.Tests
 		}
 
 		/// <summary>
-		/// For reasons I don't entirely understand, this test will actually pass when run
+		/// For reasons which I don't entirely understand, this test will actually pass when run
 		/// by itself against a single target framework without an audio output device, but
 		/// to get it to pass when running as part of the fixture or when testing against both
 		/// frameworks, it is necessary to have an audio output device.
@@ -188,7 +188,7 @@ namespace SIL.Media.Tests
 					x.StopRecordingAndSaveAsWav();
 					bool stopped = false;
 					bool isPlayingInEventHandler = false;
-					(x as ISimpleAudioWithEvents).PlaybackStopped += (o, args) =>
+					((ISimpleAudioWithEvents)x).PlaybackStopped += (o, args) =>
 					{
 						// assert here is swallowed, probably because not receiving exceptions from background worker.
 						// We want to check that isPlaying is false even during the event handler.
@@ -220,7 +220,7 @@ namespace SIL.Media.Tests
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
 			{
-				using (var d = new TemporaryFolder("palaso media test"))
+				using (var d = TemporaryFolder.Create(TestContext.CurrentContext))
 				{
 					var soundPath = d.Combine("ก.wav");
 					RobustFile.Copy(file.Path, soundPath);
@@ -242,8 +242,8 @@ namespace SIL.Media.Tests
 		/// </summary>
 		class RecordingSession : IDisposable
 		{
-			private TempFile _tempFile;
-			private ISimpleAudioSession _recorder;
+			private readonly TempFile _tempFile;
+			private readonly ISimpleAudioSession _recorder;
 
 			public RecordingSession()
 			{
@@ -320,7 +320,7 @@ namespace SIL.Media.Tests
 		}
 
 		/// <summary>
-		/// For reasons I don't entirely understand, this test will actually pass when run
+		/// For reasons which I don't entirely understand, this test will actually pass when run
 		/// by itself against a single target framework without an audio output device, but
 		/// to get it to pass when running as part of the fixture or when testing against both
 		/// frameworks, it is necessary to have an audio output device.
@@ -403,7 +403,7 @@ namespace SIL.Media.Tests
 			}
 		}
 
-		private ISimpleAudioSession RecordSomething(TempFile f)
+		private static ISimpleAudioSession RecordSomething(TempFile f)
 		{
 			var x = AudioFactory.CreateAudioSession(f.Path);
 			x.StartRecording();
@@ -430,14 +430,12 @@ namespace SIL.Media.Tests
 		public void Play_DoesPlayMp3_SmokeTest()
 		{
 			// file disposed after playback stopped
-			var file = TempFile.FromResource(Resources.ShortMp3, ".mp3");
+			using var file = TempFile.FromResource(Resources.ShortMp3, ".mp3");
 			using (var x = AudioFactory.CreateAudioSession(file.Path))
 			{
-				(x as ISimpleAudioWithEvents).PlaybackStopped += (e, f) =>
+				((ISimpleAudioWithEvents)x).PlaybackStopped += (e, f) =>
 				{
 					Debug.WriteLine(f);
-					Thread.Sleep(100);
-					file.Dispose();
 				};
 				Assert.That(x.IsPlaying, Is.False);
 				Assert.DoesNotThrow(() => x.Play());
@@ -451,10 +449,10 @@ namespace SIL.Media.Tests
 		[NUnit.Framework.Category("RequiresAudioInputDevice")]
 		public void Record_DoesRecord ()
 		{
-			using (var folder = new TemporaryFolder("Record_DoesRecord"))
+			using (var folder = TemporaryFolder.Create(TestContext.CurrentContext))
 			{
-				string fpath = Path.Combine(folder.Path, "dump.ogg");
-				using (var x = AudioFactory.CreateAudioSession(fpath))
+				string fPath = folder.Combine("dump.ogg");
+				using (var x = AudioFactory.CreateAudioSession(fPath))
 				{
 					Assert.DoesNotThrow(() => x.StartRecording());
 					Assert.IsTrue(x.IsRecording);
@@ -469,7 +467,7 @@ namespace SIL.Media.Tests
 		[Explicit] // This test is to be run manually to test long recordings. After the first beep, recite John 3:16"
 		public void Record_LongRecording()
 		{
-			using (var folder = new TemporaryFolder("Record_LongRecording"))
+			using (var folder = TemporaryFolder.Create(TestContext.CurrentContext))
 			{
 				string fPath = Path.Combine(folder.Path, "long.wav");
 				using (var x = AudioFactory.CreateAudioSession(fPath))
