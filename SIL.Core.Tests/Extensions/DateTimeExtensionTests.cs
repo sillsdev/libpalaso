@@ -1,8 +1,8 @@
-using NUnit.Framework;
-using SIL.Extensions;
 using System;
 using System.Globalization;
 using System.Threading;
+using NUnit.Framework;
+using SIL.Extensions;
 
 namespace SIL.Tests.Extensions
 {
@@ -31,7 +31,6 @@ namespace SIL.Tests.Extensions
 
 		[TestCase(1482)]
 		[TestCase(0939)]
-		[NonParallelizable]
 		public void ToISO8601TimeFormatWithUTCString_BuddhistDate_ReturnsTimeInUTC(int year)
 		{
 			Exception isolatedTestException = null;
@@ -246,6 +245,10 @@ namespace SIL.Tests.Extensions
 					Thread.CurrentThread.CurrentCulture = buddhistCulture;
 
 					result = inputGregorian.ParseModernPastDateTimePermissivelyWithException();
+					// For testing (below), we need to get the result in a format that is
+					// dependent on the current culture (with Buddhist calendar). If we
+					// wait and call ToShortDateString() later, it will use the current
+					// culture of the main thread and produce a different result.
 					resultAsBuddhistShortDate = result?.ToShortDateString();
 				}
 				catch (Exception e)
@@ -314,6 +317,10 @@ namespace SIL.Tests.Extensions
 					Thread.CurrentThread.CurrentCulture = buddhistCulture;
 
 					result = input.ParseModernPastDateTimePermissivelyWithException();
+					// For testing (below), we need to get the result in a format that is
+					// dependent on the current culture (with Buddhist calendar). If we
+					// wait and call ToShortDateString() later, it will use the current
+					// culture of the main thread and produce a different result.
 					resultAsBuddhistShortDate = result?.ToShortDateString();
 				}
 				catch (Exception e)
