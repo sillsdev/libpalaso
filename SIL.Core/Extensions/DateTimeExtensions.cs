@@ -198,8 +198,11 @@ namespace SIL.Extensions
 					}
 
 					if (parsed >= reasonableMin && parsed <= reasonableMax)
+					{
+						result = parsed;
 						return true;
-					
+					}
+
 					// Try switching calendar
 					var altCulture = (CultureInfo)cultureInfo.Clone();
 					var originalCalendar = altCulture.DateTimeFormat.Calendar;
@@ -235,7 +238,8 @@ namespace SIL.Extensions
 				}
 			}
 
-			// not found, return failure
+			// We didn't get any parse that fell within the reasonable range. The result will be
+			// the first successful parse, if any. Otherwise, we will return failure.
 			return success;
 		}
 
