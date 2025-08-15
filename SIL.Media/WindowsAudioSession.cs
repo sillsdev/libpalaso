@@ -4,7 +4,9 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+#if NET462 || NET48
 using IrrKlang;
+#endif
 using NAudio.Wave;
 using SIL.Code;
 
@@ -16,12 +18,16 @@ namespace SIL.Media
 	/// </summary>
 	internal class WindowsAudioSession : ISimpleAudioSession, ISimpleAudioWithEvents
 	{
+#if NET462 || NET48
 		private readonly IrrKlang.IAudioRecorder _recorder;
 		private readonly ISoundEngine _engine = CreateSoundEngine();
+		private readonly SoundFile _soundFile;
+#else
+		// irrKlang is not available on .NET 8+
+#endif
 		private bool _thinkWeAreRecording;
 		private DateTime _startRecordingTime;
 		private DateTime _stopRecordingTime;
-		private readonly SoundFile _soundFile;
 		private WaveOutEvent _outputDevice;
 		private AudioFileReader _audioFile;
 		/// <summary>
@@ -29,6 +35,7 @@ namespace SIL.Media
 		/// </summary>
 		public event EventHandler PlaybackStopped;
 
+#if NET462 || NET48
 		private static ISoundEngine CreateSoundEngine()
 		{
 			try
@@ -50,7 +57,9 @@ namespace SIL.Media
 				return new ISoundEngine(SoundOutputDriver.NullDriver);
 			}
 		}
+#endif
 
+#if NET462 || NET48
 		/// <summary>
 		/// Constructor for an AudioSession using the IrrKlang library
 		/// </summary>
@@ -61,9 +70,16 @@ namespace SIL.Media
 			_engine.AddFileFactory(_soundFile);
 			_recorder = new IrrKlang.IAudioRecorder(_engine);
 			FilePath = filePath;
+		 }
+#else
+		public WindowsAudioSession(string filePath)
+		{
+			throw new PlatformNotSupportedException("WindowsAudioSession is not supported on .NET 8+");
 		}
+#endif
 		public string FilePath { get; }
 
+#if NET462 || NET48
 		public void StartRecording()
 		{
 			if (_thinkWeAreRecording)
@@ -103,6 +119,12 @@ namespace SIL.Media
 		}
 
 		public bool IsRecording => _recorder != null && _recorder.IsRecording;
+#else
+		public void StartRecording() => throw new PlatformNotSupportedException("WindowsAudioSession is not supported on .NET 8+");
+		public void StopRecordingAndSaveAsWav() => throw new PlatformNotSupportedException("WindowsAudioSession is not supported on .NET 8+");
+		public double LastRecordingMilliseconds => 0;
+		public bool IsRecording => false;
+#endif
 
 		public bool IsPlaying { get; set; }
 
@@ -184,6 +206,7 @@ namespace SIL.Media
 			worker.RunWorkerAsync();
 		}
 
+#if NET462 || NET48
 		private class SoundFile : IFileFactory
 		{
 			private readonly string _soundFiledPath;
@@ -208,7 +231,9 @@ namespace SIL.Media
 				_soundFileStream = null;
 			}
 		}
+#endif
 
+#if NET462 || NET48
 		public void SaveAsWav(string path)
 		{
 
@@ -263,6 +288,12 @@ namespace SIL.Media
 
 			_recorder.ClearRecordedAudioDataBuffer();
 		}
+#else
+		public void SaveAsWav(string path)
+		{
+			throw new PlatformNotSupportedException("irrKlang is not supported on .NET 8+");
+		}
+#endif
 
 		public void StopPlaying()
 		{
@@ -272,7 +303,9 @@ namespace SIL.Media
 			}
 			try
 			{
+#if NET462 || NET48
 				_engine.RemoveAllSoundSources();
+#endif
 			}
 			catch (Exception)
 			{
@@ -282,8 +315,10 @@ namespace SIL.Media
 
 		public void Dispose()
 		{
+#if NET462 || NET48
 			_recorder.Dispose();
 			_soundFile.CloseFile();
+#endif
 		}
 	}
 }

@@ -7,6 +7,9 @@ using System.IO;
 using System.Text;
 using JetBrains.Annotations;
 using SIL.Code;
+#if !NET462
+using System.Security.AccessControl;
+#endif
 
 namespace SIL.IO
 {
@@ -349,6 +352,11 @@ namespace SIL.IO
 		public static System.Security.AccessControl.FileSecurity GetAccessControl(string filePath)
 		{
 			return RetryUtility.Retry(() => File.GetAccessControl(filePath), memo: $"GetAccessControl {filePath}");
+		}
+#else
+		public static System.Security.AccessControl.FileSecurity GetAccessControl(string filePath)
+		{
+			return RetryUtility.Retry(() => FileSystemAclExtensions.GetAccessControl(new FileInfo(filePath)), memo: $"GetAccessControl {filePath}");
 		}
 #endif
 	}
