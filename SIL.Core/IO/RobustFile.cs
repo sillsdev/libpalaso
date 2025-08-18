@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.AccessControl;
 using System.Text;
 using JetBrains.Annotations;
 using SIL.Code;
@@ -345,11 +346,13 @@ namespace SIL.IO
 			RetryUtility.Retry(() => File.WriteAllLines(path, contents), memo:$"WriteAllLines {path}");
 		}
 
-#if NET462
-		public static System.Security.AccessControl.FileSecurity GetAccessControl(string filePath)
+		public static FileSecurity GetAccessControl(string filePath)
 		{
+#if NET462
 			return RetryUtility.Retry(() => File.GetAccessControl(filePath), memo: $"GetAccessControl {filePath}");
-		}
+#else
+			return RetryUtility.Retry(() => FileSystemAclExtensions.GetAccessControl(new FileInfo(filePath)), memo: $"GetAccessControl {filePath}");
 #endif
+		}
 	}
 }

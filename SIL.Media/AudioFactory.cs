@@ -9,19 +9,32 @@ namespace SIL.Media
 {
 	public class AudioFactory
 	{
+		
+		/// <summary>
+		/// Creates an audio session for the given file path.
+		/// On Linux, uses ALSA. On Windows, uses IrrKlang (only supported on .NET Framework 4.6.2/4.8).
+		/// Throws PlatformNotSupportedException on Windows with .NET 8+.
+		/// </summary>
 		public static ISimpleAudioSession CreateAudioSession(string filePath)
 		{
 			if (Platform.IsLinux)
 				return new AudioAlsaSession(filePath);
+#if NET462 || NET48
 			RedirectIrrKlangAssembly();
 			return CreateIrrKlangSession(filePath);
+#else
+			throw new PlatformNotSupportedException("WindowsAudioSession is not supported on .NET 8+");
+#endif
 		}
 
+#if NET462 || NET48
 		private static ISimpleAudioSession CreateIrrKlangSession(string filePath)
 		{
 			return new WindowsAudioSession(filePath);
 		}
+#endif
 
+#if NET462 || NET48
 		///<summary>Adds an AssemblyResolve handler to redirect all attempts to load the
 		/// irrKlang.Net.dll to the architecture specific subdirectory.</summary>
 		private static void RedirectIrrKlangAssembly()
@@ -31,7 +44,8 @@ namespace SIL.Media
 
 			ResolveEventHandler handler = null;
 
-			handler = (sender, args) => {
+			handler = (sender, args) =>
+			{
 				const string irrklangNet4Dll = "irrKlang.NET4";
 
 				var requestedAssembly = new AssemblyName(args.Name);
@@ -62,5 +76,6 @@ namespace SIL.Media
 			};
 			AppDomain.CurrentDomain.AssemblyResolve += handler;
 		}
+#endif
 	}
 }

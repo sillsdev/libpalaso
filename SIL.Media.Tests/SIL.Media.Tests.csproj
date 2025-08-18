@@ -4,6 +4,7 @@
     <RootNamespace>SIL.Media.Tests</RootNamespace>
     <AssemblyName>SIL.Media.Tests</AssemblyName>
     <Description>Unit tests for SIL.Media</Description>
+    <TargetFrameworks>$(TargetFrameworks);net8.0-windows</TargetFrameworks>
     <SignAssembly>false</SignAssembly>
     <IsPackable>false</IsPackable>
     <UseWindowsForms>true</UseWindowsForms>
