@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using NAudio;
 using NAudio.Mixer;
 using NAudio.Wave;
@@ -102,7 +103,8 @@ namespace SIL.Media.Naudio
 			SampleAggregator.MaximumCalculated += delegate
 			{
 				_peakLevelEventArgs.Level = SampleAggregator.maxValue;
-				PeakLevelChanged?.BeginInvoke(this, _peakLevelEventArgs, null, null);
+			if (PeakLevelChanged != null)
+        		Task.Run(() => PeakLevelChanged(this, _peakLevelEventArgs));
 			};
 
 			RecordingFormat = new WaveFormat(44100, 1);
@@ -651,7 +653,7 @@ namespace SIL.Media.Naudio
 					_prevRecordedTime = currRecordedTime;
 					_recProgressEventArgs.RecordedLength = TimeSpan.FromSeconds(currRecordedTime);
 					if (RecordingProgress != null)
-						RecordingProgress.BeginInvoke(this, _recProgressEventArgs, null, null);
+    					Task.Run(() => RecordingProgress(this, _recProgressEventArgs));
 				}
 
 				if (RecordingState == RecordingState.RequestedStop)

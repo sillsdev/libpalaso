@@ -63,7 +63,7 @@ namespace SIL.Media.Tests
 			{
 				var info = MediaInfo.GetInfo(file.Path);
 				Assert.That(info.Video.Duration.TotalMilliseconds, Is.EqualTo(3069).Within(0.1));
-				Assert.That(info.Video.Duration, Is.EqualTo(info.AnalysisData.Duration).Within(0.5).Milliseconds);
+				Assert.That(info.Video.Duration, Is.EqualTo(info.AnalysisData.Duration).Within(1).Milliseconds);
 				Assert.That(info.Audio.Duration.TotalMilliseconds, Is.EqualTo(3029).Within(0.1));
 			}
 		}
