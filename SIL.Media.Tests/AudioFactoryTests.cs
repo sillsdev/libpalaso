@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using NUnit.Framework;
 using SIL.IO;
@@ -9,6 +10,14 @@ namespace SIL.Media.Tests
 	[Category("RequiresAudioOutputDevice")] // These will not work if a speaker is not available.
 	public class AudioFactoryTests
 	{
+		[OneTimeSetUp]
+		public void CheckPlatformSupport()
+		{
+#if NET8_0_OR_GREATER
+			Assert.Ignore("AudioFactory tests are not supported on .NET 8+ because WindowsAudioSession functionality is not available on this platform.");
+#endif
+		}
+
 		[Test]
 		public void Construct_FileDoesNotExist_OK()
 		{

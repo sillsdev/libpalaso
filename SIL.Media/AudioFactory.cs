@@ -24,6 +24,7 @@ namespace SIL.Media
 
 		///<summary>Adds an AssemblyResolve handler to redirect all attempts to load the
 		/// irrKlang.Net.dll to the architecture specific subdirectory.</summary>
+#if NET462 || NET48
 		private static void RedirectIrrKlangAssembly()
 		{
 			// https://blog.slaks.net/2013-12-25/redirecting-assembly-loads-at-runtime/
@@ -62,5 +63,11 @@ namespace SIL.Media
 			};
 			AppDomain.CurrentDomain.AssemblyResolve += handler;
 		}
+#else
+		private static void RedirectIrrKlangAssembly()
+		{
+			throw new PlatformNotSupportedException("WindowsAudioSession is not supported on .NET 8+");
+		}
+#endif
 	}
 }
