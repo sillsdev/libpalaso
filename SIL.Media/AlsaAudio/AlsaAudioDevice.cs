@@ -340,8 +340,6 @@ namespace SIL.Media.AlsaAudio
 				return;
 			_fAsyncQuit = true;
 			_recordingThread.Join(1000);
-			if (_recordingThread.IsAlive)
-				_recordingThread.Abort();
 			_recordingThread = null;
 		}
 
@@ -410,8 +408,6 @@ namespace SIL.Media.AlsaAudio
 				return;
 			_fAsyncQuit = true;
 			_playbackThread.Join(1000);
-			if (_playbackThread.IsAlive)
-				_playbackThread.Abort();
 			_playbackThread = null;
 		}
 
@@ -681,7 +677,7 @@ namespace SIL.Media.AlsaAudio
 				{
 				case SND_PCM_FORMAT_S32_LE:
 					var ints = new int[1024 * _info.channels];
-					while (remaining > 0)
+					while (remaining > 0 && !_fAsyncQuit)
 					{
 						int num = (remaining >= 1024) ? 1024 : remaining;
 						long cf = sf_readf_int(_hsf, ints, num);
@@ -695,7 +691,7 @@ namespace SIL.Media.AlsaAudio
 					break;
 				case SND_PCM_FORMAT_FLOAT_LE:
 					var floats = new float[1024 * _info.channels];
-					while (remaining > 0)
+					while (remaining > 0 && !_fAsyncQuit)
 					{
 						int num = (remaining >= 1024) ? 1024 : remaining;
 						long cf = sf_readf_float(_hsf, floats, num);
@@ -709,7 +705,7 @@ namespace SIL.Media.AlsaAudio
 					break;
 				case SND_PCM_FORMAT_FLOAT64_LE:
 					var doubles = new double[1024 * _info.channels];
-					while (remaining > 0)
+					while (remaining > 0 && !_fAsyncQuit)
 					{
 						int num = (remaining >= 1024) ? 1024 : remaining;
 						long cf = sf_readf_double(_hsf, doubles, num);
@@ -723,7 +719,7 @@ namespace SIL.Media.AlsaAudio
 					break;
 				default:
 					var shorts = new short[1024 * _info.channels];
-					while (remaining > 0)
+					while (remaining > 0 && !_fAsyncQuit)
 					{
 						int num = (remaining >= 1024) ? 1024 : remaining;
 						long cf = sf_readf_short(_hsf, shorts, num);

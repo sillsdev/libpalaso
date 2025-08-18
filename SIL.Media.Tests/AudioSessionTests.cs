@@ -17,6 +17,14 @@ namespace SIL.Media.Tests
 	[NUnit.Framework.Category("AudioTests")]
 	public class AudioSessionTests
 	{
+		[OneTimeSetUp]
+		public void CheckPlatformSupport()
+		{
+#if NET8_0_OR_GREATER
+			Assert.Ignore("AudioSession tests are not supported on .NET 8+ because WindowsAudioSession functionality is not available on this platform.");
+#endif
+		}
+
 		[Test]
 		public void StopRecordingAndSaveAsWav_NotRecording_Throws()
 		{

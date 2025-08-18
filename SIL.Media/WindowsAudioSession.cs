@@ -1,6 +1,9 @@
 // Copyright (c) 2015-2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
+/// Not supported in .NET 8+ due to IrrKlang
+#if NET462 || NET48
+
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -287,3 +290,4 @@ namespace SIL.Media
 		}
 	}
 }
+#endif
