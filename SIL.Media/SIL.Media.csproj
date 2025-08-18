@@ -1,5 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <TargetFrameworks>net462;net48;net8.0-windows</TargetFrameworks>
     <RootNamespace>SIL.Media</RootNamespace>
     <AssemblyTitle>SIL.Media</AssemblyTitle>
     <Description>SIL.Media contains Windows Forms UI elements and classes for processing audio on Windows and Linux.</Description>
@@ -28,7 +29,7 @@
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="irrKlang.NET4">
+    <Reference Include="irrKlang.NET4" Condition=" '$(TargetFramework)' == 'net462' Or '$(TargetFramework)' == 'net48' ">
       <Private>false</Private>
     </Reference>
   </ItemGroup>

@@ -38,27 +38,23 @@ namespace SIL.Media
 				if (requestedAssembly.Name != irrklangNet4Dll)
 					return null;
 
-				Debug.WriteLine($"Redirecting assembly load of {args.Name}, " +
-					$"loaded by {(args.RequestingAssembly == null ? "(unknown)" : args.RequestingAssembly.FullName)}");
+                Debug.WriteLine($"Redirecting assembly load of {args.Name}, " +
+                    $"loaded by {(args.RequestingAssembly == null ? "(unknown)" : args.RequestingAssembly.FullName)}");
 
-				var assemblyLocation = Assembly.GetExecutingAssembly().CodeBase;
-				if (!string.IsNullOrEmpty(assemblyLocation))
-				{
-					var uri = new Uri(assemblyLocation);
-					assemblyLocation = uri.LocalPath;
-				}
-				else
-					assemblyLocation = Assembly.GetExecutingAssembly().Location;
+                var assemblyLocation = Assembly.GetExecutingAssembly().Location;
+                if (string.IsNullOrEmpty(assemblyLocation))
+                    assemblyLocation = Directory.GetCurrentDirectory();
 
-				var directory = Path.GetDirectoryName(assemblyLocation);
-				if (string.IsNullOrEmpty(directory))
-					directory = Directory.GetCurrentDirectory();
-				requestedAssembly.CodeBase = Path.Combine(directory, "lib",
-					$"win-{Platform.ProcessArchitecture}", irrklangNet4Dll + ".dll");
+                var directory = Path.GetDirectoryName(assemblyLocation);
+                if (string.IsNullOrEmpty(directory))
+                    directory = Directory.GetCurrentDirectory();
+                
+                var assemblyPath = Path.Combine(directory, "lib",
+                    $"win-{Platform.ProcessArchitecture}", irrklangNet4Dll + ".dll");
 
-				AppDomain.CurrentDomain.AssemblyResolve -= handler;
+                AppDomain.CurrentDomain.AssemblyResolve -= handler;
 
-				return Assembly.Load(requestedAssembly);
+                return Assembly.LoadFrom(assemblyPath);
 			};
 			AppDomain.CurrentDomain.AssemblyResolve += handler;
 		}
