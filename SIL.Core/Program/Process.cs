@@ -30,8 +30,10 @@ namespace SIL.Program
 			var libpath = Environment.GetEnvironmentVariable("LD_LIBRARY_PATH");
 			if (!String.IsNullOrEmpty(libpath))
 				Environment.SetEnvironmentVariable("LD_LIBRARY_PATH", null);
-
-			System.Diagnostics.Process.Start(urlOrCmd);
+			// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+			// We are explicitly setting it to true for consistency with the old behavior
+			// but have not checked if it is necessary here.
+			System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(urlOrCmd) { UseShellExecute = true });
 
 			if (!String.IsNullOrEmpty(libpath))
 				Environment.SetEnvironmentVariable("LD_LIBRARY_PATH", libpath);
@@ -47,7 +49,10 @@ namespace SIL.Program
 			if (!String.IsNullOrEmpty(libpath))
 				Environment.SetEnvironmentVariable("LD_LIBRARY_PATH", null);
 
-			System.Diagnostics.Process.Start(command, arguments);
+			// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+			// We are explicitly setting it to true for consistency with the old behavior
+			// but have not checked if it is necessary here.
+			System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(command, arguments) { UseShellExecute = true });
 
 			if (!String.IsNullOrEmpty(libpath))
 				Environment.SetEnvironmentVariable("LD_LIBRARY_PATH", libpath);

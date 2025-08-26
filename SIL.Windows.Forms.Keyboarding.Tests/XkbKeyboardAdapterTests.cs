@@ -204,6 +204,10 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 				{
 					process.StartInfo.FileName = "/bin/grep";
 					process.StartInfo.Arguments = "-q Belgian /usr/share/X11/xkb/rules/evdev.xml";
+					// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+					// We are explicitly setting it to true for consistency with the old behavior
+					// but have not checked if it is necessary here.
+					process.StartInfo.UseShellExecute = true;
 					process.Start();
 					process.WaitForExit();
 					if (process.ExitCode != 0)
@@ -216,6 +220,10 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 				{
 					process.StartInfo.FileName = "/bin/grep";
 					process.StartInfo.Arguments = "-q 'French (no dead keys)' /usr/share/X11/xkb/rules/evdev.xml";
+					// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+					// We are explicitly setting it to true for consistency with the old behavior
+					// but have not checked if it is necessary here.
+					process.StartInfo.UseShellExecute = true;
 					process.Start();
 					process.WaitForExit();
 					if (process.ExitCode != 0)
