@@ -14,6 +14,10 @@ namespace SIL.Extensions
 		{
 			// Setup
 			using var process = new Process();
+			// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+			// We are explicitly setting it to true for consistency with the old behavior
+			// but have not checked if it is necessary here.
+			process.StartInfo.UseShellExecute = true;
 			var errorTriggered = false;
 
 			// Execute/Verify
@@ -28,6 +32,10 @@ namespace SIL.Extensions
 		{
 			// Setup
 			using var process = new Process();
+			// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+			// We are explicitly setting it to true for consistency with the old behavior
+			// but have not checked if it is necessary here.
+			process.StartInfo.UseShellExecute = true;
 			var errorTriggered = false;
 
 			// Execute/Verify
@@ -42,6 +50,10 @@ namespace SIL.Extensions
 		{
 			// Setup
 			using var process = new Process();
+			// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+			// We are explicitly setting it to true for consistency with the old behavior
+			// but have not checked if it is necessary here.
+			process.StartInfo.UseShellExecute = true;
 
 			// Execute/Verify
 			Assert.That(() => process.RunProcess("NonExistingProgram_8473464", "", null),

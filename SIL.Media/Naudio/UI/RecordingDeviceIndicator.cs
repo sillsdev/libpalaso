@@ -225,7 +225,10 @@ namespace SIL.Media.Naudio.UI
 			try
 			{
 				// launch the control panel that shows the user all their recording device options
-				System.Diagnostics.Process.Start("control", "mmsys.cpl,,1");
+				// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+				// We are explicitly setting it to true for consistency with the old behavior
+				// but have not checked if it is necessary here.
+				System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("control", "mmsys.cpl,,1") { UseShellExecute = true });
 			}
 			catch(Exception)
 			{
