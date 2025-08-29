@@ -207,7 +207,10 @@ namespace SIL.IO
 			try
 			{
 				string filePath = $"/tmp/dummy{fileExtension}";
-				Process.Start("touch", filePath)?.WaitForExit();
+				// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+				// We are explicitly setting it to true for consistency with the old behavior
+				// but have not checked if it is necessary here.
+				Process.Start(new ProcessStartInfo("touch", filePath) { UseShellExecute = true })?.WaitForExit();
 
 				var process = new Process
 				{

@@ -281,7 +281,10 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					return () =>
 					{
 						var setupApp = GetKeyboardSetupApplication(out var args);
-						Process.Start(setupApp, args);
+						// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+						// We are explicitly setting it to true for consistency with the old behavior
+						// but have not checked if it is necessary here.
+						Process.Start(new ProcessStartInfo(setupApp, args) { UseShellExecute = true });
 					};
 				default:
 					throw new NotSupportedException($"No keyboard setup action defined for keyman version {InstalledKeymanVersion}");

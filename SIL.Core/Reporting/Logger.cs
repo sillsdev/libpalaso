@@ -519,7 +519,10 @@ namespace SIL.Reporting
 		public static void ShowUserTheLogFile()
 		{
 			Singleton.m_out.Flush();
-			Process.Start(LogPath);
+			// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+			// We are explicitly setting it to true for consistency with the old behavior
+			// but have not checked if it is necessary here.
+			Process.Start(new ProcessStartInfo(LogPath) { UseShellExecute = true });
 		}
 
 		/// <summary>
@@ -547,7 +550,10 @@ namespace SIL.Reporting
 				writer.Flush();
 				writer.Close();
 			}
-			Process.Start(tempFileName);
+			// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+			// We are explicitly setting it to true for consistency with the old behavior
+			// but have not checked if it is necessary here.
+			Process.Start(new ProcessStartInfo(tempFileName) { UseShellExecute = true });
 		}
 	}
 }

@@ -180,7 +180,10 @@ namespace SIL.Windows.Forms
 			try
 			{
 				Cursor.Current = Cursors.WaitCursor;
-				Process.Start(e.LinkText);
+				// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+				// We are explicitly setting it to true for consistency with the old behavior
+				// but have not checked if it is necessary here.
+				Process.Start(new ProcessStartInfo(e.LinkText) { UseShellExecute = true });
 			}
 			finally
 			{

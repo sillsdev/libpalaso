@@ -16,7 +16,10 @@ namespace SIL.Email
 
 		public bool SendMessage(IEmailMessage message)
 		{
-			var startInfo = new ProcessStartInfo { FileName = "osascript" };
+			// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+			// We are explicitly setting it to true for consistency with the old behavior
+			// but have not checked if it is necessary here.
+			var startInfo = new ProcessStartInfo { FileName = "osascript", UseShellExecute = true };
 			var bldr = new StringBuilder();
 			bldr.AppendLine("-e 'tell application \"Mail\"");
 			bldr.AppendLine("tell (make new outgoing message)");

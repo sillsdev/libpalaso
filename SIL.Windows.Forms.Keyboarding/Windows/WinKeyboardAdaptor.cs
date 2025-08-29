@@ -280,8 +280,12 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		{
 			return () =>
 			{
-				using (Process.Start(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "control.exe"),
-					"input.dll")) {}
+				// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+				// We are explicitly setting it to true for consistency with the old behavior
+				// but have not checked if it is necessary here.
+				using (Process.Start(new ProcessStartInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "control.exe"),
+					"input.dll")
+				{ UseShellExecute = true })) { }
 			};
 		}
 

@@ -170,8 +170,10 @@ namespace SIL.Archiving.IMDI
 					Format(ArchivingPrograms.ArbilCommandLineArgs, PathToProgramToLaunch) :
 					PathToProgramToLaunch;
 			}
-
-			var prs = new Process { StartInfo = { FileName = exePath, Arguments = args } };
+			// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+			// We are explicitly setting it to true for consistency with the old behavior
+			// but have not checked if it is necessary here.
+			var prs = new Process { StartInfo = { FileName = exePath, Arguments = args, UseShellExecute = true } };
 
 			LaunchArchivingProgram(prs);
 		}

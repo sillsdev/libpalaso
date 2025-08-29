@@ -115,7 +115,10 @@ namespace SIL.Media.AlsaAudio
 			if(!_device.StartPlaying(FilePath))
 			{
 				// If the Alsa device can't play the file, it's probably a format we don't recognize. See if the OS knows how to play it.
-				Process.Start(FilePath);
+				// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+				// We are explicitly setting it to true for consistency with the old behavior
+				// but have not checked if it is necessary here.
+				Process.Start(new ProcessStartInfo(FilePath) { UseShellExecute = true });
 			}
 		}
 
