@@ -40,6 +40,10 @@ jobs:
     - name: Install Crowdin cli
       run: npm i -g @crowdin/cli
 
+    - name: Download Palaso.en.xlf source file
+      working-directory: ./l10n
+      run: crowdin download sources -T ${{ secrets.CROWDIN_PAT }}
+
     - name: Download localizations
       working-directory: ./l10n
       run: crowdin download --all -T ${{ secrets.CROWDIN_PAT }}
