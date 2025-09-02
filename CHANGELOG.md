@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
+    - [SIL.libpalaso.l10ns] Add English xlf file to the package
     - [SIL.Windows.Forms] Added PortableClipboard.CanGetImage()
     - [ClipboardTestApp] Restored this test program and added tests for PortableClipboard.CanGetImage() and GetImageFromClipboard()
 
