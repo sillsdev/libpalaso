@@ -73,7 +73,7 @@ namespace SIL.Tests.Extensions
 				TimeSeparator = "."
 			}
 		};
-		
+
 		[Test]
 		public void ToISO8601TimeFormatWithUTCString_CultureUsesPeriods_OutputsWithColons()
 		{
@@ -361,14 +361,10 @@ namespace SIL.Tests.Extensions
 		[TestCase("dd/MM/yyyy")] // Thai/European-style numeric date, zero-padded (e.g. 14/05/2025)
 		[TestCase("d/M/yyyy")] // Thai/European-style numeric date (e.g. 14/5/2025)
 		[TestCase("d-M-yyyy")] // Thai/European-style numeric date with dashes (e.g. 14-5-2025)
-		// Commenting out these test cases for now until they can be fixed.
-		//[TestCase("d")] // Short date pattern (e.g. 14/5/2025)
-		//[TestCase("M/d/yyyy")] // US-style numeric date (e.g. 5/14/2025)
-		//[TestCase("M-d-yyyy")] // US-style numeric date with dashes (e.g. 5-14-2025)
-		//[TestCase("MM/dd/yyyy")] // US-style numeric date, zero-padded (e.g. 05/14/2025)
-		//[TestCase("MM-dd-yyyy")] // US-style numeric date with dashes, zero-padded (e.g. 05-14-2025)
 		public void ParseDateTimePermissivelyWithException_NearFutureDatesWithThaiBuddhistCalendar_ReturnsDateWithPastYear(string inputFormat)
 		{
+			var reasonableMin = new DateTime(1481, 1, 1);
+			var reasonableMax = DateTime.Today.AddDays(4);
 			var futureDate = DateTime.Today.AddDays(5);
 			string input = futureDate.ToString(inputFormat);
 			int expectedYear = futureDate.Year - 543;
@@ -389,8 +385,6 @@ namespace SIL.Tests.Extensions
 					};
 					Thread.CurrentThread.CurrentCulture = buddhistCulture;
 
-					var reasonableMin = new DateTime(1481, 1, 1);
-					var reasonableMax = DateTime.Today + TimeSpan.FromDays(4);
 					result = input.ParseDateTimePermissivelyWithException(reasonableMin,
 						reasonableMax);
 				}
@@ -418,18 +412,12 @@ namespace SIL.Tests.Extensions
 		[TestCase("dd/MM/yyyy")] // Thai/European-style numeric date, zero-padded (e.g. 14/05/2025)
 		[TestCase("d/M/yyyy")] // Thai/European-style numeric date (e.g. 14/5/2025)
 		[TestCase("d-M-yyyy")] // Thai/European-style numeric date with dashes (e.g. 14-5-2025)
-		// Commenting out these test cases for now until they can be fixed.
-		//[TestCase("d")] // Short date pattern (e.g. 14/5/2025)
-		//[TestCase("M/d/yyyy")] // US-style numeric date (e.g. 5/14/2025)
-		//[TestCase("M-d-yyyy")] // US-style numeric date with dashes (e.g. 5-14-2025)
-		//[TestCase("MM/dd/yyyy")] // US-style numeric date, zero-padded (e.g. 05/14/2025)
-		//[TestCase("MM-dd-yyyy")] // US-style numeric date with dashes, zero-padded (e.g. 05-14-2025)
 		public void ParsePastDateTimePermissivelyWithException_NearFutureDatesWithThaiBuddhistCalendar_ReturnsDateWithPastYear(string inputFormat)
 		{
 			var futureDate = DateTime.Today.AddDays(2);
 			var input = futureDate.ToString(inputFormat);
 			var expectedYear = futureDate.Year - 543;
-			
+
 			Exception isolatedTestException = null;
 			DateTime? result = null;
 			// Use an isolated thread to avoid any cross test effects
@@ -455,7 +443,7 @@ namespace SIL.Tests.Extensions
 			});
 			thread.Start();
 			thread.Join();
-			
+
 			Assert.That(isolatedTestException, Is.Null, "Test failed with unexpected exception");
 			Assert.That(result?.Year, Is.EqualTo(expectedYear), "Should have returned a past year");
 		}
@@ -469,6 +457,8 @@ namespace SIL.Tests.Extensions
 		[TestCase("dddd, dd MMMM yyyy")] // Full long format (e.g. Wednesday, 14 May 2025)
 		public void ParseDateTimePermissivelyWithException_NearFutureUSDatesWithThaiBuddhistCalendar_ReturnsDateWithFutureYear(string inputFormat)
 		{
+			var reasonableMin = new DateTime(1900, 1, 1);
+			var reasonableMax = DateTime.Today.AddDays(4);
 			var futureDate = DateTime.Today.AddDays(5);
 			string input = futureDate.ToString(inputFormat);
 			int expectedYear = futureDate.Year;
@@ -489,8 +479,6 @@ namespace SIL.Tests.Extensions
 					};
 					Thread.CurrentThread.CurrentCulture = buddhistCulture;
 
-					var reasonableMin = new DateTime(1900, 1, 1);
-					var reasonableMax = DateTime.Today + TimeSpan.FromDays(4);
 					result = input.ParseDateTimePermissivelyWithException(reasonableMin,
 						reasonableMax);
 				}
@@ -519,7 +507,7 @@ namespace SIL.Tests.Extensions
 			var futureDate = DateTime.Today.AddDays(2);
 			string input = futureDate.ToString(inputFormat);
 			int expectedYear = futureDate.Year;
-			
+
 			Exception isolatedTestException = null;
 			DateTime? result = null;
 			// Use an isolated thread to avoid any cross test effects
