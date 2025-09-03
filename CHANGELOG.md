@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
-
+- [SIL.libpalaso.l10ns] Add English xlf file to the package
 - [SIL.TestUtilities] Added a Create method to TemporaryFolder that takes a TestContext
 - [SIL.Media] Added .NET 8-Windows target (though it does not support AudioFactory.CreateAudioSession or anything that would require IrrKlang)
 - [SIL.Core] Support for RobustFile.GetAccessControl in all builds
