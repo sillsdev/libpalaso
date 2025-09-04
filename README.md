@@ -127,7 +127,7 @@ Further instructions at https://github.com/sillsdev/libpalaso/wiki/Developing-wi
 
 ### Localization
 
-Palaso is localized with [L10NSharp](https://github.com/sillsdev/l10nsharp). Palaso-specific documentation is under `l10n/README.md`.
+Palaso is localized with [L10NSharp](https://github.com/sillsdev/l10nsharp). Palaso-specific documentation is in [l10n/README.md](l10n/README.md).
 
 ### Semantic versioning
 
