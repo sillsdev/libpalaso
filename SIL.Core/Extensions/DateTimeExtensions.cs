@@ -203,7 +203,9 @@ namespace SIL.Extensions
 						return true;
 					}
 
-					// Try switching calendar
+					// Try switching to Thai/Buddhist calendar. Note that other calendars (Hijri,
+					// Hebrew, etc.) could also be tried, in order of likelihood, but we have never
+					// seen evidence of data suggesting that it is necessary.
 					var altCulture = (CultureInfo)cultureInfo.Clone();
 					var originalCalendar = altCulture.DateTimeFormat.Calendar;
 					try
