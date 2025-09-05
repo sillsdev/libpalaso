@@ -321,7 +321,10 @@ namespace SIL.IO
 						arguments = $"\"{Path.GetDirectoryName(path)}\"";
 						break;
 				}
-				Process.Start(fileManager, arguments);
+				// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+				// We are explicitly setting it to true for consistency with the old behavior
+				// but have not checked if it is necessary here.
+				Process.Start(new ProcessStartInfo(fileManager, arguments) { UseShellExecute = true });
 			}
 		}
 
@@ -361,7 +364,10 @@ namespace SIL.IO
 		/// <param name="filePath">Full path to the file</param>
 		public static void OpenFileInApplication(string filePath)
 		{
-			Process.Start(filePath);
+			// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+			// We are explicitly setting it to true for consistency with the old behavior
+			// but have not checked if it is necessary here.
+			Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
 		}
 
 		private static string GetDefaultFileManager()
@@ -372,6 +378,10 @@ namespace SIL.IO
 			const string fallbackFileManager = "xdg-open";
 
 			using var xdgmime = new Process();
+			// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+			// We are explicitly setting it to true for consistency with the old behavior
+			// but have not checked if it is necessary here.
+			xdgmime.StartInfo.UseShellExecute = true;
 			bool processError = false;
 			xdgmime.RunProcess("xdg-mime", "query default inode/directory", exception =>  {
 				processError = true;
