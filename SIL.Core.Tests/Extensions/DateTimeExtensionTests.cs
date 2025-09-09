@@ -361,16 +361,18 @@ namespace SIL.Tests.Extensions
 		[TestCase("dd/MM/yyyy")] // Thai/European-style numeric date, zero-padded (e.g. 14/05/2025)
 		[TestCase("d/M/yyyy")] // Thai/European-style numeric date (e.g. 14/5/2025)
 		[TestCase("d-M-yyyy")] // Thai/European-style numeric date with dashes (e.g. 14-5-2025)
-		// Commenting out these test cases for now until they can be fixed.
-		//[TestCase("d")] // Short date pattern (e.g. 14/5/2025)
-		//[TestCase("M/d/yyyy")] // US-style numeric date (e.g. 5/14/2025)
-		//[TestCase("M-d-yyyy")] // US-style numeric date with dashes (e.g. 5-14-2025)
-		//[TestCase("MM/dd/yyyy")] // US-style numeric date, zero-padded (e.g. 05/14/2025)
-		//[TestCase("MM-dd-yyyy")] // US-style numeric date with dashes, zero-padded (e.g. 05-14-2025)
-		public void ParseDateTimePermissivelyWithException_NearFutureDatesWithThaiBuddhistCalendar_ReturnsDateWithPastYear(string inputFormat)
+		[TestCase("d")] // Short date pattern (region-specific: 14/5/2025, 5/14/2025, 14/05/2025, etc.)
+		[TestCase("M/d/yyyy")] // US-style numeric date (e.g. 5/14/2025)
+		[TestCase("M-d-yyyy")] // US-style numeric date with dashes (e.g. 5-14-2025)
+		[TestCase("MM/dd/yyyy")] // US-style numeric date, zero-padded (e.g. 05/14/2025)
+		[TestCase("MM-dd-yyyy")] // US-style numeric date with dashes, zero-padded (e.g. 05-14-2025)
+		public void ParseDateTimePermissivelyWithException_NearFutureDatesWithThaiBuddhistCalendar_ReturnsDateWithPastYear(
+			string inputFormat)
 		{
-			var futureDate = DateTime.Today.AddDays(5);
-			string input = futureDate.ToString(inputFormat);
+			var futureDate = GetNextFutureDateWithPotentiallyAmbiguousDay(5);
+			int maxDateOffset = (futureDate - DateTime.Today).Days - 1;
+			var input = futureDate.ToString(inputFormat);
+			Console.WriteLine($@"{nameof(input)} = {input}");
 			int expectedYear = futureDate.Year - 543;
 
 			Exception isolatedTestException = null;
@@ -390,7 +392,7 @@ namespace SIL.Tests.Extensions
 					Thread.CurrentThread.CurrentCulture = buddhistCulture;
 
 					var reasonableMin = new DateTime(1481, 1, 1);
-					var reasonableMax = DateTime.Today + TimeSpan.FromDays(4);
+					var reasonableMax = DateTime.Today.AddDays(maxDateOffset);
 					result = input.ParseDateTimePermissivelyWithException(reasonableMin,
 						reasonableMax);
 				}
@@ -402,8 +404,25 @@ namespace SIL.Tests.Extensions
 			thread.Start();
 			thread.Join();
 
+			if (inputFormat == "d")
+			{
+				if (isolatedTestException != null)
+				{
+					Assert.Ignore("\"d\" test case (dependent on current culture) caused " +
+						$"exception: {isolatedTestException.Message}. Input = {{input}}");
+				}
+
+				if (result?.Year != expectedYear)
+				{
+					Assert.Ignore("\"d\" test case (dependent on current culture) year " +
+						$"{result?.Year} != expected {expectedYear}. Input = {{input}}");
+				}
+
+				return;
+			}
+			
 			Assert.That(isolatedTestException, Is.Null, "Test failed with unexpected exception");
-			Assert.That(result?.Year, Is.EqualTo(expectedYear));
+			Assert.That(result?.Year, Is.EqualTo(expectedYear), "Should have returned a past year");
 		}
 
 		/// <summary>
@@ -418,16 +437,17 @@ namespace SIL.Tests.Extensions
 		[TestCase("dd/MM/yyyy")] // Thai/European-style numeric date, zero-padded (e.g. 14/05/2025)
 		[TestCase("d/M/yyyy")] // Thai/European-style numeric date (e.g. 14/5/2025)
 		[TestCase("d-M-yyyy")] // Thai/European-style numeric date with dashes (e.g. 14-5-2025)
-		// Commenting out these test cases for now until they can be fixed.
-		//[TestCase("d")] // Short date pattern (e.g. 14/5/2025)
-		//[TestCase("M/d/yyyy")] // US-style numeric date (e.g. 5/14/2025)
-		//[TestCase("M-d-yyyy")] // US-style numeric date with dashes (e.g. 5-14-2025)
-		//[TestCase("MM/dd/yyyy")] // US-style numeric date, zero-padded (e.g. 05/14/2025)
-		//[TestCase("MM-dd-yyyy")] // US-style numeric date with dashes, zero-padded (e.g. 05-14-2025)
-		public void ParsePastDateTimePermissivelyWithException_NearFutureDatesWithThaiBuddhistCalendar_ReturnsDateWithPastYear(string inputFormat)
+		[TestCase("d")] // Short date pattern (region-specific: 14/5/2025, 5/14/2025, 14/05/2025)
+		[TestCase("M/d/yyyy")] // US-style numeric date (e.g. 5/14/2025)
+		[TestCase("M-d-yyyy")] // US-style numeric date with dashes (e.g. 5-14-2025)
+		[TestCase("MM/dd/yyyy")] // US-style numeric date, zero-padded (e.g. 05/14/2025)
+		[TestCase("MM-dd-yyyy")] // US-style numeric date with dashes, zero-padded (e.g. 05-14-2025)
+		public void ParsePastDateTimePermissivelyWithException_NearFutureDatesWithThaiBuddhistCalendar_ReturnsDateWithPastYear(
+			string inputFormat)
 		{
-			var futureDate = DateTime.Today.AddDays(2);
+			var futureDate = GetNextFutureDateWithPotentiallyAmbiguousDay();
 			var input = futureDate.ToString(inputFormat);
+			Console.WriteLine($@"{nameof(input)} = {input}");
 			var expectedYear = futureDate.Year - 543;
 			
 			Exception isolatedTestException = null;
@@ -455,6 +475,23 @@ namespace SIL.Tests.Extensions
 			});
 			thread.Start();
 			thread.Join();
+
+			if (inputFormat == "d")
+			{
+				if (isolatedTestException != null)
+				{
+					Assert.Ignore("\"d\" test case (dependent on current culture) caused " +
+						$"exception: {isolatedTestException.Message}. Input = {{input}}");
+				}
+
+				if (result?.Year != expectedYear)
+				{
+					Assert.Ignore("\"d\" test case (dependent on current culture) year " +
+						$"{result?.Year} != expected {expectedYear}. Input = {{input}}");
+				}
+
+				return;
+			}
 			
 			Assert.That(isolatedTestException, Is.Null, "Test failed with unexpected exception");
 			Assert.That(result?.Year, Is.EqualTo(expectedYear), "Should have returned a past year");
@@ -469,7 +506,8 @@ namespace SIL.Tests.Extensions
 		[TestCase("dddd, dd MMMM yyyy")] // Full long format (e.g. Wednesday, 14 May 2025)
 		public void ParseDateTimePermissivelyWithException_NearFutureUSDatesWithThaiBuddhistCalendar_ReturnsDateWithFutureYear(string inputFormat)
 		{
-			var futureDate = DateTime.Today.AddDays(5);
+			var futureDate = GetNextFutureDateWithPotentiallyAmbiguousDay(5);
+			int maxDateOffset = (futureDate - DateTime.Today).Days - 1;
 			string input = futureDate.ToString(inputFormat);
 			int expectedYear = futureDate.Year;
 
@@ -490,7 +528,7 @@ namespace SIL.Tests.Extensions
 					Thread.CurrentThread.CurrentCulture = buddhistCulture;
 
 					var reasonableMin = new DateTime(1900, 1, 1);
-					var reasonableMax = DateTime.Today + TimeSpan.FromDays(4);
+					var reasonableMax = DateTime.Today.AddDays(maxDateOffset);
 					result = input.ParseDateTimePermissivelyWithException(reasonableMin,
 						reasonableMax);
 				}
@@ -516,7 +554,7 @@ namespace SIL.Tests.Extensions
 		[TestCase("dddd, dd MMMM yyyy")] // Full long format (e.g. Wednesday, 14 May 2025)
 		public void ParsePastDateTimePermissivelyWithException_NearFutureUSDatesWithThaiBuddhistCalendar_ReturnsDateWithFutureYear(string inputFormat)
 		{
-			var futureDate = DateTime.Today.AddDays(2);
+			var futureDate = GetNextFutureDateWithPotentiallyAmbiguousDay();
 			string input = futureDate.ToString(inputFormat);
 			int expectedYear = futureDate.Year;
 			
@@ -550,6 +588,25 @@ namespace SIL.Tests.Extensions
 			Assert.That(result?.Year, Is.EqualTo(expectedYear));
 		}
 
+		/// <summary>
+		/// Helper method to find the next "near" future date with a day number less than or equal
+		/// to 12, such that it that could potentially be mistaken for a month number if the date
+		/// format is ambiguous.
+		/// </summary>
+		/// <param name="minDaysIntoFuture">Number of days in the future to start looking for a
+		/// "near" date. Pass 2 or greater to avoid possible edge cases related to time zones.
+		/// </param>
+		private static DateTime GetNextFutureDateWithPotentiallyAmbiguousDay(int minDaysIntoFuture = 2)
+		{
+			var date = DateTime.Today.AddDays(minDaysIntoFuture);
+			if (date.Day > 12)
+			{
+				var nextMonth = date.AddMonths(1);
+				date = new DateTime(nextMonth.Year, nextMonth.Month, 1);
+			}
+			return date;
+		}
+		
 		[TestCase("19/10/2025 0:00:00", ExpectedResult = "2025-10-19")]
 		[TestCase("14/4/1482", ExpectedResult = "1482-04-14")]
 		[TestCase("13/3/1800 0:01:00", ExpectedResult = "1800-03-13")]
