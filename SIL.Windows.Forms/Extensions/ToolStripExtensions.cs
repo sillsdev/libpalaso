@@ -150,6 +150,7 @@ namespace SIL.Windows.Forms.Extensions
 			}
 
 			menu.DropDownOpening += DropDownOpening;
+
 		}
 	}
 
