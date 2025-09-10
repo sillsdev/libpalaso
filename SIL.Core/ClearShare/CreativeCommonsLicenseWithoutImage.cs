@@ -84,23 +84,13 @@ namespace SIL.Core.ClearShare
 		/// Other values are not guaranteed to work, though at present they will.
 		/// Enhance: Possibly we should try to verify that the token is a valid CCL one?
 		/// </summary>
-		public static LicenseInfo FromToken(string token)
+		/*public new static LicenseInfo FromToken(string token)
 		{
 			var result = new CreativeCommonsLicenseWithoutImage();
 			// Note (JH): Since version was set to default, as I add the qualifier, I'm going to let it be default as well.
 			result.Url = MakeUrlFromParts(token, kDefaultVersion, null);
 			return result;
-		}
-
-		public static LicenseInfo FromXmp(Dictionary<string, string> properties)
-		{
-			if (properties.ContainsKey("license") && properties["license"].Contains("creativecommons"))
-				return CreativeCommonsLicenseWithoutImage.FromMetadata(properties);
-
-			if (properties.ContainsKey("rights (en)"))
-				return CustomLicenseWithoutImage.FromMetadata(properties);
-			return new NullLicense();
-		}
+		}*/
 
 		public static CreativeCommonsLicenseWithoutImage FromLicenseUrl(string url)
 		{
@@ -115,7 +105,6 @@ namespace SIL.Core.ClearShare
 
 		protected CreativeCommonsLicenseWithoutImage()
 		{
-
 		}
 
 		public CreativeCommonsLicenseWithoutImage(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule, string version)

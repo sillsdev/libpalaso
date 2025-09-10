@@ -55,7 +55,7 @@ namespace SIL.Windows.Forms.TestApp
 			_localizationIncompleteViewModel = new LocalizationIncompleteViewModel(
 				Program.PrimaryL10NManager, "testapp",
 				IssueAnalyticsRequest);
-			_uiLanguageMenu.InitializeWithAvailableUILocales(l => true, Program.PrimaryL10NManager,
+			_uiLanguageMenu.InitializeWithAvailableUILocales(l => true,
 				_localizationIncompleteViewModel, additionalNamedLocales:new Dictionary<string, string> {
 					{ "Some untranslated language", WellKnownSubtags.UnlistedLanguage } });
 			_cboAboutHTML.SelectedIndex = 0;

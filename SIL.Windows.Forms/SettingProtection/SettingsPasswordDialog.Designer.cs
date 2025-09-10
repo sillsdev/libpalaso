@@ -34,7 +34,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			this._cancelButton = new System.Windows.Forms.Button();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this._explanation = new SIL.Windows.Forms.Widgets.BetterLabel();
-			this.l10NSharpExtender1 = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this.l10NSharpExtender1 = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			this.passwordBox = new SIL.Windows.Forms.Widgets.PasswordBox();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -188,7 +188,7 @@ namespace SIL.Windows.Forms.SettingProtection
 		private System.Windows.Forms.Button _cancelButton;
 		private Widgets.BetterLabel _explanation;
 		private System.Windows.Forms.PictureBox pictureBox1;
-		private L10NSharp.UI.L10NSharpExtender l10NSharpExtender1;
+		private L10NSharp.Windows.Forms.L10NSharpExtender l10NSharpExtender1;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private SIL.Windows.Forms.Widgets.PasswordBox passwordBox;
 	}

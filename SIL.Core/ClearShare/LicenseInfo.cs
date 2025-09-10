@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using L10NSharp;
@@ -8,6 +7,7 @@ namespace SIL.Core.ClearShare
 	/// <summary/>
 	public abstract class LicenseInfo
 	{
+		// Note: the only use of FromXmp is in Metadata, to create a license.
 		public static LicenseInfo FromXmp(Dictionary<string, string> properties)
 		{
 			if (properties.ContainsKey("license") && properties["license"].Contains("creativecommons"))
@@ -19,7 +19,7 @@ namespace SIL.Core.ClearShare
 		}
 
 		/// <summary>
-		/// A compact form of of this license that doesn't introduce any new text (though the license may itself have text)
+		/// A compact form of this license that doesn't introduce any new text (though the license may itself have text)
 		/// E.g. "CC BY-NC"
 		/// </summary>
 		public abstract string GetMinimalFormForCredits(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed);
@@ -30,19 +30,6 @@ namespace SIL.Core.ClearShare
 		/// A string that is a good short indication of the license type, and can be used in FromToken.
 		/// </summary>
 		public abstract string Token { get; }
-
-		//Review (JH asks in Oct 2016): Why does this exist? The only uses in libpalaso are in tests and examples. Bloom does not use it.
-		// Why is From Url not sufficient?
-		public static LicenseInfo FromToken(string abbr)
-		{
-			switch (abbr)
-			{
-				case "ask": return new NullLicense();
-				case "custom": return new CustomLicenseWithoutImage();
-				default:
-					return CreativeCommonsLicenseWithoutImage.FromToken(abbr);
-			}
-		}
 
 		/// <summary>
 		/// It doesn't make sense to let the user edit the description of a well-known license, even if the meta data is unlocked.

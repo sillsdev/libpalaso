@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 using L10NSharp;
+using L10NSharp.Windows.Forms;
 using SIL.Windows.Forms.LocalizationIncompleteDlg;
 using static SIL.WritingSystems.IetfLanguageTag;
 
@@ -94,7 +95,7 @@ namespace SIL.Windows.Forms.Extensions
 		[PublicAPI]
 		[CLSCompliant(false)]
 		public static void InitializeWithAvailableUILocales(this ToolStripDropDownItem menu,
-			Func<string, bool> localeSelectedAction = null, ILocalizationManager lm = null,
+			Func<string, bool> localeSelectedAction = null, //ILocalizationManager lm = null,
 			LocalizationIncompleteViewModel localizationIncompleteViewModel = null,
 			Func<bool> moreSelected = null, Dictionary<string, string> additionalNamedLocales = null)
 		{
@@ -142,7 +143,7 @@ namespace SIL.Windows.Forms.Extensions
 								return;
 					}
 					
-					LocalizationManager.SetUILanguage(languageId, true);
+					LocalizationManagerWinforms.SetUILanguage(languageId, true);
 					if (menu is ToolStripDropDownButton btn)
 						btn.Text = item.Text;
 				};
@@ -155,7 +156,7 @@ namespace SIL.Windows.Forms.Extensions
 
 			menu.DropDownOpening += DropDownOpening;
 
-			if (lm != null)
+			/*if (lm != null)
 			{
 				menu.DropDownItems.Add(new ToolStripSeparator());
 				var moreMenu = menu.DropDownItems.Add(LocalizationManager.GetString("Common.MoreMenuItem",
@@ -169,7 +170,7 @@ namespace SIL.Windows.Forms.Extensions
 						localizationIncompleteViewModel,
 						moreSelected, additionalNamedLocales);
 				};
-			}
+			}*/
 		}
 	}
 
