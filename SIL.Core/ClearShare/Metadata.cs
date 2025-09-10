@@ -81,14 +81,14 @@ namespace SIL.Core.ClearShare
 				return false; // Taglib already figured it as suspicious
 			if (_originalTaglibMetadata.Properties == null)
 				return false; // valid JPG, PNG, and TIF usually have this
-			// Setting limit here at 10 mega-pixels. Pretty arbitrary, even phones can produce bigger images
-			// these days. It's a bit more than an A4 full page at Bloom's min recommended 300dpi, a bit
-			// more than we need at max recommended 600dpi for a half page in A5. There could be smaller
-			// images that really run us out of memory, or larger ones that only fail because they are
-			// corrupt. But Image.FromFile's bad design forces us to guess somehow. It seems unhelpful
-			// to issue the sorts of advice we give about big files if the image is not unusually large.
-			if ((long) _originalTaglibMetadata.Properties.PhotoHeight *
-				(long) _originalTaglibMetadata.Properties.PhotoWidth > 10000000L)
+							  // Setting limit here at 10 mega-pixels. Pretty arbitrary, even phones can produce bigger images
+							  // these days. It's a bit more than an A4 full page at Bloom's min recommended 300dpi, a bit
+							  // more than we need at max recommended 600dpi for a half page in A5. There could be smaller
+							  // images that really run us out of memory, or larger ones that only fail because they are
+							  // corrupt. But Image.FromFile's bad design forces us to guess somehow. It seems unhelpful
+							  // to issue the sorts of advice we give about big files if the image is not unusually large.
+			if ((long)_originalTaglibMetadata.Properties.PhotoHeight *
+				(long)_originalTaglibMetadata.Properties.PhotoWidth > 10000000L)
 			{
 				// It's a pretty big picture, maybe we really are out of memory
 				ex.Data["imageSize"] =
@@ -114,7 +114,7 @@ namespace SIL.Core.ClearShare
 				destinationMetadata.ExceptionCaughtWhileLoading = null;
 				destinationMetadata._originalTaglibMetadata = RetryUtility.Retry(() =>
 				  TagLib.File.Create(path) as TagLib.Image.File,
-				  memo:$"LoadProperties({path})");
+				  memo: $"LoadProperties({path})");
 			}
 			catch (TagLib.UnsupportedFormatException ex)
 			{
@@ -167,7 +167,7 @@ namespace SIL.Core.ClearShare
 		{
 			destinationMetadata.CopyrightNotice = tagMain.Copyright;
 			destinationMetadata.Creator = tagMain.Creator;
-			XmpTag xmpTag = tagMain as XmpTag ?? ((CombinedImageTag) tagMain).Xmp;
+			XmpTag xmpTag = tagMain as XmpTag ?? ((CombinedImageTag)tagMain).Xmp;
 			var licenseProperties = new Dictionary<string, string>();
 			if (xmpTag != null)
 			{
@@ -185,7 +185,6 @@ namespace SIL.Core.ClearShare
 				if (rights != null)
 					licenseProperties["rights (en)"] = rights;
 			}
-
 			destinationMetadata.License = LicenseInfo.FromXmp(licenseProperties);
 
 			//NB: we're losing non-ascii somewhere... the copyright symbol is just the most obvious
@@ -222,7 +221,7 @@ namespace SIL.Core.ClearShare
 			get => _copyrightNotice;
 			set
 			{
-				if (value!=null && value.Trim().Length == 0)
+				if (value != null && value.Trim().Length == 0)
 					value = null;
 				if (value != _copyrightNotice)
 					HasChanges = true;
@@ -242,7 +241,7 @@ namespace SIL.Core.ClearShare
 		/// <returns></returns>
 		private string FixArtOfReadingCopyrightProblem(string value)
 		{
-			if(IsNullOrEmpty(value))
+			if (IsNullOrEmpty(value))
 				return Empty;
 			var startOfProblem = value.IndexOf("This work");
 			if (startOfProblem == -1)
@@ -377,7 +376,7 @@ namespace SIL.Core.ClearShare
 				assignments.Add(new MetadataAssignment("-XMP-cc:AttributionURL", "Attribution URL", (p, value) => p.AttributionUrl = value, p => p.AttributionUrl));
 				assignments.Add(new MetadataAssignment("-XMP-cc:License", "license",
 													   (p, value) => { },//p.License=LicenseInfo.FromUrl(value), //we need to use for all the properties to set up the license
-													   p => p.License.Url, p => p.License !=null));
+													   p => p.License.Url, p => p.License != null));
 				//NB: CC also has a custom one, for adding rights beyond the normal. THat's not what this is (at least right now). This is for custom licenses.
 				assignments.Add(new MetadataAssignment("-XMP-dc:Rights-en", "Rights (en)",
 													   (p, value) => { },//p.License=LicenseInfo.FromUrl(value), //we need to use for all the properties to set up the license
@@ -396,7 +395,7 @@ namespace SIL.Core.ClearShare
 			set
 			{
 				_hasChanges = value;
-				if(!value && License!=null)
+				if (!value && License != null)
 					License.HasChanges = false;
 			}
 		}
@@ -406,9 +405,10 @@ namespace SIL.Core.ClearShare
 		/// </summary>
 		public string ShortCopyrightNotice
 		{
-			get {
+			get
+			{
 				var i = CopyrightNotice.IndexOf('.');
-				if(i<0)
+				if (i < 0)
 					return CopyrightNotice;
 				return CopyrightNotice.Substring(0, i);
 			}
@@ -429,7 +429,7 @@ namespace SIL.Core.ClearShare
 		{
 			var file = RetryUtility.Retry(() =>
 				 TagLib.File.Create(path) as TagLib.Image.File,
-				memo:$"FileFormatSupportsMetadata({path})");
+				memo: $"FileFormatSupportsMetadata({path})");
 			return file != null && !file.GetType().FullName.Contains("NoMetadata");
 		}
 
@@ -465,12 +465,12 @@ namespace SIL.Core.ClearShare
 
 			var file = RetryUtility.Retry(() =>
 				TagLib.File.Create(path) as TagLib.Image.File,
-				memo:$"Metadata.Write({path}) - creating TagLib.Image.File");
+				memo: $"Metadata.Write({path}) - creating TagLib.Image.File");
 
 			file.GetTag(TagTypes.XMP, true); // The Xmp tag, at least, must exist so we can store properties into it.
-			// This does nothing if the file is not allowed to have PNG tags, that is, if it's not a PNG file.
-			// If it is, we want this tag to exist, since otherwise tools like exiftool (and hence old versions
-			// of this library and its clients) won't see our copyright notice and creator, at least.
+											 // This does nothing if the file is not allowed to have PNG tags, that is, if it's not a PNG file.
+											 // If it is, we want this tag to exist, since otherwise tools like exiftool (and hence old versions
+											 // of this library and its clients) won't see our copyright notice and creator, at least.
 			file.GetTag(TagTypes.Png, true);
 			// If we know where the image came from, copy as much metadata as we can to the new image.
 			if (copyAllMetaDataFromOriginal && _originalTaglibMetadata != null)
@@ -497,7 +497,8 @@ namespace SIL.Core.ClearShare
 
 		public void SetupReasonableLicenseDefaultBeforeEditing()
 		{
-			if (IsLicenseNotSet) {
+			if (IsLicenseNotSet)
+			{
 				License = new CreativeCommonsLicenseWithoutImage(true, true, CreativeCommonsLicenseWithoutImage.DerivativeRules.Derivatives);
 			}
 		}
@@ -514,7 +515,7 @@ namespace SIL.Core.ClearShare
 
 		public Metadata DeepCopy()
 		{
-			return (Metadata) CloneObject(this);
+			return (Metadata)CloneObject(this);
 		}
 
 		/// <summary>
@@ -545,7 +546,7 @@ namespace SIL.Core.ClearShare
 					{
 						item.SetValue(target, item.GetValue(source, null), null);
 					}
-						//object/complex types need to recursively call this method until the end of the tree is reached
+					//object/complex types need to recursively call this method until the end of the tree is reached
 					else
 					{
 						object propertyValue = item.GetValue(source, null);
@@ -611,7 +612,7 @@ namespace SIL.Core.ClearShare
 
 			XmpTag xmp = tagMain as XmpTag;
 			if (xmp == null)
-				xmp = ((CombinedImageTag) tagMain).Xmp;
+				xmp = ((CombinedImageTag)tagMain).Xmp;
 			SetCopyright(tagMain, CopyrightNotice);
 			tagMain.Creator = Creator;
 			AddOrModify(xmp, kNsCollections, "CollectionURI", CollectionUri);
@@ -655,13 +656,13 @@ namespace SIL.Core.ClearShare
 			{
 				if (IsNullOrEmpty(rights))
 					return; // leave it missing.
-				// No existing rights node, and we have some. We use (default lang) rights for copyright too, and there seems to be no way to
-				// make the base node without setting that. So set it to something meaningless.
-				// This will typically never happen, since our dialog requires a non-empty copyright.
-				// I'm not entirely happy with it, but as far as I can discover the current version of taglib cannot
-				// set the 'en' alternative of dc:rights without setting the  default alternative. In fact, I'm not sure the
-				// result of doing so would technically be valid xmp; the standard calls for every language alternation
-				// to have a default.
+							// No existing rights node, and we have some. We use (default lang) rights for copyright too, and there seems to be no way to
+							// make the base node without setting that. So set it to something meaningless.
+							// This will typically never happen, since our dialog requires a non-empty copyright.
+							// I'm not entirely happy with it, but as far as I can discover the current version of taglib cannot
+							// set the 'en' alternative of dc:rights without setting the  default alternative. In fact, I'm not sure the
+							// result of doing so would technically be valid xmp; the standard calls for every language alternation
+							// to have a default.
 				xmp.SetLangAltNode("http://purl.org/dc/elements/1.1/", "rights", "Unknown");
 				rightsNode = xmp.FindNode("http://purl.org/dc/elements/1.1/", "rights");
 			}
@@ -729,7 +730,7 @@ namespace SIL.Core.ClearShare
 		/// <example>LoadXmpFile("c:\dir\metadata.xmp")</example>
 		public void LoadXmpFile(string path)
 		{
-			if(!RobustFile.Exists(path))
+			if (!RobustFile.Exists(path))
 				throw new FileNotFoundException(path);
 
 			var xmp = new XmpTag(RobustFile.ReadAllText(path, Encoding.UTF8), null);
@@ -792,7 +793,7 @@ namespace SIL.Core.ClearShare
 			b.Append(localizedCreatorLabel).Append(": ").AppendLine(Creator);
 			b.AppendLine($"{localizedCreatorLabel}: {Creator}");
 			b.AppendLine(CopyrightNotice);
-			if(!IsNullOrEmpty(CollectionName))
+			if (!IsNullOrEmpty(CollectionName))
 				b.AppendLine(CollectionName);
 			if (!IsNullOrEmpty(CollectionUri))
 				b.AppendLine(CollectionUri);
@@ -828,7 +829,7 @@ namespace SIL.Core.ClearShare
 		{
 			var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 			var path = appData.CombineForPath("palaso");
-			if(!Directory.Exists(path))
+			if (!Directory.Exists(path))
 			{
 				Directory.CreateDirectory(path);
 			}
@@ -848,7 +849,7 @@ namespace SIL.Core.ClearShare
 
 		public void SetCopyrightNotice(string year, string by)
 		{
-			if ((License is CreativeCommonsLicenseWithoutImage) && !((CreativeCommonsLicenseWithoutImage) License).AttributionRequired)
+			if ((License is CreativeCommonsLicenseWithoutImage) && !((CreativeCommonsLicenseWithoutImage)License).AttributionRequired)
 			{
 				// Public Domain, no copyright as such.
 				if (!IsNullOrEmpty(year))
@@ -857,7 +858,7 @@ namespace SIL.Core.ClearShare
 					CopyrightNotice = by;
 				return;
 			}
-			if(!IsNullOrEmpty(year))
+			if (!IsNullOrEmpty(year))
 				CopyrightNotice = "Copyright © " + year + ", " + by;
 			else
 				CopyrightNotice = "Copyright © " + by;
@@ -879,7 +880,7 @@ namespace SIL.Core.ClearShare
 
 		public string GetCopyrightBy()
 		{
-			if(IsNullOrEmpty(CopyrightNotice))
+			if (IsNullOrEmpty(CopyrightNotice))
 				return Empty;
 			var m = Regex.Match(CopyrightNotice, kCopyrightPattern);
 

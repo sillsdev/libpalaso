@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using SIL.Core.ClearShare;
-using JetBrains.Annotations;
-using L10NSharp;
 
 namespace SIL.Core.ClearShare
 {
@@ -11,27 +8,6 @@ namespace SIL.Core.ClearShare
 		public override string ToString()
 		{
 			return "Custom License";
-		}
-
-		public static LicenseInfo FromXmp(Dictionary<string, string> properties)
-		{
-			if (properties.ContainsKey("license") && properties["license"].Contains("creativecommons"))
-				return CreativeCommonsLicenseWithoutImage.FromMetadata(properties);
-
-			if (properties.ContainsKey("rights (en)"))
-				return FromMetadata(properties);
-			return new NullLicense();
-		}
-
-		public static LicenseInfo FromToken(string abbr)
-		{
-			switch (abbr)
-			{
-				case "ask": return new NullLicense();
-				case "custom": return new CustomLicenseWithoutImage();
-				default:
-					return CreativeCommonsLicenseWithoutImage.FromToken(abbr);
-			}
 		}
 
 		public override string GetMinimalFormForCredits(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
