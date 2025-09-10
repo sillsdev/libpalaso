@@ -1,11 +1,14 @@
 // Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
-using System.Drawing;
+using System.IO;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.TestUtilities;
 using SIL.Core.ClearShare;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Formats.Png;
 using TagLib.Xmp;
 
 namespace SIL.Tests.ClearShare
@@ -13,16 +16,16 @@ namespace SIL.Tests.ClearShare
 	[TestFixture]
 	public class MetadataTests
 	{
-		private Bitmap _mediaFile;
+		private Image<Rgba32> _mediaFile;
 		private TempFile _tempFile;
 		private Metadata _outgoing;
 
 		[SetUp]
 		public void Setup()
 		{
-			_mediaFile = new Bitmap(10, 10);
+			_mediaFile = new Image<Rgba32>(10, 10);
 			_tempFile = TempFile.WithExtension("png");
-			_mediaFile.Save(_tempFile.Path);
+			_mediaFile.Save(_tempFile.Path, new PngEncoder());
 			_outgoing = Metadata.FromFile(_tempFile.Path);
 		}
 
@@ -152,11 +155,11 @@ namespace SIL.Tests.ClearShare
 		[Test]
 		public void RoundTripPng_FileNameHasNonAsciiCharacters()
 		{
-			var mediaFile = new Bitmap(10, 10);
+			var bitmapArray = new byte[10 * 10 * 3];
 			using (var folder = new TemporaryFolder("LibPalaso exiftool Test"))
 			{
 				var path = folder.Combine("Love these non-áscii chárácters.png");
-				mediaFile.Save(path);
+				_mediaFile.Save(path, new PngEncoder());
 				var outgoing = Metadata.FromFile(path);
 
 				outgoing.Creator = "joe shmo";
@@ -167,11 +170,11 @@ namespace SIL.Tests.ClearShare
 		[Test]
 		public void RoundTripPng_InPathWithNonAsciiCharacters()
 		{
-			var mediaFile = new Bitmap(10, 10);
+			var bitmapArray = new byte[10 * 10 * 3];
 			using (var folder = new TemporaryFolder("LibPalaso exiftool Test with non-áscii chárácters"))
 			{
 				var path = folder.Combine("test.png");
-				mediaFile.Save(path);
+				_mediaFile.Save(path, new PngEncoder());
 				var outgoing = Metadata.FromFile(path);
 
 				outgoing.Creator = "joe shmo";

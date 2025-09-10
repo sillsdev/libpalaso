@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
 using SIL.Core.ClearShare;
 
 namespace SIL.Windows.Forms.ClearShare
@@ -11,7 +9,6 @@ namespace SIL.Windows.Forms.ClearShare
 
 		private CreativeCommonsLicense()
 		{
-
 		}
 
 		public CreativeCommonsLicense(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule)
@@ -24,16 +21,16 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 		}
 
-		public new static LicenseInfo FromXmp(Dictionary<string, string> properties)
+		public static LicenseInfo FromToken(string token)
 		{
-			if (properties.ContainsKey("license") && properties["license"].Contains("creativecommons"))
-				return CreativeCommonsLicense.FromMetadata(properties);
-
-			if (properties.ContainsKey("rights (en)"))
-				return CustomLicense.FromMetadata(properties);
-			return new NullLicense();
+			var result = new CreativeCommonsLicense();
+			// Note (JH): Since version was set to default, as I add the qualifier, I'm going to let it be default as well.
+			result.Url = MakeUrlFromParts(token, kDefaultVersion, null);
+			return result;
 		}
 
+		// New implementation in order to return a CreativeCommonsLicense
+		// instead of CreativeCommonsLicenseWithoutImage
 		public new static CreativeCommonsLicense FromLicenseUrl(string url)
 		{
 			if(url==null || url.Trim()=="")
