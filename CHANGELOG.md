@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
+- [SIL.libpalaso.l10ns] Added a number of languages to Crowdin that are used in Bloom, together with any translations that had been made in that project
 - [SIL.libpalaso.l10ns] Add English xlf file to the package
 - [SIL.TestUtilities] Added a Create method to TemporaryFolder that takes a TestContext
 - [SIL.Media] Added .NET 8-Windows target (though it does not support AudioFactory.CreateAudioSession or anything that would require IrrKlang)
