@@ -920,6 +920,8 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		#region GetLocalizedLanguageName
+		const string kIetfLanguageCodeWhichWindowsDoesntKnowAbout = "tlh"; // Happens to be Klingon
+
 		[TestCase("en", "en", ExpectedResult = "English")]
 		[TestCase("en-Latn-US", "en", ExpectedResult = "English")]
 		[TestCase("en-x-etic", "en-GB", ExpectedResult = "English")]
@@ -932,8 +934,11 @@ namespace SIL.WritingSystems.Tests
 		[TestCase("zh-CN", "en", ExpectedResult = "Chinese (Simplified)")]
 		[TestCase("pbu", "pbu", ExpectedResult = "پښتو")]
 		[TestCase("pbu", "tpi", ExpectedResult = "پښتو")]
+		[TestCase("pbu", kIetfLanguageCodeWhichWindowsDoesntKnowAbout, ExpectedResult = "پښتو")]
 		[TestCase("prs", "en", ExpectedResult = "Dari")]
+		[TestCase("prs", kIetfLanguageCodeWhichWindowsDoesntKnowAbout, ExpectedResult = "Dari")]
 		[TestCase("tpi", "tpi", ExpectedResult = "Tok Pisin")]
+		[TestCase("tpi", kIetfLanguageCodeWhichWindowsDoesntKnowAbout, ExpectedResult = "Tok Pisin")]
 		[TestCase("es", "tpi", ExpectedResult = "español")]
 		[TestCase("es", "fr", "español", ExpectedResult = "espagnol")]
 		[TestCase("es", "de", "español", ExpectedResult = "Spanisch")]
