@@ -1313,6 +1313,15 @@ namespace SIL.WritingSystems
 				return "Chinese (Simplified)";
 			}
 
+			// Starting some time around Sept 2025, Windows started returning the "fa" culture
+			// for CultureInfo.GetCultureInfo("prs"). We actually want to return Dari in that case.
+			if (generalCode == "prs")
+			{
+				if (uiLanguageCode == "en")
+					return "Dari";
+				return "دری";
+			}
+
 			if (UseICUForLanguageNames)
 			{
 				var name = GetLocalizedLanguageNameFromIcu(generalCode, uiLanguageCode);
@@ -1404,6 +1413,12 @@ namespace SIL.WritingSystems
 			{
 				// englishNameSuffix is always an empty string if we don't need it.
 				string englishNameSuffix = Empty;
+
+				// Starting some time around Sept 2025, Windows started returning the "fa" culture
+				// for CultureInfo.GetCultureInfo("prs"). We actually want to return Dari in that case.
+				if (generalCode == "prs")
+					return "دری (Dari)";
+
 				var ci = CultureInfo.GetCultureInfo(generalCode); // this may throw or produce worthless empty object
 				if (NeedEnglishSuffixForLanguageName(ci))
 					englishNameSuffix = $" ({GetManuallyOverriddenEnglishNameIfNeeded(code, ()=>ci.EnglishName)})";
