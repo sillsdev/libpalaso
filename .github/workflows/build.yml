@@ -71,8 +71,12 @@ jobs:
       timeout-minutes: 5
 
     - name: Start Windows Audio Service
-      run: net start audiosrv
       shell: powershell
+      run: |
+        $svc = Get-Service -Name "audiosrv"
+        if ($svc.Status -ne "Running") {
+          net start audiosrv
+        }
 
     # there are cases where this will fail and we want to know about it
     # so we don't use continue-on-error, but we still want to publish the results
