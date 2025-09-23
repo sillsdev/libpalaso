@@ -28,6 +28,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [SIL.Windows.Forms] Made ContributorsListControl.GetCurrentContribution() return null in the case when a valid row is not selected.
 
+### Changed
+
+- [SIL.Windows.Forms] Upgraded to L10nSharp 9.0.0-beta*
+- [SIL.Windows.Forms] Add a reference to L10NSharp.Windows.Forms 9.0.0-beta*
+- [SIL.Windows.Forms.Keyboarding] Upgraded to L10nSharp 9.0.0-beta*
+- [SIL.Windows.Forms.Keyboarding] Add a reference to L10NSharp.Windows.Forms 9.0.0-beta*
+- [SIL.Windows.Forms] BREAKING CHANGE: ToolStripExtensions.InitializeWithAvailableUILocales() removed the ILocalizationManager parameter.  This method no longer provides functionality to display the localization dialog box in response to the user clicking More.
+
+
 ## [16.1.0] - 2025-07-18
 
 ### Added
