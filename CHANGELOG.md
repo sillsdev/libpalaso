@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [16.2.0] - 2025-09-24
+
 ### Added
 - [SIL.libpalaso.l10ns] Added a number of languages to Crowdin that are used in Bloom, together with any translations that had been made in that project
 - [SIL.libpalaso.l10ns] Add English xlf file to the package
