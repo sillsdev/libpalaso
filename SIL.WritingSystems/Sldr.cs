@@ -162,6 +162,10 @@ namespace SIL.WritingSystems
 			{
 				// The program doesn't have the ICU library available.  We can live with this.
 			}
+			catch (System.BadImageFormatException)
+			{
+				// If the ICU DLLs are invalid, we can't use them.  That's OK.
+			}
 		}
 
 		/// <summary>
