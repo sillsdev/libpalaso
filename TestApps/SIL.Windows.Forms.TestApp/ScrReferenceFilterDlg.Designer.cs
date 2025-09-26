@@ -31,7 +31,7 @@ namespace SIL.Windows.Forms.TestApp
 		{
 			this.components = new System.ComponentModel.Container();
 			this.btnClose = new System.Windows.Forms.Button();
-			this.l10NSharpExtender1 = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this.l10NSharpExtender1 = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			this.toolStripFrom = new System.Windows.Forms.ToolStrip();
 			this.toolStripLabelFrom = new System.Windows.Forms.ToolStripLabel();
 			this.scrPsgFrom = new SIL.Windows.Forms.Scripture.ToolStripVerseControl();
@@ -171,7 +171,7 @@ namespace SIL.Windows.Forms.TestApp
 
 		#endregion
 		private System.Windows.Forms.Button btnClose;
-		private L10NSharp.UI.L10NSharpExtender l10NSharpExtender1;
+		private L10NSharp.Windows.Forms.L10NSharpExtender l10NSharpExtender1;
 		private System.Windows.Forms.ToolStrip toolStripFrom;
 		private System.Windows.Forms.ToolStripLabel toolStripLabelFrom;
 		private Windows.Forms.Scripture.ToolStripVerseControl scrPsgFrom;

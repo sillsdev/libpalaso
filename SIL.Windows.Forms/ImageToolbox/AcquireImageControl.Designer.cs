@@ -1,4 +1,4 @@
-﻿using SIL.Windows.Forms.ImageToolbox.ImageGallery;
+using SIL.Windows.Forms.ImageToolbox.ImageGallery;
 using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.ImageToolbox
@@ -43,7 +43,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			this._galleryControl = new ImageGalleryControl();
 			this._messageLabel = new BetterLabel();
 			this._focusTimer = new System.Windows.Forms.Timer(this.components);
-			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._L10NSharpExtender = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			this.toolStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._pictureBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
@@ -221,6 +221,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 		private ImageGalleryControl _galleryControl;
 		private Widgets.BetterLabel _messageLabel;
 		private System.Windows.Forms.Timer _focusTimer;
-		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
+		private L10NSharp.Windows.Forms.L10NSharpExtender _L10NSharpExtender;
 	}
 }

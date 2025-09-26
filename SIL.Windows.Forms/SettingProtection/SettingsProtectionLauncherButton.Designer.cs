@@ -1,4 +1,4 @@
-﻿using SIL.Windows.Forms.Widgets;
+using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.SettingProtection
 {
@@ -33,7 +33,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			this.components = new System.ComponentModel.Container();
 			this.betterLinkLabel1 = new BetterLinkLabel();
 			this._image = new System.Windows.Forms.PictureBox();
-			this.l10NSharpExtender1 = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this.l10NSharpExtender1 = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			((System.ComponentModel.ISupportInitialize)(this._image)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.l10NSharpExtender1)).BeginInit();
 			this.SuspendLayout();
@@ -101,7 +101,7 @@ namespace SIL.Windows.Forms.SettingProtection
 
 		private Widgets.BetterLinkLabel betterLinkLabel1;
 		private System.Windows.Forms.PictureBox _image;
-		private L10NSharp.UI.L10NSharpExtender l10NSharpExtender1;
+		private L10NSharp.Windows.Forms.L10NSharpExtender l10NSharpExtender1;
 
 	}
 }

@@ -1,4 +1,4 @@
-﻿using SIL.Windows.Forms.Widgets;
+using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.WritingSystems
 {
@@ -33,7 +33,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CannotFindMyLanguageDialog));
 			this._okButton = new System.Windows.Forms.Button();
-			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._L10NSharpExtender = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			this.betterLinkLabel3 = new BetterLinkLabel();
 			this.betterLinkLabel1 = new BetterLinkLabel();
 			this.betterLabel1 = new BetterLabel();
@@ -151,6 +151,6 @@ namespace SIL.Windows.Forms.WritingSystems
 		private BetterLinkLabel betterLinkLabel1;
 		private BetterLinkLabel betterLinkLabel3;
 		private System.Windows.Forms.Button _okButton;
-		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
+		private L10NSharp.Windows.Forms.L10NSharpExtender _L10NSharpExtender;
 	}
 }

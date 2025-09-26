@@ -40,7 +40,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._cannotFindLanguageLink = new System.Windows.Forms.LinkLabel();
 			this._desiredLanguageLabel = new System.Windows.Forms.Label();
 			this._desiredLanguageDisplayName = new System.Windows.Forms.TextBox();
-			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._L10NSharpExtender = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			this._showRegionalDialectsCheckBox = new System.Windows.Forms.CheckBox();
 			this._scriptsAndVariantsLink = new System.Windows.Forms.LinkLabel();
 			this._scriptsAndVariantsLabel = new System.Windows.Forms.Label();
@@ -266,7 +266,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		private System.Windows.Forms.ColumnHeader countryHeader;
 		private System.Windows.Forms.Label _desiredLanguageLabel;
 		private System.Windows.Forms.TextBox _desiredLanguageDisplayName;
-		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
+		private L10NSharp.Windows.Forms.L10NSharpExtender _L10NSharpExtender;
 		private System.Windows.Forms.CheckBox _showRegionalDialectsCheckBox;
 		private System.Windows.Forms.LinkLabel _scriptsAndVariantsLink;
 		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;

@@ -40,7 +40,7 @@ namespace SIL.Windows.Forms.Archiving
             this._buttonCancel = new System.Windows.Forms.Button();
             this._flowLayoutExtra = new System.Windows.Forms.FlowLayoutPanel();
             this._chkMetadataOnly = new System.Windows.Forms.CheckBox();
-            this.locExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+            this.locExtender = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
             this._tableLayoutPanel.SuspendLayout();
             this._flowLayoutExtra.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.locExtender)).BeginInit();
@@ -249,7 +249,7 @@ namespace SIL.Windows.Forms.Archiving
 
 		private System.Windows.Forms.LinkLabel _linkOverview;
 		private System.Windows.Forms.ProgressBar _progressBar;
-		private L10NSharp.UI.L10NSharpExtender locExtender;
+		private L10NSharp.Windows.Forms.L10NSharpExtender locExtender;
 		private LogBox _logBox;
 		protected System.Windows.Forms.TableLayoutPanel _tableLayoutPanel;
 		protected System.Windows.Forms.FlowLayoutPanel _flowLayoutExtra;

@@ -9,7 +9,7 @@ using System.Media;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 using L10NSharp;
-using L10NSharp.UI;
+using L10NSharp.Windows.Forms;
 using SIL.Code;
 using SIL.Core.ClearShare;
 using SIL.Reporting;

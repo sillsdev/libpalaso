@@ -1,4 +1,4 @@
-﻿using SIL.Windows.Forms.ClearShare.WinFormsUI;
+using SIL.Windows.Forms.ClearShare.WinFormsUI;
 using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.ImageToolbox
@@ -32,7 +32,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			this._metadataDisplayControl = new MetadataDisplayControl();
 			this._currentImageBox = new System.Windows.Forms.PictureBox();
 			this._toolTip = new System.Windows.Forms.ToolTip(this.components);
-			this._l10nSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._l10nSharpExtender = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			this.panel1.SuspendLayout();
 			this._invitationToMetadataPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._currentImageBox)).BeginInit();
@@ -238,6 +238,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 		private System.Windows.Forms.LinkLabel _editLink;
 		private Widgets.BetterLinkLabel _copyExemplarMetadata;
 		private System.Windows.Forms.ToolTip _toolTip;
-		private L10NSharp.UI.L10NSharpExtender _l10nSharpExtender;
+		private L10NSharp.Windows.Forms.L10NSharpExtender _l10nSharpExtender;
 	}
 }

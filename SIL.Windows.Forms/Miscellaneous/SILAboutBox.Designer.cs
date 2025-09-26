@@ -42,7 +42,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		{
             this.components = new System.ComponentModel.Container();
             this._buildDate = new System.Windows.Forms.Label();
-            this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+            this._L10NSharpExtender = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
             this._versionNumber = new System.Windows.Forms.Label();
             this.logo = new System.Windows.Forms.PictureBox();
             this._browser = new SIL.Windows.Forms.HtmlBrowser.XWebBrowser();
@@ -208,7 +208,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		#endregion
 
 		private System.Windows.Forms.Label _buildDate;
-		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
+		private L10NSharp.Windows.Forms.L10NSharpExtender _L10NSharpExtender;
 		private System.Windows.Forms.Label _versionNumber;
 		private PictureBox logo;
 		private TableLayoutPanel tableLayoutPanelMain;

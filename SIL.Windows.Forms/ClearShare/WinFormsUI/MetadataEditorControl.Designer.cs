@@ -47,7 +47,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._unknownLicense = new System.Windows.Forms.RadioButton();
 			this._customLicense = new System.Windows.Forms.RadioButton();
 			this._customRightsStatement = new System.Windows.Forms.TextBox();
-			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._L10NSharpExtender = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			this._illustratorLabel = new System.Windows.Forms.Label();
 			this._illustrator = new System.Windows.Forms.TextBox();
 			this._copyrightYear = new System.Windows.Forms.TextBox();
@@ -606,7 +606,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		private System.Windows.Forms.RadioButton _unknownLicense;
 		private System.Windows.Forms.RadioButton _customLicense;
 		private System.Windows.Forms.TextBox _customRightsStatement;
-		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
+		private L10NSharp.Windows.Forms.L10NSharpExtender _L10NSharpExtender;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private System.Windows.Forms.Label _illustratorLabel;
 		private System.Windows.Forms.TextBox _illustrator;

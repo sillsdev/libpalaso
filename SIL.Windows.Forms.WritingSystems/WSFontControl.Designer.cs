@@ -42,7 +42,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._testAreaLabel = new System.Windows.Forms.Label();
 			this._fontNotAvailableLabel = new System.Windows.Forms.Label();
 			this._promptForFontTestArea = new SIL.Windows.Forms.Widgets.Prompt();
-			this._l10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._l10NSharpExtender = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			this._tableLayoutPanelMain.SuspendLayout();
 			this.tableLayoutPanelTestArea.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._l10NSharpExtender)).BeginInit();
@@ -269,7 +269,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		private System.Windows.Forms.CheckBox _rightToLeftCheckBox;
 		private Prompt _promptForFontTestArea;
 		private System.Windows.Forms.TableLayoutPanel _tableLayoutPanelMain;
-		private L10NSharp.UI.L10NSharpExtender _l10NSharpExtender;
+		private L10NSharp.Windows.Forms.L10NSharpExtender _l10NSharpExtender;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanelTestArea;
 		private System.Windows.Forms.Label _testAreaLabel;
 		private System.Windows.Forms.Label _fontNotAvailableLabel;

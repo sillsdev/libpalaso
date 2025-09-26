@@ -1,4 +1,4 @@
-using L10NSharp.UI;
+using L10NSharp.Windows.Forms;
 using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
@@ -38,7 +38,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this.betterLabel5 = new SIL.Windows.Forms.Widgets.BetterLabel();
 			this.betterLabel4 = new SIL.Windows.Forms.Widgets.BetterLabel();
-			this._localizationHelper = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._localizationHelper = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			((System.ComponentModel.ISupportInitialize)(this._localizationHelper)).BeginInit();
 			this.SuspendLayout();
 			// 

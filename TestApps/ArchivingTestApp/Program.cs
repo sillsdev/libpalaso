@@ -1,4 +1,5 @@
 using L10NSharp;
+using L10NSharp.Windows.Forms;
 using SIL.IO;
 
 namespace ArchivingTestApp
@@ -23,7 +24,7 @@ namespace ArchivingTestApp
 
 			var localizationFolder = Path.GetDirectoryName(
 				FileLocationUtilities.GetFileDistributedWithApplication($"Palaso.{preferredUILocale}.xlf"));
-			PrimaryL10NManager = LocalizationManager.Create(preferredUILocale, "Palaso", "Palaso",
+			PrimaryL10NManager = LocalizationManagerWinforms.Create(preferredUILocale, "Palaso", "Palaso",
 				"1.0.0", localizationFolder, "SIL/Palaso", null, "testapp@sil.org", new [] {"SIL."});
 
 			Application.Run(new MainForm());

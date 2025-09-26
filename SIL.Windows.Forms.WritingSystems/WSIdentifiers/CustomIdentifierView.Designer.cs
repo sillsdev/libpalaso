@@ -34,7 +34,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			this._languageTag = new System.Windows.Forms.TextBox();
 			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
 			this.betterLabel1 = new SIL.Windows.Forms.Widgets.BetterLabel();
-			this._l10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._l10NSharpExtender = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			((System.ComponentModel.ISupportInitialize)(this._l10NSharpExtender)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -111,6 +111,6 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 		private BetterLabel betterLabel1;
 		private System.Windows.Forms.TextBox _languageTag;
 		private System.Windows.Forms.LinkLabel linkLabel1;
-		private L10NSharp.UI.L10NSharpExtender _l10NSharpExtender;
+		private L10NSharp.Windows.Forms.L10NSharpExtender _l10NSharpExtender;
 	}
 }

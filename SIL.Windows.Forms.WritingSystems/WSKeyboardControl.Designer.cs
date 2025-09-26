@@ -56,7 +56,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._selectKeyboardLabel = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this._testArea = new System.Windows.Forms.TextBox();
-			this.l10NSharpExtender1 = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this.l10NSharpExtender1 = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
@@ -230,6 +230,6 @@ namespace SIL.Windows.Forms.WritingSystems
 		private System.Windows.Forms.LinkLabel _keymanConfigurationLink;
 		private System.Windows.Forms.LinkLabel _keyboardSettingsLink;
 		private System.Windows.Forms.ColumnHeader _keyboards;
-		private L10NSharp.UI.L10NSharpExtender l10NSharpExtender1;
+		private L10NSharp.Windows.Forms.L10NSharpExtender l10NSharpExtender1;
 	}
 }

@@ -1,4 +1,4 @@
-﻿using SIL.Windows.Forms.Widgets;
+using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 {
@@ -32,7 +32,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 		{
 			this.components = new System.ComponentModel.Container();
 			this.betterLabel1 = new SIL.Windows.Forms.Widgets.BetterLabel();
-			this._l10nsharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._l10nsharpExtender = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			((System.ComponentModel.ISupportInitialize)(this._l10nsharpExtender)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -80,6 +80,6 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 		#endregion
 
 		private BetterLabel betterLabel1;
-		private L10NSharp.UI.L10NSharpExtender _l10nsharpExtender;
+		private L10NSharp.Windows.Forms.L10NSharpExtender _l10nsharpExtender;
 	}
 }

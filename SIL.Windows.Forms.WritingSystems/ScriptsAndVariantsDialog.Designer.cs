@@ -31,7 +31,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this.components = new System.ComponentModel.Container();
 			this._okButton = new System.Windows.Forms.Button();
 			this._cancelButton = new System.Windows.Forms.Button();
-			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._L10NSharpExtender = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			this._wsIdentifierView = new SIL.Windows.Forms.WritingSystems.WSIdentifiers.WSIdentifierView();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
 			this.SuspendLayout();
@@ -108,6 +108,6 @@ namespace SIL.Windows.Forms.WritingSystems
 		private System.Windows.Forms.Button _okButton;
 		private System.Windows.Forms.Button _cancelButton;
 		private WSIdentifiers.WSIdentifierView _wsIdentifierView;
-		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
+		private L10NSharp.Windows.Forms.L10NSharpExtender _L10NSharpExtender;
 	}
 }

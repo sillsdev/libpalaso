@@ -42,7 +42,7 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 			this._btnCopy = new System.Windows.Forms.Button();
 			this.btnOk = new System.Windows.Forms.Button();
 			this._linkCrowdinAndEmailInstructions = new System.Windows.Forms.LinkLabel();
-			this.l10NSharpExtender1 = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this.l10NSharpExtender1 = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			this.tableLayoutPanel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._numUsers)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.l10NSharpExtender1)).BeginInit();
@@ -293,7 +293,7 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 		#endregion
 
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-		private L10NSharp.UI.L10NSharpExtender l10NSharpExtender1;
+		private L10NSharp.Windows.Forms.L10NSharpExtender l10NSharpExtender1;
 		private System.Windows.Forms.Button btnCancel;
 		private System.Windows.Forms.Button btnOk;
 		private System.Windows.Forms.Label _lblLocalizationIncomplete;

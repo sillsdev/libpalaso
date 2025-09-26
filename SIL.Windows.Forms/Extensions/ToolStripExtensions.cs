@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 using L10NSharp;
+using L10NSharp.Windows.Forms;
 using SIL.Windows.Forms.LocalizationIncompleteDlg;
 using static SIL.WritingSystems.IetfLanguageTag;
 
@@ -61,11 +62,6 @@ namespace SIL.Windows.Forms.Extensions
 		/// different language is selected. This function should normally return <c>true</c> but
 		/// may return <c>false</c> to indicate that the default behavior should be suppressed.
 		/// </param>
-		/// <param name="lm">The primary  <see cref="ILocalizationManager"/> for the application
-		/// (used to determine which node in the tree should be selected when displaying the
-		/// localization dialog box in response to the user clicking More. If an application does
-		/// not support field-based localization, this can be omitted and the More menu item will
-		/// not be added.</param>
 		/// <param name="localizationIncompleteViewModel">Optional. If provided, and the primary
 		/// localization manager does not have any strings translated for the given language,
 		/// then a dialog box will be shown informing the user that localization has not yet been
@@ -94,7 +90,7 @@ namespace SIL.Windows.Forms.Extensions
 		[PublicAPI]
 		[CLSCompliant(false)]
 		public static void InitializeWithAvailableUILocales(this ToolStripDropDownItem menu,
-			Func<string, bool> localeSelectedAction = null, ILocalizationManager lm = null,
+			Func<string, bool> localeSelectedAction = null,
 			LocalizationIncompleteViewModel localizationIncompleteViewModel = null,
 			Func<bool> moreSelected = null, Dictionary<string, string> additionalNamedLocales = null)
 		{
@@ -141,8 +137,8 @@ namespace SIL.Windows.Forms.Extensions
 							if (dlg.ShowDialog(item.GetCurrentParent().FindForm()) == DialogResult.Cancel)
 								return;
 					}
-					
-					LocalizationManager.SetUILanguage(languageId, true);
+
+					LocalizationManagerWinforms.SetUILanguage(languageId, true);
 					if (menu is ToolStripDropDownButton btn)
 						btn.Text = item.Text;
 				};
@@ -154,22 +150,6 @@ namespace SIL.Windows.Forms.Extensions
 			}
 
 			menu.DropDownOpening += DropDownOpening;
-
-			if (lm != null)
-			{
-				menu.DropDownItems.Add(new ToolStripSeparator());
-				var moreMenu = menu.DropDownItems.Add(LocalizationManager.GetString("Common.MoreMenuItem",
-					"&More...", "Last item in menu of UI languages, used to open localization dialog box"));
-				moreMenu.Click += (a, b) =>
-				{
-					if (moreSelected != null && !moreSelected.Invoke())
-						return;
-					lm.ShowLocalizationDialogBox(false, menu.Owner?.FindForm());
-					menu.InitializeWithAvailableUILocales(localeSelectedAction, lm,
-						localizationIncompleteViewModel,
-						moreSelected, additionalNamedLocales);
-				};
-			}
 		}
 	}
 
