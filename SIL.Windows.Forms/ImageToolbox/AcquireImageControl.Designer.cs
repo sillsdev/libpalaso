@@ -1,4 +1,4 @@
-﻿using SIL.Windows.Forms.ImageToolbox.ImageGallery;
+using SIL.Windows.Forms.ImageToolbox.ImageGallery;
 using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.ImageToolbox
@@ -36,8 +36,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AcquireImageControl));
 			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
 			this._galleryButton = new System.Windows.Forms.ToolStripButton();
-			this._scannerButton = new System.Windows.Forms.ToolStripButton();
-			this._cameraButton = new System.Windows.Forms.ToolStripButton();
 			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
 			this._pictureBox = new System.Windows.Forms.PictureBox();
 			this._galleryControl = new ImageGalleryControl();
@@ -55,8 +53,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 			this.toolStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
 			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 			this._galleryButton,
-			this._scannerButton,
-			this._cameraButton,
 			this.toolStripButton1});
 			this._L10NSharpExtender.SetLocalizableToolTip(this.toolStrip1, null);
 			this._L10NSharpExtender.SetLocalizationComment(this.toolStrip1, null);
@@ -82,34 +78,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 			this._galleryButton.Text = "Image Galleries";
 			this._galleryButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
 			this._galleryButton.Click += new System.EventHandler(this.OnGalleryClick);
-			//
-			// _scannerButton
-			//
-			this._scannerButton.Image = ((System.Drawing.Image)(resources.GetObject("_scannerButton.Image")));
-			this._scannerButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this._L10NSharpExtender.SetLocalizableToolTip(this._scannerButton, null);
-			this._L10NSharpExtender.SetLocalizationComment(this._scannerButton, null);
-			this._L10NSharpExtender.SetLocalizingId(this._scannerButton, "ImageToolbox.Scanner");
-			this._scannerButton.Margin = new System.Windows.Forms.Padding(20, 1, 0, 2);
-			this._scannerButton.Name = "_scannerButton";
-			this._scannerButton.Size = new System.Drawing.Size(53, 51);
-			this._scannerButton.Text = "Scanner";
-			this._scannerButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-			this._scannerButton.Click += new System.EventHandler(this.OnScannerClick);
-			//
-			// _cameraButton
-			//
-			this._cameraButton.Image = ((System.Drawing.Image)(resources.GetObject("_cameraButton.Image")));
-			this._cameraButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this._L10NSharpExtender.SetLocalizableToolTip(this._cameraButton, null);
-			this._L10NSharpExtender.SetLocalizationComment(this._cameraButton, null);
-			this._L10NSharpExtender.SetLocalizingId(this._cameraButton, "ImageToolbox.Camera");
-			this._cameraButton.Margin = new System.Windows.Forms.Padding(20, 1, 0, 2);
-			this._cameraButton.Name = "_cameraButton";
-			this._cameraButton.Size = new System.Drawing.Size(52, 51);
-			this._cameraButton.Text = "Camera";
-			this._cameraButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-			this._cameraButton.Click += new System.EventHandler(this.OnCameraClick);
 			//
 			// toolStripButton1
 			//
@@ -214,8 +182,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private System.Windows.Forms.ToolStrip toolStrip1;
 		private System.Windows.Forms.ToolStripButton toolStripButton1;
-		private System.Windows.Forms.ToolStripButton _cameraButton;
-		private System.Windows.Forms.ToolStripButton _scannerButton;
 		private System.Windows.Forms.ToolStripButton _galleryButton;
 		private System.Windows.Forms.PictureBox _pictureBox;
 		private ImageGalleryControl _galleryControl;
