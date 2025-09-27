@@ -13,7 +13,7 @@ using WIA;
 namespace SIL.Windows.Forms.ImageToolbox
 {
 	/// <summary>
-	/// Provides 4 ways to get an image: Gallery (art of reading), scanner, camera, or file system.
+	/// Provides 4 ways to get an image: Gallery (art of reading) or file system.
 	/// </summary>
 	public partial class AcquireImageControl : UserControl, IImageToolboxControl
 	{
@@ -28,7 +28,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 			if (!Platform.IsWindows)
 			{
-				_scannerButton.Enabled = _cameraButton.Enabled = false;
 				// Mono layout doesn't always handle Anchor point properly.  Fix it.
 				FixMyLayoutForMono();
 			}
@@ -244,7 +243,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 		public void SetImage(PalasoImage image)
 		{
 			_previousImage = image;
-			_scannerButton.Checked = _cameraButton.Checked = false;
 			_currentImage = image;
 			SetMode(Modes.SingleImage);
 			_pictureBox.Image = image?.Image;
@@ -263,23 +261,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 				return _currentImage;
 			}
 			return _previousImage;
-		}
-
-
-		private void OnScannerClick(object sender, EventArgs e)
-		{
-			_scannerButton.Checked = true;
-			SetImage(null);
-			UsageReporter.SendNavigationNotice("ImageToolbox:GetFromScanner");
-			GetFromDevice(ImageAcquisitionService.DeviceKind.Scanner);
-		}
-
-		private void OnCameraClick(object sender, EventArgs e)
-		{
-			SetImage(null);
-			_cameraButton.Checked = true;
-			UsageReporter.SendNavigationNotice("ImageToolbox:GetFromCamera");
-			GetFromDevice(ImageAcquisitionService.DeviceKind.Camera);
 		}
 
 		private void GetFromDevice(ImageAcquisitionService.DeviceKind deviceKind)
