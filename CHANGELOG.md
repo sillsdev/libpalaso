@@ -16,6 +16,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- [SIL.Windows.Forms] BREAKING CHANGE: Upgraded to L10nSharp v9. Any clients which also use L10nSharp must also upgrade to v9.
+- [SIL.Windows.Forms] Add a reference to L10nSharp.Windows.Forms v9.
+- [SIL.Windows.Forms.Keyboarding] BREAKING CHANGE: Upgraded to L10nSharp v9. Any clients which also use L10nSharp must also upgrade to v9.
+- [SIL.Windows.Forms.Keyboarding] Add a reference to L10nSharp.Windows.Forms v9.
+- [SIL.Windows.Forms] BREAKING CHANGE: ToolStripExtensions.InitializeWithAvailableUILocales() removed the ILocalizationManager parameter.  This method no longer provides functionality to display the localization dialog box in response to the user clicking More.
+
 ## [16.2.0] - 2025-09-24
 
 ### Added

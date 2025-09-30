@@ -35,7 +35,7 @@ namespace SIL.Windows.Forms.FileSystem
 			this.chkApplyToAll = new System.Windows.Forms.CheckBox();
 			this.btnYes = new System.Windows.Forms.Button();
 			this.btnNo = new System.Windows.Forms.Button();
-			this.l10NSharpExtender1 = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this.l10NSharpExtender1 = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			labelFileExists = new System.Windows.Forms.Label();
 			labelOverwriteConfirmation = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.l10NSharpExtender1)).BeginInit();
@@ -160,6 +160,6 @@ namespace SIL.Windows.Forms.FileSystem
 		private System.Windows.Forms.CheckBox chkApplyToAll;
 		private System.Windows.Forms.Button btnYes;
 		private System.Windows.Forms.Button btnNo;
-		private L10NSharp.UI.L10NSharpExtender l10NSharpExtender1;
+		private L10NSharp.Windows.Forms.L10NSharpExtender l10NSharpExtender1;
 	}
 }
