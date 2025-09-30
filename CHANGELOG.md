@@ -33,10 +33,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] Added .NET 8-Windows target (though it does not support AudioFactory.CreateAudioSession or anything that would require IrrKlang)
 - [SIL.Core] Support for RobustFile.GetAccessControl in all builds
 
-
 ### Fixed
 
 - [SIL.Windows.Forms] Made ContributorsListControl.GetCurrentContribution() return null in the case when a valid row is not selected.
+
+### Removed
+
+- [SIL.Windows.Forms] In .NET 8 builds, removed Scanner and Camera options from the Image Toolbox.
 
 ## [16.1.0] - 2025-07-18
 
