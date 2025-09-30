@@ -1,4 +1,4 @@
-﻿using SIL.Windows.Forms.ImageToolbox.ImageGallery;
+using SIL.Windows.Forms.ImageToolbox.ImageGallery;
 using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.ImageToolbox
@@ -55,8 +55,10 @@ namespace SIL.Windows.Forms.ImageToolbox
 			this.toolStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
 			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 			this._galleryButton,
+#if NET462 || NET48
 			this._scannerButton,
 			this._cameraButton,
+#endif
 			this.toolStripButton1});
 			this._L10NSharpExtender.SetLocalizableToolTip(this.toolStrip1, null);
 			this._L10NSharpExtender.SetLocalizationComment(this.toolStrip1, null);
