@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Keyboarding] Add a reference to L10nSharp.Windows.Forms v9.
 - [SIL.Windows.Forms] BREAKING CHANGE: ToolStripExtensions.InitializeWithAvailableUILocales() removed the ILocalizationManager parameter.  This method no longer provides functionality to display the localization dialog box in response to the user clicking More.
 
+### Removed
+
+- [SIL.Windows.Forms] In .NET 8 builds, removed Scanner and Camera options from the Image Toolbox.
+
 ## [16.2.0] - 2025-09-24
 
 ### Added
@@ -32,7 +36,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.TestUtilities] Added a Create method to TemporaryFolder that takes a TestContext
 - [SIL.Media] Added .NET 8-Windows target (though it does not support AudioFactory.CreateAudioSession or anything that would require IrrKlang)
 - [SIL.Core] Support for RobustFile.GetAccessControl in all builds
-
 
 ### Fixed
 
