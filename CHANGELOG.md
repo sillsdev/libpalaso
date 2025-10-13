@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - [SIL.Windows.Forms] Made ContributorsListControl.GetCurrentContribution() return null in the case when a valid row is not selected.
+- [SIL.WritingSystems] For .NET 8, fixed the English names for Chinese (Simplified) and Chinese (Traditional) to be consistent with the other .NET  target builds.
 
 ## [16.1.0] - 2025-07-18
 
