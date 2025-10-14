@@ -5,6 +5,7 @@ using System.Drawing;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.TestUtilities;
+using SIL.Core.ClearShare;
 using SIL.Windows.Forms.ClearShare;
 using TagLib.Xmp;
 
@@ -23,7 +24,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			_mediaFile = new Bitmap(10, 10);
 			_tempFile = TempFile.WithExtension("png");
 			_mediaFile.Save(_tempFile.Path);
-		   _outgoing = Metadata.FromFile(_tempFile.Path);
+		   _outgoing = MetadataUtils.FromFile(_tempFile.Path);
 		 }
 
 		[TearDown]
@@ -37,7 +38,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			_outgoing.CopyrightNotice = "Copyright Test";
 			_outgoing.Write();
-			Assert.AreEqual("Copyright Test", Metadata.FromFile(_tempFile.Path).CopyrightNotice);
+			Assert.AreEqual("Copyright Test", MetadataUtils.FromFile(_tempFile.Path).CopyrightNotice);
 		}
 
 		[Test]
@@ -45,7 +46,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			_outgoing.CopyrightNotice = "Copyright ŋoŋ";
 			_outgoing.Write();
-			Assert.AreEqual("Copyright ŋoŋ", Metadata.FromFile(_tempFile.Path).CopyrightNotice);
+			Assert.AreEqual("Copyright ŋoŋ", MetadataUtils.FromFile(_tempFile.Path).CopyrightNotice);
 		}
 
 
@@ -54,7 +55,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			_outgoing.Creator = "joŋ";
 			_outgoing.Write();
-			Assert.AreEqual("joŋ", Metadata.FromFile(_tempFile.Path).Creator);
+			Assert.AreEqual("joŋ", MetadataUtils.FromFile(_tempFile.Path).Creator);
 		}
 
 		[Test]
@@ -62,7 +63,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			_outgoing.CopyrightNotice = "Copyright <! ' <hello>";
 			_outgoing.Write();
-			Assert.AreEqual("Copyright <! ' <hello>", Metadata.FromFile(_tempFile.Path).CopyrightNotice);
+			Assert.AreEqual("Copyright <! ' <hello>", MetadataUtils.FromFile(_tempFile.Path).CopyrightNotice);
 		}
 
 		[Test]
@@ -70,7 +71,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			_outgoing.License = new CustomLicense() {RightsStatement = "Use this if you must."};
 			_outgoing.Write();
-			var license = (CustomLicense)Metadata.FromFile(_tempFile.Path).License;
+			var license = (CustomLicense)MetadataUtils.FromFile(_tempFile.Path).License;
 			Assert.AreEqual(_outgoing.License.RightsStatement, license.RightsStatement);
 		}
 
@@ -79,7 +80,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			_outgoing.License =new CreativeCommonsLicense(false,true,CreativeCommonsLicense.DerivativeRules.Derivatives);
 			_outgoing.Write();
-			var cc = (CreativeCommonsLicense) Metadata.FromFile(_tempFile.Path).License;
+			var cc = (CreativeCommonsLicense) MetadataUtils.FromFile(_tempFile.Path).License;
 			Assert.AreEqual(cc.AttributionRequired, false);
 			Assert.AreEqual(cc.CommercialUseAllowed, true);
 			Assert.AreEqual(cc.DerivativeRule, CreativeCommonsLicense.DerivativeRules.Derivatives);
@@ -91,7 +92,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			_outgoing.License = new CreativeCommonsLicense(false, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
 			_outgoing.License.RightsStatement = "Please attribute nicely";
 			_outgoing.Write();
-			var cc = (CreativeCommonsLicense)Metadata.FromFile(_tempFile.Path).License;
+			var cc = (CreativeCommonsLicense)MetadataUtils.FromFile(_tempFile.Path).License;
 			Assert.That(cc.RightsStatement, Is.EqualTo("Please attribute nicely"));
 		}
 
@@ -108,7 +109,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			_outgoing.Creator = "JohnT";
 			_outgoing.License.RightsStatement = "Please attribute nicely";
 			_outgoing.Write();
-			var incoming = Metadata.FromFile(_tempFile.Path);
+			var incoming = MetadataUtils.FromFile(_tempFile.Path);
 			var cc = (CreativeCommonsLicense)incoming.License;
 			Assert.That(cc.AttributionRequired, Is.False);
 			Assert.That(cc.CommercialUseAllowed, Is.True);
@@ -125,11 +126,11 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			_outgoing.CopyrightNotice = "Copyright © 2014 SIL";
 			_outgoing.License.RightsStatement = "Please attribute nicely";
 			_outgoing.Write();
-			var intermediate = Metadata.FromFile(_tempFile.Path);
+			var intermediate = MetadataUtils.FromFile(_tempFile.Path);
 			intermediate.License = new CreativeCommonsLicense(false, true,
 				CreativeCommonsLicense.DerivativeRules.Derivatives); // no rights
 			intermediate.Write();
-			var incoming = Metadata.FromFile(_tempFile.Path);
+			var incoming = MetadataUtils.FromFile(_tempFile.Path);
 			var cc = (CreativeCommonsLicense)incoming.License;
 			Assert.That(cc.AttributionRequired, Is.False);
 			Assert.That(cc.CommercialUseAllowed, Is.True);
@@ -143,7 +144,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			_outgoing.License = new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.NoDerivatives);
 			_outgoing.Write();
-			var cc = (CreativeCommonsLicense)Metadata.FromFile(_tempFile.Path).License;
+			var cc = (CreativeCommonsLicense)MetadataUtils.FromFile(_tempFile.Path).License;
 			Assert.AreEqual(cc.AttributionRequired, true);
 			Assert.AreEqual(cc.CommercialUseAllowed, false);
 			Assert.AreEqual(cc.DerivativeRule, CreativeCommonsLicense.DerivativeRules.NoDerivatives);
@@ -157,11 +158,11 @@ namespace SIL.Windows.Forms.Tests.ClearShare
             {
                 var path = folder.Combine("Love these non-áscii chárácters.png");
                 mediaFile.Save(path);
-                var outgoing = Metadata.FromFile(path);
+                var outgoing = MetadataUtils.FromFile(path);
 
                 outgoing.Creator = "joe shmo";
                 outgoing.Write();
-                Assert.AreEqual("joe shmo", Metadata.FromFile(path).Creator);
+                Assert.AreEqual("joe shmo", MetadataUtils.FromFile(path).Creator);
             }
         }
         [Test]
@@ -172,11 +173,11 @@ namespace SIL.Windows.Forms.Tests.ClearShare
             {
                 var path = folder.Combine("test.png");
                 mediaFile.Save(path);
-                var outgoing = Metadata.FromFile(path);
+                var outgoing = MetadataUtils.FromFile(path);
 
                 outgoing.Creator = "joe shmo";
                 outgoing.Write();
-                Assert.AreEqual("joe shmo", Metadata.FromFile(path).Creator);
+                Assert.AreEqual("joe shmo", MetadataUtils.FromFile(path).Creator);
             }
         }
 
@@ -186,7 +187,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			_outgoing.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
 			_outgoing.Write();
-			var cc = (CreativeCommonsLicense)Metadata.FromFile(_tempFile.Path).License;
+			var cc = (CreativeCommonsLicense)MetadataUtils.FromFile(_tempFile.Path).License;
 			Assert.AreEqual(cc.AttributionRequired, true);
 			Assert.AreEqual(cc.CommercialUseAllowed, true);
 			Assert.AreEqual(cc.DerivativeRule, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
@@ -196,7 +197,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			_outgoing.AttributionUrl = "http://somewhere.com";
 			_outgoing.Write();
-			Assert.AreEqual("http://somewhere.com", Metadata.FromFile(_tempFile.Path).AttributionUrl);
+			Assert.AreEqual("http://somewhere.com", MetadataUtils.FromFile(_tempFile.Path).AttributionUrl);
 		}
 
 		[Test]
@@ -204,7 +205,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			_outgoing.Creator = "joe shmo";
 			_outgoing.Write();
-			Assert.AreEqual("joe shmo", Metadata.FromFile(_tempFile.Path).Creator);
+			Assert.AreEqual("joe shmo", MetadataUtils.FromFile(_tempFile.Path).Creator);
 		}
 
 
@@ -254,7 +255,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void LoadFromFile_CopyrightNotSet_CopyrightGivesNull()
 		{
-			Assert.IsNull(Metadata.FromFile(_tempFile.Path).Creator);
+			Assert.IsNull(MetadataUtils.FromFile(_tempFile.Path).Creator);
 		}
 
 		[Test]
@@ -267,7 +268,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			using(var f = TempFile.WithExtension("xmp"))
 			{
 				original.SaveXmpFile(f.Path);
-				another.LoadXmpFile(f.Path);
+				MetadataUtils.LoadXmpFile(f.Path, another);
 			}
 			Assert.AreEqual("John", another.Creator);
 			Assert.AreEqual(original.License.Url, another.License.Url);
@@ -541,7 +542,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			// This way we test both SaveInImageTag and LoadProperties for round-tripping.
 			oldMetadata.SaveInImageTag(tag);
 			var newMetadata = new Metadata();
-			Metadata.LoadProperties(tag, newMetadata);
+			MetadataUtils.LoadProperties(tag, newMetadata);
 			Assert.AreEqual(oldMetadata.CopyrightNotice, newMetadata.CopyrightNotice, header + "CopyrightNotice");
 			Assert.AreEqual(oldMetadata.License.GetType().FullName, newMetadata.License.GetType().FullName, header + "License class type");
 			Assert.AreEqual(oldMetadata.License.Token, newMetadata.License.Token, header + "License.Token");

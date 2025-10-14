@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -216,7 +216,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			if (_invitationToMetadataPanel.Visible && _copyExemplarMetadata.Visible)
 			{
 				var s = LocalizationManager.GetString("ImageToolbox.CopyExemplarMetadata", "Use {0}", "Used to copy a previous metadata set to the current image. The {0} will be replaced with the name of the exemplar image.");
-				_copyExemplarMetadata.Text = string.Format(s, Metadata.GetStoredExemplarSummaryString(Metadata.FileCategory.Image));
+				_copyExemplarMetadata.Text = string.Format(s, MetadataUtils.GetStoredExemplarSummaryString(Metadata.FileCategory.Image));
 			}
 
 			if (Platform.IsWindows)
@@ -373,7 +373,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			{
 				isSuggesting = true;
 				hadChanges = _imageInfo.Metadata.HasChanges;
-				_imageInfo.Metadata.SetupReasonableLicenseDefaultBeforeEditing();
+				MetadataUtils.SetupReasonableLicenseDefaultBeforeEditing(_imageInfo.Metadata);
 			}
 
 			if (EditMetadataActionOverride != null)
@@ -445,7 +445,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private void OnCopyExemplar_MouseClick(object sender, MouseEventArgs e)
 		{
-			_imageInfo.Metadata.LoadFromStoredExemplar(Metadata.FileCategory.Image);
+			MetadataUtils.LoadFromStoredExemplar(Metadata.FileCategory.Image, _imageInfo.Metadata);
 			SetupMetaDataControls(ImageInfo.Metadata);
 			MetadataChanged?.Invoke(this, EventArgs.Empty);
 			// Too risky (see https://issues.bloomlibrary.org/youtrack/issue/BL-1001): _imageInfo.SaveUpdatedMetadataIfItMakesSense();

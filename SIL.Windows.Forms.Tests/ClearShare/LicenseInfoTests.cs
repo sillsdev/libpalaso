@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using SIL.Core.ClearShare;
 using SIL.Windows.Forms.ClearShare;
 
 namespace SIL.Windows.Forms.Tests.ClearShare
@@ -10,35 +11,35 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void FromToken_CreativeCommons_GiveExpectedAttributes()
 		{
-			CreativeCommonsLicense ccLicense = (CreativeCommonsLicense)LicenseInfo.FromToken("by");
+			CreativeCommonsLicense ccLicense = (CreativeCommonsLicense)ClearShareUsage.FromToken("by");
 			Assert.That(ccLicense.AttributionRequired, Is.True);
 			Assert.That(ccLicense.CommercialUseAllowed, Is.True);
 			Assert.That(ccLicense.DerivativeRule, Is.EqualTo(CreativeCommonsLicense.DerivativeRules.Derivatives));
 
 
-			ccLicense = (CreativeCommonsLicense)LicenseInfo.FromToken("by-sa");
+			ccLicense = (CreativeCommonsLicense)ClearShareUsage.FromToken("by-sa");
 			Assert.That(ccLicense.AttributionRequired, Is.True);
 			Assert.That(ccLicense.CommercialUseAllowed, Is.True);
 			Assert.That(ccLicense.DerivativeRule, Is.EqualTo(CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike));
 
-			ccLicense = (CreativeCommonsLicense)LicenseInfo.FromToken("by-nd");
+			ccLicense = (CreativeCommonsLicense)ClearShareUsage.FromToken("by-nd");
 			Assert.That(ccLicense.AttributionRequired, Is.True);
 			Assert.That(ccLicense.CommercialUseAllowed, Is.True);
 			Assert.That(ccLicense.DerivativeRule, Is.EqualTo(CreativeCommonsLicense.DerivativeRules.NoDerivatives));
 
 
-			ccLicense = (CreativeCommonsLicense)LicenseInfo.FromToken("by-nc");
+			ccLicense = (CreativeCommonsLicense)ClearShareUsage.FromToken("by-nc");
 			Assert.That(ccLicense.AttributionRequired, Is.True);
 			Assert.That(ccLicense.CommercialUseAllowed, Is.False);
 			Assert.That(ccLicense.DerivativeRule, Is.EqualTo(CreativeCommonsLicense.DerivativeRules.Derivatives));
 
 
-			ccLicense = (CreativeCommonsLicense)LicenseInfo.FromToken("by-nc-sa");
+			ccLicense = (CreativeCommonsLicense)ClearShareUsage.FromToken("by-nc-sa");
 			Assert.That(ccLicense.AttributionRequired, Is.True);
 			Assert.That(ccLicense.CommercialUseAllowed, Is.False);
 			Assert.That(ccLicense.DerivativeRule, Is.EqualTo(CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike));
 
-			ccLicense = (CreativeCommonsLicense)LicenseInfo.FromToken("by-nc-nd");
+			ccLicense = (CreativeCommonsLicense)ClearShareUsage.FromToken("by-nc-nd");
 			Assert.That(ccLicense.AttributionRequired, Is.True);
 			Assert.That(ccLicense.CommercialUseAllowed, Is.False);
 			Assert.That(ccLicense.DerivativeRule, Is.EqualTo(CreativeCommonsLicense.DerivativeRules.NoDerivatives));
@@ -48,14 +49,14 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void FromToken_Ask_GiveNullLicense()
 		{
-			Assert.That(LicenseInfo.FromToken("ask"), Is.InstanceOf<NullLicense>());
+			Assert.That(ClearShareUsage.FromToken("ask"), Is.InstanceOf<NullLicense>());
 		}
 
 
 		[Test]
 		public void FromToken_Ask_GiveCustomLicense()
 		{
-			Assert.That(LicenseInfo.FromToken("custom"), Is.InstanceOf<CustomLicense>());
+			Assert.That(ClearShareUsage.FromToken("custom"), Is.InstanceOf<CustomLicense>());
 		}
 
 		[Test]

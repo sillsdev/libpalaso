@@ -17,7 +17,7 @@ using TagLib.Image;
 using TagLib.Xmp;
 using static System.String;
 
-namespace SIL.Windows.Forms.ClearShare
+namespace SIL.Core.ClearShare
 {
 	/// <summary>
 	/// Provides reading and writing of metadata, currently for any file which TagLib can read AND write (images, pdf).
@@ -51,22 +51,10 @@ namespace SIL.Windows.Forms.ClearShare
 		}
 
 		/// <summary>
-		/// Create a MetadataAccess by reading an existing media file
-		/// </summary>
-		/// <param name="path"></param>
-		/// <returns></returns>
-		public static Metadata FromFile(string path)
-		{
-			var m = new Metadata { _path = path };
-			LoadProperties(path, m);
-			return m;
-		}
-
-		/// <summary>
 		/// If the MetaData was loaded from a file, this stores all the other metadata from that file,
 		/// which will typically be useful to write to a file derived from it.
 		/// </summary>
-		TagLib.Image.File _originalTaglibMetadata;
+		public TagLib.Image.File OriginalTaglibMetadata { get; set; }
 
 		// This is called when we got an out of memory exception reading the image itself.
 		// Often this means the image file is actually corrupt.
@@ -77,9 +65,9 @@ namespace SIL.Windows.Forms.ClearShare
 		// in reporting the problem.
 		public bool IsOutOfMemoryPlausible(OutOfMemoryException ex)
 		{
-			if (_originalTaglibMetadata.PossiblyCorrupt)
+			if (OriginalTaglibMetadata.PossiblyCorrupt)
 				return false; // Taglib already figured it as suspicious
-			if (_originalTaglibMetadata.Properties == null)
+			if (OriginalTaglibMetadata.Properties == null)
 				return false; // valid JPG, PNG, and TIF usually have this
 			// Setting limit here at 10 mega-pixels. Pretty arbitrary, even phones can produce bigger images
 			// these days. It's a bit more than an A4 full page at Bloom's min recommended 300dpi, a bit
@@ -87,13 +75,13 @@ namespace SIL.Windows.Forms.ClearShare
 			// images that really run us out of memory, or larger ones that only fail because they are
 			// corrupt. But Image.FromFile's bad design forces us to guess somehow. It seems unhelpful
 			// to issue the sorts of advice we give about big files if the image is not unusually large.
-			if ((long) _originalTaglibMetadata.Properties.PhotoHeight *
-				(long) _originalTaglibMetadata.Properties.PhotoWidth > 10000000L)
+			if ((long)OriginalTaglibMetadata.Properties.PhotoHeight *
+				(long) OriginalTaglibMetadata.Properties.PhotoWidth > 10000000L)
 			{
 				// It's a pretty big picture, maybe we really are out of memory
 				ex.Data["imageSize"] =
-					Tuple.Create(_originalTaglibMetadata.Properties.PhotoWidth,
-						_originalTaglibMetadata.Properties.PhotoHeight);
+					Tuple.Create(OriginalTaglibMetadata.Properties.PhotoWidth,
+						OriginalTaglibMetadata.Properties.PhotoHeight);
 				return true;
 			}
 
@@ -101,101 +89,6 @@ namespace SIL.Windows.Forms.ClearShare
 		}
 
 		public Exception ExceptionCaughtWhileLoading;
-
-		/// <summary>
-		/// NB: this is used in 2 places; one is loading from the image we are linked to, the other from a sample image we are copying metadata from
-		/// </summary>
-		/// <param name="path"></param>
-		/// <param name="destinationMetadata"></param>
-		private static void LoadProperties(string path, Metadata destinationMetadata)
-		{
-			try
-			{
-				destinationMetadata.ExceptionCaughtWhileLoading = null;
-				destinationMetadata._originalTaglibMetadata = RetryUtility.Retry(() =>
-				  TagLib.File.Create(path) as TagLib.Image.File,
-				  memo:$"LoadProperties({path})");
-			}
-			catch (TagLib.UnsupportedFormatException ex)
-			{
-				// TagLib throws this exception when the file doesn't have any metadata, sigh.
-				// So since I don't see a way to differentiate between that case and the case
-				// where something really is wrong, we're just gonna have to swallow this,
-				// even in DEBUG mode, because else a lot of simple image tests fail
-				destinationMetadata.ExceptionCaughtWhileLoading = ex;
-				return;
-			}
-			catch (NotImplementedException ex)
-			{
-				// TagLib throws this exception if it encounters (private?) metadata that it doesn't
-				// understand.  This prevents us from even looking at images that have such metadata,
-				// which seems unreasonable.  Other packages like MetadataExtractor don't have this
-				// problem, but have other limitations.
-				// See https://issues.bloomlibrary.org/youtrack/issue/BL-8706 for a user complaint.
-				System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
-				destinationMetadata.ExceptionCaughtWhileLoading = ex;
-				return;
-			}
-			catch (ArgumentOutOfRangeException ex)
-			{
-				// TagLib can throw this if it can't read some part of the metadata.  This
-				// prevents us from even looking at images that have such metadata, which
-				// seems unreasonable. (TagLib doesn't fully understand IPTC profiles, for
-				// example, which can lead to this exception.)
-				// See https://issues.bloomlibrary.org/youtrack/issue/BL-11933 for a user complaint.
-				System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
-				destinationMetadata.ExceptionCaughtWhileLoading = ex;
-				return;
-			}
-			LoadProperties(destinationMetadata._originalTaglibMetadata.ImageTag, destinationMetadata);
-		}
-
-		/// <summary>
-		/// Load the properties of the specified MetaData object from the specified ImageTag.
-		/// tagMain may be a CombinedImageTag (when working with a real image file) or an XmpTag (when working with an XMP file).
-		/// Most of the data is read simply from the XmpTag (which is the Xmp property of the combined tag, if it is not tagMain itself).
-		/// But, we don't want to pass combinedTag.Xmp when working with a file, because some files may have CopyRightNotice or Creator
-		/// stored (only) in some other tag;
-		/// and we need to handle the case where we only have an XmpTag, because there appears to be no way to create a
-		/// combinedTag that just has an XmpTag inside it (or indeed any way to create any combinedTag except as part of
-		/// reading a real image file).
-		/// </summary>
-		/// <remarks>
-		/// internal to allow unit testing
-		/// </remarks>
-		internal static void LoadProperties(ImageTag tagMain, Metadata destinationMetadata)
-		{
-			destinationMetadata.CopyrightNotice = tagMain.Copyright;
-			destinationMetadata.Creator = tagMain.Creator;
-			XmpTag xmpTag = tagMain as XmpTag ?? ((CombinedImageTag) tagMain).Xmp;
-			var licenseProperties = new Dictionary<string, string>();
-			if (xmpTag != null)
-			{
-				destinationMetadata.CollectionUri = xmpTag.GetTextNode(kNsCollections,
-					"CollectionURI");
-				destinationMetadata.CollectionName = xmpTag.GetTextNode(
-					kNsCollections,
-					"CollectionName");
-				destinationMetadata.AttributionUrl = xmpTag.GetTextNode(kNsCc, "attributionURL");
-
-				var licenseUrl = xmpTag.GetTextNode(kNsCc, "license");
-				if (!IsNullOrWhiteSpace(licenseUrl))
-					licenseProperties["license"] = licenseUrl;
-				var rights = GetRights(xmpTag);
-				if (rights != null)
-					licenseProperties["rights (en)"] = rights;
-			}
-			destinationMetadata.License = LicenseInfo.FromXmp(licenseProperties);
-
-			//NB: we're losing non-ascii somewhere... the copyright symbol is just the most obvious
-			if (!IsNullOrEmpty(destinationMetadata.CopyrightNotice))
-			{
-				destinationMetadata.CopyrightNotice = destinationMetadata.CopyrightNotice.Replace("Copyright �", "Copyright ©");
-			}
-
-			//clear out the change-setting we just caused, because as of right now, we are clean with respect to what is on disk, no need to save.
-			destinationMetadata.HasChanges = false;
-		}
 
 		private LicenseInfo _license;
 
@@ -416,11 +309,11 @@ namespace SIL.Windows.Forms.ClearShare
 		/// <inheritdoc/>
 		public override string ToString() => MinimalCredits(new[] { "en" }, out _);
 
-		private string _path;
+		public string MediaFilePath { get; set; }
 
 		public void Write()
 		{
-			Write(_path);
+			Write(MediaFilePath);
 		}
 
 		/// <summary>Returns if the format of the image file supports metadata</summary>
@@ -437,9 +330,9 @@ namespace SIL.Windows.Forms.ClearShare
 		/// </summary>
 		public void NormalizeOrientation()
 		{
-			if (_originalTaglibMetadata == null)
+			if (OriginalTaglibMetadata == null)
 				return;
-			var ifdTag = _originalTaglibMetadata.GetTag(TagTypes.TiffIFD) as IFDTag;
+			var ifdTag = OriginalTaglibMetadata.GetTag(TagTypes.TiffIFD) as IFDTag;
 			if (ifdTag != null)
 				ifdTag.Orientation = ImageOrientation.TopLeft;
 		}
@@ -472,9 +365,9 @@ namespace SIL.Windows.Forms.ClearShare
 			// of this library and its clients) won't see our copyright notice and creator, at least.
 			file.GetTag(TagTypes.Png, true);
 			// If we know where the image came from, copy as much metadata as we can to the new image.
-			if (copyAllMetaDataFromOriginal && _originalTaglibMetadata != null)
+			if (copyAllMetaDataFromOriginal && OriginalTaglibMetadata != null)
 			{
-				file.CopyFrom(_originalTaglibMetadata);
+				file.CopyFrom(OriginalTaglibMetadata);
 			}
 			SaveInImageTag(file.ImageTag);
 			RetryUtility.Retry(() => file.Save(), memo: $"Metadata.Write({path}) - saving TagLib.Image.File");
@@ -492,13 +385,6 @@ namespace SIL.Windows.Forms.ClearShare
 		public void WriteIntellectualPropertyOnly(string path)
 		{
 			Write(path, false);
-		}
-
-		public void SetupReasonableLicenseDefaultBeforeEditing()
-		{
-			if (IsLicenseNotSet) {
-				License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
-			}
 		}
 
 		// In April 2022, we realized that checking for NullLicense is not sufficient.
@@ -593,9 +479,9 @@ namespace SIL.Windows.Forms.ClearShare
 		/// reading a real file).
 		/// </summary>
 		/// <remarks>
-		/// internal to allow unit testing of the method
+		/// public to allow unit testing of the method
 		/// </remarks>
-		internal void SaveInImageTag(ImageTag tagMain)
+		public void SaveInImageTag(ImageTag tagMain)
 		{
 			// Taglib doesn't care what namespace prefix is used for these namespaces (which it doesn't already know about).
 			// It will happily assign them to be ns1 and ns2 and successfully read back the data.
@@ -695,7 +581,7 @@ namespace SIL.Windows.Forms.ClearShare
 			return qualifier != null && qualifier.Value == lang;
 		}
 
-		static string GetRights(XmpTag xmp)
+		public static string GetRights(XmpTag xmp)
 		{
 			var rightsNode = xmp.FindNode("http://purl.org/dc/elements/1.1/", "rights");
 			if (rightsNode == null)
@@ -723,19 +609,6 @@ namespace SIL.Windows.Forms.ClearShare
 		}
 
 		/// <summary>
-		/// Loads all metadata found in the XMP file.
-		/// </summary>
-		/// <example>LoadXmpFile("c:\dir\metadata.xmp")</example>
-		public void LoadXmpFile(string path)
-		{
-			if(!RobustFile.Exists(path))
-				throw new FileNotFoundException(path);
-
-			var xmp = new XmpTag(RobustFile.ReadAllText(path, Encoding.UTF8), null);
-			LoadProperties(xmp, this);
-		}
-
-		/// <summary>
 		/// Save the current metadata in the user settings, so that in the future, a call to LoadFromStoredExemplar() will retrieve them.
 		/// This is used to quickly populate metadata with the values used in the past (e.g. many images will have the same illustrator, license, etc.)
 		/// </summary>
@@ -743,17 +616,6 @@ namespace SIL.Windows.Forms.ClearShare
 		public void StoreAsExemplar(FileCategory category)
 		{
 			SaveXmpFile(GetExemplarPath(category));
-		}
-
-		/// <summary>
-		/// Get previously saved values from a file in the user setting.
-		/// This is used to quickly populate metadata with the values used in the past (e.g. many images will have the same illustrator, license, etc.)
-		/// </summary>
-		/// <param name="category">e.g. "image", "document"</param>
-		public void LoadFromStoredExemplar(FileCategory category)
-		{
-			LoadXmpFile(GetExemplarPath(category));
-			HasChanges = true;
 		}
 
 		/// <summary>
@@ -805,25 +667,7 @@ namespace SIL.Windows.Forms.ClearShare
 			return b.ToString();
 		}
 
-		/// <summary>
-		/// For use on a hyperlink/button
-		/// </summary>
-		/// <returns></returns>
-		public static string GetStoredExemplarSummaryString(FileCategory category)
-		{
-			try
-			{
-				var m = new Metadata();
-				m.LoadFromStoredExemplar(category);
-				return $"{m.Creator}/{m.CopyrightNotice}/{m.License}";
-			}
-			catch (Exception)
-			{
-				return Empty;
-			}
-		}
-
-		private static string GetExemplarPath(FileCategory category)
+		public static string GetExemplarPath(FileCategory category)
 		{
 			var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 			var path = appData.CombineForPath("palaso");
@@ -847,7 +691,7 @@ namespace SIL.Windows.Forms.ClearShare
 
 		public void SetCopyrightNotice(string year, string by)
 		{
-			if ((License is CreativeCommonsLicense) && !((CreativeCommonsLicense) License).AttributionRequired)
+			if ((License is CreativeCommonsLicenseBase) && !((CreativeCommonsLicenseBase) License).AttributionRequired)
 			{
 				// Public Domain, no copyright as such.
 				if (!IsNullOrEmpty(year))
@@ -864,8 +708,8 @@ namespace SIL.Windows.Forms.ClearShare
 
 		const string kCopyrightPattern = @"\D*(?<year>\d\d\d\d)?(,\s)?(?<by>(.|\r?\n)+)?";
 		const string kNoYearPattern = @"([cC]opyright,?\s+)?(COPYRIGHT,?\s+)?\©?\s*(?<by>.+)";
-		private const string kNsCollections = "http://www.metadataworkinggroup.com/schemas/collections/";
-		private const string kNsCc = "http://creativecommons.org/ns#";
+		public const string kNsCollections = "http://www.metadataworkinggroup.com/schemas/collections/";
+		public const string kNsCc = "http://creativecommons.org/ns#";
 
 
 		public string GetCopyrightYear()

@@ -324,7 +324,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 					// very often means really that the image file is corrupt.
 					// We'll try to diagnose that by attempting to get metadata. If that throws (probably TagLib.CorruptFileException),
 					// assume it's a better indication of the problem.
-					var metadata = Metadata.FromFile(path);
+					var metadata = MetadataUtils.FromFile(path);
 					if (metadata.IsOutOfMemoryPlausible(e))
 						#pragma warning disable CA2200
 						// ReSharper disable once PossibleIntendedRethrow
@@ -345,7 +345,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 				FileName = Path.GetFileName(path),
 				_originalFilePath = path,
 				_pathForSavingMetadataChanges = path,
-				Metadata = Metadata.FromFile(tempPath),
+				Metadata = MetadataUtils.FromFile(tempPath),
 				_tempFilePath = tempPath
 			};
 			NormalizeImageOrientation(i);

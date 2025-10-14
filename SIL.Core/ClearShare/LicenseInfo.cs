@@ -1,24 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using JetBrains.Annotations;
 using L10NSharp;
 
-namespace SIL.Windows.Forms.ClearShare
+namespace SIL.Core.ClearShare
 {
 	/// <summary/>
 	public abstract class LicenseInfo
 	{
-		public static LicenseInfo FromXmp(Dictionary<string, string> properties)
-		{
-			if (properties.ContainsKey("license") && properties["license"].Contains("creativecommons"))
-				return CreativeCommonsLicense.FromMetadata(properties);
-
-			if (properties.ContainsKey("rights (en)"))
-				return CustomLicense.FromMetadata(properties);
-			return new NullLicense();
-		}
-
 		/// <summary>
 		/// A compact form of of this license that doesn't introduce any new text (though the license may itself have text)
 		/// E.g. "CC BY-NC"
@@ -31,24 +20,6 @@ namespace SIL.Windows.Forms.ClearShare
 		/// A string that is a good short indication of the license type, and can be used in FromToken.
 		/// </summary>
 		public abstract string Token { get; }
-
-		//Review (JH asks in Oct 2016): Why does this exist? The only uses in libpalaso are in tests and examples. Bloom does not use it.
-		// Why is From Url not sufficient?
-		public static LicenseInfo FromToken(string abbr)
-		{
-			switch (abbr)
-			{
-				case "ask": return new NullLicense();
-				case "custom": return new CustomLicense();
-				default:
-					return CreativeCommonsLicense.FromToken(abbr);
-			}
-		}
-
-		public virtual Image GetImage()
-		{
-			return null;
-		}
 
 		/// <summary>
 		/// It doesn't make sense to let the user edit the description of a well-known license, even if the meta data is unlocked.
@@ -181,11 +152,6 @@ namespace SIL.Windows.Forms.ClearShare
 		public override string Token =>
 			//do not think of changing this, there is data out there that could get messed up
 			"custom";
-
-		public override Image GetImage()
-		{
-			return null;
-		}
 
 		public override string Url { get; set; }
 

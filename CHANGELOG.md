@@ -23,6 +23,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Keyboarding] BREAKING CHANGE: Upgraded to L10nSharp v9. Any clients which also use L10nSharp must also upgrade to v9.
 - [SIL.Windows.Forms.Keyboarding] Add a reference to L10nSharp.Windows.Forms v9.
 - [SIL.Windows.Forms] BREAKING CHANGE: ToolStripExtensions.InitializeWithAvailableUILocales() removed the ILocalizationManager parameter.  This method no longer provides functionality to display the localization dialog box in response to the user clicking More.
+- [SIL.Windows.Forms] BREAKING CHANGE: The LicenseInfo class moved to SIL.Core. Windows.Forms dependent functionality that could not move to SIL.Core, moved to the following places:
+  - Static method LicenseInfo.FromXmp() moved to CreativeCommonLicense.FromXmp().
+  - Static method LicenseInfo.FromToken() moved to ClearShareUsage.FromToken().
+  - Virtual method GetImage() moved to ILicenseWithImage.
+- [SIL.Windows.Forms] BREAKING CHANGE: The Metadata class moved to SIL.Core. The following Windows.Forms dependent functionality, that could not move to SIL.Core, moved to the MetadataUtils class:
+  - Metadata.FromFile()
+  - Metadata.LoadProperties()
+  - Metadata.LoadXmpFile()
+  - Metadata.SetupReasonableLicenseDefaultBeforeEditing()
+  - Metadata.LoadFromStoredExemplar()
+  - Metadata.GetStoredExemplarSummaryString()
+- [SIL.Windows.Forms] BREAKING CHANGE: CreativeCommonsLicense functionality that was not dependent on Windows.Forms moved to a new class, CreativeCommonsLicenseBase, in SIL.Core.
+
 
 ### Removed
 
