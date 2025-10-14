@@ -81,12 +81,13 @@ namespace SIL.Core.ClearShare
 				return false; // Taglib already figured it as suspicious
 			if (_originalTaglibMetadata.Properties == null)
 				return false; // valid JPG, PNG, and TIF usually have this
-							  // Setting limit here at 10 mega-pixels. Pretty arbitrary, even phones can produce bigger images
-							  // these days. It's a bit more than an A4 full page at Bloom's min recommended 300dpi, a bit
-							  // more than we need at max recommended 600dpi for a half page in A5. There could be smaller
-							  // images that really run us out of memory, or larger ones that only fail because they are
-							  // corrupt. But Image.FromFile's bad design forces us to guess somehow. It seems unhelpful
-							  // to issue the sorts of advice we give about big files if the image is not unusually large.
+
+			// Setting limit here at 10 mega-pixels. Pretty arbitrary, even phones can produce bigger images
+			// these days. It's a bit more than an A4 full page at Bloom's min recommended 300dpi, a bit
+			// more than we need at max recommended 600dpi for a half page in A5. There could be smaller
+			// images that really run us out of memory, or larger ones that only fail because they are
+			// corrupt. But Image.FromFile's bad design forces us to guess somehow. It seems unhelpful
+			// to issue the sorts of advice we give about big files if the image is not unusually large.
 			if ((long)_originalTaglibMetadata.Properties.PhotoHeight *
 				(long)_originalTaglibMetadata.Properties.PhotoWidth > 10000000L)
 			{
@@ -468,9 +469,10 @@ namespace SIL.Core.ClearShare
 				memo: $"Metadata.Write({path}) - creating TagLib.Image.File");
 
 			file.GetTag(TagTypes.XMP, true); // The Xmp tag, at least, must exist so we can store properties into it.
-											 // This does nothing if the file is not allowed to have PNG tags, that is, if it's not a PNG file.
-											 // If it is, we want this tag to exist, since otherwise tools like exiftool (and hence old versions
-											 // of this library and its clients) won't see our copyright notice and creator, at least.
+
+			// This does nothing if the file is not allowed to have PNG tags, that is, if it's not a PNG file.
+			// If it is, we want this tag to exist, since otherwise tools like exiftool (and hence old versions
+			// of this library and its clients) won't see our copyright notice and creator, at least.
 			file.GetTag(TagTypes.Png, true);
 			// If we know where the image came from, copy as much metadata as we can to the new image.
 			if (copyAllMetaDataFromOriginal && _originalTaglibMetadata != null)
@@ -656,13 +658,14 @@ namespace SIL.Core.ClearShare
 			{
 				if (IsNullOrEmpty(rights))
 					return; // leave it missing.
-							// No existing rights node, and we have some. We use (default lang) rights for copyright too, and there seems to be no way to
-							// make the base node without setting that. So set it to something meaningless.
-							// This will typically never happen, since our dialog requires a non-empty copyright.
-							// I'm not entirely happy with it, but as far as I can discover the current version of taglib cannot
-							// set the 'en' alternative of dc:rights without setting the  default alternative. In fact, I'm not sure the
-							// result of doing so would technically be valid xmp; the standard calls for every language alternation
-							// to have a default.
+
+				// No existing rights node, and we have some. We use (default lang) rights for copyright too, and there seems to be no way to
+				// make the base node without setting that. So set it to something meaningless.
+				// This will typically never happen, since our dialog requires a non-empty copyright.
+				// I'm not entirely happy with it, but as far as I can discover the current version of taglib cannot
+				// set the 'en' alternative of dc:rights without setting the  default alternative. In fact, I'm not sure the
+				// result of doing so would technically be valid xmp; the standard calls for every language alternation
+				// to have a default.
 				xmp.SetLangAltNode("http://purl.org/dc/elements/1.1/", "rights", "Unknown");
 				rightsNode = xmp.FindNode("http://purl.org/dc/elements/1.1/", "rights");
 			}
