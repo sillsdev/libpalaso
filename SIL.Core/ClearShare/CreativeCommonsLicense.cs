@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace SIL.Core.ClearShare
 {
-	public class CreativeCommonsLicenseWithoutImage : LicenseInfo
+	public class CreativeCommonsLicense : LicenseInfo
 	{
 		// This URL may be checked in code that uses the library, so make it available as a constant.
 		public const string CC0Url = "http://creativecommons.org/publicdomain/zero/1.0/";
@@ -86,35 +86,35 @@ namespace SIL.Core.ClearShare
 		/// </summary>
 		/*public new static LicenseInfo FromToken(string token)
 		{
-			var result = new CreativeCommonsLicenseWithoutImage();
+			var result = new CreativeCommonsLicense();
 			// Note (JH): Since version was set to default, as I add the qualifier, I'm going to let it be default as well.
 			result.Url = MakeUrlFromParts(token, kDefaultVersion, null);
 			return result;
 		}*/
 
-		public static CreativeCommonsLicenseWithoutImage FromLicenseUrl(string url)
+		public static CreativeCommonsLicense FromLicenseUrl(string url)
 		{
 			if(url==null || url.Trim()=="")
 			{
 				throw new ArgumentOutOfRangeException();
 			}
-			var l = new CreativeCommonsLicenseWithoutImage();
+			var l = new CreativeCommonsLicense();
 			l.Url = url;
 			return l;
 		}
 
-		protected CreativeCommonsLicenseWithoutImage()
+		protected CreativeCommonsLicense()
 		{
 		}
 
-		public CreativeCommonsLicenseWithoutImage(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule, string version)
+		public CreativeCommonsLicense(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule, string version)
 		{
 			AttributionRequired = attributionRequired;
 			CommercialUseAllowed = commercialUseAllowed;
 			DerivativeRule = derivativeRule;
 			Version = version;
 		}
-		public CreativeCommonsLicenseWithoutImage(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule)
+		public CreativeCommonsLicense(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule)
 			:this(attributionRequired, commercialUseAllowed, derivativeRule, kDefaultVersion)
 		{
 		}

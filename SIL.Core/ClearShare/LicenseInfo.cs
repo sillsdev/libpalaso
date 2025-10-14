@@ -11,10 +11,10 @@ namespace SIL.Core.ClearShare
 		public static LicenseInfo FromXmp(Dictionary<string, string> properties)
 		{
 			if (properties.ContainsKey("license") && properties["license"].Contains("creativecommons"))
-				return CreativeCommonsLicenseWithoutImage.FromMetadata(properties);
+				return CreativeCommonsLicense.FromMetadata(properties);
 
 			if (properties.ContainsKey("rights (en)"))
-				return CustomLicenseWithoutImage.FromMetadata(properties);
+				return CustomLicense.FromMetadata(properties);
 			return new NullLicense();
 		}
 

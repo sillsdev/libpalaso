@@ -24,7 +24,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void ShowFullDialogTwiceToCheckRoundTripping()
 		{
 			var m = new Metadata();
-			m.License = CreativeCommonsLicense.FromToken("by");
+			m.License = CreativeCommonsLicenseWithImage.FromToken("by");
 			m.License.RightsStatement = "some restrictions";
 
 			using (var dlg = new MetadataEditorDialog(m))
@@ -46,7 +46,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			m.CopyrightNotice = "copyright me";
 			m.Creator = "you";
 			m.AttributionUrl = "http://google.com";
-			m.License = new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+			m.License = new CreativeCommonsLicenseWithImage(true, false, CreativeCommonsLicenseWithImage.DerivativeRules.DerivativesWithShareAndShareAlike);
 			var c = new MetadataEditorControl();
 			c.Metadata = m;
 			var dlg = new Form();
@@ -98,14 +98,14 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			var m = new Metadata();
 			m.CopyrightNotice = "test1";
 			m.Creator = "test2";
-			var ccLicense = new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+			var ccLicense = new CreativeCommonsLicenseWithImage(true, false, CreativeCommonsLicenseWithImage.DerivativeRules.DerivativesWithShareAndShareAlike);
 			ccLicense.IntergovernmentalOrganizationQualifier = true;
 			m.License = ccLicense;
 			Assert.That(m.License.Url, Does.EndWith("3.0/igo/"));
 			// SUT
 			ccLicense.IntergovernmentalOrganizationQualifier = false;
 			m.License = ccLicense;
-			Assert.That(m.License.Url, Does.EndWith(CreativeCommonsLicense.kDefaultVersion+"/"));
+			Assert.That(m.License.Url, Does.EndWith(CreativeCommonsLicenseWithImage.kDefaultVersion+"/"));
 		}
 
 		[Test]
@@ -114,7 +114,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			var m = new Metadata();
 			m.CopyrightNotice = "test1";
 			m.Creator = "test2";
-			var ccLicense = new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+			var ccLicense = new CreativeCommonsLicenseWithImage(true, false, CreativeCommonsLicenseWithImage.DerivativeRules.DerivativesWithShareAndShareAlike);
 			ccLicense.Version = "3.0"; // set old version (but non-IGO)
 			m.License = ccLicense;
 			Assert.That(m.License.Url, Does.EndWith("3.0/"));
@@ -125,7 +125,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			ccLicense.IntergovernmentalOrganizationQualifier = false;
 			m.License = ccLicense;
 			// Considered an acceptable loss of information, since the user was messing with the IGO setting.
-			Assert.That(m.License.Url, Does.EndWith(CreativeCommonsLicense.kDefaultVersion + "/"));
+			Assert.That(m.License.Url, Does.EndWith(CreativeCommonsLicenseWithImage.kDefaultVersion + "/"));
 		}
 	}
 }

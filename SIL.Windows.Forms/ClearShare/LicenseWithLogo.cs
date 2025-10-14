@@ -43,9 +43,9 @@ namespace SIL.Windows.Forms.ClearShare
 			switch (abbr)
 			{
 				case "ask": return new NullLicense();
-				case "custom": return new CustomLicense();
+				case "custom": return new CustomLicenseWithImage();
 				default:
-					return CreativeCommonsLicense.FromToken(abbr);
+					return CreativeCommonsLicenseWithImage.FromToken(abbr);
 			}
 		}
 
