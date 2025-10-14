@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - [SIL.Windows.Forms] Made ContributorsListControl.GetCurrentContribution() return null in the case when a valid row is not selected.
+- [SIL.WritingSystems] Make the English names for Chinese (Simplified) and Chinese (Traditional) consistent regardless of differences in Windows CultureInfo 
 
 ## [16.1.0] - 2025-07-18
 
