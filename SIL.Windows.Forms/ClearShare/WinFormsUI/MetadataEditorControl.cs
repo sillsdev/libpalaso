@@ -78,15 +78,15 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 				_attributionUrl.Text = _metadata.AttributionUrl;
 
-				if (_metadata.License is CreativeCommonsLicense)
+				if (_metadata.License is CreativeCommonsLicenseWithImage)
 				{
-					var cc = (CreativeCommonsLicense) _metadata.License;
+					var cc = (CreativeCommonsLicenseWithImage) _metadata.License;
 					if (cc.AttributionRequired)
 					{
 						_creativeCommons.Checked = true;
-						_noDerivates.Checked = cc.DerivativeRule == CreativeCommonsLicense.DerivativeRules.NoDerivatives;
-						_shareAlike.Checked = cc.DerivativeRule == CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike;
-						_derivatives.Checked = cc.DerivativeRule == CreativeCommonsLicense.DerivativeRules.Derivatives;
+						_noDerivates.Checked = cc.DerivativeRule == CreativeCommonsLicenseWithImage.DerivativeRules.NoDerivatives;
+						_shareAlike.Checked = cc.DerivativeRule == CreativeCommonsLicenseWithImage.DerivativeRules.DerivativesWithShareAndShareAlike;
+						_derivatives.Checked = cc.DerivativeRule == CreativeCommonsLicenseWithImage.DerivativeRules.Derivatives;
 						_commercial.Checked = cc.CommercialUseAllowed;
 						_nonCommercial.Checked = !cc.CommercialUseAllowed;
 						_customRightsStatement.Text = _metadata.License.RightsStatement;
@@ -99,7 +99,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 						_derivatives.Checked = true;
 					}
 				}
-				else if(_metadata.License is CustomLicense)
+				else if(_metadata.License is CustomLicenseWithImage)
 				{
 					_customLicense.Checked = true;
 					_customRightsStatement.Text = _metadata.License.RightsStatement;
@@ -130,24 +130,24 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				return;
 
 			var previousLicense = _metadata.License;
-			var previousWasCC = previousLicense != null && previousLicense is CreativeCommonsLicense;
-			var previousWasCC0 = previousWasCC && !((CreativeCommonsLicense)previousLicense).AttributionRequired;
+			var previousWasCC = previousLicense != null && previousLicense is CreativeCommonsLicenseWithImage;
+			var previousWasCC0 = previousWasCC && !((CreativeCommonsLicenseWithImage)previousLicense).AttributionRequired;
 			var currentIsCC0 = false;
 
-			if (_metadata.License == null || !(_metadata.License is CreativeCommonsLicense))//todo: that's kinda heavy-handed
-				_metadata.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
+			if (_metadata.License == null || !(_metadata.License is CreativeCommonsLicenseWithImage))//todo: that's kinda heavy-handed
+				_metadata.License = new CreativeCommonsLicenseWithImage(true, true, CreativeCommonsLicenseWithImage.DerivativeRules.Derivatives);
 
 			if (_creativeCommons.Checked)
 			{
-				var cc = (CreativeCommonsLicense) _metadata.License;
+				var cc = (CreativeCommonsLicenseWithImage) _metadata.License;
 				cc.AttributionRequired = true; // for now, we don't have a way to turn that off
 				cc.CommercialUseAllowed = _commercial.Checked;
 				if (_derivatives.Checked)
-					cc.DerivativeRule = CreativeCommonsLicense.DerivativeRules.Derivatives;
+					cc.DerivativeRule = CreativeCommonsLicenseWithImage.DerivativeRules.Derivatives;
 				else if (_shareAlike.Checked)
-					cc.DerivativeRule = CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike;
+					cc.DerivativeRule = CreativeCommonsLicenseWithImage.DerivativeRules.DerivativesWithShareAndShareAlike;
 				else
-					cc.DerivativeRule = CreativeCommonsLicense.DerivativeRules.NoDerivatives;
+					cc.DerivativeRule = CreativeCommonsLicenseWithImage.DerivativeRules.NoDerivatives;
 				_licenseImage.Image = cc.GetImage();
 
 				// If we're going from custom to CC, we could as easily just copy the statement into CC license.
@@ -165,10 +165,10 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				if (previousWasCC0 || !previousWasCC)
 				{
 					// reset license to our desired defaults
-					cc.Version = CreativeCommonsLicense.kDefaultVersion;
+					cc.Version = CreativeCommonsLicenseWithImage.kDefaultVersion;
 					cc.AttributionRequired = true;
 					cc.CommercialUseAllowed = true;
-					cc.DerivativeRule = CreativeCommonsLicense.DerivativeRules.Derivatives;
+					cc.DerivativeRule = CreativeCommonsLicenseWithImage.DerivativeRules.Derivatives;
 					cc.IntergovernmentalOrganizationQualifier = false;
 					_commercial.Checked = true;
 					_derivatives.Checked = true;
@@ -177,10 +177,10 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			else if (_publicDomainCC0.Checked)
 			{
 				// Public Domain CC0 = totally open CC license
-				var cc0 = (CreativeCommonsLicense)_metadata.License;
+				var cc0 = (CreativeCommonsLicenseWithImage)_metadata.License;
 				cc0.AttributionRequired = false;
 				cc0.CommercialUseAllowed = true;
-				cc0.DerivativeRule = CreativeCommonsLicense.DerivativeRules.Derivatives;
+				cc0.DerivativeRule = CreativeCommonsLicenseWithImage.DerivativeRules.Derivatives;
 				cc0.IntergovernmentalOrganizationQualifier = false;
 				cc0.Version = "";
 				_licenseImage.Image = cc0.GetImage();
@@ -197,7 +197,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			}
 			else if (_customLicense.Checked)
 			{
-				_metadata.License = new CustomLicense() {RightsStatement = _customRightsStatement.Text};
+				_metadata.License = new CustomLicenseWithImage() {RightsStatement = _customRightsStatement.Text};
 			}
 			// Wording of copyright notice changes for Public Domain compared to other licenses.
 			// (Public Domain doesn't claim copyright, but still attributes creator initially.)
@@ -251,14 +251,14 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		{
 			if (_customLicense.Checked)
 			{
-				var customLicense = _metadata.License as CustomLicense;
+				var customLicense = _metadata.License as CustomLicenseWithImage;
 
 				if (customLicense != null)
 					customLicense.RightsStatement = _customRightsStatement.Text;
 			}
 			if (CreativeCommonsStyleLicenseIsChecked())
 			{
-				var l = _metadata.License as CreativeCommonsLicense;
+				var l = _metadata.License as CreativeCommonsLicenseWithImage;
 
 				l.RightsStatement = _customRightsStatement.Text;
 			}

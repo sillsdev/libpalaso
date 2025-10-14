@@ -16,7 +16,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			m.CopyrightNotice = "copyright me";
 			m.Creator = "you";
 			m.AttributionUrl = "http://google.com";
-			m.License = new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+			m.License = new CreativeCommonsLicenseWithImage(true, false, CreativeCommonsLicenseWithImage.DerivativeRules.DerivativesWithShareAndShareAlike);
 			var c = new MetadataDisplayControl();
 			c.SetMetadata(m);
 			var dlg = new Form();
