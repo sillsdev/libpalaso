@@ -4,26 +4,26 @@ using SIL.Core.ClearShare;
 
 namespace SIL.Windows.Forms.ClearShare
 {
-	public class CreativeCommonsLicenseWithImage : CreativeCommonsLicense, ILicenseWithImage
+	public class CreativeCommonsLicense : CreativeCommonsLicenseBase, ILicenseWithImage
 	{
 
-		private CreativeCommonsLicenseWithImage()
+		private CreativeCommonsLicense()
 		{
 		}
 
-		public CreativeCommonsLicenseWithImage(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule)
+		public CreativeCommonsLicense(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule)
 			: base(attributionRequired, commercialUseAllowed, derivativeRule, kDefaultVersion)
 		{
 		}
 
-		public CreativeCommonsLicenseWithImage(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule, string version)
+		public CreativeCommonsLicense(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule, string version)
 			: base(attributionRequired, commercialUseAllowed, derivativeRule, version)
 		{
 		}
 
 		public static LicenseInfo FromToken(string token)
 		{
-			var result = new CreativeCommonsLicenseWithImage();
+			var result = new CreativeCommonsLicense();
 			// Note (JH): Since version was set to default, as I add the qualifier, I'm going to let it be default as well.
 			result.Url = MakeUrlFromParts(token, kDefaultVersion, null);
 			return result;
@@ -31,13 +31,13 @@ namespace SIL.Windows.Forms.ClearShare
 
 		// New implementation in order to return a CreativeCommonsLicense
 		// instead of CreativeCommonsLicense
-		public new static CreativeCommonsLicenseWithImage FromLicenseUrl(string url)
+		public new static CreativeCommonsLicense FromLicenseUrl(string url)
 		{
 			if(url==null || url.Trim()=="")
 			{
 				throw new ArgumentOutOfRangeException();
 			}
-			var l = new CreativeCommonsLicenseWithImage();
+			var l = new CreativeCommonsLicense();
 			l.Url = url;
 			return l;
 		}

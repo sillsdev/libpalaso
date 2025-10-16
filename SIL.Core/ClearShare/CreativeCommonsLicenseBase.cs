@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace SIL.Core.ClearShare
 {
-	public class CreativeCommonsLicense : LicenseInfo
+	public class CreativeCommonsLicenseBase : LicenseInfo
 	{
 		// This URL may be checked in code that uses the library, so make it available as a constant.
 		public const string CC0Url = "http://creativecommons.org/publicdomain/zero/1.0/";
@@ -92,29 +92,29 @@ namespace SIL.Core.ClearShare
 			return result;
 		}*/
 
-		public static CreativeCommonsLicense FromLicenseUrl(string url)
+		public static CreativeCommonsLicenseBase FromLicenseUrl(string url)
 		{
 			if(url==null || url.Trim()=="")
 			{
 				throw new ArgumentOutOfRangeException();
 			}
-			var l = new CreativeCommonsLicense();
+			var l = new CreativeCommonsLicenseBase();
 			l.Url = url;
 			return l;
 		}
 
-		protected CreativeCommonsLicense()
+		protected CreativeCommonsLicenseBase()
 		{
 		}
 
-		public CreativeCommonsLicense(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule, string version)
+		public CreativeCommonsLicenseBase(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule, string version)
 		{
 			AttributionRequired = attributionRequired;
 			CommercialUseAllowed = commercialUseAllowed;
 			DerivativeRule = derivativeRule;
 			Version = version;
 		}
-		public CreativeCommonsLicense(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule)
+		public CreativeCommonsLicenseBase(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule)
 			:this(attributionRequired, commercialUseAllowed, derivativeRule, kDefaultVersion)
 		{
 		}

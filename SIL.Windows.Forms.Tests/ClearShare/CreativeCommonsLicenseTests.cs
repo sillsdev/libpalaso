@@ -20,39 +20,39 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void RoundTrip_BY()
 		{
-			var original =new CreativeCommonsLicenseWithImage(true,true,CreativeCommonsLicenseWithImage.DerivativeRules.Derivatives);
-			var copy = CreativeCommonsLicenseWithImage.FromLicenseUrl(original.Url);
+			var original =new CreativeCommonsLicense(true,true,CreativeCommonsLicense.DerivativeRules.Derivatives);
+			var copy = CreativeCommonsLicense.FromLicenseUrl(original.Url);
 			Assert.AreEqual(copy.AttributionRequired, true);
 			Assert.AreEqual(copy.CommercialUseAllowed, true);
-			Assert.AreEqual(copy.DerivativeRule, CreativeCommonsLicenseWithImage.DerivativeRules.Derivatives);
+			Assert.AreEqual(copy.DerivativeRule, CreativeCommonsLicense.DerivativeRules.Derivatives);
 		}
 
 		[Test]
 		public void RoundTrip_BY_NC_ND()
 		{
-			var original = new CreativeCommonsLicenseWithImage(true, false, CreativeCommonsLicenseWithImage.DerivativeRules.NoDerivatives);
-			var copy = CreativeCommonsLicenseWithImage.FromLicenseUrl(original.Url);
+			var original = new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.NoDerivatives);
+			var copy = CreativeCommonsLicense.FromLicenseUrl(original.Url);
 			Assert.AreEqual(copy.AttributionRequired, true);
 			Assert.AreEqual(copy.CommercialUseAllowed, false);
-			Assert.AreEqual(copy.DerivativeRule, CreativeCommonsLicenseWithImage.DerivativeRules.NoDerivatives);
+			Assert.AreEqual(copy.DerivativeRule, CreativeCommonsLicense.DerivativeRules.NoDerivatives);
 		}
 
 		[Test]
 		public void RoundTrip_BY_SA()
 		{
-			var original = new CreativeCommonsLicenseWithImage(true, true, CreativeCommonsLicenseWithImage.DerivativeRules.DerivativesWithShareAndShareAlike);
-			var copy = CreativeCommonsLicenseWithImage.FromLicenseUrl(original.Url);
+			var original = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+			var copy = CreativeCommonsLicense.FromLicenseUrl(original.Url);
 			Assert.AreEqual(copy.AttributionRequired, true);
 			Assert.AreEqual(copy.CommercialUseAllowed, true);
-			Assert.AreEqual(copy.DerivativeRule, CreativeCommonsLicenseWithImage.DerivativeRules.DerivativesWithShareAndShareAlike);
+			Assert.AreEqual(copy.DerivativeRule, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
 		}
 
 		[Test]
 		public void RoundTrip_BY_IGO()
 		{
-			var original = new CreativeCommonsLicenseWithImage(true, true, CreativeCommonsLicenseWithImage.DerivativeRules.DerivativesWithShareAndShareAlike);
+			var original = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
 			original.IntergovernmentalOrganizationQualifier = true;
-			var copy = CreativeCommonsLicenseWithImage.FromLicenseUrl(original.Url);
+			var copy = CreativeCommonsLicense.FromLicenseUrl(original.Url);
 			Assert.IsTrue(copy.IntergovernmentalOrganizationQualifier);
 		}
 
@@ -61,11 +61,11 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			// CC0 is essentially just "do what you want". So we don't have a particular property for it, we
 			// just set all three aspects to be permissive.
-			var original = new CreativeCommonsLicenseWithImage(false, true, CreativeCommonsLicenseWithImage.DerivativeRules.Derivatives);
-			var copy = CreativeCommonsLicenseWithImage.FromLicenseUrl(original.Url);
+			var original = new CreativeCommonsLicense(false, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
+			var copy = CreativeCommonsLicense.FromLicenseUrl(original.Url);
 			Assert.IsFalse(copy.AttributionRequired);
 			Assert.IsTrue(copy.CommercialUseAllowed);
-			Assert.AreEqual(copy.DerivativeRule, CreativeCommonsLicenseWithImage.DerivativeRules.Derivatives);
+			Assert.AreEqual(copy.DerivativeRule, CreativeCommonsLicense.DerivativeRules.Derivatives);
 		}
 
 		[Test]
@@ -73,15 +73,15 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			// CC0 is essentially just "do what you want". So we don't have a particular property for it, we
 			// just set all three aspects to be permissive.
-			var original = new CreativeCommonsLicenseWithImage(false, true, CreativeCommonsLicenseWithImage.DerivativeRules.Derivatives, "1.0");
+			var original = new CreativeCommonsLicense(false, true, CreativeCommonsLicense.DerivativeRules.Derivatives, "1.0");
 			//notice that the url for cc0 does not follow the conventions of the other licenses.
-			Assert.AreEqual(CreativeCommonsLicenseWithImage.CC0Url, original.Url);
+			Assert.AreEqual(CreativeCommonsLicense.CC0Url, original.Url);
 		}
 
 		[Test]
 		public void Url_QualifierIsIGO_UrlHasIgo()
 		{
-			var original = new CreativeCommonsLicenseWithImage(true, true, CreativeCommonsLicenseWithImage.DerivativeRules.Derivatives);
+			var original = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
 			original.Version = "3.0";
 			original.IntergovernmentalOrganizationQualifier = true;
 			Assert.AreEqual("http://creativecommons.org/licenses/by/3.0/igo/", original.Url);
@@ -90,35 +90,35 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void FromLicenseUrl_VersionRead()
 		{
-			var original = CreativeCommonsLicenseWithImage.FromLicenseUrl("http://creativecommons.org/licenses/by-nd/4.3/");
+			var original = CreativeCommonsLicense.FromLicenseUrl("http://creativecommons.org/licenses/by-nd/4.3/");
 			Assert.AreEqual("4.3", original.Version);
 
 		}
 		[Test]
 		public void FromLicenseUrl_IGO_VersionRead()
 		{
-			var original = CreativeCommonsLicenseWithImage.FromLicenseUrl("http://creativecommons.org/licenses/by/3.0/IGO");
+			var original = CreativeCommonsLicense.FromLicenseUrl("http://creativecommons.org/licenses/by/3.0/IGO");
 			Assert.AreEqual("3.0", original.Version);
 		}
 		[Test]
 		public void FromLicenseUrl_IGO_IGORead()
 		{
-			var license = CreativeCommonsLicenseWithImage.FromLicenseUrl("http://creativecommons.org/licenses/by/3.0/");
+			var license = CreativeCommonsLicense.FromLicenseUrl("http://creativecommons.org/licenses/by/3.0/");
 			Assert.IsFalse(license.IntergovernmentalOrganizationQualifier);
-			license = CreativeCommonsLicenseWithImage.FromLicenseUrl("http://creativecommons.org/licenses/by/3.0/IGO");
+			license = CreativeCommonsLicense.FromLicenseUrl("http://creativecommons.org/licenses/by/3.0/IGO");
 			Assert.IsTrue(license.IntergovernmentalOrganizationQualifier);
 		}
 
 		[Test]
 		public void FromLicenseUrl_EmptyString_Throws()
 		{
-			Assert.Throws<ArgumentOutOfRangeException>(()=>CreativeCommonsLicenseWithImage.FromLicenseUrl(""));
+			Assert.Throws<ArgumentOutOfRangeException>(()=>CreativeCommonsLicense.FromLicenseUrl(""));
 		}
 
 		[Test]
 		public void Url_GivesVersion()
 		{
-			var original = new CreativeCommonsLicenseWithImage(true, true, CreativeCommonsLicenseWithImage.DerivativeRules.Derivatives);
+			var original = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
 			original.Version = "2.2";
 			Assert.AreEqual("http://creativecommons.org/licenses/by/2.2/", original.Url);
 		}
@@ -127,7 +127,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void ChangeVersion_HasChanges_True()
 		{
-			var l = new CreativeCommonsLicenseWithImage(true, true, CreativeCommonsLicenseWithImage.DerivativeRules.DerivativesWithShareAndShareAlike);
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
 			l.HasChanges = false;
 			l.Version = "3.23";
 			Assert.IsTrue(l.HasChanges);
@@ -135,7 +135,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void ChangeIGO_HasChanges_True()
 		{
-			var l = new CreativeCommonsLicenseWithImage(true, true, CreativeCommonsLicenseWithImage.DerivativeRules.Derivatives)
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives)
 			{
 				HasChanges = false,
 				IntergovernmentalOrganizationQualifier = true
@@ -146,7 +146,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void SetIGO_VersionNumerIsAppropriate()
 		{
-			var l = new CreativeCommonsLicenseWithImage(true, true, CreativeCommonsLicenseWithImage.DerivativeRules.Derivatives)
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives)
 			{
 				IntergovernmentalOrganizationQualifier = true
 			};
@@ -156,21 +156,21 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void UnSetIGO_VersionNumberIsHighestDefault()
 		{
-			var l = new CreativeCommonsLicenseWithImage(true, true, CreativeCommonsLicenseWithImage.DerivativeRules.Derivatives)
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives)
 			{
 				IntergovernmentalOrganizationQualifier = true,
 				Version = "3.0"
 			};
 			// SUT
 			l.IntergovernmentalOrganizationQualifier = false;
-			Assert.AreEqual(CreativeCommonsLicenseWithImage.kDefaultVersion, l.Version,
+			Assert.AreEqual(CreativeCommonsLicense.kDefaultVersion, l.Version,
 				"Setting igo to false when it was true should change version to the current default version.");
 		}
 
 		[Test]
 		public void UnSetIGO_IGOAlreadyUnset_DoesntAffectPreviousVersionNumber()
 		{
-			var l = new CreativeCommonsLicenseWithImage(true, true, CreativeCommonsLicenseWithImage.DerivativeRules.Derivatives)
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives)
 			{
 				IntergovernmentalOrganizationQualifier = false,
 				Version = "3.0"
@@ -184,7 +184,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void ChangeAttributionRequired_HasChanges_True()
 		{
-			var l = new CreativeCommonsLicenseWithImage(true, true, CreativeCommonsLicenseWithImage.DerivativeRules.DerivativesWithShareAndShareAlike);
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
 			l.HasChanges = false;
 			l.AttributionRequired = !l.AttributionRequired;
 			Assert.IsTrue(l.HasChanges);
@@ -193,7 +193,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void ChangeCommercialUseAllowed_HasChanges_True()
 		{
-			var l = new CreativeCommonsLicenseWithImage(true, true, CreativeCommonsLicenseWithImage.DerivativeRules.DerivativesWithShareAndShareAlike);
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
 			l.HasChanges = false;
 			l.CommercialUseAllowed = !l.CommercialUseAllowed;
 			Assert.IsTrue(l.HasChanges);
@@ -202,15 +202,15 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void ChangeDerivativeRule_HasChanges_True()
 		{
-			var l = new CreativeCommonsLicenseWithImage(true, true, CreativeCommonsLicenseWithImage.DerivativeRules.DerivativesWithShareAndShareAlike);
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
 			l.HasChanges = false;
-			l.DerivativeRule = CreativeCommonsLicenseWithImage.DerivativeRules.NoDerivatives;
+			l.DerivativeRule = CreativeCommonsLicense.DerivativeRules.NoDerivatives;
 			Assert.IsTrue(l.HasChanges);
 		}
 		[Test]
 		public void HasChanges_CanToggle()
 		{
-			var l = new CreativeCommonsLicenseWithImage(true, true, CreativeCommonsLicenseWithImage.DerivativeRules.DerivativesWithShareAndShareAlike);
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
 			l.HasChanges = false;
 			Assert.IsFalse(l.HasChanges);
 			l.HasChanges = true;
@@ -219,7 +219,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void GetDescription_NoTranslation_GivesEnglish()
 		{
-			var l = new CreativeCommonsLicenseWithImage(true, true, CreativeCommonsLicenseWithImage.DerivativeRules.DerivativesWithShareAndShareAlike);
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
 			string languageUsed;
 			Assert.AreEqual(l.GetDescription(new[] { "en" }, out languageUsed), l.GetDescription(new[]{"qx", "en"}, out languageUsed));
 			Assert.AreEqual("en",languageUsed);
