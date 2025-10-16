@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SIL.Core.ClearShare
 {
-	public class CustomLicense : LicenseInfo
+	public class CustomLicenseBase : LicenseInfo
 	{
 		public override string ToString()
 		{
@@ -48,7 +48,7 @@ namespace SIL.Core.ClearShare
 			if (!properties.ContainsKey("rights (en)"))
 				throw new ApplicationException("A license property is required in order to make a  Custom License from metadata.");
 
-			var license = new CustomLicense();
+			var license = new CustomLicenseBase();
 			license.RightsStatement = properties["rights (en)"];
 			return license;
 		}

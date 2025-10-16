@@ -48,7 +48,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			DialogResult = DialogResult.OK;
 
 			//we can't have a custom license without some description of it
-			var customLicense = _returnMetaData.License as CustomLicenseWithImage;
+			var customLicense = _returnMetaData.License as CustomLicense;
 			if(customLicense!=null && string.IsNullOrEmpty(customLicense.RightsStatement))
 				_returnMetaData.License = new NullLicense();
 

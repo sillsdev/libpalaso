@@ -11,10 +11,10 @@ namespace SIL.Core.ClearShare
 		public static LicenseInfo FromXmp(Dictionary<string, string> properties)
 		{
 			if (properties.ContainsKey("license") && properties["license"].Contains("creativecommons"))
-				return CreativeCommonsLicense.FromMetadata(properties);
+				return CreativeCommonsLicenseBase.FromMetadata(properties);
 
 			if (properties.ContainsKey("rights (en)"))
-				return CustomLicense.FromMetadata(properties);
+				return CustomLicenseBase.FromMetadata(properties);
 			return new NullLicense();
 		}
 
@@ -33,7 +33,7 @@ namespace SIL.Core.ClearShare
 
 		/// <summary>
 		/// It doesn't make sense to let the user edit the description of a well-known license, even if the meta data is unlocked.
-		/// REVIEW: How do we know whether this is a well-known license? Presently, only <see cref="CreativeCommonsLicense"/> is always well-known.
+		/// REVIEW: How do we know whether this is a well-known license? Presently, only <see cref="CreativeCommonsLicenseBase"/> is always well-known.
 		/// REVIEW (Hasso) 2023.07: This is never used (internally, at least) and all overriding implementations return false, too.
 		/// </summary>
 		[PublicAPI]
