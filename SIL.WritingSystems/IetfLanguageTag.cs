@@ -25,6 +25,8 @@ namespace SIL.WritingSystems
 
 		private const string kSimplifiedChineseNameInEnglish = "Chinese (Simplified)";
 		private const string kTraditionalChineseNameInEnglish = "Chinese (Traditional)";
+		private const string kSimplifiedChineseAutonym = "简体中文";
+		private const string kTraditionalChineseAutonym = "繁体中文";
 
 		private const string PrivateUseExpr = "[xX](-" + PrivateUseSubExpr + ")+";
 		// according to RFC-5646 the private use subtag can be up to 8 characters
@@ -1355,9 +1357,11 @@ namespace SIL.WritingSystems
 				langName = ci.DisplayName;
 				if (uiLanguageCode != "en")
 				{
-					if (generalCode == ChineseSimplifiedTag)
-						langName = ci.NativeName;
-					else if (langName == ci.EnglishName)
+					if (
+						langName == ci.EnglishName
+						|| generalCode == ChineseSimplifiedTag
+						|| generalCode == ChineseTraditionalTag
+					)
 						langName = FixBotchedNativeName(ci.NativeName);
 				}
 				if (IsNullOrWhiteSpace(langName))
@@ -1569,7 +1573,8 @@ namespace SIL.WritingSystems
 			switch (name)
 			{
 				// .Net gets this one wrong,but Mono gets it right.
-				case "Indonesia": return "Bahasa Indonesia";
+				case "Indonesia":
+					return "Bahasa Indonesia";
 
 				// Although these look the same, what Windows supplies as the "Native Name"
 				// Wiktionary lists it as a different word and says that the word we have
@@ -1579,14 +1584,18 @@ namespace SIL.WritingSystems
 				// incorrect version does not actually appear on that Wikipedia page. It
 				// would be nice to find someone who is an authority on this, so we could
 				// report it to Microsoft as a bug if it is indeed incorrect.
-				case "درى": return "دری";
+				case "درى":
+					return "دری";
 				// Incorrect capitalization on older Windows OS versions.
-				case "Português": return "português";
-				// REVIEW: For Chinese, older Windows OS versions return 中文(中华人民共和国) instead
-				// of 中文(中国) {i.e., Chinese (People's Republic of China) instead of
-				// Chinese (China). Do we consider that "botched"?
-
-				default: return name;
+				case "Português":
+					return "português";
+				case "中文(中国)":
+					return kSimplifiedChineseAutonym;
+				case "中文(台灣)":
+				case "中文(台湾)":
+					return kTraditionalChineseAutonym;
+				default:
+					return name;
 			}
 		}
 		#endregion
