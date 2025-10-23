@@ -23,6 +23,11 @@ namespace SIL.WritingSystems
 	{
 		private const string kInvalidTagMsg = "The IETF language tag is invalid.";
 
+		private const string kSimplifiedChineseNameInEnglish = "Chinese (Simplified)";
+		private const string kTraditionalChineseNameInEnglish = "Chinese (Traditional)";
+		private const string kSimplifiedChineseAutonym = "简体中文";
+		private const string kTraditionalChineseAutonym = "繁体中文";
+
 		private const string PrivateUseExpr = "[xX](-" + PrivateUseSubExpr + ")+";
 		// according to RFC-5646 the private use subtag can be up to 8 characters
 		// some data in alltags uses longer ones so relaxing this requirement
@@ -1298,19 +1303,19 @@ namespace SIL.WritingSystems
 
 			if (generalCode == ChineseSimplifiedTag && uiLanguageCode == "en")
 			{
-				// This corresponds to what we (currently) get as the "English Subtitle" in
-				// GetNativeLanguageNameWithEnglishSubtitle. Not sure if it really matters here,
-				// but the ICU-supplied name (e.g., used on Linux), and the EnglishName and
+				// We also use this as the "English Subtitle" in GetNativeLanguageNameWithEnglishSubtitle. Not sure if 
+				// it really matters here, but the ICU-supplied name (e.g., used on Linux), and the EnglishName and
 				// DisplayName supplied via the Windows CultureInfo are all subtly different in
 				// unhelpful ways:
 				// ICU: Chinese (China)
-				// DisplayName: Chinese (Simplified, PRC)
-				// EnglishName: Chinese (Simplified, China)
-				// Ideally, we should probably either have GetNativeLanguageNameWithEnglishSubtitle
-				// use this same constant or factor out the complex logic so that we always compute
-				// the same value based on a single well-defined source. But it's not clear whether
-				// one of those approaches is superior.
-				return "Chinese (Simplified)";
+				// DisplayName: Chinese (Simplified, PRC) or Chinese (Simplified, Mainland China) or Chinese (China)
+				// EnglishName: Chinese (Simplified, China) or Chinese (Simplified, Mainland China) or Chinese (China)
+
+				return kSimplifiedChineseNameInEnglish;
+			}
+			else if (generalCode == ChineseTraditionalTag && uiLanguageCode == "en")
+			{
+				return kTraditionalChineseNameInEnglish;
 			}
 
 			// Starting some time around Sept 2025, Windows started returning the "fa" culture
@@ -1352,9 +1357,11 @@ namespace SIL.WritingSystems
 				langName = ci.DisplayName;
 				if (uiLanguageCode != "en")
 				{
-					if (generalCode == ChineseSimplifiedTag)
-						langName = ci.NativeName;
-					else if (langName == ci.EnglishName)
+					if (
+						langName == ci.EnglishName
+						|| generalCode == ChineseSimplifiedTag
+						|| generalCode == ChineseTraditionalTag
+					)
 						langName = FixBotchedNativeName(ci.NativeName);
 				}
 				if (IsNullOrWhiteSpace(langName))
@@ -1437,18 +1444,6 @@ namespace SIL.WritingSystems
 					if (idxCountry > 0)
 						nativeName = nativeName.Substring(0, idxCountry);
 				}
-				else if (englishNameSuffix.Length > 0)
-				{
-					// I have seen more cruft after the country name a few times, so remove that
-					// as well. The parenthetical expansion always seems to start "(Simplified",
-					// which we want to keep. We need double close parentheses because there's one
-					// open parenthesis before "Chinese" and another open parenthesis before
-					// "Simplified" (which precedes ", China" or ", PRC"). Also, we don't worry
-					// about the parenthetical content of the native Chinese name.
-					var idxCountry = englishNameSuffix.IndexOf(", ", StringComparison.Ordinal);
-					if (idxCountry > 0)
-						englishNameSuffix = englishNameSuffix.Substring(0, idxCountry) + "))";
-				}
 				langName = nativeName + englishNameSuffix;
 				if (!ci.IsUnknownCulture())
 				{
@@ -1495,9 +1490,17 @@ namespace SIL.WritingSystems
 
 		public static string GetManuallyOverriddenEnglishNameIfNeeded(string code, Func<string> defaultOtherwise)
 		{
-			// We used pbu in Crowdin for some reason which is "Northern Pashto,"
-			// but we want this label to just be the generic macrolanguage "Pashto."
-			return code == "pbu" ? "Pashto" : defaultOtherwise();
+			switch (code)
+			{
+			case "pbu":
+				return "Pashto";
+			case ChineseSimplifiedTag:
+				return kSimplifiedChineseNameInEnglish; 
+			case ChineseTraditionalTag:
+				return kTraditionalChineseNameInEnglish;
+			default:
+				return defaultOtherwise();
+			}
 		}
 
 		/// <summary>
@@ -1570,7 +1573,8 @@ namespace SIL.WritingSystems
 			switch (name)
 			{
 				// .Net gets this one wrong,but Mono gets it right.
-				case "Indonesia": return "Bahasa Indonesia";
+				case "Indonesia":
+					return "Bahasa Indonesia";
 
 				// Although these look the same, what Windows supplies as the "Native Name"
 				// Wiktionary lists it as a different word and says that the word we have
@@ -1580,14 +1584,18 @@ namespace SIL.WritingSystems
 				// incorrect version does not actually appear on that Wikipedia page. It
 				// would be nice to find someone who is an authority on this, so we could
 				// report it to Microsoft as a bug if it is indeed incorrect.
-				case "درى": return "دری";
+				case "درى":
+					return "دری";
 				// Incorrect capitalization on older Windows OS versions.
-				case "Português": return "português";
-				// REVIEW: For Chinese, older Windows OS versions return 中文(中华人民共和国) instead
-				// of 中文(中国) {i.e., Chinese (People's Republic of China) instead of
-				// Chinese (China). Do we consider that "botched"?
-
-				default: return name;
+				case "Português":
+					return "português";
+				case "中文(中国)":
+					return kSimplifiedChineseAutonym;
+				case "中文(台灣)":
+				case "中文(台湾)":
+					return kTraditionalChineseAutonym;
+				default:
+					return name;
 			}
 		}
 		#endregion

@@ -948,7 +948,8 @@ namespace SIL.WritingSystems.Tests
 		[TestCase("noh", "en", ExpectedResult = "Nomu")]
 		[TestCase("noh", "noh", ExpectedResult = "Nomu")]
 		// See REVIEW comment in IEtfLanguageTag.FixBotchedNativeName
-		[TestCase("zh-CN", "zh-CN", "中文(中华人民共和国)", ExpectedResult = "中文(中国)")]
+		[TestCase("zh-CN", "zh-CN", "中文(中华人民共和国)", ExpectedResult = "简体中文")]
+		[TestCase("zh-TW", "zh-TW", ExpectedResult = "繁体中文")] // Perhaps this may need an acceptibleFallback
 		// Not sure if this fallback for Dari is truly acceptable. Although it looks the same and
 		// is what Windows supplies as the "Native Name", Wiktionary lists it as a different word
 		// and says that the word we have hardcoded in IetfLanguageTags.GetNativeNameIfKnown is the
@@ -1047,8 +1048,8 @@ namespace SIL.WritingSystems.Tests
 			return IetfLanguageTag.GetNativeLanguageNameWithEnglishSubtitle(tag);
 		}
 
-		[TestCase("zh-CN", "中文(中华人民共和国) (Chinese (Simplified))", "中文 (中国) (Chinese (Simplified))", ExpectedResult = "中文(中国) (Chinese (Simplified))")]
-		[TestCase("zh-TW", "中文(中华人民共和国) (Chinese (Traditional))", "中文 (台湾) (Chinese (Traditional))", ExpectedResult = "中文(台灣) (Chinese (Traditional))")]
+		[TestCase("zh-CN", "中文(中华人民共和国) (Chinese (Simplified))", "中文 (中国) (Chinese (Simplified))", ExpectedResult = "简体中文 (Chinese (Simplified))")]
+		[TestCase("zh-TW", "中文(中华人民共和国) (Chinese (Traditional))", "中文 (台湾) (Chinese (Traditional))", ExpectedResult = "繁体中文 (Chinese (Traditional))")]
 		public string GetNativeLanguageNameWithEnglishSubtitle_China_GetsNativeNamePlusEnglishAsNeeded(
 			string tag, string acceptableResultPreWindows10, string acceptableResultLinux)
 		{
