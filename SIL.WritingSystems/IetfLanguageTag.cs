@@ -1590,9 +1590,12 @@ namespace SIL.WritingSystems
 				case "Português":
 					return "português";
 				case "中文(中国)":
+				case "中文（中国）":
 					return kSimplifiedChineseAutonym;
 				case "中文(台灣)":
+				case "中文（台灣）":
 				case "中文(台湾)":
+				case "中文（台湾）":
 					return kTraditionalChineseAutonym;
 				default:
 					return name;
