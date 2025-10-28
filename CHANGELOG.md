@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- [SIL.Windows.Forms] Prevent BetterLabel from responding to OnTextChanged when it has been disposed.
+
 ### Changed
 
 - [SIL.Windows.Forms] BREAKING CHANGE: Upgraded to L10nSharp v9. Any clients which also use L10nSharp must also upgrade to v9.
