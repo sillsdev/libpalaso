@@ -66,7 +66,7 @@ namespace SIL.Core.ClearShare
 		/// If the MetaData was loaded from a file, this stores all the other metadata from that file,
 		/// which will typically be useful to write to a file derived from it.
 		/// </summary>
-		TagLib.Image.File _originalTaglibMetadata;
+		protected TagLib.Image.File _originalTaglibMetadata;
 
 		// This is called when we got an out of memory exception reading the image itself.
 		// Often this means the image file is actually corrupt.
@@ -108,7 +108,7 @@ namespace SIL.Core.ClearShare
 		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="destinationMetadata"></param>
-		private static void LoadProperties(string path, Metadata destinationMetadata)
+		protected static void LoadProperties(string path, Metadata destinationMetadata)
 		{
 			try
 			{
@@ -186,7 +186,7 @@ namespace SIL.Core.ClearShare
 				if (rights != null)
 					licenseProperties["rights (en)"] = rights;
 			}
-			destinationMetadata.License = LicenseInfo.FromXmp(licenseProperties);
+			destinationMetadata.License = LicenseUtils.FromXmp(licenseProperties);
 
 			//NB: we're losing non-ascii somewhere... the copyright symbol is just the most obvious
 			if (!IsNullOrEmpty(destinationMetadata.CopyrightNotice))
@@ -198,7 +198,7 @@ namespace SIL.Core.ClearShare
 			destinationMetadata.HasChanges = false;
 		}
 
-		private LicenseInfo _license;
+		protected LicenseInfo _license;
 
 		///<summary>
 		/// 0 or more licenses offered by the copyright holder
@@ -216,7 +216,7 @@ namespace SIL.Core.ClearShare
 			}
 		}
 
-		private string _copyrightNotice;
+		protected string _copyrightNotice;
 		public string CopyrightNotice
 		{
 			get => _copyrightNotice;
@@ -250,7 +250,7 @@ namespace SIL.Core.ClearShare
 			return value.Substring(0, startOfProblem);
 		}
 
-		private string _creator;
+		protected string _creator;
 
 		/// <summary>
 		/// Use this for artist, photographer, company, whatever. It is mapped to EXIF:Author and XMP:AttributionName
@@ -418,7 +418,7 @@ namespace SIL.Core.ClearShare
 		/// <inheritdoc/>
 		public override string ToString() => MinimalCredits(new[] { "en" }, out _);
 
-		private string _path;
+		protected string _path;
 
 		public void Write()
 		{
@@ -501,7 +501,7 @@ namespace SIL.Core.ClearShare
 		{
 			if (IsLicenseNotSet)
 			{
-				License = new CreativeCommonsLicenseBase(true, true, CreativeCommonsLicenseBase.DerivativeRules.Derivatives);
+				License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
 			}
 		}
 
@@ -526,7 +526,7 @@ namespace SIL.Core.ClearShare
 		/// </summary>
 		/// <param name="source"></param>
 		/// <returns></returns>
-		private static object CloneObject(object source)
+		protected static object CloneObject(object source)
 		{
 			//grab the type and create a new instance of that type
 			Type sourceType = source.GetType();
@@ -700,7 +700,7 @@ namespace SIL.Core.ClearShare
 			return qualifier != null && qualifier.Value == lang;
 		}
 
-		static string GetRights(XmpTag xmp)
+		protected static string GetRights(XmpTag xmp)
 		{
 			var rightsNode = xmp.FindNode("http://purl.org/dc/elements/1.1/", "rights");
 			if (rightsNode == null)
@@ -852,7 +852,7 @@ namespace SIL.Core.ClearShare
 
 		public void SetCopyrightNotice(string year, string by)
 		{
-			if ((License is CreativeCommonsLicenseBase) && !((CreativeCommonsLicenseBase)License).AttributionRequired)
+			if ((License is CreativeCommonsLicense) && !((CreativeCommonsLicense)License).AttributionRequired)
 			{
 				// Public Domain, no copyright as such.
 				if (!IsNullOrEmpty(year))
@@ -869,8 +869,8 @@ namespace SIL.Core.ClearShare
 
 		const string kCopyrightPattern = @"\D*(?<year>\d\d\d\d)?(,\s)?(?<by>(.|\r?\n)+)?";
 		const string kNoYearPattern = @"([cC]opyright,?\s+)?(COPYRIGHT,?\s+)?\©?\s*(?<by>.+)";
-		private const string kNsCollections = "http://www.metadataworkinggroup.com/schemas/collections/";
-		private const string kNsCc = "http://creativecommons.org/ns#";
+		protected const string kNsCollections = "http://www.metadataworkinggroup.com/schemas/collections/";
+		protected const string kNsCc = "http://creativecommons.org/ns#";
 
 
 		public string GetCopyrightYear()

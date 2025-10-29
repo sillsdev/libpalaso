@@ -1,43 +1,59 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using SIL.Core.ClearShare;
 
 namespace SIL.Windows.Forms.ClearShare
 {
-	public class CreativeCommonsLicense : CreativeCommonsLicenseBase, ILicenseWithImage
+	public class CreativeCommonsLicenseWithImage : CreativeCommonsLicense, ILicenseWithImage
 	{
 
-		private CreativeCommonsLicense()
+		private CreativeCommonsLicenseWithImage()
 		{
 		}
 
-		public CreativeCommonsLicense(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule)
+		public CreativeCommonsLicenseWithImage(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule)
 			: base(attributionRequired, commercialUseAllowed, derivativeRule, kDefaultVersion)
 		{
 		}
 
-		public CreativeCommonsLicense(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule, string version)
+		public CreativeCommonsLicenseWithImage(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule, string version)
 			: base(attributionRequired, commercialUseAllowed, derivativeRule, version)
 		{
 		}
 
 		public static LicenseInfo FromToken(string token)
 		{
-			var result = new CreativeCommonsLicense();
+			var result = new CreativeCommonsLicenseWithImage();
 			// Note (JH): Since version was set to default, as I add the qualifier, I'm going to let it be default as well.
 			result.Url = MakeUrlFromParts(token, kDefaultVersion, null);
 			return result;
 		}
 
-		// New implementation in order to return a CreativeCommonsLicense
+		/// <summary>
+		/// at the moment, we only use the license url, but in future we could add other custom provisions, like "ok to crop" (if they're allowed by cc?)
+		/// </summary>
+		public new static LicenseInfo FromMetadata(Dictionary<string, string> metadataProperties)
+		{
+			if (!metadataProperties.ContainsKey("license"))
+				throw new ApplicationException("A license property is required in order to make a Creative Commons License from metadata.");
+
+			var result = FromLicenseUrl(metadataProperties["license"]);
+			string rights;
+			if (metadataProperties.TryGetValue("rights (en)", out rights))
+				result.RightsStatement = rights;
+			return result;
+		}
+
+		// New implementation in order to return a CreativeCommonsLicenseWithImage
 		// instead of CreativeCommonsLicense
-		public new static CreativeCommonsLicense FromLicenseUrl(string url)
+		public new static CreativeCommonsLicenseWithImage FromLicenseUrl(string url)
 		{
 			if(url==null || url.Trim()=="")
 			{
 				throw new ArgumentOutOfRangeException();
 			}
-			var l = new CreativeCommonsLicense();
+			var l = new CreativeCommonsLicenseWithImage();
 			l.Url = url;
 			return l;
 		}

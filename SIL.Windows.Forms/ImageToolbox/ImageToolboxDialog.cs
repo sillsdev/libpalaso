@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 using SIL.Core.ClearShare;
 using SIL.Reporting;
@@ -19,7 +19,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// For example, the client may want to use a different UI to edit the `Metadata`.
 		/// The `Action<Metadata>` callback saves the modified `Metadata` to the image.
 		/// <see cref="ImageToolboxControl.SetNewImageMetadata(Metadata)"/></param>
-		public ImageToolboxDialog(PalasoImage imageInfo, string initialSearchString, Action<Metadata, Action<Metadata>> editMetadataActionOverride)
+		public ImageToolboxDialog(PalasoImage imageInfo, string initialSearchString, Action<MetadataForLicenseWithImage, Action<MetadataForLicenseWithImage>> editMetadataActionOverride)
 		{
 			InitializeComponent();
 			_imageToolboxControl.ImageInfo = imageInfo;

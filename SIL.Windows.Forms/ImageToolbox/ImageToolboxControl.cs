@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -192,7 +192,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// <summary>Metadata (copyright info) changed</summary>
 		public event EventHandler MetadataChanged;
 
-		private void SetupMetaDataControls(Metadata metaData)
+		private void SetupMetaDataControls(MetadataForLicenseWithImage metaData)
 		{
 			Guard.AgainstNull(_imageInfo, "_imageInfo");
 			if (_currentImageBox.Image == null)
@@ -356,7 +356,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// The `Action&lt;Metadata&gt;` callback saves the modified `Metadata` to the image.
 		/// <see cref="SetNewImageMetadata(Metadata)"/>
 		/// </summary>
-		public Action<Metadata, Action<Metadata>> EditMetadataActionOverride { get; set; }
+		public Action<MetadataForLicenseWithImage, Action<MetadataForLicenseWithImage>> EditMetadataActionOverride { get; set; }
 
 		private void OnEditMetadataLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
@@ -395,7 +395,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			}
 		}
 
-		private void SetNewImageMetadata(Metadata newMetadata)
+		private void SetNewImageMetadata(MetadataForLicenseWithImage newMetadata)
 		{
 			_imageInfo.Metadata = newMetadata;
 			SetupMetaDataControls(_imageInfo.Metadata);

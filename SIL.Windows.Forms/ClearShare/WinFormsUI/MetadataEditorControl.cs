@@ -9,7 +9,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 {
 	public partial class MetadataEditorControl : UserControl
 	{
-		private Metadata _metadata;
+		private MetadataForLicenseWithImage _metadata;
 		private bool _settingUp;
 
 		public MetadataEditorControl()
@@ -53,7 +53,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			ParentForm.Shown += (sender, ee) => UpdateDisplay();
 		}
 
-		public Metadata Metadata
+		public MetadataForLicenseWithImage Metadata
 		{
 			get { return _metadata; }
 			set
@@ -73,14 +73,15 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 					_copyrightYear.Text = DateTime.Now.Year.ToString();
 
 				_copyrightBy.Text = _metadata.GetCopyrightBy();
-				if(_metadata.License!=null)
+				if(_metadata.License!=null && (_metadata.License is ILicenseWithImage))
 					_licenseImage.Image = ((ILicenseWithImage)_metadata.License).GetImage();
 
 				_attributionUrl.Text = _metadata.AttributionUrl;
 
+				// Will also evaluate true if _metadata.License is CreativeCommonsLicenseWithImage
 				if (_metadata.License is CreativeCommonsLicense)
 				{
-					var cc = (CreativeCommonsLicense) _metadata.License;
+					var cc = (CreativeCommonsLicense)_metadata.License;
 					if (cc.AttributionRequired)
 					{
 						_creativeCommons.Checked = true;
@@ -134,12 +135,12 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			var previousWasCC0 = previousWasCC && !((CreativeCommonsLicense)previousLicense).AttributionRequired;
 			var currentIsCC0 = false;
 
-			if (_metadata.License == null || !(_metadata.License is CreativeCommonsLicense))//todo: that's kinda heavy-handed
-				_metadata.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
+			if (_metadata.License == null || !(_metadata.License is CreativeCommonsLicenseWithImage))//todo: that's kinda heavy-handed
+				_metadata.License = new CreativeCommonsLicenseWithImage(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
 
 			if (_creativeCommons.Checked)
 			{
-				var cc = (CreativeCommonsLicense) _metadata.License;
+				var cc = (CreativeCommonsLicenseWithImage) _metadata.License;
 				cc.AttributionRequired = true; // for now, we don't have a way to turn that off
 				cc.CommercialUseAllowed = _commercial.Checked;
 				if (_derivatives.Checked)
@@ -177,7 +178,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			else if (_publicDomainCC0.Checked)
 			{
 				// Public Domain CC0 = totally open CC license
-				var cc0 = (CreativeCommonsLicense)_metadata.License;
+				var cc0 = (CreativeCommonsLicenseWithImage)_metadata.License;
 				cc0.AttributionRequired = false;
 				cc0.CommercialUseAllowed = true;
 				cc0.DerivativeRule = CreativeCommonsLicense.DerivativeRules.Derivatives;
@@ -197,7 +198,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			}
 			else if (_customLicense.Checked)
 			{
-				_metadata.License = new CustomLicense() {RightsStatement = _customRightsStatement.Text};
+				_metadata.License = new CustomLicenseWithImage() {RightsStatement = _customRightsStatement.Text};
 			}
 			// Wording of copyright notice changes for Public Domain compared to other licenses.
 			// (Public Domain doesn't claim copyright, but still attributes creator initially.)
@@ -251,14 +252,14 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		{
 			if (_customLicense.Checked)
 			{
-				var customLicense = _metadata.License as CustomLicense;
+				var customLicense = _metadata.License as CustomLicenseWithImage;
 
 				if (customLicense != null)
 					customLicense.RightsStatement = _customRightsStatement.Text;
 			}
 			if (CreativeCommonsStyleLicenseIsChecked())
 			{
-				var l = _metadata.License as CreativeCommonsLicense;
+				var l = _metadata.License as CreativeCommonsLicenseWithImage;
 
 				l.RightsStatement = _customRightsStatement.Text;
 			}

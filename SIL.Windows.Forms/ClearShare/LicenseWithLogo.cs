@@ -37,15 +37,15 @@ namespace SIL.Windows.Forms.ClearShare
 		}
 
 		//Review (JH asks in Oct 2016): Why does this exist? The only uses in libpalaso are in tests and examples. Bloom does not use it.
-		// Review Ariel June 2025: CreativeCommonsLicense.FromToken is used in FieldWorks and in Bloom, but LicenseWithLogo.FromToken has no uses in Bloom or anywhere in sillsdev except in libpalaso tests & examples.
+		// Review Ariel June 2025: CreativeCommonsLicenseWithImage.FromToken is used in FieldWorks and in Bloom, but LicenseWithLogo.FromToken has no uses in Bloom or anywhere in sillsdev except in libpalaso tests & examples.
 		public static LicenseInfo FromToken(string abbr)
 		{
 			switch (abbr)
 			{
 				case "ask": return new NullLicense();
-				case "custom": return new CustomLicense();
+				case "custom": return new CustomLicenseWithImage();
 				default:
-					return CreativeCommonsLicense.FromToken(abbr);
+					return CreativeCommonsLicenseWithImage.FromToken(abbr);
 			}
 		}
 

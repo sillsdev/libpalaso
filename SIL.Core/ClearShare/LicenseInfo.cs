@@ -7,17 +7,6 @@ namespace SIL.Core.ClearShare
 	/// <summary/>
 	public abstract class LicenseInfo
 	{
-		// Note: the only use of FromXmp is in Metadata, to create a license.
-		public static LicenseInfo FromXmp(Dictionary<string, string> properties)
-		{
-			if (properties.ContainsKey("license") && properties["license"].Contains("creativecommons"))
-				return CreativeCommonsLicenseBase.FromMetadata(properties);
-
-			if (properties.ContainsKey("rights (en)"))
-				return CustomLicenseBase.FromMetadata(properties);
-			return new NullLicense();
-		}
-
 		/// <summary>
 		/// A compact form of this license that doesn't introduce any new text (though the license may itself have text)
 		/// E.g. "CC BY-NC"
@@ -33,7 +22,7 @@ namespace SIL.Core.ClearShare
 
 		/// <summary>
 		/// It doesn't make sense to let the user edit the description of a well-known license, even if the meta data is unlocked.
-		/// REVIEW: How do we know whether this is a well-known license? Presently, only <see cref="CreativeCommonsLicenseBase"/> is always well-known.
+		/// REVIEW: How do we know whether this is a well-known license? Presently, only <see cref="CreativeCommonsLicense"/> is always well-known.
 		/// REVIEW (Hasso) 2023.07: This is never used (internally, at least) and all overriding implementations return false, too.
 		/// </summary>
 		[PublicAPI]

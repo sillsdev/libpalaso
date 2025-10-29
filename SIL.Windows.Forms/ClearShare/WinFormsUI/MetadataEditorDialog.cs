@@ -7,10 +7,10 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 {
 	public partial class MetadataEditorDialog : SIL.Windows.Forms.Miscellaneous.FormForUsingPortableClipboard
 	{
-		private readonly Metadata _originalMetaData;
-		private Metadata _returnMetaData;
+		private readonly MetadataForLicenseWithImage _originalMetaData;
+		private MetadataForLicenseWithImage _returnMetaData;
 
-		public MetadataEditorDialog(Metadata originalMetaData)
+		public MetadataEditorDialog(MetadataForLicenseWithImage originalMetaData)
 		{
 			_originalMetaData = originalMetaData;
 			InitializeComponent();
@@ -31,7 +31,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		}
 
 
-		public Metadata Metadata
+		public MetadataForLicenseWithImage Metadata
 		{
 			get { return _returnMetaData; }
 		}
@@ -48,7 +48,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			DialogResult = DialogResult.OK;
 
 			//we can't have a custom license without some description of it
-			var customLicense = _returnMetaData.License as CustomLicense;
+			var customLicense = _returnMetaData.License as CustomLicenseWithImage;
 			if(customLicense!=null && string.IsNullOrEmpty(customLicense.RightsStatement))
 				_returnMetaData.License = new NullLicense();
 

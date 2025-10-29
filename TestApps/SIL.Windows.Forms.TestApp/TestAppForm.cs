@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using L10NSharp;
-using SIL.Core.ClearShare;
+using SIL.Windows.Forms.ClearShare;
 using SIL.Extensions;
 using SIL.IO;
 using SIL.Lexicon;
@@ -313,7 +313,7 @@ and displays it as HTML.
 
 		private void OnShowMetaDataEditorClicked(object sender, EventArgs e)
 		{
-			using (var dlg = new MetadataEditorDialog(new Metadata()))
+			using (var dlg = new MetadataEditorDialog(new MetadataForLicenseWithImage()))
 			{
 				dlg.ShowDialog();
 			}

@@ -44,7 +44,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		public void TypicalEmbedInJson()
 		{
 			// example
-			var license = new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.Derivatives);
+			var license = new CreativeCommonsLicenseWithImage(true, false, CreativeCommonsLicenseWithImage.DerivativeRules.Derivatives);
 			license.RightsStatement = "Please acknowledge using 'Based on work of SIL Global'";
 
 			var json = "{\"license\":'" + license.Token + "\",\"rights\":\"" + license.RightsStatement + "\"}";
@@ -58,12 +58,12 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			var recoveredLicense = LicenseWithLogo.FromToken(token);
 			license.RightsStatement = rights;
 
-			Assert.That(recoveredLicense, Is.InstanceOf<CustomLicense>());
+			Assert.That(recoveredLicense, Is.InstanceOf<CustomLicenseWithImage>());
 
 			Assert.That(LicenseWithLogo.FromToken("ask"), Is.InstanceOf<NullLicense>());
 			var ccLicense = LicenseWithLogo.FromToken("by-nc-sa");
-			Assert.That(ccLicense, Is.InstanceOf<CreativeCommonsLicense>());
-			Assert.That(((CreativeCommonsLicense)ccLicense).AttributionRequired, Is.True);
+			Assert.That(ccLicense, Is.InstanceOf<CreativeCommonsLicenseWithImage>());
+			Assert.That(((CreativeCommonsLicenseWithImage)ccLicense).AttributionRequired, Is.True);
 		}
 	}
 }

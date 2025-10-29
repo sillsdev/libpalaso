@@ -17,7 +17,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			InitializeComponent();
 		}
 
-		public void SetMetadata(Metadata metaData)
+		public void SetMetadata(MetadataForLicenseWithImage metaData)
 		{
 			_table.SuspendLayout();
 			_table.Controls.Clear();
