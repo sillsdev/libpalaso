@@ -1317,6 +1317,15 @@ namespace SIL.WritingSystems
 			{
 				return kTraditionalChineseNameInEnglish;
 			}
+			else if (generalCode == ChineseSimplifiedTag && uiLanguageTag == ChineseSimplifiedTag)
+			{
+				// Chinese autonyms are also messed up in various ways, so we hard-code them here.
+				return kSimplifiedChineseAutonym;
+			}
+			else if (generalCode == ChineseTraditionalTag && uiLanguageTag == ChineseTraditionalTag)
+			{
+				return kTraditionalChineseAutonym;
+			}
 
 			// Starting some time around Sept 2025, Windows started returning the "fa" culture
 			// for CultureInfo.GetCultureInfo("prs"). We actually want to return Dari in that case.

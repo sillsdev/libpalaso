@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Fixed
+- [SIL.WritingSystems] Handle Chinese autonyms properly in IetfLanguageTag.GetLocalizedLanguageName().
 - [SIL.Windows.Forms] Prevent BetterLabel from responding to OnTextChanged when it has been disposed.
 
 ### Changed
