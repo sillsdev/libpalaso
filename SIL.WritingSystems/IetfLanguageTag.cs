@@ -1304,21 +1304,24 @@ namespace SIL.WritingSystems
 			var generalCode = GetGeneralCode(languageTag);
 			var uiLanguageCode = GetLanguagePart(uiLanguageTag);
 
-			if (generalCode == ChineseSimplifiedTag && uiLanguageCode == "en")
+			if (generalCode == ChineseSimplifiedTag)
 			{
-				// We also use this as the "English Subtitle" in GetNativeLanguageNameWithEnglishSubtitle. Not sure if 
-				// it really matters here, but the ICU-supplied name (e.g., used on Linux), and the EnglishName and
+				// We also use this as the "English Subtitle" in GetNativeLanguageNameWithEnglishSubtitle.
+				// The ICU-supplied name (e.g., used on Linux), and the EnglishName and
 				// DisplayName supplied via the Windows CultureInfo are all subtly different in
 				// unhelpful ways:
 				// ICU: Chinese (China)
 				// DisplayName: Chinese (Simplified, PRC) or Chinese (Simplified, Mainland China) or Chinese (China)
 				// EnglishName: Chinese (Simplified, China) or Chinese (Simplified, Mainland China) or Chinese (China)
-
-				return kSimplifiedChineseNameInEnglish;
+				if (uiLanguageCode == "en")
+					return kSimplifiedChineseNameInEnglish;
+				return kSimplifiedChineseAutonym;
 			}
-			else if (generalCode == ChineseTraditionalTag && uiLanguageCode == "en")
+			if (generalCode == ChineseTraditionalTag)
 			{
-				return kTraditionalChineseNameInEnglish;
+				if (uiLanguageCode == "en")
+					return kTraditionalChineseNameInEnglish;
+				return kTraditionalChineseAutonym;
 			}
 
 			// Starting some time around Sept 2025, Windows started returning the "fa" culture
@@ -1360,11 +1363,7 @@ namespace SIL.WritingSystems
 				langName = ci.DisplayName;
 				if (uiLanguageCode != "en")
 				{
-					if (
-						langName == ci.EnglishName
-						|| generalCode == ChineseSimplifiedTag
-						|| generalCode == ChineseTraditionalTag
-					)
+					if (langName == ci.EnglishName)
 						langName = FixBotchedNativeName(ci.NativeName);
 				}
 				if (IsNullOrWhiteSpace(langName))
@@ -1424,6 +1423,14 @@ namespace SIL.WritingSystems
 				// englishNameSuffix is always an empty string if we don't need it.
 				string englishNameSuffix = Empty;
 
+				if (generalCode == ChineseSimplifiedTag)
+				{
+					return $"{kSimplifiedChineseAutonym} ({kSimplifiedChineseNameInEnglish})";
+				}
+				if (generalCode == ChineseTraditionalTag)
+				{
+					return $"{kTraditionalChineseAutonym} ({kTraditionalChineseNameInEnglish})";
+				}
 				// Starting some time around Sept 2025, Windows started returning the "fa" culture
 				// for CultureInfo.GetCultureInfo("prs"). We actually want to return Dari in that case.
 				if (generalCode == "prs")
@@ -1437,16 +1444,13 @@ namespace SIL.WritingSystems
 				if (IsNullOrWhiteSpace(nativeName))
 					nativeName = code;
 
-				if (ci.Name != ChineseSimplifiedTag && ci.Name != ChineseTraditionalTag)
-				{
-					// Remove any country (or script?) names.
-					var idxCountry = englishNameSuffix.LastIndexOf(" (", StringComparison.Ordinal);
-					if (englishNameSuffix.Length > 0 && idxCountry > 0)
-						englishNameSuffix = englishNameSuffix.Substring(0, idxCountry) + ")";
-					idxCountry = nativeName.IndexOf(" (", StringComparison.Ordinal);
-					if (idxCountry > 0)
-						nativeName = nativeName.Substring(0, idxCountry);
-				}
+				// Remove any country (or script?) names.
+				var idxCountry = englishNameSuffix.LastIndexOf(" (", StringComparison.Ordinal);
+				if (englishNameSuffix.Length > 0 && idxCountry > 0)
+					englishNameSuffix = englishNameSuffix.Substring(0, idxCountry) + ")";
+				idxCountry = nativeName.IndexOf(" (", StringComparison.Ordinal);
+				if (idxCountry > 0)
+					nativeName = nativeName.Substring(0, idxCountry);
 				langName = nativeName + englishNameSuffix;
 				if (!ci.IsUnknownCulture())
 				{
@@ -1594,14 +1598,6 @@ namespace SIL.WritingSystems
 				// Incorrect capitalization on older Windows OS versions.
 				case "Português":
 					return "português";
-				case "中文(中国)":
-				case "中文（中国）":
-					return kSimplifiedChineseAutonym;
-				case "中文(台灣)":
-				case "中文（台灣）":
-				case "中文(台湾)":
-				case "中文（台湾）":
-					return kTraditionalChineseAutonym;
 				default:
 					return name;
 			}
