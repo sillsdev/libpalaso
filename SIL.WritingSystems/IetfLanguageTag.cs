@@ -1116,6 +1116,9 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Gets the language part of the specified language tag.
 		/// </summary>
+		/// <remarks>
+		/// Returns `zh` for both `zh-CN` and `zh-TW`.
+		/// </remarks>
 		[PublicAPI]
 		public static string GetLanguagePart(string langTag)
 		{
