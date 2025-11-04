@@ -16,11 +16,11 @@ namespace SIL.Windows.Forms.ImageToolbox
 {
 	public class PalasoImage : IDisposable
 	{
-		private MetadataForLicenseWithImage _metadata;
+		private Metadata _metadata;
 
 		private string _tempFilePath;
 
-		public MetadataForLicenseWithImage Metadata
+		public Metadata Metadata
 		{
 			get { return _metadata; }
 			set
@@ -61,14 +61,14 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		public PalasoImage()
 		{
-			Metadata = new MetadataForLicenseWithImage();
+			Metadata = new Metadata();
 		}
 
 		public PalasoImage(Image image)
 		{
 			Image = image;
 			FileName = null;
-			Metadata = new MetadataForLicenseWithImage();
+			Metadata = new Metadata();
 		}
 
 		public static PalasoImage FromImage(Image image)
@@ -324,7 +324,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 					// very often means really that the image file is corrupt.
 					// We'll try to diagnose that by attempting to get metadata. If that throws (probably TagLib.CorruptFileException),
 					// assume it's a better indication of the problem.
-					var metadata = MetadataForLicenseWithImage.FromFile(path);
+					var metadata = Metadata.FromFile(path);
 					if (metadata.IsOutOfMemoryPlausible(e))
 						#pragma warning disable CA2200
 						// ReSharper disable once PossibleIntendedRethrow
@@ -345,7 +345,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 				FileName = Path.GetFileName(path),
 				_originalFilePath = path,
 				_pathForSavingMetadataChanges = path,
-				Metadata = MetadataForLicenseWithImage.FromFile(tempPath),
+				Metadata = Metadata.FromFile(tempPath),
 				_tempFilePath = tempPath
 			};
 			NormalizeImageOrientation(i);

@@ -75,7 +75,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 		{
 			Application.EnableVisualStyles();
 			PalasoImage i = PalasoImage.FromImage(LicenseLogos.by_nd);
-			i.Metadata.License = new CreativeCommonsLicenseWithImage(true,true, CreativeCommonsLicenseWithImage.DerivativeRules.DerivativesWithShareAndShareAlike);
+			i.Metadata.License = new CreativeCommonsLicense(true,true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
 			i.Metadata.CopyrightNotice = "Copyright 1992 Papua New Guinea Department of Education and Other Good Things";
 			i.Metadata.CollectionName = "International Illustrations: The Art Of Reading";
 			i.Metadata.Creator = "Various Talented Illustrators";

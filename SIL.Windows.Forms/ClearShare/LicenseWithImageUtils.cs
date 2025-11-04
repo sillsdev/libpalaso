@@ -11,10 +11,10 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 			if (properties.ContainsKey("license") &&
 			    properties["license"].Contains("creativecommons"))
-				return CreativeCommonsLicenseWithImage.FromMetadata(properties);
+				return CreativeCommonsLicense.FromMetadata(properties);
 
 			if (properties.ContainsKey("rights (en)"))
-				return CustomLicenseWithImage.FromMetadata(properties);
+				return CustomLicense.FromMetadata(properties);
 			return new NullLicense();
 		}
 	}

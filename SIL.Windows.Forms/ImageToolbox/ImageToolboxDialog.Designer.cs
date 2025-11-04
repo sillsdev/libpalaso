@@ -33,7 +33,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		{
 			this.components = new System.ComponentModel.Container();
 			PalasoImage palasoImage1 = new PalasoImage();
-			MetadataForLicenseWithImage metadata1 = new MetadataForLicenseWithImage();
+			Metadata metadata1 = new Metadata();
 			this._cancelButton = new System.Windows.Forms.Button();
 			this._okButton = new System.Windows.Forms.Button();
 			this._imageToolboxControl = new ImageToolboxControl();

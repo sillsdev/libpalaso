@@ -192,7 +192,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// <summary>Metadata (copyright info) changed</summary>
 		public event EventHandler MetadataChanged;
 
-		private void SetupMetaDataControls(MetadataForLicenseWithImage metaData)
+		private void SetupMetaDataControls(Metadata metaData)
 		{
 			Guard.AgainstNull(_imageInfo, "_imageInfo");
 			if (_currentImageBox.Image == null)
@@ -212,11 +212,11 @@ namespace SIL.Windows.Forms.ImageToolbox
 			if (_metadataDisplayControl.Visible)
 				_metadataDisplayControl.SetMetadata(metaData);
 
-			_copyExemplarMetadata.Visible = Metadata.HaveStoredExemplar(Metadata.FileCategory.Image);
+			_copyExemplarMetadata.Visible = MetadataBare.HaveStoredExemplar(MetadataBare.FileCategory.Image);
 			if (_invitationToMetadataPanel.Visible && _copyExemplarMetadata.Visible)
 			{
 				var s = LocalizationManager.GetString("ImageToolbox.CopyExemplarMetadata", "Use {0}", "Used to copy a previous metadata set to the current image. The {0} will be replaced with the name of the exemplar image.");
-				_copyExemplarMetadata.Text = string.Format(s, Metadata.GetStoredExemplarSummaryString(Metadata.FileCategory.Image));
+				_copyExemplarMetadata.Text = string.Format(s, MetadataBare.GetStoredExemplarSummaryString(MetadataBare.FileCategory.Image));
 			}
 
 			if (Platform.IsWindows)
@@ -356,7 +356,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// The `Action&lt;Metadata&gt;` callback saves the modified `Metadata` to the image.
 		/// <see cref="SetNewImageMetadata(Metadata)"/>
 		/// </summary>
-		public Action<MetadataForLicenseWithImage, Action<MetadataForLicenseWithImage>> EditMetadataActionOverride { get; set; }
+		public Action<Metadata, Action<Metadata>> EditMetadataActionOverride { get; set; }
 
 		private void OnEditMetadataLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
@@ -395,12 +395,12 @@ namespace SIL.Windows.Forms.ImageToolbox
 			}
 		}
 
-		private void SetNewImageMetadata(MetadataForLicenseWithImage newMetadata)
+		private void SetNewImageMetadata(Metadata newMetadata)
 		{
 			_imageInfo.Metadata = newMetadata;
 			SetupMetaDataControls(_imageInfo.Metadata);
 			// Too risky (see https://issues.bloomlibrary.org/youtrack/issue/BL-1001): _imageInfo.SaveUpdatedMetadataIfItMakesSense();
-			_imageInfo.Metadata.StoreAsExemplar(Metadata.FileCategory.Image);
+			_imageInfo.Metadata.StoreAsExemplar(MetadataBare.FileCategory.Image);
 			MetadataChanged?.Invoke(this, EventArgs.Empty);
 		}
 
@@ -445,7 +445,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private void OnCopyExemplar_MouseClick(object sender, MouseEventArgs e)
 		{
-			_imageInfo.Metadata.LoadFromStoredExemplar(Metadata.FileCategory.Image);
+			_imageInfo.Metadata.LoadFromStoredExemplar(MetadataBare.FileCategory.Image);
 			SetupMetaDataControls(ImageInfo.Metadata);
 			MetadataChanged?.Invoke(this, EventArgs.Empty);
 			// Too risky (see https://issues.bloomlibrary.org/youtrack/issue/BL-1001): _imageInfo.SaveUpdatedMetadataIfItMakesSense();

@@ -12,11 +12,11 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test, Ignore("By Hand")]
 		public void ShowControl()
 		{
-			var m = new MetadataForLicenseWithImage();
+			var m = new Metadata();
 			m.CopyrightNotice = "copyright me";
 			m.Creator = "you";
 			m.AttributionUrl = "http://google.com";
-			m.License = new CreativeCommonsLicenseWithImage(true, false, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+			m.License = new CreativeCommonsLicense(true, false, CreativeCommonsLicenseBare.DerivativeRules.DerivativesWithShareAndShareAlike);
 			var c = new MetadataDisplayControl();
 			c.SetMetadata(m);
 			var dlg = new Form();

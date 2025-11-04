@@ -313,7 +313,7 @@ and displays it as HTML.
 
 		private void OnShowMetaDataEditorClicked(object sender, EventArgs e)
 		{
-			using (var dlg = new MetadataEditorDialog(new MetadataForLicenseWithImage()))
+			using (var dlg = new MetadataEditorDialog(new Metadata()))
 			{
 				dlg.ShowDialog();
 			}
