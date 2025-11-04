@@ -689,6 +689,7 @@ namespace SIL.WritingSystems.Tests
 		[TestCase("qaa", ExpectedResult = "qaa")]
 		[TestCase("qed", ExpectedResult = "qed")]
 		[TestCase("qed-Lepc-x-rubbish", ExpectedResult = "qed")]
+		[TestCase("zh-CN-fonipa", ExpectedResult = "zh")]
 		public string GetLanguagePart_ValidIetfTag_ReturnsLanguage(string tag)
 		{
 			return IetfLanguageTag.GetLanguagePart(tag);
@@ -1109,5 +1110,20 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(name, Is.EqualTo(expectedResult));
 		}
 		#endregion
+
+		[TestCase("tpi-AR", ExpectedResult = "tpi")]
+		[TestCase("tpi-Lepc-BR-fonipa-x-blah", ExpectedResult = "tpi")]
+		[TestCase("qaa", ExpectedResult = "qaa")]
+		[TestCase("qed-Lepc-x-rubbish", ExpectedResult = "qed")]
+		[TestCase("zh-BN", ExpectedResult = "zh")]
+		[TestCase("zh-CN-fonipa", ExpectedResult = "zh-CN")]
+		[TestCase("zh-Hans", ExpectedResult = "zh")]
+		[TestCase("zh-TW", ExpectedResult = "zh-TW")]
+		[TestCase("a", ExpectedResult = "a")]
+		[TestCase("-", ExpectedResult = "")]
+		public string GetGeneralCode_ReturnsCode(string tag)
+		{
+			return IetfLanguageTag.GetGeneralCode(tag);
+		}
 	}
 }

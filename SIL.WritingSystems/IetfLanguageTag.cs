@@ -1523,10 +1523,12 @@ namespace SIL.WritingSystems
 			// Though you might be tempted to simplify this by using GetLanguagePart, don't: this
 			// methods works with three-letter codes even if there is a valid 2-letter code that
 			// should be used instead.
+			if (code.StartsWith(ChineseSimplifiedTag))
+				return ChineseSimplifiedTag;
+			if (code.StartsWith(ChineseTraditionalTag))
+				return ChineseTraditionalTag;
 			var idxCountry = code.IndexOf("-");
-			if (idxCountry == -1 || code == ChineseSimplifiedTag || code == ChineseTraditionalTag)
-				return code;
-			return code.Substring(0, idxCountry);
+			return idxCountry == -1 ? code : code.Substring(0, idxCountry);
 		}
 
 		/// <summary>
