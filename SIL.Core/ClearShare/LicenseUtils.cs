@@ -10,10 +10,10 @@ namespace SIL.Core.ClearShare
 		{
 			if (properties.ContainsKey("license") &&
 			    properties["license"].Contains("creativecommons"))
-				return CreativeCommonsLicenseBare.FromMetadata(properties);
+				return CreativeCommonsLicenseBare.BareLicenseFromMetadata(properties);
 
 			if (properties.ContainsKey("rights (en)"))
-				return CustomLicenseBare.FromMetadata(properties);
+				return CustomLicenseBare.BareLicenseFromMetadata(properties);
 			return new NullLicense();
 		}
 	}
