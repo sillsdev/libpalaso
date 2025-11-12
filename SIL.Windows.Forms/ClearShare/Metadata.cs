@@ -46,7 +46,7 @@ namespace SIL.Windows.Forms.ClearShare
 	/// </summary>
 	public class Metadata : MetadataBare
 	{
-		public new Metadata FromFile(string path)
+		public static Metadata FromFile(string path)
 		{
 			var m = new Metadata() { _path = path };
 			LoadProperties(path, m);
@@ -56,6 +56,30 @@ namespace SIL.Windows.Forms.ClearShare
 		public new Metadata DeepCopy()
 		{
 			return (Metadata)CloneObject(this);
+		}
+
+		/*/// <summary>
+		/// Saves all the metadata that fits in XMP to a file.
+		/// </summary>
+		/// <example>SaveXmplFile("c:\dir\metadata.xmp")</example>
+		public new void SaveXmpFile(string path)
+		{
+			var tag = new XmpTag();
+			SaveInImageTag(tag);
+			RobustFile.WriteAllText(path, tag.Render(), Encoding.UTF8);
+		}*/
+
+		/// <summary>
+		/// Loads all metadata found in the XMP file.
+		/// </summary>
+		/// <example>LoadXmpFile("c:\dir\metadata.xmp")</example>
+		public new void LoadXmpFile(string path)
+		{
+			if (!RobustFile.Exists(path))
+				throw new FileNotFoundException(path);
+
+			var xmp = new XmpTag(RobustFile.ReadAllText(path, Encoding.UTF8), null);
+			LoadProperties(xmp, this);
 		}
 
 		/// <summary>

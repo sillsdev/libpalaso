@@ -58,7 +58,7 @@ namespace SIL.Core.ClearShare
 		/// </summary>
 		/// <param name="path"></param>
 		/// <returns></returns>
-		public virtual MetadataBare FromFile(string path)
+		public static MetadataBare BareLicenseFromFile(string path)
 		{
 			var m = new MetadataBare { _path = path };
 			LoadProperties(path, m);
