@@ -18,7 +18,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// instead of the default (launching <see cref="ClearShare.WinFormsUI.MetadataEditorDialog"/>).
 		/// For example, the client may want to use a different UI to edit the `Metadata`.
 		/// The `Action<Metadata>` callback saves the modified `Metadata` to the image.
-		/// <see cref="ImageToolboxControl.SetNewImageMetadata(MetadataBare)"/></param>
+		/// <see cref="ImageToolboxControl.SetNewImageMetadata(Metadata)"/></param>
 		public ImageToolboxDialog(PalasoImage imageInfo, string initialSearchString, Action<Metadata, Action<Metadata>> editMetadataActionOverride)
 		{
 			InitializeComponent();
