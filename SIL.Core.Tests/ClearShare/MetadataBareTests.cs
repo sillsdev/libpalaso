@@ -155,11 +155,11 @@ namespace SIL.Tests.ClearShare
 		[Test]
 		public void RoundTripPng_FileNameHasNonAsciiCharacters()
 		{
-			var bitmapArray = new byte[10 * 10 * 3];
+			var mediaFile = new Image<Rgba32>(10, 10);
 			using (var folder = new TemporaryFolder("LibPalaso exiftool Test"))
 			{
 				var path = folder.Combine("Love these non-áscii chárácters.png");
-				_mediaFile.Save(path, new PngEncoder());
+				mediaFile.Save(path, new PngEncoder());
 				var outgoing = MetadataBare.BareLicenseFromFile(path);
 
 				outgoing.Creator = "joe shmo";
@@ -170,11 +170,11 @@ namespace SIL.Tests.ClearShare
 		[Test]
 		public void RoundTripPng_InPathWithNonAsciiCharacters()
 		{
-			var bitmapArray = new byte[10 * 10 * 3];
+			var mediaFile = new Image<Rgba32>(10, 10);
 			using (var folder = new TemporaryFolder("LibPalaso exiftool Test with non-áscii chárácters"))
 			{
 				var path = folder.Combine("test.png");
-				_mediaFile.Save(path, new PngEncoder());
+				mediaFile.Save(path, new PngEncoder());
 				var outgoing = MetadataBare.BareLicenseFromFile(path);
 
 				outgoing.Creator = "joe shmo";
