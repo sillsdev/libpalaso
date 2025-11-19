@@ -33,6 +33,7 @@ namespace SIL.Tests.ClearShare
 		public void TearDown()
 		{
 			_tempFile.Dispose();
+			_mediaFile.Dispose();
 		}
 
 		[Test]
@@ -155,31 +156,37 @@ namespace SIL.Tests.ClearShare
 		[Test]
 		public void RoundTripPng_FileNameHasNonAsciiCharacters()
 		{
-			var mediaFile = new Image<Rgba32>(10, 10);
-			using (var folder = new TemporaryFolder("LibPalaso exiftool Test"))
+			using (var mediaFile = new Image<Rgba32>(10, 10))
 			{
-				var path = folder.Combine("Love these non-áscii chárácters.png");
-				mediaFile.Save(path, new PngEncoder());
-				var outgoing = MetadataBare.BareLicenseFromFile(path);
+				using (var folder = new TemporaryFolder("LibPalaso exiftool Test"))
+				{
+					var path = folder.Combine("Love these non-áscii chárácters.png");
+					mediaFile.Save(path, new PngEncoder());
+					var outgoing = MetadataBare.BareLicenseFromFile(path);
 
-				outgoing.Creator = "joe shmo";
-				outgoing.Write();
-				Assert.AreEqual("joe shmo", MetadataBare.BareLicenseFromFile(path).Creator);
+					outgoing.Creator = "joe shmo";
+					outgoing.Write();
+					Assert.AreEqual("joe shmo", MetadataBare.BareLicenseFromFile(path).Creator);
+				}
 			}
 		}
 		[Test]
 		public void RoundTripPng_InPathWithNonAsciiCharacters()
 		{
-			var mediaFile = new Image<Rgba32>(10, 10);
-			using (var folder = new TemporaryFolder("LibPalaso exiftool Test with non-áscii chárácters"))
+			using (var mediaFile = new Image<Rgba32>(10, 10))
 			{
-				var path = folder.Combine("test.png");
-				mediaFile.Save(path, new PngEncoder());
-				var outgoing = MetadataBare.BareLicenseFromFile(path);
+				using (var folder =
+				       new TemporaryFolder(
+					       "LibPalaso exiftool Test with non-áscii chárácters"))
+				{
+					var path = folder.Combine("test.png");
+					mediaFile.Save(path, new PngEncoder());
+					var outgoing = MetadataBare.BareLicenseFromFile(path);
 
-				outgoing.Creator = "joe shmo";
-				outgoing.Write();
-				Assert.AreEqual("joe shmo", MetadataBare.BareLicenseFromFile(path).Creator);
+					outgoing.Creator = "joe shmo";
+					outgoing.Write();
+					Assert.AreEqual("joe shmo", MetadataBare.BareLicenseFromFile(path).Creator);
+				}
 			}
 		}
 
