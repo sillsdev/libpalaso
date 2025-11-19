@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using L10NSharp;
 
 namespace SIL.Core.ClearShare
 {
