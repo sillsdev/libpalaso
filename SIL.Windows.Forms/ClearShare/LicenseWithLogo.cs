@@ -12,30 +12,6 @@ namespace SIL.Windows.Forms.ClearShare
 	{
 		public Image Logo { get; private set; }
 
-		protected virtual string GetBestLicenseTranslation(string idSuffix, string englishText, string comment,
-			IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
-		{
-			idSuffix = "MetadataDisplay.Licenses." + idSuffix;
-			foreach (var targetLanguage in languagePriorityIds)
-			{
-				if (targetLanguage == "en")
-				{
-					//do the query to make sure the string is there to be translated someday
-					LocalizationManager.GetDynamicString("Palaso", idSuffix, englishText, comment);
-					idOfLanguageUsed = "en";
-					return englishText;
-				}
-				//otherwise, see if we have a translation
-				if (LocalizationManager.GetIsStringAvailableForLangId(idSuffix, targetLanguage))
-				{
-					idOfLanguageUsed = targetLanguage;
-					return LocalizationManager.GetDynamicStringOrEnglish("Palaso", idSuffix, englishText, comment, targetLanguage);
-				}
-			}
-			idOfLanguageUsed = string.Empty;
-			return "[Missing translation for " + idSuffix + "]";
-		}
-
 		//Review (JH asks in Oct 2016): Why does this exist? The only uses in libpalaso are in tests and examples. Bloom does not use it.
 		// Review Ariel June 2025: CreativeCommonsLicenseWithImage.FromToken is used in FieldWorks and in Bloom, but LicenseWithLogo.FromToken has no uses in Bloom or anywhere in sillsdev except in libpalaso tests & examples.
 		public static LicenseInfo FromToken(string abbr)

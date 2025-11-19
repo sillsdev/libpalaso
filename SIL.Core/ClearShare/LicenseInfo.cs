@@ -54,15 +54,15 @@ namespace SIL.Core.ClearShare
 				if (targetLanguage == "en")
 				{
 					//do the query to make sure the string is there to be translated someday
-					LocalizationManager.GetDynamicString("Palaso", idSuffix, englishText, comment);
+					Localizer.GetDynamicString("Palaso", idSuffix, englishText, comment);
 					idOfLanguageUsed = "en";
 					return englishText;
 				}
 				//otherwise, see if we have a translation
-				if (LocalizationManager.GetIsStringAvailableForLangId(idSuffix, targetLanguage))
+				if (Localizer.GetIsStringAvailableForLangId(idSuffix, targetLanguage))
 				{
 					idOfLanguageUsed = targetLanguage;
-					return LocalizationManager.GetDynamicStringOrEnglish("Palaso", idSuffix, englishText, comment, targetLanguage);
+					return Localizer.GetDynamicStringOrEnglish("Palaso", idSuffix, englishText, comment, targetLanguage);
 				}
 			}
 			idOfLanguageUsed = string.Empty;
