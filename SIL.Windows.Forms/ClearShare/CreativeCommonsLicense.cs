@@ -30,9 +30,9 @@ namespace SIL.Windows.Forms.ClearShare
 			return result;
 		}
 
-		/// <summary>
+		/// <remarks>
 		/// at the moment, we only use the license url, but in future we could add other custom provisions, like "ok to crop" (if they're allowed by cc?)
-		/// </summary>
+		/// </remarks>
 		public static LicenseInfo FromMetadata(Dictionary<string, string> metadataProperties)
 		{
 			if (!metadataProperties.ContainsKey("license"))

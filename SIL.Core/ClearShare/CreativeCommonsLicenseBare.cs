@@ -4,11 +4,11 @@ using System.Globalization;
 
 namespace SIL.Core.ClearShare
 {
-	/// <summary>
-	/// CreativeCommonsLicenseBare is a WindowsForms-free base version of the CustomLicense class. In order to be WindowsForms independent,
+	/// <remarks>
+	/// CreativeCommonsLicenseBare is a WindowsForms-free base version of the CreativeCommonsLicense class. In order to be WindowsForms independent,
 	/// it does not include information about any license images (for example, the "0 Public Domain" or "CC BY" images used by creative commons licenses).
 	/// To include license images, use the CreativeCommonsLicense class in SIL.WindowsForms.Clearshare.
-	/// </summary>
+	/// </remarks>
 	public class CreativeCommonsLicenseBare : LicenseInfo
 	{
 		// This URL may be checked in code that uses the library, so make it available as a constant.
@@ -190,7 +190,7 @@ namespace SIL.Core.ClearShare
 		/// </summary>
 		/// <remarks>
 		/// REVIEW: (asked by Hatton Oct 2016) Serialization by whom? Why not just use the url, which is the canonical form?
-		/// Note that this does not include any qualifier (of which at the moment the one one is "igo", but who knows
+		/// Note that this does not include any qualifier (of which at the moment the one is "igo"), but who knows
 		/// what the future holds.
 		///</remarks>
 		public override string Token
@@ -223,7 +223,7 @@ namespace SIL.Core.ClearShare
 		}
 
 		/// <summary>
-		/// A compact form of of this license that doesn't introduce any new text (though the license may itself have text)
+		/// A compact form of this license that doesn't introduce any new text (though the license may itself have text)
 		/// E.g. CC BY-NC
 		/// </summary>
 		public override string GetMinimalFormForCredits(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)

@@ -3,7 +3,6 @@ using JetBrains.Annotations;
 
 namespace SIL.Core.ClearShare
 {
-	/// <summary/>
 	public abstract class LicenseInfo
 	{
 		/// <summary>

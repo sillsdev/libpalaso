@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace SIL.Core.ClearShare
 {
-	/// <summary>
+	/// <remarks>
 	/// CustomLicenseBare is a WindowsForms-free base version of the CustomLicense class. In order to be WindowsForms independent,
 	/// it does not include information about any license images (for example, the "0 Public Domain" or "CC BY" images used by creative commons licenses).
 	/// To include license images, use the CustomLicense class in SIL.WindowsForms.Clearshare.
-	/// </summary>
+	/// </remarks>
 	public class CustomLicenseBare : LicenseInfo
 	{
 		public override string ToString()
@@ -22,7 +22,7 @@ namespace SIL.Core.ClearShare
 
 		///<summary></summary>
 		/// <remarks>
-		/// Currently, we don't know the language of custom license strings, so we the ISO 639-2 code for undetermined, "und"
+		/// Currently, we don't know the language of custom license strings, so we use the ISO 639-2 code for undetermined, "und"
 		/// </remarks>
 		/// <param name="languagePriorityIds"></param>
 		/// <param name="idOfLanguageUsed"></param>
@@ -51,7 +51,7 @@ namespace SIL.Core.ClearShare
 		public static LicenseInfo BareLicenseFromMetadata(Dictionary<string, string> properties)
 		{
 			if (!properties.ContainsKey("rights (en)"))
-				throw new ApplicationException("A license property is required in order to make a  Custom License from metadata.");
+				throw new ApplicationException("A license property is required in order to make a Custom License from metadata.");
 
 			var license = new CustomLicenseBare();
 			license.RightsStatement = properties["rights (en)"];
