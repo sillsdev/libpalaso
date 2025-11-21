@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 using SIL.Core.ClearShare;
 using SIL.Reporting;

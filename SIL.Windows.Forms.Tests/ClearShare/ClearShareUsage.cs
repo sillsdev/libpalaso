@@ -55,13 +55,13 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			var rights = "Academic Institutions may use this free of charge";
 
 			// reconstitute the license
-			var recoveredLicense = LicenseInfo.FromToken(token);
+			var recoveredLicense = LicenseWithLogo.FromToken(token);
 			license.RightsStatement = rights;
 
 			Assert.That(recoveredLicense, Is.InstanceOf<CustomLicense>());
 
-			Assert.That(LicenseInfo.FromToken("ask"), Is.InstanceOf<NullLicense>());
-			var ccLicense = LicenseInfo.FromToken("by-nc-sa");
+			Assert.That(LicenseWithLogo.FromToken("ask"), Is.InstanceOf<NullLicense>());
+			var ccLicense = LicenseWithLogo.FromToken("by-nc-sa");
 			Assert.That(ccLicense, Is.InstanceOf<CreativeCommonsLicense>());
 			Assert.That(((CreativeCommonsLicense)ccLicense).AttributionRequired, Is.True);
 		}

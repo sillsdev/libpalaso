@@ -73,20 +73,20 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 					_copyrightYear.Text = DateTime.Now.Year.ToString();
 
 				_copyrightBy.Text = _metadata.GetCopyrightBy();
-				if(_metadata.License!=null)
-					_licenseImage.Image = _metadata.License.GetImage();
+				if(_metadata.License!=null && (_metadata.License is ILicenseWithImage))
+					_licenseImage.Image = ((ILicenseWithImage)_metadata.License).GetImage();
 
 				_attributionUrl.Text = _metadata.AttributionUrl;
 
 				if (_metadata.License is CreativeCommonsLicense)
 				{
-					var cc = (CreativeCommonsLicense) _metadata.License;
+					var cc = (CreativeCommonsLicense)_metadata.License;
 					if (cc.AttributionRequired)
 					{
 						_creativeCommons.Checked = true;
-						_noDerivates.Checked = cc.DerivativeRule == CreativeCommonsLicense.DerivativeRules.NoDerivatives;
-						_shareAlike.Checked = cc.DerivativeRule == CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike;
-						_derivatives.Checked = cc.DerivativeRule == CreativeCommonsLicense.DerivativeRules.Derivatives;
+						_noDerivates.Checked = cc.DerivativeRule == CreativeCommonsLicenseBare.DerivativeRules.NoDerivatives;
+						_shareAlike.Checked = cc.DerivativeRule == CreativeCommonsLicenseBare.DerivativeRules.DerivativesWithShareAndShareAlike;
+						_derivatives.Checked = cc.DerivativeRule == CreativeCommonsLicenseBare.DerivativeRules.Derivatives;
 						_commercial.Checked = cc.CommercialUseAllowed;
 						_nonCommercial.Checked = !cc.CommercialUseAllowed;
 						_customRightsStatement.Text = _metadata.License.RightsStatement;
@@ -135,7 +135,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			var currentIsCC0 = false;
 
 			if (_metadata.License == null || !(_metadata.License is CreativeCommonsLicense))//todo: that's kinda heavy-handed
-				_metadata.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
+				_metadata.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicenseBare.DerivativeRules.Derivatives);
 
 			if (_creativeCommons.Checked)
 			{
@@ -143,11 +143,11 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				cc.AttributionRequired = true; // for now, we don't have a way to turn that off
 				cc.CommercialUseAllowed = _commercial.Checked;
 				if (_derivatives.Checked)
-					cc.DerivativeRule = CreativeCommonsLicense.DerivativeRules.Derivatives;
+					cc.DerivativeRule = CreativeCommonsLicenseBare.DerivativeRules.Derivatives;
 				else if (_shareAlike.Checked)
-					cc.DerivativeRule = CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike;
+					cc.DerivativeRule = CreativeCommonsLicenseBare.DerivativeRules.DerivativesWithShareAndShareAlike;
 				else
-					cc.DerivativeRule = CreativeCommonsLicense.DerivativeRules.NoDerivatives;
+					cc.DerivativeRule = CreativeCommonsLicenseBare.DerivativeRules.NoDerivatives;
 				_licenseImage.Image = cc.GetImage();
 
 				// If we're going from custom to CC, we could as easily just copy the statement into CC license.
@@ -165,10 +165,10 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				if (previousWasCC0 || !previousWasCC)
 				{
 					// reset license to our desired defaults
-					cc.Version = CreativeCommonsLicense.kDefaultVersion;
+					cc.Version = CreativeCommonsLicenseBare.kDefaultVersion;
 					cc.AttributionRequired = true;
 					cc.CommercialUseAllowed = true;
-					cc.DerivativeRule = CreativeCommonsLicense.DerivativeRules.Derivatives;
+					cc.DerivativeRule = CreativeCommonsLicenseBare.DerivativeRules.Derivatives;
 					cc.IntergovernmentalOrganizationQualifier = false;
 					_commercial.Checked = true;
 					_derivatives.Checked = true;
@@ -180,7 +180,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				var cc0 = (CreativeCommonsLicense)_metadata.License;
 				cc0.AttributionRequired = false;
 				cc0.CommercialUseAllowed = true;
-				cc0.DerivativeRule = CreativeCommonsLicense.DerivativeRules.Derivatives;
+				cc0.DerivativeRule = CreativeCommonsLicenseBare.DerivativeRules.Derivatives;
 				cc0.IntergovernmentalOrganizationQualifier = false;
 				cc0.Version = "";
 				_licenseImage.Image = cc0.GetImage();
