@@ -5,11 +5,11 @@ using System.Globalization;
 namespace SIL.Core.ClearShare
 {
 	/// <remarks>
-	/// CreativeCommonsLicenseBare is a WindowsForms-free base version of the CreativeCommonsLicense class. In order to be WindowsForms independent,
+	/// CreativeCommonsLicenseInfo is a WindowsForms-free base version of the CreativeCommonsLicense class. In order to be WindowsForms independent,
 	/// it does not include information about any license images (for example, the "0 Public Domain" or "CC BY" images used by creative commons licenses).
 	/// To include license images, use the CreativeCommonsLicense class in SIL.WindowsForms.Clearshare.
 	/// </remarks>
-	public class CreativeCommonsLicenseBare : LicenseInfo
+	public class CreativeCommonsLicenseInfo : LicenseInfo
 	{
 		// This URL may be checked in code that uses the library, so make it available as a constant.
 		public const string CC0Url = "http://creativecommons.org/publicdomain/zero/1.0/";
@@ -72,7 +72,7 @@ namespace SIL.Core.ClearShare
 		/// <summary>
 		/// at the moment, we only use the license url, but in future we could add other custom provisions, like "ok to crop" (if they're allowed by cc?)
 		/// </summary>
-		public static LicenseInfo BareLicenseFromMetadata(Dictionary<string, string> metadataProperties)
+		public static LicenseInfo CCLicenseInfoFromMetadata(Dictionary<string, string> metadataProperties)
 		{
 			if(!metadataProperties.ContainsKey("license"))
 				throw new ApplicationException("A license property is required in order to make a Creative Commons License from metadata.");
@@ -84,29 +84,29 @@ namespace SIL.Core.ClearShare
 			return result;
 		}
 
-		public static CreativeCommonsLicenseBare BareLicenseFromUrl(string url)
+		public static CreativeCommonsLicenseInfo BareLicenseFromUrl(string url)
 		{
 			if(url==null || url.Trim()=="")
 			{
 				throw new ArgumentOutOfRangeException();
 			}
-			var l = new CreativeCommonsLicenseBare();
+			var l = new CreativeCommonsLicenseInfo();
 			l.Url = url;
 			return l;
 		}
 
-		protected CreativeCommonsLicenseBare()
+		protected CreativeCommonsLicenseInfo()
 		{
 		}
 
-		public CreativeCommonsLicenseBare(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule, string version)
+		public CreativeCommonsLicenseInfo(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule, string version)
 		{
 			AttributionRequired = attributionRequired;
 			CommercialUseAllowed = commercialUseAllowed;
 			DerivativeRule = derivativeRule;
 			Version = version;
 		}
-		public CreativeCommonsLicenseBare(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule)
+		public CreativeCommonsLicenseInfo(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule)
 			:this(attributionRequired, commercialUseAllowed, derivativeRule, kDefaultVersion)
 		{
 		}

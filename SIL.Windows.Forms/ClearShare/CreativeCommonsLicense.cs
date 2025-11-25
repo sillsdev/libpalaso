@@ -5,7 +5,7 @@ using SIL.Core.ClearShare;
 
 namespace SIL.Windows.Forms.ClearShare
 {
-	public class CreativeCommonsLicense : CreativeCommonsLicenseBare, ILicenseWithImage
+	public class CreativeCommonsLicense : CreativeCommonsLicenseInfo, ILicenseWithImage
 	{
 
 		private CreativeCommonsLicense()
@@ -46,7 +46,7 @@ namespace SIL.Windows.Forms.ClearShare
 		}
 
 		// New implementation in order to return a CreativeCommonsLicense
-		// instead of CreativeCommonsLicenseBare
+		// instead of CreativeCommonsLicenseInfo
 		public static CreativeCommonsLicense FromLicenseUrl(string url)
 		{
 			if(url==null || url.Trim()=="")
