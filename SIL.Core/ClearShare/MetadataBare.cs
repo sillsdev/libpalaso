@@ -504,7 +504,7 @@ namespace SIL.Core.ClearShare
 		{
 			if (IsLicenseNotSet)
 			{
-				License = new CreativeCommonsLicenseBare(true, true, CreativeCommonsLicenseBare.DerivativeRules.Derivatives);
+				License = new CreativeCommonsLicenseInfo(true, true, CreativeCommonsLicenseInfo.DerivativeRules.Derivatives);
 			}
 		}
 
@@ -855,7 +855,7 @@ namespace SIL.Core.ClearShare
 
 		public void SetCopyrightNotice(string year, string by)
 		{
-			if ((License is CreativeCommonsLicenseBare) && !((CreativeCommonsLicenseBare)License).AttributionRequired)
+			if ((License is CreativeCommonsLicenseInfo) && !((CreativeCommonsLicenseInfo)License).AttributionRequired)
 			{
 				// Public Domain, no copyright as such.
 				if (!IsNullOrEmpty(year))

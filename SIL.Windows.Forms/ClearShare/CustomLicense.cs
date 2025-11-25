@@ -5,7 +5,7 @@ using SIL.Core.ClearShare;
 
 namespace SIL.Windows.Forms.ClearShare
 {
-	public class CustomLicense : CustomLicenseBare, ILicenseWithImage
+	public class CustomLicense : CustomLicenseInfo, ILicenseWithImage
 	{
 		public Image GetImage()
 		{
