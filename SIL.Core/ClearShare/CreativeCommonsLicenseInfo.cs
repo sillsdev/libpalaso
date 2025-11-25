@@ -4,10 +4,15 @@ using System.Globalization;
 
 namespace SIL.Core.ClearShare
 {
+	/// <summary>
+	/// Represents a Creative Commons license in a platform-neutral, data-only form.
+	/// Tracks the license’s attribution, commercial use, derivative rules, version, and URL,
+	/// and can generate a string token or a human-readable description.
+	/// </summary>
 	/// <remarks>
-	/// CreativeCommonsLicenseInfo is a WindowsForms-free base version of the CreativeCommonsLicense class. In order to be WindowsForms independent,
-	/// it does not include information about any license images (for example, the "0 Public Domain" or "CC BY" images used by creative commons licenses).
-	/// To include license images, use the CreativeCommonsLicense class in SIL.WindowsForms.Clearshare.
+	/// This is a WindowsForms-free base version of <see cref="SIL.WindowsForms.Clearshare.CreativeCommonsLicense"/>.
+	/// It does not include license images (such as "CC0" or "CC BY") or other UI elements.
+	/// Use the WindowsForms version if you need those features.
 	/// </remarks>
 	public class CreativeCommonsLicenseInfo : LicenseInfo
 	{

@@ -3,10 +3,15 @@ using System.Collections.Generic;
 
 namespace SIL.Core.ClearShare
 {
+	/// <summary>
+	/// Represents a custom, user-defined license in a platform-neutral, data-only form.
+	/// Tracks the license text (RightsStatement) and provides methods to get a string token or a human-readable description.
+	/// This class does not include any UI elements or images.
+	/// </summary>
 	/// <remarks>
-	/// CustomLicenseBare is a WindowsForms-free base version of the CustomLicense class. In order to be WindowsForms independent,
-	/// it does not include information about any license images (for example, the "0 Public Domain" or "CC BY" images used by creative commons licenses).
-	/// To include license images, use the CustomLicense class in SIL.WindowsForms.Clearshare.
+	/// This is a WindowsForms-free base version of <see cref="SIL.WindowsForms.Clearshare.CustomLicense"/>.
+	/// It does not include the optional <see cref="SIL.WindowsForms.Clearshare.CustomLicense.Image"/> property used for display purposes.
+	/// Use the WindowsForms version if you need to show an image for the license.
 	/// </remarks>
 	public class CustomLicenseInfo : LicenseInfo
 	{

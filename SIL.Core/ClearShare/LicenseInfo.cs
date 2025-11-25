@@ -3,6 +3,12 @@ using JetBrains.Annotations;
 
 namespace SIL.Core.ClearShare
 {
+	/// <summary>
+	/// Serves as the base class for all types of licenses in the system, providing a common interface for license metadata.
+	/// Tracks key properties such as the license URL, a human-readable token, and rights statements,
+	/// and defines methods to get a minimal form for credits and a descriptive summary of the license.
+	/// Subclasses implement specific license types (e.g., Creative Commons, custom licenses) and may add platform- or UI-specific details.
+	/// </summary>
 	public abstract class LicenseInfo
 	{
 		/// <summary>
