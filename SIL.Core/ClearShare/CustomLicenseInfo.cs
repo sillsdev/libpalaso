@@ -8,7 +8,7 @@ namespace SIL.Core.ClearShare
 	/// it does not include information about any license images (for example, the "0 Public Domain" or "CC BY" images used by creative commons licenses).
 	/// To include license images, use the CustomLicense class in SIL.WindowsForms.Clearshare.
 	/// </remarks>
-	public class CustomLicenseBare : LicenseInfo
+	public class CustomLicenseInfo : LicenseInfo
 	{
 		public override string ToString()
 		{
@@ -48,12 +48,12 @@ namespace SIL.Core.ClearShare
 
 		public override string Url { get; set; }
 
-		public static LicenseInfo BareLicenseFromMetadata(Dictionary<string, string> properties)
+		public static LicenseInfo CustomLicenseInfoFromMetadata(Dictionary<string, string> properties)
 		{
 			if (!properties.ContainsKey("rights (en)"))
 				throw new ApplicationException("A license property is required in order to make a Custom License from metadata.");
 
-			var license = new CustomLicenseBare();
+			var license = new CustomLicenseInfo();
 			license.RightsStatement = properties["rights (en)"];
 			return license;
 		}
