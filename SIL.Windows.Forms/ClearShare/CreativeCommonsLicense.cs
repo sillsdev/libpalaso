@@ -5,6 +5,22 @@ using SIL.Core.ClearShare;
 
 namespace SIL.Windows.Forms.ClearShare
 {
+	/// <summary>
+	/// Represents a Creative Commons license with WindowsForms-specific features,
+	/// extending <see cref="SIL.Core.ClearShare.CreativeCommonsLicenseInfo"/> by adding support for
+	/// associated license images (e.g., CC BY, CC BY-SA, CC0).
+	/// </summary>
+	/// <remarks>
+	/// This class provides constructors for creating licenses from explicit
+	/// Creative Commons terms (attribution, commercial use, derivative rules, and
+	/// version), as well as factory methods for building a license from a token,
+	/// metadata properties, or a full license URL.
+	/// <para>
+	/// Unlike the platform-neutral <see cref="SIL.Core.ClearShare.CreativeCommonsLicenseInfo"/>,
+	/// this class includes UI-related functionality such as returning the
+	/// appropriate license logo via <see cref="GetImage"/>.
+	/// </para>
+	/// </remarks>
 	public class CreativeCommonsLicense : CreativeCommonsLicenseInfo, ILicenseWithImage
 	{
 
