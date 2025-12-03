@@ -44,7 +44,7 @@ namespace SIL.Windows.Forms.ClearShare
 	/// indicates that the unchanged version is in  EXIF:Copyright. And if this value is present, it is what ExifTool (8.5.6.0) returns
 	/// when it is simply asked for Copyright, even though the new value is stored in two other copyright fields.
 	/// </summary>
-	public class Metadata : MetadataBare
+	public class Metadata : MetadataCore
 	{
 		public static Metadata FromFile(string path)
 		{
