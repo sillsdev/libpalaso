@@ -69,11 +69,11 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				this.Visible = true;
 				_illustrator.Text = _metadata.Creator;
 				_copyrightYear.Text = _metadata.GetCopyrightYear();
-				if(_copyrightYear.Text =="")
+				if (_copyrightYear.Text =="")
 					_copyrightYear.Text = DateTime.Now.Year.ToString();
 
 				_copyrightBy.Text = _metadata.GetCopyrightBy();
-				if(_metadata.License!=null && (_metadata.License is ILicenseWithImage))
+				if (_metadata.License!=null && (_metadata.License is ILicenseWithImage))
 					_licenseImage.Image = ((ILicenseWithImage)_metadata.License).GetImage();
 
 				_attributionUrl.Text = _metadata.AttributionUrl;
@@ -99,7 +99,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 						_derivatives.Checked = true;
 					}
 				}
-				else if(_metadata.License is CustomLicense)
+				else if (_metadata.License is CustomLicense)
 				{
 					_customLicense.Checked = true;
 					_customRightsStatement.Text = _metadata.License.RightsStatement;
@@ -126,7 +126,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 		private void OnLicenseComponentChanged(object sender, EventArgs e)
 		{
-			if(_settingUp)
+			if (_settingUp)
 				return;
 
 			var previousLicense = _metadata.License;
@@ -191,7 +191,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				}
 				currentIsCC0 = true;
 			}
-			else if(_unknownLicense.Checked)
+			else if (_unknownLicense.Checked)
 			{
 				_metadata.License = new NullLicense();
 			}

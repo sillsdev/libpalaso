@@ -23,13 +23,13 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			_table.Controls.Clear();
 			_table.RowCount = 0;
 			_table.RowStyles.Clear();
-			if(!string.IsNullOrEmpty(metaData.Creator))
+			if (!string.IsNullOrEmpty(metaData.Creator))
 			{
 				AddRow(string.Format("Creator: {0}".Localize("MetadataDisplay.Creator"), metaData.Creator));
 			}
 			if (!string.IsNullOrEmpty(metaData.CollectionName))
 			{
-				if(!string.IsNullOrEmpty(metaData.CollectionUri))
+				if (!string.IsNullOrEmpty(metaData.CollectionUri))
 				{
 					AddHyperLink(metaData.CollectionName, metaData.CollectionUri,2);
 				}
@@ -50,11 +50,11 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			{
 				AddRow(metaData.ShortCopyrightNotice);
 			}
-			if(!string.IsNullOrEmpty(metaData.AttributionUrl))
+			if (!string.IsNullOrEmpty(metaData.AttributionUrl))
 			{
 				AddHyperLink(metaData.AttributionUrl.Replace("http://",""), metaData.AttributionUrl,2);
 			}
-			if(metaData.License!=null)
+			if (metaData.License!=null)
 			{
 				if (metaData.License is NullLicense)
 				{
@@ -88,7 +88,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 						//AddHyperLink(LocalizationManager.GetString("License Info", metaData.License.Url, 1);
 						AddHyperLink("License Info".Localize("MetadataDisplay.LicenseInfo"), metaData.License.Url, 1);
 					}
-					else if(pictureBox!=null)
+					else if (pictureBox!=null)
 					{
 						_table.SetColumnSpan(pictureBox, 2);
 					}

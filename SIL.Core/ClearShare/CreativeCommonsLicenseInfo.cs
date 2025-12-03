@@ -79,19 +79,19 @@ namespace SIL.Core.ClearShare
 		/// </summary>
 		public static LicenseInfo CCLicenseInfoFromMetadata(Dictionary<string, string> metadataProperties)
 		{
-			if(!metadataProperties.ContainsKey("license"))
+			if (!metadataProperties.ContainsKey("license"))
 				throw new ApplicationException("A license property is required in order to make a Creative Commons License from metadata.");
 
-			var result = BareLicenseFromUrl(metadataProperties["license"]);
+			var result = CreateCreativeCommonsLicenseInfoFromUrl(metadataProperties["license"]);
 			string rights;
 			if (metadataProperties.TryGetValue("rights (en)", out rights))
 				result.RightsStatement = rights;
 			return result;
 		}
 
-		public static CreativeCommonsLicenseInfo BareLicenseFromUrl(string url)
+		public static CreativeCommonsLicenseInfo CreateCreativeCommonsLicenseInfoFromUrl(string url)
 		{
-			if(url==null || url.Trim()=="")
+			if (url==null || url.Trim()=="")
 			{
 				throw new ArgumentOutOfRangeException();
 			}
@@ -124,7 +124,7 @@ namespace SIL.Core.ClearShare
 			}
 			set
 			{
-				if(value!=Url)
+				if (value!=Url)
 				{
 					HasChanges = true;
 				}
@@ -162,7 +162,7 @@ namespace SIL.Core.ClearShare
 				if (decimal.TryParse(version, NumberStyles.AllowDecimalPoint, new CultureInfo("en-US"), out result))
 					Version = version;
 
-				if(parts.Length > 6)
+				if (parts.Length > 6)
 					_qualifier = parts[6].ToLowerInvariant().Trim();
 			}
 
@@ -170,7 +170,7 @@ namespace SIL.Core.ClearShare
 
 		protected static string MakeUrlFromParts(string token, string version, string qualifier)
 		{
-			if(token == "cc0")
+			if (token == "cc0")
 			{
 				// this one is weird in a couple ways, including that it doesn't have /licenses/ in the path
 				return CC0Url;
@@ -285,7 +285,7 @@ namespace SIL.Core.ClearShare
 
 			string s= Url + System.Environment.NewLine;
 
-			if(!AttributionRequired)
+			if (!AttributionRequired)
 			{
 				return GetComponentOfLicenseInBestLanguage("PublicDomain", "You can copy, modify, and distribute this work, even for commercial purposes, all without asking permission.", languagePriorityIds, out idOfLanguageUsed) + " ";
 			}
@@ -295,7 +295,7 @@ namespace SIL.Core.ClearShare
 			else
 				s += GetComponentOfLicenseInBestLanguage("NonCommercial", "You may not use this work for commercial purposes.", languagePriorityIds, out idOfLanguageUsed) + " ";
 
-			if(DerivativeRule == DerivativeRules.Derivatives)
+			if (DerivativeRule == DerivativeRules.Derivatives)
 				s += GetComponentOfLicenseInBestLanguage("Derivatives", "You may adapt and add to this work.", languagePriorityIds, out idOfLanguageUsed) + " ";
 
 			if (DerivativeRule == DerivativeRules.NoDerivatives)
@@ -356,7 +356,7 @@ namespace SIL.Core.ClearShare
 					}
 				}
 				_qualifier = newValue;
-				if(value)
+				if (value)
 				{
 					_version = "3.0";// as of November 2016 and July 2023, igo only had a 3.0 version, while normal cc licenses were up to 4.0
 				}

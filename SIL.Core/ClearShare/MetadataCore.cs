@@ -20,8 +20,22 @@ using static System.String;
 namespace SIL.Core.ClearShare
 {
 	/// <summary>
-	/// MetadataBare is a WindowsForms-free base version of the Metadata class. In order to be WindowsForms independent, it does not include information about any license images
-	/// (for example, the "0 Public Domain" or "CC BY" images used by creative commons licenses).To include license images, use the Metadata class in SIL.WindowsForms.Clearshare.
+	/// Provides reading and writing of image metadata,
+	/// including copyright, creator, collection details, and licensing information.
+	/// 
+	/// MetadataCore can load metadata from image files (via TagLib), from XMP files, or from
+	/// previously saved exemplars, and it writes metadata back to image files while preserving
+	/// original tags when appropriate.
+	/// 
+	/// MetadataCore also tracks whether changes have been made to the metadta, includes utilities
+	/// for default license initialization, and handles error cases such as unsupported or
+	/// partially corrupt metadata.
+	/// </summary>
+	/// <remarks>
+	/// This is a WindowsForms-free base version of <see cref="SIL.WindowsForms.Clearshare.Metadata"/>.
+	/// In order to be WindowsForms independent, it does not include information about license images
+	/// (for example, the "0 Public Domain" or "CC BY" images used by creative commons licenses).
+	/// Use the WindowsForms version if you need to show an image for the license.
 	/// 
 	/// Provides reading and writing of metadata, currently for any file which TagLib can read AND write (images, pdf).
 	/// Where multiple metadata formats are in a file (XMP, EXIF, IPTC-IIM), we read the first one we find (that has a non-empty value) and write them all.
@@ -29,26 +43,11 @@ namespace SIL.Core.ClearShare
 	///
 	/// Microsoft Pro Photo Tools: http://www.microsoft.com/download/en/details.aspx?id=13518
 	///
-	/// A previous version of this class used exiftool.exe to read and write this data. The exact fields chosen to store each piece of ClearShare metadata
-	/// were chosen when working with exiftool as the best matches to the data we want to store; when switching to taglib, the same names were used
-	/// as precisely as possible in order to ensure the greatest possible data interchange with exiftool and anything using it, especially programs
-	/// using old versions of this library.
-	/// Backwards compatibility was achieved for all fields: we can read anything written by the old version of MetaData.
-	/// Forwards compatibility was also fully achieved for files with no existing metadata: if the new library is used to add metadata
-	/// to a file which previously had none, old versions of this library (and exiftool generally) should be able to read all of it correctly.
-	/// There is however one case I haven't been able to fix:
-	///   - Add metadata to a file using exiftool (or an old version of this library, or possibly other tools that write EXIF:Copyright)
-	///   - Modify the copyright using this new version
-	///   - Attempt to read it using the old version.
-	/// In that scenario, exiftool continues to find the old copyright notice.
-	/// Apparently, in addition to storing it in the XMP dc:rights/default field and (typically) PNG Copyright field, exiftool stores it
-	/// in yet another tag, which taglib does not support, at least for PNG files. Running exiftool with arguments -a -u - args -g
-	/// indicates that the unchanged version is in  EXIF:Copyright. And if this value is present, it is what ExifTool (8.5.6.0) returns
-	/// when it is simply asked for Copyright, even though the new value is stored in two other copyright fields.
-	/// </summary>
-	public class MetadataBare
+	/// A previous version of the Metadata class used exiftool.exe to read and write data. For more info see the comments on <see cref="SIL.WindowsForms.Clearshare.Metadata"/>.
+	/// </remarks>
+	public class MetadataCore
 	{
-		public MetadataBare()
+		public MetadataCore()
 		{
 			IsEmpty = true;
 		}
@@ -58,9 +57,9 @@ namespace SIL.Core.ClearShare
 		/// </summary>
 		/// <param name="path"></param>
 		/// <returns></returns>
-		public static MetadataBare BareLicenseFromFile(string path)
+		public static MetadataCore CreateMetadataCoreFromFile(string path)
 		{
-			var m = new MetadataBare { _path = path };
+			var m = new MetadataCore { _path = path };
 			LoadProperties(path, m);
 			return m;
 		}
@@ -111,7 +110,7 @@ namespace SIL.Core.ClearShare
 		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="destinationMetadata"></param>
-		protected static void LoadProperties(string path, MetadataBare destinationMetadata)
+		protected static void LoadProperties(string path, MetadataCore destinationMetadata)
 		{
 			try
 			{
@@ -167,7 +166,7 @@ namespace SIL.Core.ClearShare
 		/// <remarks>
 		/// internal to allow unit testing
 		/// </remarks>
-		internal static void LoadProperties(ImageTag tagMain, MetadataBare destinationMetadata)
+		internal static void LoadProperties(ImageTag tagMain, MetadataCore destinationMetadata)
 		{
 			destinationMetadata.CopyrightNotice = tagMain.Copyright;
 			destinationMetadata.Creator = tagMain.Creator;
@@ -346,18 +345,18 @@ namespace SIL.Core.ClearShare
 
 		private class MetadataAssignment
 		{
-			public Func<MetadataBare, string> GetStringFunction { get; }
-			public Func<MetadataBare, bool> ShouldSetValue { get; }
+			public Func<MetadataCore, string> GetStringFunction { get; }
+			public Func<MetadataCore, bool> ShouldSetValue { get; }
 			public string Switch;
 			public string ResultLabel;
-			public Action<MetadataBare, string> AssignmentAction;
+			public Action<MetadataCore, string> AssignmentAction;
 
-			public MetadataAssignment(string Switch, string resultLabel, Action<MetadataBare, string> assignmentAction, Func<MetadataBare, string> stringProvider)
+			public MetadataAssignment(string Switch, string resultLabel, Action<MetadataCore, string> assignmentAction, Func<MetadataCore, string> stringProvider)
 				: this(Switch, resultLabel, assignmentAction, stringProvider, p => !IsNullOrEmpty(stringProvider(p)))
 			{
 			}
 
-			public MetadataAssignment(string @switch, string resultLabel, Action<MetadataBare, string> assignmentAction, Func<MetadataBare, string> stringProvider, Func<MetadataBare, bool> shouldSetValueFunction)
+			public MetadataAssignment(string @switch, string resultLabel, Action<MetadataCore, string> assignmentAction, Func<MetadataCore, string> stringProvider, Func<MetadataCore, bool> shouldSetValueFunction)
 			{
 				GetStringFunction = stringProvider;
 				ShouldSetValue = shouldSetValueFunction;
@@ -518,9 +517,9 @@ namespace SIL.Core.ClearShare
 		// If the copyright has not been set, we assume the license has not been set either.
 		public bool IsLicenseNotSet => License == null || (License is NullLicense && IsNullOrEmpty(CopyrightNotice));
 
-		public MetadataBare DeepCopy()
+		public MetadataCore DeepCopy()
 		{
-			return (MetadataBare)CloneObject(this);
+			return (MetadataCore)CloneObject(this);
 		}
 
 		/// <summary>
@@ -821,7 +820,7 @@ namespace SIL.Core.ClearShare
 		{
 			try
 			{
-				var m = new MetadataBare();
+				var m = new MetadataCore();
 				m.LoadFromStoredExemplar(category);
 				return $"{m.Creator}/{m.CopyrightNotice}/{m.License}";
 			}

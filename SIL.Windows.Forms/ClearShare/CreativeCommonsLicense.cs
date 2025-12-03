@@ -65,7 +65,7 @@ namespace SIL.Windows.Forms.ClearShare
 		// instead of CreativeCommonsLicenseInfo
 		public static CreativeCommonsLicense FromLicenseUrl(string url)
 		{
-			if(url==null || url.Trim()=="")
+			if (url==null || url.Trim()=="")
 			{
 				throw new ArgumentOutOfRangeException();
 			}
