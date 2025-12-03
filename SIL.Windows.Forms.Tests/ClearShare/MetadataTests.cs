@@ -2,6 +2,7 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Drawing;
+using System.Windows.Forms.VisualStyles;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.TestUtilities;
@@ -249,6 +250,20 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			Assert.AreEqual(original.License.GetType(), another.License.GetType());
 		}
 
+		[Test]
+		public void LoadXmpFile_LoadsCorrectLicenseType()
+		{
+			MetadataCore originalMetadata = new Metadata();
+			MetadataCore loadedMetadata = new Metadata();
+			originalMetadata.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicenseInfo.DerivativeRules.Derivatives);
+			using (var f = TempFile.WithExtension("xmp"))
+			{
+				originalMetadata.SaveXmpFile(f.Path);
+				loadedMetadata.LoadXmpFile(f.Path);
+			}
+			// Ensure that the loaded License type is CreativeCommonsLicense and not CreativeCommonsLicenseInfo
+			Assert.AreEqual(originalMetadata.License.GetType(), loadedMetadata.License.GetType());
+		}
 
 		[Test]
 		public void DeepCopy()

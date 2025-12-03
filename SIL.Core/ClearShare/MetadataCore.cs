@@ -733,7 +733,7 @@ namespace SIL.Core.ClearShare
 		/// Loads all metadata found in the XMP file.
 		/// </summary>
 		/// <example>LoadXmpFile("c:\dir\metadata.xmp")</example>
-		public void LoadXmpFile(string path)
+		public virtual void LoadXmpFile(string path)
 		{
 			if (!RobustFile.Exists(path))
 				throw new FileNotFoundException(path);

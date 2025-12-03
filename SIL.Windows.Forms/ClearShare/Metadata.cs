@@ -73,7 +73,7 @@ namespace SIL.Windows.Forms.ClearShare
 		/// Loads all metadata found in the XMP file.
 		/// </summary>
 		/// <example>LoadXmpFile("c:\dir\metadata.xmp")</example>
-		public new void LoadXmpFile(string path)
+		public override void LoadXmpFile(string path)
 		{
 			if (!RobustFile.Exists(path))
 				throw new FileNotFoundException(path);
