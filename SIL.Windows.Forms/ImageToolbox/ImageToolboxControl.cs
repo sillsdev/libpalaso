@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -212,11 +212,11 @@ namespace SIL.Windows.Forms.ImageToolbox
 			if (_metadataDisplayControl.Visible)
 				_metadataDisplayControl.SetMetadata(metaData);
 
-			_copyExemplarMetadata.Visible = Metadata.HaveStoredExemplar(Metadata.FileCategory.Image);
+			_copyExemplarMetadata.Visible = MetadataCore.HaveStoredExemplar(MetadataCore.FileCategory.Image);
 			if (_invitationToMetadataPanel.Visible && _copyExemplarMetadata.Visible)
 			{
 				var s = LocalizationManager.GetString("ImageToolbox.CopyExemplarMetadata", "Use {0}", "Used to copy a previous metadata set to the current image. The {0} will be replaced with the name of the exemplar image.");
-				_copyExemplarMetadata.Text = string.Format(s, Metadata.GetStoredExemplarSummaryString(Metadata.FileCategory.Image));
+				_copyExemplarMetadata.Text = string.Format(s, MetadataCore.GetStoredExemplarSummaryString(MetadataCore.FileCategory.Image));
 			}
 
 			if (Platform.IsWindows)
@@ -400,7 +400,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			_imageInfo.Metadata = newMetadata;
 			SetupMetaDataControls(_imageInfo.Metadata);
 			// Too risky (see https://issues.bloomlibrary.org/youtrack/issue/BL-1001): _imageInfo.SaveUpdatedMetadataIfItMakesSense();
-			_imageInfo.Metadata.StoreAsExemplar(Metadata.FileCategory.Image);
+			_imageInfo.Metadata.StoreAsExemplar(MetadataCore.FileCategory.Image);
 			MetadataChanged?.Invoke(this, EventArgs.Empty);
 		}
 
@@ -445,7 +445,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private void OnCopyExemplar_MouseClick(object sender, MouseEventArgs e)
 		{
-			_imageInfo.Metadata.LoadFromStoredExemplar(Metadata.FileCategory.Image);
+			_imageInfo.Metadata.LoadFromStoredExemplar(MetadataCore.FileCategory.Image);
 			SetupMetaDataControls(ImageInfo.Metadata);
 			MetadataChanged?.Invoke(this, EventArgs.Empty);
 			// Too risky (see https://issues.bloomlibrary.org/youtrack/issue/BL-1001): _imageInfo.SaveUpdatedMetadataIfItMakesSense();

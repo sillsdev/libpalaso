@@ -1,5 +1,7 @@
 using System.Drawing;
 using SIL.Core.ClearShare;
+using System.Collections.Generic;
+using L10NSharp;
 
 namespace SIL.Windows.Forms.ClearShare
 {
@@ -9,6 +11,19 @@ namespace SIL.Windows.Forms.ClearShare
 	public class LicenseWithLogo : License
 	{
 		public Image Logo { get; private set; }
+
+		//Review (JH asks in Oct 2016): Why does this exist? The only uses in libpalaso are in tests and examples. Bloom does not use it.
+		// Review Ariel June 2025: CreativeCommonsLicenseWithImage.FromToken is used in FieldWorks and in Bloom, but LicenseWithLogo.FromToken has no uses in Bloom or anywhere in sillsdev except in libpalaso tests & examples.
+		public static LicenseInfo FromToken(string abbr)
+		{
+			switch (abbr)
+			{
+				case "ask": return new NullLicense();
+				case "custom": return new CustomLicense();
+				default:
+					return CreativeCommonsLicense.FromToken(abbr);
+			}
+		}
 
 		/// ------------------------------------------------------------------------------------
 		public override int GetHashCode()

@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Threading;
 using L10NSharp;
 using NUnit.Framework;
 using SIL.Windows.Forms.ClearShare;
+using SIL.Windows.Forms.i18n;
 
 namespace SIL.Windows.Forms.Tests.ClearShare
 {
@@ -15,6 +16,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		{
 			Thread.CurrentThread.CurrentCulture = new CultureInfo("sv-SE"); //sweden, which uses commas for decimal  point (regression test)
 			LocalizationManager.StrictInitializationMode = false;
+			Localizer.Default = new L10NSharpLocalizer();
 		}
 
 		[Test]

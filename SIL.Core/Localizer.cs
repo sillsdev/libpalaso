@@ -7,8 +7,10 @@ namespace SIL
 		string UILanguageId { get; }
 		string GetString(string stringId, string englishText);
 		string GetString(string stringId, string englishText, string comment);
+		bool GetIsStringAvailableForLangId(string id, string targetLangId);
 		string GetDynamicString(string appId, string id, string englishText);
 		string GetDynamicString(string appId, string id, string englishText, string comment);
+		string GetDynamicStringOrEnglish(string appId, string id, string englishText, string comment, string targetLangId);
 	}
 
 	public class Localizer
@@ -39,6 +41,11 @@ namespace SIL
 			return Default.GetString(stringId, englishText, comment);
 		}
 
+		public static bool GetIsStringAvailableForLangId(string id, string targetLangId)
+		{
+			return Default.GetIsStringAvailableForLangId(id, targetLangId);
+		}
+
 		public static string GetDynamicString(string appId, string id, string englishText)
 		{
 			return Default.GetDynamicString(appId, id, englishText);
@@ -47,6 +54,11 @@ namespace SIL
 		public static string GetDynamicString(string appId, string id, string englishText, string comment)
 		{
 			return Default.GetDynamicString(appId, id, englishText, comment);
+		}
+
+		public static string GetDynamicStringOrEnglish(string appId, string id, string englishText, string comment, string targetLangId)
+		{
+			return Default.GetDynamicStringOrEnglish(appId, id, englishText, comment, targetLangId);
 		}
 	}
 
@@ -64,12 +76,24 @@ namespace SIL
 			return englishText;
 		}
 
+		public bool GetIsStringAvailableForLangId(string stringId, string targetLangId)
+		{
+			if (targetLangId == "en")
+				return true;
+			return false;
+		}
+
 		public string GetDynamicString(string appId, string id, string englishText)
 		{
 			return englishText;
 		}
 
 		public string GetDynamicString(string appId, string id, string englishText, string comment)
+		{
+			return englishText;
+		}
+
+		public string GetDynamicStringOrEnglish(string appId, string id, string englishText, string comment, string targetLangId)
 		{
 			return englishText;
 		}
