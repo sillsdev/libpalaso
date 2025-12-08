@@ -6,6 +6,9 @@
     <Description>The SIL.Windows.Forms.Keyboarding library provides cross-platform functionality for keyboard selection and switching in Windows Forms applications. Currently, this library supports system and Keyman keyboards on Windows, and X keyboard extension (XKB) and Intelligent Input Bus (IBus) keyboards on Linux.</Description>
     <TargetFrameworks>$(TargetFrameworks);net8.0-windows</TargetFrameworks>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'net48' ">
+    <DefineConstants>$(DefineConstants);NETFRAMEWORK</DefineConstants>
+  </PropertyGroup>
 
   <ItemGroup Condition=" !$(DefineConstants.Contains('NETFRAMEWORK')) ">
     <Content Remove="Linux\**" />
