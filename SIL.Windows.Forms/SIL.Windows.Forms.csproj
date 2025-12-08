@@ -10,6 +10,9 @@
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
     <TargetFrameworks>$(TargetFrameworks);net8.0-windows</TargetFrameworks>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'net48' ">
+    <DefineConstants>$(DefineConstants);NETFRAMEWORK</DefineConstants>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Enchant.Net" Version="1.4.2" />

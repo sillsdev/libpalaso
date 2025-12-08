@@ -11,6 +11,9 @@
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'net48' ">
+    <DefineConstants>$(DefineConstants);NETFRAMEWORK</DefineConstants>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
