@@ -23,7 +23,6 @@ namespace SIL.Tests.ClearShare
 		[SetUp]
 		public void Setup()
 		{
-			_mediaFile = new Image<Rgba32>(10, 10);
 			_tempFile = TempFile.WithExtension("png");
 			_mediaFile.Save(_tempFile.Path, new PngEncoder());
 			_outgoing = MetadataCore.CreateMetadataCoreFromFile(_tempFile.Path);

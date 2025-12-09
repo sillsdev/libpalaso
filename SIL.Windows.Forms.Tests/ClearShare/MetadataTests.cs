@@ -22,7 +22,6 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[SetUp]
 		public void Setup()
 		{
-			_mediaFile = new Bitmap(10, 10);
 			_tempFile = TempFile.WithExtension("png");
 			_mediaFile.Save(_tempFile.Path);
 			_outgoing = Metadata.FromFile(_tempFile.Path);
@@ -162,32 +161,38 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void RoundTripPng_FileNameHasNonAsciiCharacters()
 		{
-			var mediaFile = new Bitmap(10, 10);
-			using (var folder = new TemporaryFolder("LibPalaso exiftool Test"))
+			using (var mediaFile = new Bitmap(10, 10))
 			{
-				var path = folder.Combine("Love these non-áscii chárácters.png");
-				mediaFile.Save(path);
-				var outgoing = Metadata.FromFile(path);
+				using (var folder = new TemporaryFolder("LibPalaso exiftool Test"))
+				{
+					var path = folder.Combine("Love these non-áscii chárácters.png");
+					mediaFile.Save(path);
+					var outgoing = Metadata.FromFile(path);
 
-				outgoing.Creator = "joe shmo";
-				outgoing.Write();
-				Assert.AreEqual("joe shmo", Metadata.FromFile(path).Creator);
+					outgoing.Creator = "joe shmo";
+					outgoing.Write();
+					Assert.AreEqual("joe shmo", Metadata.FromFile(path).Creator);
+				}
 			}
 		}
 
 		[Test]
 		public void RoundTripPng_InPathWithNonAsciiCharacters()
 		{
-			var mediaFile = new Bitmap(10, 10);
-			using (var folder = new TemporaryFolder("LibPalaso exiftool Test with non-áscii chárácters"))
+			using (var mediaFile = new Bitmap(10, 10))
 			{
-				var path = folder.Combine("test.png");
-				mediaFile.Save(path);
-				var outgoing = Metadata.FromFile(path);
+				using (var folder =
+				       new TemporaryFolder(
+					       "LibPalaso exiftool Test with non-áscii chárácters"))
+				{
+					var path = folder.Combine("test.png");
+					mediaFile.Save(path);
+					var outgoing = Metadata.FromFile(path);
 
-				outgoing.Creator = "joe shmo";
-				outgoing.Write();
-				Assert.AreEqual("joe shmo", Metadata.FromFile(path).Creator);
+					outgoing.Creator = "joe shmo";
+					outgoing.Write();
+					Assert.AreEqual("joe shmo", Metadata.FromFile(path).Creator);
+				}
 			}
 		}
 
