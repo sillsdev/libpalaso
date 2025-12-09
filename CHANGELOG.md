@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
-- [SIL.Core.Clearshare] Added new classes MetadataBare, CreativeCommonsLicenseBare, and CustomLicenseBare; these are Winforms-free versions of the classes Metadata, CreativeCommonsLicense, and CustomLicense.
+- [SIL.Core.Clearshare] Added new classes MetadataCore, CreativeCommonsLicenseInfo, and CustomLicenseInfo; these are Winforms-free base versions of the classes Metadata, CreativeCommonsLicense, and CustomLicense.
 
 - [SIL.Core.Clearshare and SIL.Windows.Forms.Clearshare] Added LicenseUtils and LicenseWithImageUtils to handle the FromXmp method for creating a license. LicenseUtils constructs a bare license object that is Winforms-independent; LicenseWithImageUtils constructs a Winforms-dependent license object with access to license images. 
 - [SIL.Core.Clearshare] New methods "GetIsStringAvailableForLangId" and "GetDynamicStringOrEnglish" were added to Localizer for use in LicenseInfo's "GetBestLicenseTranslation" method, to remove LicenseInfo's L10NSharp dependency.
@@ -36,8 +36,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 	- The GetImage method from LicenseInfo was moved to the ILicenseWithImage interface, which is implemented by CreativeCommonsLicense and CustomLicense.
     - GetBestLicenseTranslation in LicenseInfo now uses Localizer instead of using L10NSharp.LocalizationManager.
 
-- [SIL.Windows.Forms.Clearshare] Winforms-independent metadata and license functionality of Metadata, CreativeCommonsLicense, and CustomLicense were moved to new classes MetadataBare, CreativeCommonsLicenseBare, and CustomLicenseBare in SIL.Core.Clearshare. Metadata, CreativeCommonsLicense, and CustomLicense inherit from the Bare Winforms-free metadata and license versions.
-- [SIL.Windows.Forms.Tests.Clearshare] Many tests from MetadataTests in SIL.Windows.Forms.Clearshare were moved to MetadataBareTests in Core.Clearshare. Tests that use Winforms-specific versions of methods (e.g. Metadata.FromFile) were retained. Added checks to test that the correct (Winforms-dependent) License objects are created when loading from xmp, round tripping a license in a png, or saving metadata to tag.
+- [SIL.Windows.Forms.Clearshare] Winforms-independent metadata and license functionality of Metadata, CreativeCommonsLicense, and CustomLicense were moved to new classes MetadataCore, CreativeCommonsLicenseInfo, and CustomLicenseInfo in SIL.Core.Clearshare. Metadata, CreativeCommonsLicense, and CustomLicense inherit from the Bare Winforms-free metadata and license versions.
+- [SIL.Windows.Forms.Tests.Clearshare] Many tests from MetadataTests in SIL.Windows.Forms.Clearshare were moved to MetadataCoreTests in Core.Clearshare. Tests that use Winforms-specific versions of methods (e.g. Metadata.FromFile) were retained. Added checks to test that the correct (Winforms-dependent) License objects are created when loading from xmp, round tripping a license in a png, or saving metadata to tag.
 - [SIL.Windows.Forms.Tests.Clearshare] LicenseInfoTests renamed LicenseWithLogoTests.
 - [SIL.Windows.Forms] BREAKING CHANGE: Upgraded to L10nSharp v9. Any clients which also use L10nSharp must also upgrade to v9.
 - [SIL.Windows.Forms] Add a reference to L10nSharp.Windows.Forms v9.
