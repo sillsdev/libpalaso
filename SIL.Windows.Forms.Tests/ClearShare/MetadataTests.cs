@@ -22,6 +22,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[SetUp]
 		public void Setup()
 		{
+			_mediaFile = new Bitmap(10, 10);
 			_tempFile = TempFile.WithExtension("png");
 			_mediaFile.Save(_tempFile.Path);
 			_outgoing = Metadata.FromFile(_tempFile.Path);
