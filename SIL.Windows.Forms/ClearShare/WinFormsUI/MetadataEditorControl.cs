@@ -73,8 +73,8 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 					_copyrightYear.Text = DateTime.Now.Year.ToString();
 
 				_copyrightBy.Text = _metadata.GetCopyrightBy();
-				if (_metadata.License!=null && (_metadata.License is ILicenseWithImage))
-					_licenseImage.Image = ((ILicenseWithImage)_metadata.License).GetImage();
+				if (_metadata.License is ILicenseWithImage licenseWithImage)
+					_licenseImage.Image = licenseWithImage.GetImage();
 
 				_attributionUrl.Text = _metadata.AttributionUrl;
 

@@ -68,8 +68,8 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 					System.Drawing.Image licenseImage = null;
 					// Licenses constructed from SIL.Core.Clearshare will not have images,
 					// and will not be of type ILicenseWithImage.
-					if (metaData.License is ILicenseWithImage)
-						licenseImage = ((ILicenseWithImage)metaData.License).GetImage();
+					if (metaData.License is ILicenseWithImage licenseWithImage)
+						licenseImage = licenseWithImage.GetImage();
 					PictureBox pictureBox = null;
 					if (licenseImage != null)
 					{
