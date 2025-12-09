@@ -20,14 +20,18 @@ using static System.String;
 namespace SIL.Core.ClearShare
 {
 	/// <summary>
-	/// Provides reading and writing of image metadata,
-	/// including copyright, creator, collection details, and licensing information.
+	/// Provides reading and writing of image metadata, currently for any file which TagLib can read
+	/// AND write (images, pdf). Metadata handled includes copyright, creator, collection details,
+	/// and licensing information.
+	/// 
+	/// Where multiple metadata formats are in a file (XMP, EXIF, IPTC-IIM), we read the first one we find
+	/// (that has a non-empty value) and write them all.
 	/// 
 	/// MetadataCore can load metadata from image files (via TagLib), from XMP files, or from
 	/// previously saved exemplars, and it writes metadata back to image files while preserving
 	/// original tags when appropriate.
 	/// 
-	/// MetadataCore also tracks whether changes have been made to the metadta, includes utilities
+	/// MetadataCore also tracks whether changes have been made to the metadata, includes utilities
 	/// for default license initialization, and handles error cases such as unsupported or
 	/// partially corrupt metadata.
 	/// </summary>
@@ -36,9 +40,7 @@ namespace SIL.Core.ClearShare
 	/// In order to be WindowsForms independent, it does not include information about license images
 	/// (for example, the "0 Public Domain" or "CC BY" images used by creative commons licenses).
 	/// Use the WindowsForms version if you need to show an image for the license.
-	/// 
-	/// Provides reading and writing of metadata, currently for any file which TagLib can read AND write (images, pdf).
-	/// Where multiple metadata formats are in a file (XMP, EXIF, IPTC-IIM), we read the first one we find (that has a non-empty value) and write them all.
+	///
 	/// Working Group guidelines: http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
 	///
 	/// Microsoft Pro Photo Tools: http://www.microsoft.com/download/en/details.aspx?id=13518
@@ -60,7 +62,7 @@ namespace SIL.Core.ClearShare
 		public static MetadataCore CreateMetadataCoreFromFile(string path)
 		{
 			var m = new MetadataCore { _path = path };
-			LoadProperties(path, m);
+			m.LoadProperties(path);
 			return m;
 		}
 
@@ -110,12 +112,12 @@ namespace SIL.Core.ClearShare
 		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="destinationMetadata"></param>
-		protected static void LoadProperties(string path, MetadataCore destinationMetadata)
+		private void LoadProperties(string path)
 		{
 			try
 			{
-				destinationMetadata.ExceptionCaughtWhileLoading = null;
-				destinationMetadata._originalTaglibMetadata = RetryUtility.Retry(() =>
+				ExceptionCaughtWhileLoading = null;
+				_originalTaglibMetadata = RetryUtility.Retry(() =>
 				  TagLib.File.Create(path) as TagLib.Image.File,
 				  memo: $"LoadProperties({path})");
 			}
@@ -125,7 +127,7 @@ namespace SIL.Core.ClearShare
 				// So since I don't see a way to differentiate between that case and the case
 				// where something really is wrong, we're just gonna have to swallow this,
 				// even in DEBUG mode, because else a lot of simple image tests fail
-				destinationMetadata.ExceptionCaughtWhileLoading = ex;
+				ExceptionCaughtWhileLoading = ex;
 				return;
 			}
 			catch (NotImplementedException ex)
@@ -136,7 +138,7 @@ namespace SIL.Core.ClearShare
 				// problem, but have other limitations.
 				// See https://issues.bloomlibrary.org/youtrack/issue/BL-8706 for a user complaint.
 				System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
-				destinationMetadata.ExceptionCaughtWhileLoading = ex;
+				ExceptionCaughtWhileLoading = ex;
 				return;
 			}
 			catch (ArgumentOutOfRangeException ex)
@@ -147,10 +149,10 @@ namespace SIL.Core.ClearShare
 				// example, which can lead to this exception.)
 				// See https://issues.bloomlibrary.org/youtrack/issue/BL-11933 for a user complaint.
 				System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
-				destinationMetadata.ExceptionCaughtWhileLoading = ex;
+				ExceptionCaughtWhileLoading = ex;
 				return;
 			}
-			LoadProperties(destinationMetadata._originalTaglibMetadata.ImageTag, destinationMetadata);
+			LoadProperties(_originalTaglibMetadata.ImageTag);
 		}
 
 		/// <summary>
@@ -164,22 +166,24 @@ namespace SIL.Core.ClearShare
 		/// reading a real image file).
 		/// </summary>
 		/// <remarks>
-		/// internal to allow unit testing
+		/// Creates a Winforms-free type LicenseInfo object.
+		/// 
+		/// Internal to allow unit testing.
 		/// </remarks>
-		internal static void LoadProperties(ImageTag tagMain, MetadataCore destinationMetadata)
+		internal void LoadProperties(ImageTag tagMain)
 		{
-			destinationMetadata.CopyrightNotice = tagMain.Copyright;
-			destinationMetadata.Creator = tagMain.Creator;
+			CopyrightNotice = tagMain.Copyright;
+			Creator = tagMain.Creator;
 			XmpTag xmpTag = tagMain as XmpTag ?? ((CombinedImageTag)tagMain).Xmp;
 			var licenseProperties = new Dictionary<string, string>();
 			if (xmpTag != null)
 			{
-				destinationMetadata.CollectionUri = xmpTag.GetTextNode(kNsCollections,
+				CollectionUri = xmpTag.GetTextNode(kNsCollections,
 					"CollectionURI");
-				destinationMetadata.CollectionName = xmpTag.GetTextNode(
+				CollectionName = xmpTag.GetTextNode(
 					kNsCollections,
 					"CollectionName");
-				destinationMetadata.AttributionUrl = xmpTag.GetTextNode(kNsCc, "attributionURL");
+				AttributionUrl = xmpTag.GetTextNode(kNsCc, "attributionURL");
 
 				var licenseUrl = xmpTag.GetTextNode(kNsCc, "license");
 				if (!IsNullOrWhiteSpace(licenseUrl))
@@ -188,16 +192,16 @@ namespace SIL.Core.ClearShare
 				if (rights != null)
 					licenseProperties["rights (en)"] = rights;
 			}
-			destinationMetadata.License = LicenseUtils.FromXmp(licenseProperties);
+			License = LicenseUtils.FromXmp(licenseProperties);
 
 			//NB: we're losing non-ascii somewhere... the copyright symbol is just the most obvious
-			if (!IsNullOrEmpty(destinationMetadata.CopyrightNotice))
+			if (!IsNullOrEmpty(CopyrightNotice))
 			{
-				destinationMetadata.CopyrightNotice = destinationMetadata.CopyrightNotice.Replace("Copyright �", "Copyright ©");
+				CopyrightNotice = CopyrightNotice.Replace("Copyright �", "Copyright ©");
 			}
 
 			//clear out the change-setting we just caused, because as of right now, we are clean with respect to what is on disk, no need to save.
-			destinationMetadata.HasChanges = false;
+			HasChanges = false;
 		}
 
 		protected LicenseInfo _license;
@@ -739,7 +743,7 @@ namespace SIL.Core.ClearShare
 				throw new FileNotFoundException(path);
 
 			var xmp = new XmpTag(RobustFile.ReadAllText(path, Encoding.UTF8), null);
-			LoadProperties(xmp, this);
+			LoadProperties(xmp);
 		}
 
 		/// <summary>

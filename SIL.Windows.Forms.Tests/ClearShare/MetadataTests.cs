@@ -317,7 +317,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			// This way we test both SaveInImageTag and LoadProperties for round-tripping.
 			oldMetadata.SaveInImageTag(tag);
 			var newMetadata = new Metadata();
-			Metadata.LoadProperties(tag, newMetadata);
+			newMetadata.LoadProperties(tag);
 			Assert.AreEqual(oldMetadata.CopyrightNotice, newMetadata.CopyrightNotice, header + "CopyrightNotice");
 			Assert.AreEqual(oldMetadata.License.GetType().FullName, newMetadata.License.GetType().FullName, header + "License class type");
 			Assert.AreEqual(oldMetadata.License.Token, newMetadata.License.Token, header + "License.Token");

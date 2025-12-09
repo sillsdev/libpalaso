@@ -49,7 +49,7 @@ namespace SIL.Windows.Forms.ClearShare
 		public static Metadata FromFile(string path)
 		{
 			var m = new Metadata() { _path = path };
-			LoadProperties(path, m);
+			m.LoadProperties(path);
 			return m;
 		}
 
@@ -58,20 +58,13 @@ namespace SIL.Windows.Forms.ClearShare
 			return (Metadata)CloneObject(this);
 		}
 
-		/*/// <summary>
-		/// Saves all the metadata that fits in XMP to a file.
-		/// </summary>
-		/// <example>SaveXmplFile("c:\dir\metadata.xmp")</example>
-		public new void SaveXmpFile(string path)
-		{
-			var tag = new XmpTag();
-			SaveInImageTag(tag);
-			RobustFile.WriteAllText(path, tag.Render(), Encoding.UTF8);
-		}*/
-
 		/// <summary>
 		/// Loads all metadata found in the XMP file.
 		/// </summary>
+		/// <remarks>
+		/// Overrides LoadXmpFile from MetadataCore because we need to use Metadata's LoadProperties
+		/// in order to create a Winforms type License that will have access to license images.
+		/// </remarks>
 		/// <example>LoadXmpFile("c:\dir\metadata.xmp")</example>
 		public override void LoadXmpFile(string path)
 		{
@@ -79,7 +72,7 @@ namespace SIL.Windows.Forms.ClearShare
 				throw new FileNotFoundException(path);
 
 			var xmp = new XmpTag(RobustFile.ReadAllText(path, Encoding.UTF8), null);
-			LoadProperties(xmp, this);
+			LoadProperties(xmp);
 		}
 
 		/// <summary>
@@ -87,12 +80,12 @@ namespace SIL.Windows.Forms.ClearShare
 		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="destinationMetadata"></param>
-		private static void LoadProperties(string path, Metadata destinationMetadata)
+		private void LoadProperties(string path)
 		{
 			try
 			{
-				destinationMetadata.ExceptionCaughtWhileLoading = null;
-				destinationMetadata._originalTaglibMetadata = RetryUtility.Retry(() =>
+				ExceptionCaughtWhileLoading = null;
+				_originalTaglibMetadata = RetryUtility.Retry(() =>
 				  TagLib.File.Create(path) as TagLib.Image.File,
 				  memo: $"LoadProperties({path})");
 			}
@@ -102,7 +95,7 @@ namespace SIL.Windows.Forms.ClearShare
 				// So since I don't see a way to differentiate between that case and the case
 				// where something really is wrong, we're just gonna have to swallow this,
 				// even in DEBUG mode, because else a lot of simple image tests fail
-				destinationMetadata.ExceptionCaughtWhileLoading = ex;
+				ExceptionCaughtWhileLoading = ex;
 				return;
 			}
 			catch (NotImplementedException ex)
@@ -113,7 +106,7 @@ namespace SIL.Windows.Forms.ClearShare
 				// problem, but have other limitations.
 				// See https://issues.bloomlibrary.org/youtrack/issue/BL-8706 for a user complaint.
 				System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
-				destinationMetadata.ExceptionCaughtWhileLoading = ex;
+				ExceptionCaughtWhileLoading = ex;
 				return;
 			}
 			catch (ArgumentOutOfRangeException ex)
@@ -124,10 +117,10 @@ namespace SIL.Windows.Forms.ClearShare
 				// example, which can lead to this exception.)
 				// See https://issues.bloomlibrary.org/youtrack/issue/BL-11933 for a user complaint.
 				System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
-				destinationMetadata.ExceptionCaughtWhileLoading = ex;
+				ExceptionCaughtWhileLoading = ex;
 				return;
 			}
-			LoadProperties(destinationMetadata._originalTaglibMetadata.ImageTag, destinationMetadata);
+			LoadProperties(_originalTaglibMetadata.ImageTag);
 		}
 
 		/// <summary>
@@ -141,22 +134,28 @@ namespace SIL.Windows.Forms.ClearShare
 		/// reading a real image file).
 		/// </summary>
 		/// <remarks>
-		/// internal to allow unit testing
+		/// This method is nearly identical to LoadProperties in MetadataCore;
+		/// however, unlike that method, it creates a LicenseInfo object that
+		/// has access to WinForms and therefore to license images.
+		/// (e.g. It has type CreativeCommonsLicense or CustomLicense instead of just
+		/// CreativeCommonsLicenseInfo or CustomLicenseInfo.)
+		/// 
+		/// It is internal to allow unit testing.
 		/// </remarks>
-		internal static void LoadProperties(ImageTag tagMain, Metadata destinationMetadata)
+		internal void LoadProperties(ImageTag tagMain)
 		{
-			destinationMetadata.CopyrightNotice = tagMain.Copyright;
-			destinationMetadata.Creator = tagMain.Creator;
+			CopyrightNotice = tagMain.Copyright;
+			Creator = tagMain.Creator;
 			XmpTag xmpTag = tagMain as XmpTag ?? ((CombinedImageTag)tagMain).Xmp;
 			var licenseProperties = new Dictionary<string, string>();
 			if (xmpTag != null)
 			{
-				destinationMetadata.CollectionUri = xmpTag.GetTextNode(kNsCollections,
+				CollectionUri = xmpTag.GetTextNode(kNsCollections,
 					"CollectionURI");
-				destinationMetadata.CollectionName = xmpTag.GetTextNode(
+				CollectionName = xmpTag.GetTextNode(
 					kNsCollections,
 					"CollectionName");
-				destinationMetadata.AttributionUrl = xmpTag.GetTextNode(kNsCc, "attributionURL");
+				AttributionUrl = xmpTag.GetTextNode(kNsCc, "attributionURL");
 
 				var licenseUrl = xmpTag.GetTextNode(kNsCc, "license");
 				if (!IsNullOrWhiteSpace(licenseUrl))
@@ -165,16 +164,16 @@ namespace SIL.Windows.Forms.ClearShare
 				if (rights != null)
 					licenseProperties["rights (en)"] = rights;
 			}
-			destinationMetadata.License = LicenseWithImageUtils.FromXmp(licenseProperties);
+			License = LicenseWithImageUtils.FromXmp(licenseProperties);
 
 			//NB: we're losing non-ascii somewhere... the copyright symbol is just the most obvious
-			if (!IsNullOrEmpty(destinationMetadata.CopyrightNotice))
+			if (!IsNullOrEmpty(CopyrightNotice))
 			{
-				destinationMetadata.CopyrightNotice = destinationMetadata.CopyrightNotice.Replace("Copyright �", "Copyright ©");
+				CopyrightNotice = CopyrightNotice.Replace("Copyright �", "Copyright ©");
 			}
 
 			//clear out the change-setting we just caused, because as of right now, we are clean with respect to what is on disk, no need to save.
-			destinationMetadata.HasChanges = false;
+			HasChanges = false;
 		}
 	}
 }
