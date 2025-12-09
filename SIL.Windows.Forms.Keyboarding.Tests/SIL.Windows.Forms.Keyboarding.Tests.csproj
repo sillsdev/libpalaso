@@ -7,6 +7,9 @@
     <TargetFrameworks>$(TargetFrameworks);net8.0-windows</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'net48' ">
+    <DefineConstants>$(DefineConstants);NETFRAMEWORK</DefineConstants>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="L10NSharp" Version="9.0.0-*" />
