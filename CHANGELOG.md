@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Prevent BetterLabel from responding to OnTextChanged when it has been disposed.
 
 ### Changed
-
+- [SIL.Windows.Forms.i18n, SIL.Core.Desktop.i18n] BREAKING CHANGE: Move L10NSharpLocalizer from Windows.Forms to Core.Desktop so it can be accessed without Winforms dependency.
 - [SIL.Windows.Forms.Clearshare] BREAKING CHANGE: Made LicenseInfo class independent of Windows Forms and moved it from SIL.Windows.Forms.Clearshare to SIL.Core.Clearshare.
 	- The FromXmp method was moved to LicenseUtils and LicenseWithImageUtils to construct Winforms-independent and Winforms-dependent license types respectively.
 	- The FromToken method was moved from LicenseInfo to LicenseWithLogo, so it can return the Winforms-dependent license types. FromToken is only used in libpalaso tests and examples, and a Winforms-independent version of this method is not needed.
