@@ -4,7 +4,7 @@ using System.Threading;
 using L10NSharp;
 using NUnit.Framework;
 using SIL.Windows.Forms.ClearShare;
-using SIL.Windows.Forms.i18n;
+using SIL.Core.Desktop.i18n;
 
 namespace SIL.Windows.Forms.Tests.ClearShare
 {

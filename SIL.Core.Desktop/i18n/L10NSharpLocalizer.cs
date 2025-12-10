@@ -1,6 +1,6 @@
 using L10NSharp;
 
-namespace SIL.Windows.Forms.i18n
+namespace SIL.Core.Desktop.i18n
 {
 	public class L10NSharpLocalizer : ILocalizer
 	{
