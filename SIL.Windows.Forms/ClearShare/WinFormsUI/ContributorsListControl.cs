@@ -228,15 +228,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 		/// ------------------------------------------------------------------------------------
 		[PublicAPI]
-		public Contribution GetCurrentContribution()
-		{
-			if (_grid.CurrentCellAddress.Y < 0 || _grid.CurrentCellAddress.Y >= _grid.RowCount)
-			{
-				// No valid row selected
-				return null;
-			}
-			return GetContributionFromRow(_grid.CurrentCellAddress.Y);
-		}
+		public Contribution GetCurrentContribution() => GetContributionFromRow(_grid.CurrentCellAddress.Y);
 
 		/// ------------------------------------------------------------------------------------
 		protected override void OnHandleDestroyed(EventArgs e)
@@ -448,6 +440,12 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		/// ------------------------------------------------------------------------------------
 		private Contribution GetContributionFromRow(int rowIndex)
 		{
+			if (rowIndex < 0 || rowIndex >= _grid.RowCount || rowIndex == _grid.NewRowIndex)
+			{
+				// No valid row selected
+				return null;
+			}
+			
 			var row = _grid.Rows[rowIndex];
 
 			var contribution = new Contribution
