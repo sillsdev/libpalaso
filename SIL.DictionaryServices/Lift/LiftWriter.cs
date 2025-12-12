@@ -726,19 +726,21 @@ namespace SIL.DictionaryServices.Lift
 
 				string scaryUnicodeEscaped = form.Form.EscapeAnyUnicodeCharactersIllegalInXml();
 				string safeFromScaryUnicodeSoItStaysEscaped = scaryUnicodeEscaped.Replace("&#x", "");
-				XmlReader testerForWellFormedness = XmlReader.Create(new StringReader("<temp>" + safeFromScaryUnicodeSoItStaysEscaped + "</temp>"));
-
 				bool isTextWellFormedXml = true;
-				try
+				using (var stringReader = new StringReader("<temp>" + safeFromScaryUnicodeSoItStaysEscaped + "</temp>"))
+				using (var testerForWellFormedness = XmlReader.Create(stringReader))
 				{
-					while (testerForWellFormedness.Read())
+					try
 					{
-						//Just checking for well formed XML
+						while (testerForWellFormedness.Read())
+						{
+							//Just checking for well formed XML
+						}
 					}
-				}
-				catch
-				{
-					isTextWellFormedXml = false;
+					catch
+					{
+						isTextWellFormedXml = false;
+					}
 				}
 
 				if (isTextWellFormedXml)
