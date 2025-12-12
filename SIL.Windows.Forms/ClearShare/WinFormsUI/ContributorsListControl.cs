@@ -9,7 +9,7 @@ using System.Media;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 using L10NSharp;
-using L10NSharp.UI;
+using L10NSharp.Windows.Forms;
 using SIL.Code;
 using SIL.Core.ClearShare;
 using SIL.Reporting;
@@ -228,10 +228,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 		/// ------------------------------------------------------------------------------------
 		[PublicAPI]
-		public Contribution GetCurrentContribution()
-		{
-			return GetContributionFromRow(_grid.CurrentCellAddress.Y);
-		}
+		public Contribution GetCurrentContribution() => GetContributionFromRow(_grid.CurrentCellAddress.Y);
 
 		/// ------------------------------------------------------------------------------------
 		protected override void OnHandleDestroyed(EventArgs e)
@@ -380,10 +377,10 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 			_grid.IsDirty = true;
 
-			var contribution = GetContributionFromRow(e.RowIndex);
-
 			if (ValidatingContributor == null)
 				return;
+
+			var contribution = GetContributionFromRow(e.RowIndex);
 
 			var kvp = ValidatingContributor(this, contribution, e);
 
@@ -443,6 +440,12 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		/// ------------------------------------------------------------------------------------
 		private Contribution GetContributionFromRow(int rowIndex)
 		{
+			if (rowIndex < 0 || rowIndex >= _grid.RowCount || rowIndex == _grid.NewRowIndex)
+			{
+				// No valid row selected
+				return null;
+			}
+			
 			var row = _grid.Rows[rowIndex];
 
 			var contribution = new Contribution

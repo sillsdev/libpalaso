@@ -37,7 +37,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			this._image = new System.Windows.Forms.PictureBox();
 			this._passwordNotice = new BetterLabel();
 			this.betterLabel1 = new BetterLabel();
-			this.l10NSharpExtender1 = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this.l10NSharpExtender1 = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			this._normallyHiddenCheckbox = new System.Windows.Forms.CheckBox();
 			this.betterLabel2 = new BetterLabel();
 			this.betterLabel3 = new BetterLabel();
@@ -250,7 +250,7 @@ namespace SIL.Windows.Forms.SettingProtection
 		private System.Windows.Forms.PictureBox _image;
 		private Widgets.BetterLabel betterLabel1;
 		private Widgets.BetterLabel _passwordNotice;
-		private L10NSharp.UI.L10NSharpExtender l10NSharpExtender1;
+		private L10NSharp.Windows.Forms.L10NSharpExtender l10NSharpExtender1;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private System.Windows.Forms.CheckBox _normallyHiddenCheckbox;
 		private Widgets.BetterLabel betterLabel2;

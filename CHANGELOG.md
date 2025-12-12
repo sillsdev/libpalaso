@@ -17,13 +17,53 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
+- [SIL.Core.Clearshare] Added new classes MetadataCore, CreativeCommonsLicenseInfo, and CustomLicenseInfo; these are Winforms-free base versions of the classes Metadata, CreativeCommonsLicense, and CustomLicense.
 
-- [SIL.TestUtilities] Added a Create method to TemporaryFolder that takes a TestContext
+- [SIL.Core.Clearshare and SIL.Windows.Forms.Clearshare] Added LicenseUtils and LicenseWithImageUtils to handle the FromXmp method for creating a license. LicenseUtils constructs a bare license object that is Winforms-independent; LicenseWithImageUtils constructs a Winforms-dependent license object with access to license images. 
+- [SIL.Core.Clearshare] New methods "GetIsStringAvailableForLangId" and "GetDynamicStringOrEnglish" were added to Localizer for use in LicenseInfo's "GetBestLicenseTranslation" method, to remove LicenseInfo's L10NSharp dependency.
+- [SIL.Windows.Forms.Clearshare] New ILicenseWithImage interface handles "GetImage" method for Winforms-dependent licenses, implemented in CreativeCommonsLicense and CustomLicense, and formerly included in LicenseInfo.
+- [SIL.Core.Clearshare] New tests MetadataBareTests are based on previous MetadataTests in SIL.Windows.Forms.Clearshare. The tests were updated to use ImageSharp instead of Winforms for handling images.
 - [SIL.Windows.Forms] Added KeysExtensions class with the IsNavigationKey extension method.
 
 ### Fixed
-
+- [SIL.WritingSystems] Fix IetfLanguageTag.GetGeneralCode to handle cases when zh-CN or zh-TW is a prefix and not the whole string.
+- [SIL.Windows.Forms] Prevent BetterLabel from responding to OnTextChanged when it has been disposed.
+- [SIL.Windows.Forms] Prevent ContributorsListControl.GetContributionFromRow from throwing an exception when the DataGridView has no valid rows selected.
 - [SIL.Windows.Keyboarding] Fixed a subtle bug in IbusKeyboardSwitchingAdaptor when determining whether IBus would have handled a key event while a pre-edit is active. The code now accounts for the possibility of modifier keys (particularly Ctrl), which IBus would presumably have handled when in combination with navigation keys, Backspace, and Delete.
+
+### Changed
+- [SIL.Windows.Forms.i18n, SIL.Core.Desktop.i18n] BREAKING CHANGE: Move L10NSharpLocalizer from Windows.Forms to Core.Desktop so it can be accessed without Winforms dependency.
+- [SIL.Windows.Forms.Clearshare] BREAKING CHANGE: Made LicenseInfo class independent of Windows Forms and moved it from SIL.Windows.Forms.Clearshare to SIL.Core.Clearshare.
+	- The FromXmp method was moved to LicenseUtils and LicenseWithImageUtils to construct Winforms-independent and Winforms-dependent license types respectively.
+	- The FromToken method was moved from LicenseInfo to LicenseWithLogo, so it can return the Winforms-dependent license types. FromToken is only used in libpalaso tests and examples, and a Winforms-independent version of this method is not needed.
+	- The GetImage method from LicenseInfo was moved to the ILicenseWithImage interface, which is implemented by CreativeCommonsLicense and CustomLicense.
+    - GetBestLicenseTranslation in LicenseInfo now uses Localizer instead of using L10NSharp.LocalizationManager.
+
+- [SIL.Windows.Forms.Clearshare] Winforms-independent metadata and license functionality of Metadata, CreativeCommonsLicense, and CustomLicense were moved to new classes MetadataCore, CreativeCommonsLicenseInfo, and CustomLicenseInfo in SIL.Core.Clearshare. Metadata, CreativeCommonsLicense, and CustomLicense inherit from the Bare Winforms-free metadata and license versions.
+- [SIL.Windows.Forms.Tests.Clearshare] Many tests from MetadataTests in SIL.Windows.Forms.Clearshare were moved to MetadataCoreTests in Core.Clearshare. Tests that use Winforms-specific versions of methods (e.g. Metadata.FromFile) were retained. Added checks to test that the correct (Winforms-dependent) License objects are created when loading from xmp, round tripping a license in a png, or saving metadata to tag.
+- [SIL.Windows.Forms.Tests.Clearshare] LicenseInfoTests renamed LicenseWithLogoTests.
+- [SIL.Windows.Forms] BREAKING CHANGE: Upgraded to L10nSharp v9. Any clients which also use L10nSharp must also upgrade to v9.
+- [SIL.Windows.Forms] Add a reference to L10nSharp.Windows.Forms v9.
+- [SIL.Windows.Forms.Keyboarding] BREAKING CHANGE: Upgraded to L10nSharp v9. Any clients which also use L10nSharp must also upgrade to v9.
+- [SIL.Windows.Forms.Keyboarding] Add a reference to L10nSharp.Windows.Forms v9.
+- [SIL.Windows.Forms] BREAKING CHANGE: ToolStripExtensions.InitializeWithAvailableUILocales() removed the ILocalizationManager parameter.  This method no longer provides functionality to display the localization dialog box in response to the user clicking More.
+
+### Removed
+
+- [SIL.Windows.Forms] In .NET 8 builds, removed Scanner and Camera options from the Image Toolbox.
+
+## [16.2.0] - 2025-09-24
+
+### Added
+- [SIL.libpalaso.l10ns] Added a number of languages to Crowdin that are used in Bloom, together with any translations that had been made in that project
+- [SIL.libpalaso.l10ns] Add English xlf file to the package
+- [SIL.TestUtilities] Added a Create method to TemporaryFolder that takes a TestContext
+- [SIL.Media] Added .NET 8-Windows target (though it does not support AudioFactory.CreateAudioSession or anything that would require IrrKlang)
+- [SIL.Core] Support for RobustFile.GetAccessControl in all builds
+
+### Fixed
+- [SIL.Windows.Forms] Made ContributorsListControl.GetCurrentContribution() return null in the case when a valid row is not selected.
+- [SIL.WritingSystems] Make the English names for Chinese (Simplified) and Chinese (Traditional) consistent regardless of differences in Windows CultureInfo 
 
 ## [16.1.0] - 2025-07-18
 
@@ -606,7 +646,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
   projects
 
-[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v16.1.0...master
+[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v16.2.0...master
+[16.2.0]: https://github.com/sillsdev/libpalaso/compare/v16.1.0...v16.2.0
 [16.1.0]: https://github.com/sillsdev/libpalaso/compare/v16.0.0...v16.1.0
 [16.0.0]: https://github.com/sillsdev/libpalaso/compare/v15.0.0...v16.0.0
 [15.0.0]: https://github.com/sillsdev/libpalaso/compare/v14.1.1...v15.0.0

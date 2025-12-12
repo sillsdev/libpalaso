@@ -2,9 +2,11 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Drawing;
+using System.Windows.Forms.VisualStyles;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.TestUtilities;
+using SIL.Core.ClearShare;
 using SIL.Windows.Forms.ClearShare;
 using TagLib.Xmp;
 
@@ -23,8 +25,8 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			_mediaFile = new Bitmap(10, 10);
 			_tempFile = TempFile.WithExtension("png");
 			_mediaFile.Save(_tempFile.Path);
-		   _outgoing = Metadata.FromFile(_tempFile.Path);
-		 }
+			_outgoing = Metadata.FromFile(_tempFile.Path);
+		}
 
 		[TearDown]
 		public void TearDown()
@@ -68,27 +70,35 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void RoundTripPng_CustomLicense_PreservesRightsStatement()
 		{
-			_outgoing.License = new CustomLicense() {RightsStatement = "Use this if you must."};
+			_outgoing.License = new CustomLicense() { RightsStatement = "Use this if you must." };
 			_outgoing.Write();
 			var license = (CustomLicense)Metadata.FromFile(_tempFile.Path).License;
 			Assert.AreEqual(_outgoing.License.RightsStatement, license.RightsStatement);
 		}
 
 		[Test]
+		public void RoundTripPng_CustomLicense_ReadsInSameObjectType()
+		{
+			_outgoing.License = new CustomLicense() { RightsStatement = "Use this if you must." };
+			_outgoing.Write();
+			Assert.AreEqual(_outgoing.License.GetType(), Metadata.FromFile(_tempFile.Path).License.GetType());
+		}
+
+		[Test]
 		public void RoundTripPng_HasCC_Permissive_License_ReadsInSameLicense()
 		{
-			_outgoing.License =new CreativeCommonsLicense(false,true,CreativeCommonsLicense.DerivativeRules.Derivatives);
+			_outgoing.License = new CreativeCommonsLicense(false, true, CreativeCommonsLicenseInfo.DerivativeRules.Derivatives);
 			_outgoing.Write();
-			var cc = (CreativeCommonsLicense) Metadata.FromFile(_tempFile.Path).License;
+			var cc = (CreativeCommonsLicense)Metadata.FromFile(_tempFile.Path).License;
 			Assert.AreEqual(cc.AttributionRequired, false);
 			Assert.AreEqual(cc.CommercialUseAllowed, true);
-			Assert.AreEqual(cc.DerivativeRule, CreativeCommonsLicense.DerivativeRules.Derivatives);
+			Assert.AreEqual(cc.DerivativeRule, CreativeCommonsLicenseInfo.DerivativeRules.Derivatives);
 		}
 
 		[Test]
 		public void RoundTripPng_HasCC_Permissive_License_WithRights_ReadsInSameLicense()
 		{
-			_outgoing.License = new CreativeCommonsLicense(false, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
+			_outgoing.License = new CreativeCommonsLicense(false, true, CreativeCommonsLicenseInfo.DerivativeRules.Derivatives);
 			_outgoing.License.RightsStatement = "Please attribute nicely";
 			_outgoing.Write();
 			var cc = (CreativeCommonsLicense)Metadata.FromFile(_tempFile.Path).License;
@@ -103,7 +113,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void RoundTripPng_ManyProperties_RecoversAll()
 		{
-			_outgoing.License = new CreativeCommonsLicense(false, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
+			_outgoing.License = new CreativeCommonsLicense(false, true, CreativeCommonsLicenseInfo.DerivativeRules.Derivatives);
 			_outgoing.CopyrightNotice = "Copyright © 2014 SIL";
 			_outgoing.Creator = "JohnT";
 			_outgoing.License.RightsStatement = "Please attribute nicely";
@@ -112,7 +122,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			var cc = (CreativeCommonsLicense)incoming.License;
 			Assert.That(cc.AttributionRequired, Is.False);
 			Assert.That(cc.CommercialUseAllowed, Is.True);
-			Assert.That(cc.DerivativeRule, Is.EqualTo(CreativeCommonsLicense.DerivativeRules.Derivatives));
+			Assert.That(cc.DerivativeRule, Is.EqualTo(CreativeCommonsLicenseInfo.DerivativeRules.Derivatives));
 			Assert.That(cc.RightsStatement, Is.EqualTo("Please attribute nicely"));
 			Assert.That(incoming.CopyrightNotice, Is.EqualTo("Copyright © 2014 SIL"));
 			Assert.That(incoming.Creator, Is.EqualTo("JohnT"));
@@ -121,19 +131,19 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void CanRemoveRightsStatment()
 		{
-			_outgoing.License = new CreativeCommonsLicense(false, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
+			_outgoing.License = new CreativeCommonsLicense(false, true, CreativeCommonsLicenseInfo.DerivativeRules.Derivatives);
 			_outgoing.CopyrightNotice = "Copyright © 2014 SIL";
 			_outgoing.License.RightsStatement = "Please attribute nicely";
 			_outgoing.Write();
 			var intermediate = Metadata.FromFile(_tempFile.Path);
 			intermediate.License = new CreativeCommonsLicense(false, true,
-				CreativeCommonsLicense.DerivativeRules.Derivatives); // no rights
+				CreativeCommonsLicenseInfo.DerivativeRules.Derivatives); // no rights
 			intermediate.Write();
 			var incoming = Metadata.FromFile(_tempFile.Path);
 			var cc = (CreativeCommonsLicense)incoming.License;
 			Assert.That(cc.AttributionRequired, Is.False);
 			Assert.That(cc.CommercialUseAllowed, Is.True);
-			Assert.That(cc.DerivativeRule, Is.EqualTo(CreativeCommonsLicense.DerivativeRules.Derivatives));
+			Assert.That(cc.DerivativeRule, Is.EqualTo(CreativeCommonsLicenseInfo.DerivativeRules.Derivatives));
 			Assert.That(cc.RightsStatement, Is.Null.Or.Empty);
 			Assert.That(incoming.CopyrightNotice, Is.EqualTo("Copyright © 2014 SIL"));
 		}
@@ -141,56 +151,72 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		[Test]
 		public void RoundTripPng_HasCC_Strict_License_ReadsInSameLicense()
 		{
-			_outgoing.License = new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.NoDerivatives);
+			_outgoing.License = new CreativeCommonsLicense(true, false, CreativeCommonsLicenseInfo.DerivativeRules.NoDerivatives);
 			_outgoing.Write();
 			var cc = (CreativeCommonsLicense)Metadata.FromFile(_tempFile.Path).License;
 			Assert.AreEqual(cc.AttributionRequired, true);
 			Assert.AreEqual(cc.CommercialUseAllowed, false);
-			Assert.AreEqual(cc.DerivativeRule, CreativeCommonsLicense.DerivativeRules.NoDerivatives);
+			Assert.AreEqual(cc.DerivativeRule, CreativeCommonsLicenseInfo.DerivativeRules.NoDerivatives);
 		}
 
-        [Test]
-        public void RoundTripPng_FileNameHasNonAsciiCharacters()
-        {
-            var mediaFile = new Bitmap(10, 10);
-            using (var folder = new TemporaryFolder("LibPalaso exiftool Test"))
-            {
-                var path = folder.Combine("Love these non-áscii chárácters.png");
-                mediaFile.Save(path);
-                var outgoing = Metadata.FromFile(path);
+		[Test]
+		public void RoundTripPng_FileNameHasNonAsciiCharacters()
+		{
+			using (var mediaFile = new Bitmap(10, 10))
+			{
+				using (var folder = new TemporaryFolder("LibPalaso exiftool Test"))
+				{
+					var path = folder.Combine("Love these non-áscii chárácters.png");
+					mediaFile.Save(path);
+					var outgoing = Metadata.FromFile(path);
 
-                outgoing.Creator = "joe shmo";
-                outgoing.Write();
-                Assert.AreEqual("joe shmo", Metadata.FromFile(path).Creator);
-            }
-        }
-        [Test]
-        public void RoundTripPng_InPathWithNonAsciiCharacters()
-        {
-            var mediaFile = new Bitmap(10, 10);
-            using (var folder = new TemporaryFolder("LibPalaso exiftool Test with non-áscii chárácters"))
-            {
-                var path = folder.Combine("test.png");
-                mediaFile.Save(path);
-                var outgoing = Metadata.FromFile(path);
+					outgoing.Creator = "joe shmo";
+					outgoing.Write();
+					Assert.AreEqual("joe shmo", Metadata.FromFile(path).Creator);
+				}
+			}
+		}
 
-                outgoing.Creator = "joe shmo";
-                outgoing.Write();
-                Assert.AreEqual("joe shmo", Metadata.FromFile(path).Creator);
-            }
-        }
+		[Test]
+		public void RoundTripPng_InPathWithNonAsciiCharacters()
+		{
+			using (var mediaFile = new Bitmap(10, 10))
+			{
+				using (var folder =
+				       new TemporaryFolder(
+					       "LibPalaso exiftool Test with non-áscii chárácters"))
+				{
+					var path = folder.Combine("test.png");
+					mediaFile.Save(path);
+					var outgoing = Metadata.FromFile(path);
 
+					outgoing.Creator = "joe shmo";
+					outgoing.Write();
+					Assert.AreEqual("joe shmo", Metadata.FromFile(path).Creator);
+				}
+			}
+		}
 
 		[Test]
 		public void RoundTripPng_HasCC_Medium_License_ReadsInSameLicense()
 		{
-			_outgoing.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+			_outgoing.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicenseInfo.DerivativeRules.DerivativesWithShareAndShareAlike);
 			_outgoing.Write();
 			var cc = (CreativeCommonsLicense)Metadata.FromFile(_tempFile.Path).License;
 			Assert.AreEqual(cc.AttributionRequired, true);
 			Assert.AreEqual(cc.CommercialUseAllowed, true);
-			Assert.AreEqual(cc.DerivativeRule, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+			Assert.AreEqual(cc.DerivativeRule, CreativeCommonsLicenseInfo.DerivativeRules.DerivativesWithShareAndShareAlike);
+			Assert.AreEqual(typeof(CreativeCommonsLicense), Metadata.FromFile(_tempFile.Path).License.GetType());
 		}
+
+		[Test]
+		public void RoundTripPng_HasCC_ReadsInSameObjectType()
+		{
+			_outgoing.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicenseInfo.DerivativeRules.DerivativesWithShareAndShareAlike);
+			_outgoing.Write();
+			Assert.AreEqual(_outgoing.License.GetType(), Metadata.FromFile(_tempFile.Path).License.GetType());
+		}
+
 		[Test]
 		public void RoundTripPng_AttributionUrl()
 		{
@@ -207,50 +233,6 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			Assert.AreEqual("joe shmo", Metadata.FromFile(_tempFile.Path).Creator);
 		}
 
-
-		[Test]
-		public void SetLicense_HasChanges_True()
-		{
-			var m = new Metadata();
-			m.HasChanges = false;
-			m.License=new CreativeCommonsLicense(true,true,CreativeCommonsLicense.DerivativeRules.Derivatives);
-			Assert.IsTrue(m.HasChanges);
-		}
-
-		[Test]
-		public void ChangeLicenseObject_HasChanges_True()
-		{
-			var m = new Metadata();
-			m.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
-			m.HasChanges = false;
-			m.License = new NullLicense();
-			Assert.IsTrue(m.HasChanges);
-		}
-
-
-		[Test]
-		public void ChangeLicenseDetails_HasChanges_True()
-		{
-			var m = new Metadata();
-			m.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
-			m.HasChanges = false;
-			((CreativeCommonsLicense) m.License).CommercialUseAllowed = false;
-			Assert.IsTrue(m.HasChanges);
-		}
-
-
-		[Test]
-		public void SetHasChangesFalse_AlsoClearsLicenseHasChanges()
-		{
-			var m = new Metadata();
-			m.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
-			 ((CreativeCommonsLicense)m.License).CommercialUseAllowed = false;
-			 Assert.IsTrue(m.HasChanges);
-			 m.HasChanges = false;
-			 Assert.IsFalse(m.License.HasChanges);
-			 Assert.IsFalse(m.HasChanges);
-		}
-
 		[Test]
 		public void LoadFromFile_CopyrightNotSet_CopyrightGivesNull()
 		{
@@ -263,239 +245,39 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			var original = new Metadata();
 			var another = new Metadata();
 			original.Creator = "John";
-			original.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
-			using(var f = TempFile.WithExtension("xmp"))
+			original.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicenseInfo.DerivativeRules.Derivatives);
+			using (var f = TempFile.WithExtension("xmp"))
 			{
 				original.SaveXmpFile(f.Path);
 				another.LoadXmpFile(f.Path);
 			}
 			Assert.AreEqual("John", another.Creator);
 			Assert.AreEqual(original.License.Url, another.License.Url);
+			Assert.AreEqual(original.License.GetType(), another.License.GetType());
 		}
 
+		[Test]
+		public void LoadXmpFile_LoadsCorrectLicenseType()
+		{
+			MetadataCore originalMetadata = new Metadata();
+			MetadataCore loadedMetadata = new Metadata();
+			originalMetadata.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicenseInfo.DerivativeRules.Derivatives);
+			using (var f = TempFile.WithExtension("xmp"))
+			{
+				originalMetadata.SaveXmpFile(f.Path);
+				loadedMetadata.LoadXmpFile(f.Path);
+			}
+			// Ensure that the loaded License type is CreativeCommonsLicense and not CreativeCommonsLicenseInfo
+			Assert.AreEqual(originalMetadata.License.GetType(), loadedMetadata.License.GetType());
+		}
 
 		[Test]
 		public void DeepCopy()
 		{
 			var m = new Metadata();
-			m.License = new CreativeCommonsLicense(true, true,
-												   CreativeCommonsLicense.DerivativeRules.
-													   DerivativesWithShareAndShareAlike);
+			m.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicenseInfo.DerivativeRules.DerivativesWithShareAndShareAlike);
 			Metadata copy = m.DeepCopy();
-			Assert.AreEqual(m.License.Url,copy.License.Url);
-		}
-
-		[Test]
-		public void GetCopyrightBy_HasSymbolAndComma_ReturnsCopyrightHolder()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "© 2012, SIL Global";
-			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
-		}
-
-		[Test]
-		public void GetCopyrightBy_HasCopyrightAndSymbolAndComma_ReturnsCopyrightHolder()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "Copyright © 2012, SIL Global";
-			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
-		}
-
-		[Test]
-		public void GetCopyrightBy_HasCopyrightAndSymbolNoYear_ReturnsCopyrightHolder()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "Copyright © SIL Global";
-			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
-		}
-
-
-		[Test]
-		public void GetCopyrightBy_HasCOPYRIGHTAndSymbolNoYear_ReturnsCopyrightHolder()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "COPYRIGHT © SIL Global";
-			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
-		}
-
-
-		[Test]
-		public void GetCopyrightBy_HasSymbolNoComma_ReturnsCopyrightHolder()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "© 2012 SIL Global";
-			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
-		}
-
-
-		[Test]
-		public void GetCopyrightBy_Empty_ReturnsEmpty()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "";
-			Assert.AreEqual("", m.GetCopyrightBy());
-		}
-
-		[Test]
-		public void GetCopyrightBy_HasSymbolNoYear_ReturnsCopyrightHolder()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "© SIL Global";
-			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
-		}
-
-
-		[Test]
-		public void GetCopyrightBy_NoSymbolOrYear_ReturnsCopyrightHolder()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "SIL Global";
-			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
-		}
-
-		[Test]
-		public void GetCopyrightBy_HandlesMultilineCopyrightHolder()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "Copyright © 2018, text1" + Environment.NewLine + "text2";
-			var cHolder = m.GetCopyrightBy();
-			Assert.AreEqual("text1" + Environment.NewLine + "text2", cHolder, "Copyright holder should have 2 lines of text.");
-		}
-
-		[Test]
-		public void GetCopyrightInfo_ArtOfReading_ReturnsCopyrightInfo()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "Copyright, SIL Global 2009. ";	// (from AOR_Cat3.png)
-			Assert.AreEqual("SIL Global", m.GetCopyrightBy());
-			Assert.AreEqual("2009", m.GetCopyrightYear());
-		}
-
-		[Test]
-		public void GetCopyrightInfo_Vaccinations_ReturnsCopyrightInfo()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "Copyright SIL Papua New Guinea 1996";
-			Assert.AreEqual("SIL Papua New Guinea", m.GetCopyrightBy());
-			Assert.AreEqual("1996", m.GetCopyrightYear());
-		}
-
-		[Test]
-		public void GetCopyrightInfo_StoryPrimer_ReturnsCopyrightInfo()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "Copyright SIL Australia and the Literacy Association of the Solomon Islands (LASI) 2014";
-			Assert.AreEqual("SIL Australia and the Literacy Association of the Solomon Islands (LASI)", m.GetCopyrightBy());
-			Assert.AreEqual("2014", m.GetCopyrightYear());
-		}
-
-		[Test]
-		public void GetCopyrightYear_HasCopyrightAndSymbolAndComma_ReturnsCopyrightYear()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "Copyright © 2012, SIL Global";
-			Assert.AreEqual("2012", m.GetCopyrightYear());
-		}
-
-
-		[Test]
-		public void GetCopyrightYear_HasSymbolAndComma_ReturnsCopyrightYear()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "© 2012, SIL Global";
-			Assert.AreEqual("2012", m.GetCopyrightYear());
-		}
-
-		[Test]
-		public void GetCopyrightYear_NoSymbolOrComma_ReturnsCopyrightYear()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "2012 SIL Global";
-			Assert.AreEqual("2012", m.GetCopyrightYear());
-		}
-
-		[Test]
-		public void GetCopyrightYear_SymbolButNoYear_ReturnsEmptyString()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "© SIL Global";
-			Assert.AreEqual("", m.GetCopyrightYear());
-		}
-
-
-		[Test]
-		public void GetCopyrightYear_NoYear_ReturnsEmptyString()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "SIL Global";
-			Assert.AreEqual("", m.GetCopyrightYear());
-		}
-
-		[Test]
-		public void GetCopyrightYear_Empty_ReturnsEmptyString()
-		{
-			var m = new Metadata();
-			m.CopyrightNotice = "";
-			Assert.AreEqual("", m.GetCopyrightYear());
-		}
-
-		[Test]
-		public void MinimalCredits_CustomLicense()
-		{
-			var m = new Metadata
-			{
-				CopyrightNotice = "Copyright © 2014 SIL",
-				Creator = "Jane Doe",
-				CollectionName = "My Collection",
-				License = new CustomLicense()
-				{
-					RightsStatement = "Please attribute nicely"
-				}
-			};
-
-			string idOfLanguageUsedForLicense;
-			Assert.AreEqual("Jane Doe, My Collection, © 2014 SIL. Please attribute nicely", m.MinimalCredits(new[] {"en"}, out idOfLanguageUsedForLicense));
-		}
-		[Test]
-		public void MinimalCredits_OnlyCopyright()
-		{
-			var m = new Metadata {CopyrightNotice = "Copyright 2011 Foo Incorporated"};
-			string idOfLanguageUsedForLicense;
-			Assert.AreEqual("© 2011 Foo Incorporated", m.MinimalCredits(new[] { "en" }, out idOfLanguageUsedForLicense));
-		}
-
-		[Test]
-		public void MinimalCredits_CreativeCommonsNoCreator()
-		{
-			var m = new Metadata
-			{
-				CopyrightNotice = "Copyright © 2014 SIL",
-				CollectionName = "My Collection",
-				License = new CreativeCommonsLicense(true,true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike)
-				{
-					IntergovernmentalOrganizationQualifier = true
-				}
-			};
-
-			string idOfLanguageUsedForLicense;
-			Assert.AreEqual("My Collection, © 2014 SIL. CC BY-SA IGO 3.0", m.MinimalCredits(new[] { "en" }, out idOfLanguageUsedForLicense));
-		}
-
-		[Test]
-		public void MinimalCredits_CreativeCommonsWithExtraRightsStatement()
-		{
-			var m = new Metadata
-			{
-				CopyrightNotice = "Copyright © 2014 SIL",
-				License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike)
-				{
-					IntergovernmentalOrganizationQualifier = true,
-					RightsStatement = "Only people named Fred can use this."
-				}
-			};
-
-			string idOfLanguageUsedForLicense;
-			Assert.AreEqual("© 2014 SIL. CC BY-SA IGO 3.0. Only people named Fred can use this.", m.MinimalCredits(new[] { "en" }, out idOfLanguageUsedForLicense));
+			Assert.AreEqual(m.License.Url, copy.License.Url);
 		}
 
 		[Test]
@@ -541,12 +323,13 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			// This way we test both SaveInImageTag and LoadProperties for round-tripping.
 			oldMetadata.SaveInImageTag(tag);
 			var newMetadata = new Metadata();
-			Metadata.LoadProperties(tag, newMetadata);
+			newMetadata.LoadProperties(tag);
 			Assert.AreEqual(oldMetadata.CopyrightNotice, newMetadata.CopyrightNotice, header + "CopyrightNotice");
 			Assert.AreEqual(oldMetadata.License.GetType().FullName, newMetadata.License.GetType().FullName, header + "License class type");
 			Assert.AreEqual(oldMetadata.License.Token, newMetadata.License.Token, header + "License.Token");
 			Assert.AreEqual(oldMetadata.License.Url, newMetadata.License.Url, header + "License.Url");
 			Assert.AreEqual(oldMetadata.License.RightsStatement, newMetadata.License.RightsStatement, header + "License.RightsStatement");
+			Assert.AreEqual(oldMetadata.License.GetType(), newMetadata.License.GetType());
 		}
 	}
 }

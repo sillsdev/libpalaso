@@ -689,6 +689,7 @@ namespace SIL.WritingSystems.Tests
 		[TestCase("qaa", ExpectedResult = "qaa")]
 		[TestCase("qed", ExpectedResult = "qed")]
 		[TestCase("qed-Lepc-x-rubbish", ExpectedResult = "qed")]
+		[TestCase("zh-CN-fonipa", ExpectedResult = "zh")]
 		public string GetLanguagePart_ValidIetfTag_ReturnsLanguage(string tag)
 		{
 			return IetfLanguageTag.GetLanguagePart(tag);
@@ -920,6 +921,8 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		#region GetLocalizedLanguageName
+		const string kIetfLanguageCodeWhichWindowsDoesntKnowAbout = "tlh"; // Happens to be Klingon
+
 		[TestCase("en", "en", ExpectedResult = "English")]
 		[TestCase("en-Latn-US", "en", ExpectedResult = "English")]
 		[TestCase("en-x-etic", "en-GB", ExpectedResult = "English")]
@@ -932,8 +935,10 @@ namespace SIL.WritingSystems.Tests
 		[TestCase("zh-CN", "en", ExpectedResult = "Chinese (Simplified)")]
 		[TestCase("pbu", "pbu", ExpectedResult = "پښتو")]
 		[TestCase("pbu", "tpi", ExpectedResult = "پښتو")]
+		[TestCase("pbu", kIetfLanguageCodeWhichWindowsDoesntKnowAbout, ExpectedResult = "پښتو")]
 		[TestCase("prs", "en", ExpectedResult = "Dari")]
 		[TestCase("tpi", "tpi", ExpectedResult = "Tok Pisin")]
+		[TestCase("tpi", kIetfLanguageCodeWhichWindowsDoesntKnowAbout, ExpectedResult = "Tok Pisin")]
 		[TestCase("es", "tpi", ExpectedResult = "español")]
 		[TestCase("es", "fr", "español", ExpectedResult = "espagnol")]
 		[TestCase("es", "de", "español", ExpectedResult = "Spanisch")]
@@ -944,7 +949,8 @@ namespace SIL.WritingSystems.Tests
 		[TestCase("noh", "en", ExpectedResult = "Nomu")]
 		[TestCase("noh", "noh", ExpectedResult = "Nomu")]
 		// See REVIEW comment in IEtfLanguageTag.FixBotchedNativeName
-		[TestCase("zh-CN", "zh-CN", "中文(中华人民共和国)", ExpectedResult = "中文(中国)")]
+		[TestCase("zh-CN", "zh-CN", "中文(中华人民共和国)", ExpectedResult = "简体中文")]
+		[TestCase("zh-TW", "zh-TW", ExpectedResult = "繁体中文")] // Perhaps this may need an acceptibleFallback
 		// Not sure if this fallback for Dari is truly acceptable. Although it looks the same and
 		// is what Windows supplies as the "Native Name", Wiktionary lists it as a different word
 		// and says that the word we have hardcoded in IetfLanguageTags.GetNativeNameIfKnown is the
@@ -953,6 +959,7 @@ namespace SIL.WritingSystems.Tests
 		// version does not actually appear on that Wikipedia page.
 		[TestCase("prs", "prs", /*"درى",*/ ExpectedResult = "دری")]
 		[TestCase("prs", "fr", /*"درى",*/ ExpectedResult = "دری")]
+		[TestCase("prs", kIetfLanguageCodeWhichWindowsDoesntKnowAbout, /*"درى",*/ ExpectedResult = "دری")]
 		public string GetLocalizedLanguageName_Valid_GetsNameInTargetLanguageOrNativeAsFallback(
 			string tag, string uiTag, string acceptableFallback = null)
 		{
@@ -1042,8 +1049,8 @@ namespace SIL.WritingSystems.Tests
 			return IetfLanguageTag.GetNativeLanguageNameWithEnglishSubtitle(tag);
 		}
 
-		[TestCase("zh-CN", "中文(中华人民共和国) (Chinese (Simplified))", "中文 (中国) (Chinese (Simplified))", ExpectedResult = "中文(中国) (Chinese (Simplified))")]
-		[TestCase("zh-TW", "中文(中华人民共和国) (Chinese (Traditional))", "中文 (台湾) (Chinese (Traditional))", ExpectedResult = "中文(台灣) (Chinese (Traditional))")]
+		[TestCase("zh-CN", "中文(中华人民共和国) (Chinese (Simplified))", "中文 (中国) (Chinese (Simplified))", ExpectedResult = "简体中文 (Chinese (Simplified))")]
+		[TestCase("zh-TW", "中文(中华人民共和国) (Chinese (Traditional))", "中文 (台湾) (Chinese (Traditional))", ExpectedResult = "繁体中文 (Chinese (Traditional))")]
 		public string GetNativeLanguageNameWithEnglishSubtitle_China_GetsNativeNamePlusEnglishAsNeeded(
 			string tag, string acceptableResultPreWindows10, string acceptableResultLinux)
 		{
@@ -1103,5 +1110,20 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(name, Is.EqualTo(expectedResult));
 		}
 		#endregion
+
+		[TestCase("tpi-AR", ExpectedResult = "tpi")]
+		[TestCase("tpi-Lepc-BR-fonipa-x-blah", ExpectedResult = "tpi")]
+		[TestCase("qaa", ExpectedResult = "qaa")]
+		[TestCase("qed-Lepc-x-rubbish", ExpectedResult = "qed")]
+		[TestCase("zh-BN", ExpectedResult = "zh")]
+		[TestCase("zh-CN-fonipa", ExpectedResult = "zh-CN")]
+		[TestCase("zh-Hans", ExpectedResult = "zh")]
+		[TestCase("zh-TW", ExpectedResult = "zh-TW")]
+		[TestCase("a", ExpectedResult = "a")]
+		[TestCase("-", ExpectedResult = "")]
+		public string GetGeneralCode_ReturnsCode(string tag)
+		{
+			return IetfLanguageTag.GetGeneralCode(tag);
+		}
 	}
 }

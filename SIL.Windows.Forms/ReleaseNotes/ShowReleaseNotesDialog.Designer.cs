@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using SIL.Windows.Forms.HtmlBrowser;
 
@@ -53,7 +53,7 @@ namespace SIL.Windows.Forms.ReleaseNotes
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._L10NSharpExtender = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			this._browser = new SIL.Windows.Forms.HtmlBrowser.XWebBrowser();
 			this._okButton = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
@@ -122,6 +122,6 @@ namespace SIL.Windows.Forms.ReleaseNotes
 
 		private XWebBrowser _browser;
 		private System.Windows.Forms.Button _okButton;
-		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
+		private L10NSharp.Windows.Forms.L10NSharpExtender _L10NSharpExtender;
 	}
 }

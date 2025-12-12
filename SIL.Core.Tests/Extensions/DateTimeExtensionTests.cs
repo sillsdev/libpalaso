@@ -31,50 +31,134 @@ namespace SIL.Tests.Extensions
 
 		[TestCase(1482)]
 		[TestCase(0939)]
-		[NonParallelizable]
 		public void ToISO8601TimeFormatWithUTCString_BuddhistDate_ReturnsTimeInUTC(int year)
 		{
-			var originalCulture = Thread.CurrentThread.CurrentCulture;
-			try
+			Exception isolatedTestException = null;
+			DateTime? buddhistDateTime = null;
+			// Use an isolated thread to avoid any cross test effects
+			var thread = new Thread(() =>
 			{
-				// Temporarily set system locale to use Buddhist date system
-				var buddhistCulture = new CultureInfo("th-TH");
-				buddhistCulture.DateTimeFormat.Calendar = new ThaiBuddhistCalendar();
-				Thread.CurrentThread.CurrentCulture = buddhistCulture;
+				try
+				{
+					// Set system locale in this thread to use Buddhist date system
+					var buddhistCulture = new CultureInfo("th-TH")
+					{
+						DateTimeFormat = {
+							Calendar = new ThaiBuddhistCalendar()
+						}
+					};
+					Thread.CurrentThread.CurrentCulture = buddhistCulture;
 
-				// Create a DateTime in the Buddhist calendar
-				var dateTime = new DateTime(year, 3, 9, 10, 28, 39, DateTimeKind.Local);
+					// Create a DateTime in the Buddhist calendar
+					buddhistDateTime = new DateTime(year, 3, 9, 10, 28, 39, DateTimeKind.Local);
+				}
+				catch (Exception e)
+				{
+					isolatedTestException = e;
+				}
+			});
+			thread.Start();
+			thread.Join();
 
-				Assert.That(dateTime.ToISO8601TimeFormatWithUTCString(),
-					Is.EqualTo(dateTime.ToUniversalTime()
-						.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture)));
-			}
-			finally
+			Assert.That(isolatedTestException, Is.Null, "Test failed with unexpected exception");
+			Assert.That(buddhistDateTime?.ToISO8601TimeFormatWithUTCString(),
+				Is.EqualTo(buddhistDateTime?.ToUniversalTime()
+				.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture)));
+		}
+
+		private readonly CultureInfo _cultureWithPeriodAsTimeSeparator = new CultureInfo("en-US")
+		{
+			DateTimeFormat =
 			{
-				// Reset system locale to the original culture
-				Thread.CurrentThread.CurrentCulture = originalCulture;
+				TimeSeparator = "."
 			}
+		};
+		
+		[Test]
+		public void ToISO8601TimeFormatWithUTCString_CultureUsesPeriods_OutputsWithColons()
+		{
+			Exception isolatedTestException = null;
+			const string whenSample = "2008-07-01T16:29:23Z";
+			string result = null;
+			// Use an isolated thread to avoid any cross test effects
+			var thread = new Thread(() =>
+			{
+				try
+				{
+					// Set system locale in this thread to use the problem culture.
+					Thread.CurrentThread.CurrentCulture = _cultureWithPeriodAsTimeSeparator;
+
+					var when = DateTimeExtensions.ParseISO8601DateTime(whenSample);
+					result = when.ToISO8601TimeFormatWithUTCString();
+				}
+				catch (Exception e)
+				{
+					isolatedTestException = e;
+				}
+			});
+			thread.Start();
+			thread.Join();
+
+			Assert.That(isolatedTestException, Is.Null, "Test failed with unexpected exception");
+			Assert.AreEqual(whenSample, result);
 		}
 
 		[Test]
-		public void ToISO8601XTimeString_CultureUsesPeriods_OutputsWithColons()
+		public void ToISO8601TimeFormatNoTimeZoneString_CultureUsesPeriods_OutputsWithColons()
 		{
-			//simulate the culture that was messing us up
-			var culture = new CultureInfo("en-US");
-			culture.DateTimeFormat.TimeSeparator = ".";
-			Thread.CurrentThread.CurrentCulture = culture;
+			Exception isolatedTestException = null;
+			const string whenSample = "2008-07-01T16:29:23";
+			string result = null;
+			// Use an isolated thread to avoid any cross test effects
+			var thread = new Thread(() =>
+			{
+				try
+				{
+					// Set system locale in this thread to use the problem culture.
+					Thread.CurrentThread.CurrentCulture = _cultureWithPeriodAsTimeSeparator;
 
-			string whenSample = "2008-07-01T16:29:23Z";
-			var when = DateTimeExtensions.ParseISO8601DateTime(whenSample);
-			Assert.AreEqual(whenSample, when.ToISO8601TimeFormatWithUTCString());
+					var when = DateTimeExtensions.ParseISO8601DateTime(whenSample);
+					result = when.ToISO8601TimeFormatNoTimeZoneString();
+				}
+				catch (Exception e)
+				{
+					isolatedTestException = e;
+				}
+			});
+			thread.Start();
+			thread.Join();
 
-			whenSample = "2008-07-01T16:29:23";
-			when = DateTimeExtensions.ParseISO8601DateTime(whenSample);
-			Assert.AreEqual(whenSample, when.ToISO8601TimeFormatNoTimeZoneString());
+			Assert.That(isolatedTestException, Is.Null, "Test failed with unexpected exception");
+			Assert.AreEqual(whenSample, result);
+		}
 
-			whenSample = "2008-07-01";
-			when = DateTimeExtensions.ParseISO8601DateTime(whenSample);
-			Assert.AreEqual(whenSample, when.ToISO8601TimeFormatDateOnlyString());
+		[Test]
+		public void ToISO8601TimeFormatDateOnlyString_CultureUsesPeriods_OutputsWithColons()
+		{
+			Exception isolatedTestException = null;
+			const string whenSample = "2008-07-01";
+			string result = null;
+			// Use an isolated thread to avoid any cross test effects
+			var thread = new Thread(() =>
+			{
+				try
+				{
+					// Set system locale in this thread to use the problem culture.
+					Thread.CurrentThread.CurrentCulture = _cultureWithPeriodAsTimeSeparator;
+
+					var when = DateTimeExtensions.ParseISO8601DateTime(whenSample);
+					result = when.ToISO8601TimeFormatDateOnlyString();
+				}
+				catch (Exception e)
+				{
+					isolatedTestException = e;
+				}
+			});
+			thread.Start();
+			thread.Join();
+
+			Assert.That(isolatedTestException, Is.Null, "Test failed with unexpected exception");
+			Assert.AreEqual(whenSample, result);
 		}
 
 		[TestCase("2014-01-01", ExpectedResult = true)]
@@ -143,36 +227,54 @@ namespace SIL.Tests.Extensions
 		public void ParseModernPastDateTimePermissivelyWithException_GregorianISO8601WithThaiBuddhistCalendar_ReturnsDateWithCorrectYear(
 			string inputGregorian)
 		{
-			var originalCulture = Thread.CurrentThread.CurrentCulture;
-			try
+			Exception isolatedTestException = null;
+			DateTime? result = null;
+			string resultAsBuddhistShortDate = null;
+			// Use an isolated thread to avoid any cross test effects
+			var thread = new Thread(() =>
 			{
-				// Temporarily set system locale to use Buddhist date system
-				var buddhistCulture = new CultureInfo("th-TH");
-				buddhistCulture.DateTimeFormat.Calendar = new ThaiBuddhistCalendar();
-				Thread.CurrentThread.CurrentCulture = buddhistCulture;
+				try
+				{
+					// Set system locale in this thread to use Buddhist date system
+					var buddhistCulture = new CultureInfo("th-TH")
+					{
+						DateTimeFormat = {
+							Calendar = new ThaiBuddhistCalendar()
+						}
+					};
+					Thread.CurrentThread.CurrentCulture = buddhistCulture;
 
-				var result = inputGregorian.ParseModernPastDateTimePermissivelyWithException();
-				var inputDateOnly = inputGregorian.Split(' ')[0];
-				var inputDateParts = inputDateOnly.Split('-');
-				Assert.That(inputDateParts.Length, Is.EqualTo(3), "Sanity check");
-				// Note that even when the current culture is Thai/Buddhist, the year,
-				// month and day values in the DateTime object are still Gregorian.
-				Assert.That(result.Year.ToString(), Is.EqualTo(inputDateParts[0]));
-				Assert.That(result.Month, Is.EqualTo(int.Parse(inputDateParts[1])));
-				Assert.That(result.Day, Is.EqualTo(int.Parse(inputDateParts[2])));
-				Assert.That(result.ToISO8601TimeFormatDateOnlyString(),
-					Is.EqualTo(inputDateOnly));
+					result = inputGregorian.ParseModernPastDateTimePermissivelyWithException();
+					// For testing (below), we need to get the result in a format that is
+					// dependent on the current culture (with Buddhist calendar). If we
+					// wait and call ToShortDateString() later, it will use the current
+					// culture of the main thread and produce a different result.
+					resultAsBuddhistShortDate = result?.ToShortDateString();
+				}
+				catch (Exception e)
+				{
+					isolatedTestException = e;
+				}
+			});
+			thread.Start();
+			thread.Join();
 
-				var expectedResultFormattedAsBuddhistDate =
-					$"{result.Day}/{result.Month}/{result.Year + 543}";
-				Assert.That(result.ToShortDateString(),
-					Is.EqualTo(expectedResultFormattedAsBuddhistDate));
-			}
-			finally
-			{
-				// Reset system locale to the original culture
-				Thread.CurrentThread.CurrentCulture = originalCulture;
-			}
+			Assert.That(isolatedTestException, Is.Null, "Test failed with unexpected exception");
+			var inputDateOnly = inputGregorian.Split(' ')[0];
+			var inputDateParts = inputDateOnly.Split('-');
+			Assert.That(inputDateParts.Length, Is.EqualTo(3), "Sanity check");
+			// Note that even when the current culture is Thai/Buddhist, the year,
+			// month and day values in the DateTime object are still Gregorian.
+			Assert.That(result?.Year.ToString(), Is.EqualTo(inputDateParts[0]));
+			Assert.That(result?.Month, Is.EqualTo(int.Parse(inputDateParts[1])));
+			Assert.That(result?.Day, Is.EqualTo(int.Parse(inputDateParts[2])));
+			Assert.That(result?.ToISO8601TimeFormatDateOnlyString(),
+				Is.EqualTo(inputDateOnly));
+
+			var expectedResultFormattedAsBuddhistDate =
+				$"{result?.Day}/{result?.Month}/{result?.Year + 543}";
+			Assert.That(resultAsBuddhistShortDate,
+				Is.EqualTo(expectedResultFormattedAsBuddhistDate));
 		}
 
 		/// <summary>
@@ -193,41 +295,58 @@ namespace SIL.Tests.Extensions
 		[TestCase("14/4/1543", false, "14/4/1543")]
 		[TestCase("3/9/1257 0:01:00", false, "3/9/1257")]
 		[TestCase("9/3/2568 0:01:00", false, "9/3/2568")]
-		[NonParallelizable]
 		public void ParseModernPastDateTimePermissivelyWithException_WithThaiBuddhistCalendar_ReturnsDateWithCorrectYear(
 			string input, bool expectedToInterpretAsGregorianYear,
 			string expectedResultFormattedAsBuddhistDate)
 		{
-			var originalCulture = Thread.CurrentThread.CurrentCulture;
-			try
+			Exception isolatedTestException = null;
+			DateTime? result = null;
+			string resultAsBuddhistShortDate = null;
+			// Use an isolated thread to avoid any cross test effects
+			var thread = new Thread(() =>
 			{
-				// Temporarily set system locale to use Buddhist date system
-				var buddhistCulture = new CultureInfo("th-TH");
-				buddhistCulture.DateTimeFormat.Calendar = new ThaiBuddhistCalendar();
-				Thread.CurrentThread.CurrentCulture = buddhistCulture;
+				try
+				{
+					// Set system locale in this thread to use Buddhist date system
+					var buddhistCulture = new CultureInfo("th-TH")
+					{
+						DateTimeFormat = {
+							Calendar = new ThaiBuddhistCalendar()
+						}
+					};
+					Thread.CurrentThread.CurrentCulture = buddhistCulture;
 
-				var result = input.ParseModernPastDateTimePermissivelyWithException();
-				Assert.That(result.ToShortDateString(),
-					Is.EqualTo(expectedResultFormattedAsBuddhistDate));
-				var inputDateOnly = input.Split(' ')[0];
-				var inputDateParts = inputDateOnly.Split('/', '-');
-				Assert.That(inputDateParts.Length, Is.EqualTo(3), "Sanity check");
-				// Note that even when the current culture is Thai/Buddhist, the unformatted year,
-				// month and day stored in the DateTime object are still Gregorian.
-				var expectedGregorianYear = expectedToInterpretAsGregorianYear
-					? inputDateParts[2]
-					: (int.Parse(inputDateParts[2]) - 543).ToString();
-				Assert.That(result.Year.ToString(), Is.EqualTo(expectedGregorianYear));
-				Assert.That(result.Month.ToString(), Is.EqualTo(inputDateParts[1]));
-				Assert.That(result.Day.ToString(), Is.EqualTo(inputDateParts[0]));
-				Assert.That(result.ToISO8601TimeFormatDateOnlyString(), Is.EqualTo(
-					$"{int.Parse(expectedGregorianYear):D4}-{int.Parse(inputDateParts[1]):D2}-{int.Parse(inputDateParts[0]):D2}"));
-			}
-			finally
-			{
-				// Reset system locale to the original culture
-				Thread.CurrentThread.CurrentCulture = originalCulture;
-			}
+					result = input.ParseModernPastDateTimePermissivelyWithException();
+					// For testing (below), we need to get the result in a format that is
+					// dependent on the current culture (with Buddhist calendar). If we
+					// wait and call ToShortDateString() later, it will use the current
+					// culture of the main thread and produce a different result.
+					resultAsBuddhistShortDate = result?.ToShortDateString();
+				}
+				catch (Exception e)
+				{
+					isolatedTestException = e;
+				}
+			});
+			thread.Start();
+			thread.Join();
+
+			Assert.That(isolatedTestException, Is.Null, "Test failed with unexpected exception");
+			Assert.That(resultAsBuddhistShortDate,
+				Is.EqualTo(expectedResultFormattedAsBuddhistDate));
+			var inputDateOnly = input.Split(' ')[0];
+			var inputDateParts = inputDateOnly.Split('/', '-');
+			Assert.That(inputDateParts.Length, Is.EqualTo(3), "Sanity check");
+			// Note that even when the current culture is Thai/Buddhist, the unformatted year,
+			// month and day stored in the DateTime object are still Gregorian.
+			var expectedGregorianYear = expectedToInterpretAsGregorianYear
+				? inputDateParts[2]
+				: (int.Parse(inputDateParts[2]) - 543).ToString();
+			Assert.That(result?.Year.ToString(), Is.EqualTo(expectedGregorianYear));
+			Assert.That(result?.Month.ToString(), Is.EqualTo(inputDateParts[1]));
+			Assert.That(result?.Day.ToString(), Is.EqualTo(inputDateParts[0]));
+			Assert.That(result?.ToISO8601TimeFormatDateOnlyString(), Is.EqualTo(
+				$"{int.Parse(expectedGregorianYear):D4}-{int.Parse(inputDateParts[1]):D2}-{int.Parse(inputDateParts[0]):D2}"));
 		}
 
 		/// <summary>
@@ -242,37 +361,74 @@ namespace SIL.Tests.Extensions
 		[TestCase("dd/MM/yyyy")] // Thai/European-style numeric date, zero-padded (e.g. 14/05/2025)
 		[TestCase("d/M/yyyy")] // Thai/European-style numeric date (e.g. 14/5/2025)
 		[TestCase("d-M-yyyy")] // Thai/European-style numeric date with dashes (e.g. 14-5-2025)
-		[NonParallelizable]
-		public void ParseDateTimePermissivelyWithException_NearFutureDatesWithThaiBuddhistCalendar_ReturnsDateWithPastYear(string inputFormat)
+		[TestCase("d")] // Short date pattern (region-specific: 14/5/2025, 5/14/2025, 14/05/2025, etc.)
+		[TestCase("M/d/yyyy")] // US-style numeric date (e.g. 5/14/2025)
+		[TestCase("M-d-yyyy")] // US-style numeric date with dashes (e.g. 5-14-2025)
+		[TestCase("MM/dd/yyyy")] // US-style numeric date, zero-padded (e.g. 05/14/2025)
+		[TestCase("MM-dd-yyyy")] // US-style numeric date with dashes, zero-padded (e.g. 05-14-2025)
+		public void ParseDateTimePermissivelyWithException_NearFutureDatesWithThaiBuddhistCalendar_ReturnsDateWithPastYear(
+			string inputFormat)
 		{
-			var futureDate = DateTime.Today.AddDays(5);
-			string input = futureDate.ToString(inputFormat);
+			var futureDate = GetNextFutureDateWithPotentiallyAmbiguousDay(5);
+			int maxDateOffset = (futureDate - DateTime.Today).Days - 1;
+			var input = futureDate.ToString(inputFormat);
+			Console.WriteLine($@"{nameof(input)} = {input}");
 			int expectedYear = futureDate.Year - 543;
-			var originalCulture = Thread.CurrentThread.CurrentCulture;
-			try
-			{
-				// Temporarily set system locale to use Buddhist date system
-				var buddhistCulture = new CultureInfo("th-TH");
-				buddhistCulture.DateTimeFormat.Calendar = new ThaiBuddhistCalendar();
-				Thread.CurrentThread.CurrentCulture = buddhistCulture;
 
-				var reasonableMin = new DateTime(1481, 1, 1);
-				var reasonableMax = DateTime.Today + TimeSpan.FromDays(4);
-				var result = input.ParseDateTimePermissivelyWithException(reasonableMin,
-					reasonableMax);
-				Assert.That(result.Year, Is.EqualTo(expectedYear));
-			}
-			finally
+			Exception isolatedTestException = null;
+			DateTime? result = null;
+			// Use an isolated thread to avoid any cross test effects
+			var thread = new Thread(() =>
 			{
-				// Reset system locale to the original culture
-				Thread.CurrentThread.CurrentCulture = originalCulture;
+				try
+				{
+					// Set system locale in this thread to use Buddhist date system
+					var buddhistCulture = new CultureInfo("th-TH")
+					{
+						DateTimeFormat = {
+							Calendar = new ThaiBuddhistCalendar()
+						}
+					};
+					Thread.CurrentThread.CurrentCulture = buddhistCulture;
+
+					var reasonableMin = new DateTime(1481, 1, 1);
+					var reasonableMax = DateTime.Today.AddDays(maxDateOffset);
+					result = input.ParseDateTimePermissivelyWithException(reasonableMin,
+						reasonableMax);
+				}
+				catch (Exception e)
+				{
+					isolatedTestException = e;
+				}
+			});
+			thread.Start();
+			thread.Join();
+
+			if (inputFormat == "d")
+			{
+				if (isolatedTestException != null)
+				{
+					Assert.Ignore("\"d\" test case (dependent on current culture) caused " +
+						$"exception: {isolatedTestException.Message}. Input = {{input}}");
+				}
+
+				if (result?.Year != expectedYear)
+				{
+					Assert.Ignore("\"d\" test case (dependent on current culture) year " +
+						$"{result?.Year} != expected {expectedYear}. Input = {{input}}");
+				}
+
+				return;
 			}
+			
+			Assert.That(isolatedTestException, Is.Null, "Test failed with unexpected exception");
+			Assert.That(result?.Year, Is.EqualTo(expectedYear), "Should have returned a past year");
 		}
 
 		/// <summary>
-		/// For these test cases, we will supply a future date and pass a reasonableMin that is
-		/// more than 543 years ago. Thus, we expect the algorithm to guess that these are
-		/// (ancient) Buddhist dates as opposed to future Gregorian dates.
+		/// Test ParsePastDateTimePermissivelyWithException with default min/max. For these test
+		/// cases, we will supply a future date. Thus, we expect the algorithm to guess that these
+		/// are (ancient) Buddhist dates as opposed to future Gregorian dates.
 		/// </summary>
 		/// <remarks>Given the non-Thai (probably usually English) month name when using the
 		/// "dd MMM yyyy" format, it's slightly surprising that the Thai/Buddhist locale can parse
@@ -281,19 +437,27 @@ namespace SIL.Tests.Extensions
 		[TestCase("dd/MM/yyyy")] // Thai/European-style numeric date, zero-padded (e.g. 14/05/2025)
 		[TestCase("d/M/yyyy")] // Thai/European-style numeric date (e.g. 14/5/2025)
 		[TestCase("d-M-yyyy")] // Thai/European-style numeric date with dashes (e.g. 14-5-2025)
-		public void ParsePastDateTimePermissivelyWithException_NearFutureDatesWithThaiBuddhistCalendar_ReturnsDateWithPastYear(string inputFormat)
+		[TestCase("d")] // Short date pattern (region-specific: 14/5/2025, 5/14/2025, 14/05/2025)
+		[TestCase("M/d/yyyy")] // US-style numeric date (e.g. 5/14/2025)
+		[TestCase("M-d-yyyy")] // US-style numeric date with dashes (e.g. 5-14-2025)
+		[TestCase("MM/dd/yyyy")] // US-style numeric date, zero-padded (e.g. 05/14/2025)
+		[TestCase("MM-dd-yyyy")] // US-style numeric date with dashes, zero-padded (e.g. 05-14-2025)
+		public void ParsePastDateTimePermissivelyWithException_NearFutureDatesWithThaiBuddhistCalendar_ReturnsDateWithPastYear(
+			string inputFormat)
 		{
-			// Set the calendar in an isolated thread to avoid any cross test effects
-			var futureDate = DateTime.Today.AddDays(2);
+			var futureDate = GetNextFutureDateWithPotentiallyAmbiguousDay();
 			var input = futureDate.ToString(inputFormat);
+			Console.WriteLine($@"{nameof(input)} = {input}");
 			var expectedYear = futureDate.Year - 543;
+			
 			Exception isolatedTestException = null;
 			DateTime? result = null;
+			// Use an isolated thread to avoid any cross test effects
 			var thread = new Thread(() =>
 			{
 				try
 				{
-					// Temporarily set system locale to use Buddhist date system
+					// Set system locale in this thread to use Buddhist date system
 					var buddhistCulture = new CultureInfo("th-TH")
 					{
 						DateTimeFormat = {
@@ -311,8 +475,26 @@ namespace SIL.Tests.Extensions
 			});
 			thread.Start();
 			thread.Join();
+
+			if (inputFormat == "d")
+			{
+				if (isolatedTestException != null)
+				{
+					Assert.Ignore("\"d\" test case (dependent on current culture) caused " +
+						$"exception: {isolatedTestException.Message}. Input = {{input}}");
+				}
+
+				if (result?.Year != expectedYear)
+				{
+					Assert.Ignore("\"d\" test case (dependent on current culture) year " +
+						$"{result?.Year} != expected {expectedYear}. Input = {{input}}");
+				}
+
+				return;
+			}
+			
 			Assert.That(isolatedTestException, Is.Null, "Test failed with unexpected exception");
-			Assert.That(result?.Year, Is.EqualTo(expectedYear), $"Should have returned a past year");
+			Assert.That(result?.Year, Is.EqualTo(expectedYear), "Should have returned a past year");
 		}
 
 		/// <summary>
@@ -320,75 +502,111 @@ namespace SIL.Tests.Extensions
 		/// these are date formats that cannot be parsed in Thai/Buddhist culture, so we expect
 		/// them to be interpreted as Gregorian dates.
 		/// </summary>
-		[TestCase("d")] // Short date pattern (e.g. 14/5/2025)
 		[TestCase("D")] // Long date pattern (e.g. Wednesday, 14 May 2025)
 		[TestCase("dddd, dd MMMM yyyy")] // Full long format (e.g. Wednesday, 14 May 2025)
-		[TestCase("M/d/yyyy")] // US-style numeric date (e.g. 5/14/2025)
-		[TestCase("M-d-yyyy")] // US-style numeric date with dashes (e.g. 5-14-2025)
-		[TestCase("MM/dd/yyyy")] // US-style numeric date, zero-padded (e.g. 05/14/2025)
-		[TestCase("MM-dd-yyyy")] // US-style numeric date with dashes, zero-padded (e.g. 05-14-2025)
-		[NonParallelizable]
-		public void ParseDateTimePermissivelyWithException_NearFutureUSDatesWithThaiBuddhistCalendar_ReturnsDateWithPastYear(string inputFormat)
+		public void ParseDateTimePermissivelyWithException_NearFutureUSDatesWithThaiBuddhistCalendar_ReturnsDateWithFutureYear(string inputFormat)
 		{
-			var futureDate = DateTime.Today.AddDays(5);
+			var futureDate = GetNextFutureDateWithPotentiallyAmbiguousDay(5);
+			int maxDateOffset = (futureDate - DateTime.Today).Days - 1;
 			string input = futureDate.ToString(inputFormat);
 			int expectedYear = futureDate.Year;
-			var originalCulture = Thread.CurrentThread.CurrentCulture;
-			try
-			{
-				// Temporarily set system locale to use Buddhist date system
-				var buddhistCulture = new CultureInfo("th-TH");
-				buddhistCulture.DateTimeFormat.Calendar = new ThaiBuddhistCalendar();
-				Thread.CurrentThread.CurrentCulture = buddhistCulture;
 
-				var reasonableMax = DateTime.Today + TimeSpan.FromDays(4);
-				var result = input.ParseDateTimePermissivelyWithException(new DateTime(1900, 1, 1),
-					reasonableMax);
-				Assert.That(result.Year, Is.EqualTo(expectedYear));
-			}
-			finally
+			Exception isolatedTestException = null;
+			DateTime? result = null;
+			// Use an isolated thread to avoid any cross test effects
+			var thread = new Thread(() =>
 			{
-				// Reset system locale to the original culture
-				Thread.CurrentThread.CurrentCulture = originalCulture;
-			}
+				try
+				{
+					// Set system locale in this thread to use Buddhist date system
+					var buddhistCulture = new CultureInfo("th-TH")
+					{
+						DateTimeFormat = {
+							Calendar = new ThaiBuddhistCalendar()
+						}
+					};
+					Thread.CurrentThread.CurrentCulture = buddhistCulture;
+
+					var reasonableMin = new DateTime(1900, 1, 1);
+					var reasonableMax = DateTime.Today.AddDays(maxDateOffset);
+					result = input.ParseDateTimePermissivelyWithException(reasonableMin,
+						reasonableMax);
+				}
+				catch (Exception e)
+				{
+					isolatedTestException = e;
+				}
+			});
+			thread.Start();
+			thread.Join();
+
+			Assert.That(isolatedTestException, Is.Null, "Test failed with unexpected exception");
+			Assert.That(result?.Year, Is.EqualTo(expectedYear));
 		}
 
 		/// <summary>
-		/// For these test cases, we will supply a future date. However, these are date formats
-		/// that cannot be parsed in Thai/Buddhist culture, so we expect them to be interpreted as
-		/// Gregorian dates.
+		/// Test ParsePastDateTimePermissivelyWithException with default min/max. For these test
+		/// cases, we will supply a future date. However, these are date formats that cannot be
+		/// parsed in Thai/Buddhist culture, so we expect them to be interpreted as Gregorian
+		/// dates.
 		/// </summary>
-		[TestCase("d")] // Short date pattern (e.g. 14/5/2025)
 		[TestCase("D")] // Long date pattern (e.g. Wednesday, 14 May 2025)
 		[TestCase("dddd, dd MMMM yyyy")] // Full long format (e.g. Wednesday, 14 May 2025)
-		[TestCase("M/d/yyyy")] // US-style numeric date (e.g. 5/14/2025)
-		[TestCase("M-d-yyyy")] // US-style numeric date with dashes (e.g. 5-14-2025)
-		[TestCase("MM/dd/yyyy")] // US-style numeric date, zero-padded (e.g. 05/14/2025)
-		[TestCase("MM-dd-yyyy")] // US-style numeric date with dashes, zero-padded (e.g. 05-14-2025)
-		[NonParallelizable]
-		public void ParsePastDateTimePermissivelyWithException_NearFutureUSDatesWithThaiBuddhistCalendar_ReturnsDateWithPastYear(string inputFormat)
+		public void ParsePastDateTimePermissivelyWithException_NearFutureUSDatesWithThaiBuddhistCalendar_ReturnsDateWithFutureYear(string inputFormat)
 		{
-			var futureDate = DateTime.Today.AddDays(2);
+			var futureDate = GetNextFutureDateWithPotentiallyAmbiguousDay();
 			string input = futureDate.ToString(inputFormat);
 			int expectedYear = futureDate.Year;
-			var originalCulture = Thread.CurrentThread.CurrentCulture;
-			try
+			
+			Exception isolatedTestException = null;
+			DateTime? result = null;
+			// Use an isolated thread to avoid any cross test effects
+			var thread = new Thread(() =>
 			{
-				// Temporarily set system locale to use Buddhist date system
-				var buddhistCulture = new CultureInfo("th-TH");
-				buddhistCulture.DateTimeFormat.Calendar = new ThaiBuddhistCalendar();
-				Thread.CurrentThread.CurrentCulture = buddhistCulture;
+				try
+				{
+					// Set system locale in this thread to use Buddhist date system
+					var buddhistCulture = new CultureInfo("th-TH")
+					{
+						DateTimeFormat = {
+							Calendar = new ThaiBuddhistCalendar()
+						}
+					};
+					Thread.CurrentThread.CurrentCulture = buddhistCulture;
 
-				var result = input.ParsePastDateTimePermissivelyWithException();
-				Assert.That(result.Year, Is.EqualTo(expectedYear));
-			}
-			finally
-			{
-				// Reset system locale to the original culture
-				Thread.CurrentThread.CurrentCulture = originalCulture;
-			}
+					result = input.ParsePastDateTimePermissivelyWithException();
+				}
+				catch (Exception e)
+				{
+					isolatedTestException = e;
+				}
+			});
+			thread.Start();
+			thread.Join();
+
+			Assert.That(isolatedTestException, Is.Null, "Test failed with unexpected exception");
+			Assert.That(result?.Year, Is.EqualTo(expectedYear));
 		}
 
+		/// <summary>
+		/// Helper method to find the next "near" future date with a day number less than or equal
+		/// to 12, such that it that could potentially be mistaken for a month number if the date
+		/// format is ambiguous.
+		/// </summary>
+		/// <param name="minDaysIntoFuture">Number of days in the future to start looking for a
+		/// "near" date. Pass 2 or greater to avoid possible edge cases related to time zones.
+		/// </param>
+		private static DateTime GetNextFutureDateWithPotentiallyAmbiguousDay(int minDaysIntoFuture = 2)
+		{
+			var date = DateTime.Today.AddDays(minDaysIntoFuture);
+			if (date.Day > 12)
+			{
+				var nextMonth = date.AddMonths(1);
+				date = new DateTime(nextMonth.Year, nextMonth.Month, 1);
+			}
+			return date;
+		}
+		
 		[TestCase("19/10/2025 0:00:00", ExpectedResult = "2025-10-19")]
 		[TestCase("14/4/1482", ExpectedResult = "1482-04-14")]
 		[TestCase("13/3/1800 0:01:00", ExpectedResult = "1800-03-13")]
@@ -407,7 +625,7 @@ namespace SIL.Tests.Extensions
 		[TestCase("@13:00.T")]
 		public void ParseModernPastDateTimePermissivelyWithException_UnknownFormat_ThrowsApplicationException(string input)
 		{
-			Assert.That(() => input.ParseModernPastDateTimePermissivelyWithException(),
+			Assert.That(input.ParseModernPastDateTimePermissivelyWithException,
 				Throws.TypeOf<ApplicationException>().With.InnerException.TypeOf<FormatException>());
 		}
 	}

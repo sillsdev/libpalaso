@@ -30,6 +30,7 @@ This process is run by a github action whenever a version tag is pushed and manu
 
 It can also be run manually as follows (requires the [Crowdin CLI](https://crowdin.github.io/crowdin-cli/)):
 ```
+crowdin download sources -T CROWDIN_ACCESS_TOKEN
 crowdin download --all -T CROWDIN_ACCESS_TOKEN
 msbuild l10n.proj /t:PackageL10ns
 nuget push -ApiKey TheSilNugetApiKey SIL.libpalaso.l10n.nupkg

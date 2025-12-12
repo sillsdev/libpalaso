@@ -34,7 +34,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
 			this._purposeComboBox = new System.Windows.Forms.ComboBox();
 			this.betterLabel1 = new SIL.Windows.Forms.Widgets.BetterLabel();
-			this._localizationHelper = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._localizationHelper = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			((System.ComponentModel.ISupportInitialize)(this._localizationHelper)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -117,6 +117,6 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 		private BetterLabel betterLabel1;
 		private System.Windows.Forms.LinkLabel linkLabel1;
 		private System.Windows.Forms.ComboBox _purposeComboBox;
-		private L10NSharp.UI.L10NSharpExtender _localizationHelper;
+		private L10NSharp.Windows.Forms.L10NSharpExtender _localizationHelper;
 	}
 }

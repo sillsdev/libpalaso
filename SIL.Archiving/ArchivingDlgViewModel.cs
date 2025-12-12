@@ -547,6 +547,10 @@ namespace SIL.Archiving
 				return;
 
 			var prs = new Process();
+			// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+			// We are explicitly setting it to true for consistency with the old behavior
+			// but have not checked if it is necessary here.
+			prs.StartInfo.UseShellExecute = true;
 			prs.StartInfo.FileName = PathToProgramToLaunch;
 			if (!IsNullOrEmpty(PackagePath))
 				prs.StartInfo.Arguments = "\"" + PackagePath + "\"";

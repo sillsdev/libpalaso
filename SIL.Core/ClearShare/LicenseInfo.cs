@@ -1,26 +1,18 @@
-using System;
 using System.Collections.Generic;
-using System.Drawing;
 using JetBrains.Annotations;
-using L10NSharp;
 
-namespace SIL.Windows.Forms.ClearShare
+namespace SIL.Core.ClearShare
 {
-	/// <summary/>
+	/// <summary>
+	/// Serves as the base class for all types of licenses in the system, providing a common interface for license metadata.
+	/// Tracks key properties such as the license URL, a human-readable token, and rights statements,
+	/// and defines methods to get a minimal form for credits and a descriptive summary of the license.
+	/// Subclasses implement specific license types (e.g., Creative Commons, custom licenses) and may add platform- or UI-specific details.
+	/// </summary>
 	public abstract class LicenseInfo
 	{
-		public static LicenseInfo FromXmp(Dictionary<string, string> properties)
-		{
-			if (properties.ContainsKey("license") && properties["license"].Contains("creativecommons"))
-				return CreativeCommonsLicense.FromMetadata(properties);
-
-			if (properties.ContainsKey("rights (en)"))
-				return CustomLicense.FromMetadata(properties);
-			return new NullLicense();
-		}
-
 		/// <summary>
-		/// A compact form of of this license that doesn't introduce any new text (though the license may itself have text)
+		/// A compact form of this license that doesn't introduce any new text (though the license may itself have text)
 		/// E.g. "CC BY-NC"
 		/// </summary>
 		public abstract string GetMinimalFormForCredits(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed);
@@ -32,27 +24,9 @@ namespace SIL.Windows.Forms.ClearShare
 		/// </summary>
 		public abstract string Token { get; }
 
-		//Review (JH asks in Oct 2016): Why does this exist? The only uses in libpalaso are in tests and examples. Bloom does not use it.
-		// Why is From Url not sufficient?
-		public static LicenseInfo FromToken(string abbr)
-		{
-			switch (abbr)
-			{
-				case "ask": return new NullLicense();
-				case "custom": return new CustomLicense();
-				default:
-					return CreativeCommonsLicense.FromToken(abbr);
-			}
-		}
-
-		public virtual Image GetImage()
-		{
-			return null;
-		}
-
 		/// <summary>
 		/// It doesn't make sense to let the user edit the description of a well-known license, even if the meta data is unlocked.
-		/// REVIEW: How do we know whether this is a well-known license? Presently, only <see cref="CreativeCommonsLicense"/> is always well-known.
+		/// REVIEW: How do we know whether this is a well-known license? Presently, only <see cref="CreativeCommonsLicenseInfo"/> is always well-known.
 		/// REVIEW (Hasso) 2023.07: This is never used (internally, at least) and all overriding implementations return false, too.
 		/// </summary>
 		[PublicAPI]
@@ -84,15 +58,15 @@ namespace SIL.Windows.Forms.ClearShare
 				if (targetLanguage == "en")
 				{
 					//do the query to make sure the string is there to be translated someday
-					LocalizationManager.GetDynamicString("Palaso", idSuffix, englishText, comment);
+					Localizer.GetDynamicString("Palaso", idSuffix, englishText, comment);
 					idOfLanguageUsed = "en";
 					return englishText;
 				}
 				//otherwise, see if we have a translation
-				if (LocalizationManager.GetIsStringAvailableForLangId(idSuffix, targetLanguage))
+				if (Localizer.GetIsStringAvailableForLangId(idSuffix, targetLanguage))
 				{
 					idOfLanguageUsed = targetLanguage;
-					return LocalizationManager.GetDynamicStringOrEnglish("Palaso", idSuffix, englishText, comment, targetLanguage);
+					return Localizer.GetDynamicStringOrEnglish("Palaso", idSuffix, englishText, comment, targetLanguage);
 				}
 			}
 			idOfLanguageUsed = string.Empty;
@@ -135,68 +109,6 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 			get => "";
 			set { }
-		}
-	}
-
-
-	public class CustomLicense : LicenseInfo
-	{
-//        public void SetDescription(string iso639_3LanguageCode, string description)
-//        {
-//			RightsStatement = description;
-//        }
-
-		public override string ToString()
-		{
-			return "Custom License";
-		}
-
-		public override string GetMinimalFormForCredits(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
-		{
-			return GetDescription(languagePriorityIds, out idOfLanguageUsed);
-		}
-
-		///<summary></summary>
-		/// <remarks>
-		/// Currently, we don't know the language of custom license strings, so we the ISO 639-2 code for undetermined, "und"
-		/// </remarks>
-		/// <param name="languagePriorityIds"></param>
-		/// <param name="idOfLanguageUsed"></param>
-		/// <returns></returns>
-		public override string GetDescription(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
-		{
-			//if we're empty, we're equivalent to a NullLicense
-			if (string.IsNullOrEmpty(RightsStatement))
-			{
-				return new NullLicense().GetDescription(languagePriorityIds, out idOfLanguageUsed);
-			}
-
-			//We don't actually have a way of knowing what language this is, so we use "und", from http://www.loc.gov/standards/iso639-2/faq.html#25
-			//I hereby coin "Zook's First Law": Eventually any string entered by a user will wish it had been tagged with a language identifier
-			//"Zook's Second Law" can be: Eventually any string entered by a user will wish it was a multi-string (multiple (language,value) pairs)
-			idOfLanguageUsed = "und";
-			return RightsStatement;
-		}
-
-		public override string Token =>
-			//do not think of changing this, there is data out there that could get messed up
-			"custom";
-
-		public override Image GetImage()
-		{
-			return null;
-		}
-
-		public override string Url { get; set; }
-
-		public static LicenseInfo FromMetadata(Dictionary<string, string> properties)
-		{
-			if (!properties.ContainsKey("rights (en)"))
-				throw new ApplicationException("A license property is required in order to make a  Custom License from metadata.");
-
-			var license = new CustomLicense();
-			license.RightsStatement = properties["rights (en)"];
-			return license;
 		}
 	}
 }

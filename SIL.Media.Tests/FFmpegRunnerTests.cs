@@ -10,21 +10,32 @@ namespace SIL.Media.Tests
 {
 	[Category("RequiresFfmpeg")]
 	[TestFixture]
+	[NonParallelizable]
 	public class FFmpegRunnerTests
 	{
+		bool isCiBuild = Environment.GetEnvironmentVariable("CI") != null;
+
 		[OneTimeSetUp]
 		public void CheckRequirements()
 		{
 			if (!FFmpegRunner.HaveNecessaryComponents)
 			{
-				if (Environment.GetEnvironmentVariable("CI") == null)
-					Assert.Ignore("These tests require ffmpeg to be installed.");
+				if (isCiBuild)
+					Assert.Fail("On CI build using GHA, FFmpeg should have been installed before running tests.");
 				else
-					Assert.Fail("On CI build using GHA, FFMpeg should have been installed before running tests.");
+					Assert.Ignore("These tests require FFmpeg to be installed.");
 			}
 		}
 
+		[SetUp]
+		public void SetUp()
+		{
+			FFmpegRunner.FFmpegLocation = null;
+			FFmpegRunner.MinimumVersion = null;
+		}
+
 		[Test]
+		[NonParallelizable]
 		public void HaveNecessaryComponents_NoExplicitMinVersion_ReturnsTrue()
 		{
 			Assert.IsTrue(FFmpegRunner.HaveNecessaryComponents);
@@ -32,29 +43,36 @@ namespace SIL.Media.Tests
 
 		[TestCase(5, 1)]
 		[TestCase(4, 9)]
+		[NonParallelizable]
+		[Category("RequiresUpdatedFFmpeg")]
 		public void HaveNecessaryComponents_TwoDigitMinVersion_ReturnsTrue(int major, int minor)
 		{
 			FFmpegRunner.MinimumVersion = new Version(major, minor);
-			Assert.IsTrue(FFmpegRunner.HaveNecessaryComponents);
+			Assert.IsTrue(FFmpegRunner.HaveNecessaryComponents, isCiBuild ? "" : "Developer: Note that this test will fail if you have an old version of FFmpeg.");
 		}
 
 		[TestCase(5, 1, 1)]
 		[TestCase(5, 0, 0)]
+		[NonParallelizable]
+		[Category("RequiresUpdatedFFmpeg")]
 		public void HaveNecessaryComponents_ThreeDigitMinVersion_ReturnsTrue(int major, int minor, int build)
 		{
 			FFmpegRunner.MinimumVersion = new Version(major, minor, build);
-			Assert.IsTrue(FFmpegRunner.HaveNecessaryComponents);
+			Assert.IsTrue(FFmpegRunner.HaveNecessaryComponents, isCiBuild ? "" : "Developer: Note that this test will fail if you have an old version of FFmpeg.");
 		}
 
 		[TestCase(5, 1, 1, 0)]
 		[TestCase(5, 0, 0, 9)]
+		[NonParallelizable]
+		[Category("RequiresUpdatedFFmpeg")]
 		public void HaveNecessaryComponents_FourDigitMinVersion_ReturnsTrue(int major, int minor, int build, int revision)
 		{
 			FFmpegRunner.MinimumVersion = new Version(major, minor, build, revision);
-			Assert.IsTrue(FFmpegRunner.HaveNecessaryComponents);
+			Assert.IsTrue(FFmpegRunner.HaveNecessaryComponents, isCiBuild ? "" : "Developer: Note that this test will fail if you have an old version of FFmpeg.");
 		}
 
 		[Test]
+		[NonParallelizable]
 		public void HaveNecessaryComponents_ReallyHighVersionThatDoesNotExist_ReturnsFalse()
 		{
 			FFmpegRunner.MinimumVersion = new Version(int.MaxValue, int.MaxValue);
@@ -62,6 +80,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
+		[NonParallelizable]
 		public void ExtractMp3Audio_CreatesFile()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -73,6 +92,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
+		[NonParallelizable]
 		public void ExtractOggAudio_CreatesFile()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -84,6 +104,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
+		[NonParallelizable]
 		public void ChangeNumberOfAudioChannels_CreatesFile()
 		{
 			using (var file = TempFile.FromResource(Resources._2Channel, ".wav"))
@@ -95,6 +116,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
+		[NonParallelizable]
 		public void MakeLowQualityCompressedAudio_CreatesFile()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))
@@ -128,6 +150,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
+		[NonParallelizable]
 		public void MakeLowQualitySmallVideo_CreatesFile()
 		{
 			using (var file = TempFile.FromResource(Resources.tiny, ".wmv"))

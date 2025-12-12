@@ -198,9 +198,14 @@ namespace SIL.Extensions
 					}
 
 					if (parsed >= reasonableMin && parsed <= reasonableMax)
+					{
+						result = parsed;
 						return true;
-					
-					// Try switching calendar
+					}
+
+					// Try switching to Thai/Buddhist calendar. Note that other calendars (Hijri,
+					// Hebrew, etc.) could also be tried, in order of likelihood, but we have never
+					// seen evidence of data suggesting that it is necessary.
 					var altCulture = (CultureInfo)cultureInfo.Clone();
 					var originalCalendar = altCulture.DateTimeFormat.Calendar;
 					try
@@ -235,7 +240,8 @@ namespace SIL.Extensions
 				}
 			}
 
-			// not found, return failure
+			// We didn't get any parse that fell within the reasonable range. The result will be
+			// the first successful parse, if any. Otherwise, we will return failure.
 			return success;
 		}
 

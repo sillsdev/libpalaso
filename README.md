@@ -127,7 +127,25 @@ Further instructions at https://github.com/sillsdev/libpalaso/wiki/Developing-wi
 
 ### Localization
 
-Palaso is localized with [L10NSharp](https://github.com/sillsdev/l10nsharp). Palaso-specific documentation is under `l10n/README.md`.
+Palaso is localized with [L10NSharp](https://github.com/sillsdev/l10nsharp). Palaso-specific documentation is in [l10n/README.md](l10n/README.md).
+
+### Semantic versioning
+
+These libraries use [GitVersion](https://gitversion.net/). For simplicity, all library versions advance in lockstep.
+
+- When a commit introduces a breaking change, include `+semver:major` at the start of the commit message.
+
+- For API additions or other backward-compatible enhancements, use `+semver:minor`.
+
+### Deployment on nuget.org
+
+Beta builds are published automatically to [nuget.org](https://www.nuget.org/) by the `build-test` GitHub Action.
+
+To publish an official release version:
+
+1. Push a Git tag in the format `v10.5.1` (matching the current beta version calculated by GitVersion).
+
+2. Manually run the `build-test` workflow in GitHub Actions.
 
 ## API Policy
 

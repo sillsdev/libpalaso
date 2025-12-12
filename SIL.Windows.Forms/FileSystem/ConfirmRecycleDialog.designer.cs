@@ -1,4 +1,4 @@
-﻿namespace SIL.Windows.Forms.FileSystem
+namespace SIL.Windows.Forms.FileSystem
 {
 	partial class ConfirmRecycleDialog
 	{
@@ -32,7 +32,7 @@
 			this.pictureRecycleBin = new System.Windows.Forms.PictureBox();
 			this.deleteBtn = new System.Windows.Forms.Button();
 			this.cancelBtn = new System.Windows.Forms.Button();
-			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._L10NSharpExtender = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
 			this._messageLabel = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.pictureRecycleBin)).BeginInit();
@@ -160,7 +160,7 @@
 		private System.Windows.Forms.PictureBox pictureRecycleBin;
 		private System.Windows.Forms.Button cancelBtn;
 		private System.Windows.Forms.Button deleteBtn;
-		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
+		private L10NSharp.Windows.Forms.L10NSharpExtender _L10NSharpExtender;
 		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
 		private System.Windows.Forms.Label _messageLabel;
 	}

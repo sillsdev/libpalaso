@@ -33,7 +33,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this.minimallyCompleteCheckTimer = new System.Windows.Forms.Timer(this.components);
 			this.panel1 = new System.Windows.Forms.Panel();
 			this._okButton = new System.Windows.Forms.Button();
-			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._L10NSharpExtender = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			this._metadataEditorControl = new SIL.Windows.Forms.ClearShare.WinFormsUI.MetadataEditorControl();
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
@@ -131,7 +131,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 
 		private MetadataEditorControl _metadataEditorControl;
 		private System.Windows.Forms.Button _okButton;
-		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
+		private L10NSharp.Windows.Forms.L10NSharpExtender _L10NSharpExtender;
 		private System.Windows.Forms.Button cancelButton;
 		private System.Windows.Forms.Timer minimallyCompleteCheckTimer;
 		private System.Windows.Forms.Panel panel1;

@@ -134,9 +134,11 @@ namespace SIL.Windows.Forms.Widgets
 
 		protected override void OnTextChanged(EventArgs e)
 		{
+			if (IsDisposed)
+				return;	// This has happened in Bloom (BL-15424) and caused a crash.
 			//this is apparently dangerous to do in the constructor
 			//Font = new Font(SystemFonts.MessageBoxFont.FontFamily, Font.Size, Font.Style);
-			if(Font==SystemFonts.DefaultFont)
+			if (Font==SystemFonts.DefaultFont)
 				Font = SystemFonts.MessageBoxFont;//sets the default, which can then be customized in the designer
 
 			DetermineHeight();
@@ -145,6 +147,8 @@ namespace SIL.Windows.Forms.Widgets
 
 		private void DetermineHeight()
 		{
+			if (IsDisposed)
+				return; // This has happened in Bloom (BL-15424) and caused a crash.
 			using (var g = this.CreateGraphics())
 			{
 				// Use this rather than MeasureString, which uses the obsolete GDI+ and can crash on some

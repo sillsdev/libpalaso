@@ -197,7 +197,10 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				return null;
 			}
 			return () => {
-				using (Process.Start(setupApp, args)) { }
+				// UseShellExecute defaults to true in .net framework (including .net 4) and to false in .net core (including .net 8)
+				// We are explicitly setting it to true for consistency with the old behavior
+				// but have not checked if it is necessary here.
+				using (Process.Start(new ProcessStartInfo(setupApp, args) { UseShellExecute = true })) { }
 			};
 		}
 
