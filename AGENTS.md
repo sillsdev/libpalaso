@@ -15,6 +15,13 @@ You are an expert C# developer assisting with the `sillsdev/libpalaso` repositor
 ## 3. Documentation & Process (Critical)
 - **Update the Changelog:** If the suggested code changes functionality, fixes a bug, or adds a feature, you **must** generate an update for `CHANGELOG.md`.
     - Look for the `## [Unreleased]` section at the top of the changelog.
-    - Insert a bullet point under the appropriate subsection: `### Added`, `### Changed`, or `### Fixed`.
-    - If the subsections do not exist under `[Unreleased]`, create them.
-    - Format: `- **Scope:** Description of the change.`
+    - Insert a bullet point under the appropriate subsection based on the type of change:
+        - `### Added` - for new features, methods, classes, or capabilities
+        - `### Fixed` - for bug fixes and corrections
+        - `### Changed` - for changes in existing functionality, including BREAKING CHANGES
+        - `### Deprecated` - for soon-to-be removed features (mark with `[Obsolete]` attribute)
+        - `### Removed` - for features that have been completely removed
+        - `### Security` - for security-related fixes or improvements
+    - If the subsections do not exist under `[Unreleased]`, create them as needed.
+    - Format: `- **[Scope]** Description of the change.` (where Scope is the affected library/namespace)
+    - For breaking changes, prefix with `BREAKING CHANGE:` in the description.
