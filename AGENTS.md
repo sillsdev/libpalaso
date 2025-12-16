@@ -25,3 +25,16 @@ You are an expert C# developer assisting with the `sillsdev/libpalaso` repositor
     - If the subsections do not exist under `[Unreleased]`, create them as needed.
     - Format: `- **[Scope]** Description of the change.` (where Scope is the affected library/namespace)
     - For breaking changes, prefix with `BREAKING CHANGE:` in the description.
+
+- **Commit Message Format:** Follow semantic versioning guidelines in commit messages:
+  - Include semantic version tags to indicate the impact of changes:
+    - `+semver:major` - for breaking changes that require a major version bump
+    - `+semver:minor` - for new features, added functionality, or deprecations that require a minor version bump
+    - If the change doesn't require a major or minor version bump (i.e., it's a patch-level change), the `+semver` tag is omitted
+  - Format: `Brief description of change +semver:level` (or just the description for patch-level changes)
+  - Examples:
+    - `Add new IWritingSystemRepository interface +semver:minor`
+    - `BREAKING CHANGE: Remove deprecated FileLocator methods +semver:major`
+    - `Fix null reference exception in BetterLabel` (no tag needed for patch)
+    - `Refactor internal caching mechanism` (no tag needed for patch)
+  - **Note:** BREAKING CHANGE can appear in any changelog category but always requires `+semver:major`
