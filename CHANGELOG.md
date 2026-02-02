@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- [SIL.Windows.Forms] BREAKING CHANGE: Removed optional moreSelected parameter from ToolStripExtensions.InitializeWithAvailableUILocales method. This parameter was no longer being used. Clients that want to have a More meun item that performs a custom action will now need to add it themselves.
+
 ### Added
 - [SIL.Core.Clearshare] Added new classes MetadataCore, CreativeCommonsLicenseInfo, and CustomLicenseInfo; these are Winforms-free base versions of the classes Metadata, CreativeCommonsLicense, and CustomLicense.
 

@@ -66,10 +66,6 @@ namespace SIL.Windows.Forms.Extensions
 		/// localization manager does not have any strings translated for the given language,
 		/// then a dialog box will be shown informing the user that localization has not yet been
 		/// done for application-specific strings in the requested language.</param>
-		/// <param name="moreSelected">Application-specific function to call when the More menu
-		/// item is selected. This function should normally return <c>true</c> but may return
-		/// <c>false</c> to indicate that the default behavior should be suppressed.
-		/// </param>
 		/// <param name="additionalNamedLocales">Dictionary of display-name to IetfTag for any
 		/// additional locales an application wishes to display (besides those known to the
 		/// LocalizationManager). The primary purpose of this is to allow the user to choose a
@@ -92,7 +88,7 @@ namespace SIL.Windows.Forms.Extensions
 		public static void InitializeWithAvailableUILocales(this ToolStripDropDownItem menu,
 			Func<string, bool> localeSelectedAction = null,
 			LocalizationIncompleteViewModel localizationIncompleteViewModel = null,
-			Func<bool> moreSelected = null, Dictionary<string, string> additionalNamedLocales = null)
+			Dictionary<string, string> additionalNamedLocales = null)
 		{
 			void DropDownOpening(object sender, EventArgs e)
 			{
