@@ -53,8 +53,6 @@ namespace SIL.Windows.Forms.Extensions
 		/// menu items is set up to make that language the default used for retrieving localized
 		/// strings. If this menu is a <see cref="ToolStripDropDownButton"/>, it also has its text
 		/// set to the name of the selected language.
-		/// Finally, if a primary <see cref="ILocalizationManager"/> is provided, a separate "More"
-		/// item is added at the bottom of the menu.
 		/// </summary>
 		/// <param name="menu">The menu whose <see cref="ToolStripDropDownItem.DropDownItems"/>
 		/// collection is to be initialized.</param>
