@@ -13,8 +13,7 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 		[CLSCompliant(false)]
 		public ILocalizationManager PrimaryLocalizationManager { get; }
 
-		public string EmailAddressForLocalizationRequests =>
-			LocalizationManager.EmailForSubmissions;
+		public virtual string EmailAddressForLocalizationRequests => null;
 
 		private readonly string _crowdinProjectName;
 		private readonly Action _issueRequestForLocalization;
