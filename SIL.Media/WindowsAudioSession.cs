@@ -1,7 +1,7 @@
-// Copyright (c) 2015-2025 SIL Global
+// Copyright (c) 2015-2026 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
-/// Not supported in .NET 8+ due to IrrKlang
+// Not supported in .NET 8+ due to IrrKlang
 #if NET462 || NET48
 
 using System;
@@ -15,9 +15,9 @@ namespace SIL.Media
 {
 	/// <summary>
 	/// A Windows implementation of an ISimpleAudioSession.
-	/// Uses IrrKlang for recording and NAudio for playback.
+	/// Uses <see cref="IrrKlang"/> for recording and <see cref="NAudio"/> for playback.
 	/// </summary>
-	internal class WindowsAudioSession : ISimpleAudioSession, ISimpleAudioWithEvents
+	internal class WindowsAudioSession : ISimpleAudioWithEvents
 	{
 		private readonly IrrKlang.IAudioRecorder _recorder;
 		private readonly ISoundEngine _engine = CreateSoundEngine();
@@ -27,6 +27,7 @@ namespace SIL.Media
 		private readonly SoundFile _soundFile;
 		private WaveOutEvent _outputDevice;
 		private AudioFileReader _audioFile;
+		private readonly object _lock = new object();
 		/// <summary>
 		/// Will be raised when playing is over
 		/// </summary>
@@ -55,7 +56,7 @@ namespace SIL.Media
 		}
 
 		/// <summary>
-		/// Constructor for an AudioSession using the IrrKlang library
+		/// Constructor for an AudioSession using the <see cref="IrrKlang"/> library
 		/// </summary>
 		public WindowsAudioSession(string filePath)
 		{
@@ -77,7 +78,6 @@ namespace SIL.Media
 
 			_recorder.StartRecordingBufferedAudio(22000, SampleFormat.Signed16Bit, 1);
 			_startRecordingTime = DateTime.Now;
-
 		}
 
 		public void StopRecordingAndSaveAsWav()
@@ -107,7 +107,7 @@ namespace SIL.Media
 
 		public bool IsRecording => _recorder != null && _recorder.IsRecording;
 
-		public bool IsPlaying { get; set; }
+		public bool IsPlaying { get; private set; }
 
 		public bool CanRecord => !IsPlaying && !IsRecording;
 
@@ -117,7 +117,7 @@ namespace SIL.Media
 
 		private void OnPlaybackStopped(object sender, StoppedEventArgs args)
 		{
-			lock (FilePath)
+			lock (_lock)
 			{
 				if (_outputDevice != null)
 				{
@@ -130,16 +130,19 @@ namespace SIL.Media
 					}
 				}
 			}
+
 			IsPlaying = false;
-			PlaybackStopped?.Invoke(sender, args);
+
+			PlaybackStopped?.Invoke(this, args);
 		}
 
 		/// <summary>
-		/// The current version of Play uses NAudio for playback. IrrKlang had issues with playback.
-		/// In the future it may be best to try the latest version of IrrKlang and see if true safe
-		/// cross-platform recording and playback can be accomplished now. This would eliminate the need for
-		/// the AlsaAudio classes on linux. Note: irrKlang was upgraded to v. 1.6 in Nov 2024, but I did
-		/// not re-check to see if it works for playback on all platforms.
+		/// The current version of Play uses NAudio for playback. <see cref="IrrKlang"/> had issues
+		/// with playback. In the future it may be best to try the latest version of
+		/// <see cref="IrrKlang"/> and see if true safe cross-platform recording and playback can
+		/// be accomplished now. This would eliminate the need for the <see cref="AlsaAudio"/>
+		/// classes on linux. Note: <see cref="IrrKlang"/> was upgraded to v. 1.6 in Nov 2024, but
+		/// I did not re-check to see if it works for playback on all platforms.
 		/// </summary>
 		public void Play()
 		{
@@ -156,7 +159,7 @@ namespace SIL.Media
 			{
 				try
 				{
-					lock (FilePath)
+					lock (_lock)
 					{
 						if (_outputDevice == null)
 						{
@@ -271,8 +274,12 @@ namespace SIL.Media
 		{
 			if (IsPlaying)
 			{
-				OnPlaybackStopped(this, new StoppedEventArgs());
+				lock (_lock)
+				{
+					_outputDevice?.Stop();
+				}
 			}
+
 			try
 			{
 				_engine.RemoveAllSoundSources();

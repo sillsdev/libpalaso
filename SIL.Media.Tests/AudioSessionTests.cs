@@ -123,7 +123,7 @@ namespace SIL.Media.Tests
 		[NUnit.Framework.Category("RequiresAudioOutputDevice")]
 		public void CanStop_WhilePlaying_True()
 		{
-			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
+			using (var file = GetTempAudioFile("wav"))
 			{
 				using (var x = AudioFactory.CreateAudioSession(file.Path))
 				{
@@ -226,7 +226,7 @@ namespace SIL.Media.Tests
 		[NUnit.Framework.Category("RequiresAudioInputDevice")]
 		public void Play_GiveThaiFileName_ShouldHearTinklingSounds()
 		{
-			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
+			using (var file = GetTempAudioFile("wav"))
 			{
 				using (var d = TemporaryFolder.Create(TestContext.CurrentContext))
 				{
@@ -360,7 +360,7 @@ namespace SIL.Media.Tests
 		[NUnit.Framework.Category("RequiresAudioOutputDevice")]
 		public void CanPlay_WhilePlaying_False()
 		{
-			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
+			using (var file = GetTempAudioFile("wav"))
 			{
 				using (var x = AudioFactory.CreateAudioSession(file.Path))
 				{
@@ -420,10 +420,17 @@ namespace SIL.Media.Tests
 			return x;
 		}
 
-		[Test]
-		public void Play_DoesPlay ()
+		/// <summary>
+		/// Tests using the <see cref="AudioFactory"/> to get an appropriate player for the
+		/// current hardware platform and calling <see cref="ISimpleAudioSession.Play"/> to
+		/// play an audio file and then calling <see cref="ISimpleAudioSession.StopPlaying"/>.
+		/// </summary>
+		[TestCase("wav")]
+		[TestCase("mp3")]
+		[Platform(Exclude = "Win", Reason = "Redundant. Following test covers this.")]
+		public void PlayAndStopPlaying_WavFile_DoesNotThrow(string type)
 		{
-			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
+			using (var file = GetTempAudioFile(type))
 			{
 				using (var x = AudioFactory.CreateAudioSession(file.Path))
 				{
@@ -433,24 +440,47 @@ namespace SIL.Media.Tests
 			}
 		}
 
-		[Test]
+		/// <summary>
+		/// Tests that *on Windows* the <see cref="AudioFactory"/> gets a player that implements
+		/// <see cref="ISimpleAudioWithEvents"/>. Then it tests calling
+		/// <see cref="ISimpleAudioSession.Play"/> to play an audio file and calling
+		/// <see cref="ISimpleAudioSession.StopPlaying"/>, ensuring that we are notified when
+		/// playback stops.
+		/// </summary>
+		[TestCase("wav")]
+		[TestCase("mp3")]
 		[Platform(Exclude = "Linux", Reason = "AudioAlsaSession doesn't implement ISimpleAudioWithEvents")]
-		public void Play_DoesPlayMp3_SmokeTest()
+		public void PlayAndStopPlaying_Mp3_WindowsOnlyTrackingOfPlaybackStopped(string type)
 		{
-			// file disposed after playback stopped
-			using var file = TempFile.FromResource(Resources.ShortMp3, ".mp3");
+			var playbackCompleted = new ManualResetEventSlim(false);
+			bool isPlayingValueInsidePlaybackStopped = true;
+			// The file gets disposed after playback stops.
+			using var file = GetTempAudioFile(type);
 			using (var x = AudioFactory.CreateAudioSession(file.Path))
 			{
-				((ISimpleAudioWithEvents)x).PlaybackStopped += (e, f) =>
+				if (!(x is ISimpleAudioWithEvents session))
 				{
-					Debug.WriteLine(f);
+					Assert.Fail("Expected a player that could inform caller when playback stops.");
+					return;
+				}
+
+				session.PlaybackStopped += (sender, f) =>
+				{
+					playbackCompleted.Set();
+					if (ReferenceEquals(sender, session))
+						isPlayingValueInsidePlaybackStopped = session.IsPlaying;
+					else
+						Assert.Fail("PlaybackStopped sender was not the session instance.");
 				};
-				Assert.That(x.IsPlaying, Is.False);
+				Assert.That(session.IsPlaying, Is.False);
 				Assert.DoesNotThrow(() => x.Play());
 				Assert.That(x.IsPlaying, Is.True);
 				Assert.DoesNotThrow(() => x.StopPlaying());
-				Assert.That(x.IsPlaying, Is.False);
+				Assert.That(playbackCompleted.Wait(1800), Is.True,
+					"PlaybackStopped event was not raised in time. Increase the timeout to accommodate slower hardware if necessary.");
+
 			}
+			Assert.That(isPlayingValueInsidePlaybackStopped, Is.False);
 		}
 
 		[Test]
@@ -496,6 +526,13 @@ namespace SIL.Media.Tests
 					Assert.DoesNotThrow(() => x.StopPlaying());
 				}
 			}
+		}
+
+		private TempFile GetTempAudioFile(string type)
+		{
+			return type == "wav"
+				? TempFile.FromResource(Resources.finished, $".{type}")
+				: TempFile.FromResource(Resources.ShortMp3, $".{type}");
 		}
 	}
 }

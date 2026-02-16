@@ -18,7 +18,7 @@ namespace SIL.Media
 		void StopPlaying();
 	}
 
-	public interface ISimpleAudioWithEvents
+	public interface ISimpleAudioWithEvents : ISimpleAudioSession
 	{
 		event EventHandler PlaybackStopped;
 	}
