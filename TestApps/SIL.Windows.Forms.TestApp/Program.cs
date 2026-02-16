@@ -12,6 +12,7 @@ namespace SIL.Windows.Forms.TestApp
 {
 	public static class Program
 	{
+		internal const string kSupportEmailAddress = "bogus_test_app_email_addr@sil.org";
 		internal static ILocalizationManager PrimaryL10NManager;
 
 		[STAThread]
@@ -43,7 +44,7 @@ namespace SIL.Windows.Forms.TestApp
 
 		private static void SetUpErrorHandling()
 		{
-			ErrorReport.EmailAddress = "bogus_test_app_email_addr@sil.org";
+			ErrorReport.EmailAddress = kSupportEmailAddress;
 			ErrorReport.AddStandardProperties();
 			ExceptionHandler.Init(new WinFormsExceptionHandler());
 		}
