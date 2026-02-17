@@ -16,9 +16,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-### Changed
-- [SIL.Windows.Forms] BREAKING CHANGE: Removed optional moreSelected parameter from ToolStripExtensions.InitializeWithAvailableUILocales method. This parameter was no longer being used. Clients that want to have a More menu item that performs a custom action will now need to add it themselves.
-
 ### Added
 - [SIL.Core.Clearshare] Added new classes MetadataCore, CreativeCommonsLicenseInfo, and CustomLicenseInfo; these are Winforms-free base versions of the classes Metadata, CreativeCommonsLicense, and CustomLicense.
 
@@ -49,10 +46,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Add a reference to L10nSharp.Windows.Forms v9.
 - [SIL.Windows.Forms.Keyboarding] BREAKING CHANGE: Upgraded to L10nSharp v9. Any clients which also use L10nSharp must also upgrade to v9.
 - [SIL.Windows.Forms.Keyboarding] Add a reference to L10nSharp.Windows.Forms v9.
-- [SIL.Windows.Forms] BREAKING CHANGE: ToolStripExtensions.InitializeWithAvailableUILocales() removed the ILocalizationManager parameter.  This method no longer provides functionality to display the localization dialog box in response to the user clicking More.
+- [SIL.Windows.Forms] BREAKING CHANGE: ToolStripExtensions.InitializeWithAvailableUILocales() removed the ILocalizationManager parameter. This method no longer provides functionality to display the localization dialog box in response to the user clicking More.
+- [SIL.Windows.Forms] BREAKING CHANGE: Removed optional moreSelected parameter from ToolStripExtensions.InitializeWithAvailableUILocales method. This parameter was no longer being used. Clients that want to have a More menu item that performs a custom action will now need to add it themselves.
+- [SIL.Windows.Forms] BREAKING CHANGE: LocalizationIncompleteDlg's EmailAddressForLocalizationRequests is no longer autopopulated from LocalizationManager. A new optional constructor parameter, emailAddressForLocalizationRequests, can be used instead. If not supplied, the "More information" controls will be hidden.
 
 ### Removed
-
 - [SIL.Windows.Forms] In .NET 8 builds, removed Scanner and Camera options from the Image Toolbox.
 
 ## [16.2.0] - 2025-09-24
