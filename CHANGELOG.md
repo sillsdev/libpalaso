@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core.Clearshare] New methods "GetIsStringAvailableForLangId" and "GetDynamicStringOrEnglish" were added to Localizer for use in LicenseInfo's "GetBestLicenseTranslation" method, to remove LicenseInfo's L10NSharp dependency.
 - [SIL.Windows.Forms.Clearshare] New ILicenseWithImage interface handles "GetImage" method for Winforms-dependent licenses, implemented in CreativeCommonsLicense and CustomLicense, and formerly included in LicenseInfo.
 - [SIL.Core.Clearshare] New tests MetadataBareTests are based on previous MetadataTests in SIL.Windows.Forms.Clearshare. The tests were updated to use ImageSharp instead of Winforms for handling images.
+- [SIL.Windows.Forms] Added KeysExtensions class with the IsNavigationKey extension method.
 
 ### Fixed
 - [SIL.DictionaryServices] Fix memory leak in LiftWriter
@@ -30,6 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.WritingSystems] More fixes to consistently use 繁体中文 and 简体中文 for Traditional and Simplified Chinese native language names, and Chinese (Traditional) and Chinese (Simplified) for their English names.
 - [SIL.Windows.Forms] Prevent BetterLabel from responding to OnTextChanged when it has been disposed.
 - [SIL.Windows.Forms] Prevent ContributorsListControl.GetContributionFromRow from throwing an exception when the DataGridView has no valid rows selected.
+- [SIL.Windows.Keyboarding] Fixed a subtle bug in IbusKeyboardSwitchingAdaptor when determining whether IBus would have handled a key event while a pre-edit is active. The code now accounts for the possibility of modifier keys (particularly Ctrl), which IBus would presumably have handled when in combination with navigation keys, Backspace, and Delete.
 
 ### Changed
 - [SIL.Windows.Forms.i18n, SIL.Core.Desktop.i18n] BREAKING CHANGE: Move L10NSharpLocalizer from Windows.Forms to Core.Desktop so it can be accessed without Winforms dependency.
@@ -63,7 +65,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Support for RobustFile.GetAccessControl in all builds
 
 ### Fixed
-
 - [SIL.Windows.Forms] Made ContributorsListControl.GetCurrentContribution() return null in the case when a valid row is not selected.
 - [SIL.WritingSystems] Make the English names for Chinese (Simplified) and Chinese (Traditional) consistent regardless of differences in Windows CultureInfo 
 
