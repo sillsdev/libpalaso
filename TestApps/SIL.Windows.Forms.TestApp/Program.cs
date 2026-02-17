@@ -12,6 +12,7 @@ namespace SIL.Windows.Forms.TestApp
 {
 	public static class Program
 	{
+		internal const string kSupportEmailAddress = "bogus_test_app_email_addr@sil.org";
 		internal static ILocalizationManager PrimaryL10NManager;
 
 		[STAThread]
@@ -34,7 +35,7 @@ namespace SIL.Windows.Forms.TestApp
 			var localizationFolder = Path.GetDirectoryName(
 				FileLocationUtilities.GetFileDistributedWithApplication($"Palaso.{preferredUILocale}.xlf"));
 			PrimaryL10NManager = LocalizationManagerWinforms.Create(preferredUILocale, "Palaso", "Palaso",
-				"1.0.0", localizationFolder, "SIL/Palaso", null, "testapp@sil.org", new [] {"SIL."});
+				"1.0.0", localizationFolder, "SIL/Palaso", null, new [] {"SIL."});
 
 			Application.Run(new TestAppForm());
 
@@ -43,7 +44,7 @@ namespace SIL.Windows.Forms.TestApp
 
 		private static void SetUpErrorHandling()
 		{
-			ErrorReport.EmailAddress = "bogus_test_app_email_addr@sil.org";
+			ErrorReport.EmailAddress = kSupportEmailAddress;
 			ErrorReport.AddStandardProperties();
 			ExceptionHandler.Init(new WinFormsExceptionHandler());
 		}
