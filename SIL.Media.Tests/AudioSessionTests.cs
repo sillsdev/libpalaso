@@ -428,7 +428,7 @@ namespace SIL.Media.Tests
 		[TestCase("wav")]
 		[TestCase("mp3")]
 		[Platform(Exclude = "Win", Reason = "Redundant. Following test covers this.")]
-		public void PlayAndStopPlaying_WavFile_DoesNotThrow(string type)
+		public void PlayAndStopPlaying_NonWindows_DoesNotThrow(string type)
 		{
 			using (var file = GetTempAudioFile(type))
 			{
@@ -450,37 +450,46 @@ namespace SIL.Media.Tests
 		[TestCase("wav")]
 		[TestCase("mp3")]
 		[Platform(Exclude = "Linux", Reason = "AudioAlsaSession doesn't implement ISimpleAudioWithEvents")]
-		public void PlayAndStopPlaying_Mp3_WindowsOnlyTrackingOfPlaybackStopped(string type)
+		public void PlayAndStopPlaying_Windows_TrackingOfPlaybackStopped(string type)
 		{
 			var playbackCompleted = new ManualResetEventSlim(false);
-			bool isPlayingValueInsidePlaybackStopped = true;
-			// The file gets disposed after playback stops.
-			using var file = GetTempAudioFile(type);
-			using (var x = AudioFactory.CreateAudioSession(file.Path))
+			try
 			{
-				if (!(x is ISimpleAudioWithEvents session))
+				bool isPlayingValueInsidePlaybackStopped = true;
+				// The file gets disposed after playback stops.
+				using var file = GetTempAudioFile(type);
+				using (var x = AudioFactory.CreateAudioSession(file.Path))
 				{
-					Assert.Fail("Expected a player that could inform caller when playback stops.");
-					return;
+					if (!(x is ISimpleAudioWithEvents session))
+					{
+						Assert.Fail(
+							"Expected a player that could inform caller when playback stops.");
+						return;
+					}
+
+					session.PlaybackStopped += (sender, f) =>
+					{
+						playbackCompleted.Set();
+						if (ReferenceEquals(sender, session))
+							isPlayingValueInsidePlaybackStopped = session.IsPlaying;
+						else
+							Assert.Fail("PlaybackStopped sender was not the session instance.");
+					};
+					Assert.That(session.IsPlaying, Is.False);
+					Assert.DoesNotThrow(() => x.Play());
+					Assert.That(x.IsPlaying, Is.True);
+					Assert.DoesNotThrow(() => x.StopPlaying());
+					Assert.That(playbackCompleted.Wait(1800), Is.True,
+						"PlaybackStopped event was not raised in time. Increase the timeout to accommodate slower hardware if necessary.");
+
 				}
 
-				session.PlaybackStopped += (sender, f) =>
-				{
-					playbackCompleted.Set();
-					if (ReferenceEquals(sender, session))
-						isPlayingValueInsidePlaybackStopped = session.IsPlaying;
-					else
-						Assert.Fail("PlaybackStopped sender was not the session instance.");
-				};
-				Assert.That(session.IsPlaying, Is.False);
-				Assert.DoesNotThrow(() => x.Play());
-				Assert.That(x.IsPlaying, Is.True);
-				Assert.DoesNotThrow(() => x.StopPlaying());
-				Assert.That(playbackCompleted.Wait(1800), Is.True,
-					"PlaybackStopped event was not raised in time. Increase the timeout to accommodate slower hardware if necessary.");
-
+				Assert.That(isPlayingValueInsidePlaybackStopped, Is.False);
 			}
-			Assert.That(isPlayingValueInsidePlaybackStopped, Is.False);
+			finally
+			{
+				playbackCompleted.Dispose();
+			}
 		}
 
 		[Test]

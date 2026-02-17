@@ -10,6 +10,7 @@ using System.IO;
 using IrrKlang;
 using NAudio.Wave;
 using SIL.Code;
+using SIL.Reporting;
 
 namespace SIL.Media
 {
@@ -118,22 +119,36 @@ namespace SIL.Media
 		private void OnPlaybackStopped(object sender, StoppedEventArgs args)
 		{
 			lock (_lock)
+				CleanupPlaybackResources();
+
+			PlaybackStopped?.Invoke(this, args);
+		}
+
+		private void CleanupPlaybackResources()
+		{
+			if (_outputDevice != null)
 			{
-				if (_outputDevice != null)
+				_outputDevice.PlaybackStopped -= OnPlaybackStopped;
+				try
 				{
+					// Dispose calls Stop, which can thow.
 					_outputDevice.Dispose();
-					_outputDevice = null;
-					if (_audioFile != null)
-					{
-						_audioFile.Dispose();
-						_audioFile = null;
-					}
 				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+					// We're disposing. We probably don't care what went wrong.
+				}
+				_outputDevice = null;
+			}
+			
+			if (_audioFile != null)
+			{
+				_audioFile.Dispose();
+				_audioFile = null;
 			}
 
 			IsPlaying = false;
-
-			PlaybackStopped?.Invoke(this, args);
 		}
 
 		/// <summary>
@@ -184,7 +199,7 @@ namespace SIL.Media
 					// Maybe the system has another way of playing it that works? e.g., most default players will handle mp3.
 					// But it seems risky...maybe we will be trying to play another sound or do some recording?
 					// Decided not to do this for now.
-					// The main thread has gone on with other work, don't have any current way to report the exception.
+					ErrorReport.ReportNonFatalException(e);
 				}
 			};
 			worker.RunWorkerAsync();
@@ -272,13 +287,19 @@ namespace SIL.Media
 
 		public void StopPlaying()
 		{
-			if (IsPlaying)
+			lock (_lock)
 			{
-				lock (_lock)
-				{
-					_outputDevice?.Stop();
-				}
+				if (!IsPlaying || _outputDevice == null)
+					return;
+
+				_outputDevice.Stop();
 			}
+		}
+
+		public void Dispose()
+		{
+			lock (_lock)
+				CleanupPlaybackResources();
 
 			try
 			{
@@ -286,12 +307,10 @@ namespace SIL.Media
 			}
 			catch (Exception)
 			{
-				// We'll just ignore any errors on stopping the sounds (they probably aren't playing).
+				// We'll just ignore any errors on stopping the sounds (We don't use irrKlang for playback anyway).
 			}
-		}
-
-		public void Dispose()
-		{
+			
+			_engine?.Dispose();
 			_recorder.Dispose();
 			_soundFile.CloseFile();
 		}
