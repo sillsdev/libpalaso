@@ -349,7 +349,7 @@ namespace SIL.Media.Tests
 		}
 
 		/// <summary>
-		/// For reasons I don't entirely understand, this test will actually pass when run
+		/// For reasons which I don't entirely understand, this test will actually pass when run
 		/// by itself against a single target framework without an audio output device, but
 		/// to get it to pass when running as part of the fixture or when testing against both
 		/// frameworks, it is necessary to have an audio output device. I tried setting the
@@ -424,26 +424,47 @@ namespace SIL.Media.Tests
 		/// Tests using the <see cref="AudioFactory"/> to get an appropriate player for the
 		/// current hardware platform and calling <see cref="ISimpleAudioSession.Play"/> to
 		/// play an audio file and then calling <see cref="ISimpleAudioSession.StopPlaying"/>.
+		/// Note that often -- but not necessarily always -- the request to stop may occur before
+		/// playback has actually begun.
 		/// </summary>
 		[TestCase("wav")]
 		[TestCase("mp3")]
-		[Platform(Exclude = "Win", Reason = "Redundant. Following test covers this.")]
 		public void PlayAndStopPlaying_NonWindows_DoesNotThrow(string type)
 		{
-			using (var file = GetTempAudioFile(type))
+			using var file = GetTempAudioFile(type);
+			using var session = AudioFactory.CreateAudioSession(file.Path);
+
+#if NET462 || NET48 // On Windows, substitute a test device that simulates a longer media file.
+			if (session is WindowsAudioSession windowsAudioSession)
+				windowsAudioSession.TestNAudioOutputDevice =
+				new TestNAudioWaveOutEvent();
+#endif
+
+			Assert.That(session.IsPlaying, Is.False);
+			Assert.DoesNotThrow(() => session.Play());
+			// Note that the following does not necessarily mean the actual playback has begun, but
+			// at least it has been queued to start.
+			Assert.That(session.IsPlaying, Is.True);
+			Assert.DoesNotThrow(() => session.StopPlaying());
+			if (session.IsPlaying)
 			{
-				using (var x = AudioFactory.CreateAudioSession(file.Path))
-				{
-					Assert.DoesNotThrow(() => x.Play());
-					Assert.DoesNotThrow(() => x.StopPlaying());
-				}
+#if NET462 || NET48
+				Thread.Sleep(TestNAudioWaveOutEvent.kDelayWhenStopping * 2);
+#else
+				Thread.Sleep(1000);
+#endif
+				Assert.That(session.IsPlaying, Is.False,
+					"Stop playing should have (immediately or eventually) stopped playback.");
 			}
 		}
 
+#if NET462 || NET48 // This test won't compile in .NET 8 because WindowsAudioSession is not
+					// available on that platform. None of the tests in this fixture run in .NET 8.
+					
 		/// <summary>
 		/// Tests that *on Windows* the <see cref="AudioFactory"/> gets a player that implements
 		/// <see cref="ISimpleAudioWithEvents"/>. Then it tests calling
-		/// <see cref="ISimpleAudioSession.Play"/> to play an audio file and calling
+		/// <see cref="ISimpleAudioSession.Play"/> to begin playing an audio file and calling
 		/// <see cref="ISimpleAudioSession.StopPlaying"/>, ensuring that we are notified when
 		/// playback stops.
 		/// </summary>
@@ -458,31 +479,36 @@ namespace SIL.Media.Tests
 				bool isPlayingValueInsidePlaybackStopped = true;
 				// The file gets disposed after playback stops.
 				using var file = GetTempAudioFile(type);
-				using (var x = AudioFactory.CreateAudioSession(file.Path))
+				using var x = AudioFactory.CreateAudioSession(file.Path);
+				if (!(x is ISimpleAudioWithEvents session))
 				{
-					if (!(x is ISimpleAudioWithEvents session))
-					{
-						Assert.Fail(
-							"Expected a player that could inform caller when playback stops.");
-						return;
-					}
-
-					session.PlaybackStopped += (sender, f) =>
-					{
-						playbackCompleted.Set();
-						if (ReferenceEquals(sender, session))
-							isPlayingValueInsidePlaybackStopped = session.IsPlaying;
-						else
-							Assert.Fail("PlaybackStopped sender was not the session instance.");
-					};
-					Assert.That(session.IsPlaying, Is.False);
-					Assert.DoesNotThrow(() => x.Play());
-					Assert.That(x.IsPlaying, Is.True);
-					Assert.DoesNotThrow(() => x.StopPlaying());
-					Assert.That(playbackCompleted.Wait(1800), Is.True,
-						"PlaybackStopped event was not raised in time. Increase the timeout to accommodate slower hardware if necessary.");
-
+					Assert.Fail(
+						"Expected a player that could inform caller when playback stops.");
+					return;
 				}
+
+				((WindowsAudioSession)session).TestNAudioOutputDevice =
+					new TestNAudioWaveOutEvent();
+
+				Assert.That(session.IsPlaying, Is.False);
+				Assert.DoesNotThrow(() => session.Play());
+				// Note that the following does not necessarily mean the actual playback has begun, but
+				// at least it has been queued to start.
+				Assert.That(session.IsPlaying, Is.True);
+				Thread.Sleep(100); // Give the playback a chance to actually start.
+				session.PlaybackStopped += (sender, f) =>
+				{
+					playbackCompleted.Set();
+					if (ReferenceEquals(sender, session))
+						isPlayingValueInsidePlaybackStopped = session.IsPlaying;
+					else
+						Assert.Fail("PlaybackStopped sender was not the session instance.");
+				};
+				Assert.DoesNotThrow(() => session.StopPlaying());
+				Assert.That(session.IsPlaying, Is.True,
+					"Stop playing merely issued the request, but does not force a hard status change.");
+				Assert.That(playbackCompleted.Wait(TestNAudioWaveOutEvent.kDelayWhenStopping * 2), Is.True,
+					"PlaybackStopped event was not raised.");
 
 				Assert.That(isPlayingValueInsidePlaybackStopped, Is.False);
 			}
@@ -491,6 +517,7 @@ namespace SIL.Media.Tests
 				playbackCompleted.Dispose();
 			}
 		}
+#endif
 
 		[Test]
 		[NUnit.Framework.Category("RequiresAudioInputDevice")]

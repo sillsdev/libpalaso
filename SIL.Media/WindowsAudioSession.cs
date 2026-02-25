@@ -5,8 +5,8 @@
 #if NET462 || NET48
 
 using System;
-using System.ComponentModel;
 using System.IO;
+using System.Threading.Tasks;
 using IrrKlang;
 using NAudio.Wave;
 using SIL.Code;
@@ -26,8 +26,10 @@ namespace SIL.Media
 		private DateTime _startRecordingTime;
 		private DateTime _stopRecordingTime;
 		private readonly SoundFile _soundFile;
-		private WaveOutEvent _outputDevice;
+		private INAudioOutputDevice _outputDevice;
 		private AudioFileReader _audioFile;
+		internal INAudioOutputDevice TestNAudioOutputDevice;
+		
 		private readonly object _lock = new object();
 		/// <summary>
 		/// Will be raised when playing is over
@@ -54,6 +56,10 @@ namespace SIL.Media
 				// it for timing or internal buffer synchronization, even when only recording.
 				return new ISoundEngine(SoundOutputDriver.NullDriver);
 			}
+		}
+		private INAudioOutputDevice CreateNAudioOutputDevice()
+		{
+			return TestNAudioOutputDevice ?? new NAudioWaveOutEventAdapter();
 		}
 
 		/// <summary>
@@ -108,7 +114,14 @@ namespace SIL.Media
 
 		public bool IsRecording => _recorder != null && _recorder.IsRecording;
 
-		public bool IsPlaying { get; private set; }
+		public bool IsPlaying
+		{
+			get
+			{
+				lock(_lock)
+					return _outputDevice != null;
+			}
+		}
 
 		public bool CanRecord => !IsPlaying && !IsRecording;
 
@@ -131,7 +144,7 @@ namespace SIL.Media
 				_outputDevice.PlaybackStopped -= OnPlaybackStopped;
 				try
 				{
-					// Dispose calls Stop, which can thow.
+					// Dispose calls Stop, which can throw.
 					_outputDevice.Dispose();
 				}
 				catch (Exception e)
@@ -139,16 +152,15 @@ namespace SIL.Media
 					Console.WriteLine(e);
 					// We're disposing. We probably don't care what went wrong.
 				}
+				
+				if (_audioFile != null)
+				{
+					_audioFile.Dispose();
+					_audioFile = null;
+				}
+				
 				_outputDevice = null;
 			}
-			
-			if (_audioFile != null)
-			{
-				_audioFile.Dispose();
-				_audioFile = null;
-			}
-
-			IsPlaying = false;
 		}
 
 		/// <summary>
@@ -168,9 +180,14 @@ namespace SIL.Media
 			if (new FileInfo(FilePath).Length == 0)
 				throw new FileLoadException("Trying to play empty file");
 
-			var worker = new BackgroundWorker();
-			IsPlaying = true;
-			worker.DoWork += (sender, args) =>
+			lock (_lock)
+			{
+				if (_outputDevice != null)
+					return; // Already playing. Don't start again.
+				_outputDevice = CreateNAudioOutputDevice();
+			}
+
+			Task.Run(() =>
 			{
 				try
 				{
@@ -178,14 +195,17 @@ namespace SIL.Media
 					{
 						if (_outputDevice == null)
 						{
-							_outputDevice = new WaveOutEvent();
-							_outputDevice.PlaybackStopped += OnPlaybackStopped;
+							// Playback was stopped before it even got started. Don't try to start it now.
+							return;
 						}
+
+						_outputDevice.PlaybackStopped += OnPlaybackStopped;
 						if (_audioFile == null)
 						{
 							_audioFile = new AudioFileReader(FilePath);
 							_outputDevice.Init(_audioFile);
 						}
+
 						_outputDevice.Play();
 					}
 				}
@@ -193,16 +213,13 @@ namespace SIL.Media
 				{
 					// Try to clean things up as best we can...no easy way to test this, though.
 					// We don't want to be permanently in the playing state.
-					IsPlaying = false;
-					// And, in case something critical is waiting for this...
 					OnPlaybackStopped(this, new StoppedEventArgs(e));
 					// Maybe the system has another way of playing it that works? e.g., most default players will handle mp3.
 					// But it seems risky...maybe we will be trying to play another sound or do some recording?
 					// Decided not to do this for now.
 					ErrorReport.ReportNonFatalException(e);
 				}
-			};
-			worker.RunWorkerAsync();
+			});
 		}
 
 		private class SoundFile : IFileFactory
@@ -289,10 +306,16 @@ namespace SIL.Media
 		{
 			lock (_lock)
 			{
-				if (!IsPlaying || _outputDevice == null)
+				if (_outputDevice == null) // !IsPlaying
 					return;
 
-				_outputDevice.Stop();
+				Console.WriteLine(
+					$"Playback state on thread {System.Threading.Thread.CurrentContext.ContextID}: {_outputDevice.PlaybackState}");
+
+				if (_outputDevice.PlaybackState == PlaybackState.Stopped)
+					CleanupPlaybackResources();
+				else
+					_outputDevice.Stop();
 			}
 		}
 

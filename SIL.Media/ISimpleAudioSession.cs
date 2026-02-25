@@ -1,4 +1,5 @@
 using System;
+using JetBrains.Annotations;
 
 namespace SIL.Media
 {
@@ -14,6 +15,7 @@ namespace SIL.Media
 		bool CanStop { get; }
 		bool CanPlay { get; }
 		void Play();
+		[PublicAPI]
 		void SaveAsWav(string filePath);
 		void StopPlaying();
 	}

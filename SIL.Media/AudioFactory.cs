@@ -9,7 +9,6 @@ namespace SIL.Media
 {
 	public class AudioFactory
 	{
-		
 		/// <summary>
 		/// Creates an audio session for the given file path.
 		/// On Linux, uses ALSA. On Windows, uses IrrKlang (only supported on .NET Framework 4.6.2/4.8).
