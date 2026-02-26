@@ -308,9 +308,6 @@ namespace SIL.Media
 				if (_outputDevice == null) // !IsPlaying
 					return;
 
-				Console.WriteLine(
-					$"Playback state on thread {System.Threading.Thread.CurrentContext.ContextID}: {_outputDevice.PlaybackState}");
-
 				if (_outputDevice.PlaybackState == PlaybackState.Stopped)
 					CleanupPlaybackResources();
 				else

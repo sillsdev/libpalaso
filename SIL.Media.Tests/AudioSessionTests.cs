@@ -155,7 +155,7 @@ namespace SIL.Media.Tests
 		public void RecordThenPlay_SmokeTest()
 		{
 			using var f = new TempFile();
-			var w = new BackgroundWorker();
+			using var w = new BackgroundWorker();
 			// ReSharper disable once RedundantDelegateCreation
 			w.DoWork += new DoWorkEventHandler((o, args) => SystemSounds.Exclamation.Play());
 
