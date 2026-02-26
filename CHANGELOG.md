@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core.Clearshare] New methods "GetIsStringAvailableForLangId" and "GetDynamicStringOrEnglish" were added to Localizer for use in LicenseInfo's "GetBestLicenseTranslation" method, to remove LicenseInfo's L10NSharp dependency.
 - [SIL.Windows.Forms.Clearshare] New ILicenseWithImage interface handles "GetImage" method for Winforms-dependent licenses, implemented in CreativeCommonsLicense and CustomLicense, and formerly included in LicenseInfo.
 - [SIL.Core.Clearshare] New tests MetadataBareTests are based on previous MetadataTests in SIL.Windows.Forms.Clearshare. The tests were updated to use ImageSharp instead of Winforms for handling images.
+- [SIL.Core] Added an Exception property to NonFatalErrorReportExpected to return the previous reported non-fatal exception.
+- [SIL.Media] Added a static PlaybackErrorMessage property to AudioFactory and a public const, kDefaultPlaybackErrorMessage, that will be used as the default message if the client does not set PlaybackErrorMessage.
 
 ### Fixed
 - [SIL.DictionaryServices] Fix memory leak in LiftWriter
@@ -51,6 +53,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] BREAKING CHANGE: Removed optional moreSelected parameter from ToolStripExtensions.InitializeWithAvailableUILocales method. This parameter was no longer being used. Clients that want to have a More menu item that performs a custom action will now need to add it themselves.
 - [SIL.Windows.Forms] BREAKING CHANGE: LocalizationIncompleteDlg's EmailAddressForLocalizationRequests is no longer autopopulated from LocalizationManager. A new optional constructor parameter, emailAddressForLocalizationRequests, can be used instead. If not supplied, the "More information" controls will be hidden.
 - [SIL.Media] ISimpleAudioWithEvents now extends ISimpleAudioSession. Technically a breaking change, but the only class in this library that implements it already implemented ISimpleAudioSession. Any custom implementations by clients would very likely have implemented both as well.
+- [SIL.Core] Changed the Message property on NonFatalErrorReportExpected (presumably intended for use only in tests) to return the message of the previous reported non-fatal exception if no ordninary non-fatal message has been reported.
+- [SIL.Media] In the event of an audio playback error in Windows, the non-fatal exception reported will also include an accompanying (localizable/customizable) user-friendly message.
 
 ### Removed
 - [SIL.Windows.Forms] In .NET 8 builds, removed Scanner and Camera options from the Image Toolbox.

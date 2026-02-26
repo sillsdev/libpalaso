@@ -211,13 +211,12 @@ namespace SIL.Media
 				}
 				catch (Exception e)
 				{
-					// Try to clean things up as best we can...no easy way to test this, though.
-					// We don't want to be permanently in the playing state.
 					OnPlaybackStopped(this, new StoppedEventArgs(e));
 					// Maybe the system has another way of playing it that works? e.g., most default players will handle mp3.
 					// But it seems risky...maybe we will be trying to play another sound or do some recording?
 					// Decided not to do this for now.
-					ErrorReport.ReportNonFatalException(e);
+					ErrorReport.ReportNonFatalExceptionWithMessage(e,
+						AudioFactory.PlaybackErrorMessage ?? AudioFactory.kDefaultPlaybackErrorMessage);
 				}
 			});
 		}
