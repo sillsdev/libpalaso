@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core.Clearshare] New methods "GetIsStringAvailableForLangId" and "GetDynamicStringOrEnglish" were added to Localizer for use in LicenseInfo's "GetBestLicenseTranslation" method, to remove LicenseInfo's L10NSharp dependency.
 - [SIL.Windows.Forms.Clearshare] New ILicenseWithImage interface handles "GetImage" method for Winforms-dependent licenses, implemented in CreativeCommonsLicense and CustomLicense, and formerly included in LicenseInfo.
 - [SIL.Core.Clearshare] New tests MetadataBareTests are based on previous MetadataTests in SIL.Windows.Forms.Clearshare. The tests were updated to use ImageSharp instead of Winforms for handling images.
+- [SIL.Core.Desktop] Added a constant (kBrowserCompatibleUserAgent) to RobustNetworkOperation: a browser-like User Agent string that can be used when making HTTP requests to strict servers.
 
 ### Fixed
 - [SIL.DictionaryServices] Fix memory leak in LiftWriter
@@ -49,6 +50,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] BREAKING CHANGE: ToolStripExtensions.InitializeWithAvailableUILocales() removed the ILocalizationManager parameter. This method no longer provides functionality to display the localization dialog box in response to the user clicking More.
 - [SIL.Windows.Forms] BREAKING CHANGE: Removed optional moreSelected parameter from ToolStripExtensions.InitializeWithAvailableUILocales method. This parameter was no longer being used. Clients that want to have a More menu item that performs a custom action will now need to add it themselves.
 - [SIL.Windows.Forms] BREAKING CHANGE: LocalizationIncompleteDlg's EmailAddressForLocalizationRequests is no longer autopopulated from LocalizationManager. A new optional constructor parameter, emailAddressForLocalizationRequests, can be used instead. If not supplied, the "More information" controls will be hidden.
+- [SIL.Core.Desktop] Added an optional userAgentHeader parameter to DoHttpGetAndGetProxyInfo to allow a client to mimic a real browser if necessary.
 
 ### Removed
 - [SIL.Windows.Forms] In .NET 8 builds, removed Scanner and Camera options from the Image Toolbox.
