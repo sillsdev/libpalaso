@@ -8,6 +8,8 @@ namespace SIL.Network
 
 	public class RobustNetworkOperation
 	{
+		// This user agent string seems to be satisfactory for convincing the servers that we are
+		// a real browser, and not some sort of bot.
 		private const string DefaultUserAgent =
 			"Mozilla/5.0 (Windows NT 10.0; Win64; x64) libpalaso";
 		
@@ -128,6 +130,10 @@ namespace SIL.Network
 				proxy =>
 				{
 					client.Proxy = proxy;
+					// The following convinces sites that this request is coming from a real
+					// browser, and not some sort of bot. Seems to be necessary now at least when
+					// running tests in CI, and it might also be helpful in other circumstances to
+					// avoid getting blocked by some sites.
 					client.Headers[HttpRequestHeader.UserAgent] = DefaultUserAgent;
 					client.DownloadData(url);
 					//we don't actually care what comes back
