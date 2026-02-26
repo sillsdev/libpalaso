@@ -8,9 +8,12 @@ namespace SIL.Network
 
 	public class RobustNetworkOperation
 	{
-		// This user agent string seems to be satisfactory for convincing the servers that we are
-		// a real browser, and not some sort of bot.
-		private const string DefaultUserAgent =
+		/// <summary>
+		/// A browser-like User Agent string that can be used when making HTTP requests to servers
+		/// that reject requests lacking a typical browser User-Agent header. Used in tests and
+		/// available to callers that encounter 403 responses due to restrictive server filtering.
+		/// </summary>
+		public const string kBrowserCompatibleUserAgent =
 			"Mozilla/5.0 (Windows NT 10.0; Win64; x64) libpalaso";
 		
 		/// <summary>
@@ -27,7 +30,7 @@ namespace SIL.Network
 			var proxy = new WebProxy();
 			action(proxy);
 
-			//!!!!!!!!!!!!!! in Sept 2011, hatton disabled proxy lookup. It was reportedly causing grief in Nigeria,
+			//!!!!!!!!!!!!!! in Sept 2011, Hatton disabled proxy lookup. It was reportedly causing grief in Nigeria,
 			//asking for credentials over and over, and SIL PNG doesn't use a proxy anymore. So for now...
 
 
@@ -114,10 +117,51 @@ namespace SIL.Network
 		}
 
 		/// <summary>
-		/// Used by Chorus to get proxy name, username, and password of the remote repository.
+		/// Used to determine whether an HTTP GET request requires a proxy and, if so, to retrieve
+		/// the proxy host and credentials needed to access the specified remote repository URL.
 		/// </summary>
-		/// <returns>true if a proxy is needed. THROWS if it just can't get through</returns>
-		public static bool DoHttpGetAndGetProxyInfo(string url, out string hostAndPort, out string userName, out string password, Action<string> verboseLog)
+		/// <param name="url">
+		/// The full URL to send an HTTP GET request to. Used to test connectivity and determine
+		/// whether proxy credentials are required.
+		/// </param>
+		/// <param name="hostAndPort">
+		/// Outputs the proxy host (including port, if applicable) if a proxy is required;
+		/// otherwise, an empty string.
+		/// </param>
+		/// <param name="userName">
+		/// Outputs the proxy username if authentication is required; otherwise an empty string.
+		/// </param>
+		/// <param name="password">
+		/// Outputs the proxy password if authentication is required; otherwise an empty string.
+		/// </param>
+		/// <param name="verboseLog">
+		/// Optional callback for logging diagnostic information about the request and proxy
+		/// detection process.
+		/// </param>
+		/// <param name="userAgentHeader">
+		/// Optional user agent header string to send with the request. Some servers require a
+		/// browser-like user agent and may reject requests that appear to come from automated
+		/// clients. See <see cref="kBrowserCompatibleUserAgent"/> for an example value.
+		/// </param>
+		/// <returns>
+		/// True if a proxy is required and credentials were obtained; false if no proxy is needed.
+		/// </returns>
+		/// <exception cref="ArgumentNullException">
+		/// Thrown if <paramref name="url"/> is null.
+		/// </exception>
+		/// <exception cref="UriFormatException">
+		/// Thrown if <paramref name="url"/> is not a valid URI.
+		/// </exception>
+		/// <exception cref="WebException">
+		/// Thrown if the HTTP request fails due to network errors, proxy configuration
+		/// issues, or authentication failures.
+		/// </exception>
+		/// <exception cref="NotSupportedException">
+		/// Thrown if the URI scheme is not supported.
+		/// </exception>
+		public static bool DoHttpGetAndGetProxyInfo(string url, out string hostAndPort,
+			out string userName, out string password, Action<string> verboseLog,
+			string userAgentHeader = null)
 		{
 			hostAndPort = string.Empty;
 			userName = string.Empty;
@@ -130,11 +174,8 @@ namespace SIL.Network
 				proxy =>
 				{
 					client.Proxy = proxy;
-					// The following convinces sites that this request is coming from a real
-					// browser, and not some sort of bot. Seems to be necessary now at least when
-					// running tests in CI, and it might also be helpful in other circumstances to
-					// avoid getting blocked by some sites.
-					client.Headers[HttpRequestHeader.UserAgent] = DefaultUserAgent;
+					if (userAgentHeader != null)
+						client.Headers[HttpRequestHeader.UserAgent] = userAgentHeader;
 					client.DownloadData(url);
 					//we don't actually care what comes back
 				}, verboseLog
@@ -160,9 +201,7 @@ namespace SIL.Network
 			var networkCredential = proxyInfo.Credentials.GetCredential(destination, "");
 			userName = networkCredential.UserName;
 			password = networkCredential.Password;
-			if (verboseLog != null)
-				verboseLog.Invoke("DoHttpGetAndGetProxyInfo Returning with credentials. UserName is " + userName);
-
+			verboseLog?.Invoke("DoHttpGetAndGetProxyInfo Returning with credentials. UserName is " + userName);
 
 			return true;
 		}
