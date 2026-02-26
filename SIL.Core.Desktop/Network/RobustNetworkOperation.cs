@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -8,6 +8,9 @@ namespace SIL.Network
 
 	public class RobustNetworkOperation
 	{
+		private const string DefaultUserAgent =
+			"Mozilla/5.0 (Windows NT 10.0; Win64; x64) libpalaso";
+		
 		/// <summary>
 		/// Perform a web action, trying various things to use a proxy if needed, including requesting
 		/// (and remembering) user credentials from the user.
@@ -109,7 +112,7 @@ namespace SIL.Network
 		}
 
 		/// <summary>
-		/// Used by Chorus to get proxy name, user name, and password of the remote repository.
+		/// Used by Chorus to get proxy name, username, and password of the remote repository.
 		/// </summary>
 		/// <returns>true if a proxy is needed. THROWS if it just can't get through</returns>
 		public static bool DoHttpGetAndGetProxyInfo(string url, out string hostAndPort, out string userName, out string password, Action<string> verboseLog)
@@ -125,6 +128,7 @@ namespace SIL.Network
 				proxy =>
 				{
 					client.Proxy = proxy;
+					client.Headers[HttpRequestHeader.UserAgent] = DefaultUserAgent;
 					client.DownloadData(url);
 					//we don't actually care what comes back
 				}, verboseLog
