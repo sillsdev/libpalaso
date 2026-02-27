@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using NUnit.Framework;
 using SIL.Network;
 
@@ -19,7 +19,8 @@ namespace SIL.Tests.Network
 		public void DoHttpGetAndGetProxyInfo_NoProxy_ReturnsFalse()
 		{
 			var gotProxy = RobustNetworkOperation.DoHttpGetAndGetProxyInfo(
-				"https://sil.org/", out _, out _, out _, s => Debug.WriteLine(s));
+				"https://sil.org/", out _, out _, out _, s => Debug.WriteLine(s),
+				RobustNetworkOperation.kBrowserCompatibleUserAgent);
 			Assert.That(gotProxy, Is.False);
 		}
 	}
