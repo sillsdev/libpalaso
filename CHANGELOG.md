@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Clearshare] New ILicenseWithImage interface handles "GetImage" method for Winforms-dependent licenses, implemented in CreativeCommonsLicense and CustomLicense, and formerly included in LicenseInfo.
 - [SIL.Core.Clearshare] New tests MetadataBareTests are based on previous MetadataTests in SIL.Windows.Forms.Clearshare. The tests were updated to use ImageSharp instead of Winforms for handling images.
 - [SIL.Core.Desktop] Added a constant (kBrowserCompatibleUserAgent) to RobustNetworkOperation: a browser-like User Agent string that can be used when making HTTP requests to strict servers.
+- [SIL.Core] Added an Exception property to NonFatalErrorReportExpected to return the previous reported non-fatal exception.
+- [SIL.Media] Added a static PlaybackErrorMessage property to AudioFactory and a public const, kDefaultPlaybackErrorMessage, that will be used as the default message if the client does not set PlaybackErrorMessage.
 
 ### Fixed
 - [SIL.DictionaryServices] Fix memory leak in LiftWriter
@@ -31,6 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.WritingSystems] More fixes to consistently use 繁体中文 and 简体中文 for Traditional and Simplified Chinese native language names, and Chinese (Traditional) and Chinese (Simplified) for their English names.
 - [SIL.Windows.Forms] Prevent BetterLabel from responding to OnTextChanged when it has been disposed.
 - [SIL.Windows.Forms] Prevent ContributorsListControl.GetContributionFromRow from throwing an exception when the DataGridView has no valid rows selected.
+- [SIL.Media] BREAKING CHANGE (subtle and unlikely): WindowsAudioSession.OnPlaybackStopped now passes itself as the sender instead of a private implementation object, making the event arguments correct.
 
 ### Changed
 - [SIL.Windows.Forms.i18n, SIL.Core.Desktop.i18n] BREAKING CHANGE: Move L10NSharpLocalizer from Windows.Forms to Core.Desktop so it can be accessed without Winforms dependency.
@@ -51,6 +54,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] BREAKING CHANGE: Removed optional moreSelected parameter from ToolStripExtensions.InitializeWithAvailableUILocales method. This parameter was no longer being used. Clients that want to have a More menu item that performs a custom action will now need to add it themselves.
 - [SIL.Windows.Forms] BREAKING CHANGE: LocalizationIncompleteDlg's EmailAddressForLocalizationRequests is no longer autopopulated from LocalizationManager. A new optional constructor parameter, emailAddressForLocalizationRequests, can be used instead. If not supplied, the "More information" controls will be hidden.
 - [SIL.Core.Desktop] Added an optional userAgentHeader parameter to DoHttpGetAndGetProxyInfo to allow a client to mimic a real browser if necessary.
+- [SIL.Media] ISimpleAudioWithEvents now extends ISimpleAudioSession. Technically a breaking change, but the only class in this library that implements it already implemented ISimpleAudioSession. Any custom implementations by clients would very likely have implemented both as well.
+- [SIL.Core] Changed the Message property on NonFatalErrorReportExpected (presumably intended for use only in tests) to return the message of the previous reported non-fatal exception if no ordninary non-fatal message has been reported.
+- [SIL.Media] In the event of an audio playback error in Windows, the non-fatal exception reported will also include an accompanying (localizable/customizable) user-friendly message.
 
 ### Removed
 - [SIL.Windows.Forms] In .NET 8 builds, removed Scanner and Camera options from the Image Toolbox.

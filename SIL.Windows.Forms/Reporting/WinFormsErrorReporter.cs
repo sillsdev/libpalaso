@@ -90,7 +90,7 @@ namespace SIL.Windows.Forms.Reporting
 		}
 
 		/// <summary>
-		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
+		/// Bring up a "yellow box" that lets them send in a report, then return to the program.
 		/// </summary>
 		public void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args)
 		{
@@ -99,7 +99,7 @@ namespace SIL.Windows.Forms.Reporting
 		}
 
 		/// <summary>
-		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
+		/// Bring up a "yellow box" that lets them send in a report, then return to the program.
 		/// Use this one only when you don't have an exception (else you're not reporting the exception's message)
 		/// </summary>
 		public void ReportNonFatalMessageWithStackTrace(string message, params object[] args)
