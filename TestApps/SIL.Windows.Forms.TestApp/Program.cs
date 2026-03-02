@@ -3,8 +3,10 @@ using System.IO;
 using System.Windows.Forms;
 using L10NSharp;
 using L10NSharp.Windows.Forms;
+using SIL.Core.Desktop.Privacy;
 using SIL.IO;
 using SIL.Reporting;
+using SIL.Windows.Forms.Privacy;
 using SIL.Windows.Forms.Reporting;
 using SIL.WritingSystems;
 
@@ -15,6 +17,8 @@ namespace SIL.Windows.Forms.TestApp
 		internal const string kSupportEmailAddress = "bogus_test_app_email_addr@sil.org";
 		internal static ILocalizationManager PrimaryL10NManager;
 
+		internal static IAnalytics AnalyticsImpl;
+
 		[STAThread]
 		public static void Main(string[] args)
 		{
@@ -22,6 +26,7 @@ namespace SIL.Windows.Forms.TestApp
 			Application.SetCompatibleTextRenderingDefault(false);
 
 			SetUpErrorHandling();
+			SetUpAnalytics();
 
 			Sldr.Initialize();
 			Icu.Wrapper.Init();
@@ -47,6 +52,11 @@ namespace SIL.Windows.Forms.TestApp
 			ErrorReport.EmailAddress = kSupportEmailAddress;
 			ErrorReport.AddStandardProperties();
 			ExceptionHandler.Init(new WinFormsExceptionHandler());
+		}
+
+		private static void SetUpAnalytics()
+		{
+			AnalyticsImpl = new AnalyticsProxy("TestApp");
 		}
 	}
 }

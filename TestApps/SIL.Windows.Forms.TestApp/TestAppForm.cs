@@ -28,6 +28,7 @@ using SIL.Media;
 using SIL.Windows.Forms.Extensions;
 using SIL.Windows.Forms.FileSystem;
 using SIL.Windows.Forms.LocalizationIncompleteDlg;
+using SIL.Windows.Forms.Privacy;
 using static System.Windows.Forms.MessageBoxButtons;
 
 namespace SIL.Windows.Forms.TestApp
@@ -58,6 +59,18 @@ namespace SIL.Windows.Forms.TestApp
 				_localizationIncompleteViewModel, additionalNamedLocales:new Dictionary<string, string> {
 					{ "Some untranslated language", WellKnownSubtags.UnlistedLanguage } });
 			_cboAboutHTML.SelectedIndex = 0;
+
+			SetPrivacyDlgButtonColor(Program.AnalyticsImpl.AllowTracking);
+			
+			Program.AnalyticsImpl.AllowTrackingChanged += (sender, args) =>
+			{
+				SetPrivacyDlgButtonColor(args.IsTrackingAllowed);
+			};
+		}
+
+		void SetPrivacyDlgButtonColor(bool allowed)
+		{
+			_btnShowPrivacyDlg.BackColor = allowed ? Color.LightGreen : Color.LightPink;
 		}
 
 		private void IssueAnalyticsRequest()
@@ -673,6 +686,13 @@ and displays it as HTML.
 		{
 			using (var dlg = new ScrReferenceFilterDlg())
 				dlg.ShowDialog();
+		}
+
+		private void _btnShowPrivacyDlg_Click(object sender, EventArgs e)
+		{
+			using var dlg = new PrivacyDlg(Program.AnalyticsImpl);
+			dlg.RestartLabelColor = Color.Red;
+			dlg.ShowDialog(this);
 		}
 	}
 }
