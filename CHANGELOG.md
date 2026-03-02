@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Clearshare] New ILicenseWithImage interface handles "GetImage" method for Winforms-dependent licenses, implemented in CreativeCommonsLicense and CustomLicense, and formerly included in LicenseInfo.
 - [SIL.Core.Clearshare] New tests MetadataBareTests are based on previous MetadataTests in SIL.Windows.Forms.Clearshare. The tests were updated to use ImageSharp instead of Winforms for handling images.
 - [SIL.Core.Desktop] Added a constant (kBrowserCompatibleUserAgent) to RobustNetworkOperation: a browser-like User Agent string that can be used when making HTTP requests to strict servers.
+- [SIL.Core.Desktop] Added IAnalytics interface.
+- [SIL.Windows.Forms.Privacy] Added AnalyticsProxy class, a Winforms/registry-based implementation of IAnalytics.
+- [SIL.Windows.Forms.Privacy] Added PrivacyDlg as a new standard dialog to allow user to control whether analytics tracking is allowed.
 
 ### Fixed
 - [SIL.DictionaryServices] Fix memory leak in LiftWriter
