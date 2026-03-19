@@ -34,16 +34,16 @@ namespace SIL.Windows.Forms.Privacy
 		
 		public PrivacyDlg(IAnalytics analyticsImpl)
 		{
-			InitializeComponent();
+			_analyticsImpl = analyticsImpl ?? throw new ArgumentNullException(nameof(analyticsImpl));
 
-			_analyticsImpl = analyticsImpl;
+			InitializeComponent();
 
 			// Substitute product/brand names into the localizable format strings.
 			_fmtDescription = _labelDescription.Text;
 			_fmtProductCheckboxLabel = _chkProductAnalytics.Text;
 			_fmtOrganizationCheckboxLabel = _chkPropagateDecisionGlobally.Text;
 
-			_initialAnalyticsEnabledValue = _analyticsImpl?.AllowTracking ?? true;
+			_initialAnalyticsEnabledValue = _analyticsImpl.AllowTracking;
 			// Global checkbox: show as checked when the global setting is set and its value
 			// matches the current product setting (i.e., they are in sync). Once the user
 			// has selected this

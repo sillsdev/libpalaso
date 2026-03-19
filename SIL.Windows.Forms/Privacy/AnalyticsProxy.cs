@@ -16,7 +16,6 @@ namespace SIL.Windows.Forms.Privacy
 
 		public event EventHandler<AllowTrackingChangedEventArgs> AllowTrackingChanged;
 
-		private string _productRegistryKeyId;
 		public string ProductName { get; }
 
 		/// <summary>
@@ -40,7 +39,7 @@ namespace SIL.Windows.Forms.Privacy
 		/// as part of a registry key path, this property can be overridden to provide an alternate
 		/// identifier. This should be unique across products published by the organization.
 		/// </summary>
-		public virtual string ProductRegistryKeyId => _productRegistryKeyId ?? ProductName;
+		public virtual string ProductRegistryKeyId => ProductName;
 
 		public virtual string OrganizationName { get; } = "SIL Global";
 		
