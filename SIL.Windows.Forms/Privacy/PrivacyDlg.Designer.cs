@@ -170,7 +170,7 @@ namespace SIL.Windows.Forms.Privacy
             // 
             // locExtender
             // 
-            this.locExtender.LocalizationManagerId = "SIL.Windows.Forms.Privacy";
+            this.locExtender.LocalizationManagerId = "Palaso";
             this.locExtender.PrefixForNewItems = null;
             // 
             // PrivacyDlg
