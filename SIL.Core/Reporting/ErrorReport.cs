@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using JetBrains.Annotations;
 using Microsoft.Win32;
 using SIL.IO;
 using SIL.PlatformUtilities;
@@ -29,10 +30,12 @@ namespace SIL.Reporting
 		void NotifyUserOfProblem(IRepeatNoticePolicy policy, Exception exception, string message);
 
 		/// <summary>
-		/// Notify the user of the <paramref name="message"/>, if <paramref name="policy"/> permits. Customize the alternate button label. Wait for user input. Return button clicked to the user.
+		/// Notify the user of the <paramref name="message"/>, if <paramref name="policy"/> permits.
+		/// Customize the alternate button label. Wait for user input. Return button clicked to the user.
 		/// </summary>
 		/// <remarks>The method overload should block and wait for the user to press the required button</remarks>
-		/// <returns>The method should return <paramref name="resultIfAlternateButtonPressed"/> if the alternate button is clicked, ErrorResult.OK otherwise</returns>
+		/// <returns>The method should return <paramref name="resultIfAlternateButtonPressed"/> if
+		/// the alternate button is clicked; <see cref="ErrorResult.OK"/> otherwise</returns>
 		ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy,
 										string alternateButton1Label,
 										ErrorResult resultIfAlternateButtonPressed,
@@ -144,7 +147,7 @@ namespace SIL.Reporting
 		protected static string s_emailAddress = null;
 		protected static string s_emailSubject = "Exception Report";
 		private static Action<Exception, string> s_onShowDetails;
-		private static bool s_justRecordNonFatalMessagesForTesting=false;
+		private static bool s_justRecordNonFatalMessagesForTesting = false;
 		private static string s_previousNonFatalMessage;
 		private static Exception s_previousNonFatalException;
 
@@ -177,23 +180,22 @@ namespace SIL.Reporting
 			return ReflectionHelper.LongVersionNumberString;
 		}
 
+		[PublicAPI]
 		public static object GetAssemblyAttribute(Type attributeType)
 		{
 			Assembly assembly = Assembly.GetEntryAssembly();
 			if (assembly != null)
 			{
-				object[] attributes =
-					assembly.GetCustomAttributes(attributeType, false);
-				if (attributes != null && attributes.Length > 0)
-				{
+				object[] attributes = assembly.GetCustomAttributes(attributeType, false);
+				if (attributes.Length > 0)
 					return attributes[0];
-				}
 			}
 			return null;
 		}
 
 		public static string VersionNumberString => ReflectionHelper.VersionNumberString;
 
+		[PublicAPI]
 		public static string UserFriendlyVersionString
 		{
 			get
@@ -220,40 +222,37 @@ namespace SIL.Reporting
 			if (!Platform.IsWindows)
 				return string.Empty;
 
-			using (var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full"))
-			{
-				return key == null ? "(unable to determine)" : $"{key.GetValue("Version")} ({key.GetValue("Release")})";
-			}
+			using var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full");
+			return key == null ? "(unable to determine)" : $"{key.GetValue("Version")} ({key.GetValue("Release")})";
 #endif
 		}
 
 		/// <summary>
 		/// use this in unit tests to cleanly check that a message would have been shown.
-		/// E.g.  using (new SIL.Reporting.ErrorReport.NonFatalErrorReportExpected()) {...}
+		/// E.g., using (new SIL.Reporting.ErrorReport.NonFatalErrorReportExpected()) {...}
 		/// </summary>
 		public class NonFatalErrorReportExpected :IDisposable
 		{
-			private readonly bool previousJustRecordNonFatalMessagesForTesting;
+			private readonly bool _previousJustRecordNonFatalMessagesForTesting;
 			public NonFatalErrorReportExpected()
 			{
-				previousJustRecordNonFatalMessagesForTesting = s_justRecordNonFatalMessagesForTesting;
+				_previousJustRecordNonFatalMessagesForTesting = s_justRecordNonFatalMessagesForTesting;
 				s_justRecordNonFatalMessagesForTesting = true;
 				s_previousNonFatalMessage = null;//this is a static, so a previous unit test could have filled it with something (yuck)
 			}
 			public void Dispose()
 			{
-				s_justRecordNonFatalMessagesForTesting= previousJustRecordNonFatalMessagesForTesting;
+				s_justRecordNonFatalMessagesForTesting = _previousJustRecordNonFatalMessagesForTesting;
 				if (s_previousNonFatalException == null &&  s_previousNonFatalMessage == null)
 					throw new Exception("Non Fatal Error Report was expected but wasn't generated.");
 				s_previousNonFatalMessage = null;
+				s_previousNonFatalException = null;
 			}
 			/// <summary>
 			/// use this to check the actual contents of the message that was triggered
 			/// </summary>
-			public string Message
-			{
-				get { return s_previousNonFatalMessage; }
-			}
+			public string Message => s_previousNonFatalMessage ?? s_previousNonFatalException?.Message;
+			public Exception Exception => s_previousNonFatalException;
 		}
 
 		/// <summary>
@@ -280,10 +279,7 @@ namespace SIL.Reporting
 			/// <summary>
 			/// use this to check the actual contents of the message that was triggered
 			/// </summary>
-			public string Message
-			{
-				get { return s_previousNonFatalMessage; }
-			}
+			public string Message => s_previousNonFatalMessage;
 		}
 
 		/// <summary>
@@ -291,8 +287,8 @@ namespace SIL.Reporting
 		/// </summary>
 		public static string EmailAddress
 		{
-			set { s_emailAddress = value; }
-			get { return s_emailAddress; }
+			set => s_emailAddress = value;
+			get => s_emailAddress;
 		}
 
 		/// <summary>
@@ -300,8 +296,8 @@ namespace SIL.Reporting
 		/// </summary>
 		public static string EmailSubject
 		{
-			set { s_emailSubject = value; }
-			get { return s_emailSubject; }
+			set => s_emailSubject = value;
+			get => s_emailSubject;
 		}
 
 		/// <summary>
@@ -317,14 +313,8 @@ namespace SIL.Reporting
 		/// </summary>
 		public static Action<Exception, string> OnShowDetails
 		{
-			get
-			{
-				return s_onShowDetails ?? (s_onShowDetails = ReportNonFatalExceptionWithMessage);
-			}
-			set
-			{
-				s_onShowDetails = value;
-			}
+			get => s_onShowDetails ?? (s_onShowDetails = ReportNonFatalExceptionWithMessage);
+			set => s_onShowDetails = value;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -358,7 +348,7 @@ namespace SIL.Reporting
 			else
 				AddProperty("DotNetVersion", DotNet4VersionFromWindowsRegistry());
 			// https://docs.microsoft.com/en-us/dotnet/api/system.environment.version?view=netframework-4.8 warns that using the Version property is
-			// no longer recommended for .NET Framework 4.5 or later. I'm leaving it in in hope that it may once again become useful. Note that, as
+			// no longer recommended for .NET Framework 4.5 or later. I'm leaving it in with the hope that it may once again become useful. Note that, as
 			// of .NET Framework 4.8, it is *not* marked as deprecated.
 			// https://www.mono-project.com/docs/about-mono/versioning/#framework-versioning (accessed 2020-04-02) states that
 			// "Mono's System.Environment.Version property [. . .] should be the same version number that .NET would return."
@@ -400,7 +390,7 @@ namespace SIL.Reporting
 			private readonly PlatformID _platform;
 			private readonly int _major;
 			private readonly int _minor;
-			public string Label { get; private set; }
+			public string Label { get; }
 
 			public Version(PlatformID platform, int major, int minor, string label)
 			{
@@ -421,9 +411,11 @@ namespace SIL.Reporting
 		{
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
-				var startInfo = new ProcessStartInfo("lsb_release", "-si -sr -sc");
-				startInfo.RedirectStandardOutput = true;
-				startInfo.UseShellExecute = false;
+				var startInfo = new ProcessStartInfo("lsb_release", "-si -sr -sc")
+					{
+						RedirectStandardOutput = true,
+						UseShellExecute = false
+					};
 				var proc = new Process { StartInfo = startInfo };
 				try
 				{
@@ -434,7 +426,7 @@ namespace SIL.Reporting
 						var si = proc.StandardOutput.ReadLine();
 						var sr = proc.StandardOutput.ReadLine();
 						var sc = proc.StandardOutput.ReadLine();
-						return String.Format("{0} {1} {2}", si, sr, sc);
+						return $"{si} {sr} {sc}";
 					}
 				}
 				catch (Exception)
@@ -445,17 +437,19 @@ namespace SIL.Reporting
 			else
 			{
 				// https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832%28v=vs.85%29.aspx
-				var list = new List<Version>();
-				list.Add(new Version(PlatformID.Win32NT, 5, 0, "Windows 2000"));
-				list.Add(new Version(PlatformID.Win32NT, 5, 1, "Windows XP"));
-				list.Add(new Version(PlatformID.Win32NT, 6, 0, "Vista"));
-				list.Add(new Version(PlatformID.Win32NT, 6, 1, "Windows 7"));
-				// After Windows 8 the Environment.OSVersion started misreporting information unless
-				// your app has a manifest which says it supports the OS it is running on.  This is not
-				// helpful if someone starts using an app built before the OS is released. Anything that
-				// reports its self as Windows 8 is suspect, and must get the version info another way.
-				list.Add(new Version(PlatformID.Win32NT, 6, 3, "Windows 8.1"));
-				list.Add(new Version(PlatformID.Win32NT, 10, 0, "Windows 10"));
+				var list = new List<Version>
+				{
+					new Version(PlatformID.Win32NT, 5, 0, "Windows 2000"),
+					new Version(PlatformID.Win32NT, 5, 1, "Windows XP"),
+					new Version(PlatformID.Win32NT, 6, 0, "Vista"),
+					new Version(PlatformID.Win32NT, 6, 1, "Windows 7"),
+					// After Windows 8 the Environment.OSVersion started misreporting information unless
+					// your app has a manifest which says it supports the OS it is running on.  This is not
+					// helpful if someone starts using an app built before the OS is released. Anything that
+					// reports its self as Windows 8 is suspect, and must get the version info another way.
+					new Version(PlatformID.Win32NT, 6, 3, "Windows 8.1"),
+					new Version(PlatformID.Win32NT, 10, 0, "Windows 10")
+				};
 
 				foreach (var version in list)
 				{
@@ -529,9 +523,7 @@ namespace SIL.Reporting
 		{
 			var message = string.Format(messageFmt, args);
 			return NotifyUserOfProblemWrapper(message, null, () =>
-			{
-				return _errorReporter.NotifyUserOfProblem(policy, alternateButton1Label, resultIfAlternateButtonPressed, message);
-			});
+				_errorReporter.NotifyUserOfProblem(policy, alternateButton1Label, resultIfAlternateButtonPressed, message));
 		}
 
 		/// <summary>
@@ -540,7 +532,7 @@ namespace SIL.Reporting
 		/// * Checks if s_justRecordNonFatalMessagesForTesting is true and if so, skips calling the notification/reporting logic.
 		/// * Calls UsageReporter.ReportException if exception is non-null
 		/// </summary>
-		/// <param name="message">The message that would be showed to the user</param>
+		/// <param name="message">The message that would be shown to the user</param>
 		/// <param name="exception">The associated exception. May be null.</param>
 		/// <param name="notifyUserOfProblem">A delegate that takes no arguments.
 		/// It should call (via a closure) the actual core logic of having the _errorReporter notify the user of the problem.
@@ -551,6 +543,7 @@ namespace SIL.Reporting
 			if (s_justRecordNonFatalMessagesForTesting)
 			{
 				s_previousNonFatalMessage = message;
+				s_previousNonFatalException = exception;
 				return ErrorResult.OK;
 			}
 
@@ -564,7 +557,7 @@ namespace SIL.Reporting
 		}
 
 		/// <summary>
-		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
+		/// Bring up a "yellow box" that lets them send in a report, then return to the program.
 		/// This version assumes the message has already been formatted with any arguments.
 		/// </summary>
 		public static void ReportNonFatalExceptionWithMessage(Exception error, string message)
@@ -575,8 +568,9 @@ namespace SIL.Reporting
 		}
 
 		/// <summary>
-		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
+		/// Bring up a "yellow box" that lets them send in a report, then return to the program.
 		/// </summary>
+		[PublicAPI]
 		public static void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args)
 		{
 			s_previousNonFatalMessage = message;
@@ -585,7 +579,7 @@ namespace SIL.Reporting
 		}
 
 		/// <summary>
-		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
+		/// Bring up a "yellow box" that lets them send in a report, then return to the program.
 		/// Use this one only when you don't have an exception (else you're not reporting the exception's message)
 		/// </summary>
 		public static void ReportNonFatalMessageWithStackTrace(string message, params object[] args)
@@ -593,8 +587,9 @@ namespace SIL.Reporting
 			s_previousNonFatalMessage = message;
 			_errorReporter.ReportNonFatalMessageWithStackTrace(message, args);
 		}
+		
 		/// <summary>
-		/// Bring up a "green box" that let's them send in a report, then exit.
+		/// Bring up a "green box" that lets them send in a report, then exit.
 		/// </summary>
 		public static void ReportFatalMessageWithStackTrace(string message, params object[] args)
 		{
@@ -616,7 +611,7 @@ namespace SIL.Reporting
 		{
 			if (s_justRecordNonFatalMessagesForTesting)
 			{
-				ErrorReport.s_previousNonFatalException = exception;
+				s_previousNonFatalException = exception;
 				return;
 			}
 			_errorReporter.ReportNonFatalException(exception, policy);
@@ -664,10 +659,7 @@ namespace SIL.Reporting
 			return true;
 		}
 
-		public string ReoccurrenceMessage
-		{
-			get { return string.Empty; }
-		}
+		public string ReoccurrenceMessage => string.Empty;
 	}
 
 	public class ShowOncePerSessionBasedOnExactMessagePolicy :IRepeatNoticePolicy
@@ -687,10 +679,7 @@ namespace SIL.Reporting
 			return true;
 		}
 
-		public string ReoccurrenceMessage
-		{
-			get { return "This message will not be shown again this session."; }
-		}
+		public string ReoccurrenceMessage => "This message will not be shown again this session.";
 
 		public static void Reset()
 		{
