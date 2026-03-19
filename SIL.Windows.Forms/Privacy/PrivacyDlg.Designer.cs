@@ -98,7 +98,7 @@ namespace SIL.Windows.Forms.Privacy
             this._chkProductAnalytics.Text = "Share anonymous {0} usage data";
             this._chkProductAnalytics.UseVisualStyleBackColor = true;
             // 
-            // _checkBoxGlobalAnalytics
+            // _chkPropagateDecisionGlobally
             // 
             this._chkPropagateDecisionGlobally.AutoSize = true;
             this._tableLayoutPanel.SetColumnSpan(this._chkPropagateDecisionGlobally, 3);
@@ -138,7 +138,6 @@ namespace SIL.Windows.Forms.Privacy
             // 
             this._buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this._buttonOK.AutoSize = true;
-            this._buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.locExtender.SetLocalizableToolTip(this._buttonOK, null);
             this.locExtender.SetLocalizationComment(this._buttonOK, null);
             this.locExtender.SetLocalizingId(this._buttonOK, "Common.OK");
@@ -150,6 +149,7 @@ namespace SIL.Windows.Forms.Privacy
             this._buttonOK.TabIndex = 3;
             this._buttonOK.Text = "OK";
             this._buttonOK.UseVisualStyleBackColor = true;
+            this._buttonOK.Click += new System.EventHandler(this.HandleOkButtonClick);
             // 
             // _buttonCancel
             // 

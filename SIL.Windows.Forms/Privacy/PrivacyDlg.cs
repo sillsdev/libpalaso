@@ -44,10 +44,15 @@ namespace SIL.Windows.Forms.Privacy
 			_fmtOrganizationCheckboxLabel = _chkPropagateDecisionGlobally.Text;
 
 			_initialAnalyticsEnabledValue = _analyticsImpl.AllowTracking;
-			// Global checkbox: show as checked when the global setting is set and its value
-			// matches the current product setting (i.e., they are in sync). Once the user
-			// has selected this
-			var globalValue = _analyticsImpl?.OrganizationAnalyticsEnabled;
+
+			// The Global checkbox is initially unchecked and disabled. 
+			// It asks whether the product-level decision should be applied globally, but at
+			// startup no new decision has been made yet. 
+			// If a global decision already exists, the product checkbox reflects either that
+			// global value or a product-specific override. 
+			// Regardless, the Global checkbox remains unchecked and disabled until the user
+			// changes the product-level checkbox.
+			var globalValue = _analyticsImpl.OrganizationAnalyticsEnabled;
 			_initialGlobalInSync = globalValue == _initialAnalyticsEnabledValue;
 
 			// Populate checkboxes from current runtime state.
@@ -89,12 +94,9 @@ namespace SIL.Windows.Forms.Privacy
 			_chkPropagateDecisionGlobally.Enabled = false;
 		}
 
-		protected override void OnFormClosing(FormClosingEventArgs e)
+		private void HandleOkButtonClick(object sender, EventArgs e)
 		{
-			base.OnFormClosing(e);
-
-			if (DialogResult != DialogResult.OK)
-				return;
+			DialogResult = DialogResult.OK;
 
 			if (_chkProductAnalytics.Checked != _initialAnalyticsEnabledValue)
 			{
@@ -111,8 +113,12 @@ namespace SIL.Windows.Forms.Privacy
 					                NewLine + NewLine + exception.Message,
 						$"{_analyticsImpl.ProductName} - {Text}", MessageBoxButtons.OK,
 						Warning);
+
+					DialogResult = DialogResult.Cancel;
 				}
 			}
+
+			Close();
 		}
 	}
 }
