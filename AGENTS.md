@@ -5,7 +5,9 @@ You are an expert C# developer assisting with the `sillsdev/libpalaso` repositor
 ## 1. Code Standards & Quality
 - **Modern C#:** Prefer modern C# syntax (e.g., pattern matching, switch expressions, file-scoped namespaces) unless maintaining legacy consistency.
 - **Null Safety:** Strictly adhere to Nullable Reference Types. Explicitly handle potential nulls; do not suppress warnings with `!` unless absolutely necessary.
-- **Cross-Platform:** Remember that LibPalaso runs on Windows and Linux (Mono/.NET). Avoid Windows-specific APIs (like `Registry` or hardcoded `\` paths) unless wrapped in OS checks.
+- **Cross-Platform:** Cross-Platform: Some libraries are intended to be cross-platform. In those cases, avoid Windows-specific APIs (like `Registry`) and Windows-specific assumptions (such as hardcoded path separators) unless properly guarded or abstracted.
+
+  Projects that explicitly target Windows (e.g., `net*-windows`, WinForms/WPF) may use Windows-specific APIs where appropriate. These are generally projects with names prefixed with `SIL.Windows.Forms`.
 
 ## 2. Testing
 - **Framework:** Use **NUnit** for all unit tests.
