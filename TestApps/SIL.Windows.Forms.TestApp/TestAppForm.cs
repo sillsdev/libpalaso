@@ -53,7 +53,7 @@ namespace SIL.Windows.Forms.TestApp
 			Text = Platform.DesktopEnvironmentInfoString;
 			_localizationIncompleteViewModel = new LocalizationIncompleteViewModel(
 				Program.PrimaryL10NManager, "testapp",
-				IssueAnalyticsRequest);
+				IssueAnalyticsRequest, Program.kSupportEmailAddress);
 			_uiLanguageMenu.InitializeWithAvailableUILocales(l => true,
 				_localizationIncompleteViewModel, additionalNamedLocales:new Dictionary<string, string> {
 					{ "Some untranslated language", WellKnownSubtags.UnlistedLanguage } });

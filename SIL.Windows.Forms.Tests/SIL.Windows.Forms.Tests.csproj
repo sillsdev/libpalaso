@@ -27,8 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="L10NSharp" Version="9.0.0-*" />
-    <PackageReference Include="L10NSharp.Windows.Forms" Version="9.0.0-*" />
+    <PackageReference Include="L10NSharp" Version="10.0.0-beta0001" />
+    <PackageReference Include="L10NSharp.Windows.Forms" Version="10.0.0-beta0001" />
     <PackageReference Include="Markdig.Signed" Version="0.37.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.2" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />

@@ -34,8 +34,15 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 			_linkCrowdinAndEmailInstructions.Visible =
 				_model.CrowdinProjectUrl != null;
 
-			_lblMoreInformationEmail.Text = string.Format(_lblMoreInformationEmail.Text,
-				model.EmailAddressForLocalizationRequests);
+			if (model.EmailAddressForLocalizationRequests == null)
+			{
+				_lblMoreInformationEmail.Visible = _btnCopy.Visible = false;
+			}
+			else
+			{
+				_lblMoreInformationEmail.Text = string.Format(_lblMoreInformationEmail.Text,
+					model.EmailAddressForLocalizationRequests);
+			}
 		}
 
 		private void btnOk_Click(object sender, EventArgs e)

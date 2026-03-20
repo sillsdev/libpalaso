@@ -9,6 +9,7 @@ namespace SIL.Media
 {
 	public class AudioFactory
 	{
+		public const string kDefaultPlaybackErrorMessage = "An error occurred during audio playback.";
 		
 		/// <summary>
 		/// Creates an audio session for the given file path.
@@ -77,5 +78,12 @@ namespace SIL.Media
 			AppDomain.CurrentDomain.AssemblyResolve += handler;
 		}
 #endif
+
+		/// <summary>
+		/// Message to show when an error occurs during audio playback. Client can set this to
+		/// display a localized/customized message. If not set, the default message
+		/// (<see cref="kDefaultPlaybackErrorMessage"/>) will be used.
+		/// </summary>
+		public static string PlaybackErrorMessage { get; set; }
 	}
 }

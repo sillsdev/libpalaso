@@ -13,8 +13,7 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 		[CLSCompliant(false)]
 		public ILocalizationManager PrimaryLocalizationManager { get; }
 
-		public string EmailAddressForLocalizationRequests =>
-			LocalizationManager.EmailForSubmissions;
+		public string EmailAddressForLocalizationRequests { get; }
 
 		private readonly string _crowdinProjectName;
 		private readonly Action _issueRequestForLocalization;
@@ -48,14 +47,18 @@ namespace SIL.Windows.Forms.LocalizationIncompleteDlg
 		/// part of the Crowdin project's URL following https://crowdin.com/project/</param>
 		/// <param name="issueRequestForLocalization">An action to handle issuing a localization
 		/// request (typically by passing the <see cref="StandardAnalyticsInfo"/> to
-		/// DesktopAnalytics.Track</param>
+		/// DesktopAnalytics.Track)</param>
+		/// <param name="emailAddressForLocalizationRequests">Optional email address to display in
+		/// order for the user to be able to request more information.</param>
 		[CLSCompliant(false)]
 		public LocalizationIncompleteViewModel(ILocalizationManager appLm,
-			string crowdinProjectName, Action issueRequestForLocalization)
+			string crowdinProjectName, Action issueRequestForLocalization,
+			string emailAddressForLocalizationRequests = null)
 		{
 			PrimaryLocalizationManager = appLm;
 			_crowdinProjectName = crowdinProjectName;
 			_issueRequestForLocalization = issueRequestForLocalization;
+			EmailAddressForLocalizationRequests = emailAddressForLocalizationRequests;
 		}
 
 		/// <summary>

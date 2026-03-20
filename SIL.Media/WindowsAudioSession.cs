@@ -1,23 +1,24 @@
-// Copyright (c) 2015-2025 SIL Global
+// Copyright (c) 2015-2026 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
-/// Not supported in .NET 8+ due to IrrKlang
+// Not supported in .NET 8+ due to IrrKlang
 #if NET462 || NET48
 
 using System;
-using System.ComponentModel;
 using System.IO;
+using System.Threading.Tasks;
 using IrrKlang;
 using NAudio.Wave;
 using SIL.Code;
+using SIL.Reporting;
 
 namespace SIL.Media
 {
 	/// <summary>
 	/// A Windows implementation of an ISimpleAudioSession.
-	/// Uses IrrKlang for recording and NAudio for playback.
+	/// Uses <see cref="IrrKlang"/> for recording and <see cref="NAudio"/> for playback.
 	/// </summary>
-	internal class WindowsAudioSession : ISimpleAudioSession, ISimpleAudioWithEvents
+	internal class WindowsAudioSession : ISimpleAudioWithEvents
 	{
 		private readonly IrrKlang.IAudioRecorder _recorder;
 		private readonly ISoundEngine _engine = CreateSoundEngine();
@@ -25,8 +26,11 @@ namespace SIL.Media
 		private DateTime _startRecordingTime;
 		private DateTime _stopRecordingTime;
 		private readonly SoundFile _soundFile;
-		private WaveOutEvent _outputDevice;
+		private INAudioOutputDevice _outputDevice;
 		private AudioFileReader _audioFile;
+		internal INAudioOutputDevice TestNAudioOutputDevice;
+		
+		private readonly object _lock = new object();
 		/// <summary>
 		/// Will be raised when playing is over
 		/// </summary>
@@ -53,9 +57,13 @@ namespace SIL.Media
 				return new ISoundEngine(SoundOutputDriver.NullDriver);
 			}
 		}
+		private INAudioOutputDevice CreateNAudioOutputDevice()
+		{
+			return TestNAudioOutputDevice ?? new NAudioWaveOutEventAdapter();
+		}
 
 		/// <summary>
-		/// Constructor for an AudioSession using the IrrKlang library
+		/// Constructor for an AudioSession using the <see cref="IrrKlang"/> library
 		/// </summary>
 		public WindowsAudioSession(string filePath)
 		{
@@ -77,7 +85,6 @@ namespace SIL.Media
 
 			_recorder.StartRecordingBufferedAudio(22000, SampleFormat.Signed16Bit, 1);
 			_startRecordingTime = DateTime.Now;
-
 		}
 
 		public void StopRecordingAndSaveAsWav()
@@ -107,7 +114,14 @@ namespace SIL.Media
 
 		public bool IsRecording => _recorder != null && _recorder.IsRecording;
 
-		public bool IsPlaying { get; set; }
+		public bool IsPlaying
+		{
+			get
+			{
+				lock(_lock)
+					return _outputDevice != null;
+			}
+		}
 
 		public bool CanRecord => !IsPlaying && !IsRecording;
 
@@ -117,29 +131,45 @@ namespace SIL.Media
 
 		private void OnPlaybackStopped(object sender, StoppedEventArgs args)
 		{
-			lock (FilePath)
+			lock (_lock)
+				CleanupPlaybackResources();
+
+			PlaybackStopped?.Invoke(this, args);
+		}
+
+		private void CleanupPlaybackResources()
+		{
+			if (_outputDevice != null)
 			{
-				if (_outputDevice != null)
+				_outputDevice.PlaybackStopped -= OnPlaybackStopped;
+				try
 				{
+					// Dispose calls Stop, which can throw.
 					_outputDevice.Dispose();
-					_outputDevice = null;
-					if (_audioFile != null)
-					{
-						_audioFile.Dispose();
-						_audioFile = null;
-					}
 				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+					// We're disposing. We probably don't care what went wrong.
+				}
+				
+				if (_audioFile != null)
+				{
+					_audioFile.Dispose();
+					_audioFile = null;
+				}
+				
+				_outputDevice = null;
 			}
-			IsPlaying = false;
-			PlaybackStopped?.Invoke(sender, args);
 		}
 
 		/// <summary>
-		/// The current version of Play uses NAudio for playback. IrrKlang had issues with playback.
-		/// In the future it may be best to try the latest version of IrrKlang and see if true safe
-		/// cross-platform recording and playback can be accomplished now. This would eliminate the need for
-		/// the AlsaAudio classes on linux. Note: irrKlang was upgraded to v. 1.6 in Nov 2024, but I did
-		/// not re-check to see if it works for playback on all platforms.
+		/// The current version of Play uses NAudio for playback. <see cref="IrrKlang"/> had issues
+		/// with playback. In the future it may be best to try the latest version of
+		/// <see cref="IrrKlang"/> and see if true safe cross-platform recording and playback can
+		/// be accomplished now. This would eliminate the need for the <see cref="AlsaAudio"/>
+		/// classes on linux. Note: <see cref="IrrKlang"/> was upgraded to v. 1.6 in Nov 2024, but
+		/// I did not re-check to see if it works for playback on all platforms.
 		/// </summary>
 		public void Play()
 		{
@@ -150,41 +180,45 @@ namespace SIL.Media
 			if (new FileInfo(FilePath).Length == 0)
 				throw new FileLoadException("Trying to play empty file");
 
-			var worker = new BackgroundWorker();
-			IsPlaying = true;
-			worker.DoWork += (sender, args) =>
+			lock (_lock)
+			{
+				if (_outputDevice != null)
+					return; // Already playing. Don't start again.
+				_outputDevice = CreateNAudioOutputDevice();
+			}
+
+			Task.Run(() =>
 			{
 				try
 				{
-					lock (FilePath)
+					lock (_lock)
 					{
 						if (_outputDevice == null)
 						{
-							_outputDevice = new WaveOutEvent();
-							_outputDevice.PlaybackStopped += OnPlaybackStopped;
+							// Playback was stopped before it even got started. Don't try to start it now.
+							return;
 						}
+
+						_outputDevice.PlaybackStopped += OnPlaybackStopped;
 						if (_audioFile == null)
 						{
 							_audioFile = new AudioFileReader(FilePath);
 							_outputDevice.Init(_audioFile);
 						}
+
 						_outputDevice.Play();
 					}
 				}
 				catch (Exception e)
 				{
-					// Try to clean things up as best we can...no easy way to test this, though.
-					// We don't want to be permanently in the playing state.
-					IsPlaying = false;
-					// And, in case something critical is waiting for this...
 					OnPlaybackStopped(this, new StoppedEventArgs(e));
 					// Maybe the system has another way of playing it that works? e.g., most default players will handle mp3.
 					// But it seems risky...maybe we will be trying to play another sound or do some recording?
 					// Decided not to do this for now.
-					// The main thread has gone on with other work, don't have any current way to report the exception.
+					ErrorReport.ReportNonFatalExceptionWithMessage(e,
+						AudioFactory.PlaybackErrorMessage ?? AudioFactory.kDefaultPlaybackErrorMessage);
 				}
-			};
-			worker.RunWorkerAsync();
+			});
 		}
 
 		private class SoundFile : IFileFactory
@@ -269,22 +303,33 @@ namespace SIL.Media
 
 		public void StopPlaying()
 		{
-			if (IsPlaying)
+			lock (_lock)
 			{
-				OnPlaybackStopped(this, new StoppedEventArgs());
+				if (_outputDevice == null) // !IsPlaying
+					return;
+
+				if (_outputDevice.PlaybackState == PlaybackState.Stopped)
+					CleanupPlaybackResources();
+				else
+					_outputDevice.Stop();
 			}
+		}
+
+		public void Dispose()
+		{
+			lock (_lock)
+				CleanupPlaybackResources();
+
 			try
 			{
 				_engine.RemoveAllSoundSources();
 			}
 			catch (Exception)
 			{
-				// We'll just ignore any errors on stopping the sounds (they probably aren't playing).
+				// We'll just ignore any errors on stopping the sounds (We don't use irrKlang for playback anyway).
 			}
-		}
-
-		public void Dispose()
-		{
+			
+			_engine?.Dispose();
 			_recorder.Dispose();
 			_soundFile.CloseFile();
 		}
