@@ -35,7 +35,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Prevent BetterLabel from responding to OnTextChanged when it has been disposed.
 - [SIL.Windows.Forms] Prevent ContributorsListControl.GetContributionFromRow from throwing an exception when the DataGridView has no valid rows selected.
 - [SIL.Media] BREAKING CHANGE (subtle and unlikely): WindowsAudioSession.OnPlaybackStopped now passes itself as the sender instead of a private implementation object, making the event arguments correct.
-- [SIL.Windows.Forms.Keyboarding] Fixed a subtle bug in IbusKeyboardSwitchingAdaptor when determining whether IBus would have handled a key event while a pre-edit is active. The code now accounts for the possibility of modifier keys (particularly Ctrl), which IBus would presumably have handled when in combination with navigation keys, Backspace, and Delete.
 
 ### Changed
 - [SIL.Windows.Forms.i18n, SIL.Core.Desktop.i18n] BREAKING CHANGE: Move L10NSharpLocalizer from Windows.Forms to Core.Desktop so it can be accessed without Winforms dependency.

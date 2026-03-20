@@ -315,7 +315,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				return;
 			}
 
-			// pass function keys onto ibus since they don't appear (on mono at least) as WM_SYSCHAR
+			// pass function keys on to IBus since they don't appear (on Mono at least) as WM_SYSCHAR
 			if (key >= Keys.F1 && key <= Keys.F24)
 				PassSpecialKeyEventToIbus(control, key, e.Modifiers);
 		}
@@ -339,9 +339,27 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// Gets whether the given key is expected to be handled by IBus when a pre-edit is active.
 		/// </summary>
 		/// <remarks>
-		/// REVIEW: During pre-edit, I assume that IBus handles both basic and modified navigation
-		/// keys like Ctrl+Left. ChatGPT says this is true, but I have not been able to verify this
-		/// since I don't know how to set up a Linux/IBus environment where I could test this.
+		/// REVIEW: During pre-edit, IBus presumably handles both basic and modified navigation
+		/// keys like Ctrl+Left. Multiple AI sources agree this is true, but it has not been
+		/// verified in an actual Linux/IBus environment. Eberhard has proposed the following
+		/// testing procedure on Linux:
+		/// <list type="number">
+		/// <item>Install Ubuntu 24.04 in a VM.</item>
+		/// <item>Install an IME that uses pre-edit: in a terminal run
+		/// <c>sudo apt update &amp;&amp; sudo apt install ibus-pinyin</c></item>
+		/// <item>Open Keyboard settings, click "+ Add Input Source", search for Pinyin by clicking
+		/// on the three dots below English. If you type the search term "pinyin" you'll get
+		/// "Other". Clicking that shows "Chinese (Pinyin)" which you then can add.</item>
+		/// <item>Close the settings.</item>
+		/// <item>In the terminal run <c>ibus restart</c> (or reboot).</item>
+		/// <item>The language/keyboard picker in the top bar should now offer "Chinese (Pinyin)".
+		/// </item>
+		/// <item>Open a text field in a SIL application that runs on Linux and uses
+		/// `KeyboardController` (maybe WeSay), switch to Chinese (Pinyin), and begin typing to
+		/// enter pre-edit mode. Then press modified navigation keys like Ctrl+Left and verify
+		/// that IBus handles them correctly (e.g., the pre-edit is committed or cancelled as
+		/// expected, rather than the key being ignored or causing duplicate input).</item>
+		/// </list>
 		/// </remarks>
 		private bool IsKeyHandledByIbus(Keys key)
 		{
