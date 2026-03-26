@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core.Desktop] Added a constant (kBrowserCompatibleUserAgent) to RobustNetworkOperation: a browser-like User Agent string that can be used when making HTTP requests to strict servers.
 - [SIL.Core] Added an Exception property to NonFatalErrorReportExpected to return the previous reported non-fatal exception.
 - [SIL.Media] Added a static PlaybackErrorMessage property to AudioFactory and a public const, kDefaultPlaybackErrorMessage, that will be used as the default message if the client does not set PlaybackErrorMessage.
+- [SIL.Windows.Forms] Added KeysExtensions class with the IsNavigationKey extension method.
 - [SIL.Core.Desktop] Added IAnalytics interface.
 - [SIL.Windows.Forms.Privacy] Added AnalyticsProxy class, a Winforms/registry-based implementation of IAnalytics.
 - [SIL.Windows.Forms.Privacy] Added PrivacyDlg as a new standard dialog to allow user to control whether analytics tracking is allowed.
@@ -77,7 +78,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Support for RobustFile.GetAccessControl in all builds
 
 ### Fixed
-
 - [SIL.Windows.Forms] Made ContributorsListControl.GetCurrentContribution() return null in the case when a valid row is not selected.
 - [SIL.WritingSystems] Make the English names for Chinese (Simplified) and Chinese (Traditional) consistent regardless of differences in Windows CultureInfo
 
