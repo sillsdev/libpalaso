@@ -31,8 +31,8 @@ jobs:
       with:
         fetch-depth: '0'
 
-    - name: Install WiX Toolset v3.14
-      run: choco install wixtoolset --version="[3.14.1,4.0)" -y
+    - name: Ensure WiX Toolset v3.14.(1+)
+      run: choco upgrade wixtoolset --version=3.14.1 -y --no-progress
 
     - name: Build project
       run: dotnet build -bl:build.binlog -c Release
