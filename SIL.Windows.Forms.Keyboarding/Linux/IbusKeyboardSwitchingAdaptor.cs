@@ -100,7 +100,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			context.SetEngine(ibusKeyboard.IBusKeyboardEngine.LongName);
 		}
 
-		private void SetImePreeditWindowLocationAndSize(Control control)
+		private void SetImePreEditWindowLocationAndSize(Control control)
 		{
 			var eventHandler = GetEventHandlerForControl(control);
 			if (eventHandler == null)
@@ -165,8 +165,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			e.Control.PreviewKeyDown += HandlePreviewKeyDown;
 			e.Control.KeyPress += HandleKeyPress;
 
-			var scrollableControl = e.Control as ScrollableControl;
-			if (scrollableControl != null)
+			if (e.Control is ScrollableControl scrollableControl)
 				scrollableControl.Scroll += HandleScroll;
 		}
 
@@ -182,8 +181,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			e.Control.KeyPress -= HandleKeyPress;
 			e.Control.KeyDown -= HandleKeyDownAfterIbusHandledKey;
 
-			var scrollableControl = e.Control as ScrollableControl;
-			if (scrollableControl != null)
+			if (e.Control is ScrollableControl scrollableControl)
 				scrollableControl.Scroll -= HandleScroll;
 
 			var eventHandler = GetEventHandlerForControl(e.Control);
@@ -202,7 +200,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		/// <summary>
 		/// Passes the key event to ibus. This method deals with the special keys (Cursor up/down,
-		/// backspace etc) that usually shouldn't cause a commit.
+		/// backspace, etc.) that usually shouldn't cause a commit.
 		/// </summary>
 		private bool PassSpecialKeyEventToIbus(Control control, Keys keyChar, Keys modifierKeys)
 		{
@@ -212,8 +210,11 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		private bool PassKeyEventToIbus(Control control, char keyChar, Keys modifierKeys)
 		{
-			if (keyChar == 0x7f) // we get this for Ctrl-Backspace
-				keyChar = '\b';
+			const char asciiDel = (char)0x7F;
+			const char backspace = '\b';
+
+			if (keyChar == asciiDel) // Ctrl+Backspace arrives as DEL; normalize to Backspace
+				keyChar = backspace;
 
 			return PassKeyEventToIbus(control, keyChar, modifierKeys, true);
 		}
@@ -235,7 +236,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 			if (resetIfUnhandled)
 			{
-				// If ProcessKeyEvent doesn't consume the key, we need to kill any preedits and
+				// If ProcessKeyEvent doesn't consume the key, we need to kill any pre-edits and
 				// sync before continuing processing the keypress. We return false so that the
 				// control can process the character.
 				ResetAndWaitForCommit(control);
@@ -254,8 +255,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			// and the other time because we have to call the original window proc. However, only
 			// the second time will the control report as being focused (or when we not intercept
 			// the message then the first time) (see SimpleRootSite.OriginalWndProc).
-			var control = sender as Control;
-			if (control == null || !control.Focused)
+			if (!(sender is Control control) || !control.Focused)
 				return;
 
 			_ibusComm.FocusIn();
@@ -276,63 +276,94 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		/// <summary>
 		/// Inform input bus of Keydown events
-		/// This is useful to get warning of key that should stop the preedit
+		/// This is useful to get warning of key that should stop the pre-edit
 		/// </summary>
 		private void HandlePreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 		{
 			if (!_ibusComm.Connected)
 				return;
 
-			var control = sender as Control;
+			var control = (Control)sender;
 			var eventHandler = GetEventHandlerForControl(control);
 			if (eventHandler == null)
 				return;
 
 			if (_needIMELocation)
 			{
-				SetImePreeditWindowLocationAndSize(control);
+				SetImePreEditWindowLocationAndSize(control);
 				_needIMELocation = false;
 			}
 
 			var key = e.KeyCode;
-			switch (key)
+			if (key == Keys.Escape)
 			{
-				case Keys.Escape:
-					// These should end a preedit, so wait until that has happened
-					// before allowing the key to be processed.
-					ResetAndWaitForCommit(control);
-					return;
-				case Keys.Up:
-				case Keys.Down:
-				case Keys.Left:
-				case Keys.Right:
-				case Keys.Delete:
-				case Keys.PageUp:
-				case Keys.PageDown:
-				case Keys.Home:
-				case Keys.End:
-				case Keys.Back:
-					if (PassSpecialKeyEventToIbus(control, key, e.Modifiers))
-					{
-						// If IBus handled the key we don't want the control to get it. However,
-						// we can't do this in PreviewKeyDown, so we temporarily subscribe to
-						// KeyDown and suppress the key event there.
-						control.KeyDown += HandleKeyDownAfterIbusHandledKey;
-					}
-					return;
+				// These should end a pre-edit, so wait until that has happened
+				// before allowing the key to be processed.
+				ResetAndWaitForCommit(control);
+				return;
 			}
-			// pass function keys onto ibus since they don't appear (on mono at least) as WM_SYSCHAR
+
+			if (IsKeyHandledByIbus(key))
+			{
+				if (PassSpecialKeyEventToIbus(control, key, e.Modifiers))
+				{
+					// If IBus handled the key we don't want the control to get it. However,
+					// we can't do this in PreviewKeyDown, so we temporarily subscribe to
+					// KeyDown and suppress the key event there.
+					control.KeyDown += HandleKeyDownAfterIbusHandledKey;
+				}
+				return;
+			}
+
+			// pass function keys on to IBus since they don't appear (on Mono at least) as WM_SYSCHAR
 			if (key >= Keys.F1 && key <= Keys.F24)
 				PassSpecialKeyEventToIbus(control, key, e.Modifiers);
 		}
 
 		/// <summary>
-		/// Handles a key down. While a preedit is active we don't want the control to handle
+		/// Handles a key down. While a pre-edit is active we don't want the control to handle
 		/// any of the keys that IBus deals with.
 		/// </summary>
 		private void HandleKeyDownAfterIbusHandledKey(object sender, KeyEventArgs e)
 		{
-			switch (e.KeyCode)
+			if (IsKeyHandledByIbus(e.KeyCode) && sender is Control control)
+			{
+				var eventHandler = GetEventHandlerForControl(control);
+				if (eventHandler != null)
+					e.SuppressKeyPress = eventHandler.IsPreeditActive;
+				control.KeyDown -= HandleKeyDownAfterIbusHandledKey;
+			}
+		}
+
+		/// <summary>
+		/// Gets whether the given key is expected to be handled by IBus when a pre-edit is active.
+		/// </summary>
+		/// <remarks>
+		/// REVIEW: During pre-edit, IBus presumably handles both basic and modified navigation
+		/// keys like Ctrl+Left. Multiple AI sources agree this is true, but it has not been
+		/// verified in an actual Linux/IBus environment. Eberhard has proposed the following
+		/// testing procedure on Linux:
+		/// <list type="number">
+		/// <item>Install Ubuntu 24.04 in a VM.</item>
+		/// <item>Install an IME that uses pre-edit: in a terminal run
+		/// <c>sudo apt update &amp;&amp; sudo apt install ibus-pinyin</c></item>
+		/// <item>Open Keyboard settings, click "+ Add Input Source", search for Pinyin by clicking
+		/// on the three dots below English. If you type the search term "pinyin" you'll get
+		/// "Other". Clicking that shows "Chinese (Pinyin)" which you then can add.</item>
+		/// <item>Close the settings.</item>
+		/// <item>In the terminal run <c>ibus restart</c> (or reboot).</item>
+		/// <item>The language/keyboard picker in the top bar should now offer "Chinese (Pinyin)".
+		/// </item>
+		/// <item>Open a text field in a SIL application that runs on Linux and uses
+		/// `KeyboardController` (maybe WeSay), switch to Chinese (Pinyin), and begin typing to
+		/// enter pre-edit mode. Then press modified navigation keys like Ctrl+Left and verify
+		/// that IBus handles them correctly (e.g., the pre-edit is committed or cancelled as
+		/// expected, rather than the key being ignored or causing duplicate input).</item>
+		/// </list>
+		/// </remarks>
+		private bool IsKeyHandledByIbus(Keys key)
+		{
+			switch (key & Keys.KeyCode)
 			{
 				case Keys.Up:
 				case Keys.Down:
@@ -344,13 +375,10 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				case Keys.Home:
 				case Keys.End:
 				case Keys.Back:
-					var control = sender as Control;
-					var eventHandler = GetEventHandlerForControl(control);
-					if (eventHandler != null)
-						e.SuppressKeyPress = eventHandler.IsPreeditActive;
-					control.KeyDown -= HandleKeyDownAfterIbusHandledKey;
-					break;
+					return true;
 			}
+
+			return false;
 		}
 
 		/// <summary>
@@ -360,17 +388,20 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// this method gets called. We forward the key press to IBus. If IBus swallowed the key
 		/// it will return true, so no further handling is done by the control, otherwise the
 		/// control will process the key and update the selection.
-		/// If IBus swallows the key event, it will either raise the UpdatePreeditText event,
-		/// allowing the event handler to insert the composition as preedit (and update the
-		/// selection), or it will raise the CommitText event so that the event handler can
-		/// remove the preedit, replace it with the final composition string and update the
-		/// selection. Some IBus keyboards might raise a ForwardKeyEvent (handled by
-		/// <see cref="IIbusEventHandler.OnIbusKeyPress"/>) prior to calling CommitText to
-		/// simulate a key press (e.g. backspace) so that the event handler can modify the
-		/// existing text of the control.
+		/// If IBus swallows the key event, it will either raise the
+		/// <see cref="IIbusCommunicator.UpdatePreeditText"/> event, allowing the event handler to
+		/// insert the composition as pre-edit (and update the selection), or it will raise the
+		/// <see cref="IIbusCommunicator.CommitText"/> event so that the event handler can
+		/// remove the pre-edit, replace it with the final composition string and update the
+		/// selection. Some IBus keyboards might raise a
+		/// <see cref="IBusDotNet.IInputContext.ForwardKeyEvent"/> (handled by
+		/// <see cref="IIbusEventHandler.OnIbusKeyPress"/>) prior to raising
+		/// <see cref="IIbusCommunicator.CommitText"/> to simulate a key press (e.g. backspace)
+		/// so that the event handler can modify the existing text of the control.
 		/// IBus might also open a pop-up window at the location we told it
 		/// (<see cref="IIbusEventHandler.SelectionLocationAndHeight"/>) to display possible
-		/// compositions. However, it will still call UpdatePreeditText.</remarks>
+		/// compositions. However, it will still raise
+		/// <see cref="IIbusCommunicator.UpdatePreeditText"/>.</remarks>
 		private void HandleKeyPress(object sender, KeyPressEventArgs e)
 		{
 			e.Handled = PassKeyEventToIbus(sender as Control, e.KeyChar, Control.ModifierKeys);
@@ -390,7 +421,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			if (!_ibusComm.Connected)
 				return;
 
-			SetImePreeditWindowLocationAndSize(sender as Control);
+			SetImePreEditWindowLocationAndSize(sender as Control);
 		}
 
 		#endregion
