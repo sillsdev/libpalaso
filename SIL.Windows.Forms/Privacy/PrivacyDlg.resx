@@ -120,4 +120,7 @@
   <metadata name="locExtender.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <data name="_labelDescription.Text" xml:space="preserve">
+    <value>{0} collects a small amount of usage data to help {1} improve the software. This data is intended to be anonymous and does not include personal information. However, given the small number of users and the types of data collected, we cannot strictly guarantee that individuals or language communities could never be identified. You may opt out below.</value>
+  </data>
 </root>

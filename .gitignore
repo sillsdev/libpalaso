@@ -43,3 +43,6 @@ icu4c.readme.txt
 /SIL.Windows.Forms/bin-Designer/**
 launchSettings.json
 *.xlf
+/.claude/settings.local.json
+# Normally `.guidsForInstaller.xml` files should be checked into source control, but this is just for the SIL.Windows.Forms.TestApp installer, which we do not deploy, and we don't care about upgrade installs.
+/DistFiles/.guidsForInstaller.xml

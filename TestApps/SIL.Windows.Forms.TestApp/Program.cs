@@ -9,6 +9,7 @@ using SIL.Reporting;
 using SIL.Windows.Forms.Privacy;
 using SIL.Windows.Forms.Reporting;
 using SIL.WritingSystems;
+using static System.Reflection.Assembly;
 
 namespace SIL.Windows.Forms.TestApp
 {
@@ -30,6 +31,18 @@ namespace SIL.Windows.Forms.TestApp
 
 			Sldr.Initialize();
 			Icu.Wrapper.Init();
+
+			foreach (var path in GetEntryAssembly().Location.ParentDirectories())
+			{
+				if (path.EndsWith("TestApps"))
+				{
+					FileLocationUtilities.DistFilesFolderPath = Path.Combine(
+						Path.GetDirectoryName(path),
+						"DistFiles"
+					);
+					break;
+				}
+			}
 
 			var preferredUILocale = "fr";
 			if (args.Length > 0)
@@ -56,7 +69,7 @@ namespace SIL.Windows.Forms.TestApp
 
 		private static void SetUpAnalytics()
 		{
-			AnalyticsImpl = new AnalyticsProxy("TestApp");
+			AnalyticsImpl = new AnalyticsProxy(Application.ProductName);
 		}
 	}
 }

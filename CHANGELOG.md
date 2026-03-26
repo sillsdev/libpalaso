@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - [SIL.Core.Clearshare] Added new classes MetadataCore, CreativeCommonsLicenseInfo, and CustomLicenseInfo; these are Winforms-free base versions of the classes Metadata, CreativeCommonsLicense, and CustomLicense.
 
-- [SIL.Core.Clearshare and SIL.Windows.Forms.Clearshare] Added LicenseUtils and LicenseWithImageUtils to handle the FromXmp method for creating a license. LicenseUtils constructs a bare license object that is Winforms-independent; LicenseWithImageUtils constructs a Winforms-dependent license object with access to license images. 
+- [SIL.Core.Clearshare and SIL.Windows.Forms.Clearshare] Added LicenseUtils and LicenseWithImageUtils to handle the FromXmp method for creating a license. LicenseUtils constructs a bare license object that is Winforms-independent; LicenseWithImageUtils constructs a Winforms-dependent license object with access to license images.
 - [SIL.Core.Clearshare] New methods "GetIsStringAvailableForLangId" and "GetDynamicStringOrEnglish" were added to Localizer for use in LicenseInfo's "GetBestLicenseTranslation" method, to remove LicenseInfo's L10NSharp dependency.
 - [SIL.Windows.Forms.Clearshare] New ILicenseWithImage interface handles "GetImage" method for Winforms-dependent licenses, implemented in CreativeCommonsLicense and CustomLicense, and formerly included in LicenseInfo.
 - [SIL.Core.Clearshare] New tests MetadataBareTests are based on previous MetadataTests in SIL.Windows.Forms.Clearshare. The tests were updated to use ImageSharp instead of Winforms for handling images.
@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core.Desktop] Added IAnalytics interface.
 - [SIL.Windows.Forms.Privacy] Added AnalyticsProxy class, a Winforms/registry-based implementation of IAnalytics.
 - [SIL.Windows.Forms.Privacy] Added PrivacyDlg as a new standard dialog to allow user to control whether analytics tracking is allowed.
+- [SIL.Installer] Added new package for common installer components. Initially, this includes a Privacy dialog and code to access the registry entries so users can opt out of analytics data collection.
+- [SIL.Core] Added PathUtilities.ParentDirectories extension method.
+- [SIL.Core] Added FileLocationUtilities.DistFilesFolderPath property.
 
 ### Fixed
 - [SIL.DictionaryServices] Fix memory leak in LiftWriter
@@ -76,7 +79,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - [SIL.Windows.Forms] Made ContributorsListControl.GetCurrentContribution() return null in the case when a valid row is not selected.
-- [SIL.WritingSystems] Make the English names for Chinese (Simplified) and Chinese (Traditional) consistent regardless of differences in Windows CultureInfo 
+- [SIL.WritingSystems] Make the English names for Chinese (Simplified) and Chinese (Traditional) consistent regardless of differences in Windows CultureInfo
 
 ## [16.1.0] - 2025-07-18
 

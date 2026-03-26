@@ -109,6 +109,12 @@ namespace SIL.IO
 			return LocateExecutable(true, partsOfTheSubPath);
 		}
 
+		/// <summary>
+		/// Added so that test apps that need to use a distinct output folder can indicate where to
+		/// find the files they need without having to copy them into the build directory.
+		/// </summary>
+		public static string DistFilesFolderPath;
+
 		private static string[] DirectoriesHoldingFiles => new[] {string.Empty, "DistFiles",
 			"common" /*for WeSay*/, "src" /*for Bloom*/};
 
@@ -125,12 +131,23 @@ namespace SIL.IO
 		/// <example>GetFileDistributedWithApplication(false, "info", "releaseNotes.htm");</example>
 		public static string GetFileDistributedWithApplication(bool optional, params string[] partsOfTheSubPath)
 		{
-			foreach (var directoryHoldingFiles in DirectoriesHoldingFiles)
+			if (DistFilesFolderPath != null)
 			{
-				var path = Path.Combine(DirectoryOfApplicationOrSolution,
-					directoryHoldingFiles, Path.Combine(partsOfTheSubPath));
+				var path = Path.Combine(DistFilesFolderPath, Path.Combine(partsOfTheSubPath));
 				if (File.Exists(path))
 					return path;
+			}
+
+			foreach (var directoryHoldingFiles in DirectoriesHoldingFiles)
+			{
+				var dir = Path.Combine(DirectoryOfApplicationOrSolution,
+					directoryHoldingFiles);
+				var path = Path.Combine(dir, Path.Combine(partsOfTheSubPath));
+				if (File.Exists(path))
+				{
+					DistFilesFolderPath = dir; // Remember this for next time.
+					return path;
+				}
 			}
 
 			if (optional)
@@ -198,11 +215,22 @@ namespace SIL.IO
 			if (Directory.Exists(path))
 				return path;
 
-			foreach (var directoryHoldingFiles in DirectoriesHoldingFiles)
+			if (DistFilesFolderPath != null)
 			{
-				path = Path.Combine(directory, directoryHoldingFiles, subPath);
+				path = Path.Combine(DistFilesFolderPath, subPath);
 				if (Directory.Exists(path))
 					return path;
+			}
+
+			foreach (var directoryHoldingFiles in DirectoriesHoldingFiles)
+			{
+				var dir = Path.Combine(directory, directoryHoldingFiles);
+				path = Path.Combine(dir, subPath);
+				if (Directory.Exists(path))
+				{
+					DistFilesFolderPath = dir; // Remember this for next time.
+					return path;
+				}
 			}
 
 			return null;

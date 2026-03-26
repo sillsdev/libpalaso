@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Bare-bones installer for SIL.Windows.Forms.TestApp.
+  Purpose: dog-food the SIL.Installer NuGet package (analytics dialog, custom action, registry
+  components) before the package is published.
+
+  Analytics.wxs and AnalyticsNavigation.wxs are referenced directly from the SIL.Installer
+  source tree (see Installer.wixproj). Real consumers reference the SIL.Installer NuGet package
+  instead, which delivers these files automatically via its build\SIL.Installer.targets file.
+
+  Only ProductName is required; no need to override default ProductAnalyticsRegistryKey.
+-->
+<?define ProductVersion = "1.0.0" ?>
+<?define UpgradeCode = "{A0F64E48-E75C-4AE3-89DE-7E0E953BB7A3}" ?>
+<?ifdef var.ProductName ?>
+<?else?>
+  <?define ProductName = "SIL.Windows.Forms.TestApp" ?>
+<?endif?>
+<?define OutputDir = "$(var.ProjectDir)..\SIL.Windows.Forms.TestApp\output\$(var.Configuration)\net48\" ?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*"
+           Name="$(var.ProductName) $(var.ProductVersion)"
+           Language="1033"
+           Version="$(var.ProductVersion)"
+           Manufacturer="SIL Global"
+           UpgradeCode="$(var.UpgradeCode)">
+
+    <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine" Platform="x64" />
+
+    <MajorUpgrade Schedule="afterInstallInitialize"
+                  DowngradeErrorMessage="A later version of $(var.ProductName) is already installed." />
+
+    <!-- WixUI_FeatureTree provides LicenseAgreementDlg, which AnalyticsNavigation.wxs hooks into
+         to insert the PrivacyDlg between License acceptance and the final confirmation. -->
+    <UIRef Id="WixUI_FeatureTree" />
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="ProgramDir" Name="$(var.ProductName)">
+
+          <Component Id="TestApp.exe" Guid="{77E6C2A9-CE5B-42F6-B2C5-9B477D3E5062}" Win64="yes">
+            <File Id="TestApp.exe"
+                  Name="SIL.Windows.Forms.TestApp.exe"
+                  Source="$(var.OutputDir)SIL.Windows.Forms.TestApp.exe"
+                  KeyPath="yes" />
+          </Component>
+
+          <Component Id="TestApp.exe.config" Guid="{86606984-EFEF-48DE-84F3-D14C707B9458}" Win64="yes">
+            <File Id="TestApp.exe.config"
+                  Name="SIL.Windows.Forms.TestApp.exe.config"
+                  Source="$(var.OutputDir)SIL.Windows.Forms.TestApp.exe.config"
+                  KeyPath="yes" />
+          </Component>
+
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Feature Id="ProductFeature" Level="1" Title="$(var.ProductName)">
+      <ComponentRef Id="TestApp.exe" />
+      <ComponentRef Id="TestApp.exe.config" />
+	  <ComponentGroupRef Id="DistFiles" />
+	  <ComponentGroupRef Id="DllDependencies" />
+      <!-- GlobalAnalyticsSetting + ProductAnalyticsSetting, both from Analytics.wxs -->
+      <ComponentGroupRef Id="SilAnalyticsComponents" />
+    </Feature>
+
+    <Media Id="1" Cabinet="product.cab" EmbedCab="yes" />
+    <Icon Id="AppIcon.exe" SourceFile="$(var.OutputDir)SIL.Windows.Forms.TestApp.exe" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon.exe" />
+
+  </Product>
+</Wix>

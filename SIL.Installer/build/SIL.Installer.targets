@@ -1,0 +1,27 @@
+<Project>
+  <!--
+    Auto-imported by NuGet for projects that reference SIL.Installer via PackageReference.
+
+    This file:
+      1. Adds Analytics.wxs to the WiX compiler's Compile item group.
+      2. Optionally adds AnalyticsNavigation.wxs (enabled by default; set
+         SilAnalyticsIncludeNavigation=false to wire dialog navigation manually).
+  -->
+  <PropertyGroup>
+    <!-- Set to false to suppress automatic inclusion of AnalyticsNavigation.wxs -->
+    <SilAnalyticsIncludeNavigation Condition="'$(SilAnalyticsIncludeNavigation)' == ''">true</SilAnalyticsIncludeNavigation>
+
+    <!-- When navigation is disabled, pass a WiX preprocessor variable so Analytics.wxs
+         can suppress the UIRef that would otherwise pull in the missing fragment. -->
+    <DefineConstants Condition="'$(SilAnalyticsIncludeNavigation)' != 'true'">$(DefineConstants);SilAnalyticsSkipNavigation=1</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Automatically compile the shared analytics WiX fragment -->
+    <Compile Include="$(MSBuildThisFileDirectory)Analytics.wxs" />
+
+    <!-- Automatically compile the standard dialog navigation fragment (opt-out if needed) -->
+    <Compile Include="$(MSBuildThisFileDirectory)AnalyticsNavigation.wxs"
+             Condition="'$(SilAnalyticsIncludeNavigation)' == 'true'" />
+  </ItemGroup>
+</Project>

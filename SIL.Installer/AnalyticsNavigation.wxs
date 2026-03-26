@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SIL.Installer Analytics Navigation Fragment (optional)
+
+  Wires dialog navigation for the analytics privacy dialog:
+    LicenseAgreementDlg -> PrivacyDlg -> VerifyReadyDlg  (no prior analytics preference)
+    LicenseAgreementDlg -> VerifyReadyDlg                 (preference already recorded)
+
+  The privacy dialog is skipped when either a product-specific or a global SIL analytics
+  preference already exists in the registry — e.g. on reinstall/repair, or when another
+  SIL product has already set the global preference.
+
+  Compatible with any WiX 3 UI set that includes LicenseAgreementDlg in its navigation
+  flow: WixUI_FeatureTree, WixUI_InstallDir, WixUI_Mondo, WixUI_Advanced.
+  Not compatible with WixUI_Minimal (which does not route through LicenseAgreementDlg).
+
+  This file is included automatically when the SIL.Installer NuGet package is referenced.
+  To wire navigation manually instead, set in your .wixproj before importing the package:
+    <SilAnalyticsIncludeNavigation>false</SilAnalyticsIncludeNavigation>
+-->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <UI Id="SilAnalyticsNavigation">
+
+      <!-- ── Forward: LicenseAgreementDlg Next ───────────────────────────────────
+           Standard WiX UI sets wire LicenseAgreementDlg Next at Order=2 (to their
+           intermediate dialog, e.g. CustomizeDlg). We fire at Order=3 and 4 so our
+           events run last and take precedence (last NewDialog fired wins). -->
+
+      <!-- No prior preference: show the privacy dialog -->
+      <Publish Dialog="LicenseAgreementDlg"
+               Control="Next"
+               Event="NewDialog"
+               Value="PrivacyDlg"
+               Order="3">
+        LicenseAccepted = "1"
+        AND NOT PRODUCT_ANALYTICS_SETTING
+        AND NOT GLOBAL_ANALYTICS_SETTING
+      </Publish>
+
+      <!-- Prior preference exists: skip the privacy dialog -->
+      <Publish Dialog="LicenseAgreementDlg"
+               Control="Next"
+               Event="NewDialog"
+               Value="VerifyReadyDlg"
+               Order="4">
+        LicenseAccepted = "1"
+        AND (PRODUCT_ANALYTICS_SETTING OR GLOBAL_ANALYTICS_SETTING)
+      </Publish>
+
+      <!-- ── Back: VerifyReadyDlg Back ────────────────────────────────────────────
+           Standard WiX UI sets wire VerifyReadyDlg Back to their intermediate dialog
+           (e.g. CustomizeDlg) at Order=1. We fire at Order=2 and 3 to override that,
+           returning to whichever dialog the user actually came from. -->
+
+      <!-- No prior preference: privacy dialog was shown → return to it -->
+      <Publish Dialog="VerifyReadyDlg"
+               Control="Back"
+               Event="NewDialog"
+               Value="PrivacyDlg"
+               Order="2">
+        NOT PRODUCT_ANALYTICS_SETTING AND NOT GLOBAL_ANALYTICS_SETTING
+      </Publish>
+
+      <!-- Prior preference exists: privacy dialog was skipped → return to LicenseAgreementDlg -->
+      <Publish Dialog="VerifyReadyDlg"
+               Control="Back"
+               Event="NewDialog"
+               Value="LicenseAgreementDlg"
+               Order="3">
+        PRODUCT_ANALYTICS_SETTING OR GLOBAL_ANALYTICS_SETTING
+      </Publish>
+
+    </UI>
+  </Fragment>
+</Wix>

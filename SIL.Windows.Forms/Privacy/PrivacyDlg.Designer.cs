@@ -29,6 +29,7 @@ namespace SIL.Windows.Forms.Privacy
 		private void InitializeComponent()
 		{
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PrivacyDlg));
             this._tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this._labelDescription = new System.Windows.Forms.Label();
             this._chkProductAnalytics = new System.Windows.Forms.CheckBox();
@@ -63,7 +64,7 @@ namespace SIL.Windows.Forms.Privacy
             this._tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this._tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this._tableLayoutPanel.Size = new System.Drawing.Size(413, 190);
+            this._tableLayoutPanel.Size = new System.Drawing.Size(392, 218);
             this._tableLayoutPanel.TabIndex = 0;
             // 
             // _labelDescription
@@ -77,11 +78,9 @@ namespace SIL.Windows.Forms.Privacy
             this._labelDescription.Margin = new System.Windows.Forms.Padding(0, 0, 0, 10);
             this._labelDescription.MaximumSize = new System.Drawing.Size(380, 0);
             this._labelDescription.Name = "_labelDescription";
-            this._labelDescription.Size = new System.Drawing.Size(377, 39);
+            this._labelDescription.Size = new System.Drawing.Size(380, 65);
             this._labelDescription.TabIndex = 0;
-            this._labelDescription.Text = "{0} normally reports a small amount of anonymous analytics data to {1} in order t" +
-    "o enable the developers to make continued improvements to the software. You can " +
-    "opt out of analytics reporting below.";
+            this._labelDescription.Text = resources.GetString("_labelDescription.Text");
             // 
             // _chkProductAnalytics
             // 
@@ -90,7 +89,7 @@ namespace SIL.Windows.Forms.Privacy
             this.locExtender.SetLocalizableToolTip(this._chkProductAnalytics, null);
             this.locExtender.SetLocalizationComment(this._chkProductAnalytics, "Param 0: product name");
             this.locExtender.SetLocalizingId(this._chkProductAnalytics, "DialogBoxes.PrivacyDlg.ShareProductAnalyticsCheckbox");
-            this._chkProductAnalytics.Location = new System.Drawing.Point(0, 59);
+            this._chkProductAnalytics.Location = new System.Drawing.Point(0, 85);
             this._chkProductAnalytics.Margin = new System.Windows.Forms.Padding(0, 10, 0, 5);
             this._chkProductAnalytics.Name = "_chkProductAnalytics";
             this._chkProductAnalytics.Size = new System.Drawing.Size(184, 17);
@@ -106,7 +105,7 @@ namespace SIL.Windows.Forms.Privacy
             this.locExtender.SetLocalizableToolTip(this._chkPropagateDecisionGlobally, null);
             this.locExtender.SetLocalizationComment(this._chkPropagateDecisionGlobally, "Param 0: \"SIL Global\"");
             this.locExtender.SetLocalizingId(this._chkPropagateDecisionGlobally, "DialogBoxes.PrivacyDlg.ApplyGloballyCheckbox");
-            this._chkPropagateDecisionGlobally.Location = new System.Drawing.Point(0, 86);
+            this._chkPropagateDecisionGlobally.Location = new System.Drawing.Point(0, 112);
             this._chkPropagateDecisionGlobally.Margin = new System.Windows.Forms.Padding(0, 5, 0, 0);
             this._chkPropagateDecisionGlobally.Name = "_chkPropagateDecisionGlobally";
             this._chkPropagateDecisionGlobally.Padding = new System.Windows.Forms.Padding(14, 0, 0, 0);
@@ -124,7 +123,7 @@ namespace SIL.Windows.Forms.Privacy
             this.locExtender.SetLocalizableToolTip(this._labelRestartNote, null);
             this.locExtender.SetLocalizationComment(this._labelRestartNote, "");
             this.locExtender.SetLocalizingId(this._labelRestartNote, "DialogBoxes.PrivacyDlg.RestartNoteLabel");
-            this._labelRestartNote.Location = new System.Drawing.Point(0, 113);
+            this._labelRestartNote.Location = new System.Drawing.Point(0, 139);
             this._labelRestartNote.Margin = new System.Windows.Forms.Padding(0, 10, 0, 0);
             this._labelRestartNote.MaximumSize = new System.Drawing.Size(380, 0);
             this._labelRestartNote.Name = "_labelRestartNote";
@@ -141,7 +140,7 @@ namespace SIL.Windows.Forms.Privacy
             this.locExtender.SetLocalizableToolTip(this._buttonOK, null);
             this.locExtender.SetLocalizationComment(this._buttonOK, null);
             this.locExtender.SetLocalizingId(this._buttonOK, "Common.OK");
-            this._buttonOK.Location = new System.Drawing.Point(255, 164);
+            this._buttonOK.Location = new System.Drawing.Point(234, 192);
             this._buttonOK.Margin = new System.Windows.Forms.Padding(0);
             this._buttonOK.MinimumSize = new System.Drawing.Size(75, 26);
             this._buttonOK.Name = "_buttonOK";
@@ -159,7 +158,7 @@ namespace SIL.Windows.Forms.Privacy
             this.locExtender.SetLocalizableToolTip(this._buttonCancel, null);
             this.locExtender.SetLocalizationComment(this._buttonCancel, null);
             this.locExtender.SetLocalizingId(this._buttonCancel, "Common.Cancel");
-            this._buttonCancel.Location = new System.Drawing.Point(338, 164);
+            this._buttonCancel.Location = new System.Drawing.Point(317, 192);
             this._buttonCancel.Margin = new System.Windows.Forms.Padding(8, 0, 0, 0);
             this._buttonCancel.MinimumSize = new System.Drawing.Size(75, 26);
             this._buttonCancel.Name = "_buttonCancel";
@@ -180,14 +179,14 @@ namespace SIL.Windows.Forms.Privacy
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.CancelButton = this._buttonCancel;
-            this.ClientSize = new System.Drawing.Size(453, 230);
+            this.ClientSize = new System.Drawing.Size(432, 258);
             this.Controls.Add(this._tableLayoutPanel);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.locExtender.SetLocalizableToolTip(this, null);
             this.locExtender.SetLocalizationComment(this, null);
             this.locExtender.SetLocalizingId(this, "DialogBoxes.PrivacyDlg.WindowTitle");
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(444, 268);
             this.Name = "PrivacyDlg";
             this.Padding = new System.Windows.Forms.Padding(20);
             this.ShowIcon = false;

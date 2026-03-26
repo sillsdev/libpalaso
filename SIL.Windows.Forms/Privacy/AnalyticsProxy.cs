@@ -42,7 +42,7 @@ namespace SIL.Windows.Forms.Privacy
 		public virtual string ProductRegistryKeyId => ProductName;
 
 		public virtual string OrganizationName { get; } = "SIL Global";
-		
+
 		public virtual string OrganizationRegistryKeyId { get; } = "SIL";
 
 		private string OrganizationRegistryKeyPath => $@"Software\{OrganizationRegistryKeyId}";

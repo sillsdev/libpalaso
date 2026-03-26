@@ -4,8 +4,8 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>SIL.Windows.Forms.TestApp</RootNamespace>
     <AssemblyName>SIL.Windows.Forms.TestApp</AssemblyName>
-    <Description>SIL.Windows.Forms.TestApp test app</Description>
-    <OutputPath>../../output/$(Configuration)</OutputPath>
+    <Description>SIL.Windows.Forms test app</Description>
+    <OutputPath>output/$(Configuration)</OutputPath>
     <!-- Unsigned because we reference SIL.Media which itself is unsigned because it depends on
     irrKlang.NET4.dll which is a mixed-mode assembly -->
     <SignAssembly>false</SignAssembly>

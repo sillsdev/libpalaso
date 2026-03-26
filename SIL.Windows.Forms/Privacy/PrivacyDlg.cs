@@ -31,7 +31,7 @@ namespace SIL.Windows.Forms.Privacy
 			get => _labelRestartNote.ForeColor;
 			set => _labelRestartNote.ForeColor = value;
 		}
-		
+
 		public PrivacyDlg(IAnalytics analyticsImpl)
 		{
 			_analyticsImpl = analyticsImpl ?? throw new ArgumentNullException(nameof(analyticsImpl));
@@ -39,17 +39,20 @@ namespace SIL.Windows.Forms.Privacy
 			InitializeComponent();
 
 			// Substitute product/brand names into the localizable format strings.
+			// NOTE: The installer privacy dialog (Analytics.wxs in SIL.Installer) contains
+			// equivalent text that must be kept in sync manually if any of these strings change.
+			// The "apply globally" checkbox label intentionally differs from the WiX version.
 			_fmtDescription = _labelDescription.Text;
 			_fmtProductCheckboxLabel = _chkProductAnalytics.Text;
 			_fmtOrganizationCheckboxLabel = _chkPropagateDecisionGlobally.Text;
 
 			_initialAnalyticsEnabledValue = _analyticsImpl.AllowTracking;
 
-			// The Global checkbox is initially unchecked and disabled. 
+			// The Global checkbox is initially unchecked and disabled.
 			// It asks whether the product-level decision should be applied globally, but at
-			// startup no new decision has been made yet. 
+			// startup no new decision has been made yet.
 			// If a global decision already exists, the product checkbox reflects either that
-			// global value or a product-specific override. 
+			// global value or a product-specific override.
 			// Regardless, the Global checkbox remains unchecked and disabled until the user
 			// changes the product-level checkbox.
 			var globalValue = _analyticsImpl.OrganizationAnalyticsEnabled;
