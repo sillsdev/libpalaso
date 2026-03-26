@@ -103,7 +103,7 @@
          to avoid overwriting an existing user preference with a blank value.
        - A value of "0" (explicit opt-out) is still considered "set" in MSI
          conditions, so it will be written correctly. -->
-      <Component Id="ProductAnalyticsSetting" Guid="{490DF2E0-2F29-4F52-9A4D-490F4FD6254F}">
+      <Component Id="$(var.ProductName)AnalyticsSetting" Guid="*">
         <Condition><![CDATA[SIL_ANALYTICS_APPLY_GLOBALLY <> "1" AND PRODUCT_ANALYTICS_ENABLED]]></Condition>
         <RegistryKey Root="HKCU" Key="$(var.ProductAnalyticsRegistryKey)">
           <RegistryValue
@@ -166,24 +166,25 @@
 
     <!-- ═══════════════════════════════════════════════════════
          Run in the UI sequence, these Custom Actions set the three checkbox-backing
-	 properties, following these rules:
-           Case 1 — fresh install (both _SETTING properties empty):
-             PRODUCT_ANALYTICS_ENABLED = "1", SIL_ANALYTICS_ENABLED_GLOBALLY = "1",
-             SIL_ANALYTICS_APPLY_GLOBALLY = "1"
-	     This is the only case where we show the Privacy dialog in the installer;
-	     both checkboxes will be initially checked.
-           Case 2 — only GLOBAL_ANALYTICS_SETTING is set (e.g. another SIL product ran first):
-             PRODUCT_ANALYTICS_ENABLED = normalized(GLOBAL_ANALYTICS_SETTING),
-	     SIL_ANALYTICS_ENABLED_GLOBALLY = normalized(GLOBAL_ANALYTICS_SETTING),
-             SIL_ANALYTICS_APPLY_GLOBALLY = "1" (product always inherits global → they match)
-           Case 3 — only PRODUCT_ANALYTICS_SETTING is set:
-             PRODUCT_ANALYTICS_ENABLED = normalized(PRODUCT_ANALYTICS_SETTING),
-	     SIL_ANALYTICS_ENABLED_GLOBALLY = "0",
-             SIL_ANALYTICS_APPLY_GLOBALLY = "1" if PRODUCT = "#0", else "0"
-           Case 4 — both _SETTING properties are set:
-             PRODUCT_ANALYTICS_ENABLED = normalized(PRODUCT_ANALYTICS_SETTING),
-	     SIL_ANALYTICS_ENABLED_GLOBALLY = normalized(GLOBAL_ANALYTICS_SETTING),
-             SIL_ANALYTICS_APPLY_GLOBALLY = "1" if equal, else "0"
+	     properties, following these rules:
+         Case 1 — fresh install (both _SETTING properties empty):
+            PRODUCT_ANALYTICS_ENABLED = "1"
+			SIL_ANALYTICS_ENABLED_GLOBALLY = "1",
+            SIL_ANALYTICS_APPLY_GLOBALLY = "1"
+	        This is the only case where we show the Privacy dialog in the installer;
+	        both checkboxes will be initially checked.
+        Case 2 — only GLOBAL_ANALYTICS_SETTING is set (e.g. another SIL product ran first):
+            PRODUCT_ANALYTICS_ENABLED = normalized(GLOBAL_ANALYTICS_SETTING),
+	        SIL_ANALYTICS_ENABLED_GLOBALLY = normalized(GLOBAL_ANALYTICS_SETTING),
+            SIL_ANALYTICS_APPLY_GLOBALLY = "1" (product always inherits global → they match)
+        Case 3 — only PRODUCT_ANALYTICS_SETTING is set:
+            PRODUCT_ANALYTICS_ENABLED = normalized(PRODUCT_ANALYTICS_SETTING),
+	        SIL_ANALYTICS_ENABLED_GLOBALLY = "0",
+            SIL_ANALYTICS_APPLY_GLOBALLY = "0" (user previously chose product-level only; respect that)
+        Case 4 — both _SETTING properties are set:
+            PRODUCT_ANALYTICS_ENABLED = normalized(PRODUCT_ANALYTICS_SETTING),
+	        SIL_ANALYTICS_ENABLED_GLOBALLY = normalized(GLOBAL_ANALYTICS_SETTING),
+            SIL_ANALYTICS_APPLY_GLOBALLY = "1" if equal, else "0"
 
          "normalized" means: "#1" → "1", "#0" → "0" (stripping the DWORD prefix that
          RegistrySearch Type="raw" adds). The _ENABLED/_GLOBALLY properties therefore
@@ -248,10 +249,6 @@
                   Property="SIL_ANALYTICS_APPLY_GLOBALLY"
                   Value="1"
                   Execute="immediate" />
-    <CustomAction Id="Analytics_SetApplyGlobally_ProductFalseNoGlobal"
-                  Property="SIL_ANALYTICS_APPLY_GLOBALLY"
-                  Value="1"
-                  Execute="immediate" />
     <CustomAction Id="Analytics_SetApplyGlobally_BothMatch"
                   Property="SIL_ANALYTICS_APPLY_GLOBALLY"
                   Value="1"
@@ -294,12 +291,8 @@
       <Custom Action="Analytics_SetApplyGlobally_NoProduct" After="Analytics_SetGlobalEnabled_DefaultFalse">
         NOT PRODUCT_ANALYTICS_SETTING
       </Custom>
-      <!-- Case 3: product="#0", global absent → effective global="0" → match -->
-      <Custom Action="Analytics_SetApplyGlobally_ProductFalseNoGlobal" After="Analytics_SetApplyGlobally_NoProduct">
-        PRODUCT_ANALYTICS_SETTING = "#0" AND NOT GLOBAL_ANALYTICS_SETTING
-      </Custom>
       <!-- Case 4: both set and equal -->
-      <Custom Action="Analytics_SetApplyGlobally_BothMatch" After="Analytics_SetApplyGlobally_ProductFalseNoGlobal">
+      <Custom Action="Analytics_SetApplyGlobally_BothMatch" After="Analytics_SetApplyGlobally_NoProduct">
         GLOBAL_ANALYTICS_SETTING = PRODUCT_ANALYTICS_SETTING AND GLOBAL_ANALYTICS_SETTING
       </Custom>
     </InstallUISequence>
