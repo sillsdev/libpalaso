@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] Added a static PlaybackErrorMessage property to AudioFactory and a public const, kDefaultPlaybackErrorMessage, that will be used as the default message if the client does not set PlaybackErrorMessage.
 
 ### Fixed
+- [SIL.Windows.Forms.Keyboarding] Removed Timer-based deferred IME conversion status restore from WindowsKeyboardSwitchingAdapter, which disrupted active Chinese Pinyin IME compositions (LT-22442). Added diagnostic tracing for keyboard switching and IME state.
 - [SIL.DictionaryServices] Fix memory leak in LiftWriter
 - [SIL.WritingSystems] Fix IetfLanguageTag.GetGeneralCode to handle cases when zh-CN or zh-TW is a prefix and not the whole string.
 - [SIL.WritingSystems] More fixes to consistently use 繁体中文 and 简体中文 for Traditional and Simplified Chinese native language names, and Chinese (Traditional) and Chinese (Simplified) for their English names.
