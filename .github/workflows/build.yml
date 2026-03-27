@@ -31,6 +31,8 @@ jobs:
       with:
         fetch-depth: '0'
 
+    # WiX Toolset v3.14 seems to pre-installed on GH agent. Everything I've tried so far to ensure that with choco fails.
+
     - name: Build project
       run: dotnet build -bl:build.binlog -c Release
 
