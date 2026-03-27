@@ -31,8 +31,7 @@ jobs:
       with:
         fetch-depth: '0'
 
-    - name: Ensure WiX Toolset v3.14.(1+)
-      run: choco upgrade wixtoolset --version=3.14.1 -y --no-progress
+    # WiX Toolset v3.14 seems to pre-installed on GH agent. Everything I've tried so far to ensure that with choco fails.
 
     - name: Build project
       run: dotnet build -bl:build.binlog -c Release
