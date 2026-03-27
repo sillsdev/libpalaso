@@ -3,8 +3,12 @@
   SIL.Installer Analytics Navigation Fragment (optional)
 
   Wires dialog navigation for the analytics privacy dialog:
-    LicenseAgreementDlg -> PrivacyDlg -> VerifyReadyDlg  (no prior analytics preference)
-    LicenseAgreementDlg -> VerifyReadyDlg                 (preference already recorded)
+    Fresh install / upgrade (via LicenseAgreementDlg):
+      LicenseAgreementDlg -> PrivacyDlg -> VerifyReadyDlg  (no prior analytics preference)
+      LicenseAgreementDlg -> VerifyReadyDlg                 (preference already recorded)
+    Repair / modify (via MaintenanceTypeDlg):
+      MaintenanceTypeDlg  -> PrivacyDlg -> VerifyReadyDlg  (no prior analytics preference)
+      MaintenanceTypeDlg  -> VerifyReadyDlg                 (preference already recorded)
 
   The privacy dialog is skipped when either a product-specific or a global SIL analytics
   preference already exists in the registry — e.g. on reinstall/repair, or when another
@@ -69,6 +73,68 @@
                Value="LicenseAgreementDlg"
                Order="3">
         PRODUCT_ANALYTICS_SETTING OR GLOBAL_ANALYTICS_SETTING
+      </Publish>
+
+      <!-- ── Repair flow: MaintenanceTypeDlg forward navigation ─────────────
+           During repair the flow bypasses LicenseAgreementDlg and routes through
+           MaintenanceTypeDlg instead. We override ChangeButton (standard Order=1
+           wires it to CustomizeDlg) and RepairButton (standard Order=1 wires it
+           directly to VerifyReadyDlg) so both follow the same logic as the
+           fresh-install path: show PrivacyDlg if no prior preference exists,
+           skip straight to VerifyReadyDlg otherwise. -->
+
+      <!-- No prior preference: show the privacy dialog (Change path) -->
+      <Publish Dialog="MaintenanceTypeDlg"
+               Control="ChangeButton"
+               Event="NewDialog"
+               Value="PrivacyDlg"
+               Order="2">
+        NOT PRODUCT_ANALYTICS_SETTING AND NOT GLOBAL_ANALYTICS_SETTING
+      </Publish>
+
+      <!-- Prior preference exists: skip the privacy dialog (Change path) -->
+      <Publish Dialog="MaintenanceTypeDlg"
+               Control="ChangeButton"
+               Event="NewDialog"
+               Value="VerifyReadyDlg"
+               Order="3">
+        PRODUCT_ANALYTICS_SETTING OR GLOBAL_ANALYTICS_SETTING
+      </Publish>
+
+      <!-- No prior preference: show the privacy dialog (Repair path).
+           Standard wires RepairButton → VerifyReadyDlg at Order=1; we fire at
+           Order=2 to intercept only when analytics has not been configured yet. -->
+      <Publish Dialog="MaintenanceTypeDlg"
+               Control="RepairButton"
+               Event="NewDialog"
+               Value="PrivacyDlg"
+               Order="2">
+        NOT PRODUCT_ANALYTICS_SETTING AND NOT GLOBAL_ANALYTICS_SETTING
+      </Publish>
+
+      <!-- ── Repair flow: PrivacyDlg Back ─────────────────────────────────────
+           When PrivacyDlg is reached from MaintenanceTypeDlg (repair path),
+           Back should return to MaintenanceTypeDlg rather than LicenseAgreementDlg.
+           Order=2 overrides the hardcoded Order=1 target in Analytics.wxs when
+           the product is already installed. -->
+      <Publish Dialog="PrivacyDlg"
+               Control="Back"
+               Event="NewDialog"
+               Value="MaintenanceTypeDlg"
+               Order="2">
+        Installed
+      </Publish>
+
+      <!-- ── Repair flow: VerifyReadyDlg Back ──────────────────────────────────
+           During repair with a prior analytics preference, Back should return to
+           MaintenanceTypeDlg rather than LicenseAgreementDlg. Order=4 overrides
+           the fresh-install Order=3 override above when the product is installed. -->
+      <Publish Dialog="VerifyReadyDlg"
+               Control="Back"
+               Event="NewDialog"
+               Value="MaintenanceTypeDlg"
+               Order="4">
+        Installed AND (PRODUCT_ANALYTICS_SETTING OR GLOBAL_ANALYTICS_SETTING)
       </Publish>
 
     </UI>

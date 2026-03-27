@@ -89,16 +89,16 @@
         </RegistryKey>
       </Component>
 
-<!-- Writes the per-product analytics setting (HKCU).
+      <!-- Writes the per-product analytics setting (HKCU).
 
-     This component is installed only when:
+      This component is installed only when:
        - the user is NOT applying the setting globally, and
        - a product-level value is actually set.
 
-     Behavior:
+      Behavior:
        - If the user switches to a global setting, this condition becomes false
          and MSI removes the per-product registry value.
-       - During silent installs or repairs (when the UI is skipped),
+       - During silent installs or repairs/upgrades (when the Privacy dialog is usually skipped),
          PRODUCT_ANALYTICS_ENABLED will be empty; we skip writing
          to avoid overwriting an existing user preference with a blank value.
        - A value of "0" (explicit opt-out) is still considered "set" in MSI
