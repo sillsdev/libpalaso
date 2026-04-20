@@ -38,12 +38,12 @@ jobs:
     # WriteVersionInfoToBuildLog=false suppresses the MSBuild task that causes the conflict;
     # assembly versioning is unaffected as it uses a different GitVersion task.
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v3
+      uses: gittools/actions/gitversion/setup@51d325634925d7d9ce0a7efc2c586c0bc2b9eee6 # v3.2.1
       with:
         versionSpec: '5.x'
 
     - name: Run GitVersion
-      uses: gittools/actions/gitversion/execute@v3
+      uses: gittools/actions/gitversion/execute@51d325634925d7d9ce0a7efc2c586c0bc2b9eee6 # v3.2.1
 
     - name: Build project
       run: dotnet build -bl:build.binlog -c Release -p:WriteVersionInfoToBuildLog=false
