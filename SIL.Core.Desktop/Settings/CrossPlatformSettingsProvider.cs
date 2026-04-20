@@ -33,10 +33,7 @@ namespace SIL.Settings
 		// May be overridden in a derived class to control where settings are looked for
 		// when that class is used as the provider. Must do any initialization before calls to GetCompanyAndProductPath,
 		// that is, before trying to use instances of the relevant settings.
-		protected virtual string ProductName
-		{
-			get { return null; }
-		}
+		protected virtual string ProductName => null;
 
 		/// <summary>
 		/// Indicates if the settings should be saved in roaming or local location, defaulted to false;
@@ -46,10 +43,7 @@ namespace SIL.Settings
 		/// <summary>
 		/// Where we expect to find the config file. Protected for unit testing.
 		/// </summary>
-		protected string UserConfigLocation
-		{
-			get { return IsRoaming ? UserRoamingLocation : UserLocalLocation; }
-		}
+		protected string UserConfigLocation => IsRoaming ? UserRoamingLocation : UserLocalLocation;
 
 		private readonly Dictionary<string, string> _renamedSections;
 
@@ -91,10 +85,7 @@ namespace SIL.Settings
 			return _lastReadingError;
 		}
 
-		public IDictionary<string, string> RenamedSections
-		{
-			get { return _renamedSections; }
-		}
+		public IDictionary<string, string> RenamedSections => _renamedSections;
 
 		public override void Initialize(string name, System.Collections.Specialized.NameValueCollection config)
 		{
@@ -129,7 +120,7 @@ namespace SIL.Settings
 				productName = ProductName;
 			else
 			{
-			var productAttributes =
+				var productAttributes =
 					(AssemblyProductAttribute[])assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), true);
 				if(productAttributes.Length > 0)
 				{
@@ -149,9 +140,11 @@ namespace SIL.Settings
 				//Iterate through the settings to be retrieved
 				foreach(SettingsProperty setting in collection)
 				{
-					var value = new SettingsPropertyValue(setting);
-					value.IsDirty = false;
-					value.SerializedValue = GetValue(SettingsXml, context["GroupName"].ToString(), setting);
+					var value = new SettingsPropertyValue(setting)
+					{
+						IsDirty = false,
+						SerializedValue = GetValue(SettingsXml, context["GroupName"].ToString(), setting)
+					};
 					values.Add(value);
 				}
 				return values;
@@ -185,7 +178,8 @@ namespace SIL.Settings
 						var parentNode = SettingsXml.SelectSingleNode("/configuration/configSections/sectionGroup");
 						section = SettingsXml.CreateElement("section");
 						section.SetAttribute("name", groupName);
-						section.SetAttribute("type", String.Format("{0}, {1}", typeof(ClientSettingsSection), Assembly.GetAssembly(typeof(ClientSettingsSection))));
+						section.SetAttribute("type",
+							$"{typeof(ClientSettingsSection)}, {Assembly.GetAssembly(typeof(ClientSettingsSection))}");
 						parentNode.AppendChild(section);
 					}
 					SetValue(groupNode, propVal);
@@ -236,7 +230,7 @@ namespace SIL.Settings
 		{
 			if(valueNode == null)
 			{
-				throw new ArgumentNullException("valueNode");
+				throw new ArgumentNullException(nameof(valueNode));
 			}
 			if(propVal.Property.SerializeAs == SettingsSerializeAs.String)
 			{
@@ -265,18 +259,9 @@ namespace SIL.Settings
 			}
 		}
 
-		public override string Name
-		{
-			get
-			{
-				return @"CrossPlatformLocalFileSettingsProvider";
-			}
-		}
+		public override string Name => @"CrossPlatformLocalFileSettingsProvider";
 
-		public override string Description
-		{
-			get { return "@WorkingLocalFileProviderForWinAndMono"; }
-		}
+		public override string Description => "@WorkingLocalFileProviderForWinAndMono";
 
 
 		public override string ApplicationName
@@ -302,9 +287,11 @@ namespace SIL.Settings
 			{
 				return null;
 			}
-			var value = new SettingsPropertyValue(property);
-			value.IsDirty = false;
-			value.SerializedValue = GetValue(document, context["GroupName"].ToString(), property);
+			var value = new SettingsPropertyValue(property)
+			{
+				IsDirty = false,
+				SerializedValue = GetValue(document, context["GroupName"].ToString(), property)
+			};
 			return value;
 		}
 
@@ -360,7 +347,7 @@ namespace SIL.Settings
 		/// Returns the directories in order based on finding the most recently modified user.config file (putting that first).
 		/// More specifically, a folder with a config file is 'less than' one that has none; if both have config files,
 		/// the most recently modified is less than the other.
-		/// This allows a new install to inherit settings from whatever pre-existing settings were last modified.
+		/// This allows a new installation to inherit settings from whatever pre-existing settings were last modified.
 		/// This in turn allows settings to be inherited across channels (like BloomAlpha and BloomSHRP) that may have
 		/// different version number sequences, and still a new install will get the most recent settings from any
 		/// previous versions. It works even if the version numbers are not in a consistent order.
@@ -409,8 +396,7 @@ namespace SIL.Settings
 						{
 							foreach (XmlElement sectionNode in userSettingsNode.ChildNodes.OfType<XmlElement>().ToArray())
 							{
-								string newName;
-								if (_renamedSections.TryGetValue(sectionNode.Name, out newName))
+								if (_renamedSections.TryGetValue(sectionNode.Name, out var newName))
 								{
 									XmlElement newSectionNode = oldDoc.CreateElement(newName);
 									foreach (XmlNode child in sectionNode.ChildNodes)
@@ -521,7 +507,7 @@ namespace SIL.Settings
 						var sectionGroup = _settingsXml.CreateElement("sectionGroup");
 						sectionGroup.SetAttribute("name", "userSettings");
 						var userSettingsAssembly = Assembly.GetAssembly(typeof(UserSettingsGroup));
-						var typeValue = String.Format("{0}, {1}", typeof(UserSettingsGroup), userSettingsAssembly);
+						var typeValue = $"{typeof(UserSettingsGroup)}, {userSettingsAssembly}";
 						sectionGroup.SetAttribute("type", typeValue);
 						configSections.AppendChild(sectionGroup);
 						var userSettings =  _settingsXml.CreateNode(XmlNodeType.Element, "userSettings", "");
