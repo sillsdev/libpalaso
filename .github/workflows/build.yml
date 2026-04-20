@@ -37,6 +37,11 @@ jobs:
     # target frameworks building in parallel each try to append to the same GHA environment file.
     # WriteVersionInfoToBuildLog=false suppresses the MSBuild task that causes the conflict;
     # assembly versioning is unaffected as it uses a different GitVersion task.
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v3
+      with:
+        versionSpec: '5.x'
+
     - name: Run GitVersion
       uses: gittools/actions/gitversion/execute@v3
 
