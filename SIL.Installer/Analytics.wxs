@@ -26,9 +26,16 @@
          fragment is compiled (e.g. in their own .wxs) to override this default. -->
     <?define GlobalAnalyticsRegistryKey = "Software\SIL\Analytics" ?>
 
-    <?ifdef var.ProductAnalyticsRegistryKey ?>
-    <?else?>
+    <?ifndef var.ProductAnalyticsRegistryKey ?>
       <?define ProductAnalyticsRegistryKey = "Software\SIL\$(var.ProductName)\Analytics" ?>
+    <?endif?>
+
+    <?ifndef var.AnalyticsComponentDirectory ?>
+      <?define AnalyticsComponentDirectory = ProgramDir ?>
+    <?endif?>
+
+    <?ifndef var.AnalyticsComponentWin64 ?>
+      <?define AnalyticsComponentWin64 = "yes" ?>
     <?endif?>
 
     <!-- ═══════════════════════════════════════════════════════
@@ -46,7 +53,7 @@
                       Key="$(var.ProductAnalyticsRegistryKey)"
                       Name="Enabled"
                       Type="raw"
-                      Win64="yes" />
+                      Win64="$(var.AnalyticsComponentWin64)" />
     </Property>
 
     <Property Id="GLOBAL_ANALYTICS_SETTING" Secure="yes">
@@ -55,31 +62,42 @@
                       Key="$(var.GlobalAnalyticsRegistryKey)"
                       Name="Enabled"
                       Type="raw"
-                      Win64="yes" />
+                      Win64="$(var.AnalyticsComponentWin64)" />
     </Property>
 
+	<!-- UI property for the privacy dialog checkboxes. These are *not* secure since they are
+		used only in the UI. This allows the UI to display the correct state for the checkboxes
+		even if the user clicks Back to revisit the dialog (because MSI may treat any non-empty
+		value (including "0") as "truthy" when displaying the checkbox). Since the privacy
+		 dialog only ever displays when no prior choice is recorded, we can safely initialize both
+		to "1" unconditionally. -->
+    <Property Id="PRODUCT_ANALYTICS_ENABLED_UI" Value="1" />
+    <Property Id="SIL_ANALYTICS_APPLY_GLOBALLY_UI" Value="1" />
+
     <!-- Normalized checkbox-backing properties: no defaults, no RegistrySearch.
-         Set exclusively by the normalization custom actions below (reads from the _SETTING
-         properties above to derive correct initial values). -->
+         Initialized by the normalization custom actions below (reads from the _SETTING
+         properties above to derive correct initial values) and updated by Publish actions
+		 in the UI based on user choices in the Privacy Settings dialog box. -->
     <Property Id="PRODUCT_ANALYTICS_ENABLED" Secure="yes" />
     <Property Id="SIL_ANALYTICS_ENABLED_GLOBALLY" Secure="yes" />
 
-    <!-- Set by the normalization custom actions when product and global values agree.
-         Must be Secure so it survives the UI->execute session handoff in per-machine installs;
-         component conditions depend on it. -->
-    <Property Id="SIL_ANALYTICS_APPLY_GLOBALLY" Secure="yes" />
+    <!-- Sentinel: set by Analytics_SetUiRan in InstallUISequence so InstallExecuteSequence
+         CAs can detect that the UI ran. Must be Secure to survive the UI→execute handoff.
+         When this is set, the ExecuteSequence normalization CAs are skipped — the user's
+         dialog choices (already stored in the other Secure properties) take precedence. -->
+    <Property Id="ANALYTICS_UI_RAN" Secure="yes" />
 
     <!-- ═══════════════════════════════════════════════════════
          Analytics registry components
          Wrapped in a ComponentGroup so the consuming installer
          only needs: <ComponentGroupRef Id="SilAnalyticsComponents" />
     ════════════════════════════════════════════════════════════ -->
-    <ComponentGroup Id="SilAnalyticsComponents" Directory="TARGETDIR">
+    <ComponentGroup Id="SilAnalyticsComponents" Directory="$(var.AnalyticsComponentDirectory)">
 
       <!-- Writes the shared SIL-wide analytics preference.
            GUID is fixed across all SIL products — they all share ownership of this key. -->
-      <Component Id="GlobalAnalyticsSetting" Guid="{5D729D52-F0E1-443F-AA40-664AA754F1C1}">
-        <Condition><![CDATA[SIL_ANALYTICS_APPLY_GLOBALLY = "1"]]></Condition>
+      <Component Id="GlobalAnalyticsSetting" Guid="{5D729D52-F0E1-443F-AA40-664AA754F1C1}" Win64="$(var.AnalyticsComponentWin64)" Transitive="yes">
+        <Condition><![CDATA[SIL_ANALYTICS_ENABLED_GLOBALLY]]></Condition>
         <RegistryKey Root="HKCU" Key="$(var.GlobalAnalyticsRegistryKey)">
           <RegistryValue
             Name="Enabled"
@@ -91,20 +109,13 @@
 
       <!-- Writes the per-product analytics setting (HKCU).
 
-      This component is installed only when:
-       - the user is NOT applying the setting globally, and
-       - a product-level value is actually set.
-
-      Behavior:
-       - If the user switches to a global setting, this condition becomes false
-         and MSI removes the per-product registry value.
-       - During silent installs or repairs/upgrades (when the Privacy dialog is usually skipped),
-         PRODUCT_ANALYTICS_ENABLED will be empty; we skip writing
-         to avoid overwriting an existing user preference with a blank value.
-       - A value of "0" (explicit opt-out) is still considered "set" in MSI
-         conditions, so it will be written correctly. -->
-      <Component Id="$(var.ProductName)AnalyticsSetting" Guid="*">
-        <Condition><![CDATA[SIL_ANALYTICS_APPLY_GLOBALLY <> "1" AND PRODUCT_ANALYTICS_ENABLED]]></Condition>
+      This component is installed whenever the user has made a choice (PRODUCT_ANALYTICS_ENABLED is
+      set to "0" or "1"), including when the global checkbox is also checked. This ensures the
+      per-product registry value is always authoritative for this product (matching the application's
+      AllowTracking logic, which reads the per-product key first). It also ensures that a MSI repair
+      that force-reinstalls this component (due to a missing KeyPath) always writes a consistent value. -->
+      <Component Id="$(var.ProductName)AnalyticsSetting" Guid="*" Win64="$(var.AnalyticsComponentWin64)" Transitive="yes">
+        <Condition>PRODUCT_ANALYTICS_ENABLED</Condition>
         <RegistryKey Root="HKCU" Key="$(var.ProductAnalyticsRegistryKey)">
           <RegistryValue
             Name="Enabled"
@@ -137,25 +148,39 @@
              {0} desktop software" in the C# dialog — resolve before next sync. -->
         <Control Id="Description" Type="Text" X="20" Y="10" Width="330" Height="100"
                  Text="$(var.ProductName) collects a small amount of usage data to help SIL Global improve the software. This data is intended to be anonymous and does not include personal information. However, given the small number of users and the types of data collected, we cannot strictly guarantee that individuals or language communities could never be identified. You may opt out below." />
+		<!-- CheckBoxValue="1" indicates the *output* value of PRODUCT_ANALYTICS_ENABLED_UI when checked -->
         <Control Id="ProductAnalyticsCheckbox" Type="CheckBox"
                  X="20" Y="120" Width="330" Height="18"
-                 Property="PRODUCT_ANALYTICS_ENABLED"
+                 Property="PRODUCT_ANALYTICS_ENABLED_UI"
                  CheckBoxValue="1"
                  Text="Share anonymous $(var.ProductName) usage data" />
+		<!-- CheckBoxValue="1" indicates the value of SIL_ANALYTICS_APPLY_GLOBALLY_UI when checked.
+             Hidden during repair: the global setting is shared across SIL products and should not
+             be changed during a repair; only the per-product setting may be adjusted. -->
         <Control Id="GlobalAnalyticsCheckbox" Type="CheckBox"
                  X="20" Y="145" Width="330" Height="18"
-                 Property="SIL_ANALYTICS_APPLY_GLOBALLY"
+                 Property="SIL_ANALYTICS_APPLY_GLOBALLY_UI"
                  CheckBoxValue="1"
-                 Text="Use this setting for other SIL Global desktop software" />
+                 Text="Use this setting for other SIL Global desktop software">
+          <Condition Action="hide">Installed</Condition>
+        </Control>
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&lt; Back">
           <Publish Event="NewDialog" Value="LicenseAgreementDlg">1</Publish>
         </Control>
         <Control Id="Next" Type="PushButton" X="240" Y="243" Width="56" Height="17" Default="yes" Text="Next >">
-          <!-- Normalize unchecked product-specific value to "0" only when global is NOT applied -->
-          <Publish Property="PRODUCT_ANALYTICS_ENABLED" Value="0">NOT PRODUCT_ANALYTICS_ENABLED AND NOT SIL_ANALYTICS_APPLY_GLOBALLY</Publish>
-          <!-- Set global value to match product-specific value when global IS applied; don't touch it otherwise -->
-          <Publish Property="SIL_ANALYTICS_ENABLED_GLOBALLY" Value="1">PRODUCT_ANALYTICS_ENABLED = "1" AND SIL_ANALYTICS_APPLY_GLOBALLY = "1"</Publish>
-          <Publish Property="SIL_ANALYTICS_ENABLED_GLOBALLY" Value="0">NOT PRODUCT_ANALYTICS_ENABLED AND SIL_ANALYTICS_APPLY_GLOBALLY = "1"</Publish>
+          <!-- Set product-specific value according to the UI selection. -->
+          <Publish Property="PRODUCT_ANALYTICS_ENABLED" Value="0">NOT PRODUCT_ANALYTICS_ENABLED_UI OR PRODUCT_ANALYTICS_ENABLED_UI = "0"</Publish>
+          <Publish Property="PRODUCT_ANALYTICS_ENABLED" Value="1">PRODUCT_ANALYTICS_ENABLED_UI = "1"</Publish>
+          <!-- Set global value to match product-specific value when global IS applied; clear it otherwise.
+               All three are suppressed during repair (Installed is set): the GlobalAnalyticsCheckbox is
+               hidden then and SIL_ANALYTICS_APPLY_GLOBALLY_UI defaults to "1", which would otherwise
+               incorrectly trigger the "set" actions. The global registry value is intentionally left
+               untouched during repair regardless of its current state.
+               The clear only fires when GLOBAL_ANALYTICS_SETTING is null (i.e. no pre-existing global
+               registry value), which is the only case where the Privacy dialog is shown at all. -->
+          <Publish Property="SIL_ANALYTICS_ENABLED_GLOBALLY">NOT SIL_ANALYTICS_APPLY_GLOBALLY_UI AND NOT GLOBAL_ANALYTICS_SETTING AND NOT Installed</Publish>
+          <Publish Property="SIL_ANALYTICS_ENABLED_GLOBALLY" Value="0">PRODUCT_ANALYTICS_ENABLED = "0" AND SIL_ANALYTICS_APPLY_GLOBALLY_UI = "1" AND NOT Installed</Publish>
+          <Publish Property="SIL_ANALYTICS_ENABLED_GLOBALLY" Value="1">PRODUCT_ANALYTICS_ENABLED = "1" AND SIL_ANALYTICS_APPLY_GLOBALLY_UI = "1" AND NOT Installed</Publish>
           <Publish Event="NewDialog" Value="VerifyReadyDlg">1</Publish>
         </Control>
         <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
@@ -165,26 +190,22 @@
     </UI>
 
     <!-- ═══════════════════════════════════════════════════════
-         Run in the UI sequence, these Custom Actions set the three checkbox-backing
-	     properties, following these rules:
-         Case 1 — fresh install (both _SETTING properties empty):
-            PRODUCT_ANALYTICS_ENABLED = "1"
-			SIL_ANALYTICS_ENABLED_GLOBALLY = "1",
-            SIL_ANALYTICS_APPLY_GLOBALLY = "1"
-	        This is the only case where we show the Privacy dialog in the installer;
-	        both checkboxes will be initially checked.
+        Run in the UI sequence, these Custom Actions set the three checkbox-backing
+	    properties, following these rules:
+        Case 1 — fresh install (both _SETTING properties empty):
+	    	This is the only case where we show the Privacy dialog in the installer;
+	    	both checkboxes will be initially checked, but we don't want to set any defaults
+			for the registry values until the user clicks Next, so *none* of the CAs below
+			fire in this case.
         Case 2 — only GLOBAL_ANALYTICS_SETTING is set (e.g. another SIL product ran first):
             PRODUCT_ANALYTICS_ENABLED = normalized(GLOBAL_ANALYTICS_SETTING),
-	        SIL_ANALYTICS_ENABLED_GLOBALLY = normalized(GLOBAL_ANALYTICS_SETTING),
-            SIL_ANALYTICS_APPLY_GLOBALLY = "1" (product always inherits global → they match)
+	        SIL_ANALYTICS_ENABLED_GLOBALLY = normalized(GLOBAL_ANALYTICS_SETTING)
         Case 3 — only PRODUCT_ANALYTICS_SETTING is set:
             PRODUCT_ANALYTICS_ENABLED = normalized(PRODUCT_ANALYTICS_SETTING),
-	        SIL_ANALYTICS_ENABLED_GLOBALLY = "0",
-            SIL_ANALYTICS_APPLY_GLOBALLY = "0" (user previously chose product-level only; respect that)
+	        SIL_ANALYTICS_ENABLED_GLOBALLY = "0"
         Case 4 — both _SETTING properties are set:
             PRODUCT_ANALYTICS_ENABLED = normalized(PRODUCT_ANALYTICS_SETTING),
-	        SIL_ANALYTICS_ENABLED_GLOBALLY = normalized(GLOBAL_ANALYTICS_SETTING),
-            SIL_ANALYTICS_APPLY_GLOBALLY = "1" if equal, else "0"
+	        SIL_ANALYTICS_ENABLED_GLOBALLY = normalized(GLOBAL_ANALYTICS_SETTING)
 
          "normalized" means: "#1" → "1", "#0" → "0" (stripping the DWORD prefix that
          RegistrySearch Type="raw" adds). The _ENABLED/_GLOBALLY properties therefore
@@ -200,15 +221,9 @@
 		 (failing because it needed UAC elevation that isn't available in the UI sequence),
 		 we use multiple WiX CAs with conditions to cover all the cases even though it's
 		 a bit more verbose.
-
-		 See AnalyticsNormalizationTests.wixproj for tests that verify this logic.
     ════════════════════════════════════════════════════════════ -->
 
     <!-- PRODUCT_ANALYTICS_ENABLED -->
-    <CustomAction Id="Analytics_SetProductEnabled_Fresh"
-                  Property="PRODUCT_ANALYTICS_ENABLED"
-                  Value="1"
-                  Execute="immediate" />
     <CustomAction Id="Analytics_SetProductEnabled_FromGlobal_True"
                   Property="PRODUCT_ANALYTICS_ENABLED"
                   Value="1"
@@ -227,10 +242,6 @@
                   Execute="immediate" />
 
     <!-- SIL_ANALYTICS_ENABLED_GLOBALLY -->
-    <CustomAction Id="Analytics_SetGlobalEnabled_Fresh"
-                  Property="SIL_ANALYTICS_ENABLED_GLOBALLY"
-                  Value="1"
-                  Execute="immediate" />
     <CustomAction Id="Analytics_SetGlobalEnabled_FromGlobal_True"
                   Property="SIL_ANALYTICS_ENABLED_GLOBALLY"
                   Value="1"
@@ -244,22 +255,18 @@
                   Value="0"
                   Execute="immediate" />
 
-    <!-- SIL_ANALYTICS_APPLY_GLOBALLY — left unset (≡ "0") when no "1" CA fires -->
-    <CustomAction Id="Analytics_SetApplyGlobally_NoProduct"
-                  Property="SIL_ANALYTICS_APPLY_GLOBALLY"
-                  Value="1"
-                  Execute="immediate" />
-    <CustomAction Id="Analytics_SetApplyGlobally_BothMatch"
-                  Property="SIL_ANALYTICS_APPLY_GLOBALLY"
+    <!-- Sentinel: marks that InstallUISequence ran, so ExecuteSequence CAs are suppressed -->
+    <CustomAction Id="Analytics_SetUiRan"
+                  Property="ANALYTICS_UI_RAN"
                   Value="1"
                   Execute="immediate" />
 
     <InstallUISequence>
-      <!-- PRODUCT_ANALYTICS_ENABLED: exactly one of these five fires -->
-      <Custom Action="Analytics_SetProductEnabled_Fresh" Before="CostFinalize">
-        NOT PRODUCT_ANALYTICS_SETTING AND NOT GLOBAL_ANALYTICS_SETTING
-      </Custom>
-      <Custom Action="Analytics_SetProductEnabled_FromGlobal_True" After="Analytics_SetProductEnabled_Fresh">
+      <!-- Sentinel: fires unconditionally so ExecuteSequence CAs know the UI ran -->
+      <Custom Action="Analytics_SetUiRan" Before="Analytics_SetProductEnabled_FromGlobal_True">1</Custom>
+
+      <!-- PRODUCT_ANALYTICS_ENABLED: no more than one of these four fires -->
+      <Custom Action="Analytics_SetProductEnabled_FromGlobal_True" Before="CostFinalize">
         NOT PRODUCT_ANALYTICS_SETTING AND GLOBAL_ANALYTICS_SETTING = "#1"
       </Custom>
       <Custom Action="Analytics_SetProductEnabled_FromGlobal_False" After="Analytics_SetProductEnabled_FromGlobal_True">
@@ -272,11 +279,8 @@
         PRODUCT_ANALYTICS_SETTING = "#0"
       </Custom>
 
-      <!-- SIL_ANALYTICS_ENABLED_GLOBALLY: exactly one of these four fires -->
-      <Custom Action="Analytics_SetGlobalEnabled_Fresh" After="Analytics_SetProductEnabled_FromProduct_False">
-        NOT PRODUCT_ANALYTICS_SETTING AND NOT GLOBAL_ANALYTICS_SETTING
-      </Custom>
-      <Custom Action="Analytics_SetGlobalEnabled_FromGlobal_True" After="Analytics_SetGlobalEnabled_Fresh">
+      <!-- SIL_ANALYTICS_ENABLED_GLOBALLY: no more than one of these three fires -->
+      <Custom Action="Analytics_SetGlobalEnabled_FromGlobal_True" After="Analytics_SetProductEnabled_FromProduct_False">
         GLOBAL_ANALYTICS_SETTING = "#1"
       </Custom>
       <Custom Action="Analytics_SetGlobalEnabled_FromGlobal_False" After="Analytics_SetGlobalEnabled_FromGlobal_True">
@@ -285,17 +289,44 @@
       <Custom Action="Analytics_SetGlobalEnabled_DefaultFalse" After="Analytics_SetGlobalEnabled_FromGlobal_False">
         PRODUCT_ANALYTICS_SETTING AND NOT GLOBAL_ANALYTICS_SETTING
       </Custom>
-
-      <!-- SIL_ANALYTICS_APPLY_GLOBALLY: "1" when effective values match, unset (≡ "0") otherwise -->
-      <!-- Cases 1+2: product absent → inherits global → always matches -->
-      <Custom Action="Analytics_SetApplyGlobally_NoProduct" After="Analytics_SetGlobalEnabled_DefaultFalse">
-        NOT PRODUCT_ANALYTICS_SETTING
-      </Custom>
-      <!-- Case 4: both set and equal -->
-      <Custom Action="Analytics_SetApplyGlobally_BothMatch" After="Analytics_SetApplyGlobally_NoProduct">
-        GLOBAL_ANALYTICS_SETTING = PRODUCT_ANALYTICS_SETTING AND GLOBAL_ANALYTICS_SETTING
-      </Custom>
     </InstallUISequence>
+
+    <!-- Run the normalization CAs in InstallExecuteSequence so that in silent/minimal-UI
+		 installs, if prior settings exist the relevant CAs fire, the component conditions
+         evaluate correctly, and existing registry values are preserved rather than
+         deleted by a false component condition. -->
+    <InstallExecuteSequence>
+
+      <!-- All CAs in this sequence are gated on NOT ANALYTICS_UI_RAN.
+           When the installer runs interactively, InstallUISequence sets ANALYTICS_UI_RAN = "1"
+           and that value is passed (as a Secure property) to the execute session, so none of
+           these CAs fire — the user's choices from the Privacy dialog take precedence.
+           Only during a silent install (UISequence skipped) do these CAs fire. -->
+
+      <!-- PRODUCT_ANALYTICS_ENABLED (cases 2-4) -->
+      <Custom Action="Analytics_SetProductEnabled_FromGlobal_True" After="AppSearch">
+        NOT ANALYTICS_UI_RAN AND NOT PRODUCT_ANALYTICS_SETTING AND GLOBAL_ANALYTICS_SETTING = "#1"
+      </Custom>
+      <Custom Action="Analytics_SetProductEnabled_FromGlobal_False" After="Analytics_SetProductEnabled_FromGlobal_True">
+        NOT ANALYTICS_UI_RAN AND NOT PRODUCT_ANALYTICS_SETTING AND GLOBAL_ANALYTICS_SETTING = "#0"
+      </Custom>
+      <Custom Action="Analytics_SetProductEnabled_FromProduct_True" After="Analytics_SetProductEnabled_FromGlobal_False">
+        NOT ANALYTICS_UI_RAN AND PRODUCT_ANALYTICS_SETTING = "#1"
+      </Custom>
+      <Custom Action="Analytics_SetProductEnabled_FromProduct_False" After="Analytics_SetProductEnabled_FromProduct_True">
+        NOT ANALYTICS_UI_RAN AND PRODUCT_ANALYTICS_SETTING = "#0"
+      </Custom>
+
+      <!-- SIL_ANALYTICS_ENABLED_GLOBALLY (cases 2/4 — needed so GlobalAnalyticsSetting
+           writes the correct value) -->
+      <Custom Action="Analytics_SetGlobalEnabled_FromGlobal_True" After="Analytics_SetProductEnabled_FromProduct_False">
+        NOT ANALYTICS_UI_RAN AND GLOBAL_ANALYTICS_SETTING = "#1"
+      </Custom>
+      <Custom Action="Analytics_SetGlobalEnabled_FromGlobal_False" After="Analytics_SetGlobalEnabled_FromGlobal_True">
+        NOT ANALYTICS_UI_RAN AND GLOBAL_ANALYTICS_SETTING = "#0"
+      </Custom>
+
+    </InstallExecuteSequence>
 
   </Fragment>
 </Wix>

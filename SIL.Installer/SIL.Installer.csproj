@@ -26,4 +26,24 @@
     <None Include="build/README.md" Pack="true" PackagePath="README.md" />
   </ItemGroup>
 
+
+  <!-- Compile the WiX fragments with candle.exe to catch syntax and schema errors early.
+       Skipped silently when WiX 3.14 is not installed (e.g. on machines that only build
+       the NuGet package and never build a consuming installer). -->
+  <PropertyGroup>
+    <WixToolsPath Condition="'$(WixToolsPath)' == ''">$(ProgramFiles(x86))\WiX Toolset v3.14\bin\</WixToolsPath>
+    <WixValidationOutDir>$(IntermediateOutputPath)wix-validate\</WixValidationOutDir>
+  </PropertyGroup>
+
+  <Target Name="ValidateWixFragments" AfterTargets="Build"
+          Condition="Exists('$(WixToolsPath)candle.exe')">
+    <MakeDir Directories="$(WixValidationOutDir)" />
+    <Exec Command="&quot;$(WixToolsPath)candle.exe&quot; -nologo -arch x64 -dProductName=SILInstallerValidation -out &quot;$(WixValidationOutDir)&quot; Analytics.wxs AnalyticsNavigation.wxs"
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+  <Target Name="CleanWixValidation" AfterTargets="Clean">
+    <RemoveDir Directories="$(WixValidationOutDir)" />
+  </Target>
+
 </Project>

@@ -25,13 +25,26 @@ The `SIL.Installer.targets` file is imported automatically. It:
 - Adds `Analytics.wxs` to the WiX compiler's `Compile` items.
 - Adds `AnalyticsNavigation.wxs` to `Compile` items (opt out with `SilAnalyticsIncludeNavigation=false`).
 
-### 2. Define required preprocessor variables
+### 2. Define preprocessor variables
 
 In your installer's `.wxs` file (or via `DefineConstants` in the `.wixproj`):
 
 ```xml
+<!-- Required -->
 <?define ProductName = "YourProduct" ?>
+
+<!-- Optional: defaults to "Software\SIL\$(var.ProductName)\Analytics" -->
 <?define ProductAnalyticsRegistryKey = "Software\SIL\YourProduct\Analytics" ?>
+
+<!-- Optional: WiX directory ID to anchor the analytics ComponentGroup.
+     Must be a directory ID defined in your installer's <Directory> tree.
+     No files are written here; MSI requires a directory anchor even for
+     registry-only components. Override only if your installer does not
+     define 'ProgramDir'. -->
+<?define AnalyticsComponentDirectory = ProgramDir ?>
+
+<!-- Optional: set to "no" for a 32-bit installer. Defaults to "yes". -->
+<?define AnalyticsComponentWin64 = "yes" ?>
 ```
 
 ### 3. Reference the component group
