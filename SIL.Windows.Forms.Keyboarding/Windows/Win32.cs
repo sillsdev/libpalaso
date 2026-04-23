@@ -118,6 +118,25 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 		[DllImport("imm32.dll", CharSet = CharSet.Unicode)]
 		public static extern int ImmGetDescription(IntPtr hkl, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder description, uint bufLen);
+
+		/// <summary>
+		/// Determines the open or close status of the IME.
+		/// </summary>
+		/// <param name="hIMC">Handle to the input context.</param>
+		/// <returns>Returns true if the IME is open, or false otherwise.</returns>
+		[DllImport("imm32.dll", CharSet = CharSet.Auto)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool ImmGetOpenStatus(HandleRef hIMC);
+
+		/// <summary>
+		/// Opens or closes the IME.
+		/// </summary>
+		/// <param name="hIMC">Handle to the input context.</param>
+		/// <param name="open">true to open the IME, or false to close it.</param>
+		/// <returns>Returns true if successful, or false otherwise.</returns>
+		[DllImport("imm32.dll", CharSet = CharSet.Auto)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		public static extern bool ImmSetOpenStatus(HandleRef hIMC, bool open);
 		#endregion
 
 		#region user32.dll
@@ -148,6 +167,18 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 		[DllImport("user32.dll")]
 		public static extern int GetKeyboardLayoutList(int nBuff, [Out] IntPtr lpList);
+
+		/// <summary>
+		/// Retrieves the name of the class to which the specified window belongs.
+		/// </summary>
+		[DllImport("user32.dll", CharSet = CharSet.Auto)]
+		public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
+		/// <summary>
+		/// Retrieves the keyboard layout for the specified thread.
+		/// </summary>
+		[DllImport("user32.dll")]
+		public static extern IntPtr GetKeyboardLayout(uint idThread);
 		#endregion
 
 		#region shlwapi.dll
