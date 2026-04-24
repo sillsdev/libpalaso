@@ -13,13 +13,14 @@ using System;
 namespace SIL.Core.Desktop.Privacy
 {
 	/// <summary>
-	/// Provides configuration and identity information used for analytics tracking.
+	/// Represents the user's consent state for analytics tracking and provides access to the
+	/// effective tracking permission for the current product.
 	/// </summary>
 	/// <remarks>
 	/// Implementations determine whether analytics events may be sent,
 	/// based on product-level and (optionally) organization-level settings.
 	/// </remarks>
-	public interface IAnalytics
+	public interface IAnalyticsConsent
 	{
 		event EventHandler<AllowTrackingChangedEventArgs> AllowTrackingChanged;
 		
@@ -36,11 +37,8 @@ namespace SIL.Core.Desktop.Privacy
 		string OrganizationName { get; }
 
 		/// <summary>
-		/// Gets a value indicating whether analytics tracking is currently permitted for this product.
-		/// This is determined as follows:
-		/// 1. If a product-specific setting exists, it takes precedence.
-		/// 2. Otherwise, the global/organization-wide setting is used.
-		/// 3. If neither setting is present, tracking is allowed by default.
+		/// Gets a value indicating whether analytics tracking is currently permitted for this product
+		/// after applying product and organization preferences.
 		/// </summary>
 		bool AllowTracking { get; }
 

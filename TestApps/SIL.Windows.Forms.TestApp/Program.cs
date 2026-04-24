@@ -18,7 +18,7 @@ namespace SIL.Windows.Forms.TestApp
 		internal const string kSupportEmailAddress = "bogus_test_app_email_addr@sil.org";
 		internal static ILocalizationManager PrimaryL10NManager;
 
-		internal static IAnalytics AnalyticsImpl;
+		internal static IAnalyticsConsent AnalyticsImpl;
 
 		[STAThread]
 		public static void Main(string[] args)
@@ -69,7 +69,7 @@ namespace SIL.Windows.Forms.TestApp
 
 		private static void SetUpAnalytics()
 		{
-			AnalyticsImpl = new AnalyticsProxy(Application.ProductName);
+			AnalyticsImpl = new AnalyticsConsent(Application.ProductName);
 		}
 	}
 }

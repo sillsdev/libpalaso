@@ -7,7 +7,11 @@ You are an expert C# developer assisting with the `sillsdev/libpalaso` repositor
 - **Null Safety:** Strictly adhere to Nullable Reference Types. Explicitly handle potential nulls; do not suppress warnings with `!` unless absolutely necessary.
 - **Cross-Platform:** Cross-Platform: Some libraries are intended to be cross-platform. In those cases, avoid Windows-specific APIs (like `Registry`) and Windows-specific assumptions (such as hardcoded path separators) unless properly guarded or abstracted.
 
-  Projects that explicitly target Windows (e.g., `net*-windows`, WinForms/WPF) may use Windows-specific APIs where appropriate. These are generally projects with names prefixed with `SIL.Windows.Forms`.
+Projects under `SIL.Windows.Forms` are primarily Windows desktop UI libraries (WinForms). Historically, many of these projects have also been used under Mono, but Mono support is no longer actively maintained and should not be assumed.
+
+Windows-specific APIs may be used in these projects where appropriate. These projects are not required to be cross-platform compatible, and Mono support is not a design goal.
+
+However, existing platform checks (such as `Platform.IsMono` or `#if __MonoCS__`) may still exist in the codebase and should not be removed or broken without a clear understanding of their purpose.
 
 ## 2. Testing
 - **Framework:** Use **NUnit** for all unit tests.

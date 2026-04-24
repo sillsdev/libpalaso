@@ -27,8 +27,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Added an Exception property to NonFatalErrorReportExpected to return the previous reported non-fatal exception.
 - [SIL.Media] Added a static PlaybackErrorMessage property to AudioFactory and a public const, kDefaultPlaybackErrorMessage, that will be used as the default message if the client does not set PlaybackErrorMessage.
 - [SIL.Windows.Forms] Added KeysExtensions class with the IsNavigationKey extension method.
-- [SIL.Core.Desktop] Added IAnalytics interface.
-- [SIL.Windows.Forms.Privacy] Added AnalyticsProxy class, a Winforms/registry-based implementation of IAnalytics.
+- [SIL.Core.Desktop] Added IAnalyticsConsent interface.
+- [SIL.Windows.Forms.Privacy] Added AnalyticsConsent class, a Registry-based opt-out implementation of IAnalyticsConsent.
 - [SIL.Windows.Forms.Privacy] Added PrivacyDlg as a new standard dialog to allow user to control whether analytics tracking is allowed.
 - [SIL.Installer] Added new package for common installer components. Initially, this includes a Privacy dialog and code to access the registry entries so users can opt out of analytics data collection.
 - [SIL.Core] Added PathUtilities.ParentDirectories extension method.
