@@ -21,7 +21,7 @@ namespace SIL.Windows.Forms.Privacy
 	{
 		private readonly bool _initialAnalyticsEnabledValue;
 		private readonly bool _initialGlobalInSync;
-		private readonly IAnalytics _analyticsImpl;
+		private readonly IAnalyticsConsent _analyticsImpl;
 		private readonly string _fmtDescription;
 		private readonly string _fmtProductCheckboxLabel;
 		private readonly string _fmtOrganizationCheckboxLabel;
@@ -32,7 +32,7 @@ namespace SIL.Windows.Forms.Privacy
 			set => _labelRestartNote.ForeColor = value;
 		}
 
-		public PrivacyDlg(IAnalytics analyticsImpl)
+		public PrivacyDlg(IAnalyticsConsent analyticsImpl)
 		{
 			_analyticsImpl = analyticsImpl ?? throw new ArgumentNullException(nameof(analyticsImpl));
 

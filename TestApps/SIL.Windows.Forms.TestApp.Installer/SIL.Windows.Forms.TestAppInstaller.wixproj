@@ -6,7 +6,7 @@
   without nuget.exe. Real consumers use the SIL.Installer NuGet package instead.
 -->
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <Import Project="..\..\packages\SIL.BuildTasks.3.2.0\build\SIL.BuildTasks.props" Condition="Exists('..\..\packages\SIL.BuildTasks.3.2.0\build\SIL.BuildTasks.props')" />
+  <Import Project=".\packages\SIL.BuildTasks.3.2.0\build\SIL.BuildTasks.props" Condition="Exists('.\packages\SIL.BuildTasks.3.2.0\build\SIL.BuildTasks.props')" />
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
     <Platform Condition="'$(Platform)' == ''">x64</Platform>

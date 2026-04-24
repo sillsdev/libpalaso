@@ -7,10 +7,13 @@ using SIL.Core.Desktop.Privacy;
 namespace SIL.Windows.Forms.Privacy
 {
 	/// <summary>
-	/// An analytics implementation that saves settings in the Windows registry.
+	/// An analytics consent implementation backed by settings stored in the Windows registry. In
+	/// this implementation, product-specific settings take precedence over global/organization-wide
+	/// settings if both are present. Also, consent follows an opt-out model, so if neither setting
+	/// is present, tracking is allowed.
 	/// </summary>
 	[PublicAPI]
-	public class AnalyticsProxy : IAnalytics
+	public class AnalyticsConsent : IAnalyticsConsent
 	{
 		private const string kRegistryValueName = "Enabled";
 
@@ -19,7 +22,8 @@ namespace SIL.Windows.Forms.Privacy
 		public string ProductName { get; }
 
 		/// <summary>
-		/// Constructs an instance of the AnalyticsProxy class with the specified product name.
+		/// Constructs an instance of the <see cref="AnalyticsConsent"/> class for the specified
+		/// product.
 		/// </summary>
 		/// <param name="productName">
 		/// The name of the product (suitable for displaying in the UI). This will be also be used
@@ -29,7 +33,7 @@ namespace SIL.Windows.Forms.Privacy
 		/// <exception cref="ArgumentNullException">
 		/// The <paramref name="productName"/> was null
 		/// </exception>
-		public AnalyticsProxy(string productName)
+		public AnalyticsConsent(string productName)
 		{
 			ProductName = productName ?? throw new ArgumentNullException(nameof(productName));
 		}
