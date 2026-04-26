@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Dog-food test installer for SIL.Windows.Forms.TestApp.
+  References SIL.Installer source files directly from this repo rather than through the
+  NuGet package — NuGet PackageReference restore is not supported for old-style .wixproj
+  without nuget.exe. Real consumers use the SIL.Installer NuGet package instead.
+-->
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project=".\packages\SIL.BuildTasks.3.2.0\build\SIL.BuildTasks.props" Condition="Exists('.\packages\SIL.BuildTasks.3.2.0\build\SIL.BuildTasks.props')" />
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <Platform Condition="'$(Platform)' == ''">x64</Platform>
+    <ProductVersion>3.0</ProductVersion>
+    <ProjectGuid>{2A256529-31BF-49DC-9F67-B069C6986228}</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputName>SIL.Windows.Forms.TestAppInstaller</OutputName>
+    <OutputType>Package</OutputType>
+    <OutputPath>output\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineSolutionProperties>false</DefineSolutionProperties>
+    <!-- ProductName must be in DefineConstants (not just <?define?> in Installer.wxs) so that
+         Analytics.wxs can see it — WiX 3 preprocessor variables are file-scoped. -->
+    <DefineConstants>ProductName=SIL.Windows.Forms.TestApp</DefineConstants>
+    <Name>SIL.Windows.Forms.TestAppInstaller</Name>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+	<GeneratedDllsDependencies>$(IntermediateOutputPath)GeneratedDllsDependencies.wxs</GeneratedDllsDependencies>
+	<GeneratedDistFiles>$(IntermediateOutputPath)GeneratedDistFiles.wxs</GeneratedDistFiles>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Installer.wxs" />
+	<Compile Include="$(GeneratedDllsDependencies)" />
+	<Compile Include="$(GeneratedDistFiles)" />
+    <!-- Include the WiX fragments directly from the SIL.Installer source tree,
+         mirroring what SIL.Installer.targets does for real NuGet consumers. -->
+    <Compile Include="..\..\SIL.Installer\Analytics.wxs">
+      <Link>Analytics.wxs</Link>
+    </Compile>
+    <Compile Include="..\..\SIL.Installer\AnalyticsNavigation.wxs">
+      <Link>AnalyticsNavigation.wxs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <WixExtension Include="WixUIExtension">
+      <HintPath>$(WixExtDir)WixUIExtension.dll</HintPath>
+      <Name>WixUIExtension</Name>
+    </WixExtension>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SilBuildTasksFile)')"
+    Text="$([System.String]::Format('$(ErrorText)', '$(SilBuildTasksFile)'))" />
+  </Target>
+  
+  <UsingTask
+	TaskName="SIL.BuildTasks.MakeWixForDirTree.MakeWixForDirTree"
+	AssemblyFile="$(SilBuildTasksFile)" />
+	
+  <Target Name="GenerateWixFiles"
+        BeforeTargets="Compile">
+
+  <MakeWixForDirTree
+      DirectoryReferenceId="ProgramDir"
+      ComponentGroupId="DllDependencies"
+      RootDirectory="$(MSBuildProjectDirectory)\..\SIL.Windows.Forms.TestApp\output\$(Configuration)\net48\"
+      OutputFilePath="$(GeneratedDllsDependencies)"
+      InstallerSourceDirectory="$(MSBuildProjectDirectory)"
+      MatchRegExPattern=".+\.dll"
+      SetWin64="true" />
+
+  <MakeWixForDirTree
+      DirectoryReferenceId="ProgramDir"
+      ComponentGroupId="DistFiles"
+      RootDirectory="$(MSBuildProjectDirectory)\..\..\DistFiles\"
+      OutputFilePath="$(GeneratedDistFiles)"
+      InstallerSourceDirectory="$(MSBuildProjectDirectory)"
+      MatchRegExPattern=".*\.xlf"
+      SetWin64="true" />
+
+  </Target>
+</Project>

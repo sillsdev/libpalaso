@@ -12,6 +12,9 @@ namespace SIL.IO
 {
 	public static class FileLocationUtilities
 	{
+		private static string s_distFilesFolder;
+		private static string s_distFilesFolderCached;
+		
 		/// <summary>
 		/// Gives the directory of either the project folder (if running from visual studio), or
 		/// the installation folder.  Helpful for finding templates and things; by using this,
@@ -109,6 +112,16 @@ namespace SIL.IO
 			return LocateExecutable(true, partsOfTheSubPath);
 		}
 
+		/// <summary>
+		/// Added so that test apps that need to use a distinct output folder can indicate where to
+		/// find the files they need without having to copy them into the build directory.
+		/// </summary>
+		public static string DistFilesFolderPath
+		{
+			get => s_distFilesFolder ?? s_distFilesFolderCached;
+			set => s_distFilesFolder = value;
+		}
+
 		private static string[] DirectoriesHoldingFiles => new[] {string.Empty, "DistFiles",
 			"common" /*for WeSay*/, "src" /*for Bloom*/};
 
@@ -125,12 +138,23 @@ namespace SIL.IO
 		/// <example>GetFileDistributedWithApplication(false, "info", "releaseNotes.htm");</example>
 		public static string GetFileDistributedWithApplication(bool optional, params string[] partsOfTheSubPath)
 		{
-			foreach (var directoryHoldingFiles in DirectoriesHoldingFiles)
+			if (DistFilesFolderPath != null)
 			{
-				var path = Path.Combine(DirectoryOfApplicationOrSolution,
-					directoryHoldingFiles, Path.Combine(partsOfTheSubPath));
+				var path = Path.Combine(DistFilesFolderPath, Path.Combine(partsOfTheSubPath));
 				if (File.Exists(path))
 					return path;
+			}
+
+			foreach (var directoryHoldingFiles in DirectoriesHoldingFiles)
+			{
+				var dir = Path.Combine(DirectoryOfApplicationOrSolution,
+					directoryHoldingFiles);
+				var path = Path.Combine(dir, Path.Combine(partsOfTheSubPath));
+				if (File.Exists(path))
+				{
+					s_distFilesFolderCached = dir; // Remember this for next time.
+					return path;
+				}
 			}
 
 			if (optional)
@@ -198,11 +222,22 @@ namespace SIL.IO
 			if (Directory.Exists(path))
 				return path;
 
-			foreach (var directoryHoldingFiles in DirectoriesHoldingFiles)
+			if (DistFilesFolderPath != null)
 			{
-				path = Path.Combine(directory, directoryHoldingFiles, subPath);
+				path = Path.Combine(DistFilesFolderPath, subPath);
 				if (Directory.Exists(path))
 					return path;
+			}
+
+			foreach (var directoryHoldingFiles in DirectoriesHoldingFiles)
+			{
+				var dir = Path.Combine(directory, directoryHoldingFiles);
+				path = Path.Combine(dir, subPath);
+				if (Directory.Exists(path))
+				{
+					s_distFilesFolderCached = dir; // Remember this for next time.
+					return path;
+				}
 			}
 
 			return null;
@@ -343,7 +378,7 @@ namespace SIL.IO
 		/// <summary>
 		/// Returns a list of the possible paths to the program files folder, taking into
 		/// account that 2 often (or always?) exist in a Win64 OS (i.e. "Program Files" and
-		/// "Program Files (x86)"). On Mono we return the folders of the PATH variable.
+		/// "Program Files (x86)"). On Mono, we return the folders of the PATH variable.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private static IEnumerable<string> GetPossibleProgramFilesFolders()

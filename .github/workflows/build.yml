@@ -31,8 +31,22 @@ jobs:
       with:
         fetch-depth: '0'
 
+    # WiX Toolset v3.14 seems to be pre-installed on GH agent. Everything I've tried so far to ensure that with choco fails.
+
+    # Run GitVersion as a separate step before building to avoid a race condition where multiple
+    # target frameworks building in parallel each try to append to the same GHA environment file.
+    # WriteVersionInfoToBuildLog=false suppresses the MSBuild task that causes the conflict;
+    # assembly versioning is unaffected as it uses a different GitVersion task.
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@51d325634925d7d9ce0a7efc2c586c0bc2b9eee6 # v3.2.1
+      with:
+        versionSpec: '5.x'
+
+    - name: Run GitVersion
+      uses: gittools/actions/gitversion/execute@51d325634925d7d9ce0a7efc2c586c0bc2b9eee6 # v3.2.1
+
     - name: Build project
-      run: dotnet build -bl:build.binlog -c Release
+      run: dotnet build -bl:build.binlog -c Release -p:WriteVersionInfoToBuildLog=false
 
     - name: Get Path to Tests
       run: echo "TEST_PATH=$(dotnet msbuild SIL.Core.Tests/ --getProperty:OutputPath -p:TargetFramework=${{ matrix.framework }} -p:Configuration=Release)" >> $GITHUB_ENV

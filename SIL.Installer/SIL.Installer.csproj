@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- This project exists solely to pack the WiX fragments and targets file as a NuGet
+         package. The compiled (empty) DLL is included in the package to satisfy NuGet's
+         NU5017 requirement that a package have content or dependencies. -->
+    <TargetFrameworks></TargetFrameworks><!-- override Directory.Build.props multi-targeting -->
+    <TargetFramework>net48</TargetFramework>
+    <AssemblyName>SIL.Installer</AssemblyName>
+    <RootNamespace>SIL.Installer</RootNamespace>
+    <Description>Reusable WiX 3 installer components for SIL applications: analytics WiX fragment.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- WiX source fragments — explicit PackagePath including filename to avoid ambiguity -->
+    <None Include="Analytics.wxs" Pack="true" PackagePath="build/Analytics.wxs" />
+    <None Include="AnalyticsNavigation.wxs" Pack="true" PackagePath="build/AnalyticsNavigation.wxs" />
+    <!-- Auto-wire targets: NuGet auto-imports build\<PackageId>.targets for PackageReference consumers -->
+    <None Include="build/SIL.Installer.targets" Pack="true" PackagePath="build/SIL.Installer.targets" />
+    <!-- Usage README at package root -->
+    <None Include="build/README.md" Pack="true" PackagePath="README.md" />
+  </ItemGroup>
+
+
+  <!-- Compile the WiX fragments with candle.exe to catch syntax and schema errors early.
+       Skipped silently when WiX 3.14 is not installed (e.g. on machines that only build
+       the NuGet package and never build a consuming installer). -->
+  <PropertyGroup>
+    <WixToolsPath Condition="'$(WixToolsPath)' == ''">$(ProgramFiles(x86))\WiX Toolset v3.14\bin\</WixToolsPath>
+    <WixValidationOutDir>$(IntermediateOutputPath)wix-validate\</WixValidationOutDir>
+  </PropertyGroup>
+
+  <Target Name="ValidateWixFragments" AfterTargets="Build"
+          Condition="Exists('$(WixToolsPath)candle.exe')">
+    <MakeDir Directories="$(WixValidationOutDir)" />
+    <Exec Command="&quot;$(WixToolsPath)candle.exe&quot; -nologo -arch x64 -dProductName=SILInstallerValidation -out &quot;$(WixValidationOutDir)&quot; Analytics.wxs AnalyticsNavigation.wxs"
+          WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+  <Target Name="CleanWixValidation" AfterTargets="Clean">
+    <RemoveDir Directories="$(WixValidationOutDir)" />
+  </Target>
+
+</Project>

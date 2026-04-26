@@ -1,4 +1,4 @@
-// Copyright (c) 2025 SIL Global
+// Copyright (c) 2025-2026 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
@@ -356,6 +356,29 @@ namespace SIL.IO
 					Arguments = arguments,
 					UseShellExecute = false
 				});
+		}
+
+		/// <summary>
+		/// Returns an enumerable of ancestor directory paths for the given path, starting from
+		/// the immediate parent and working up to the root. If the path is rooted, the returned
+		/// paths will also be rooted.
+		/// </summary>
+		/// <param name="path">A file or directory path.</param>
+		/// <returns>
+		/// Parent directory paths ordered from nearest to farthest ancestor. For example,
+		/// <c>"/a/b/c/file.txt"</c> yields <c>"/a/b/c"</c>, <c>"/a/b"</c>, <c>"/a"</c>.
+		/// </returns>
+		public static IEnumerable<string> ParentDirectories(this string path)
+		{
+			var current = Path.GetDirectoryName(path);
+			while (!string.IsNullOrEmpty(current))
+			{
+				yield return current;
+				var parent = Path.GetDirectoryName(current);
+				if (parent == current)
+					break;
+				current = parent;
+			}
 		}
 
 		/// <summary>
