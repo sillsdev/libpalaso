@@ -1,3 +1,4 @@
+#if !NET8_0 || WINDOWS
 using L10NSharp;
 
 namespace SIL.Core.Desktop.i18n
@@ -36,3 +37,4 @@ namespace SIL.Core.Desktop.i18n
 		}
 	}
 }
+#endif
