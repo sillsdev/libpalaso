@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
+
 - [SIL.Core.Clearshare] Added new classes MetadataCore, CreativeCommonsLicenseInfo, and CustomLicenseInfo; these are Winforms-free base versions of the classes Metadata, CreativeCommonsLicense, and CustomLicense.
 
 - [SIL.Core.Clearshare and SIL.Windows.Forms.Clearshare] Added LicenseUtils and LicenseWithImageUtils to handle the FromXmp method for creating a license. LicenseUtils constructs a bare license object that is Winforms-independent; LicenseWithImageUtils constructs a Winforms-dependent license object with access to license images.
@@ -35,6 +36,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Added FileLocationUtilities.DistFilesFolderPath property.
 
 ### Fixed
+
+- [SIL.Core.Desktop] Made L10NSharp conditional so net8.0 builds do not depend on L10NSharp (but net8.0-windows builds still do).
 - [SIL.Windows.Forms.Keyboarding] Removed Timer-based deferred IME conversion status restore from WindowsKeyboardSwitchingAdapter, which disrupted active Chinese Pinyin IME compositions (LT-22442). Added diagnostic tracing for keyboard switching and IME state.
 - [SIL.DictionaryServices] Fix memory leak in LiftWriter
 - [SIL.WritingSystems] Fix IetfLanguageTag.GetGeneralCode to handle cases when zh-CN or zh-TW is a prefix and not the whole string.
@@ -44,11 +47,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] BREAKING CHANGE (subtle and unlikely): WindowsAudioSession.OnPlaybackStopped now passes itself as the sender instead of a private implementation object, making the event arguments correct.
 
 ### Changed
+
 - [SIL.Windows.Forms.i18n, SIL.Core.Desktop.i18n] BREAKING CHANGE: Move L10NSharpLocalizer from Windows.Forms to Core.Desktop so it can be accessed without Winforms dependency.
 - [SIL.Windows.Forms.Clearshare] BREAKING CHANGE: Made LicenseInfo class independent of Windows Forms and moved it from SIL.Windows.Forms.Clearshare to SIL.Core.Clearshare.
-	- The FromXmp method was moved to LicenseUtils and LicenseWithImageUtils to construct Winforms-independent and Winforms-dependent license types respectively.
-	- The FromToken method was moved from LicenseInfo to LicenseWithLogo, so it can return the Winforms-dependent license types. FromToken is only used in libpalaso tests and examples, and a Winforms-independent version of this method is not needed.
-	- The GetImage method from LicenseInfo was moved to the ILicenseWithImage interface, which is implemented by CreativeCommonsLicense and CustomLicense.
+  - The FromXmp method was moved to LicenseUtils and LicenseWithImageUtils to construct Winforms-independent and Winforms-dependent license types respectively.
+  - The FromToken method was moved from LicenseInfo to LicenseWithLogo, so it can return the Winforms-dependent license types. FromToken is only used in libpalaso tests and examples, and a Winforms-independent version of this method is not needed.
+  - The GetImage method from LicenseInfo was moved to the ILicenseWithImage interface, which is implemented by CreativeCommonsLicense and CustomLicense.
     - GetBestLicenseTranslation in LicenseInfo now uses Localizer instead of using L10NSharp.LocalizationManager.
 
 - [SIL.Windows.Forms.Clearshare] Winforms-independent metadata and license functionality of Metadata, CreativeCommonsLicense, and CustomLicense were moved to new classes MetadataCore, CreativeCommonsLicenseInfo, and CustomLicenseInfo in SIL.Core.Clearshare. Metadata, CreativeCommonsLicense, and CustomLicense inherit from the Bare Winforms-free metadata and license versions.
@@ -67,11 +71,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] In the event of an audio playback error in Windows, the non-fatal exception reported will also include an accompanying (localizable/customizable) user-friendly message.
 
 ### Removed
+
 - [SIL.Windows.Forms] In .NET 8 builds, removed Scanner and Camera options from the Image Toolbox.
 
 ## [16.2.0] - 2025-09-24
 
 ### Added
+
 - [SIL.libpalaso.l10ns] Added a number of languages to Crowdin that are used in Bloom, together with any translations that had been made in that project
 - [SIL.libpalaso.l10ns] Add English xlf file to the package
 - [SIL.TestUtilities] Added a Create method to TemporaryFolder that takes a TestContext
@@ -79,6 +85,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Support for RobustFile.GetAccessControl in all builds
 
 ### Fixed
+
 - [SIL.Windows.Forms] Made ContributorsListControl.GetCurrentContribution() return null in the case when a valid row is not selected.
 - [SIL.WritingSystems] Make the English names for Chinese (Simplified) and Chinese (Traditional) consistent regardless of differences in Windows CultureInfo
 
