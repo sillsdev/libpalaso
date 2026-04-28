@@ -8,5 +8,5 @@ using SIL.Acknowledgements;
 	"1c4946c1185e3bfb621bc6")]
 
 [assembly: Acknowledgement("L10NSharp", Url = "https://github.com/sillsdev/l10nsharp/",
-	Copyright = "Copyright © SIL Global 2010-2024", LicenseUrl = "https://opensource.org/licenses/MIT",
+	Copyright = "Copyright © SIL Global 2010-2026", LicenseUrl = "https://opensource.org/licenses/MIT",
 	Location = "./L10NSharp.dll")]
