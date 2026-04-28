@@ -1,4 +1,3 @@
-using System;
 using System.Runtime.CompilerServices;
 using SIL.Acknowledgements;
 
@@ -16,10 +15,9 @@ using SIL.Acknowledgements;
 [assembly: Acknowledgement("KeymanLink", Url = "https://keyman.com/", Copyright = "Copyright © SIL 2006",
 	Location = "./KeymanLink.dll")]
 [assembly: Acknowledgement("L10NSharp", Url = "https://github.com/sillsdev/l10nsharp/",
-	Copyright = "Copyright © SIL Global 2010-2024", LicenseUrl = "https://opensource.org/licenses/MIT",
+	Copyright = "Copyright © SIL Global 2010-2026", LicenseUrl = "https://opensource.org/licenses/MIT",
 	Location = "./L10NSharp.dll")]
 [assembly: Acknowledgement("Mono.Unix", Name = "Mono.Unix", Url = "https://www.nuget.org/packages/Mono.Unix/",
 	LicenseUrl = "https://opensource.org/licenses/MIT")]
 [assembly: Acknowledgement("NDesk.DBus", Name = "NDesk.DBus", Url = "https://www.nuget.org/packages/NDesk.DBus/",
 	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © Alp Toker", Location = "./NDesk.DBus.dll")]
-
