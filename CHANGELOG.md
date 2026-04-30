@@ -45,6 +45,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] BREAKING CHANGE (subtle and unlikely): WindowsAudioSession.OnPlaybackStopped now passes itself as the sender instead of a private implementation object, making the event arguments correct.
 
 ### Changed
+- [SIL.Windows.Forms] PalasoImage robust load/save helpers now accept additional retry exception types without replacing the built-in retry defaults, and the built-in retry lists were expanded for additional read/save exceptions seen in the wild.
 - [SIL.Windows.Forms.TestApp] Restored the Image Toolbox button in the test app dialog.
 - [SIL.Core.Desktop, SIL.Windows.Forms, SIL.Windows.Forms.Keyboarding] Bump L10NSharp to 10.0.0-beta0004 to support SIL.Core.Desktop with target `netstandard2.0`; also updated the copyright to 2026 in each `AssemblyInfo.cs`.
 - [SIL.Windows.Forms.i18n, SIL.Core.Desktop.i18n] BREAKING CHANGE: Move L10NSharpLocalizer from Windows.Forms to Core.Desktop so it can be accessed without Winforms dependency.
