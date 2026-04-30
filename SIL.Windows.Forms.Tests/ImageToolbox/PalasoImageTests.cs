@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -123,6 +124,32 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					Assert.DoesNotThrow(() => File.Delete(temp.Path));
 				}
 			}
+		}
+
+		[Test]
+		public void GetLoadExceptionTypesToRetry_AdditionalExceptionTypesToRetry_ContainsKnownAndAdditionalTypes()
+		{
+			var exceptionTypesToRetry = PalasoImage.GetLoadExceptionTypesToRetry(
+				new HashSet<Type> { typeof(InvalidOperationException) });
+
+			Assert.That(exceptionTypesToRetry, Does.Contain(typeof(IOException)));
+			Assert.That(exceptionTypesToRetry, Does.Contain(typeof(OutOfMemoryException)));
+			Assert.That(exceptionTypesToRetry, Does.Contain(typeof(TagLib.CorruptFileException)));
+			Assert.That(exceptionTypesToRetry, Does.Contain(typeof(KeyNotFoundException)));
+			Assert.That(exceptionTypesToRetry, Does.Contain(typeof(ApplicationException)));
+			Assert.That(exceptionTypesToRetry, Does.Contain(typeof(InvalidOperationException)));
+		}
+
+		[Test]
+		public void GetSaveExceptionTypesToRetry_AdditionalExceptionTypesToRetry_ContainsKnownAndAdditionalTypes()
+		{
+			var exceptionTypesToRetry = PalasoImage.GetSaveExceptionTypesToRetry(
+				new HashSet<Type> { typeof(InvalidOperationException) });
+
+			Assert.That(exceptionTypesToRetry, Does.Contain(typeof(IOException)));
+			Assert.That(exceptionTypesToRetry, Does.Contain(typeof(System.Runtime.InteropServices.ExternalException)));
+			Assert.That(exceptionTypesToRetry, Does.Contain(typeof(ApplicationException)));
+			Assert.That(exceptionTypesToRetry, Does.Contain(typeof(InvalidOperationException)));
 		}
 
 		[Test]
