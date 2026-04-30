@@ -194,7 +194,7 @@ namespace SIL.Windows.Forms.Clipboarding
 				// This line gets all the file paths that were selected in explorer
 				string[] files = dataObject.GetData(DataFormats.FileDrop) as string[];
 
-				return files?.Where(RobustFile.Exists).Select(PalasoImage.FromFileRobustly).FirstOrDefault();
+				return files?.Where(RobustFile.Exists).Select(path => PalasoImage.FromFileRobustly(path)).FirstOrDefault();
 			}
 
 			if (Clipboard.ContainsText() && RobustFile.Exists(Clipboard.GetText()))
