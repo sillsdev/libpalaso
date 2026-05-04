@@ -44,7 +44,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] BREAKING CHANGE (subtle and unlikely): WindowsAudioSession.OnPlaybackStopped now passes itself as the sender instead of a private implementation object, making the event arguments correct.
 
 ### Changed
-- [SIL.Core.Desktop, SIL.Windows.Forms, SIL.Windows.Forms.Keyboarding] Bumped L10NSharp to 10.0.0-beta0002 to support SIL.Core.Desktop with target `net8.0`; also updated the copyright to 2026 in each `AssemblyInfo.cs`.
+- [SIL.Core.Desktop, SIL.Windows.Forms, SIL.Windows.Forms.Keyboarding] Bump L10NSharp to 10.0.0-beta0004 to support SIL.Core.Desktop with target `netstandard2.0`; also updated the copyright to 2026 in each `AssemblyInfo.cs`.
 - [SIL.Windows.Forms.i18n, SIL.Core.Desktop.i18n] BREAKING CHANGE: Move L10NSharpLocalizer from Windows.Forms to Core.Desktop so it can be accessed without Winforms dependency.
 - [SIL.Windows.Forms.Clearshare] BREAKING CHANGE: Made LicenseInfo class independent of Windows Forms and moved it from SIL.Windows.Forms.Clearshare to SIL.Core.Clearshare.
 	- The FromXmp method was moved to LicenseUtils and LicenseWithImageUtils to construct Winforms-independent and Winforms-dependent license types respectively.
