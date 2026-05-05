@@ -25,14 +25,14 @@ namespace L10NSharpTestApp
 
 			// Locate the XLF for the requested locale.
 			var xlfName = $"Palaso.{locale}.xlf";
-			var xlfPath = FileLocationUtilities.GetFileDistributedWithApplication(xlfName);
+			var xlfPath = FileLocationUtilities.GetFileDistributedWithApplication(true, xlfName);
 			if (xlfPath == null)
 			{
 				Console.WriteLine($"No XLF found for locale '{locale}' ({xlfName}).");
 				return;
 			}
 
-			var locDir = Path.GetDirectoryName(xlfPath)!;
+			var locDir = Path.GetDirectoryName(xlfPath);
 			Console.WriteLine($"Loading XLF from: {locDir}");
 
 			using var manager = LocalizationManager.Create(locale, "Palaso", "Palaso", "1.0.0",

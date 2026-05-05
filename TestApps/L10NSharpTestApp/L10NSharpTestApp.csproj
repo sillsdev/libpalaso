@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
     <RootNamespace>L10NSharpTestApp</RootNamespace>
     <AssemblyName>L10NSharpTestApp</AssemblyName>
     <Description>Test app for L10NSharp localization</Description>
     <IsPackable>false</IsPackable>
-    <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
