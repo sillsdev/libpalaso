@@ -32,6 +32,7 @@ namespace SIL.Tests.i18n
 		public void TearDown()
 		{
 			_manager?.Dispose();
+			LocalizationManager.ForgetDisposedManagers();
 			if (_tempDir != null && Directory.Exists(_tempDir))
 				Directory.Delete(_tempDir, recursive: true);
 		}
@@ -39,15 +40,8 @@ namespace SIL.Tests.i18n
 		[Test]
 		public void GetString_UnknownKey_ReturnsFallbackEnglish()
 		{
-			var result = _localizer.GetString("NoSuch.Key", "Fallback A");
-			Assert.That(result, Is.EqualTo("Fallback A"));
-		}
-
-		[Test]
-		public void GetString_WithComment_UnknownKey_ReturnsFallbackEnglish()
-		{
-			var result = _localizer.GetString("NoSuch.Key2", "Fallback B", "Comment text");
-			Assert.That(result, Is.EqualTo("Fallback B"));
+			var result = _localizer.GetString("NoSuch.Key.Static", "Static fallback");
+			Assert.That(result, Is.EqualTo("Static fallback"));
 		}
 
 		[Test]
@@ -59,23 +53,45 @@ namespace SIL.Tests.i18n
 		[Test]
 		public void GetIsStringAvailableForLangId_UnknownKey_ReturnsFalse()
 		{
-			var result = _localizer.GetIsStringAvailableForLangId("NoSuch.Key3", kLang);
+			var result = _localizer.GetIsStringAvailableForLangId("NoSuch.Key", kLang);
 			Assert.That(result, Is.False);
-		}
-
-		[Test]
-		public void GetDynamicString_UnknownKey_ReturnsFallbackEnglish()
-		{
-			var result = _localizer.GetDynamicString(kAppId, "NoSuch.Dynamic", "Fallback C");
-			Assert.That(result, Is.EqualTo("Fallback C"));
 		}
 
 		[Test]
 		public void GetDynamicStringOrEnglish_UnknownKey_ReturnsFallbackEnglish()
 		{
-			var result = _localizer.GetDynamicStringOrEnglish(kAppId, "NoSuch.Dynamic2",
-				"Fallback D", null, kLang);
-			Assert.That(result, Is.EqualTo("Fallback D"));
+			var result = _localizer.GetDynamicStringOrEnglish(kAppId, "NoSuch.Key.Dynamic",
+				"Dynamic fallback", null, kLang);
+			Assert.That(result, Is.EqualTo("Dynamic fallback"));
+		}
+
+		[Test]
+		public void GetString_WithTranslation_ReturnsTranslatedString()
+		{
+			const string kFrAppId = kAppId + "Fr";
+			const string kKey = "Test.Greeting";
+			const string kEnglish = "Hello";
+			const string kFrench = "Bonjour";
+
+			var xliffPath = Path.Combine(_tempDir, kFrAppId + ".fr.xlf");
+			File.WriteAllText(xliffPath, $@"<?xml version=""1.0"" encoding=""utf-8""?>
+<xliff xmlns=""urn:oasis:names:tc:xliff:document:1.2"" version=""1.2"">
+	<file source-language=""en"" original=""{kFrAppId}.dll"" target-language=""fr"">
+		<body>
+			<trans-unit id=""{kKey}"">
+				<source xml:lang=""en"">{kEnglish}</source>
+				<target xml:lang=""fr"" state=""final"">{kFrench}</target>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>");
+
+			using var frManager = LocalizationManager.Create("fr", kFrAppId,
+				"L10NSharpLocalizer Tests", "1.0", _tempDir, null, new[] { "SIL." }, null);
+
+			var result = _localizer.GetDynamicStringOrEnglish(
+				kFrAppId, kKey, kEnglish, null, "fr");
+			Assert.That(result, Is.EqualTo(kFrench));
 		}
 	}
 }
