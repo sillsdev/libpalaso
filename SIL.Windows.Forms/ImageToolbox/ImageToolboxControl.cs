@@ -420,7 +420,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			_editLink.Visible = false;
 			_invitationToMetadataPanel.Visible = false;
 
-			AddControl("Get Picture".Localize("ImageToolbox.GetPicture"), ImageToolboxButtons.browse, "browse", (x) =>
+			AddControl("Get Image".Localize("ImageToolbox.GetPicture"), ImageToolboxButtons.browse, "browse", (x) =>
 			{
 				_acquireImageControl = new AcquireImageControl();
 				_acquireImageControl.ImageLoadingExceptionReporter =
