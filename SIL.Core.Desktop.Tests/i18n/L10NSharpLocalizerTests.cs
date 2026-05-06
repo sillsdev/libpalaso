@@ -73,8 +73,23 @@ namespace SIL.Tests.i18n
 			const string kEnglish = "Hello";
 			const string kFrench = "Bonjour";
 
-			var xliffPath = Path.Combine(_tempDir, kFrAppId + ".fr.xlf");
-			File.WriteAllText(xliffPath, $@"<?xml version=""1.0"" encoding=""utf-8""?>
+			// Write the English XLIFF for L10NSharp to use as a baseline. Without it, the
+			// trans-unit id is absent on a clean machine, so L10NSharp sees it as an orphan and
+			// silently drops it from the French XLIFF.
+			File.WriteAllText(Path.Combine(_tempDir, $"{kFrAppId}.en.xlf"),
+				$@"<?xml version=""1.0"" encoding=""utf-8""?>
+<xliff xmlns=""urn:oasis:names:tc:xliff:document:1.2"" version=""1.2"">
+	<file source-language=""en"" original=""{kFrAppId}.dll"">
+		<body>
+			<trans-unit id=""{kKey}"">
+				<source xml:lang=""en"">{kEnglish}</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>");
+
+			File.WriteAllText(Path.Combine(_tempDir, $"{kFrAppId}.fr.xlf"),
+				$@"<?xml version=""1.0"" encoding=""utf-8""?>
 <xliff xmlns=""urn:oasis:names:tc:xliff:document:1.2"" version=""1.2"">
 	<file source-language=""en"" original=""{kFrAppId}.dll"" target-language=""fr"">
 		<body>
