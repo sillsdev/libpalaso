@@ -15,6 +15,7 @@ using SIL.IO;
 using SIL.Lexicon;
 using SIL.PlatformUtilities;
 using SIL.Reporting;
+using SIL.Windows.Forms.ImageToolbox;
 using SIL.Windows.Forms.ClearShare;
 using SIL.Windows.Forms.ClearShare.WinFormsUI;
 using SIL.Windows.Forms.HtmlBrowser;
@@ -152,6 +153,12 @@ namespace SIL.Windows.Forms.TestApp
 		private void OnSilAboutBoxClicked(object sender, EventArgs e)
 		{
 			ShowSilAboutBox(XWebBrowser.BrowserType.Default, true);
+		}
+
+		private void OnImageToolboxClicked(object sender, EventArgs e)
+		{
+			using var dialog = new ImageToolboxDialog(null, null);
+			dialog.ShowDialog(this);
 		}
 
 		private void OnSilAboutBoxGeckoClicked(object sender, EventArgs e)
