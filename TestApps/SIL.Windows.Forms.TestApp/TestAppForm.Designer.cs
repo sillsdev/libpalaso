@@ -106,14 +106,14 @@ namespace SIL.Windows.Forms.TestApp
             "Navigating is handled",
             "Simple HTML with no external links",
             "Allow external links to open in About dialog"});
-            this._cboAboutHTML.Location = new System.Drawing.Point(101, 150);
+            this._cboAboutHTML.Location = new System.Drawing.Point(101, 179);
             this._cboAboutHTML.Name = "_cboAboutHTML";
             this._cboAboutHTML.Size = new System.Drawing.Size(68, 21);
             this._cboAboutHTML.TabIndex = 16;
             // 
             // btnRefRange
             // 
-            this.btnRefRange.Location = new System.Drawing.Point(12, 550);
+            this.btnRefRange.Location = new System.Drawing.Point(12, 579);
             this.btnRefRange.Margin = new System.Windows.Forms.Padding(2);
             this.btnRefRange.Name = "btnRefRange";
             this.btnRefRange.Size = new System.Drawing.Size(157, 23);
@@ -124,7 +124,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // _btnShowFadingMessage
             // 
-            this._btnShowFadingMessage.Location = new System.Drawing.Point(12, 121);
+            this._btnShowFadingMessage.Location = new System.Drawing.Point(12, 150);
             this._btnShowFadingMessage.Name = "_btnShowFadingMessage";
             this._btnShowFadingMessage.Size = new System.Drawing.Size(157, 23);
             this._btnShowFadingMessage.TabIndex = 14;
@@ -134,7 +134,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnOpenProject
             // 
-            this.btnOpenProject.Location = new System.Drawing.Point(12, 523);
+            this.btnOpenProject.Location = new System.Drawing.Point(12, 552);
             this.btnOpenProject.Margin = new System.Windows.Forms.Padding(2);
             this.btnOpenProject.Name = "btnOpenProject";
             this.btnOpenProject.Size = new System.Drawing.Size(157, 23);
@@ -145,7 +145,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnShowFileOverwriteDlg
             // 
-            this.btnShowFileOverwriteDlg.Location = new System.Drawing.Point(12, 496);
+            this.btnShowFileOverwriteDlg.Location = new System.Drawing.Point(12, 525);
             this.btnShowFileOverwriteDlg.Margin = new System.Windows.Forms.Padding(2);
             this.btnShowFileOverwriteDlg.Name = "btnShowFileOverwriteDlg";
             this.btnShowFileOverwriteDlg.Size = new System.Drawing.Size(157, 23);
@@ -156,7 +156,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnMediaFileInfo
             // 
-            this.btnMediaFileInfo.Location = new System.Drawing.Point(12, 468);
+            this.btnMediaFileInfo.Location = new System.Drawing.Point(12, 497);
             this.btnMediaFileInfo.Margin = new System.Windows.Forms.Padding(2);
             this.btnMediaFileInfo.Name = "btnMediaFileInfo";
             this.btnMediaFileInfo.Size = new System.Drawing.Size(157, 23);
@@ -188,7 +188,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 606);
+            this.label1.Location = new System.Drawing.Point(12, 635);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(149, 13);
             superToolTipInfo1.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
@@ -212,7 +212,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 626);
+            this.label2.Location = new System.Drawing.Point(12, 655);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(140, 13);
             superToolTipInfo2.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
@@ -229,7 +229,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnThrowException
             // 
-            this.btnThrowException.Location = new System.Drawing.Point(12, 440);
+            this.btnThrowException.Location = new System.Drawing.Point(12, 469);
             this.btnThrowException.Name = "btnThrowException";
             this.btnThrowException.Size = new System.Drawing.Size(157, 23);
             this.btnThrowException.TabIndex = 8;
@@ -239,7 +239,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnShowFormWithModalChild
             // 
-            this.btnShowFormWithModalChild.Location = new System.Drawing.Point(12, 411);
+            this.btnShowFormWithModalChild.Location = new System.Drawing.Point(12, 440);
             this.btnShowFormWithModalChild.Name = "btnShowFormWithModalChild";
             this.btnShowFormWithModalChild.Size = new System.Drawing.Size(157, 23);
             this.btnShowFormWithModalChild.TabIndex = 7;
@@ -249,7 +249,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnTestContributorsList
             // 
-            this.btnTestContributorsList.Location = new System.Drawing.Point(12, 382);
+            this.btnTestContributorsList.Location = new System.Drawing.Point(12, 411);
             this.btnTestContributorsList.Name = "btnTestContributorsList";
             this.btnTestContributorsList.Size = new System.Drawing.Size(157, 23);
             this.btnTestContributorsList.TabIndex = 6;
@@ -259,7 +259,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // recordPlayButton
             // 
-            this.recordPlayButton.Location = new System.Drawing.Point(12, 353);
+            this.recordPlayButton.Location = new System.Drawing.Point(12, 382);
             this.recordPlayButton.Name = "recordPlayButton";
             this.recordPlayButton.Size = new System.Drawing.Size(157, 23);
             this.recordPlayButton.TabIndex = 5;
@@ -270,7 +270,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnFlexibleMessageBox
             // 
-            this.btnFlexibleMessageBox.Location = new System.Drawing.Point(12, 324);
+            this.btnFlexibleMessageBox.Location = new System.Drawing.Point(12, 353);
             this.btnFlexibleMessageBox.Name = "btnFlexibleMessageBox";
             this.btnFlexibleMessageBox.Size = new System.Drawing.Size(157, 23);
             this.btnFlexibleMessageBox.TabIndex = 4;
@@ -280,7 +280,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnSettingProtectionDialog
             // 
-            this.btnSettingProtectionDialog.Location = new System.Drawing.Point(12, 294);
+            this.btnSettingProtectionDialog.Location = new System.Drawing.Point(12, 323);
             this.btnSettingProtectionDialog.Name = "btnSettingProtectionDialog";
             this.btnSettingProtectionDialog.Size = new System.Drawing.Size(157, 23);
             this.btnSettingProtectionDialog.TabIndex = 3;
@@ -290,7 +290,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // _silAboutBoxGecko
             // 
-            this._silAboutBoxGecko.Location = new System.Drawing.Point(12, 179);
+            this._silAboutBoxGecko.Location = new System.Drawing.Point(12, 208);
             this._silAboutBoxGecko.Name = "_silAboutBoxGecko";
             this._silAboutBoxGecko.Size = new System.Drawing.Size(157, 23);
             this._silAboutBoxGecko.TabIndex = 2;
@@ -300,7 +300,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnSelectFile
             // 
-            this.btnSelectFile.Location = new System.Drawing.Point(12, 265);
+            this.btnSelectFile.Location = new System.Drawing.Point(12, 294);
             this.btnSelectFile.Name = "btnSelectFile";
             this.btnSelectFile.Size = new System.Drawing.Size(157, 23);
             this.btnSelectFile.TabIndex = 0;
@@ -310,7 +310,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnMetaDataEditor
             // 
-            this.btnMetaDataEditor.Location = new System.Drawing.Point(12, 236);
+            this.btnMetaDataEditor.Location = new System.Drawing.Point(12, 265);
             this.btnMetaDataEditor.Name = "btnMetaDataEditor";
             this.btnMetaDataEditor.Size = new System.Drawing.Size(157, 23);
             this.btnMetaDataEditor.TabIndex = 0;
@@ -320,7 +320,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnShowReleaseNotes
             // 
-            this.btnShowReleaseNotes.Location = new System.Drawing.Point(12, 207);
+            this.btnShowReleaseNotes.Location = new System.Drawing.Point(12, 236);
             this.btnShowReleaseNotes.Name = "btnShowReleaseNotes";
             this.btnShowReleaseNotes.Size = new System.Drawing.Size(157, 23);
             this.btnShowReleaseNotes.TabIndex = 0;
@@ -331,7 +331,7 @@ namespace SIL.Windows.Forms.TestApp
             // btnSilAboutBox
             // 
             this.btnSilAboutBox.AutoSize = true;
-            this.btnSilAboutBox.Location = new System.Drawing.Point(12, 150);
+            this.btnSilAboutBox.Location = new System.Drawing.Point(12, 179);
             this.btnSilAboutBox.Name = "btnSilAboutBox";
             this.btnSilAboutBox.Size = new System.Drawing.Size(83, 23);
             this.btnSilAboutBox.TabIndex = 0;
@@ -341,10 +341,13 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // btnImageToolbox
             // 
-            this.btnImageToolbox.Location = new System.Drawing.Point(0, 0);
+            this.btnImageToolbox.Location = new System.Drawing.Point(12, 121);
             this.btnImageToolbox.Name = "btnImageToolbox";
-            this.btnImageToolbox.Size = new System.Drawing.Size(75, 23);
-            this.btnImageToolbox.TabIndex = 13;
+            this.btnImageToolbox.Size = new System.Drawing.Size(157, 23);
+            this.btnImageToolbox.TabIndex = 0;
+            this.btnImageToolbox.Text = "Image Toolbox";
+            this.btnImageToolbox.UseVisualStyleBackColor = true;
+            this.btnImageToolbox.Click += new System.EventHandler(this.OnImageToolboxClicked);
             // 
             // btnWritingSystemSetupDialog
             // 
@@ -386,7 +389,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             // _btnShowPrivacyDlg
             // 
-            this._btnShowPrivacyDlg.Location = new System.Drawing.Point(12, 577);
+            this._btnShowPrivacyDlg.Location = new System.Drawing.Point(12, 606);
             this._btnShowPrivacyDlg.Margin = new System.Windows.Forms.Padding(2);
             this._btnShowPrivacyDlg.Name = "_btnShowPrivacyDlg";
             this._btnShowPrivacyDlg.Size = new System.Drawing.Size(157, 23);
@@ -399,7 +402,7 @@ namespace SIL.Windows.Forms.TestApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(187, 650);
+            this.ClientSize = new System.Drawing.Size(187, 679);
             this.Controls.Add(this._btnShowPrivacyDlg);
             this.Controls.Add(this._cboAboutHTML);
             this.Controls.Add(this.btnRefRange);
