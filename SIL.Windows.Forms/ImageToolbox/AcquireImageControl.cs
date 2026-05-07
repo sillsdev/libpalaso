@@ -100,10 +100,10 @@ namespace SIL.Windows.Forms.ImageToolbox
 							dlg.InitialDirectory = ImageToolboxSettings.Default.LastImageFolder; ;
 						}
 
-						dlg.Title = "Choose Picture File".Localize("ImageToolbox.FileChooserTitle", "Title shown for a file chooser dialog brought up by the ImageToolbox");
+						dlg.Title = "Choose Image File".Localize("ImageToolbox.FileChooserTitle", "Title shown for a file chooser dialog brought up by the ImageToolbox");
 
 						//NB: disallowed gif because of a .net crash:  http://jira.palaso.org/issues/browse/BL-85
-						dlg.Filter = "picture files".Localize("ImageToolbox.PictureFiles", "Shown in the file-picking dialog to describe what kind of files the dialog is filtering for") + "(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
+						dlg.Filter = "image files".Localize("ImageToolbox.PictureFiles", "Shown in the file-picking dialog to describe what kind of files the dialog is filtering for") + "(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
 
 						if (DialogResult.OK == dlg.ShowDialog(this.ParentForm))
 						{
