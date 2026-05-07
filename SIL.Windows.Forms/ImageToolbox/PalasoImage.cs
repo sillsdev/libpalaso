@@ -358,26 +358,39 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// <remarks>
 		/// This would logically belong in SIL.Core.IO.RobustIO except that PalasoImage is in SIL.Windows.Forms.
 		/// </remarks>
-		public static PalasoImage FromFileRobustly(string path)
+		public static PalasoImage FromFileRobustly(
+			string path,
+			int maxRetryAttempts = RetryUtility.kDefaultMaxRetryAttempts,
+			int retryDelay = RetryUtility.kDefaultRetryDelay,
+			HashSet<Type> exceptionTypesToRetry = null
+		)
 		{
+			exceptionTypesToRetry ??= new HashSet<Type>
+			{
+				typeof(System.IO.IOException),
+				// Odd type to catch... but it seems that Image.FromFile (which is called in the bowels of PalasoImage.FromFile)
+				// throws OutOfMemoryException when the file is inaccessible.
+				// See http://stackoverflow.com/questions/2610416/is-there-a-reason-image-fromfile-throws-an-outofmemoryexception-for-an-invalid-i
+				typeof(System.OutOfMemoryException),
+				// Again you'd expect that if it's corrupt, it would stay that way, but
+				// experimentally, it seems we can get this if the file can't be read because it is (temporarily?) locked.
+				// (The text of the message reads, "File could not be read and is possible corrupted", which
+				// suggests they are using this to cover any case of not being able to read the file."
+				typeof(TagLib.CorruptFileException),
+				// Bloom saw this one in the wild. BL-16221
+				typeof(System.Collections.Generic.KeyNotFoundException),
+				// Adding this simply because I'm adding it on the Save side. I'm tempted to just retry everything...
+				typeof(System.ApplicationException),
+			};
+
 			try
 			{
-				return RetryUtility.Retry(() => PalasoImage.FromFile(path),
-					RetryUtility.kDefaultMaxRetryAttempts,
-					RetryUtility.kDefaultRetryDelay,
-					new HashSet<Type>
-					{
-						typeof(System.IO.IOException),
-						// Odd type to catch... but it seems that Image.FromFile (which is called in the bowels of PalasoImage.FromFile)
-						// throws OutOfMemoryException when the file is inaccessible.
-						// See http://stackoverflow.com/questions/2610416/is-there-a-reason-image-fromfile-throws-an-outofmemoryexception-for-an-invalid-i
-						typeof(System.OutOfMemoryException),
-						// Again you'd expect that if it's corrupt, it would stay that way, but
-						// experimentally, it seems we can get this if the file can't be read because it is (temporarily?) locked.
-						// (The text of the message reads, "File could not be read and is possible corrupted", which
-						// suggests they are using this to cover any case of not being able to read the file."
-						typeof(TagLib.CorruptFileException)
-					});
+				return RetryUtility.Retry(
+					() => PalasoImage.FromFile(path),
+					maxRetryAttempts,
+					retryDelay,
+					exceptionTypesToRetry
+				);
 			}
 			catch (Exception e)
 			{
@@ -395,16 +408,27 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// <remarks>
 		/// This would logically belong in SIL.Core.IO.RobustIO except that PalasoImage is in SIL.Windows.Forms.
 		/// </remarks>
-		public static void SaveImageRobustly(PalasoImage image, string fileName)
+		public static void SaveImageRobustly(
+			PalasoImage image,
+			string fileName,
+			int maxRetryAttempts = RetryUtility.kDefaultMaxRetryAttempts,
+			int retryDelay = RetryUtility.kDefaultRetryDelay,
+			HashSet<Type> retryOnExceptions = null)
 		{
+
+			retryOnExceptions ??= new HashSet<Type>
+			{
+				typeof(System.IO.IOException),
+				typeof(System.Runtime.InteropServices.ExternalException),
+				// PalasoImage.SaveImageSafely can also throw ApplicationExceptions
+				// (See https://github.com/sillsdev/libpalaso/blob/f2482a5b3c6c75b50ec5672b1eb731b1a040a05a/SIL.Windows.Forms/ImageToolbox/PalasoImage.cs#L155)
+				typeof(System.ApplicationException),
+			};
+
 			RetryUtility.Retry(() => image.Save(fileName),
-				RetryUtility.kDefaultMaxRetryAttempts,
-				RetryUtility.kDefaultRetryDelay,
-				new HashSet<Type>
-				{
-					Type.GetType("System.IO.IOException"),
-					Type.GetType("System.Runtime.InteropServices.ExternalException")
-				});
+				maxRetryAttempts,
+				retryDelay,
+				retryOnExceptions);
 		}
 
 		/// <summary>
