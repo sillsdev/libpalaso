@@ -58,7 +58,7 @@ namespace SIL.Tests.i18n
 		public void GetIsStringAvailableForLangId_UnknownKey_ReturnsFalse()
 		{
 			const string kKey = "Static.No.Adds.Key";
-			_localizer.GetString(kAppId, kKey, "Not added to cache");
+			_localizer.GetString(kKey, "Not added to cache");
 
 			var resultB = _localizer.GetIsStringAvailableForLangId(kKey, kLang);
 			Assert.That(resultB, Is.False);
