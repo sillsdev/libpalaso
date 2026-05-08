@@ -5,26 +5,31 @@ using System.IO;
 using L10NSharp;
 using NUnit.Framework;
 using SIL.Core.Desktop.i18n;
+using SIL.TestUtilities;
 
 namespace SIL.Tests.i18n
 {
+	/// <summary>
+	/// Tests basic functionality of <see cref="SIL.Core.Desktop.i18n.L10NSharpLocalizer"/>, which
+	/// wraps L10NSharp's <see cref="LocalizationManager"/>.
+	/// </summary>
 	[TestFixture]
 	public class L10NSharpLocalizerTests
 	{
-		private string _tempDir;
+		private TemporaryFolder _tempFolder;
 		private ILocalizationManager _manager;
 		private L10NSharpLocalizer _localizer;
 
 		private const string kLang = "en";
-		private const string kAppId = "L10NSharpLocalizerTests";
+		private const string kAppId = "L10NSharpLocalizerTest";
+		private const string kAppName = "L10NSharpLocalizer Test";
 
 		[SetUp]
 		public void SetUp()
 		{
-			_tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-			Directory.CreateDirectory(_tempDir);
-			_manager = LocalizationManager.Create(kLang, kAppId, "L10NSharpLocalizer Tests",
-				"1.0", _tempDir, null, new[] { "SIL." }, null);
+			_tempFolder = new TemporaryFolder(kAppId);
+			_manager = LocalizationManager.Create(
+				kLang, kAppId, kAppName, "1.0", _tempFolder.Path, null, new[] { "SIL." }, null);
 			_localizer = new L10NSharpLocalizer();
 		}
 
@@ -33,8 +38,7 @@ namespace SIL.Tests.i18n
 		{
 			_manager?.Dispose();
 			LocalizationManager.ForgetDisposedManagers();
-			if (_tempDir != null && Directory.Exists(_tempDir))
-				Directory.Delete(_tempDir, recursive: true);
+			_tempFolder?.Dispose();
 		}
 
 		[Test]
@@ -53,8 +57,21 @@ namespace SIL.Tests.i18n
 		[Test]
 		public void GetIsStringAvailableForLangId_UnknownKey_ReturnsFalse()
 		{
-			var result = _localizer.GetIsStringAvailableForLangId("NoSuch.Key", kLang);
-			Assert.That(result, Is.False);
+			const string kKey = "Static.No.Adds.Key";
+			_localizer.GetString(kAppId, kKey, "Not added to cache");
+
+			var resultB = _localizer.GetIsStringAvailableForLangId(kKey, kLang);
+			Assert.That(resultB, Is.False);
+		}
+
+		[Test]
+		public void GetIsStringAvailableForLangId_KeyRegisteredWithGetDynamicString_ReturnsTrue()
+		{
+			const string kKey = "Dynamic.Adds.Key";
+			_localizer.GetDynamicString(kAppId, kKey, "Added to cache");
+
+			var resultB = _localizer.GetIsStringAvailableForLangId(kKey, kLang);
+			Assert.That(resultB, Is.True);
 		}
 
 		[Test]
@@ -69,31 +86,17 @@ namespace SIL.Tests.i18n
 		public void GetString_WithTranslation_ReturnsTranslatedString()
 		{
 			const string kFrAppId = kAppId + "Fr";
+			const string kFrAppName = kAppName + " French";
 			const string kKey = "Test.Greeting";
 			const string kEnglish = "Hello";
 			const string kFrench = "Bonjour";
 
-			// Write the English XLIFF for L10NSharp to use as a baseline. Without it, the
-			// trans-unit id is absent on a clean machine, so L10NSharp sees it as an orphan and
-			// silently drops it from the French XLIFF.
-			File.WriteAllText(Path.Combine(_tempDir, $"{kFrAppId}.en.xlf"),
+			File.WriteAllText(Path.Combine(_tempFolder.Path, $"{kFrAppId}.fr.xlf"),
 				$@"<?xml version=""1.0"" encoding=""utf-8""?>
-<xliff xmlns=""urn:oasis:names:tc:xliff:document:1.2"" version=""1.2"">
-	<file source-language=""en"" original=""{kFrAppId}.dll"">
+<xliff version=""1.2"" xmlns=""urn:oasis:names:tc:xliff:document:1.2"" xmlns:sil=""http://sil.org/software/XLiff"">
+	<file original=""{kFrAppId}.dll"" source-language=""en"" target-language=""fr"">
 		<body>
-			<trans-unit id=""{kKey}"">
-				<source xml:lang=""en"">{kEnglish}</source>
-			</trans-unit>
-		</body>
-	</file>
-</xliff>");
-
-			File.WriteAllText(Path.Combine(_tempDir, $"{kFrAppId}.fr.xlf"),
-				$@"<?xml version=""1.0"" encoding=""utf-8""?>
-<xliff xmlns=""urn:oasis:names:tc:xliff:document:1.2"" version=""1.2"">
-	<file source-language=""en"" original=""{kFrAppId}.dll"" target-language=""fr"">
-		<body>
-			<trans-unit id=""{kKey}"">
+			<trans-unit id=""{kKey}"" sil:dynamic=""true"">
 				<source xml:lang=""en"">{kEnglish}</source>
 				<target xml:lang=""fr"" state=""final"">{kFrench}</target>
 			</trans-unit>
@@ -101,8 +104,8 @@ namespace SIL.Tests.i18n
 	</file>
 </xliff>");
 
-			using var frManager = LocalizationManager.Create("fr", kFrAppId,
-				"L10NSharpLocalizer Tests", "1.0", _tempDir, null, new[] { "SIL." }, null);
+			using var frManager = LocalizationManager.Create("fr", kFrAppId, kFrAppName, "1.0",
+				_tempFolder.Path, null, new[] { "SIL." }, null);
 
 			var result = _localizer.GetDynamicStringOrEnglish(
 				kFrAppId, kKey, kEnglish, null, "fr");
