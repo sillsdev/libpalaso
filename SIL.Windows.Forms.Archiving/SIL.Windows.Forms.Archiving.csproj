@@ -4,6 +4,7 @@
     <RootNamespace>SIL.Windows.Forms.Archiving</RootNamespace>
     <AssemblyTitle>SIL.Windows.Forms.Archiving</AssemblyTitle>
     <Description>SIL.Windows.Forms.Archiving contains Windows Forms UI elements and classes for archiving data to REAP using the RAMP application.</Description>
+    <TargetFrameworks>$(TargetFrameworks);net8.0-windows</TargetFrameworks>
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 

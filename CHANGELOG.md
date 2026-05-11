@@ -17,8 +17,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
+- [SIL.Windows.Forms.Archiving, SIL.Windows.Forms.DblBundle] Added `net8.0-windows` target.
 - [SIL.Core.Clearshare] Added new classes MetadataCore, CreativeCommonsLicenseInfo, and CustomLicenseInfo; these are Winforms-free base versions of the classes Metadata, CreativeCommonsLicense, and CustomLicense.
-
 - [SIL.Core.Clearshare and SIL.Windows.Forms.Clearshare] Added LicenseUtils and LicenseWithImageUtils to handle the FromXmp method for creating a license. LicenseUtils constructs a bare license object that is Winforms-independent; LicenseWithImageUtils constructs a Winforms-dependent license object with access to license images.
 - [SIL.Core.Clearshare] New methods "GetIsStringAvailableForLangId" and "GetDynamicStringOrEnglish" were added to Localizer for use in LicenseInfo's "GetBestLicenseTranslation" method, to remove LicenseInfo's L10NSharp dependency.
 - [SIL.Windows.Forms.Clearshare] New ILicenseWithImage interface handles "GetImage" method for Winforms-dependent licenses, implemented in CreativeCommonsLicense and CustomLicense, and formerly included in LicenseInfo.
@@ -46,7 +46,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - [SIL.Windows.Forms.TestApp] Restored the Image Toolbox button in the test app dialog.
-- [SIL.Core.Desktop, SIL.Windows.Forms, SIL.Windows.Forms.Keyboarding] Bumped L10NSharp to 10.0.0-beta0002 to support SIL.Core.Desktop with target `net8.0`; also updated the copyright to 2026 in each `AssemblyInfo.cs`.
+- [SIL.Core.Desktop, SIL.Windows.Forms, SIL.Windows.Forms.Keyboarding] Bump L10NSharp to 10.0.0-beta0004 to support SIL.Core.Desktop with target `netstandard2.0`; also updated the copyright to 2026 in each `AssemblyInfo.cs`.
 - [SIL.Windows.Forms.i18n, SIL.Core.Desktop.i18n] BREAKING CHANGE: Move L10NSharpLocalizer from Windows.Forms to Core.Desktop so it can be accessed without Winforms dependency.
 - [SIL.Windows.Forms.Clearshare] BREAKING CHANGE: Made LicenseInfo class independent of Windows Forms and moved it from SIL.Windows.Forms.Clearshare to SIL.Core.Clearshare.
 	- The FromXmp method was moved to LicenseUtils and LicenseWithImageUtils to construct Winforms-independent and Winforms-dependent license types respectively.

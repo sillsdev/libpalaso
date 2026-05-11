@@ -4,6 +4,7 @@
     <RootNamespace>SIL.Windows.Forms.DblBundle</RootNamespace>
     <AssemblyTitle>SIL.Windows.Forms.DblBundle</AssemblyTitle>
     <Description></Description>
+    <TargetFrameworks>$(TargetFrameworks);net8.0-windows</TargetFrameworks>
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

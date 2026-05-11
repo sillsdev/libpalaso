@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
+    <TargetFrameworks>$(TargetFrameworks);net8.0-windows</TargetFrameworks>
     <RootNamespace>SIL.Windows.Forms.TestApp</RootNamespace>
     <AssemblyName>SIL.Windows.Forms.TestApp</AssemblyName>
     <Description>SIL.Windows.Forms test app</Description>
