@@ -104,6 +104,8 @@ namespace SIL.Tests.i18n
 	</file>
 </xliff>");
 
+			// For test isolation, create a new localization manager for French.
+			// In actual usage, a single localization manager would be used for all locales.
 			using var frManager = LocalizationManager.Create("fr", kFrAppId, kFrAppName, "1.0",
 				_tempFolder.Path, null, new[] { "SIL." }, null);
 
