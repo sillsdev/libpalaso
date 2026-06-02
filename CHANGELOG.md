@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Added FileLocationUtilities.DistFilesFolderPath property.
 
 ### Fixed
+- [SIL.Core] `GlobalMutex.Lock()` (Windows) now recovers from `AbandonedMutexException` instead of propagating it. Per the .NET Mutex contract, the calling thread owns the mutex despite the exception; the prior behavior crashed callers (FieldWorks LT-21834 and a related shutdown crash) with no diagnostic gain. A `Trace.TraceWarning` is emitted on recovery.
 - [SIL.Windows.Forms] Updated ImageToolbox UI to consistently use "image" (not "picture").
 - [SIL.Windows.Forms.Keyboarding] Removed Timer-based deferred IME conversion status restore from WindowsKeyboardSwitchingAdapter, which disrupted active Chinese Pinyin IME compositions (LT-22442). Added diagnostic tracing for keyboard switching and IME state.
 - [SIL.DictionaryServices] Fix memory leak in LiftWriter

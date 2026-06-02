@@ -357,7 +357,18 @@ namespace SIL.Threading
 
 			public void Wait()
 			{
-				_mutex.WaitOne();
+				try
+				{
+					_mutex.WaitOne();
+				}
+				catch (AbandonedMutexException e)
+				{
+					// Per the .NET Mutex contract this thread owns the mutex despite the exception, so
+					// we proceed and release as normal. AME carries no information about who abandoned
+					// the mutex or why, so propagating it would just crash the host with no diagnostic
+					// value. We still trace so self-abandonment by a thread in *this* process stays visible.
+					Trace.TraceWarning("Recovered abandoned GlobalMutex \"{0}\": {1}", _name, e.Message);
+				}
 			}
 
 			public void Release()

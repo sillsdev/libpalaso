@@ -1,5 +1,7 @@
 using System;
+using System.Threading;
 using NUnit.Framework;
+using SIL.PlatformUtilities;
 using SIL.Threading;
 
 namespace SIL.Tests.Threading
@@ -90,6 +92,39 @@ namespace SIL.Tests.Threading
 				{
 					using (mutex.Lock()) {}
 				}
+			}
+		}
+
+		[Test, Timeout(5000)]
+		public void Lock_AfterMutexAbandonedByExitedThread_RecoversWithoutThrowing()
+		{
+			if (!Platform.IsWindows)
+				Assert.Ignore("AbandonedMutexException only surfaces through the Windows named Mutex; flock and Monitor adapters cannot reach it.");
+
+			var envVar = Environment.GetEnvironmentVariable("SIL_CORE_MAKE_GLOBAL_MUTEX_LOCAL_ONLY");
+			if (!string.IsNullOrEmpty(envVar))
+				Assert.Ignore("LocalOnlyMutexAdapter uses Monitor; AbandonedMutexException is unreachable through it.");
+
+			const string name = "libpalaso-test-abandoned-mutex";
+			using (var mutex = new GlobalMutex(name))
+			{
+				mutex.Initialize();
+
+				// Acquire and intentionally don't release: thread exit marks the mutex abandoned.
+				var worker = new Thread(() =>
+				{
+					var raw = new Mutex(false, name);
+					raw.WaitOne();
+				}) { IsBackground = true };
+				worker.Start();
+				Assert.That(worker.Join(TimeSpan.FromSeconds(2)), Is.True, "Worker should exit promptly");
+
+				// Nested Lock verifies we actually own the mutex, not just that we swallowed the exception.
+				Assert.DoesNotThrow(() =>
+				{
+					using (mutex.Lock())
+					using (mutex.Lock()) { }
+				});
 			}
 		}
 	}
