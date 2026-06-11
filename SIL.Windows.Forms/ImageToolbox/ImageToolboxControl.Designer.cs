@@ -202,8 +202,10 @@ namespace SIL.Windows.Forms.ImageToolbox
 			//
 			// ImageToolboxControl
 			//
-			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+			// Inherit (rather than Dpi) so the top-level form's DPI scaling cascades into
+			// this control's children; a nested container with its own AutoScaleMode does
+			// not get scaled properly on high-DPI monitors (BL-16414).
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
 			this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.Controls.Add(this.panel1);

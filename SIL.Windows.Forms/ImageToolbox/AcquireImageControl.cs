@@ -8,6 +8,7 @@ using SIL.PlatformUtilities;
 using SIL.Reporting;
 using System.Drawing.Imaging;
 using SIL.IO;
+using SIL.Windows.Forms.Extensions;
 using WIA;
 
 namespace SIL.Windows.Forms.ImageToolbox
@@ -25,6 +26,16 @@ namespace SIL.Windows.Forms.ImageToolbox
 		public AcquireImageControl()
 		{
 			InitializeComponent();
+
+			// The designer-set ImageScalingSize is in physical pixels and is not scaled
+			// automatically on high-DPI monitors, so scale explicitly once the actual
+			// DPI is known (BL-16414).
+			Load += (sender, args) =>
+			{
+				var dpiScale = this.GetDpiScale();
+				toolStrip1.ImageScalingSize = new Size(
+					(int)(32 * dpiScale), (int)(32 * dpiScale));
+			};
 
 			if (!Platform.IsWindows)
 			{

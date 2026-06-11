@@ -9,6 +9,20 @@ namespace SIL.Windows.Forms.Extensions
 {
 	public static class ControlExtensions
 	{
+		/// <summary>
+		/// Get the scale factor of the monitor the control is rendering on, relative to
+		/// the traditional 96 DPI (e.g. 2.0 on a monitor scaled to 200%). Useful for
+		/// scaling values WinForms does not scale automatically, such as
+		/// ImageList.ImageSize and ToolStrip.ImageScalingSize (BL-16414). The control's
+		/// handle should already be created (e.g. call this from a Load handler) for
+		/// the value to be reliable.
+		/// </summary>
+		public static float GetDpiScale(this Control control)
+		{
+			using (var graphics = control.CreateGraphics())
+				return graphics.DpiX / 96f;
+		}
+
 		[DllImport("user32.dll", CharSet = CharSet.Auto, EntryPoint = "SendMessage")]
 		private static extern void SendMessageWindows(IntPtr hWnd, int msg, int wParam, int lParam);
 

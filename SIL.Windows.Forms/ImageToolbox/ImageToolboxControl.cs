@@ -9,6 +9,7 @@ using SIL.PlatformUtilities;
 using SIL.Reporting;
 using SIL.Windows.Forms.ClearShare;
 using SIL.Windows.Forms.ClearShare.WinFormsUI;
+using SIL.Windows.Forms.Extensions;
 using SIL.Windows.Forms.ImageToolbox.Cropping;
 
 namespace SIL.Windows.Forms.ImageToolbox
@@ -211,6 +212,15 @@ namespace SIL.Windows.Forms.ImageToolbox
 			_editLink.Visible = metaData!=null && _metadataDisplayControl.Visible && !looksOfficial;
 			if (_metadataDisplayControl.Visible)
 				_metadataDisplayControl.SetMetadata(metaData);
+			if (Platform.IsWindows && _editLink.Visible)
+			{
+				// DPI scaling combined with the bottom-anchoring can leave the link
+				// positioned outside the visible panel (BL-16414), so place it
+				// explicitly just below the metadata display.
+				_editLink.Location = new Point(_editLink.Left,
+					Math.Min(_metadataDisplayControl.Bottom + 4,
+						panel1.ClientSize.Height - _editLink.Height));
+			}
 
 			_copyExemplarMetadata.Visible = MetadataCore.HaveStoredExemplar(MetadataCore.FileCategory.Image);
 			if (_invitationToMetadataPanel.Visible && _copyExemplarMetadata.Visible)
@@ -413,7 +423,10 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 			_toolListView.LargeImageList = _toolImages;
 			_toolImages.ColorDepth = ColorDepth.Depth24Bit;
-			_toolImages.ImageSize = new Size(32, 32);
+			// ImageList sizes are in physical pixels and are not scaled automatically
+			// on high-DPI monitors, so scale explicitly (BL-16414).
+			var dpiScale = this.GetDpiScale();
+			_toolImages.ImageSize = new Size((int)(32 * dpiScale), (int)(32 * dpiScale));
 
 			// These two controls should never be visible except when made so by SetupMetaDataControls when ImageInfo is not null.
 			// To help ensure this we make both not visible right at the start.

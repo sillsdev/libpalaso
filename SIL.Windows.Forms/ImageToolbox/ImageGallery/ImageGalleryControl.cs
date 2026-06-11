@@ -218,6 +218,10 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 			if (DesignMode)
 				return;
 
+			// The designer-set thumbnail size is in physical pixels and is not scaled
+			// automatically on high-DPI monitors, so scale explicitly (BL-16414).
+			_thumbnailViewer.ThumbNailSize = (int)(_thumbnailViewer.ThumbNailSize * this.GetDpiScale());
+
 			_imageCollectionManager = ImageCollectionManager.FromStandardLocations(SearchLanguage);
 			_collectionToolStrip.Visible = false;
 			if (_imageCollectionManager == null)

@@ -28,7 +28,15 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 		public int ThumbNailSize
 		{
 			get { return thumbNailSize; }
-			set { thumbNailSize = value; }
+			set
+			{
+				thumbNailSize = value;
+				// Keep the image list in sync; otherwise thumbnails are stretched to
+				// whatever size it had at construction. (Note that setting ImageSize
+				// clears the list, so this is meant to be set before loading images.)
+				if (LargeImageList != null)
+					LargeImageList.ImageSize = new Size(value, value);
+			}
 		}
 
 		private Color thumbBorderColor = Color.Wheat;
