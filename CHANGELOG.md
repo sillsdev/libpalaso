@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Prevent BetterLabel from responding to OnTextChanged when it has been disposed.
 - [SIL.Windows.Forms] Prevent ContributorsListControl.GetContributionFromRow from throwing an exception when the DataGridView has no valid rows selected.
 - [SIL.Media] BREAKING CHANGE (subtle and unlikely): WindowsAudioSession.OnPlaybackStopped now passes itself as the sender instead of a private implementation object, making the event arguments correct.
+- [SIL.Archiving] Fixed ArchiveAccessProtocol.GetDocumentationUri failing to create a missing documentation file because the resource lookup stripped the file extension and no longer matched the embedded resource name.
 
 ### Changed
 - [SIL.Windows.Forms] PalasoImage robust load/save helpers now accept additional retry exception types without replacing the built-in retry defaults, and the built-in retry lists were expanded for additional read/save exceptions seen in the wild.
