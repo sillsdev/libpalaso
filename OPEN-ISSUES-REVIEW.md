@@ -12,10 +12,8 @@
 | #                                                          | Title                                           | Size | Review |          Breaking          |                     Already fixed?                      | Primary file(s)                             |
 | ---------------------------------------------------------- | ----------------------------------------------- | :--: | :----: | :------------------------: | :-----------------------------------------------------: | ------------------------------------------- |
 | [#761](https://github.com/sillsdev/libpalaso/issues/761)   | Corruption in Windows language crashes          |  XS  |  Low   |             No             |                           No                            | `WritingSystemFromWindowsLocaleProvider.cs` |
-| [#1016](https://github.com/sillsdev/libpalaso/issues/1016) | feature/nuget → main dev branch                 |  XS  |  Low   |       Likely (done)        |                            —                            | none (close-out)                            |
 | [#1037](https://github.com/sillsdev/libpalaso/issues/1037) | pdfdroplet consume/publish nuget                |  XS  |  Low   |         Partially          |            `CopyTo pdfDroplet.bat` (remove)             |
 | [#1392](https://github.com/sillsdev/libpalaso/issues/1392) | GetDocumentationUri test fails                  |  XS  |  Low   |             No             |                 `AccessProtocolList.cs`                 |
-| [#1430](https://github.com/sillsdev/libpalaso/issues/1430) | Wiki: Release Procedure out of date             |  XS  |  Low   |             No             |                        wiki only                        |
 | [#1431](https://github.com/sillsdev/libpalaso/issues/1431) | nuget: hide old betas                           |  XS  |  Low   |             No             |                      nuget.org op                       |
 | [#1448](https://github.com/sillsdev/libpalaso/issues/1448) | Date wrong in generated PR commit msg           |  XS  |  Low   |             No             |      `.github/workflows/update-language-data.yml`       |
 | [#1479](https://github.com/sillsdev/libpalaso/issues/1479) | VerseRef.GetBBBCCCVVV at upper limit            |  XS  |  Low   |             No             |               `SIL.Scripture/VerseRef.cs`               |
@@ -66,11 +64,11 @@ These clusters are worth batching into a single PR (or at least coordinating) to
 
 ### Documentation / release / nuget housekeeping cluster
 
-- **#1010**, **#1021**, **#1430**, **#1431** are all nuget/release documentation or nuget.org operations (README + wiki + unlisting old betas). Best handled as one "release-docs refresh" pass; #1430 and #1431 belong on the same release checklist.
+- **#1010**, **#1021**, **#1431** are all nuget/release documentation or nuget.org operations (README + wiki + unlisting old betas). Best handled as one "release-docs refresh" pass.
 
 ### nuget umbrella sub-tasks (mostly cross-repo)
 
-- **#993** is the umbrella; **#1001** (FieldWorks), **#1007** (LfMerge), **#1008** (FieldWorks packaging), **#1016** (autosrtests), **#1037** (pdfdroplet) are all sub-tasks. The **libpalaso-side work is done**; the remaining work lives in other repos. These are triage/close candidates, not libpalaso code changes (see notes below).
+- **#993** is the umbrella; **#1001** (FieldWorks), **#1007** (LfMerge), **#1008** (FieldWorks packaging), **#1037** (pdfdroplet) are all sub-tasks. The **libpalaso-side work is done**; the remaining work lives in other repos. These are triage/close candidates, not libpalaso code changes (see notes below).
 
 ---
 
@@ -103,12 +101,6 @@ Both open PRs are **drafts**.
 - **Review:** Low — a single try/catch / null-guard. **Breaking:** No. **Already fixed:** No.
 - Line ~120 still accesses `language.LayoutName` with no guard; the existing try/catch only covers `language.Culture`. `InputLanguage.LayoutName` can throw `NullReferenceException` from WinForms when the Windows language install is corrupt. Wrap the `yield return` in try/catch and skip the offending language. 2018 discussion noted it was WeSay-specific and may not repro on Win10/11 — low priority, but the crash point is still live.
 
-#### #1016 — lfmerge-autosrtests: make feature/nuget the main dev branch
-
-- **Files:** none — verification + close-out.
-- **Review:** Low. **Breaking:** No. **Already fixed:** Likely (done).
-- `feature/nuget` merged to master 2021-02-23 (`29e851ed`); `GitVersion.yml` has no nuget-branch overrides; GHA publishes packages automatically. Only remaining action is **closing the issue**. Stale title appears to be a copy-paste artifact.
-
 #### #1037 — pdfdroplet should consume and publish nuget package
 
 - **Files:** `CopyTo pdfDroplet.bat` (delete/deprecate); rest in `sillsdev/pdfdroplet` + Bloom (external).
@@ -121,17 +113,11 @@ Both open PRs are **drafts**.
 - **Review:** Low — one-line logic error. **Breaking:** No. **Already fixed:** No.
 - Introduced by PR #1317. Line ~208 strips the extension (`"ailca.html"` → `"ailca"`) then `GetResource("ailca")` misses the manifest name `SIL.Archiving.Resources.ailca.html`. Simplest fix: don't strip the extension. Test already written (`[SkipOnTeamCity]`).
 
-#### #1430 — [Wiki] Release Procedure out of date
-
-- **Files:** wiki page only (not in repo).
-- **Review:** Low. **Breaking:** No. **Already fixed:** No.
-- Wiki references decommissioned AppVeyor + manual release steps; GHA (`build.yml`) now publishes on tag/master. A 2026-06-16 comment confirms v17 shipped via GHA, making the update overdue. Pure wiki edit. Pairs with #1431.
-
 #### #1431 — [nuget] Hide old betas
 
 - **Files:** none in repo — nuget.org operation.
 - **Review:** Low. **Breaking:** No. **Already fixed:** No.
-- Run [SIL.NuGetCleaner](https://github.com/sillsdev/SIL.NuGetCleaner) to unlist beta versions 14.0.1–16.0.0. Operational; add to the standard release checklist (ties to #1430).
+- Run [SIL.NuGetCleaner](https://github.com/sillsdev/SIL.NuGetCleaner) to unlist beta versions 14.0.1–16.0.0.
 
 #### #1448 — Date wrong in generated PR commit message
 
@@ -163,7 +149,7 @@ Both open PRs are **drafts**.
 
 - **Files:** `README.md`, `CHANGELOG.md`, wiki (external).
 - **Review:** Low. **Breaking:** No. **Already fixed:** Partially.
-- README already has a "Deployment on nuget.org" section and a local-package wiki link. Remaining gap is likely wiki content. Audit wiki pages, fill gaps, verify README matches current GHA workflow. Part of the **docs cluster** with #1021/#1430/#1431.
+- README already has a "Deployment on nuget.org" section and a local-package wiki link. Remaining gap is likely wiki content. Audit wiki pages, fill gaps, verify README matches current GHA workflow. Part of the **docs cluster** with #1021/#1431.
 
 #### #1021 — Investigate/document how to always get latest nuget version
 
@@ -301,7 +287,7 @@ Both open PRs are **drafts**.
 
 - **Files:** cross-repo meta-issue; libpalaso-side files (`build.yml`, `Directory.Build.props`/`.targets`, per-project `.csproj`) were all done when `feature/nuget` merged 2021-02-23.
 - **Review:** High (spans 6+ repos). **Breaking:** Maybe (downstream build-process change). **Already fixed:** Partially — **libpalaso's own work is done**; ~16/35 checklist items remain, all in external repos.
-- Long-running (2020–) dashboard. Remaining items are blockers in FieldWorks (#1001), LfMerge (#1007), Chorus (#1002), docs (#1009/#1010), autosrtests (#1016). Consider retitling/splitting; its value now is status-tracking.
+- Long-running (2020–) dashboard. Remaining items are blockers in FieldWorks (#1001), LfMerge (#1007), Chorus (#1002), docs (#1009/#1010). Consider retitling/splitting; its value now is status-tracking.
 
 #### #1425 — Prepare to migrate away from irrKlang
 
