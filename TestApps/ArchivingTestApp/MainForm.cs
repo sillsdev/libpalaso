@@ -94,6 +94,7 @@ namespace ArchivingTestApp
 
 		private void SetFilesToArchive(ArchivingDlgViewModel model, CancellationToken cancellationToken)
 		{
+			Thread.Sleep(1200); // Pause briefly to display SearchingForArchiveUploadingProgram.
 			foreach (ListViewGroup group in m_listFiles.Groups)
 			{
 				var files = (from ListViewItem item in @group.Items select item.Text).ToList();
