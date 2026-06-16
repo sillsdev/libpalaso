@@ -343,18 +343,21 @@ namespace SIL.Windows.Forms.Archiving
 					return Format(LocalizationManager.GetString(
 						"DialogBoxes.ArchivingDlg.SearchingForRampMsg",
 						"Searching for the {0} program...",
-						"Parameter is the path to the auxiliary archive upload program (RAMP, etc.)."),
+						"Parameter is the name of the auxiliary archive upload program (usually " +
+						"\"RAMP\", but other program names are possible)."),
 						_viewModel.NameOfProgramToLaunch);
 				case ArchiveUploadingProgramNotFound:
 					return Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.RampNotFoundMsg",
 						"The {0} program cannot be found!",
-						"Parameter is the path to the auxiliary archive upload program (RAMP, etc.)."),
+						"Parameter is the name of the auxiliary archive upload program (usually " +
+						"\"RAMP\", but other program names are possible)."),
 						_viewModel.NameOfProgramToLaunch);
 				case ErrorStartingArchivalProgram:
 					return Format(LocalizationManager.GetString(
 						"DialogBoxes.ArchivingDlg.StartingRampErrorMsg",
 						"There was an error attempting to open the archive package in {0}.",
-						"Parameter is the path to the auxiliary archive upload program (RAMP, etc.)."),
+						"Parameter is the name of the auxiliary archive upload program (usually " +
+						"\"RAMP\", but other program names are possible)."),
 						_viewModel.NameOfProgramToLaunch);
 				case PreparingFiles:
 					return LocalizationManager.GetString(
