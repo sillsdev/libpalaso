@@ -499,8 +499,8 @@ namespace SIL.Lift.Tests.Merging
 		}
 
 		/// <summary>
-		/// This is a regression test... had <lift> and the lack of a closing
-		/// </lift> meant that the new item was never added
+		/// This is a regression test... had &lt;lift&gt; and the lack of a closing
+		/// &lt;/lift&gt; meant that the new item was never added
 		/// </summary>
 		[Test]
 		public void AddingToEmptyLift()
