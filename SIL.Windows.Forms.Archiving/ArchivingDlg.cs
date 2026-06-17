@@ -337,22 +337,28 @@ namespace SIL.Windows.Forms.Archiving
 						"DialogBoxes.ArchivingDlg.PrearchivingStatusMsg",
 						"The following files will be added to the archive:");
 				case SearchingForArchiveUploadingProgram:
+					// ENHANCE: These RAMP-specific IDs should probably be changed to reflect the
+					// more generic nature of the strings, but in practice (for now at least), it
+					// will probably always be RAMP.
 					return Format(LocalizationManager.GetString(
 						"DialogBoxes.ArchivingDlg.SearchingForRampMsg",
 						"Searching for the {0} program...",
-						"Parameter is the path to the auxiliary archive upload program (RAMP, etc.)."),
-						_viewModel.PathToProgramToLaunch);
+						"Parameter is the name of the auxiliary archive upload program (usually " +
+						"\"RAMP\", but other program names are possible)."),
+						_viewModel.NameOfProgramToLaunch);
 				case ArchiveUploadingProgramNotFound:
 					return Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.RampNotFoundMsg",
 						"The {0} program cannot be found!",
-						"Parameter is the path to the auxiliary archive upload program (RAMP, etc.)."),
-						_viewModel.PathToProgramToLaunch);
+						"Parameter is the name of the auxiliary archive upload program (usually " +
+						"\"RAMP\", but other program names are possible)."),
+						_viewModel.NameOfProgramToLaunch);
 				case ErrorStartingArchivalProgram:
 					return Format(LocalizationManager.GetString(
 						"DialogBoxes.ArchivingDlg.StartingRampErrorMsg",
 						"There was an error attempting to open the archive package in {0}.",
-						"Parameter is the path to the auxiliary archive upload program (RAMP, etc.)."),
-						_viewModel.PathToProgramToLaunch);
+						"Parameter is the name of the auxiliary archive upload program (usually " +
+						"\"RAMP\", but other program names are possible)."),
+						_viewModel.NameOfProgramToLaunch);
 				case PreparingFiles:
 					return LocalizationManager.GetString(
 						"DialogBoxes.ArchivingDlg.PreparingFilesMsg",
