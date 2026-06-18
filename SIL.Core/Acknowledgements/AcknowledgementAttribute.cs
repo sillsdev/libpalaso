@@ -51,7 +51,8 @@ namespace SIL.Acknowledgements
 		/// if no custom Html is set. This is an optional field.
 		/// If this property is set, it will override the automatic value produced by examining the dll itself.
 		/// </summary>
-		public string Name {
+		public string Name
+		{
 			get
 			{
 				if (!string.IsNullOrEmpty(_name) || string.IsNullOrEmpty(Location))
@@ -131,8 +132,8 @@ namespace SIL.Acknowledgements
 		public string Location { get; set; }
 
 		/// <summary>
-		/// If no custom Html is provided, this will generate a default <li></li> entry filled in with the information
-		/// provided in the acknowledgement.
+		/// If no custom Html is provided, this will generate a default &lt;li&gt;&lt;/li&gt;
+		/// entry filled in with the information provided in the acknowledgement.
 		///
 		/// Example default Html based on the example acknowledgement in the constructor comment is:
 		/// "&lt;li&gt;&lt;a href='http://www.codeplex.com/DotNetZip'&gt;DotNetZip Library&lt;/a&gt;: Dino Chiesa &lt;a href='https://opensource.org/licenses/MS-PL'&gt;https://opensource.org/licenses/MS-PL&lt;/a&gt;&lt;li&gt;"

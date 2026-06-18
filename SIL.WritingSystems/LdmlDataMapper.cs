@@ -881,8 +881,8 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Utility to remove empty elements. Since isEmpty is true for "<element />"
-		/// but false for "<element></element>", we have to check both cases
+		/// Utility to remove empty elements. Since isEmpty is true for "&lt;element /&gt;"
+		/// but false for "&lt;element&gt;&lt;/element&gt;", we have to check both cases
 		/// </summary>
 		/// <param name="element">XElement to remove if it's empty or has 0 contents/attributes/elements</param>
 		private static void RemoveIfEmpty(ref XElement element)
