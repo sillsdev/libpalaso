@@ -225,9 +225,9 @@ namespace SIL.Archiving
 		/// one message before the archival creation begins.
 		/// </summary>
 		/// <remarks>This is used only in the normal default implementation of
-		/// <see cref="DisplayInitialSummary"/></remarks>, so if
+		/// <see cref="DisplayInitialSummary"/>, so if
 		/// <see cref="OverrideDisplayInitialSummary"/> is set, then there is no point in also
-		/// setting this delegate.
+		/// setting this delegate.</remarks>
 		/// ------------------------------------------------------------------------------------
 		public Func<IDictionary<string, Tuple<IEnumerable<string>, string>>, IEnumerable<Tuple<string, MessageType>>> GetOverriddenPreArchivingMessages { private get; set; }
 
@@ -238,9 +238,9 @@ namespace SIL.Archiving
 		/// type is <see cref="MessageType.Indented"/>.
 		/// </summary>
 		/// <remarks>This is used only in the normal default implementation of
-		/// <see cref="DisplayInitialSummary"/></remarks>, so if
+		/// <see cref="DisplayInitialSummary"/>, so if
 		/// <see cref="OverrideDisplayInitialSummary"/> is set, then there is no point in also
-		/// setting this property.
+		/// setting this property.</remarks>
 		/// ------------------------------------------------------------------------------------
 		public MessageType InitialFileGroupDisplayMessageType { private get; set; } = MessageType.Indented;
 
@@ -251,9 +251,9 @@ namespace SIL.Archiving
 		/// groupId (as set in <see cref="AddFileGroup"/>.
 		/// </summary>
 		/// <remarks>This is used only in the normal default implementation of
-		/// <see cref="DisplayInitialSummary"/></remarks>, so if
+		/// <see cref="DisplayInitialSummary"/>, so if
 		/// <see cref="OverrideDisplayInitialSummary"/> is set, then there is no point in also
-		/// setting this delegate.
+		/// setting this delegate.</remarks>
 		/// ------------------------------------------------------------------------------------
 		public Func<string, string> OverrideGetFileGroupDisplayMessage { private get; set; }
 		#endregion

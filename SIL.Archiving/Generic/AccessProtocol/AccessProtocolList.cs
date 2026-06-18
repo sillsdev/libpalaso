@@ -204,9 +204,7 @@ namespace SIL.Archiving.Generic.AccessProtocol
 			// try to create the file if it is not there
 			if (!File.Exists(fileName))
 			{
-				var pos = DocumentationFile.LastIndexOf('.');
-				var resourceName = pos > -1 ? DocumentationFile.Substring(0, pos) : DocumentationFile;
-				var resourceString = GetResource(resourceName);
+				var resourceString = GetResource(DocumentationFile);
 				if (!string.IsNullOrEmpty(resourceString))
 					File.WriteAllText(fileName, resourceString);
 			}
