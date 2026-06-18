@@ -75,8 +75,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] ISimpleAudioWithEvents now extends ISimpleAudioSession. Technically a breaking change, but the only class in this library that implements it already implemented ISimpleAudioSession. Any custom implementations by clients would very likely have implemented both as well.
 - [SIL.Core] Changed the Message property on NonFatalErrorReportExpected (presumably intended for use only in tests) to return the message of the previous reported non-fatal exception if no ordninary non-fatal message has been reported.
 - [SIL.Media] In the event of an audio playback error in Windows, the non-fatal exception reported will also include an accompanying (localizable/customizable) user-friendly message.
-- [SIL.WritingSystems] Updated embedded langtags.json
-- [SIL.WritingSystems] Updated embedded ianaSubtagRegistry.txt
+- [SIL.WritingSystems] Updated embedded langtags.json (api 1.4, 2026-06-09)
+- [SIL.WritingSystems] Updated embedded ianaSubtagRegistry.txt (2026-06-14)
 
 ### Removed
 
