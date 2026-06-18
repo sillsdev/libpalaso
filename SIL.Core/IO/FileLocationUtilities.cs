@@ -126,6 +126,13 @@ namespace SIL.IO
 			"common" /*for WeSay*/, "src" /*for Bloom*/};
 
 		/// <summary>
+		/// Additional directories to search after the built-in ones in
+		/// <see cref="GetFileDistributedWithApplication(bool, string[])"/>. Useful for apps that
+		/// install files outside the standard locations (e.g., a git submodule during development).
+		/// </summary>
+		public static IList<string> AdditionalSearchDirectories { get; } = new List<string>();
+
+		/// <summary>
 		/// Find a file which, on a development machine, lives in [solution]/[distFileFolderName]/[subPath],
 		/// and when installed, lives in
 		/// [applicationFolder]/[distFileFolderName]/[subPath1]/[subPathN]  or
@@ -155,6 +162,13 @@ namespace SIL.IO
 					s_distFilesFolderCached = dir; // Remember this for next time.
 					return path;
 				}
+			}
+
+			foreach (var additionalDir in AdditionalSearchDirectories)
+			{
+				var path = Path.Combine(additionalDir, Path.Combine(partsOfTheSubPath));
+				if (File.Exists(path))
+					return path;
 			}
 
 			if (optional)

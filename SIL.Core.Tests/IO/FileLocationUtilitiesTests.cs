@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using SIL.IO;
 using SIL.PlatformUtilities;
 using static SIL.IO.FileLocationUtilities;
 
@@ -190,6 +191,28 @@ namespace SIL.Tests.IO
 		}
 
 		//TODO: this could use lots more tests
+
+		[Test]
+		public void GetFileDistributedWithApplication_FileOnlyInAdditionalDirectory_FindsCorrectly()
+		{
+			const string fileName = "TestFileInAdditionalDir.txt";
+			using (var tempFile = TempFile.WithFilenameInTempFolder(fileName))
+			{
+				File.WriteAllText(tempFile.Path, "test content");
+				var tempDir = Path.GetDirectoryName(tempFile.Path);
+				AdditionalSearchDirectories.Add(tempDir);
+				try
+				{
+					var result = GetFileDistributedWithApplication(true, fileName);
+					Assert.That(result, Is.Not.Null);
+					Assert.That(File.Exists(result));
+				}
+				finally
+				{
+					AdditionalSearchDirectories.Remove(tempDir);
+				}
+			}
+		}
 
 		[Test]
 		public void LocateExecutable_DistFiles()

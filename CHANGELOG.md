@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Installer] Added new package for common installer components. Initially, this includes a Privacy dialog and code to access the registry entries so users can opt out of analytics data collection.
 - [SIL.Core] Added PathUtilities.ParentDirectories extension method.
 - [SIL.Core] Added FileLocationUtilities.DistFilesFolderPath property.
+- [SIL.Core] Added FileLocationUtilities.AdditionalSearchDirectories property, allowing apps to register extra directories searched as a fallback by GetFileDistributedWithApplication.
 
 ### Fixed
 - [SIL.Windows.Forms] Updated ImageToolbox UI to consistently use "image" (not "picture").
