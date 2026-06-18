@@ -125,10 +125,10 @@ namespace SIL.Reporting
 				_currentlyPosting = true;
 				PostAnalytics(content);
 			}
-			catch (Exception)
+			catch (Exception err)
 			{
 #if DEBUG
-				throw;
+				throw err;
 #endif
 				// normally, swallow
 			}
@@ -153,10 +153,10 @@ namespace SIL.Reporting
 					Debug.WriteLine(t.Result);
 				}
 			}
-			catch (Exception)
+			catch (Exception err)
 			{
 #if DEBUG
-				throw;
+				throw err;
 #endif
 				// normally swallow
 			}
