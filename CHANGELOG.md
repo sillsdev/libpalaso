@@ -43,6 +43,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Prevent BetterLabel from responding to OnTextChanged when it has been disposed.
 - [SIL.Windows.Forms] Prevent ContributorsListControl.GetContributionFromRow from throwing an exception when the DataGridView has no valid rows selected.
 - [SIL.Media] BREAKING CHANGE (subtle and unlikely): WindowsAudioSession.OnPlaybackStopped now passes itself as the sender instead of a private implementation object, making the event arguments correct.
+- [build] Fixed the update-language-data workflow so the generated pull request commit message shows the actual update date instead of a literal `$(date ...)` string.
+- [SIL.Archiving] Fixed ArchiveAccessProtocol.GetDocumentationUri failing to create a missing documentation file because the resource lookup stripped the file extension and no longer matched the embedded resource name.
 - [SIL.Windows.Forms.Archiving] Fixed formatting of message in ArchivingDlg so that the name of the auxiliary archive upload program (e.g., "RAMP") is displayed.
 
 ### Changed
