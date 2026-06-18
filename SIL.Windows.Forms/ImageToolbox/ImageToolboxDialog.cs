@@ -16,7 +16,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// <param name="editMetadataActionOverride">If non-null, this action will be used
 		/// instead of the default (launching <see cref="ClearShare.WinFormsUI.MetadataEditorDialog"/>).
 		/// For example, the client may want to use a different UI to edit the `Metadata`.
-		/// The `Action<Metadata>` callback saves the modified `Metadata` to the image.
+		/// The `Action&lt;Metadata&gt;` callback saves the modified `Metadata` to the image.
 		/// <see cref="ImageToolboxControl.SetNewImageMetadata(Metadata)"/></param>
 		public ImageToolboxDialog(PalasoImage imageInfo, string initialSearchString, Action<Metadata, Action<Metadata>> editMetadataActionOverride)
 		{
@@ -24,7 +24,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			_imageToolboxControl.ImageInfo = imageInfo;
 			_imageToolboxControl.InitialSearchString = initialSearchString;
 			_imageToolboxControl.EditMetadataActionOverride = editMetadataActionOverride;
-			SearchLanguage = "en";	// unless the caller specifies otherwise explicitly
+			SearchLanguage = "en";  // unless the caller specifies otherwise explicitly
 		}
 
 		public PalasoImage ImageInfo { get { return _imageToolboxControl.ImageInfo; } }
@@ -53,7 +53,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		{
 			//enhance: doesn't tell us all that much.
 			UsageReporter.SendNavigationNotice("ImageToolboxDialog/Ok");
-			DialogResult = (ImageInfo==null || ImageInfo.Image==null)? DialogResult.Cancel : DialogResult.OK;
+			DialogResult = (ImageInfo == null || ImageInfo.Image == null) ? DialogResult.Cancel : DialogResult.OK;
 			_imageToolboxControl.Closing();
 			Close();
 		}
