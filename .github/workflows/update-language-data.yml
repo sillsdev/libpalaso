@@ -36,7 +36,7 @@ jobs:
       langtags_url: ${{ steps.changes.outputs.langtags_url }}
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
@@ -94,7 +94,7 @@ jobs:
     if: needs.check-changes.outputs.has_changes == 'true'
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
@@ -120,20 +120,20 @@ jobs:
 
     - name: Add langtags entry to CHANGELOG.md
       if: needs.check-changes.outputs.has_langtags_changes
-      uses: claudiodekker/changelog-updater@6d9e21971591cfd515ef8cc71b721b767794afd4
+      uses: claudiodekker/changelog-updater@965b63190529191a495923ef184fb3090784ea1e # v1.2.0
       with:
         section: "Changed"
         entry-text: "[SIL.WritingSystems] Updated embedded langtags.json"
 
     - name: Add iana subtags entry to CHANGELOG.md
       if: needs.check-changes.outputs.has_iana_changes
-      uses: claudiodekker/changelog-updater@6d9e21971591cfd515ef8cc71b721b767794afd4
+      uses: claudiodekker/changelog-updater@965b63190529191a495923ef184fb3090784ea1e # v1.2.0
       with:
         section: "Changed"
         entry-text: "[SIL.WritingSystems] Updated embedded ianaSubtagRegistry.txt"
 
     - name: Upload updated changelog
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
         name: updated-changelog
         path: CHANGELOG.md
@@ -145,13 +145,13 @@ jobs:
     if: needs.check-changes.outputs.has_changes == 'true'
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2 # v5.3.0
       with:
         dotnet-version: '8.0.x'
 
@@ -216,13 +216,13 @@ jobs:
         fi
 
     - name: Download updated changelog
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
       with:
         name: updated-changelog
         path: .
 
     - name: Create Pull Request
-      uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e
+      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         add-paths: |
