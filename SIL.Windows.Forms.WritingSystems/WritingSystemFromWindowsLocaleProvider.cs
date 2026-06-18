@@ -117,7 +117,21 @@ namespace SIL.Windows.Forms.WritingSystems
 				var cleaner = new IetfLanguageTagCleaner(culture.TwoLetterISOLanguageName, "", region, "", "");
 				cleaner.Clean();
 
-				yield return Tuple.Create(cleaner.GetCompleteTag(), language.LayoutName);
+				string layoutName;
+				try
+				{
+					// InputLanguage.LayoutName can throw (e.g. a NullReferenceException from
+					// System.Windows.Forms) when the user's Windows language installation is
+					// corrupt. Skip the offending language rather than crashing the whole enumeration.
+					layoutName = language.LayoutName;
+				}
+				catch (Exception e)
+				{
+					Debug.WriteLine($"Skipping input language '{culture.EnglishName}' because its keyboard layout name could not be read (the Windows language installation may be corrupt): {e.Message}");
+					continue;
+				}
+
+				yield return Tuple.Create(cleaner.GetCompleteTag(), layoutName);
 			}
 		}
 
