@@ -826,6 +826,7 @@ namespace SIL.Xml
 		/// XML file.
 		/// </summary>
 		[Obsolete("Use ConvertMultiParagraphToSafeXml")]
+		[CLSCompliant(false)]
 		public static string ConvertMultiparagraphToSafeXml(string sInput) =>
 			ConvertMultiParagraphToSafeXml(sInput);
 
