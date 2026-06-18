@@ -221,6 +221,11 @@ jobs:
         name: updated-changelog
         path: .
 
+    - name: Get current date
+      id: current-date
+      shell: bash
+      run: echo "date=$(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> "$GITHUB_OUTPUT"
+
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e
       with:
@@ -232,7 +237,7 @@ jobs:
         commit-message: |
           Update embedded writing system data
 
-          - Updated: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          - Updated: ${{ steps.current-date.outputs.date }}
           - langtags.json: ${{ needs.check-changes.outputs.has_langtags_changes == 'true' && 'Updated' || 'No changes' }}
           - ianaSubtagRegistry.txt: ${{ needs.check-changes.outputs.has_iana_changes == 'true' && 'Updated' || 'No changes' }}
           - SLDR staging: ${{ github.event.inputs.use_staging }}
