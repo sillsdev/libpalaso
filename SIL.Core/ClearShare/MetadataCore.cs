@@ -799,7 +799,6 @@ namespace SIL.Core.ClearShare
 		public string GetSummaryParagraph(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed, string localizedCreatorLabel = "Creator")
 		{
 			var b = new StringBuilder();
-			b.Append(localizedCreatorLabel).Append(": ").AppendLine(Creator);
 			b.AppendLine($"{localizedCreatorLabel}: {Creator}");
 			b.AppendLine(CopyrightNotice);
 			if (!IsNullOrEmpty(CollectionName))
@@ -811,7 +810,8 @@ namespace SIL.Core.ClearShare
 			if (!IsNullOrEmpty(License.Url) && !description.Contains(License.Url))
 				b.AppendLine(License.Url);
 			b.AppendLine(description);
-			if (!IsNullOrWhiteSpace(License.RightsStatement))
+			// CustomLicenseInfo.GetDescription returns RightsStatement, so guard against appending it twice.
+			if (!IsNullOrWhiteSpace(License.RightsStatement) && !description.Contains(License.RightsStatement))
 				b.AppendLine(License.RightsStatement);
 			return b.ToString();
 		}
