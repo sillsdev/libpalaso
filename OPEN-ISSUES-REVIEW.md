@@ -35,7 +35,7 @@
 | [#1008](https://github.com/sillsdev/libpalaso/issues/1008) | Update/test FieldWorks packaging                |  M   | Medium |          Unclear           |                     FieldWorks repo                     |
 | [#1105](https://github.com/sillsdev/libpalaso/issues/1105) | Linux CopyImageToClipboard                      |  M   | Medium |             No             |            `Clipboarding/LinuxClipboard.cs`             |
 | [#1272](https://github.com/sillsdev/libpalaso/issues/1272) | Scan image dialog non-modal in x64              |  M   | Medium |             No             | `lib/x64/Interop.WIA.dll`, `ImageAcquisitionService.cs` |
-| [#1320](https://github.com/sillsdev/libpalaso/issues/1320) | Upgrade to .NET8                                |  M   |  High  |         Yes (NRT)          |           `Directory.Build.props`, `*.csproj`           |
+| [#1320](https://github.com/sillsdev/libpalaso/issues/1320) | Upgrade to .NET8                                |  M   |  High  |         Yes (NRT)          |                        Partially                        | `Directory.Build.props`, `*.csproj`           |
 | [#1411](https://github.com/sillsdev/libpalaso/issues/1411) | Calls to obsolete methods                       |  M   | Medium |             No             |        `Sldr.cs`, `AnalyticsEventSender.cs`, +5         |
 | [#1428](https://github.com/sillsdev/libpalaso/issues/1428) | GlobalMutex hardcoded /var/lock                 |  M   | Medium |             No             |           `SIL.Core/Threading/GlobalMutex.cs`           |
 | [#1001](https://github.com/sillsdev/libpalaso/issues/1001) | Use nuget packages in FieldWorks                |  L   |  High  |             No             |                     FieldWorks repo                     |
@@ -88,6 +88,7 @@ Both open PRs are **drafts**.
 - Wide-reaching project/namespace rename. Low line-count but huge file fan-out, so high merge-conflict risk against anything touching `SIL.Media`.
 - **Breaking change:** Yes — renaming the assembly/namespace breaks every downstream consumer of `SIL.Media`. Needs a clear migration story and semver-major bump.
 - **Cross-reference:** directly collides with the `SIL.Media` work in **#1425** (irrKlang migration) and **#1266** (audio recorder). Decide the rename's fate _before_ doing substantial `SIL.Media` work, or the rename will need re-doing.
+- **See [`NET8-UPGRADE-REMAINING-PLAN.md`](NET8-UPGRADE-REMAINING-PLAN.md)** for the rename-vs-split-vs-leave decision (with pros/cons) and the recommendation to open a fresh PR off `master` rather than reviving this one.
 
 ---
 
@@ -247,7 +248,8 @@ Both open PRs are **drafts**.
 
 - **Files:** `Directory.Build.props` (add `<Nullable>enable</Nullable>`), `SIL.Windows.Forms.Scripture.csproj` (add `net8.0-windows`), many `.cs` for NRT annotation.
 - **Review:** High — NRT is a repo-wide effort. **Breaking:** **Yes** (enabling NRT changes public API nullability). **Already fixed:** Partially.
-- Done: non-WinForms libs target `netstandard2.0`; major WinForms projects target `net8.0-windows`; AppVeyor removed (`cc60efbb`); GHA matrix builds net8.0 + net8.0-windows. Remaining: add `net8.0-windows` to `SIL.Windows.Forms.Scripture` (and verify GeckoBrowserAdapter), and enable NRT solution-wide (`LangVersion=8` set but `<Nullable>` absent) — the latter is the bulk and a deliberate later phase.
+- Done: non-WinForms libs target `netstandard2.0`; major WinForms projects target `net8.0-windows`; AppVeyor removed (`cc60efbb`); GHA matrix builds net8.0 + net8.0-windows. Remaining: add `net8.0-windows` to `SIL.Windows.Forms.Scripture` (and verify GeckoBrowserAdapter — its Geckofx dependency is Framework-only), and enable NRT solution-wide (`LangVersion=8` set but `<Nullable>` absent) — the latter is the bulk and a deliberate later phase.
+- **Full remaining-work plan, with the decision points (SIL.Media disposition, NRT rollout strategy, `LangVersion` bump, dropping `net462`) and pros/cons: [`NET8-UPGRADE-REMAINING-PLAN.md`](NET8-UPGRADE-REMAINING-PLAN.md).**
 
 #### #1411 — Calls to obsolete methods
 
