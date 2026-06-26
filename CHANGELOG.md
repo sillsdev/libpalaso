@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Added
+
 - [SIL.Windows.Forms.Archiving, SIL.Windows.Forms.DblBundle] Added `net8.0-windows` target.
 - [SIL.Core.Clearshare] Added new classes MetadataCore, CreativeCommonsLicenseInfo, and CustomLicenseInfo; these are Winforms-free base versions of the classes Metadata, CreativeCommonsLicense, and CustomLicense.
 - [SIL.Core.Clearshare and SIL.Windows.Forms.Clearshare] Added LicenseUtils and LicenseWithImageUtils to handle the FromXmp method for creating a license. LicenseUtils constructs a bare license object that is Winforms-independent; LicenseWithImageUtils constructs a Winforms-dependent license object with access to license images.
@@ -35,6 +36,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Added FileLocationUtilities.DistFilesFolderPath property.
 
 ### Fixed
+
 - [SIL.Windows.Forms.WritingSystems] WritingSystemFromWindowsLocaleProvider no longer crashes when an installed input language has a corrupt Windows installation; it now skips languages whose keyboard layout name cannot be read instead of throwing.
 - [SIL.Windows.Forms] Updated ImageToolbox UI to consistently use "image" (not "picture").
 - [SIL.Windows.Forms.Keyboarding] Removed Timer-based deferred IME conversion status restore from WindowsKeyboardSwitchingAdapter, which disrupted active Chinese Pinyin IME compositions (LT-22442). Added diagnostic tracing for keyboard switching and IME state.
@@ -49,6 +51,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Archiving] Fixed formatting of message in ArchivingDlg so that the name of the auxiliary archive upload program (e.g., "RAMP") is displayed.
 
 ### Changed
+
 - [SIL.Windows.Forms] PalasoImage robust load/save helpers now accept additional retry exception types without replacing the built-in retry defaults, and the built-in retry lists were expanded for additional read/save exceptions seen in the wild.
 - [SIL.Windows.Forms.TestApp] Restored the Image Toolbox button in the test app dialog.
 - [SIL.Core.Desktop, SIL.Windows.Forms, SIL.Windows.Forms.Keyboarding] Bump L10NSharp to 10.0.0-beta0004 to support SIL.Core.Desktop with target `netstandard2.0`; also updated the copyright to 2026 in each `AssemblyInfo.cs`.
@@ -58,7 +61,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 	- The FromToken method was moved from LicenseInfo to LicenseWithLogo, so it can return the Winforms-dependent license types. FromToken is only used in libpalaso tests and examples, and a Winforms-independent version of this method is not needed.
 	- The GetImage method from LicenseInfo was moved to the ILicenseWithImage interface, which is implemented by CreativeCommonsLicense and CustomLicense.
     - GetBestLicenseTranslation in LicenseInfo now uses Localizer instead of using L10NSharp.LocalizationManager.
-
 - [SIL.Windows.Forms.Clearshare] Winforms-independent metadata and license functionality of Metadata, CreativeCommonsLicense, and CustomLicense were moved to new classes MetadataCore, CreativeCommonsLicenseInfo, and CustomLicenseInfo in SIL.Core.Clearshare. Metadata, CreativeCommonsLicense, and CustomLicense inherit from the Bare Winforms-free metadata and license versions.
 - [SIL.Windows.Forms.Tests.Clearshare] Many tests from MetadataTests in SIL.Windows.Forms.Clearshare were moved to MetadataCoreTests in Core.Clearshare. Tests that use Winforms-specific versions of methods (e.g. Metadata.FromFile) were retained. Added checks to test that the correct (Winforms-dependent) License objects are created when loading from xmp, round tripping a license in a png, or saving metadata to tag.
 - [SIL.Windows.Forms.Tests.Clearshare] LicenseInfoTests renamed LicenseWithLogoTests.
@@ -73,13 +75,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] ISimpleAudioWithEvents now extends ISimpleAudioSession. Technically a breaking change, but the only class in this library that implements it already implemented ISimpleAudioSession. Any custom implementations by clients would very likely have implemented both as well.
 - [SIL.Core] Changed the Message property on NonFatalErrorReportExpected (presumably intended for use only in tests) to return the message of the previous reported non-fatal exception if no ordninary non-fatal message has been reported.
 - [SIL.Media] In the event of an audio playback error in Windows, the non-fatal exception reported will also include an accompanying (localizable/customizable) user-friendly message.
+- [SIL.WritingSystems] Updated embedded langtags.json (api 1.4, 2026-06-09)
+- [SIL.WritingSystems] Updated embedded ianaSubtagRegistry.txt (2026-06-14)
 
 ### Removed
+
 - [SIL.Windows.Forms] In .NET 8 builds, removed Scanner and Camera options from the Image Toolbox.
+
 
 ## [16.2.0] - 2025-09-24
 
 ### Added
+
 - [SIL.libpalaso.l10ns] Added a number of languages to Crowdin that are used in Bloom, together with any translations that had been made in that project
 - [SIL.libpalaso.l10ns] Add English xlf file to the package
 - [SIL.TestUtilities] Added a Create method to TemporaryFolder that takes a TestContext
@@ -87,8 +94,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Support for RobustFile.GetAccessControl in all builds
 
 ### Fixed
+
 - [SIL.Windows.Forms] Made ContributorsListControl.GetCurrentContribution() return null in the case when a valid row is not selected.
 - [SIL.WritingSystems] Make the English names for Chinese (Simplified) and Chinese (Traditional) consistent regardless of differences in Windows CultureInfo
+
 
 ## [16.1.0] - 2025-07-18
 
@@ -111,6 +120,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.WritingSystems] Updated embedded ianaSubtagRegistry.txt
 - [SIL.Windows.Forms] Improved SILAboutBox to help prevent navigation issues when the supplied HTML contains links but lacks both a `<base target="_blank">` element and explicit `target="_blank"` attributes on the links. If the Navigating event is not handled, such links would otherwise open within the About box itself, often resulting in unexpected behavior. A sensible fallback is now applied automatically to the HTML, and in debug mode, a developer warning is shown.
 - [SIL.Windows.Forms] Documented previously undocumented feature: SILAboutBox constructor can accept either a filename or a file URI.
+
 
 ## [16.0.0] - 2025-05-20
 
