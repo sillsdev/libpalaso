@@ -27,7 +27,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         fetch-depth: '0'
 
@@ -53,7 +53,7 @@ jobs:
 
     # Several steps to set up FFmpeg and Scream and start Audio Service so that audio tests can run
     - name: Install FFmpeg
-      uses: FedericoCarboni/setup-ffmpeg@v3
+      uses: FedericoCarboni/setup-ffmpeg@37062fbf7149fc5578d6c57e08aed62458b375d6 # v3.1
       id: setup-ffmpeg
       with:
         ffmpeg-version: release
@@ -73,7 +73,7 @@ jobs:
         openssl pkcs12 -export -nodes -in ScreamCertificate.cer -inkey ScreamCertificate.pvk -out ScreamCertificate.pfx -passout pass:
 
     - name: Setup MSVC Dev Cmd
-      uses: ilammy/msvc-dev-cmd@v1
+      uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
 
     - name: Sign and Install Scream Driver - allows unit tests that require an audio output device
       shell: powershell
@@ -100,7 +100,7 @@ jobs:
 
     - name: Upload hang dump (if any)
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
         name: Hang dumps (${{ matrix.framework }})
         path: |
@@ -109,7 +109,7 @@ jobs:
 
     - name: Upload test results
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
         name: Test results (${{ matrix.framework }})
         path: ./test-results
@@ -124,7 +124,7 @@ jobs:
     # You might want to test out the PR packages, but the release should be pulled from nuget
     - name: Upload Nuget Packages
       id: nuget-temp
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
         name: Nuget Packages
         path: |
@@ -140,7 +140,7 @@ jobs:
 
     - name: Publish logs on failure
       if: failure()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
         name: binary-logs (${{ matrix.framework }})
         path: build.binlog
@@ -155,12 +155,12 @@ jobs:
     if: always()
     steps:
       - name: Download test results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           path: artifacts
           pattern: Test results *
       - name: Publish test results
-        uses: EnricoMi/publish-unit-test-result-action@8885e273a4343cd7b48eaa72428dea0c3067ea98 # v2.14.0
+        uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2.24.0
         with:
           check_name: Palaso Tests
           files: artifacts/**/*.trx
