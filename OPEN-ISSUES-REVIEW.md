@@ -1,7 +1,7 @@
 # Open Issues — Technical Scope Review
 
-**Repo:** [sillsdev/libpalaso](https://github.com/sillsdev/libpalaso) · **Branch:** `issues` (current with `master`) · **Reviewed:** 2026-06-16
-**Scope:** all 34 open issues + 2 open PRs. Each issue was evaluated against its full GitHub conversation and the current checkout (≈master).
+**Repo:** [sillsdev/libpalaso](https://github.com/sillsdev/libpalaso) · **Branch:** `issues` (current with `master`) · **Reviewed:** 2026-06-26
+**Scope:** all 30 open issues + 1 open PR. Each issue was evaluated against its full GitHub conversation and the current checkout (≈master).
 
 **Size key:** `XS` trivial (<1 hr) · `S` hours · `M` ~1 day · `L` multi-day · `XL` major / cross-repo / uncertain.
 
@@ -11,13 +11,11 @@
 
 | #                                                          | Title                                           | Size | Review |          Breaking          |                     Already fixed?                      | Primary file(s)                             |
 | ---------------------------------------------------------- | ----------------------------------------------- | :--: | :----: | :------------------------: | :-----------------------------------------------------: | ------------------------------------------- |
-| [#761](https://github.com/sillsdev/libpalaso/issues/761)   | Corruption in Windows language crashes          |  XS  |  Low   |             No             |                           No                            | `WritingSystemFromWindowsLocaleProvider.cs` |
 | [#1037](https://github.com/sillsdev/libpalaso/issues/1037) | pdfdroplet consume/publish nuget                |  XS  |  Low   |         Partially          |            `CopyTo pdfDroplet.bat` (remove)             |
-| [#1392](https://github.com/sillsdev/libpalaso/issues/1392) | GetDocumentationUri test fails                  |  XS  |  Low   |             No             |                 `AccessProtocolList.cs`                 |
 | [#1431](https://github.com/sillsdev/libpalaso/issues/1431) | nuget: hide old betas                           |  XS  |  Low   |             No             |                      nuget.org op                       |
-| [#1448](https://github.com/sillsdev/libpalaso/issues/1448) | Date wrong in generated PR commit msg           |  XS  |  Low   |             No             |      `.github/workflows/update-language-data.yml`       |
 | [#1479](https://github.com/sillsdev/libpalaso/issues/1479) | VerseRef.GetBBBCCCVVV at upper limit            |  XS  |  Low   |             No             |               `SIL.Scripture/VerseRef.cs`               |
 | [#359](https://github.com/sillsdev/libpalaso/issues/359)   | Linux GlobalMutex EINTR                         |  S   | Medium |             No             |           `SIL.Core/Threading/GlobalMutex.cs`           |
+| [#1516](https://github.com/sillsdev/libpalaso/issues/1516) | Flaky audio tests on CI                         |  S   | Medium |             No             |          `SIL.Media.Tests/AudioSessionTests.cs`         |
 | [#959](https://github.com/sillsdev/libpalaso/issues/959)   | GetFileDistributedWithApplication under VS Test |  S   | Medium |         Partially          |    `ReflectionHelper.cs`, `FileLocationUtilities.cs`    |
 | [#1010](https://github.com/sillsdev/libpalaso/issues/1010) | Document nuget package changes                  |  S   |  Low   |         Partially          |                    `README.md`, wiki                    |
 | [#1021](https://github.com/sillsdev/libpalaso/issues/1021) | Always get latest nuget version                 |  S   |  Low   |             No             |              `dependabot.yml` (add) / docs              |
@@ -52,13 +50,13 @@ These clusters are worth batching into a single PR (or at least coordinating) to
 
 ### Strong overlaps (literally the same file)
 
-- **`SIL.Core/Threading/GlobalMutex.cs`** → **#359** (Linux EINTR retry) + **#1428** (hardcoded `/var/lock`). Both touch the Linux adapter and a maintainer already flagged doing them together. **Note:** open **PR #1504** also edits this file (Windows adapter, `AbandonedMutexException`) — see §3.
+- **`SIL.Core/Threading/GlobalMutex.cs`** → **#359** (Linux EINTR retry) + **#1428** (hardcoded `/var/lock`). Both touch the Linux adapter and a maintainer already flagged doing them together. **Note:** closed-unmerged **PR #1504** also edited this file (Windows adapter, `AbandonedMutexException`) and remains an available reference — see §3.
 - **`SIL.Scripture/VerseRef.cs`** (+ `SIL.Scripture.Tests/VerseRefTests.cs`) → **#1474** (`TrySetVerse` skips validation) + **#1479** (`GetBBBCCCVVV` off-by-one at the limit). Two independent bugs in the same class; bundle the test changes.
 - **`SIL.Windows.Forms/Clipboarding/LinuxClipboard.NativeMethods.cs`** → **#1170** (UTF-8 byte-length bug in `gtk_clipboard_set_text`) + **#1105** (implement `CopyImageToClipboard`). Same native-interop file; #1105 also edits `LinuxClipboard.cs`. Fixing #1170 may directly un-skip the tests blocked in #1170.
 
 ### Same project / related area
 
-- **`SIL.Media`** → **#1266** (`Naudio/AudioRecorder.cs`, mic-permission error) + **#1425** (`WindowsAudioSession.cs`/`AudioFactory.cs`, irrKlang→NAudio). Same audio project; #1425 is the big one and may subsume recorder hardening. **PR #1325** renames this whole project (see §3).
+- **`SIL.Media`** → **#1266** (`Naudio/AudioRecorder.cs`, mic-permission error) + **#1425** (`WindowsAudioSession.cs`/`AudioFactory.cs`, irrKlang→NAudio) + **#1516** (flaky `AudioSessionTests.cs` on CI). Same audio project; #1425 is the big one and may subsume recorder hardening. **PR #1325** renames this whole project (see §3).
 - **`SIL.Windows.Forms/ImageToolbox/`** → **#1272** (`ImageAcquisitionService.cs` + `lib/x64/Interop.WIA.dll`) + **#1275** (`Cropping/ImageCropper.cs`). Different files, same toolbox feature; recent master commits already touch ImageToolbox.
 - **`SIL.Windows.Forms.WritingSystems/`** → **#1337** (`WritingSystemSetupDialog.Designer.cs`/`.cs` localization) + **#1411** (one of seven obsolete-call sites is `WSSpellingControl.cs`/`WritingSystemSetupModel.cs`). Adjacent, mild overlap.
 
@@ -74,13 +72,13 @@ These clusters are worth batching into a single PR (or at least coordinating) to
 
 ## 3. In-progress PRs
 
-Both open PRs are **drafts**.
+One open PR remains (a **draft**). The previously-open PR #1504 was **closed unmerged** on 2026-06-18 (author: "not actually up for this right now"; added a comment to the Jira issue pointing at the PR) — it survives as a reference for the Windows-adapter fix, noted below.
 
-### PR #1504 — Recover from AbandonedMutexException in GlobalMutex (Windows)
+### PR #1504 (closed, unmerged) — Recover from AbandonedMutexException in GlobalMutex (Windows)
 
-- **Author:** myieye · **Draft** · `+48/-1`, 3 files · opened 2026-06-02.
-- `WindowsGlobalMutexAdapter.Wait()` now catches `AbandonedMutexException`, logs a warning, and proceeds — matching the .NET `Mutex` contract (the lock is still acquired when the exception is thrown). Fixes JIRA **LT-21834** plus a shutdown-time crash via `WritingSystemManager.Save → GlobalWritingSystemRepository.TryGet → GlobalMutex.Lock()`.
-- **Cross-reference:** touches the **same file** as issues **#359** and **#1428** (Windows path vs. their Linux path). Whoever picks up the Linux mutex issues should rebase on / coordinate with this PR. Small and self-contained; close to mergeable once reviewed.
+- **Author:** myieye · **Closed unmerged 2026-06-18** · `+48/-1`, 3 files · opened 2026-06-02.
+- `WindowsGlobalMutexAdapter.Wait()` would catch `AbandonedMutexException`, log a warning, and proceed — matching the .NET `Mutex` contract (the lock is still acquired when the exception is thrown). Targeted JIRA **LT-21834** plus a shutdown-time crash via `WritingSystemManager.Save → GlobalWritingSystemRepository.TryGet → GlobalMutex.Lock()`. The author closed it as too hairy to finish now and pointed the Jira issue at it.
+- **Cross-reference:** touches the **same file** as issues **#359** and **#1428** (Windows path vs. their Linux path). Whoever picks up the Linux mutex issues can reuse this branch's diff as a starting point for the Windows-adapter hardening.
 
 ### PR #1325 — Renamed SIL.Media to SIL.Windows.Forms.Media
 
@@ -96,35 +94,17 @@ Both open PRs are **drafts**.
 
 ### XS
 
-#### #761 — Corruption in Windows language leads to a crash
-
-- **Files:** `SIL.Windows.Forms.WritingSystems/WritingSystemFromWindowsLocaleProvider.cs` (edit)
-- **Review:** Low — a single try/catch / null-guard. **Breaking:** No. **Already fixed:** No.
-- Line ~120 still accesses `language.LayoutName` with no guard; the existing try/catch only covers `language.Culture`. `InputLanguage.LayoutName` can throw `NullReferenceException` from WinForms when the Windows language install is corrupt. Wrap the `yield return` in try/catch and skip the offending language. 2018 discussion noted it was WeSay-specific and may not repro on Win10/11 — low priority, but the crash point is still live.
-
 #### #1037 — pdfdroplet should consume and publish nuget package
 
 - **Files:** `CopyTo pdfDroplet.bat` (delete/deprecate); rest in `sillsdev/pdfdroplet` + Bloom (external).
 - **Review:** Low. **Breaking:** No. **Already fixed:** Partially.
 - First three checklist items done (pdfdroplet PRs #24/#25). Remaining items (Bloom consuming pdfdroplet as nuget, removing TC deps) are external. Only libpalaso-side cleanup: remove obsolete `CopyTo pdfDroplet.bat`. Close or move to pdfdroplet repo.
 
-#### #1392 — GetDocumentationUri…ReturnsRootedPathToExistingFile fails
-
-- **Files:** `SIL.Archiving/Generic/AccessProtocol/AccessProtocolList.cs` (edit)
-- **Review:** Low — one-line logic error. **Breaking:** No. **Already fixed:** No.
-- Introduced by PR #1317. Line ~208 strips the extension (`"ailca.html"` → `"ailca"`) then `GetResource("ailca")` misses the manifest name `SIL.Archiving.Resources.ailca.html`. Simplest fix: don't strip the extension. Test already written (`[SkipOnTeamCity]`).
-
 #### #1431 — [nuget] Hide old betas
 
 - **Files:** none in repo — nuget.org operation.
 - **Review:** Low. **Breaking:** No. **Already fixed:** No.
 - Run [SIL.NuGetCleaner](https://github.com/sillsdev/SIL.NuGetCleaner) to unlist beta versions 14.0.1–16.0.0.
-
-#### #1448 — Date wrong in generated PR commit message
-
-- **Files:** `.github/workflows/update-language-data.yml` (edit)
-- **Review:** Low. **Breaking:** No. **Already fixed:** No.
-- Line ~235 `- Updated: $(date -u …)` is a YAML `commit-message:` value passed to `peter-evans/create-pull-request`, so the `$()` shell substitution never runs and is emitted literally. Fix: add a `run:` step writing the date to `$GITHUB_OUTPUT`, then reference `${{ steps.<id>.outputs.date }}`.
 
 #### #1479 — VerseRef.GetBBBCCCVVV does unexpected things at the upper limit
 
@@ -138,7 +118,7 @@ Both open PRs are **drafts**.
 
 - **Files:** `SIL.Core/Threading/GlobalMutex.cs` (edit)
 - **Review:** Medium — Unix signal semantics. **Breaking:** No. **Already fixed:** No.
-- `LinuxGlobalMutexAdapter.Wait()` (~line 293) calls `flock(LOCK_EX)` with no `EINTR` retry, so a signal surfaces as an unhandled `NativeException`. Loop and retry when `GetLastWin32Error()==4`. The `SIL_CORE_MAKE_GLOBAL_MUTEX_LOCAL_ONLY` workaround (PR #1378) exists but root cause is unfixed. @rmunn planned to fix alongside **#1428**. **Bundle with #1428; coordinate with PR #1504.**
+- `LinuxGlobalMutexAdapter.Wait()` (~line 293) calls `flock(LOCK_EX)` with no `EINTR` retry, so a signal surfaces as an unhandled `NativeException`. Loop and retry when `GetLastWin32Error()==4`. The `SIL_CORE_MAKE_GLOBAL_MUTEX_LOCAL_ONLY` workaround (PR #1378) exists but root cause is unfixed. @rmunn planned to fix alongside **#1428**. **Bundle with #1428; reuse the closed-unmerged PR #1504 diff for the Windows-adapter piece.**
 
 #### #959 — GetFileDistributedWithApplication under VS Test Platform
 
@@ -212,6 +192,12 @@ Both open PRs are **drafts**.
 - **Review:** Medium — TagLib# PNG tag-writing internals. **Breaking:** No (only `tEXt` bytes; XMP/iTXt unchanged). **Already fixed:** No.
 - TagLib# (v2.3.0) writes PNG `tEXt` chunks as UTF-8 where the spec requires ISO-8859-1, so non-ASCII copyright/author double-encodes (`MetadataCore.cs` ~line 482 forces a `TagTypes.Png` tag). Options: skip the `TagTypes.Png` tag, post-process the bytes, or fix upstream. Reporter notes low impact (XMP iTXt is always correct; most images are ASCII/JPEG) and left it as a tracking item.
 
+#### #1516 — Flaky tests on CI
+
+- **Files:** `SIL.Media.Tests/AudioSessionTests.cs` (investigate/stabilize)
+- **Review:** Medium — flakiness is intermittent and audio-timing dependent. **Breaking:** No. **Already fixed:** No.
+- Two SIL.Media playback tests flake on CI: `Play_InvalidAudioFileThrowsBackgroundException_NonFatalErrorReported` and `PlayAndStopPlaying_NonWindows_DoesNotThrow("wav")`. Both depend on async playback/background-error timing, so a fixed wait or a missed event surfaces as an intermittent failure. Diagnose the race (poll/await the expected state instead of sleeping; ensure the background exception is observed deterministically). **Same project as #1266/#1425; PR #1325 renames the project.**
+
 ### M
 
 #### #597 — Additional attachments are ignored when sending email
@@ -261,7 +247,7 @@ Both open PRs are **drafts**.
 
 - **Files:** `SIL.Core/Threading/GlobalMutex.cs` (edit), `SIL.Core.Tests/Threading/GlobalMutexTests.cs` (edit)
 - **Review:** Medium — fallback strategy still debated. **Breaking:** Maybe (different versions wouldn't mutually exclude during upgrade). **Already fixed:** No.
-- Line ~262 still `Path.Combine("/var/lock", name)`. An XDG_RUNTIME_DIR fallback added in `3301b97a` (2021) was effectively dropped by `1bbd00bb` (Jun 2024, macOS rewrite). On modern Linux `/var/lock`→`/run/lock` is root-only and systemd plans removal in v258. Options unresolved: `/dev/shm` fallback vs `XDG_RUNTIME_DIR` (user-scoped) vs `ExplicitGlobalMutexAdapter`. **Bundle with #359; coordinate with PR #1504.**
+- Line ~262 still `Path.Combine("/var/lock", name)`. An XDG_RUNTIME_DIR fallback added in `3301b97a` (2021) was effectively dropped by `1bbd00bb` (Jun 2024, macOS rewrite). On modern Linux `/var/lock`→`/run/lock` is root-only and systemd plans removal in v258. Options unresolved: `/dev/shm` fallback vs `XDG_RUNTIME_DIR` (user-scoped) vs `ExplicitGlobalMutexAdapter`. **Bundle with #359; reuse the closed-unmerged PR #1504 diff for the Windows-adapter piece.**
 
 ### L
 
@@ -331,4 +317,4 @@ These were pushed directly (predating or bypassing the PR workflow), so they are
 
 ---
 
-_Generated by a technical review of all 34 open issues (each read with its full conversation) plus the 2 open PRs, checked against the current `issues`-branch checkout. §5 cross-references the 1,402-PR history against the surviving `origin` branches. No issues, PRs, or branches were created or modified._
+_Generated by a technical review of all 30 open issues (each read with its full conversation) plus the 1 open PR, checked against the current `issues`-branch checkout. §5 cross-references the 1,402-PR history against the surviving `origin` branches. No issues, PRs, or branches were created or modified._
