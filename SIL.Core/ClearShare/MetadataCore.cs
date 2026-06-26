@@ -70,6 +70,7 @@ namespace SIL.Core.ClearShare
 		/// If the MetaData was loaded from a file, this stores all the other metadata from that file,
 		/// which will typically be useful to write to a file derived from it.
 		/// </summary>
+		[CLSCompliant(false)]
 		protected TagLib.Image.File _originalTaglibMetadata;
 
 		// This is called when we got an out of memory exception reading the image itself.
@@ -204,6 +205,7 @@ namespace SIL.Core.ClearShare
 			HasChanges = false;
 		}
 
+		[CLSCompliant(false)]
 		protected LicenseInfo _license;
 
 		///<summary>
@@ -222,6 +224,7 @@ namespace SIL.Core.ClearShare
 			}
 		}
 
+		[CLSCompliant(false)]
 		protected string _copyrightNotice;
 		public string CopyrightNotice
 		{
@@ -256,6 +259,7 @@ namespace SIL.Core.ClearShare
 			return value.Substring(0, startOfProblem);
 		}
 
+		[CLSCompliant(false)]
 		protected string _creator;
 
 		/// <summary>
@@ -424,6 +428,7 @@ namespace SIL.Core.ClearShare
 		/// <inheritdoc/>
 		public override string ToString() => MinimalCredits(new[] { "en" }, out _);
 
+		[CLSCompliant(false)]
 		protected string _path;
 
 		public void Write()
@@ -706,6 +711,7 @@ namespace SIL.Core.ClearShare
 			return qualifier != null && qualifier.Value == lang;
 		}
 
+		[CLSCompliant(false)]
 		protected static string GetRights(XmpTag xmp)
 		{
 			var rightsNode = xmp.FindNode("http://purl.org/dc/elements/1.1/", "rights");
