@@ -24,6 +24,7 @@ namespace SIL.Core.ClearShare
 			NoDerivatives, DerivativesWithShareAndShareAlike, Derivatives
 		}
 
+		[CLSCompliant(false)]
 		protected bool _attributionRequired;
 		public bool AttributionRequired
 		{
@@ -43,6 +44,7 @@ namespace SIL.Core.ClearShare
 			return Token;  //by-nc-sa
 		}
 
+		[CLSCompliant(false)]
 		protected bool _commercialUseAllowed;
 		public bool CommercialUseAllowed
 		{
@@ -57,6 +59,7 @@ namespace SIL.Core.ClearShare
 			}
 		}
 
+		[CLSCompliant(false)]
 		protected DerivativeRules _derivativeRule;
 		public DerivativeRules DerivativeRule
 		{
@@ -318,6 +321,7 @@ namespace SIL.Core.ClearShare
 			return GetBestLicenseTranslation("CreativeCommons." + idSuffix, englishText, comment, languagePriorityIds, out idOfLanguageUsed);
 		}
 
+		[CLSCompliant(false)]
 		protected string _version;
 		public string Version
 		{
@@ -332,6 +336,7 @@ namespace SIL.Core.ClearShare
 			}
 		}
 
+		[CLSCompliant(false)]
 		protected string _qualifier = null;
 
 		/// <remarks>
