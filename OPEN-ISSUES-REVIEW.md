@@ -1,7 +1,7 @@
 # Open Issues — Technical Scope Review
 
-**Repo:** [sillsdev/libpalaso](https://github.com/sillsdev/libpalaso) · **Branch:** `issues` (current with `master`) · **Reviewed:** 2026-06-26
-**Scope:** all 30 open issues + 1 open PR. Each issue was evaluated against its full GitHub conversation and the current checkout (≈master).
+**Repo:** [sillsdev/libpalaso](https://github.com/sillsdev/libpalaso) · **Branch:** `issues` (current with `master`) · **Reviewed:** 2026-06-29
+**Scope:** all 23 open issues + 1 open PR. Each issue was evaluated against its full GitHub conversation and the current checkout (≈master).
 
 **Size key:** `XS` trivial (<1 hr) · `S` hours · `M` ~1 day · `L` multi-day · `XL` major / cross-repo / uncertain.
 
@@ -9,38 +9,31 @@
 
 ## 1. Summary table (sorted by size)
 
-| #                                                          | Title                                           | Size | Review |          Breaking          |                     Already fixed?                      | Primary file(s)                             |
-| ---------------------------------------------------------- | ----------------------------------------------- | :--: | :----: | :------------------------: | :-----------------------------------------------------: | ------------------------------------------- |
-| [#1037](https://github.com/sillsdev/libpalaso/issues/1037) | pdfdroplet consume/publish nuget                |  XS  |  Low   |         Partially          |            `CopyTo pdfDroplet.bat` (remove)             |
-| [#1431](https://github.com/sillsdev/libpalaso/issues/1431) | nuget: hide old betas                           |  XS  |  Low   |             No             |                      nuget.org op                       |
-| [#1479](https://github.com/sillsdev/libpalaso/issues/1479) | VerseRef.GetBBBCCCVVV at upper limit            |  XS  |  Low   |             No             |               `SIL.Scripture/VerseRef.cs`               |
-| [#359](https://github.com/sillsdev/libpalaso/issues/359)   | Linux GlobalMutex EINTR                         |  S   | Medium |             No             |           `SIL.Core/Threading/GlobalMutex.cs`           |
-| [#1516](https://github.com/sillsdev/libpalaso/issues/1516) | Flaky audio tests on CI                         |  S   | Medium |             No             |          `SIL.Media.Tests/AudioSessionTests.cs`         |
-| [#959](https://github.com/sillsdev/libpalaso/issues/959)   | GetFileDistributedWithApplication under VS Test |  S   | Medium |         Partially          |    `ReflectionHelper.cs`, `FileLocationUtilities.cs`    |
-| [#1010](https://github.com/sillsdev/libpalaso/issues/1010) | Document nuget package changes                  |  S   |  Low   |         Partially          |                    `README.md`, wiki                    |
-| [#1021](https://github.com/sillsdev/libpalaso/issues/1021) | Always get latest nuget version                 |  S   |  Low   |             No             |              `dependabot.yml` (add) / docs              |
-| [#1134](https://github.com/sillsdev/libpalaso/issues/1134) | Keep protected controls hidden                  |  S   |  Low   |             No             |              `SettingsProtectionHelper.cs`              |
-| [#1170](https://github.com/sillsdev/libpalaso/issues/1170) | VerseControlTests fail on Linux                 |  S   | Medium |             No             |            `LinuxClipboard.NativeMethods.cs`            |
-| [#1266](https://github.com/sillsdev/libpalaso/issues/1266) | BeginMonitoring throws when Mic perm off        |  S   | Medium |             No             |           `SIL.Media/Naudio/AudioRecorder.cs`           |
-| [#1275](https://github.com/sillsdev/libpalaso/issues/1275) | Crash switching Crop/Choose                     |  S   |  Low   |             No             |         `ImageToolbox/Cropping/ImageCropper.cs`         |
-| [#1337](https://github.com/sillsdev/libpalaso/issues/1337) | WritingSystemSetupDialog not localizable        |  S   |  Low   |             No             |         `WritingSystemSetupDialog.Designer.cs`          |
-| [#1435](https://github.com/sillsdev/libpalaso/issues/1435) | KeymanLegacyBundle should be SIL-controlled     |  S   |  Low   |         Partially          |         `SIL.Windows.Forms.Keyboarding.csproj`          |
-| [#1468](https://github.com/sillsdev/libpalaso/issues/1468) | Tok Pisin tpi/tp lang mismatch                  |  S   | Medium |             No             |                   `l10n/crowdin.yml`                    |
-| [#1474](https://github.com/sillsdev/libpalaso/issues/1474) | Inconsistent VerseRef creation                  |  S   | Medium |             No             |               `SIL.Scripture/VerseRef.cs`               |
-| [#1503](https://github.com/sillsdev/libpalaso/issues/1503) | Invalid copyright encoding in PNG               |  S   | Medium |             No             |              `ClearShare/MetadataCore.cs`               |
-| [#597](https://github.com/sillsdev/libpalaso/issues/597)   | Email attachments ignored                       |  M   | Medium |             No             |           `SIL.Core/Email/*EmailProvider.cs`            |
-| [#1007](https://github.com/sillsdev/libpalaso/issues/1007) | Update/test LfMerge packaging                   |  M   | Medium |          Unclear           |                      LfMerge repo                       |
-| [#1008](https://github.com/sillsdev/libpalaso/issues/1008) | Update/test FieldWorks packaging                |  M   | Medium |          Unclear           |                     FieldWorks repo                     |
-| [#1105](https://github.com/sillsdev/libpalaso/issues/1105) | Linux CopyImageToClipboard                      |  M   | Medium |             No             |            `Clipboarding/LinuxClipboard.cs`             |
-| [#1272](https://github.com/sillsdev/libpalaso/issues/1272) | Scan image dialog non-modal in x64              |  M   | Medium |             No             | `lib/x64/Interop.WIA.dll`, `ImageAcquisitionService.cs` |
-| [#1320](https://github.com/sillsdev/libpalaso/issues/1320) | Upgrade to .NET8                                |  M   |  High  |         Yes (NRT)          |                        Partially                        | `Directory.Build.props`, `*.csproj`           |
-| [#1411](https://github.com/sillsdev/libpalaso/issues/1411) | Calls to obsolete methods                       |  M   | Medium |             No             |        `Sldr.cs`, `AnalyticsEventSender.cs`, +5         |
-| [#1428](https://github.com/sillsdev/libpalaso/issues/1428) | GlobalMutex hardcoded /var/lock                 |  M   | Medium |             No             |           `SIL.Core/Threading/GlobalMutex.cs`           |
-| [#1001](https://github.com/sillsdev/libpalaso/issues/1001) | Use nuget packages in FieldWorks                |  L   |  High  |             No             |                     FieldWorks repo                     |
-| [#1089](https://github.com/sillsdev/libpalaso/issues/1089) | ICU collation parse/gen problems                |  L   |  High  |             No             |    `SimpleRulesParser.cs`, `LdmlCollationParser.cs`     |
-| [#1505](https://github.com/sillsdev/libpalaso/issues/1505) | Linux keyboard switching broken (Ubuntu 24.04)  |  L   |  High  |             No             |       `GnomeShellIbusKeyboardSwitchingAdaptor.cs`       |
-| [#993](https://github.com/sillsdev/libpalaso/issues/993)   | Create/use nuget packages (umbrella)            |  XL  |  High  | Partially (libpalaso done) |                     cross-repo meta                     |
-| [#1425](https://github.com/sillsdev/libpalaso/issues/1425) | Migrate away from irrKlang                      |  XL  |  High  |             No             |  `SIL.Media/WindowsAudioSession.cs`, `AudioFactory.cs`  |
+| #                                                          | Title                                           | Size | Review | Breaking  |                     Already fixed?                      | Primary file(s)                     |
+| ---------------------------------------------------------- | ----------------------------------------------- | :--: | :----: | :-------: | :-----------------------------------------------------: | ----------------------------------- |
+| [#1431](https://github.com/sillsdev/libpalaso/issues/1431) | nuget: hide old betas                           |  XS  |  Low   |    No     |                      nuget.org op                       |
+| [#1479](https://github.com/sillsdev/libpalaso/issues/1479) | VerseRef.GetBBBCCCVVV at upper limit            |  XS  |  Low   |    No     |               `SIL.Scripture/VerseRef.cs`               |
+| [#359](https://github.com/sillsdev/libpalaso/issues/359)   | Linux GlobalMutex EINTR                         |  S   | Medium |    No     |           `SIL.Core/Threading/GlobalMutex.cs`           |
+| [#1516](https://github.com/sillsdev/libpalaso/issues/1516) | Flaky audio tests on CI                         |  S   | Medium |    No     |         `SIL.Media.Tests/AudioSessionTests.cs`          |
+| [#959](https://github.com/sillsdev/libpalaso/issues/959)   | GetFileDistributedWithApplication under VS Test |  S   | Medium | Partially |    `ReflectionHelper.cs`, `FileLocationUtilities.cs`    |
+| [#1134](https://github.com/sillsdev/libpalaso/issues/1134) | Keep protected controls hidden                  |  S   |  Low   |    No     |              `SettingsProtectionHelper.cs`              |
+| [#1170](https://github.com/sillsdev/libpalaso/issues/1170) | VerseControlTests fail on Linux                 |  S   | Medium |    No     |            `LinuxClipboard.NativeMethods.cs`            |
+| [#1266](https://github.com/sillsdev/libpalaso/issues/1266) | BeginMonitoring throws when Mic perm off        |  S   | Medium |    No     |           `SIL.Media/Naudio/AudioRecorder.cs`           |
+| [#1275](https://github.com/sillsdev/libpalaso/issues/1275) | Crash switching Crop/Choose                     |  S   |  Low   |    No     |         `ImageToolbox/Cropping/ImageCropper.cs`         |
+| [#1337](https://github.com/sillsdev/libpalaso/issues/1337) | WritingSystemSetupDialog not localizable        |  S   |  Low   |    No     |         `WritingSystemSetupDialog.Designer.cs`          |
+| [#1435](https://github.com/sillsdev/libpalaso/issues/1435) | KeymanLegacyBundle should be SIL-controlled     |  S   |  Low   | Partially |         `SIL.Windows.Forms.Keyboarding.csproj`          |
+| [#1468](https://github.com/sillsdev/libpalaso/issues/1468) | Tok Pisin tpi/tp lang mismatch                  |  S   | Medium |    No     |                   `l10n/crowdin.yml`                    |
+| [#1474](https://github.com/sillsdev/libpalaso/issues/1474) | Inconsistent VerseRef creation                  |  S   | Medium |    No     |               `SIL.Scripture/VerseRef.cs`               |
+| [#1503](https://github.com/sillsdev/libpalaso/issues/1503) | Invalid copyright encoding in PNG               |  S   | Medium |    No     |              `ClearShare/MetadataCore.cs`               |
+| [#597](https://github.com/sillsdev/libpalaso/issues/597)   | Email attachments ignored                       |  M   | Medium |    No     |           `SIL.Core/Email/*EmailProvider.cs`            |
+| [#1105](https://github.com/sillsdev/libpalaso/issues/1105) | Linux CopyImageToClipboard                      |  M   | Medium |    No     |            `Clipboarding/LinuxClipboard.cs`             |
+| [#1272](https://github.com/sillsdev/libpalaso/issues/1272) | Scan image dialog non-modal in x64              |  M   | Medium |    No     | `lib/x64/Interop.WIA.dll`, `ImageAcquisitionService.cs` |
+| [#1320](https://github.com/sillsdev/libpalaso/issues/1320) | Upgrade to .NET8                                |  M   |  High  | Yes (NRT) |                        Partially                        | `Directory.Build.props`, `*.csproj` |
+| [#1411](https://github.com/sillsdev/libpalaso/issues/1411) | Calls to obsolete methods                       |  M   | Medium |    No     |        `Sldr.cs`, `AnalyticsEventSender.cs`, +5         |
+| [#1428](https://github.com/sillsdev/libpalaso/issues/1428) | GlobalMutex hardcoded /var/lock                 |  M   | Medium |    No     |           `SIL.Core/Threading/GlobalMutex.cs`           |
+| [#1089](https://github.com/sillsdev/libpalaso/issues/1089) | ICU collation parse/gen problems                |  L   |  High  |    No     |    `SimpleRulesParser.cs`, `LdmlCollationParser.cs`     |
+| [#1505](https://github.com/sillsdev/libpalaso/issues/1505) | Linux keyboard switching broken (Ubuntu 24.04)  |  L   |  High  |    No     |       `GnomeShellIbusKeyboardSwitchingAdaptor.cs`       |
+| [#1425](https://github.com/sillsdev/libpalaso/issues/1425) | Migrate away from irrKlang                      |  XL  |  High  |    No     |  `SIL.Media/WindowsAudioSession.cs`, `AudioFactory.cs`  |
 
 ---
 
@@ -59,14 +52,6 @@ These clusters are worth batching into a single PR (or at least coordinating) to
 - **`SIL.Media`** → **#1266** (`Naudio/AudioRecorder.cs`, mic-permission error) + **#1425** (`WindowsAudioSession.cs`/`AudioFactory.cs`, irrKlang→NAudio) + **#1516** (flaky `AudioSessionTests.cs` on CI). Same audio project; #1425 is the big one and may subsume recorder hardening. **PR #1325** renames this whole project (see §3).
 - **`SIL.Windows.Forms/ImageToolbox/`** → **#1272** (`ImageAcquisitionService.cs` + `lib/x64/Interop.WIA.dll`) + **#1275** (`Cropping/ImageCropper.cs`). Different files, same toolbox feature; recent master commits already touch ImageToolbox.
 - **`SIL.Windows.Forms.WritingSystems/`** → **#1337** (`WritingSystemSetupDialog.Designer.cs`/`.cs` localization) + **#1411** (one of seven obsolete-call sites is `WSSpellingControl.cs`/`WritingSystemSetupModel.cs`). Adjacent, mild overlap.
-
-### Documentation / release / nuget housekeeping cluster
-
-- **#1010**, **#1021**, **#1431** are all nuget/release documentation or nuget.org operations (README + wiki + unlisting old betas). Best handled as one "release-docs refresh" pass.
-
-### nuget umbrella sub-tasks (mostly cross-repo)
-
-- **#993** is the umbrella; **#1001** (FieldWorks), **#1007** (LfMerge), **#1008** (FieldWorks packaging), **#1037** (pdfdroplet) are all sub-tasks. The **libpalaso-side work is done**; the remaining work lives in other repos. These are triage/close candidates, not libpalaso code changes (see notes below).
 
 ---
 
@@ -94,12 +79,6 @@ One open PR remains (a **draft**). The previously-open PR #1504 was **closed unm
 
 ### XS
 
-#### #1037 — pdfdroplet should consume and publish nuget package
-
-- **Files:** `CopyTo pdfDroplet.bat` (delete/deprecate); rest in `sillsdev/pdfdroplet` + Bloom (external).
-- **Review:** Low. **Breaking:** No. **Already fixed:** Partially.
-- First three checklist items done (pdfdroplet PRs #24/#25). Remaining items (Bloom consuming pdfdroplet as nuget, removing TC deps) are external. Only libpalaso-side cleanup: remove obsolete `CopyTo pdfDroplet.bat`. Close or move to pdfdroplet repo.
-
 #### #1431 — [nuget] Hide old betas
 
 - **Files:** none in repo — nuget.org operation.
@@ -125,18 +104,6 @@ One open PR remains (a **draft**). The previously-open PR #1504 was **closed unm
 - **Files:** `SIL.Core/Reflection/ReflectionHelper.cs`, `SIL.Core/IO/FileLocationUtilities.cs`, `SIL.Core.Tests/IO/FileLocationUtilitiesTests.cs`
 - **Review:** Medium. **Breaking:** Maybe. **Already fixed:** Partially.
 - `ReflectionHelper.RunningFromUnitTest` already detects MSTest's `TestFramework`, but under `microsoft.testplatform.testhost` `GetEntryAssembly()` returns the host, pointing `DirectoryOfApplicationOrSolution` at the wrong place. Detect `testhost` by name or fall back to executing-assembly path. Maintainer (@tombogle, Feb 2025) suspects it may be moot (Vessel/GlyssenEngine inactive) — possible **close/needs-repro** candidate.
-
-#### #1010 — Document what changed with the nuget packages
-
-- **Files:** `README.md`, `CHANGELOG.md`, wiki (external).
-- **Review:** Low. **Breaking:** No. **Already fixed:** Partially.
-- README already has a "Deployment on nuget.org" section and a local-package wiki link. Remaining gap is likely wiki content. Audit wiki pages, fill gaps, verify README matches current GHA workflow. Part of the **docs cluster** with #1021/#1431.
-
-#### #1021 — Investigate/document how to always get latest nuget version
-
-- **Files:** `dependabot.yml`/`renovate.json` (add) in `.github/` and/or `README.md`/wiki.
-- **Review:** Low. **Breaking:** No. **Already fixed:** No.
-- Discussion converged on floating versions (`*`) vs. an update bot (Renovate/Dependabot). No such config exists in the repo. Pick an approach, add config, document. Mostly decision-making.
 
 #### #1134 — Keep protected controls hidden under password protection
 
@@ -206,18 +173,6 @@ One open PR remains (a **draft**). The previously-open PR #1504 was **closed unm
 - **Review:** Medium — per-client protocol quirks. **Breaking:** No. **Already fixed:** No.
 - `MailToEmailProvider.GetAttachments()` comma-joins into one `&attachment=` (invalid for `mailto:`); `ThunderbirdEmailProvider` similarly uses a single param; `LinuxEmailProvider` correctly repeats `--attach`; macOS correctly iterates. Fix the format per provider (repeat the key). Note: a known upstream `xdg-email` bug (Feb 2025 comment) may still drop all but the last attachment even when formatted correctly — document the limitation.
 
-#### #1007 — update/test LfMerge packaging
-
-- **Files:** none in libpalaso; work is in the LfMerge repo. `debian-src/` here is vestigial (2008, nant-based).
-- **Review:** Medium. **Breaking:** No. **Already fixed:** Unclear.
-- Empty-body stub sub-task of #993, no comments, last touched 2020-12-08. Triage: close or move to LfMerge.
-
-#### #1008 — update/test FieldWorks packaging
-
-- **Files:** none in libpalaso; FieldWorks installer/packaging scripts.
-- **Review:** Medium. **Breaking:** No. **Already fixed:** Unclear.
-- Empty-body stub sub-task of #993. Since #1001 (FW nuget adoption) is still open, FW packaging can't be complete. Triage: close or move to FieldWorks.
-
 #### #1105 — Implement PortableClipboard.CopyImageToClipboard on Linux
 
 - **Files:** `SIL.Windows.Forms/Clipboarding/LinuxClipboard.cs`, `LinuxClipboard.NativeMethods.cs`, `PortableClipboardTests.cs`
@@ -251,12 +206,6 @@ One open PR remains (a **draft**). The previously-open PR #1504 was **closed unm
 
 ### L
 
-#### #1001 — Use nuget packages in FieldWorks
-
-- **Files:** none in libpalaso; work is the Gerrit change `gerrit.lsdev.sil.org/c/FieldWorks/+/7869`.
-- **Review:** High — ICU data, COM interop, 32-bit Windows. **Breaking:** Yes (FW dev workflow). **Already fixed:** No.
-- Sub-task of #993, stale since Nov 2021 (3/7 items checked). Remaining blockers (COM test failures, 32-bit ICU errors) are FieldWorks-side. Nothing for libpalaso unless ICU failures trace to the libpalaso nuget artifacts.
-
 #### #1089 — ICU collation parsing and generation problems
 
 - **Files:** `SIL.WritingSystems/SimpleRulesParser.cs`, `LdmlCollationParser.cs`, `SimpleCollationRulesParserTests.cs`
@@ -270,12 +219,6 @@ One open PR remains (a **draft**). The previously-open PR #1504 was **closed unm
 - `SelectKeyboard()` still calls `--method org.gnome.Shell.Eval` with `imports.ui.status.keyboard…` (lines 36–38). `org.gnome.Shell.Eval` was deprecated in GNOME 41 and removed in the version shipping with Ubuntu 24.04+, so switching silently fails. Fix likely requires deploying a custom GNOME Shell extension exposing a replacement D-Bus method (or an alternative like `ibus engine`). No fallback exists today. Most complex of the two keyboard issues.
 
 ### XL
-
-#### #993 — Create and use nuget packages in libpalaso and related projects (umbrella)
-
-- **Files:** cross-repo meta-issue; libpalaso-side files (`build.yml`, `Directory.Build.props`/`.targets`, per-project `.csproj`) were all done when `feature/nuget` merged 2021-02-23.
-- **Review:** High (spans 6+ repos). **Breaking:** Maybe (downstream build-process change). **Already fixed:** Partially — **libpalaso's own work is done**; ~16/35 checklist items remain, all in external repos.
-- Long-running (2020–) dashboard. Remaining items are blockers in FieldWorks (#1001), LfMerge (#1007), Chorus (#1002), docs (#1009/#1010). Consider retitling/splitting; its value now is status-tracking.
 
 #### #1425 — Prepare to migrate away from irrKlang
 
@@ -317,4 +260,4 @@ These were pushed directly (predating or bypassing the PR workflow), so they are
 
 ---
 
-_Generated by a technical review of all 30 open issues (each read with its full conversation) plus the 1 open PR, checked against the current `issues`-branch checkout. §5 cross-references the 1,402-PR history against the surviving `origin` branches. No issues, PRs, or branches were created or modified._
+_Generated by a technical review of all open issues (each read with its full conversation) plus the 1 open PR, checked against the current `issues`-branch checkout. §5 cross-references the 1,402-PR history against the surviving `origin` branches. No issues, PRs, or branches were created or modified._
