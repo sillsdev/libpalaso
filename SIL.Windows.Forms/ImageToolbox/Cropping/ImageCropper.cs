@@ -422,13 +422,21 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 					{
 						//We've sadly lost our jpeg formatting, so now we encode a new image in jpeg
 						var stream = new MemoryStream();
-						cropped.Save(stream, ImageFormat.Jpeg);
-						var oldCropped = cropped;
-						// Do not dispose stream here: GDI+ bitmaps reference the stream for lazy decoding.
-						// The stream will be collected when the returned Bitmap is no longer referenced.
-						stream.Position = 0;
-						cropped = (Bitmap)System.Drawing.Image.FromStream(stream);
-						oldCropped.Dispose();
+						try
+						{
+							cropped.Save(stream, ImageFormat.Jpeg);
+							stream.Position = 0;
+							// Do not dispose stream on success: GDI+ bitmaps reference the stream for lazy
+							// decoding. The stream is collected when the returned Bitmap is disposed.
+							var oldCropped = cropped;
+							cropped = (Bitmap)System.Drawing.Image.FromStream(stream);
+							oldCropped.Dispose();
+						}
+						catch
+						{
+							stream.Dispose();
+							throw;
+						}
 						Require.That(ImageFormat.Jpeg.Guid == cropped.RawFormat.Guid, "lost jpeg formatting");
 					}
 					return cropped;
