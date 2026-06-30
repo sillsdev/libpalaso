@@ -86,5 +86,59 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 				}
 			}
 		}
+		[Test]
+		public void GetCroppedImage_JpegImage_SetViaPropertyDirectly_ReturnsJpegBitmap()
+		{
+			// Setting Image directly (not via SetImage) must still initialize _originalFormat so
+			// GetCroppedImage does not throw NullReferenceException on JPEG re-encoding.
+			using (var tempFile = TempFile.WithExtension(".jpg"))
+			{
+				using (var bmp = new Bitmap(100, 80))
+					bmp.Save(tempFile.Path, ImageFormat.Jpeg);
+
+				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
+				using (var cropper = new ImageCropper())
+				{
+					cropper.Size = new Size(400, 300);
+					cropper.Image = palasoImage; // bypass SetImage intentionally
+
+					using (var result = cropper.GetCroppedImage())
+					{
+						Assert.IsNotNull(result);
+						Assert.AreEqual(ImageFormat.Jpeg.Guid, result.RawFormat.Guid);
+						Assert.Greater(result.Width, 0);
+					}
+				}
+			}
+		}
+
+		[Test]
+		public void SetImage_CalledTwice_DoesNotThrow()
+		{
+			using (var tempFile1 = TempFile.WithExtension(".png"))
+			using (var tempFile2 = TempFile.WithExtension(".jpg"))
+			{
+				using (var bmp = new Bitmap(100, 80))
+				{
+					bmp.Save(tempFile1.Path, ImageFormat.Png);
+					bmp.Save(tempFile2.Path, ImageFormat.Jpeg);
+				}
+
+				using (var img1 = PalasoImage.FromFile(tempFile1.Path))
+				using (var img2 = PalasoImage.FromFile(tempFile2.Path))
+				using (var cropper = new ImageCropper())
+				{
+					cropper.Size = new Size(400, 300);
+					cropper.SetImage(img1);
+					Assert.DoesNotThrow(() => cropper.SetImage(img2));
+
+					using (var result = cropper.GetCroppedImage())
+					{
+						Assert.IsNotNull(result);
+						Assert.AreEqual(ImageFormat.Jpeg.Guid, result.RawFormat.Guid);
+					}
+				}
+			}
+		}
 	}
 }
