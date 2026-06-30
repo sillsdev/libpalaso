@@ -14,6 +14,23 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 	[TestFixture]
 	public class UITests
 	{
+		[Test]
+		[Apartment(ApartmentState.STA)]
+		public void WritingSystemSetupDialog_Construct_DoesNotThrow()
+		{
+			using (var folder = new TemporaryFolder("WS-Test-Smoke"))
+			{
+				var repository = LdmlInFolderWritingSystemRepository.Initialize(folder.Path);
+				Assert.DoesNotThrow(() =>
+				{
+					using (var dlg = new WritingSystemSetupDialog(repository))
+					{
+						Assert.That(dlg, Is.Not.Null);
+					}
+				});
+			}
+		}
+
 		//NB: in Mar 2011, I couldn't get these to run in vs 2010 with resharper, because
 		// of the need to be in single apartment thread mode. The app.config is there, requesting
 		// it, but it doesn't work. So I had to plug in this CrossThreadTestRunner thing
