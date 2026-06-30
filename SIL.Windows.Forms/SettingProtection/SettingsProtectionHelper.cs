@@ -149,6 +149,10 @@ namespace SIL.Windows.Forms.SettingProtection
 		public void SetSettingsProtection(Control c, bool isProtected) =>
 			SetSettingsProtectionInternal(c, isProtected);
 
+		/// <param name="keepHidden">When <c>true</c> and <paramref name="isProtected"/> is <c>true</c>,
+		/// the control is always hidden regardless of password override. Has no effect when
+		/// <paramref name="isProtected"/> is <c>false</c> — the component is shown and removed from
+		/// all tracking sets.</param>
 		[PublicAPI]
 		public void SetSettingsProtection(Control c, bool isProtected, bool keepHidden) =>
 			SetSettingsProtectionInternal(c, isProtected, keepHidden);
@@ -205,6 +209,10 @@ namespace SIL.Windows.Forms.SettingProtection
 		public void SetSettingsProtection(ToolStripItem toolStripItem, bool isProtected) =>
 			SetSettingsProtectionInternal(toolStripItem, isProtected);
 
+		/// <param name="keepHidden">When <c>true</c> and <paramref name="isProtected"/> is <c>true</c>,
+		/// the item is always hidden regardless of password override. Has no effect when
+		/// <paramref name="isProtected"/> is <c>false</c> — the component is shown and removed from
+		/// all tracking sets.</param>
 		[PublicAPI]
 		public void SetSettingsProtection(ToolStripItem toolStripItem, bool isProtected, bool keepHidden) =>
 			SetSettingsProtectionInternal(toolStripItem, isProtected, keepHidden);
