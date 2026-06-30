@@ -146,7 +146,11 @@ namespace SIL.Windows.Forms.SettingProtection
 		}
 
 		[PublicAPI]
-		public void SetSettingsProtection(Control c, bool isProtected, bool keepHidden = false) =>
+		public void SetSettingsProtection(Control c, bool isProtected) =>
+			SetSettingsProtectionInternal(c, isProtected);
+
+		[PublicAPI]
+		public void SetSettingsProtection(Control c, bool isProtected, bool keepHidden) =>
 			SetSettingsProtectionInternal(c, isProtected, keepHidden);
 		#endregion
 
