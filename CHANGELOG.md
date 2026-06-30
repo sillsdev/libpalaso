@@ -1,4 +1,4 @@
-﻿# Change Log
+# Change Log
 
 All notable changes to this project will be documented in this file.
 
@@ -45,7 +45,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DictionaryServices] Fix memory leak in LiftWriter
 - [SIL.Windows.Forms] Fixed ImageCropper crash when switching between Crop and Choose tabs (Application.Idle leak + premature MemoryStream disposal)
 - [SIL.WritingSystems] Fix IetfLanguageTag.GetGeneralCode to handle cases when zh-CN or zh-TW is a prefix and not the whole string.
-- [SIL.WritingSystems] More fixes to consistently use ç¹ä½“ä¸­æ–‡ and ç®€ä½“ä¸­æ–‡ for Traditional and Simplified Chinese native language names, and Chinese (Traditional) and Chinese (Simplified) for their English names.
+- [SIL.WritingSystems] More fixes to consistently use 繁体中文 and 简体中文 for Traditional and Simplified Chinese native language names, and Chinese (Traditional) and Chinese (Simplified) for their English names.
 - [SIL.Windows.Forms] Prevent BetterLabel from responding to OnTextChanged when it has been disposed.
 - [SIL.Windows.Forms] Prevent ContributorsListControl.GetContributionFromRow from throwing an exception when the DataGridView has no valid rows selected.
 - [SIL.Media] BREAKING CHANGE (subtle and unlikely): WindowsAudioSession.OnPlaybackStopped now passes itself as the sender instead of a private implementation object, making the event arguments correct.
@@ -115,7 +115,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - [SIL.Windows.Forms] In `CustomDropDown.OnOpening`, fixed check that triggers timer to stop.
-- [SIL.Windows.Forms] Fixed HtmlBrowserHandled.OnNewWindow to open external URLs (`target="_blank"`) in the systemâ€™s default browser instead of Internet Explorer. This improves behavior in SILAboutBox and other components that use the embedded browser.
+- [SIL.Windows.Forms] Fixed HtmlBrowserHandled.OnNewWindow to open external URLs (`target="_blank"`) in the system’s default browser instead of Internet Explorer. This improves behavior in SILAboutBox and other components that use the embedded browser.
 
 ### Changed
 
