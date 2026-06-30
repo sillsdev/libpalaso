@@ -34,10 +34,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Installer] Added new package for common installer components. Initially, this includes a Privacy dialog and code to access the registry entries so users can opt out of analytics data collection.
 - [SIL.Core] Added PathUtilities.ParentDirectories extension method.
 - [SIL.Core] Added FileLocationUtilities.DistFilesFolderPath property.
+- [SIL.Windows.Forms] Added `keepHidden` option to `SetSettingsProtection` so controls can be marked always-hidden, remaining hidden even under password-override.
 
 ### Fixed
 
-- [SIL.Windows.Forms] Fixed SettingsProtectionHelper to support always-hidden controls that remain hidden even under password-override
 - [SIL.Core.ClearShare] Fixed `MetadataCore.GetSummaryParagraph` appending the Creator line twice and conditionally appending `RightsStatement` twice when using `CustomLicenseInfo`.
 - [SIL.Core] Fixed FontAnalytics exception handling to preserve original stack traces in debug mode.
 - [SIL.Windows.Forms.WritingSystems] WritingSystemFromWindowsLocaleProvider no longer crashes when an installed input language has a corrupt Windows installation; it now skips languages whose keyboard layout name cannot be read instead of throwing.
