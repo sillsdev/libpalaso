@@ -15,6 +15,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 	public class UITests
 	{
 		[Test]
+		[Explicit("Requires KeyboardController and LocalizationManager infrastructure — run by hand")]
 		[Apartment(ApartmentState.STA)]
 		public void WritingSystemSetupDialog_Construct_DoesNotThrow()
 		{
