@@ -47,6 +47,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Fixed ImageCropper `GetCroppedImage` returning a JPEG-format bitmap backed by a prematurely disposed `MemoryStream`
 - [SIL.Windows.Forms] Fixed ImageCropper `Image` setter leaking the previous temp file and cropping image on re-set; fields are now nulled after disposal so a mid-setter failure does not leave disposed-but-non-null references
 - [SIL.Windows.Forms] Fixed ImageCropper not downscaling tall images before cropping (height condition was checking width)
+- [SIL.Windows.Forms] Fixed ImageCropper `GetCroppedImage` throwing `NullReferenceException` when `Image` property is set directly rather than via `SetImage`
 - [SIL.WritingSystems] Fix IetfLanguageTag.GetGeneralCode to handle cases when zh-CN or zh-TW is a prefix and not the whole string.
 - [SIL.WritingSystems] More fixes to consistently use 繁体中文 and 简体中文 for Traditional and Simplified Chinese native language names, and Chinese (Traditional) and Chinese (Simplified) for their English names.
 - [SIL.Windows.Forms] Prevent BetterLabel from responding to OnTextChanged when it has been disposed.
