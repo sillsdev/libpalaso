@@ -466,7 +466,6 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 			}
 			else
 			{
-				_originalFormat = image.Image.RawFormat;
 				Image = image;
 			}
 		}
