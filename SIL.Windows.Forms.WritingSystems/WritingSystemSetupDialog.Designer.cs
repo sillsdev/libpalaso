@@ -71,7 +71,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._closeButton.Text = "Close";
 			this._L10NSharpExtender.SetLocalizableToolTip(this._closeButton, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._closeButton, null);
-			this._L10NSharpExtender.SetLocalizingId(this._closeButton, "WritingSystemSetupDialog._closeButton");
+			this._L10NSharpExtender.SetLocalizingId(this._closeButton, "WritingSystemSetupDialog.CloseButton");
 			this._closeButton.UseVisualStyleBackColor = true;
 			this._closeButton.Click += new System.EventHandler(this._closeButton_Click);
 			//
@@ -85,7 +85,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._openGlobal.Text = "Computer";
 			this._L10NSharpExtender.SetLocalizableToolTip(this._openGlobal, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._openGlobal, null);
-			this._L10NSharpExtender.SetLocalizingId(this._openGlobal, "WritingSystemSetupDialog._openGlobal");
+			this._L10NSharpExtender.SetLocalizingId(this._openGlobal, "WritingSystemSetupDialog.ComputerButton");
 			this._openGlobal.UseVisualStyleBackColor = true;
 			this._openGlobal.Click += new System.EventHandler(this._openGlobal_Click);
 			//
@@ -99,7 +99,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._openDirectory.Text = "Directory";
 			this._L10NSharpExtender.SetLocalizableToolTip(this._openDirectory, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._openDirectory, null);
-			this._L10NSharpExtender.SetLocalizingId(this._openDirectory, "WritingSystemSetupDialog._openDirectory");
+			this._L10NSharpExtender.SetLocalizingId(this._openDirectory, "WritingSystemSetupDialog.DirectoryButton");
 			this._openDirectory.UseVisualStyleBackColor = true;
 			this._openDirectory.Click += new System.EventHandler(this._openDirectory_Click);
 			//
@@ -114,7 +114,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._openLabel.Text = "Open Writing Systems:";
 			this._L10NSharpExtender.SetLocalizableToolTip(this._openLabel, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._openLabel, null);
-			this._L10NSharpExtender.SetLocalizingId(this._openLabel, "WritingSystemSetupDialog._openLabel");
+			this._L10NSharpExtender.SetLocalizingId(this._openLabel, "WritingSystemSetupDialog.OpenWritingSystemsLabel");
 			//
 			// WritingSystemSetupDialog
 			//
