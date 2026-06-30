@@ -272,6 +272,8 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 		private void CalculateSourceImageArea()
 		{
+			if (_croppingImage == null)
+				return;
 			float imageToCanvaseScaleFactor = GetImageToCanvasScaleFactor(_croppingImage);
 			_sourceImageArea = new Rectangle(GripThickness, GripThickness,
 											 (int)(_croppingImage.Width*imageToCanvaseScaleFactor),
