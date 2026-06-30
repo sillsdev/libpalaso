@@ -19,7 +19,6 @@ namespace SIL.Windows.Forms.SettingProtection
 			{
 				if (components != null)
 					components.Dispose();
-				_checkForCtrlKeyTimer.Dispose();
 				if (!_isDisposed)
 				{
 					_isDisposed = true;
