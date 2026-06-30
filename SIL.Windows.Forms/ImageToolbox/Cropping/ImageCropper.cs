@@ -145,6 +145,9 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				if (value == null)
 					return;
 
+				_savedOriginalImage?.Dispose();
+				_croppingImage?.Dispose();
+
 				//other code changes the image of this palaso image, at which time the PI disposes of its copy,
 				//so we better keep our own.
 
