@@ -149,6 +149,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				_savedOriginalImage = null;
 				_croppingImage?.Dispose();
 				_croppingImage = null;
+				_originalFormat = value.Image.RawFormat;
 
 				//other code changes the image of this palaso image, at which time the PI disposes of its copy,
 				//so we better keep our own.
