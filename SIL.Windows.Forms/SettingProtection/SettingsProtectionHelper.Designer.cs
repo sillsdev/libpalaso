@@ -25,6 +25,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			{
 				_isDisposed = true;
 				_componentsUnderSettingsProtection.Clear();
+				_alwaysHiddenComponents.Clear();
 			}
 		}
 
