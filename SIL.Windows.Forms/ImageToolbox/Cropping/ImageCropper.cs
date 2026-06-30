@@ -483,6 +483,8 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 					components = null;
 				}
 
+				Application.Idle -= Application_Idle;
+
 				try
 				{
 					if (_savedOriginalImage != null)
@@ -505,8 +507,6 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				catch (UnauthorizedAccessException)
 				{
 				}
-
-				Application.Idle -= Application_Idle;
 			}
 			base.Dispose(disposing);
 		}
