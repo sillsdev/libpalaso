@@ -427,7 +427,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 						// Do not dispose stream here: GDI+ bitmaps reference the stream for lazy decoding.
 						// The stream will be collected when the returned Bitmap is no longer referenced.
 						stream.Position = 0;
-						cropped = System.Drawing.Image.FromStream(stream) as Bitmap;
+						cropped = (Bitmap)System.Drawing.Image.FromStream(stream);
 						oldCropped.Dispose();
 						Require.That(ImageFormat.Jpeg.Guid == cropped.RawFormat.Guid, "lost jpeg formatting");
 					}
