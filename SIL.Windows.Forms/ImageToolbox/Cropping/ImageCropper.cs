@@ -421,14 +421,15 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 					if (_originalFormat.Guid == ImageFormat.Jpeg.Guid)
 					{
 						//We've sadly lost our jpeg formatting, so now we encode a new image in jpeg
-						using (var stream = new MemoryStream())
-						{
-							cropped.Save(stream, ImageFormat.Jpeg);
-							var oldCropped = cropped;
-							cropped = System.Drawing.Image.FromStream(stream) as Bitmap;
-							oldCropped.Dispose();
-							Require.That(ImageFormat.Jpeg.Guid == cropped.RawFormat.Guid, "lost jpeg formatting");
-						}
+						var stream = new MemoryStream();
+						cropped.Save(stream, ImageFormat.Jpeg);
+						var oldCropped = cropped;
+						// Do not dispose stream here: GDI+ bitmaps reference the stream for lazy decoding.
+						// The stream will be collected when the returned Bitmap is no longer referenced.
+						stream.Position = 0;
+						cropped = System.Drawing.Image.FromStream(stream) as Bitmap;
+						oldCropped.Dispose();
+						Require.That(ImageFormat.Jpeg.Guid == cropped.RawFormat.Guid, "lost jpeg formatting");
 					}
 					return cropped;
 				}
@@ -504,6 +505,8 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				catch (UnauthorizedAccessException)
 				{
 				}
+
+				Application.Idle -= Application_Idle;
 			}
 			base.Dispose(disposing);
 		}
