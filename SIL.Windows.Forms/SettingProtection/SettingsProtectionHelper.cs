@@ -142,7 +142,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			if (c == null)
 				throw new ArgumentNullException();
 
-			return _componentsUnderSettingsProtection.Contains(c);
+			return _componentsUnderSettingsProtection.Contains(c) || _alwaysHiddenComponents.Contains(c);
 		}
 
 		[PublicAPI]

@@ -112,5 +112,14 @@ namespace SIL.Windows.Forms.Tests.SettingsProtection
 
 			Assert.That(control.Visible, Is.True);
 		}
+
+		[Test]
+		public void GetSettingsProtection_AlwaysHiddenControl_ReturnsTrue()
+		{
+			var control = new Button();
+			_helper.SetSettingsProtection(control, true, keepHidden: true);
+
+			Assert.That(_helper.GetSettingsProtection(control), Is.True);
+		}
 	}
 }
