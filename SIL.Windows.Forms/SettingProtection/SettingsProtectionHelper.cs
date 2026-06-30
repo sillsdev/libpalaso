@@ -202,8 +202,11 @@ namespace SIL.Windows.Forms.SettingProtection
 		/// </summary>
 		/// <exception cref="ArgumentNullException">toolStripItem was null</exception>
 		[PublicAPI]
-		public void SetSettingsProtection(ToolStripItem toolStripItem, bool isProtected,
-			bool keepHidden = false) =>
+		public void SetSettingsProtection(ToolStripItem toolStripItem, bool isProtected) =>
+			SetSettingsProtectionInternal(toolStripItem, isProtected);
+
+		[PublicAPI]
+		public void SetSettingsProtection(ToolStripItem toolStripItem, bool isProtected, bool keepHidden) =>
 			SetSettingsProtectionInternal(toolStripItem, isProtected, keepHidden);
 	}
 }
