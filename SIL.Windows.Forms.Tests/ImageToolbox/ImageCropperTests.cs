@@ -16,7 +16,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 		public void Dispose_CalledTwice_DoesNotThrow()
 		{
 			var cropper = new ImageCropper();
-			cropper.Dispose();
+			Assert.DoesNotThrow(() => cropper.Dispose());
 			Assert.DoesNotThrow(() => cropper.Dispose());
 		}
 
@@ -121,7 +121,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 				{
 					cropper.Size = new Size(400, 300);
 					cropper.SetImage(img1);
-					Assert.DoesNotThrow(() => cropper.SetImage(img2));
+					cropper.SetImage(img2);
 
 					using (var result = cropper.GetCroppedImage())
 					{
