@@ -251,12 +251,35 @@ After `git fetch --prune`, **49** branches remain on `origin`. Cross-referencing
 - The fix was never merged and **no issue tracks it**. The crash path is still live: `MetadataCore.FileFormatSupportsMetadata()` ([MetadataCore.cs:435](SIL.Core/ClearShare/MetadataCore.cs#L435)) calls `TagLib.File.Create(path)` inside `RetryUtility.Retry` with no catch, so a file TagLib can't parse (the reporter's `star.jpg` from MS Paint on Win10) throws straight up through `Write()` ([MetadataCore.cs:469](SIL.Core/ClearShare/MetadataCore.cs#L469)). The PR's fix was a one-line `try/catch ⇒ return false`. The recent BL-16221 PalasoImage hardening (`cca708f4`) touched adjacent code but not this method.
 - **Recommended:** open a small bug issue capturing the repro (the `star.jpg` from the PR thread) and the one-line guard, then delete the branch. Keep the branch only as long as it's the sole record of the repro.
 
-### Note on the remaining ~36 undeleted branches (no associated PR — out of scope)
+### Note on the remaining ~35 undeleted branches (no associated PR — out of scope)
 
 These were pushed directly (predating or bypassing the PR workflow), so they aren't "closed PRs." For completeness:
 
 - **Keep (intentional maintenance/release branches):** `libpalaso-2.6`/`-3.1`/`-4.0`/`-4.2`/`-6.0`, `wesay1.2`/`1.4`/`1.5`, `Bloom3.7`/`Bloom-5.2`, `HearThis1.4`, `FW7.2`, `LIFT-0.15`, `DotNet35Profile`, `DotNet40ClientProfile`.
-- **Stale experiment/feature branches, likely deletable** (each would need a quick owner check; not tied to any PR): `BL-16414-imagetoolbox-dpi`, `HandleLaunchesRight`, `IWritingSystemDefinition`, `ImproveGACookie`, `LT-16358a`, `LdmlDataMapperToDumpXmlReaderAndXmlWriter`, `QueryWork`, `TrimWav`-era siblings, `animator-int`, `bugfix/master/ldata_sldr`, `feature/master/20180319alltags`, `feature/master/ethnologueFeb18update`, `feature/master/fixldata_updatesldr`, `fix/CheckVersion`, `main-copy-for-testing`, `move-metadata`, `naudioForWeSay`.
+- **Stale experiment/feature branches, likely deletable** (each would need a quick owner check; not tied to any PR): `BL-16414-imagetoolbox-dpi`, `HandleLaunchesRight`, `IWritingSystemDefinition`, `ImproveGACookie`, `LT-16358a`, `LdmlDataMapperToDumpXmlReaderAndXmlWriter`, `QueryWork`, `TrimWav`-era siblings, `bugfix/master/ldata_sldr`, `feature/master/20180319alltags`, `feature/master/ethnologueFeb18update`, `feature/master/fixldata_updatesldr`, `fix/CheckVersion`, `main-copy-for-testing`, `move-metadata`, `naudioForWeSay`.
+
+#### Resolution check on the 16 "likely deletable" branches
+
+`TrimWav`-era siblings and `bugfix/master/ldata_sldr` no longer exist on `origin` (already gone). The remaining 15 were diffed against master's history:
+
+| Branch                                      | Owner             | Last commit | Verdict                                                                                                                                      | Recommendation                                |
+| ------------------------------------------- | ----------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| `BL-16414-imagetoolbox-dpi`                 | Andrew Polk       | 2026-06-11  | **Active WIP**, 20 days old. DPI-scaling fix has no equivalent in master.                                                                    | **Keep — check with Andrew Polk**, not stale  |
+| `move-metadata`                             | Ariel Rorabaugh   | 2025-10-14  | Superseded by master's Metadata/LicenseInfo refactor (PR #1478); its CHANGELOG/L10NSharp-9 commits already merged separately                 | Delete                                        |
+| `LT-16358a`                                 | mark-sil          | 2025-10-14  | Same goal as `move-metadata`, also superseded by PR #1478                                                                                    | Delete                                        |
+| `main-copy-for-testing`                     | Jason Naylor      | 2025-06-17  | `update-language-data.yml` already exists on master in a more mature form                                                                    | Delete                                        |
+| `fix/CheckVersion`                          | Hasso             | 2022-08-19  | Version-check/throw logic already present in master's `LdmlDataMapper.cs`, arrived independently                                             | Delete                                        |
+| `feature/master/fixldata_updatesldr`        | Daniel Glassey    | 2018-03-22  | Payload (`alltags.txt`) later deleted from repo entirely; TLS1.2 fix never landed and SLDR lookup was since rewritten                        | Delete                                        |
+| `feature/master/20180319alltags`            | Daniel Glassey    | 2018-03-23  | Data-only; the resource files it updates were later deleted repo-wide (SLDR-based lookup replaced them)                                      | Delete                                        |
+| `feature/master/ethnologueFeb18update`      | Daniel Glassey    | 2018-03-19  | Same — obsolete data, files since removed                                                                                                    | Delete                                        |
+| `LdmlDataMapperToDumpXmlReaderAndXmlWriter` | Randy Regnier     | 2014-01-15  | Goal (XmlReader→XElement) achieved independently in master                                                                                   | Delete                                        |
+| `QueryWork`                                 | Tim Armstrong     | 2014-01-15  | `CustomFieldQuery`/`RecordToken` reimplemented independently under `SIL.Core/Data`                                                           | Delete                                        |
+| `naudioForWeSay`                            | John Hatton       | 2014-01-15  | 2012 WIP NAudio recorder; superseded by `SIL.Media/Naudio` (already NAudio-based) — but is prior art for open issue #1425 (irrKlang removal) | Delete; optionally cite as prior art on #1425 |
+| `HandleLaunchesRight`                       | Eberhard Beilharz | 2014-01-15  | Zero substantive commits — only hg→git migration/`.gitignore` noise                                                                          | Delete                                        |
+| `IWritingSystemDefinition`                  | Eberhard Beilharz | 2014-01-15  | Same — zero substantive commits                                                                                                              | Delete                                        |
+| `ImproveGACookie`                           | Eberhard Beilharz | 2014-01-15  | Same — only `.gitattributes`/`.gitignore` commits                                                                                            | Delete                                        |
+
+**Net: All but 1 safe to delete now; only `BL-16414-imagetoolbox-dpi` needs an owner check first.**
 
 ---
 
