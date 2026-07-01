@@ -104,7 +104,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 		}
 
 		[Test]
-		public void SetImage_CalledTwice_DoesNotThrow()
+		public void SetImage_Reassign_UpdatesFormatAndDoesNotThrow()
 		{
 			using (var tempFile1 = TempFile.WithExtension(".png"))
 			using (var tempFile2 = TempFile.WithExtension(".jpg"))
