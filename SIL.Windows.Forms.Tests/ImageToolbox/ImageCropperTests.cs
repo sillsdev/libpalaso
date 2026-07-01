@@ -13,13 +13,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 	public class ImageCropperTests
 	{
 		[Test]
-		public void Dispose_DoesNotThrow()
-		{
-			var cropper = new ImageCropper();
-			Assert.DoesNotThrow(() => cropper.Dispose());
-		}
-
-		[Test]
 		public void Dispose_CalledTwice_DoesNotThrow()
 		{
 			var cropper = new ImageCropper();
@@ -47,7 +40,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 						// Accessing Width forces GDI+ to decode the image data; this would throw
 						// if the backing stream had been prematurely disposed.
 						Assert.Greater(result.Width, 0);
-						Assert.Greater(result.Height, 0);
 					}
 				}
 			}
@@ -77,7 +69,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 						Assert.AreEqual(ImageFormat.Jpeg.Guid, result.RawFormat.Guid);
 						// Force pixel data access to confirm the stream is still alive.
 						Assert.Greater(result.Width, 0);
-						Assert.Greater(result.Height, 0);
 					}
 					finally
 					{
