@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using L10NSharp;
 using SIL.Windows.Forms.WritingSystems.WSTree;
 using SIL.WritingSystems;
 
@@ -74,7 +75,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			catch (ArgumentException exception)
 			{
 				MessageBox.Show (
-					this, exception.Message, "Input Systems Error",
+					this, exception.Message,
+					LocalizationManager.GetString("WritingSystemSetupDialog.InputSystemsError", "Input Systems Error"),
 					MessageBoxButtons.OK, MessageBoxIcon.Exclamation
 				);
 			}
@@ -87,7 +89,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			openDir.RootFolder = Environment.SpecialFolder.Personal;
 
 			// Set the help text description for the FolderBrowserDialog.
-			openDir.Description = "Select the folder with Writing Systems";
+			openDir.Description = LocalizationManager.GetString("WritingSystemSetupDialog.SelectFolderDescription", "Select the folder with Writing Systems");
 
 			// Allow the user to create new files via the FolderBrowserDialog.
 			openDir.ShowNewFolderButton = true;
@@ -105,7 +107,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 				dlg.WritingSystemSuggestor.SuggestVoice = true;
 				dlg.WritingSystemSuggestor.OtherKnownWritingSystems = null;
-				dlg.Text = String.Format("Writing Systems in folder {0}", newDir);
+				dlg.Text = String.Format(LocalizationManager.GetString("WritingSystemSetupDialog.TitleWithFolder", "Writing Systems in folder {0}", "The {0} is replaced with the folder path."), newDir);
 
 				dlg.Show();
 			}
@@ -117,7 +119,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			dlg.WritingSystemSuggestor.SuggestVoice = true;
 			dlg.WritingSystemSuggestor.OtherKnownWritingSystems = null;
 			dlg.DisposeRepository = true;
-			dlg.Text = String.Format("Writing Systems for all users of this computer");
+			dlg.Text = LocalizationManager.GetString("WritingSystemSetupDialog.TitleAllUsers", "Writing Systems for all users of this computer");
 
 			dlg.Show();
 		}
