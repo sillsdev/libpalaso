@@ -15,17 +15,18 @@ namespace SIL.Windows.Forms.SettingProtection
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && (components != null))
+			if (disposing)
 			{
-				components.Dispose();
+				if (components != null)
+					components.Dispose();
+				if (!_isDisposed)
+				{
+					_isDisposed = true;
+					_componentsUnderSettingsProtection.Clear();
+					_alwaysHiddenComponents.Clear();
+				}
 			}
 			base.Dispose(disposing);
-			_checkForCtrlKeyTimer.Dispose();
-			if(!_isDisposed)
-			{
-				_isDisposed = true;
-				_componentsUnderSettingsProtection.Clear();
-			}
 		}
 
 		#region Component Designer generated code

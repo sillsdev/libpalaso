@@ -22,6 +22,7 @@ namespace SIL.Windows.Forms.SettingProtection
 	public partial class SettingsProtectionHelper : Component, IExtenderProvider
 	{
 		private readonly HashSet<Component> _componentsUnderSettingsProtection;
+		private readonly HashSet<Component> _alwaysHiddenComponents;
 		private bool _isDisposed;
 
 		public bool CanExtend(object extendee)
@@ -35,6 +36,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			InitializeComponent();
 
 			_componentsUnderSettingsProtection = new HashSet<Component>();
+			_alwaysHiddenComponents = new HashSet<Component>();
 
 			if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
 			{
@@ -76,6 +78,11 @@ namespace SIL.Windows.Forms.SettingProtection
 
 				ShowOrHideComponent(component, visible);
 			}
+
+			foreach (var component in _alwaysHiddenComponents)
+			{
+				ShowOrHideComponent(component, false);
+			}
 		}
 
 		private static void ShowOrHideComponent(Component component, bool visible)
@@ -89,7 +96,8 @@ namespace SIL.Windows.Forms.SettingProtection
 					"Only components which are Controls or ToolStripItems can be under settings protection.");
 		}
 
-		private void SetSettingsProtectionInternal(Component controlOrToolStripItem, bool isProtected)
+		private void SetSettingsProtectionInternal(Component controlOrToolStripItem, bool isProtected,
+			bool keepHidden = false)
 		{
 			if (controlOrToolStripItem == null)
 				throw new ArgumentNullException();
@@ -100,13 +108,23 @@ namespace SIL.Windows.Forms.SettingProtection
 
 			if (isProtected)
 			{
-				_componentsUnderSettingsProtection.Add(controlOrToolStripItem);
+				if (keepHidden)
+				{
+					_alwaysHiddenComponents.Add(controlOrToolStripItem);
+					_componentsUnderSettingsProtection.Remove(controlOrToolStripItem);
+				}
+				else
+				{
+					_componentsUnderSettingsProtection.Add(controlOrToolStripItem);
+					_alwaysHiddenComponents.Remove(controlOrToolStripItem);
+				}
 				// No need to call ShowOrHideComponent explicitly. It will get called when the
 				// timer fires.
 			}
 			else
 			{
 				_componentsUnderSettingsProtection.Remove(controlOrToolStripItem);
+				_alwaysHiddenComponents.Remove(controlOrToolStripItem);
 				ShowOrHideComponent(controlOrToolStripItem, true);
 			}
 		}
@@ -124,12 +142,20 @@ namespace SIL.Windows.Forms.SettingProtection
 			if (c == null)
 				throw new ArgumentNullException();
 
-			return _componentsUnderSettingsProtection.Contains(c);
+			return _componentsUnderSettingsProtection.Contains(c) || _alwaysHiddenComponents.Contains(c);
 		}
 
 		[PublicAPI]
 		public void SetSettingsProtection(Control c, bool isProtected) =>
 			SetSettingsProtectionInternal(c, isProtected);
+
+		/// <param name="keepHidden">When <c>true</c> and <paramref name="isProtected"/> is <c>true</c>,
+		/// the control is always hidden regardless of password override. Has no effect when
+		/// <paramref name="isProtected"/> is <c>false</c> — the component is shown and removed from
+		/// all tracking sets.</param>
+		[PublicAPI]
+		public void SetSettingsProtection(Control c, bool isProtected, bool keepHidden) =>
+			SetSettingsProtectionInternal(c, isProtected, keepHidden);
 		#endregion
 
 		#region IComponent Members
@@ -182,5 +208,13 @@ namespace SIL.Windows.Forms.SettingProtection
 		[PublicAPI]
 		public void SetSettingsProtection(ToolStripItem toolStripItem, bool isProtected) =>
 			SetSettingsProtectionInternal(toolStripItem, isProtected);
+
+		/// <param name="keepHidden">When <c>true</c> and <paramref name="isProtected"/> is <c>true</c>,
+		/// the item is always hidden regardless of password override. Has no effect when
+		/// <paramref name="isProtected"/> is <c>false</c> — the component is shown and removed from
+		/// all tracking sets.</param>
+		[PublicAPI]
+		public void SetSettingsProtection(ToolStripItem toolStripItem, bool isProtected, bool keepHidden) =>
+			SetSettingsProtectionInternal(toolStripItem, isProtected, keepHidden);
 	}
 }

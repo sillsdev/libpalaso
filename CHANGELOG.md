@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Installer] Added new package for common installer components. Initially, this includes a Privacy dialog and code to access the registry entries so users can opt out of analytics data collection.
 - [SIL.Core] Added PathUtilities.ParentDirectories extension method.
 - [SIL.Core] Added FileLocationUtilities.DistFilesFolderPath property.
+- [SIL.Windows.Forms] Added `keepHidden` option to `SetSettingsProtection` so controls can be marked always-hidden, remaining hidden even under password-override.
 
 ### Fixed
 
