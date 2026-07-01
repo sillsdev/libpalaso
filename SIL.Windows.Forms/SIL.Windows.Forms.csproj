@@ -49,12 +49,12 @@
 
   <ItemGroup>
     <None Include="../lib/Interop.WIA.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Pack>true</Pack>
       <PackagePath>build</PackagePath>
     </None>
     <None Include="../lib/x64/Interop.WIA.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>Interop.WIA.dll</Link>
       <Pack>true</Pack>
       <PackagePath>build/x64</PackagePath>
     </None>

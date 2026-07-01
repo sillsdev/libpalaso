@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+- [SIL.Windows.Forms] Fixed `Interop.WIA.dll` deployment to provide the AnyCPU build to 64-bit (x64/AnyCPU) consumers instead of the 32-bit-only build.
 - [SIL.Core.ClearShare] Fixed `MetadataCore.GetSummaryParagraph` appending the Creator line twice and conditionally appending `RightsStatement` twice when using `CustomLicenseInfo`.
 - [SIL.Core] Fixed FontAnalytics exception handling to preserve original stack traces in debug mode.
 - [SIL.Windows.Forms.WritingSystems] WritingSystemFromWindowsLocaleProvider no longer crashes when an installed input language has a corrupt Windows installation; it now skips languages whose keyboard layout name cannot be read instead of throwing.
