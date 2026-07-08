@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Threading;
 using NUnit.Framework;
 using SIL.IO;
@@ -37,9 +38,12 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					using (var result = cropper.GetCroppedImage())
 					{
 						Assert.IsNotNull(result);
-						// Accessing Width forces GDI+ to decode the image data; this would throw
-						// if the backing stream had been prematurely disposed.
 						Assert.Greater(result.Width, 0);
+						// Re-encoding forces GDI+ to re-read the pixel data (Width/RawFormat alone
+						// only touch cached metadata); this would throw if the backing store had
+						// been prematurely disposed.
+						using (var ms = new MemoryStream())
+							Assert.DoesNotThrow(() => result.Save(ms, ImageFormat.Png));
 					}
 				}
 			}
@@ -67,8 +71,11 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					{
 						Assert.IsNotNull(result);
 						Assert.AreEqual(ImageFormat.Jpeg.Guid, result.RawFormat.Guid);
-						// Force pixel data access to confirm the stream is still alive.
-						Assert.Greater(result.Width, 0);
+						// Re-encode to force GDI+ to re-read pixel data from the backing stream.
+						// Width/RawFormat only touch cached metadata and pass even when the stream
+						// has been disposed, so they cannot confirm the stream is still alive.
+						using (var ms = new MemoryStream())
+							Assert.DoesNotThrow(() => result.Save(ms, ImageFormat.Png));
 					}
 					finally
 					{
@@ -127,6 +134,41 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					{
 						Assert.IsNotNull(result);
 						Assert.AreEqual(ImageFormat.Jpeg.Guid, result.RawFormat.Guid);
+					}
+				}
+			}
+		}
+
+		[Test]
+		public void SetImage_ReCropPreviouslyCroppedJpeg_DoesNotThrow()
+		{
+			// Regression test for the crash reported in the ImageToolbox (issue #1275) when
+			// switching Get Image <-> Crop with a JPEG. GetImage() returns a Bitmap backed by a
+			// MemoryStream; feeding that result back into a new cropper re-saves it in the Image
+			// setter (value.Image.Save), which threw "A generic error occurred in GDI+" once the
+			// backing stream had been disposed.
+			using (var tempFile = TempFile.WithExtension(".jpg"))
+			{
+				using (var bmp = new Bitmap(1200, 900))
+					bmp.Save(tempFile.Path, ImageFormat.Jpeg);
+
+				// GetImage() returns the same PalasoImage instance, now holding the cropped JPEG,
+				// so the outer using disposes it exactly once.
+				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
+				{
+					PalasoImage cropped;
+					using (var cropper1 = new ImageCropper())
+					{
+						cropper1.Size = new Size(400, 300);
+						cropper1.SetImage(palasoImage);
+						cropped = cropper1.GetImage();
+					}
+					Assert.That(cropped, Is.Not.Null);
+
+					using (var cropper2 = new ImageCropper())
+					{
+						cropper2.Size = new Size(400, 300);
+						Assert.DoesNotThrow(() => cropper2.SetImage(cropped));
 					}
 				}
 			}
