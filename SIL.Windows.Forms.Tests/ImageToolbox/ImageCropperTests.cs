@@ -39,9 +39,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					{
 						Assert.IsNotNull(result);
 						Assert.Greater(result.Width, 0);
-						// Re-encoding forces GDI+ to re-read the pixel data (Width/RawFormat alone
-						// only touch cached metadata); this would throw if the backing store had
-						// been prematurely disposed.
+						// Re-encode to force GDI+ to re-read the pixel data from the backing store.
 						using (var ms = new MemoryStream())
 							Assert.DoesNotThrow(() => result.Save(ms, ImageFormat.Png));
 					}
@@ -71,9 +69,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					{
 						Assert.IsNotNull(result);
 						Assert.AreEqual(ImageFormat.Jpeg.Guid, result.RawFormat.Guid);
-						// Re-encode to force GDI+ to re-read pixel data from the backing stream.
-						// Width/RawFormat only touch cached metadata and pass even when the stream
-						// has been disposed, so they cannot confirm the stream is still alive.
+						// Re-encode to force GDI+ to re-read the pixel data from the backing stream.
 						using (var ms = new MemoryStream())
 							Assert.DoesNotThrow(() => result.Save(ms, ImageFormat.Png));
 					}
@@ -142,11 +138,9 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 		[Test]
 		public void SetImage_ReCropPreviouslyCroppedJpeg_DoesNotThrow()
 		{
-			// Regression test for the crash reported in the ImageToolbox (issue #1275) when
-			// switching Get Image <-> Crop with a JPEG. GetImage() returns a Bitmap backed by a
-			// MemoryStream; feeding that result back into a new cropper re-saves it in the Image
-			// setter (value.Image.Save), which threw "A generic error occurred in GDI+" once the
-			// backing stream had been disposed.
+			// GetImage() returns a JPEG Bitmap backed by a MemoryStream; feeding that result
+			// back into a new cropper re-saves it in the Image setter (value.Image.Save), which
+			// crashed once the backing stream had been disposed.
 			using (var tempFile = TempFile.WithExtension(".jpg"))
 			{
 				using (var bmp = new Bitmap(1200, 900))
