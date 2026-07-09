@@ -443,6 +443,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 						catch
 						{
 							stream.Dispose();
+							cropped.Dispose();
 							throw;
 						}
 						Require.That(ImageFormat.Jpeg.Guid == cropped.RawFormat.Guid, "lost jpeg formatting");
