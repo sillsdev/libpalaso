@@ -55,6 +55,51 @@ namespace SIL.Core.ClearShare
 		}
 
 		/// <summary>
+		/// TagLib# is not thread-safe when reading or writing image metadata. In particular,
+		/// TagLib.Xmp.XmpTag keeps mutable *static* state that has no internal locking:
+		///  - a single shared NameTable that every metadata read mutates while parsing the XMP
+		///    (TagLib parses via "new XmlDocument(NameTable); doc.LoadXml(...)"), and
+		///  - the static NamespacePrefixes dictionary, which every render/save mutates -- both
+		///    TagLib itself (when it invents prefixes for unknown namespaces) and SaveInImageTag
+		///    below (which writes the "cc" and "pdf" prefixes into it directly).
+		/// If two threads read and/or write metadata at the same time, these collections are
+		/// structurally corrupted. Because they are static, the corruption persists for the life
+		/// of the process, so every subsequent metadata operation then throws
+		/// "Operations that change non-concurrent collections must have exclusive access."
+		/// To prevent this we serialize all access to TagLib (for image metadata) process-wide
+		/// behind this single lock. It is protected static so the WinForms Metadata subclass, which
+		/// lives in a different assembly, shares the very same lock object.
+		/// </summary>
+		protected static readonly object TagLibLock = new object();
+
+		/// <summary>
+		/// Runs the given action while holding <see cref="TagLibLock"/>. Callers that use TagLib
+		/// directly (rather than through this class) - for example, to read or modify EXIF tags -
+		/// should wrap that work in this method so that it is serialized against the metadata reads
+		/// and writes done here. Otherwise concurrent TagLib access can corrupt XmpTag's static
+		/// state; see the remarks on <see cref="TagLibLock"/>.
+		/// </summary>
+		public static void RunUnderTagLibLock(Action action)
+		{
+			lock (TagLibLock)
+			{
+				action();
+			}
+		}
+
+		/// <summary>
+		/// Runs the given function while holding <see cref="TagLibLock"/> and returns its result.
+		/// See <see cref="RunUnderTagLibLock(Action)"/>.
+		/// </summary>
+		public static T RunUnderTagLibLock<T>(Func<T> function)
+		{
+			lock (TagLibLock)
+			{
+				return function();
+			}
+		}
+
+		/// <summary>
 		/// Create a MetadataAccess by reading an existing media file
 		/// </summary>
 		/// <param name="path"></param>
@@ -115,45 +160,49 @@ namespace SIL.Core.ClearShare
 		/// <param name="destinationMetadata"></param>
 		private void LoadProperties(string path)
 		{
-			try
+			// See TagLibLock: all TagLib access for image metadata must be serialized.
+			lock (TagLibLock)
 			{
-				ExceptionCaughtWhileLoading = null;
-				_originalTaglibMetadata = RetryUtility.Retry(() =>
-				  TagLib.File.Create(path) as TagLib.Image.File,
-				  memo: $"LoadProperties({path})");
+				try
+				{
+					ExceptionCaughtWhileLoading = null;
+					_originalTaglibMetadata = RetryUtility.Retry(() =>
+					  TagLib.File.Create(path) as TagLib.Image.File,
+					  memo: $"LoadProperties({path})");
+				}
+				catch (TagLib.UnsupportedFormatException ex)
+				{
+					// TagLib throws this exception when the file doesn't have any metadata, sigh.
+					// So since I don't see a way to differentiate between that case and the case
+					// where something really is wrong, we're just gonna have to swallow this,
+					// even in DEBUG mode, because else a lot of simple image tests fail
+					ExceptionCaughtWhileLoading = ex;
+					return;
+				}
+				catch (NotImplementedException ex)
+				{
+					// TagLib throws this exception if it encounters (private?) metadata that it doesn't
+					// understand.  This prevents us from even looking at images that have such metadata,
+					// which seems unreasonable.  Other packages like MetadataExtractor don't have this
+					// problem, but have other limitations.
+					// See https://issues.bloomlibrary.org/youtrack/issue/BL-8706 for a user complaint.
+					System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
+					ExceptionCaughtWhileLoading = ex;
+					return;
+				}
+				catch (ArgumentOutOfRangeException ex)
+				{
+					// TagLib can throw this if it can't read some part of the metadata.  This
+					// prevents us from even looking at images that have such metadata, which
+					// seems unreasonable. (TagLib doesn't fully understand IPTC profiles, for
+					// example, which can lead to this exception.)
+					// See https://issues.bloomlibrary.org/youtrack/issue/BL-11933 for a user complaint.
+					System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
+					ExceptionCaughtWhileLoading = ex;
+					return;
+				}
+				LoadProperties(_originalTaglibMetadata.ImageTag);
 			}
-			catch (TagLib.UnsupportedFormatException ex)
-			{
-				// TagLib throws this exception when the file doesn't have any metadata, sigh.
-				// So since I don't see a way to differentiate between that case and the case
-				// where something really is wrong, we're just gonna have to swallow this,
-				// even in DEBUG mode, because else a lot of simple image tests fail
-				ExceptionCaughtWhileLoading = ex;
-				return;
-			}
-			catch (NotImplementedException ex)
-			{
-				// TagLib throws this exception if it encounters (private?) metadata that it doesn't
-				// understand.  This prevents us from even looking at images that have such metadata,
-				// which seems unreasonable.  Other packages like MetadataExtractor don't have this
-				// problem, but have other limitations.
-				// See https://issues.bloomlibrary.org/youtrack/issue/BL-8706 for a user complaint.
-				System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
-				ExceptionCaughtWhileLoading = ex;
-				return;
-			}
-			catch (ArgumentOutOfRangeException ex)
-			{
-				// TagLib can throw this if it can't read some part of the metadata.  This
-				// prevents us from even looking at images that have such metadata, which
-				// seems unreasonable. (TagLib doesn't fully understand IPTC profiles, for
-				// example, which can lead to this exception.)
-				// See https://issues.bloomlibrary.org/youtrack/issue/BL-11933 for a user complaint.
-				System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
-				ExceptionCaughtWhileLoading = ex;
-				return;
-			}
-			LoadProperties(_originalTaglibMetadata.ImageTag);
 		}
 
 		/// <summary>
@@ -439,10 +488,14 @@ namespace SIL.Core.ClearShare
 		/// <summary>Returns if the format of the image file supports metadata</summary>
 		public bool FileFormatSupportsMetadata(string path)
 		{
-			var file = RetryUtility.Retry(() =>
-				 TagLib.File.Create(path) as TagLib.Image.File,
-				memo: $"FileFormatSupportsMetadata({path})");
-			return file != null && !file.GetType().FullName.Contains("NoMetadata");
+			// See TagLibLock: all TagLib access for image metadata must be serialized.
+			lock (TagLibLock)
+			{
+				var file = RetryUtility.Retry(() =>
+					 TagLib.File.Create(path) as TagLib.Image.File,
+					memo: $"FileFormatSupportsMetadata({path})");
+				return file != null && !file.GetType().FullName.Contains("NoMetadata");
+			}
 		}
 
 		/// <summary>
@@ -470,30 +523,36 @@ namespace SIL.Core.ClearShare
 		/// <param name="copyAllMetaDataFromOriginal"></param>
 		public void Write(string path, bool copyAllMetaDataFromOriginal = true)
 		{
-			// do not attempt to add metadata to a file type that does not support it.
-			if (!FileFormatSupportsMetadata(path))
-				throw new NotSupportedException(
-					$"The image file {Path.GetFileName(path)} is in a format that does not support metadata.");
-
-			var file = RetryUtility.Retry(() =>
-				TagLib.File.Create(path) as TagLib.Image.File,
-				memo: $"Metadata.Write({path}) - creating TagLib.Image.File");
-
-			file.GetTag(TagTypes.XMP, true); // The Xmp tag, at least, must exist so we can store properties into it.
-
-			// This does nothing if the file is not allowed to have PNG tags, that is, if it's not a PNG file.
-			// If it is, we want this tag to exist, since otherwise tools like exiftool (and hence old versions
-			// of this library and its clients) won't see our copyright notice and creator, at least.
-			file.GetTag(TagTypes.Png, true);
-			// If we know where the image came from, copy as much metadata as we can to the new image.
-			if (copyAllMetaDataFromOriginal && _originalTaglibMetadata != null)
+			// See TagLibLock: all TagLib access for image metadata must be serialized. This also
+			// covers SaveInImageTag's direct mutation of the static XmpTag.NamespacePrefixes and
+			// file.Save()'s rendering of the XMP (both of which mutate that shared dictionary).
+			lock (TagLibLock)
 			{
-				file.CopyFrom(_originalTaglibMetadata);
+				// do not attempt to add metadata to a file type that does not support it.
+				if (!FileFormatSupportsMetadata(path))
+					throw new NotSupportedException(
+						$"The image file {Path.GetFileName(path)} is in a format that does not support metadata.");
+
+				var file = RetryUtility.Retry(() =>
+					TagLib.File.Create(path) as TagLib.Image.File,
+					memo: $"Metadata.Write({path}) - creating TagLib.Image.File");
+
+				file.GetTag(TagTypes.XMP, true); // The Xmp tag, at least, must exist so we can store properties into it.
+
+				// This does nothing if the file is not allowed to have PNG tags, that is, if it's not a PNG file.
+				// If it is, we want this tag to exist, since otherwise tools like exiftool (and hence old versions
+				// of this library and its clients) won't see our copyright notice and creator, at least.
+				file.GetTag(TagTypes.Png, true);
+				// If we know where the image came from, copy as much metadata as we can to the new image.
+				if (copyAllMetaDataFromOriginal && _originalTaglibMetadata != null)
+				{
+					file.CopyFrom(_originalTaglibMetadata);
+				}
+				SaveInImageTag(file.ImageTag);
+				RetryUtility.Retry(() => file.Save(), memo: $"Metadata.Write({path}) - saving TagLib.Image.File");
+				//as of right now, we are clean with respect to what is on disk, no need to save.
+				HasChanges = false;
 			}
-			SaveInImageTag(file.ImageTag);
-			RetryUtility.Retry(() => file.Save(), memo: $"Metadata.Write({path}) - saving TagLib.Image.File");
-			//as of right now, we are clean with respect to what is on disk, no need to save.
-			HasChanges = false;
 		}
 
 		/// <summary>
@@ -612,27 +671,34 @@ namespace SIL.Core.ClearShare
 		/// </remarks>
 		internal void SaveInImageTag(ImageTag tagMain)
 		{
-			// Taglib doesn't care what namespace prefix is used for these namespaces (which it doesn't already know about).
-			// It will happily assign them to be ns1 and ns2 and successfully read back the data.
-			// However, exiftool and its clients, including older versions of this library, will only recognize the
-			// cc data if the namespace has the 'standard' abbreviation.
-			// I'm not sure whether the pdf one is necessary, but minimally it makes the xmp more readable and less unusual.
-			// This is a bit of a kludge...I'm using a method that TagLib says is only meant for unit tests,
-			// and modifying what is meant to be an internal data structure, bypassing the (internal) method normally used
-			// to initialize it. But it gets the job done without requiring us to fork taglib.
-			XmpTag.NamespacePrefixes["http://creativecommons.org/ns#"] = "cc";
-			XmpTag.NamespacePrefixes["http://ns.adobe.com/pdf/1.3/"] = "pdf";
+			// See TagLibLock: the writes to the static XmpTag.NamespacePrefixes dictionary just below
+			// (and any rendering of the tag afterwards) must be serialized against all other TagLib
+			// access. The callers within this class already hold the lock; taking it again here is
+			// harmless (the lock is reentrant) and also protects direct callers, e.g. unit tests.
+			lock (TagLibLock)
+			{
+				// Taglib doesn't care what namespace prefix is used for these namespaces (which it doesn't already know about).
+				// It will happily assign them to be ns1 and ns2 and successfully read back the data.
+				// However, exiftool and its clients, including older versions of this library, will only recognize the
+				// cc data if the namespace has the 'standard' abbreviation.
+				// I'm not sure whether the pdf one is necessary, but minimally it makes the xmp more readable and less unusual.
+				// This is a bit of a kludge...I'm using a method that TagLib says is only meant for unit tests,
+				// and modifying what is meant to be an internal data structure, bypassing the (internal) method normally used
+				// to initialize it. But it gets the job done without requiring us to fork taglib.
+				XmpTag.NamespacePrefixes["http://creativecommons.org/ns#"] = "cc";
+				XmpTag.NamespacePrefixes["http://ns.adobe.com/pdf/1.3/"] = "pdf";
 
-			XmpTag xmp = tagMain as XmpTag;
-			if (xmp == null)
-				xmp = ((CombinedImageTag)tagMain).Xmp;
-			SetCopyright(tagMain, CopyrightNotice);
-			tagMain.Creator = Creator;
-			AddOrModify(xmp, kNsCollections, "CollectionURI", CollectionUri);
-			AddOrModify(xmp, kNsCollections, "CollectionName", CollectionName);
-			AddOrModify(xmp, kNsCc, "attributionURL", AttributionUrl);
-			AddOrModify(xmp, kNsCc, "license", License?.Url);
-			SetRights(xmp, License?.RightsStatement);
+				XmpTag xmp = tagMain as XmpTag;
+				if (xmp == null)
+					xmp = ((CombinedImageTag)tagMain).Xmp;
+				SetCopyright(tagMain, CopyrightNotice);
+				tagMain.Creator = Creator;
+				AddOrModify(xmp, kNsCollections, "CollectionURI", CollectionUri);
+				AddOrModify(xmp, kNsCollections, "CollectionName", CollectionName);
+				AddOrModify(xmp, kNsCc, "attributionURL", AttributionUrl);
+				AddOrModify(xmp, kNsCc, "license", License?.Url);
+				SetRights(xmp, License?.RightsStatement);
+			}
 		}
 
 		/// <summary>
@@ -734,9 +800,14 @@ namespace SIL.Core.ClearShare
 		/// <example>SaveXmplFile("c:\dir\metadata.xmp")</example>
 		public void SaveXmpFile(string path)
 		{
-			var tag = new XmpTag();
-			SaveInImageTag(tag);
-			RobustFile.WriteAllText(path, tag.Render(), Encoding.UTF8);
+			// See TagLibLock: tag.Render() mutates the static XmpTag.NamespacePrefixes dictionary,
+			// and SaveInImageTag mutates it too, so this must be serialized against all TagLib access.
+			lock (TagLibLock)
+			{
+				var tag = new XmpTag();
+				SaveInImageTag(tag);
+				RobustFile.WriteAllText(path, tag.Render(), Encoding.UTF8);
+			}
 		}
 
 		/// <summary>
@@ -748,8 +819,13 @@ namespace SIL.Core.ClearShare
 			if (!RobustFile.Exists(path))
 				throw new FileNotFoundException(path);
 
-			var xmp = new XmpTag(RobustFile.ReadAllText(path, Encoding.UTF8), null);
-			LoadProperties(xmp);
+			// See TagLibLock: parsing the XMP (new XmpTag(...)) mutates the shared static NameTable,
+			// so it must be serialized against all other TagLib access.
+			lock (TagLibLock)
+			{
+				var xmp = new XmpTag(RobustFile.ReadAllText(path, Encoding.UTF8), null);
+				LoadProperties(xmp);
+			}
 		}
 
 		/// <summary>
