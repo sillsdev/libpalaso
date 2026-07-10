@@ -145,6 +145,12 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				if (value == null)
 					return;
 
+				_savedOriginalImage?.Dispose();
+				_savedOriginalImage = null;
+				_croppingImage?.Dispose();
+				_croppingImage = null;
+				_originalFormat = value.Image.RawFormat;
+
 				//other code changes the image of this palaso image, at which time the PI disposes of its copy,
 				//so we better keep our own.
 
@@ -153,7 +159,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				value.Image.Save(_savedOriginalImage.Path, ImageFormat.Png);
 
 				// make a reasonable sized copy to crop
-				if ((value.Image.Width > 1000) || (value.Image.Width > 1000))
+				if ((value.Image.Width > 1000) || (value.Image.Height > 1000))
 				{
 					_croppingImage = CreateCroppingImage(value.Image.Height, value.Image.Width);
 
@@ -267,6 +273,8 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 		private void CalculateSourceImageArea()
 		{
+			if (_croppingImage == null)
+				return;
 			float imageToCanvaseScaleFactor = GetImageToCanvasScaleFactor(_croppingImage);
 			_sourceImageArea = new Rectangle(GripThickness, GripThickness,
 											 (int)(_croppingImage.Width*imageToCanvaseScaleFactor),
@@ -424,8 +432,9 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 						using (var stream = new MemoryStream())
 						{
 							cropped.Save(stream, ImageFormat.Jpeg);
+							stream.Position = 0;
 							var oldCropped = cropped;
-							cropped = System.Drawing.Image.FromStream(stream) as Bitmap;
+							cropped = (Bitmap)System.Drawing.Image.FromStream(stream);
 							oldCropped.Dispose();
 							Require.That(ImageFormat.Jpeg.Guid == cropped.RawFormat.Guid, "lost jpeg formatting");
 						}
@@ -449,7 +458,6 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 			}
 			else
 			{
-				_originalFormat = image.Image.RawFormat;
 				Image = image;
 			}
 		}
@@ -481,6 +489,8 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 					components.Dispose();
 					components = null;
 				}
+
+				Application.Idle -= Application_Idle;
 
 				try
 				{
