@@ -68,6 +68,11 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 						Assert.IsNotNull(result);
 						Assert.AreEqual(ImageFormat.Jpeg.Guid, result.RawFormat.Guid);
 						Assert.Greater(result.Width, 0);
+						// Re-encode to force GDI+ to re-read the pixel data. The JPEG path returns an
+						// image built from a MemoryStream that GetCroppedImage disposes, so this guards
+						// against that disposal corrupting the returned bitmap.
+						using (var ms = new MemoryStream())
+							Assert.DoesNotThrow(() => result.Save(ms, ImageFormat.Jpeg));
 					}
 				}
 			}
