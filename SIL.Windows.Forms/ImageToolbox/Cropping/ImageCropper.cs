@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
-using SIL.Code;
 using SIL.IO;
 using SIL.Reporting;
 
@@ -30,7 +29,6 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 		private Point _startOfDrag = default(Point);
 
 		//we will be cropping the image, so we need to keep the original lest we be cropping the crop, so to speak
-		private ImageFormat _originalFormat;
 		private TempFile _savedOriginalImage;
 		private Image _croppingImage;
 
@@ -149,7 +147,6 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				_savedOriginalImage = null;
 				_croppingImage?.Dispose();
 				_croppingImage = null;
-				_originalFormat = value.Image.RawFormat;
 
 				//other code changes the image of this palaso image, at which time the PI disposes of its copy,
 				//so we better keep our own.
@@ -424,31 +421,18 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 						selectionHeight = originalImage.Height - top;
 					var selection = new Rectangle(left, top, selectionWidth, selectionHeight);
 
-					var cropped = originalImage.Clone(selection, originalImage.PixelFormat); //do the actual cropping
-
-					if (_originalFormat.Guid == ImageFormat.Jpeg.Guid)
+					using (var cropped = originalImage.Clone(selection, originalImage.PixelFormat)) //do the actual cropping
 					{
-						//We've sadly lost our jpeg formatting, so now we encode a new image in jpeg
-						var stream = new MemoryStream();
-						try
-						{
-							cropped.Save(stream, ImageFormat.Jpeg);
-							stream.Position = 0;
-							// Do not dispose stream on success: GDI+ bitmaps reference the stream for lazy
-							// decoding. The stream is collected when the returned Bitmap is disposed.
-							var oldCropped = cropped;
-							cropped = (Bitmap)System.Drawing.Image.FromStream(stream);
-							oldCropped.Dispose();
-						}
-						catch
-						{
-							stream.Dispose();
-							cropped.Dispose();
-							throw;
-						}
-						Require.That(ImageFormat.Jpeg.Guid == cropped.RawFormat.Guid, "lost jpeg formatting");
+						// Return a stand-alone copy. We used to round-trip the crop through a MemoryStream
+						// to restore the JPEG RawFormat, but that stream had to outlive the returned bitmap
+						// (GDI+ decodes lazily), so it could not be disposed and leaked. Cloning from the
+						// file-backed originalImage likewise keeps a lazy reference to its source, which can
+						// leave the caller's temp file locked when the crop is later saved (as ImageCropper's
+						// own Image setter does). Copying into a fresh Bitmap severs both ties. Nothing reads
+						// the returned bitmap's RawFormat -- PalasoImage.Save picks the format from the file
+						// extension -- so the resulting MemoryBmp format is fine.
+						return new Bitmap(cropped);
 					}
-					return cropped;
 				}
 			}
 			catch (Exception e)

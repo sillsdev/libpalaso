@@ -48,7 +48,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 		}
 
 		[Test]
-		public void GetCroppedImage_JpegImage_ReturnsJpegBitmapUsableAfterReturn()
+		public void GetCroppedImage_JpegImage_ReturnsUsableBitmap()
 		{
 			using (var tempFile = TempFile.WithExtension(".jpg"))
 			{
@@ -61,30 +61,25 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					cropper.Size = new Size(400, 300);
 					cropper.SetImage(palasoImage);
 
-					Image result;
-					// GetCroppedImage returns a Bitmap backed by a MemoryStream for JPEG.
-					// The stream must still be alive after the method returns.
-					result = cropper.GetCroppedImage();
-					try
+					using (var result = cropper.GetCroppedImage())
 					{
 						Assert.IsNotNull(result);
-						Assert.AreEqual(ImageFormat.Jpeg.Guid, result.RawFormat.Guid);
-						// Re-encode to force GDI+ to re-read the pixel data from the backing stream.
+						// The crop is a stand-alone in-memory bitmap, not backed by a file or stream, so
+						// it reports MemoryBmp format even for a JPEG source; the caller chooses the actual
+						// save format via the file extension.
+						Assert.AreEqual(ImageFormat.MemoryBmp.Guid, result.RawFormat.Guid);
+						// Re-encode to force GDI+ to re-read the pixel data from the backing store.
 						using (var ms = new MemoryStream())
 							Assert.DoesNotThrow(() => result.Save(ms, ImageFormat.Png));
-					}
-					finally
-					{
-						result?.Dispose();
 					}
 				}
 			}
 		}
+
 		[Test]
-		public void GetCroppedImage_JpegImage_SetViaPropertyDirectly_ReturnsJpegBitmap()
+		public void GetCroppedImage_JpegImage_SetViaPropertyDirectly_ReturnsUsableBitmap()
 		{
-			// Setting Image directly (not via SetImage) must still initialize _originalFormat so
-			// GetCroppedImage does not throw NullReferenceException on JPEG re-encoding.
+			// Setting Image directly (not via SetImage) must still yield a usable crop.
 			using (var tempFile = TempFile.WithExtension(".jpg"))
 			{
 				using (var bmp = new Bitmap(100, 80))
@@ -99,15 +94,16 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					using (var result = cropper.GetCroppedImage())
 					{
 						Assert.IsNotNull(result);
-						Assert.AreEqual(ImageFormat.Jpeg.Guid, result.RawFormat.Guid);
 						Assert.Greater(result.Width, 0);
+						using (var ms = new MemoryStream())
+							Assert.DoesNotThrow(() => result.Save(ms, ImageFormat.Png));
 					}
 				}
 			}
 		}
 
 		[Test]
-		public void SetImage_Reassign_UpdatesFormatAndDoesNotThrow()
+		public void SetImage_Reassign_DoesNotThrow()
 		{
 			using (var tempFile1 = TempFile.WithExtension(".png"))
 			using (var tempFile2 = TempFile.WithExtension(".jpg"))
@@ -129,7 +125,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					using (var result = cropper.GetCroppedImage())
 					{
 						Assert.IsNotNull(result);
-						Assert.AreEqual(ImageFormat.Jpeg.Guid, result.RawFormat.Guid);
+						Assert.Greater(result.Width, 0);
 					}
 				}
 			}
@@ -138,9 +134,10 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 		[Test]
 		public void SetImage_ReCropPreviouslyCroppedJpeg_DoesNotThrow()
 		{
-			// GetImage() returns a JPEG Bitmap backed by a MemoryStream; feeding that result
-			// back into a new cropper re-saves it in the Image setter (value.Image.Save), which
-			// crashed once the backing stream had been disposed.
+			// Regression test for issue #1275: cropping a JPEG, then feeding the result back into a
+			// new cropper (which re-saves it in the Image setter via value.Image.Save) crashed when
+			// the cropped bitmap was backed by a disposed stream. The crop is now a stand-alone
+			// bitmap, so the round-trip must not throw.
 			using (var tempFile = TempFile.WithExtension(".jpg"))
 			{
 				using (var bmp = new Bitmap(1200, 900))
