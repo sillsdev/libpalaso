@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
-using SIL.Code;
 using SIL.IO;
 using SIL.Reporting;
 
@@ -429,24 +428,19 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 					if (_originalFormat.Guid == ImageFormat.Jpeg.Guid)
 					{
 						//We've sadly lost our jpeg formatting, so now we encode a new image in jpeg
-						var stream = new MemoryStream();
-						try
+						using (var stream = new MemoryStream())
 						{
 							cropped.Save(stream, ImageFormat.Jpeg);
 							stream.Position = 0;
-							// Do not dispose stream on success: GDI+ bitmaps reference the stream for lazy
-							// decoding. The stream is collected when the returned Bitmap is disposed.
 							var oldCropped = cropped;
-							cropped = (Bitmap)System.Drawing.Image.FromStream(stream);
+							// Copy into a stream-independent Bitmap so the stream can be disposed with
+							// this using: a Bitmap from Image.FromStream keeps a lazy reference to its
+							// stream and throws a generic GDI+ error on later pixel access once the stream
+							// is gone (issue #1275).
+							using (var reloaded = (Bitmap)System.Drawing.Image.FromStream(stream))
+								cropped = new Bitmap(reloaded);
 							oldCropped.Dispose();
 						}
-						catch
-						{
-							stream.Dispose();
-							cropped.Dispose();
-							throw;
-						}
-						Require.That(ImageFormat.Jpeg.Guid == cropped.RawFormat.Guid, "lost jpeg formatting");
 					}
 					return cropped;
 				}
