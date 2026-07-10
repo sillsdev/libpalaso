@@ -44,7 +44,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Updated ImageToolbox UI to consistently use "image" (not "picture").
 - [SIL.Windows.Forms.Keyboarding] Removed Timer-based deferred IME conversion status restore from WindowsKeyboardSwitchingAdapter, which disrupted active Chinese Pinyin IME compositions (LT-22442). Added diagnostic tracing for keyboard switching and IME state.
 - [SIL.DictionaryServices] Fix memory leak in LiftWriter
-- [SIL.Windows.Forms] Fixed ImageCropper crash when switching between Crop and Choose tabs: `Application.Idle` handler was never unsubscribed, causing it to fire on a disposed object
+- [SIL.Windows.Forms] ImageCropper now unsubscribes from `Application.Idle` when disposed, fixing a handler leak that could fire on a disposed cropper
 - [SIL.Windows.Forms] Fixed ImageCropper `Image` setter leaking the previous temp file and cropping image on re-set; fields are now nulled after disposal so a mid-setter failure does not leave disposed-but-non-null references
 - [SIL.Windows.Forms] Fixed ImageCropper not downscaling tall images before cropping (height condition was checking width)
 - [SIL.Windows.Forms] Fixed ImageCropper `GetCroppedImage` throwing `NullReferenceException` when `Image` property is set directly rather than via `SetImage`
