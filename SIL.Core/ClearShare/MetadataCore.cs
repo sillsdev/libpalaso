@@ -69,6 +69,12 @@ namespace SIL.Core.ClearShare
 		/// To prevent this we serialize all access to TagLib (for image metadata) process-wide
 		/// behind this single lock. It is protected static so the WinForms Metadata subclass, which
 		/// lives in a different assembly, shares the very same lock object.
+		///
+		/// Note: some methods below hold this lock across RetryUtility.Retry(...). That is
+		/// deliberate -- it keeps each metadata operation obviously atomic. The only cost is that a
+		/// transient IO retry (e.g. a file briefly locked by antivirus) can hold the lock for the
+		/// duration of its back-off, briefly serializing other metadata threads; we accept that in
+		/// exchange for simple, provably-correct locking.
 		/// </summary>
 		protected static readonly object TagLibLock = new object();
 
@@ -217,8 +223,14 @@ namespace SIL.Core.ClearShare
 		/// </summary>
 		/// <remarks>
 		/// Creates a Winforms-free type LicenseInfo object.
-		/// 
+		///
 		/// Internal to allow unit testing.
+		///
+		/// Unlike the file-based entry points, this overload only reads already-parsed,
+		/// instance-local data from <paramref name="tagMain"/>; it does not touch XmpTag's shared
+		/// static state, so it does not itself take <see cref="TagLibLock"/>. Its in-class callers
+		/// (LoadProperties(string), LoadXmpFile) already hold the lock; direct callers (unit tests)
+		/// do not need it.
 		/// </remarks>
 		internal void LoadProperties(ImageTag tagMain)
 		{
@@ -503,6 +515,11 @@ namespace SIL.Core.ClearShare
 		/// </summary>
 		public void NormalizeOrientation()
 		{
+			// This deliberately does not take TagLibLock. It only touches this instance's own
+			// _originalTaglibMetadata (its IFD orientation tag), not the shared static XmpTag state
+			// (NameTable / NamespacePrefixes) the lock exists to protect. Per-instance TagLib
+			// objects are not shared across threads (callers do not share a MetadataCore between
+			// threads), so serializing this would be over-broad without preventing any real race.
 			if (_originalTaglibMetadata == null)
 				return;
 			var ifdTag = _originalTaglibMetadata.GetTag(TagTypes.TiffIFD) as IFDTag;

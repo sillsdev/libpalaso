@@ -34,9 +34,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Installer] Added new package for common installer components. Initially, this includes a Privacy dialog and code to access the registry entries so users can opt out of analytics data collection.
 - [SIL.Core] Added PathUtilities.ParentDirectories extension method.
 - [SIL.Core] Added FileLocationUtilities.DistFilesFolderPath property.
+- [SIL.Core.Clearshare] Added `MetadataCore.RunUnderTagLibLock(Action)` and `RunUnderTagLibLock<T>(Func<T>)` so callers that use TagLib directly can serialize that access against ClearShare's own metadata reading and writing.
 
 ### Fixed
 
+- [SIL.Core.Clearshare and SIL.Windows.Forms.Clearshare] Made image-metadata reading and writing thread-safe. TagLib#'s `XmpTag` keeps mutable static state (a shared `NameTable` and the `NamespacePrefixes` dictionary) with no internal locking; concurrent metadata operations could corrupt it and then make every subsequent metadata call throw "Operations that change non-concurrent collections must have exclusive access." for the life of the process. All TagLib access is now serialized behind a single process-wide lock.
 - [SIL.Windows.Forms] Fixed `Interop.WIA.dll` deployment to provide the AnyCPU build to 64-bit (x64/AnyCPU) consumers instead of the 32-bit-only build.
 - [SIL.Core.ClearShare] Fixed `MetadataCore.GetSummaryParagraph` appending the Creator line twice and conditionally appending `RightsStatement` twice when using `CustomLicenseInfo`.
 - [SIL.Core] Fixed FontAnalytics exception handling to preserve original stack traces in debug mode.
