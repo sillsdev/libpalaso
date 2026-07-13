@@ -423,14 +423,9 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 					using (var cropped = originalImage.Clone(selection, originalImage.PixelFormat)) //do the actual cropping
 					{
-						// Return a stand-alone copy. We used to round-trip the crop through a MemoryStream
-						// to restore the JPEG RawFormat, but that stream had to outlive the returned bitmap
-						// (GDI+ decodes lazily), so it could not be disposed and leaked. Cloning from the
-						// file-backed originalImage likewise keeps a lazy reference to its source, which can
-						// leave the caller's temp file locked when the crop is later saved (as ImageCropper's
-						// own Image setter does). Copying into a fresh Bitmap severs both ties. Nothing reads
-						// the returned bitmap's RawFormat -- PalasoImage.Save picks the format from the file
-						// extension -- so the resulting MemoryBmp format is fine.
+						// Copy into a fresh, stand-alone Bitmap so the result has no lazy reference to a
+						// stream or file we'd otherwise need to keep open. The caller picks the save
+						// format via file extension, so the resulting MemoryBmp format is fine.
 						return new Bitmap(cropped);
 					}
 				}
