@@ -390,16 +390,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 			try
 			{
-				//jpeg = b96b3c  *AE* -0728-11d3-9d7b-0000f81ef32e
-				//bitmap = b96b3c  *AA* -0728-11d3-9d7b-0000f81ef32e
-
-				//NB: this worked for tiff and png, but would crash with Out Of Memory for jpegs.
-				//This may be because I closed the stream? THe doc says you have to keep that stream open.
-				//Also, note that this method, too, lost our jpeg encoding:
-				//          return bmp.Clone(selection, _image.PixelFormat);
-				//So now, I first copy it, then clone with the bounds of our crop:
-
-				using (var originalImage = new Bitmap(_savedOriginalImage.Path)) //**** here we lose the jpeg rawimageformat, if it's a jpeg. Grrr.
+				using (var originalImage = new Bitmap(_savedOriginalImage.Path))
 				{
 					double z = 1.0 / GetImageToCanvasScaleFactor(originalImage);
 
