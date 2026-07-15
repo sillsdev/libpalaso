@@ -153,7 +153,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				value.Image.Save(_savedOriginalImage.Path, ImageFormat.Png);
 
 				// make a reasonable sized copy to crop
-				if ((value.Image.Width > 1000) || (value.Image.Width > 1000))
+				if ((value.Image.Width > 1000) || (value.Image.Height > 1000))
 				{
 					_croppingImage = CreateCroppingImage(value.Image.Height, value.Image.Width);
 
