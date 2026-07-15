@@ -176,8 +176,7 @@ namespace SIL.Tests.ClearShare
 			using (var mediaFile = new Image<Rgba32>(10, 10))
 			{
 				using (var folder =
-				       new TemporaryFolder(
-					       "LibPalaso exiftool Test with non-áscii chárácters"))
+					new TemporaryFolder("LibPalaso exiftool Test with non-áscii chárácters"))
 				{
 					var path = folder.Combine("test.png");
 					mediaFile.Save(path, new PngEncoder());
@@ -543,6 +542,32 @@ namespace SIL.Tests.ClearShare
 			VerifyMetadataUnchangedSavingToTag(meta2, tag, "Verify custom license again: ");
 			VerifyMetadataUnchangedSavingToTag(meta1, tag, "Verify CC license again: ");
 			VerifyMetadataUnchangedSavingToTag(meta3, tag, "Verify null license again: ");
+		}
+
+		[Test]
+		public void GetSummaryParagraph_EachComponentAppearsExactlyOnce()
+		{
+			var m = new MetadataCore
+			{
+				Creator = "Sméagol",
+				CopyrightNotice = "Copyright © 2026 Lex Tools",
+				CollectionName = "My Precious",
+				CollectionUri = "abc://1.2.3",
+				License = new CustomLicenseInfo { RightsStatement = "It's mine!" }
+			};
+			var summary = m.GetSummaryParagraph(new[] { "en" }, out _);
+			foreach (var component in new[]
+			{
+				"Sméagol",
+				"Copyright © 2026 Lex Tools",
+				"My Precious",
+				"abc://1.2.3",
+				"It's mine!"
+			})
+			{
+				var count = summary.Split(new[] { component }, StringSplitOptions.None).Length - 1;
+				Assert.AreEqual(1, count, $"Expected exactly one occurrence of \"{component}\" but found {count}");
+			}
 		}
 
 		private void VerifyMetadataUnchangedSavingToTag(MetadataCore oldMetadata, XmpTag tag, string header)

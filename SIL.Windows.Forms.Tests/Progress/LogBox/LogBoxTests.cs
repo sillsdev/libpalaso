@@ -9,7 +9,7 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 	{
 		private Windows.Forms.Progress.LogBox progress;
 		[Test]
-		[Category("KnownMonoIssue")] // this test hangs on TeamCity for Linux
+		[Category("SkipOnTeamCity")] // this test sometimes hangs on TeamCity
 		public void ShowLogBox()
 		{
 			Console.WriteLine("Showing LogBox");

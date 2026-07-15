@@ -29,7 +29,7 @@ However, existing platform checks (such as `Platform.IsMono` or `#if __MonoCS__`
         - `### Removed` - for features that have been completely removed
         - `### Security` - for security-related fixes or improvements
     - If the subsections do not exist under `[Unreleased]`, create them as needed.
-    - Format: `- **[Scope]** Description of the change.` (where Scope is the affected library/namespace)
+    - Format: `- [Scope] Description of the change.` (where Scope is the affected library/namespace)
     - For breaking changes, prefix with `BREAKING CHANGE:` in the description.
 
 - **Commit Message Format:** Follow semantic versioning guidelines in commit messages:
