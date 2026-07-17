@@ -37,7 +37,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core.Clearshare] Added `MetadataCore.RunUnderTagLibLock(Action)` and `RunUnderTagLibLock<T>(Func<T>)` so callers that use TagLib directly can serialize that access against ClearShare's own metadata reading and writing.
 
 ### Fixed
-
 - [SIL.Core.Clearshare and SIL.Windows.Forms.Clearshare] Made image-metadata reading and writing thread-safe. TagLib#'s `XmpTag` keeps mutable static state (a shared `NameTable` and the `NamespacePrefixes` dictionary) with no internal locking; concurrent metadata operations could corrupt it and then make every subsequent metadata call throw "Operations that change non-concurrent collections must have exclusive access." for the life of the process. All TagLib access is now serialized behind a single process-wide lock.
 - [SIL.Windows.Forms] Fixed `Interop.WIA.dll` deployment to provide the AnyCPU build to 64-bit (x64/AnyCPU) consumers instead of the 32-bit-only build.
 - [SIL.Core.ClearShare] Fixed `MetadataCore.GetSummaryParagraph` appending the Creator line twice and conditionally appending `RightsStatement` twice when using `CustomLicenseInfo`.
@@ -56,6 +55,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [build] Fixed the update-language-data workflow so the generated pull request commit message shows the actual update date instead of a literal `$(date ...)` string.
 - [SIL.Archiving] Fixed ArchiveAccessProtocol.GetDocumentationUri failing to create a missing documentation file because the resource lookup stripped the file extension and no longer matched the embedded resource name.
 - [SIL.Windows.Forms.Archiving] Fixed formatting of message in ArchivingDlg so that the name of the auxiliary archive upload program (e.g., "RAMP") is displayed.
+- [SIL.Core] `GlobalMutex.Lock()` (Windows) now recovers from `AbandonedMutexException` instead of propagating it. Per the .NET Mutex contract, the calling thread owns the mutex despite the exception; the prior behavior crashed callers (FieldWorks LT-21834 and a related shutdown crash) with no diagnostic gain. A `Trace.TraceWarning` is emitted on recovery.
 
 ### Changed
 
