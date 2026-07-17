@@ -34,7 +34,10 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 			}
 		}
 
+		// Garbage collection is non-deterministic, so this test may be flaky.
+		// If it turns out to be a problem, drop this test and its supporting method.
 		[Test]
+
 		public void Dispose_AllowsGarbageCollection()
 		{
 			// The ImageCropper subscribes to the static Application.Idle event in its
