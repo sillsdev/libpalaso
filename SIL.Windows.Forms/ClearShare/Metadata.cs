@@ -71,8 +71,13 @@ namespace SIL.Windows.Forms.ClearShare
 			if (!RobustFile.Exists(path))
 				throw new FileNotFoundException(path);
 
-			var xmp = new XmpTag(RobustFile.ReadAllText(path, Encoding.UTF8), null);
-			LoadProperties(xmp);
+			// See MetadataCore.TagLibLock: parsing the XMP (new XmpTag(...)) mutates the shared
+			// static NameTable, so it must be serialized against all other TagLib access.
+			lock (TagLibLock)
+			{
+				var xmp = new XmpTag(RobustFile.ReadAllText(path, Encoding.UTF8), null);
+				LoadProperties(xmp);
+			}
 		}
 
 		/// <summary>
@@ -82,45 +87,49 @@ namespace SIL.Windows.Forms.ClearShare
 		/// <param name="destinationMetadata"></param>
 		private void LoadProperties(string path)
 		{
-			try
+			// See MetadataCore.TagLibLock: all TagLib access for image metadata must be serialized.
+			lock (TagLibLock)
 			{
-				ExceptionCaughtWhileLoading = null;
-				_originalTaglibMetadata = RetryUtility.Retry(() =>
-				  TagLib.File.Create(path) as TagLib.Image.File,
-				  memo: $"LoadProperties({path})");
+				try
+				{
+					ExceptionCaughtWhileLoading = null;
+					_originalTaglibMetadata = RetryUtility.Retry(() =>
+					  TagLib.File.Create(path) as TagLib.Image.File,
+					  memo: $"LoadProperties({path})");
+				}
+				catch (TagLib.UnsupportedFormatException ex)
+				{
+					// TagLib throws this exception when the file doesn't have any metadata, sigh.
+					// So since I don't see a way to differentiate between that case and the case
+					// where something really is wrong, we're just gonna have to swallow this,
+					// even in DEBUG mode, because else a lot of simple image tests fail
+					ExceptionCaughtWhileLoading = ex;
+					return;
+				}
+				catch (NotImplementedException ex)
+				{
+					// TagLib throws this exception if it encounters (private?) metadata that it doesn't
+					// understand.  This prevents us from even looking at images that have such metadata,
+					// which seems unreasonable.  Other packages like MetadataExtractor don't have this
+					// problem, but have other limitations.
+					// See https://issues.bloomlibrary.org/youtrack/issue/BL-8706 for a user complaint.
+					System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
+					ExceptionCaughtWhileLoading = ex;
+					return;
+				}
+				catch (ArgumentOutOfRangeException ex)
+				{
+					// TagLib can throw this if it can't read some part of the metadata.  This
+					// prevents us from even looking at images that have such metadata, which
+					// seems unreasonable. (TagLib doesn't fully understand IPTC profiles, for
+					// example, which can lead to this exception.)
+					// See https://issues.bloomlibrary.org/youtrack/issue/BL-11933 for a user complaint.
+					System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
+					ExceptionCaughtWhileLoading = ex;
+					return;
+				}
+				LoadProperties(_originalTaglibMetadata.ImageTag);
 			}
-			catch (TagLib.UnsupportedFormatException ex)
-			{
-				// TagLib throws this exception when the file doesn't have any metadata, sigh.
-				// So since I don't see a way to differentiate between that case and the case
-				// where something really is wrong, we're just gonna have to swallow this,
-				// even in DEBUG mode, because else a lot of simple image tests fail
-				ExceptionCaughtWhileLoading = ex;
-				return;
-			}
-			catch (NotImplementedException ex)
-			{
-				// TagLib throws this exception if it encounters (private?) metadata that it doesn't
-				// understand.  This prevents us from even looking at images that have such metadata,
-				// which seems unreasonable.  Other packages like MetadataExtractor don't have this
-				// problem, but have other limitations.
-				// See https://issues.bloomlibrary.org/youtrack/issue/BL-8706 for a user complaint.
-				System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
-				ExceptionCaughtWhileLoading = ex;
-				return;
-			}
-			catch (ArgumentOutOfRangeException ex)
-			{
-				// TagLib can throw this if it can't read some part of the metadata.  This
-				// prevents us from even looking at images that have such metadata, which
-				// seems unreasonable. (TagLib doesn't fully understand IPTC profiles, for
-				// example, which can lead to this exception.)
-				// See https://issues.bloomlibrary.org/youtrack/issue/BL-11933 for a user complaint.
-				System.Diagnostics.Debug.WriteLine($"TagLib exception: {ex}");
-				ExceptionCaughtWhileLoading = ex;
-				return;
-			}
-			LoadProperties(_originalTaglibMetadata.ImageTag);
 		}
 
 		/// <summary>
