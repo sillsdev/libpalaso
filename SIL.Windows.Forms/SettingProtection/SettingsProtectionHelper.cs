@@ -23,6 +23,7 @@ namespace SIL.Windows.Forms.SettingProtection
 	{
 		private readonly HashSet<Component> _componentsUnderSettingsProtection = new HashSet<Component>();
 		private readonly HashSet<Component> _alwaysHiddenComponents = new HashSet<Component>();
+		private readonly bool _isRuntime;
 		private bool _isDisposed;
 
 		public bool CanExtend(object extendee)
@@ -35,7 +36,8 @@ namespace SIL.Windows.Forms.SettingProtection
 		{
 			InitializeComponent();
 
-			if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
+			_isRuntime = LicenseManager.UsageMode != LicenseUsageMode.Designtime;
+			if (_isRuntime)
 			{
 				container?.Add(this);
 				_checkForCtrlKeyTimer.Enabled = true;
@@ -109,14 +111,18 @@ namespace SIL.Windows.Forms.SettingProtection
 				{
 					_alwaysHiddenComponents.Add(controlOrToolStripItem);
 					_componentsUnderSettingsProtection.Remove(controlOrToolStripItem);
+					// Hide now rather than on the next tick, except at design time, where the
+					// component must stay visible on the design surface.
+					if (_isRuntime)
+						ShowOrHideComponent(controlOrToolStripItem, false);
 				}
 				else
 				{
 					_componentsUnderSettingsProtection.Add(controlOrToolStripItem);
 					_alwaysHiddenComponents.Remove(controlOrToolStripItem);
+					// No need to call ShowOrHideComponent explicitly. It will get called when the
+					// timer fires.
 				}
-				// No need to call ShowOrHideComponent explicitly. It will get called when the
-				// timer fires.
 			}
 			else
 			{
@@ -146,10 +152,17 @@ namespace SIL.Windows.Forms.SettingProtection
 		public void SetSettingsProtection(Control c, bool isProtected) =>
 			SetSettingsProtectionInternal(c, isProtected);
 
-		/// <param name="keepHidden">When <c>true</c> and <paramref name="isProtected"/> is <c>true</c>,
-		/// the control is always hidden regardless of password override. Has no effect when
-		/// <paramref name="isProtected"/> is <c>false</c> — the component is shown and removed from
-		/// all tracking sets.</param>
+		/// <summary>
+		/// Makes a control protected (i.e., managed) or not, optionally keeping it hidden even
+		/// when the other protected controls are revealed.
+		/// </summary>
+		/// <param name="c">The control to protect or stop protecting</param>
+		/// <param name="isProtected">Whether the control is under settings protection</param>
+		/// <param name="keepHidden">When <c>true</c> and <paramref name="isProtected"/> is
+		/// <c>true</c>, the control is hidden and stays hidden even while the user holds down
+		/// Ctrl+Shift to reveal the other protected controls. This has no effect when
+		/// <paramref name="isProtected"/> is <c>false</c>.</param>
+		/// <exception cref="ArgumentNullException">c was null</exception>
 		[PublicAPI]
 		public void SetSettingsProtection(Control c, bool isProtected, bool keepHidden) =>
 			SetSettingsProtectionInternal(c, isProtected, keepHidden);
@@ -206,10 +219,17 @@ namespace SIL.Windows.Forms.SettingProtection
 		public void SetSettingsProtection(ToolStripItem toolStripItem, bool isProtected) =>
 			SetSettingsProtectionInternal(toolStripItem, isProtected);
 
-		/// <param name="keepHidden">When <c>true</c> and <paramref name="isProtected"/> is <c>true</c>,
-		/// the item is always hidden regardless of password override. Has no effect when
-		/// <paramref name="isProtected"/> is <c>false</c> — the component is shown and removed from
-		/// all tracking sets.</param>
+		/// <summary>
+		/// Allows you to dynamically make a ToolStripItem protected (i.e., managed) or not,
+		/// optionally keeping it hidden even when the other protected items are revealed
+		/// </summary>
+		/// <param name="toolStripItem">The item to protect or stop protecting</param>
+		/// <param name="isProtected">Whether the item is under settings protection</param>
+		/// <param name="keepHidden">When <c>true</c> and <paramref name="isProtected"/> is
+		/// <c>true</c>, the item is hidden and stays hidden even while the user holds down
+		/// Ctrl+Shift to reveal the other protected items. This has no effect when
+		/// <paramref name="isProtected"/> is <c>false</c>.</param>
+		/// <exception cref="ArgumentNullException">toolStripItem was null</exception>
 		[PublicAPI]
 		public void SetSettingsProtection(ToolStripItem toolStripItem, bool isProtected, bool keepHidden) =>
 			SetSettingsProtectionInternal(toolStripItem, isProtected, keepHidden);

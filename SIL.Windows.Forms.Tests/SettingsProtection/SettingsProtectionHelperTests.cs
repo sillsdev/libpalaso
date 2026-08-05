@@ -93,6 +93,20 @@ namespace SIL.Windows.Forms.Tests.SettingsProtection
 		}
 
 		[Test]
+		public void SetSettingsProtection_AlwaysHiddenControl_IsHiddenWithoutWaitingForTimer()
+		{
+			SettingsProtectionSingleton.Settings.NormallyHidden = false;
+			using (var control = new Button { Visible = true })
+			{
+				_helper.SetSettingsProtection(control, true, keepHidden: true);
+
+				// Deliberately no UpdateDisplay call: an always-hidden control must not stay
+				// visible until the timer next fires.
+				Assert.That(control.Visible, Is.False);
+			}
+		}
+
+		[Test]
 		public void SetSettingsProtection_SwitchFromAlwaysHiddenToNormal_ControlBecomesNormallyManaged()
 		{
 			SettingsProtectionSingleton.Settings.NormallyHidden = false;
