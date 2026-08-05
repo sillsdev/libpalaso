@@ -21,8 +21,8 @@ namespace SIL.Windows.Forms.SettingProtection
 	[ProvideProperty("SettingsProtection", typeof(Control))]
 	public partial class SettingsProtectionHelper : Component, IExtenderProvider
 	{
-		private readonly HashSet<Component> _componentsUnderSettingsProtection;
-		private readonly HashSet<Component> _alwaysHiddenComponents;
+		private readonly HashSet<Component> _componentsUnderSettingsProtection = new HashSet<Component>();
+		private readonly HashSet<Component> _alwaysHiddenComponents = new HashSet<Component>();
 		private bool _isDisposed;
 
 		public bool CanExtend(object extendee)
@@ -34,9 +34,6 @@ namespace SIL.Windows.Forms.SettingProtection
 		public SettingsProtectionHelper(IContainer container)
 		{
 			InitializeComponent();
-
-			_componentsUnderSettingsProtection = new HashSet<Component>();
-			_alwaysHiddenComponents = new HashSet<Component>();
 
 			if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
 			{

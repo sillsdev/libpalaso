@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Reflection;
 using System.Windows.Forms;
 using NUnit.Framework;
@@ -37,24 +38,28 @@ namespace SIL.Windows.Forms.Tests.SettingsProtection
 		public void UpdateDisplay_NormalProtectedControl_IsVisibleWhenNotNormallyHidden()
 		{
 			SettingsProtectionSingleton.Settings.NormallyHidden = false;
-			var control = new Button { Visible = false };
-			_helper.SetSettingsProtection(control, true);
+			using (var control = new Button { Visible = false })
+			{
+				_helper.SetSettingsProtection(control, true);
 
-			CallUpdateDisplay(_helper);
+				CallUpdateDisplay(_helper);
 
-			Assert.That(control.Visible, Is.True);
+				Assert.That(control.Visible, Is.True);
+			}
 		}
 
 		[Test]
 		public void UpdateDisplay_NormalProtectedControl_IsHiddenWhenNormallyHidden()
 		{
 			SettingsProtectionSingleton.Settings.NormallyHidden = true;
-			var control = new Button { Visible = true };
-			_helper.SetSettingsProtection(control, true);
+			using (var control = new Button { Visible = true })
+			{
+				_helper.SetSettingsProtection(control, true);
 
-			CallUpdateDisplay(_helper);
+				CallUpdateDisplay(_helper);
 
-			Assert.That(control.Visible, Is.False);
+				Assert.That(control.Visible, Is.False);
+			}
 		}
 
 		[Test]
@@ -63,63 +68,86 @@ namespace SIL.Windows.Forms.Tests.SettingsProtection
 			// Even when NormallyHidden=false (i.e., normal controls are visible),
 			// an always-hidden control must stay hidden.
 			SettingsProtectionSingleton.Settings.NormallyHidden = false;
-			var control = new Button { Visible = true };
-			_helper.SetSettingsProtection(control, true, keepHidden: true);
+			using (var control = new Button { Visible = true })
+			{
+				_helper.SetSettingsProtection(control, true, keepHidden: true);
 
-			CallUpdateDisplay(_helper);
+				CallUpdateDisplay(_helper);
 
-			Assert.That(control.Visible, Is.False);
+				Assert.That(control.Visible, Is.False);
+			}
 		}
 
 		[Test]
 		public void UpdateDisplay_AlwaysHiddenControl_RemainsHiddenWhenNormallyHidden()
 		{
 			SettingsProtectionSingleton.Settings.NormallyHidden = true;
-			var control = new Button { Visible = true };
-			_helper.SetSettingsProtection(control, true, keepHidden: true);
+			using (var control = new Button { Visible = true })
+			{
+				_helper.SetSettingsProtection(control, true, keepHidden: true);
 
-			CallUpdateDisplay(_helper);
+				CallUpdateDisplay(_helper);
 
-			Assert.That(control.Visible, Is.False);
+				Assert.That(control.Visible, Is.False);
+			}
 		}
 
 		[Test]
 		public void SetSettingsProtection_SwitchFromAlwaysHiddenToNormal_ControlBecomesNormallyManaged()
 		{
 			SettingsProtectionSingleton.Settings.NormallyHidden = false;
-			var control = new Button { Visible = true };
-			_helper.SetSettingsProtection(control, true, keepHidden: true);
-			CallUpdateDisplay(_helper);
-			Assert.That(control.Visible, Is.False, "Precondition: always-hidden should be hidden");
+			using (var control = new Button { Visible = true })
+			{
+				_helper.SetSettingsProtection(control, true, keepHidden: true);
+				CallUpdateDisplay(_helper);
+				Assert.That(control.Visible, Is.False, "Precondition: always-hidden should be hidden");
 
-			// Re-register without keepHidden — should now follow the normal rule
-			_helper.SetSettingsProtection(control, true, keepHidden: false);
-			CallUpdateDisplay(_helper);
+				// Re-register without keepHidden — should now follow the normal rule
+				_helper.SetSettingsProtection(control, true, keepHidden: false);
+				CallUpdateDisplay(_helper);
 
-			Assert.That(control.Visible, Is.True);
+				Assert.That(control.Visible, Is.True);
+			}
 		}
 
 		[Test]
 		public void SetSettingsProtection_UnprotectAlwaysHiddenControl_ControlBecomesVisible()
 		{
 			SettingsProtectionSingleton.Settings.NormallyHidden = false;
-			var control = new Button { Visible = true };
-			_helper.SetSettingsProtection(control, true, keepHidden: true);
-			CallUpdateDisplay(_helper);
-			Assert.That(control.Visible, Is.False, "Precondition: always-hidden should be hidden");
+			using (var control = new Button { Visible = true })
+			{
+				_helper.SetSettingsProtection(control, true, keepHidden: true);
+				CallUpdateDisplay(_helper);
+				Assert.That(control.Visible, Is.False, "Precondition: always-hidden should be hidden");
 
-			_helper.SetSettingsProtection(control, false);
+				_helper.SetSettingsProtection(control, false);
 
-			Assert.That(control.Visible, Is.True);
+				Assert.That(control.Visible, Is.True);
+			}
 		}
 
 		[Test]
 		public void GetSettingsProtection_AlwaysHiddenControl_ReturnsTrue()
 		{
-			var control = new Button();
-			_helper.SetSettingsProtection(control, true, keepHidden: true);
+			using (var control = new Button())
+			{
+				_helper.SetSettingsProtection(control, true, keepHidden: true);
 
-			Assert.That(_helper.GetSettingsProtection(control), Is.True);
+				Assert.That(_helper.GetSettingsProtection(control), Is.True);
+			}
+		}
+
+		[Test]
+		public void Dispose_WhileStillSitedInContainer_DoesNotThrow()
+		{
+			// Disposing removes the component from its container, which reads Site, and the Site
+			// override throws once disposed; so _isDisposed must not be set until that is done.
+			using (var container = new Container())
+			{
+				var helper = new SettingsProtectionHelper(container);
+
+				Assert.That(() => helper.Dispose(), Throws.Nothing);
+			}
 		}
 	}
 }

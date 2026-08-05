@@ -15,18 +15,21 @@ namespace SIL.Windows.Forms.SettingProtection
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 		protected override void Dispose(bool disposing)
 		{
+			System.Diagnostics.Debug.WriteLineIf(!disposing, "****** Missing Dispose() call for " + GetType().Name + ". ****** ");
+			if (_isDisposed)
+				return;
 			if (disposing)
 			{
 				if (components != null)
 					components.Dispose();
-				if (!_isDisposed)
-				{
-					_isDisposed = true;
-					_componentsUnderSettingsProtection.Clear();
-					_alwaysHiddenComponents.Clear();
-				}
+				_componentsUnderSettingsProtection.Clear();
+				_alwaysHiddenComponents.Clear();
 			}
+			// Must run before _isDisposed is set: the base implementation removes this component
+			// from its container, which reads the Site property, and our override of Site throws
+			// once disposed.
 			base.Dispose(disposing);
+			_isDisposed = true;
 		}
 
 		#region Component Designer generated code
