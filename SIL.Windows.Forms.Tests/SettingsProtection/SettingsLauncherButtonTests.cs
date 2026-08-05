@@ -21,8 +21,6 @@ namespace SIL.Windows.Forms.Tests.SettingsProtection
 				Assert.That(helper, Is.Not.Null, "Precondition: the button creates a helper");
 			}
 
-			// An undisposed helper keeps an enabled timer running, and the timer roots the helper,
-			// so it is never finalized either.
 			Assert.That(() => helper.CanExtend(new object()),
 				Throws.InstanceOf<ObjectDisposedException>());
 		}
