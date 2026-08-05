@@ -34,7 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Installer] Added new package for common installer components. Initially, this includes a Privacy dialog and code to access the registry entries so users can opt out of analytics data collection.
 - [SIL.Core] Added PathUtilities.ParentDirectories extension method.
 - [SIL.Core] Added FileLocationUtilities.DistFilesFolderPath property.
-- [SIL.Windows.Forms] Added `keepHidden` option to `SetSettingsProtection` so controls can be marked always-hidden, remaining hidden even under password-override.
+- [SIL.Windows.Forms] Added `SettingsProtectionHelper.SetSettingsProtection` overloads taking a `keepHidden` parameter, so a `Control` or `ToolStripItem` can be marked always-hidden: it stays hidden even while Ctrl+Shift is held to reveal the other protected components. The existing two-parameter overloads are unchanged.
 
 ### Fixed
 
@@ -51,8 +51,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] BREAKING CHANGE (subtle and unlikely): WindowsAudioSession.OnPlaybackStopped now passes itself as the sender instead of a private implementation object, making the event arguments correct.
 - [build] Fixed the update-language-data workflow so the generated pull request commit message shows the actual update date instead of a literal `$(date ...)` string.
 - [SIL.Archiving] Fixed ArchiveAccessProtocol.GetDocumentationUri failing to create a missing documentation file because the resource lookup stripped the file extension and no longer matched the embedded resource name.
-- [SIL.Windows.Forms] Fixed `SettingsProtectionHelper.Dispose(bool)` to only touch managed resources when `disposing` is true, and removed a redundant explicit timer disposal.
 - [SIL.Windows.Forms.Archiving] Fixed formatting of message in ArchivingDlg so that the name of the auxiliary archive upload program (e.g., "RAMP") is displayed.
+- [SIL.Windows.Forms] Fixed `SettingsProtectionHelper.Dispose` so that it only touches managed resources when disposing, is safe to call more than once, and no longer disposes the Ctrl+Shift timer explicitly (the timer is owned by the component container that disposes it).
 
 ### Changed
 
