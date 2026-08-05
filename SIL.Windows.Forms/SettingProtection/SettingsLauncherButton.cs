@@ -16,7 +16,9 @@ namespace SIL.Windows.Forms.SettingProtection
 			this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
 			InitializeComponent();
 			_linkLabel.Click += OnLinkClicked;
-			_helper = new SettingsProtectionHelper(Container);
+			// Give the helper this control's own container, not Container (the site's container,
+			// which is null at run time), so that disposing this control disposes the helper.
+			_helper = new SettingsProtectionHelper(components);
 			_helper.SetSettingsProtection(this, true);
 		}
 
