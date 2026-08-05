@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Reflection;
 using NUnit.Framework;
 using SIL.Windows.Forms.SettingProtection;
@@ -12,6 +13,9 @@ namespace SIL.Windows.Forms.Tests.SettingsProtection
 		[Test]
 		public void Dispose_DisposesTheSettingsProtectionHelperItCreated()
 		{
+			// The helper only registers itself with the button's container at run time.
+			Assume.That(LicenseManager.UsageMode, Is.EqualTo(LicenseUsageMode.Runtime));
+
 			var helperField = typeof(SettingsLauncherButton).GetField("_helper",
 				BindingFlags.NonPublic | BindingFlags.Instance);
 			Assert.That(helperField, Is.Not.Null,
