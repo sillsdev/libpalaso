@@ -64,17 +64,25 @@ namespace SIL.Windows.Forms.SettingProtection
 			return result;
 		}
 
+		private static bool ProtectedComponentsAreVisible
+		{
+			get
+			{
+				var keys = Keys.Control | Keys.Shift;
+				return !SettingsProtectionSingleton.Settings.NormallyHidden ||
+					((Control.ModifierKeys & keys) == keys);
+			}
+		}
+
 		private void UpdateDisplay()
 		{
 			if (_componentsUnderSettingsProtection == null)//sometimes get a tick before this has been set
 				return;
 
-			var keys = Keys.Control | Keys.Shift;
+			var visible = ProtectedComponentsAreVisible;
 
 			foreach (var component in _componentsUnderSettingsProtection)
 			{
-				bool visible = !SettingsProtectionSingleton.Settings.NormallyHidden || ((Control.ModifierKeys & keys) == keys);
-
 				ShowOrHideComponent(component, visible);
 			}
 
@@ -119,9 +127,11 @@ namespace SIL.Windows.Forms.SettingProtection
 				else
 				{
 					_componentsUnderSettingsProtection.Add(controlOrToolStripItem);
-					_alwaysHiddenComponents.Remove(controlOrToolStripItem);
-					// No need to call ShowOrHideComponent explicitly. It will get called when the
-					// timer fires.
+					var wasAlwaysHidden = _alwaysHiddenComponents.Remove(controlOrToolStripItem);
+					// If it was always-hidden then it is hidden now, so apply the normal rule
+					// instead of leaving it hidden until the timer fires.
+					if (wasAlwaysHidden && _isRuntime)
+						ShowOrHideComponent(controlOrToolStripItem, ProtectedComponentsAreVisible);
 				}
 			}
 			else
