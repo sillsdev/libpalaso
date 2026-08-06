@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Added PathUtilities.ParentDirectories extension method.
 - [SIL.Core] Added FileLocationUtilities.DistFilesFolderPath property.
 - [SIL.Core.Clearshare] Added `MetadataCore.RunUnderTagLibLock(Action)` and `RunUnderTagLibLock<T>(Func<T>)` so callers that use TagLib directly can serialize that access against ClearShare's own metadata reading and writing.
+- [SIL.Windows.Forms] Added `SettingsProtectionHelper.SetSettingsProtection` overloads taking a `keepHidden` parameter, so a `Control` or `ToolStripItem` can be marked always-hidden: it stays hidden even while Ctrl+Shift is held to reveal the other protected components. The existing two-parameter overloads are unchanged.
 
 ### Fixed
 
@@ -57,6 +58,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Archiving] Fixed ArchiveAccessProtocol.GetDocumentationUri failing to create a missing documentation file because the resource lookup stripped the file extension and no longer matched the embedded resource name.
 - [SIL.Windows.Forms.Archiving] Fixed formatting of message in ArchivingDlg so that the name of the auxiliary archive upload program (e.g., "RAMP") is displayed.
 - [SIL.Windows.Forms] Fixed SettingsLauncherButton never disposing the SettingsProtectionHelper it creates, which left an enabled timer running after the button was disposed. Also removed the button's own unused visibility timer, which had no handler but was posting timer messages for the life of the control.
+- [SIL.Windows.Forms] Fixed `SettingsProtectionHelper.Dispose` so that it only touches managed resources when disposing, is safe to call more than once, and no longer disposes the Ctrl+Shift timer explicitly (the timer is owned by the component container that disposes it).
 
 ### Changed
 
