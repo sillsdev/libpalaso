@@ -33,7 +33,6 @@ namespace SIL.Windows.Forms.SettingProtection
 		{
 			this.components = new System.ComponentModel.Container();
 			this._image = new System.Windows.Forms.PictureBox();
-			this._checkVisibilityTmer = new System.Windows.Forms.Timer(this.components);
 			this.l10NSharpExtender1 = new L10NSharp.Windows.Forms.L10NSharpExtender(this.components);
 			this._linkLabel = new BetterLinkLabel();
 			((System.ComponentModel.ISupportInitialize)(this._image)).BeginInit();
@@ -52,10 +51,6 @@ namespace SIL.Windows.Forms.SettingProtection
 			this._image.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
 			this._image.TabIndex = 2;
 			this._image.TabStop = false;
-			//
-			// _checkVisibilityTmer
-			//
-			this._checkVisibilityTmer.Enabled = true;
 			//
 			// l10NSharpExtender1
 			//
@@ -105,7 +100,6 @@ namespace SIL.Windows.Forms.SettingProtection
 		#endregion
 
 		private System.Windows.Forms.PictureBox _image;
-		private System.Windows.Forms.Timer _checkVisibilityTmer;
 		private L10NSharp.Windows.Forms.L10NSharpExtender l10NSharpExtender1;
 		private Widgets.BetterLinkLabel _linkLabel;
 
