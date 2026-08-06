@@ -56,6 +56,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [build] Fixed the update-language-data workflow so the generated pull request commit message shows the actual update date instead of a literal `$(date ...)` string.
 - [SIL.Archiving] Fixed ArchiveAccessProtocol.GetDocumentationUri failing to create a missing documentation file because the resource lookup stripped the file extension and no longer matched the embedded resource name.
 - [SIL.Windows.Forms.Archiving] Fixed formatting of message in ArchivingDlg so that the name of the auxiliary archive upload program (e.g., "RAMP") is displayed.
+- [SIL.Windows.Forms] Fixed SettingsLauncherButton never disposing the SettingsProtectionHelper it creates, which left an enabled timer running after the button was disposed. Also removed the button's own unused visibility timer, which had no handler but was posting timer messages for the life of the control.
 
 ### Changed
 
