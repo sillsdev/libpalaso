@@ -59,6 +59,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Archiving] Fixed formatting of message in ArchivingDlg so that the name of the auxiliary archive upload program (e.g., "RAMP") is displayed.
 - [SIL.Windows.Forms] Fixed SettingsLauncherButton never disposing the SettingsProtectionHelper it creates, which left an enabled timer running after the button was disposed. Also removed the button's own unused visibility timer, which had no handler but was posting timer messages for the life of the control.
 - [SIL.Windows.Forms] Fixed `SettingsProtectionHelper.Dispose` so that it only touches managed resources when disposing, is safe to call more than once, and no longer disposes the Ctrl+Shift timer explicitly (the timer is owned by the component container that disposes it).
+- [SIL.WritingSystems] Fixed `GlobalWritingSystemRepository.Replace` silently failing to update a writing system, after several seconds of retries, when an earlier interrupted update had left a `.localrepoupdate` file behind. It now recovers from the interruption instead of failing on every later attempt, and no longer stalls when the writing system has no file on disk yet.
 
 ### Changed
 

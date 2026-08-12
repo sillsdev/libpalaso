@@ -437,6 +437,74 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Replace_StaleLocalRepoUpdateFileExists_ReplacesAndRemovesStaleFile()
+		{
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws);
+				repo.Save();
+				string wsFilePath = repo.GetFilePathFromLanguageTag("en-US");
+				Assert.That(File.Exists(wsFilePath), Is.True);
+
+				// Simulate debris left behind by a process that died mid-Replace on a previous run.
+				string staleFile = wsFilePath + ".localrepoupdate";
+				File.WriteAllText(staleFile, "stale");
+
+				var newWs = new WritingSystemDefinition("en-US") {WindowsLcid = "test"};
+				repo.Replace("en-US", newWs);
+
+				Assert.That(repo.Get("en-US").WindowsLcid, Is.EqualTo("test"), "Replace should have taken effect");
+				Assert.That(File.Exists(staleFile), Is.False, "Stale .localrepoupdate file should not be left behind");
+			}
+		}
+
+		[Test]
+		public void Replace_StaleLocalRepoUpdateFileExistsAndLdmlFileMissing_ReplacesAndRemovesStaleFile()
+		{
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws);
+				repo.Save();
+				string wsFilePath = repo.GetFilePathFromLanguageTag("en-US");
+				Assert.That(File.Exists(wsFilePath), Is.True);
+
+				// Simulate a process that died after stashing the old file but before restoring it.
+				string staleFile = wsFilePath + ".localrepoupdate";
+				File.Copy(wsFilePath, staleFile);
+				File.Delete(wsFilePath);
+
+				var newWs = new WritingSystemDefinition("en-US") {WindowsLcid = "test"};
+				repo.Replace("en-US", newWs);
+
+				Assert.That(repo.Get("en-US").WindowsLcid, Is.EqualTo("test"), "Replace should have taken effect");
+				Assert.That(File.Exists(staleFile), Is.False, "Stale .localrepoupdate file should not be left behind");
+			}
+		}
+
+		[Test]
+		public void Replace_NoLdmlFileAndNoLocalRepoUpdateFile_Replaces()
+		{
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws); // in memory only; never saved, so no .ldml file exists yet
+				string wsFilePath = repo.GetFilePathFromLanguageTag("en-US");
+				Assert.That(File.Exists(wsFilePath), Is.False);
+
+				var newWs = new WritingSystemDefinition("en-US") {WindowsLcid = "test"};
+				repo.Replace("en-US", newWs);
+
+				Assert.That(repo.Get("en-US").WindowsLcid, Is.EqualTo("test"), "Replace should have taken effect");
+				Assert.That(File.Exists(wsFilePath + ".localrepoupdate"), Is.False, "No stash file should be created when there is nothing to stash");
+			}
+		}
+
+		[Test]
 		public void AllWritingSystems_LdmlCheckingSetEmptyCanNotSave()
 		{
 			using (var tf = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
