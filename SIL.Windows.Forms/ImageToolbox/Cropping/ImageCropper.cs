@@ -468,8 +468,10 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 			}
 			else
 			{
-				_originalFormat = image.Image.RawFormat;
+				var originalFormat = image.Image.RawFormat;
 				Image = image;
+				// If the Image setter throws, _originalFormat must still describe the previous image.
+				_originalFormat = originalFormat;
 			}
 		}
 
