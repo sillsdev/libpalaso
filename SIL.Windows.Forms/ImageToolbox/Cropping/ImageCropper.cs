@@ -149,7 +149,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				//so we better keep our own.
 
 				// Nothing we hold for the current image is disposed until the new one is built and
-				// every field is on it, so that a failure on either side leaves us on a usable image.
+				// the control fully switched to it, so a failure on either side leaves us usable.
 
 				// save the original in a temp file instead of an Image object to free up memory
 				var savedOriginalImage = TempFile.CreateAndGetPathButDontMakeTheFile();
@@ -189,8 +189,6 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				_croppingImage = croppingImage;
 				_image = value;
 
-				DisposeImageState(previousSavedOriginalImage, previousCroppingImage);
-
 				CalculateSourceImageArea();
 				CreateGrips();
 
@@ -200,6 +198,8 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				}
 
 				Invalidate();
+
+				DisposeImageState(previousSavedOriginalImage, previousCroppingImage);
 			}
 		}
 
