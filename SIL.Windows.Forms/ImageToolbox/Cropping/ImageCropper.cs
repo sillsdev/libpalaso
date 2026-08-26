@@ -145,40 +145,51 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				if (value == null)
 					return;
 
-				// Hold on to what we built for the previous image until the new one is fully in
-				// place, so that a failure below leaves us on the image we were already showing.
-				var previousSavedOriginalImage = _savedOriginalImage;
-				var previousCroppingImage = _croppingImage;
-
 				//other code changes the image of this palaso image, at which time the PI disposes of its copy,
 				//so we better keep our own.
 
+				// Build everything for the new image into locals before touching what we hold for
+				// the current one, so that a failure here leaves us on the image we are already
+				// showing rather than in a half-updated state.
+
 				// save the original in a temp file instead of an Image object to free up memory
-				_savedOriginalImage = TempFile.CreateAndGetPathButDontMakeTheFile();
-				value.Image.Save(_savedOriginalImage.Path, ImageFormat.Png);
-
-				// make a reasonable sized copy to crop
-				if ((value.Image.Width > 1000) || (value.Image.Height > 1000))
+				var savedOriginalImage = TempFile.CreateAndGetPathButDontMakeTheFile();
+				Image croppingImage = null;
+				try
 				{
-					_croppingImage = CreateCroppingImage(value.Image.Height, value.Image.Width);
+					value.Image.Save(savedOriginalImage.Path, ImageFormat.Png);
 
-					var srcRect = new Rectangle(0, 0, value.Image.Width, value.Image.Height);
-					var destRect = new Rectangle(0, 0, _croppingImage.Width, _croppingImage.Height);
-
-					using (var g = Graphics.FromImage(_croppingImage))
+					// make a reasonable sized copy to crop
+					if ((value.Image.Width > 1000) || (value.Image.Height > 1000))
 					{
-						g.DrawImage(value.Image, destRect, srcRect, GraphicsUnit.Pixel);
+						croppingImage = CreateCroppingImage(value.Image.Height, value.Image.Width);
+
+						var srcRect = new Rectangle(0, 0, value.Image.Width, value.Image.Height);
+						var destRect = new Rectangle(0, 0, croppingImage.Width, croppingImage.Height);
+
+						using (var g = Graphics.FromImage(croppingImage))
+						{
+							g.DrawImage(value.Image, destRect, srcRect, GraphicsUnit.Pixel);
+						}
+					}
+					else
+					{
+						croppingImage = (Image)value.Image.Clone();
 					}
 				}
-				else
+				catch
 				{
-					_croppingImage = (Image)value.Image.Clone();
+					DisposeImageState(savedOriginalImage, croppingImage);
+					throw;
 				}
 
-				_image = value;
+				// Only now that the new image is ready do we let go of the previous one. These used
+				// to be simply overwritten, leaking the temp file and the bitmap.
+				DisposeImageState(_savedOriginalImage, _croppingImage);
+				_savedOriginalImage = savedOriginalImage;
+				_croppingImage = croppingImage;
 
-				// These used to be simply overwritten above, leaking the temp file and the bitmap.
-				DisposeImageState(previousSavedOriginalImage, previousCroppingImage);
+				_image = value;
 
 				CalculateSourceImageArea();
 				CreateGrips();

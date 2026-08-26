@@ -154,7 +154,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 		}
 
 		[Test]
-		public void SetImage_NewImageFailsToLoad_LeavesPreviousImageStateIntact()
+		public void Image_NewImageFailsToLoad_LeavesPreviousImageStateIntact()
 		{
 			using (var tempFile = TempFile.WithExtension(".png"))
 			{
@@ -166,23 +166,27 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 				{
 					cropper.SetImage(goodImage);
 
-					var savedOriginalPath = GetSavedOriginalImage(cropper).Path;
+					var savedOriginalImage = GetSavedOriginalImage(cropper);
 					var croppingImage = GetCroppingImage(cropper);
 
-					// A PalasoImage whose underlying bitmap has been disposed out from under it:
-					// the setter throws while saving the new original.
+					// A PalasoImage whose underlying bitmap has been disposed out from under it, so
+					// that the setter throws partway through building the state for the new image.
 					var unusableBitmap = new Bitmap(100, 80);
 					unusableBitmap.Dispose();
 					var unusableImage = PalasoImage.FromImage(unusableBitmap);
 
-					Assert.Throws<ArgumentException>(() => cropper.SetImage(unusableImage));
+					// Assign the property rather than calling SetImage: SetImage reads
+					// image.Image.RawFormat first, which would throw before the setter is entered.
+					Assert.Throws<ArgumentException>(() => cropper.Image = unusableImage);
 
-					Assert.That(File.Exists(savedOriginalPath), Is.True,
-						"A failed reassignment must not delete the temp file we are still cropping from");
+					Assert.That(GetSavedOriginalImage(cropper), Is.SameAs(savedOriginalImage),
+						"A failed assignment must leave us cropping from the original we already saved");
+					Assert.That(File.Exists(savedOriginalImage.Path), Is.True,
+						"A failed assignment must not delete the temp file we are still cropping from");
 					Assert.That(GetCroppingImage(cropper), Is.SameAs(croppingImage),
-						"A failed reassignment must leave the cropper on the image it was already showing");
+						"A failed assignment must leave the cropper on the image it was already showing");
 					Assert.DoesNotThrow(() => { var unused = croppingImage.Width; },
-						"A failed reassignment must not dispose the cropping image still in use");
+						"A failed assignment must not dispose the cropping image still in use");
 				}
 			}
 		}
