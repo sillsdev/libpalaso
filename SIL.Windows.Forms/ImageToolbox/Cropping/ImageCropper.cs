@@ -182,11 +182,16 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 					throw;
 				}
 
-				DisposeImageState(_savedOriginalImage, _croppingImage);
+				var previousSavedOriginalImage = _savedOriginalImage;
+				var previousCroppingImage = _croppingImage;
+
 				_savedOriginalImage = savedOriginalImage;
 				_croppingImage = croppingImage;
-
 				_image = value;
+
+				// Let go of the previous image only once every field is on the new one, so that a
+				// failure to clean it up cannot leave us showing a disposed image.
+				DisposeImageState(previousSavedOriginalImage, previousCroppingImage);
 
 				CalculateSourceImageArea();
 				CreateGrips();
@@ -516,11 +521,9 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 			{
 				savedOriginalImage?.Dispose();
 			}
-			// BL-2680, somehow user can get in a state where we CAN'T delete a temp file.
-			// I think we can afford to just ignore it. One temp file will be leaked.
-			catch (IOException)
-			{
-			}
+			// BL-2680, somehow user can get in a state where we CAN'T delete a temp file. We can
+			// afford to just ignore it; one temp file will be leaked. TempFile.Dispose already
+			// ignores an IOException, but leaves this one to us.
 			catch (UnauthorizedAccessException)
 			{
 			}
