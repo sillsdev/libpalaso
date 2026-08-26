@@ -148,9 +148,8 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				//other code changes the image of this palaso image, at which time the PI disposes of its copy,
 				//so we better keep our own.
 
-				// Build everything for the new image into locals before touching what we hold for
-				// the current one, so that a failure here leaves us on the image we are already
-				// showing rather than in a half-updated state.
+				// Nothing we hold for the current image is touched until the new one is ready, so
+				// that a failure here leaves us on the image we are already showing.
 
 				// save the original in a temp file instead of an Image object to free up memory
 				var savedOriginalImage = TempFile.CreateAndGetPathButDontMakeTheFile();
@@ -183,8 +182,6 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 					throw;
 				}
 
-				// Only now that the new image is ready do we let go of the previous one. These used
-				// to be simply overwritten, leaking the temp file and the bitmap.
 				DisposeImageState(_savedOriginalImage, _croppingImage);
 				_savedOriginalImage = savedOriginalImage;
 				_croppingImage = croppingImage;
@@ -510,10 +507,6 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 			base.Dispose(disposing);
 		}
 
-		/// <summary>
-		/// Disposes the temp file and cropping image built for a given image, whether because we
-		/// are being given a new image to crop or because we are being disposed.
-		/// </summary>
 		private static void DisposeImageState(TempFile savedOriginalImage, Image croppingImage)
 		{
 			// Dispose the bitmap first: unlike deleting the temp file, it cannot fail.

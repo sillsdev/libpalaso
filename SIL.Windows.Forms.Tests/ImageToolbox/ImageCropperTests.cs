@@ -147,7 +147,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 
 					Assert.That(File.Exists(firstSavedOriginalPath), Is.False,
 						"Temp file holding the first original should have been deleted on reassignment");
-					Assert.Throws<ArgumentException>(() => { var unused = firstCroppingImage.Width; },
+					Assert.That(() => firstCroppingImage.Width, Throws.TypeOf<ArgumentException>(),
 						"Cropping image for the first original should have been disposed on reassignment");
 				}
 			}
@@ -170,7 +170,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					var croppingImage = GetCroppingImage(cropper);
 
 					// A PalasoImage whose underlying bitmap has been disposed out from under it, so
-					// that the setter throws partway through building the state for the new image.
+					// the setter throws partway through.
 					var unusableBitmap = new Bitmap(100, 80);
 					unusableBitmap.Dispose();
 					var unusableImage = PalasoImage.FromImage(unusableBitmap);
@@ -185,7 +185,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 						"A failed assignment must not delete the temp file we are still cropping from");
 					Assert.That(GetCroppingImage(cropper), Is.SameAs(croppingImage),
 						"A failed assignment must leave the cropper on the image it was already showing");
-					Assert.DoesNotThrow(() => { var unused = croppingImage.Width; },
+					Assert.That(() => croppingImage.Width, Throws.Nothing,
 						"A failed assignment must not dispose the cropping image still in use");
 				}
 			}
