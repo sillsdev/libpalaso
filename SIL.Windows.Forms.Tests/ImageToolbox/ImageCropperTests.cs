@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -119,10 +120,87 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 			}
 		}
 
+		[Test]
+		public void SetImage_Reassigned_DisposesStateBuiltForPreviousImage()
+		{
+			using (var tempFile1 = TempFile.WithExtension(".png"))
+			using (var tempFile2 = TempFile.WithExtension(".png"))
+			{
+				using (var bmp = new Bitmap(100, 80))
+				{
+					bmp.Save(tempFile1.Path, ImageFormat.Png);
+					bmp.Save(tempFile2.Path, ImageFormat.Png);
+				}
+
+				using (var firstImage = PalasoImage.FromFile(tempFile1.Path))
+				using (var secondImage = PalasoImage.FromFile(tempFile2.Path))
+				using (var cropper = new ImageCropper { Size = new Size(400, 300) })
+				{
+					cropper.SetImage(firstImage);
+
+					var firstSavedOriginalPath = GetSavedOriginalImage(cropper).Path;
+					var firstCroppingImage = GetCroppingImage(cropper);
+					Assert.That(File.Exists(firstSavedOriginalPath), Is.True,
+						"Sanity check: the first saved-original temp file should exist before reassignment");
+
+					cropper.SetImage(secondImage);
+
+					Assert.That(File.Exists(firstSavedOriginalPath), Is.False,
+						"Temp file holding the first original should have been deleted on reassignment");
+					Assert.Throws<ArgumentException>(() => { var unused = firstCroppingImage.Width; },
+						"Cropping image for the first original should have been disposed on reassignment");
+				}
+			}
+		}
+
+		[Test]
+		public void SetImage_NewImageFailsToLoad_LeavesPreviousImageStateIntact()
+		{
+			using (var tempFile = TempFile.WithExtension(".png"))
+			{
+				using (var bmp = new Bitmap(100, 80))
+					bmp.Save(tempFile.Path, ImageFormat.Png);
+
+				using (var goodImage = PalasoImage.FromFile(tempFile.Path))
+				using (var cropper = new ImageCropper { Size = new Size(400, 300) })
+				{
+					cropper.SetImage(goodImage);
+
+					var savedOriginalPath = GetSavedOriginalImage(cropper).Path;
+					var croppingImage = GetCroppingImage(cropper);
+
+					// A PalasoImage whose underlying bitmap has been disposed out from under it:
+					// the setter throws while saving the new original.
+					var unusableBitmap = new Bitmap(100, 80);
+					unusableBitmap.Dispose();
+					var unusableImage = PalasoImage.FromImage(unusableBitmap);
+
+					Assert.Throws<ArgumentException>(() => cropper.SetImage(unusableImage));
+
+					Assert.That(File.Exists(savedOriginalPath), Is.True,
+						"A failed reassignment must not delete the temp file we are still cropping from");
+					Assert.That(GetCroppingImage(cropper), Is.SameAs(croppingImage),
+						"A failed reassignment must leave the cropper on the image it was already showing");
+					Assert.DoesNotThrow(() => { var unused = croppingImage.Width; },
+						"A failed reassignment must not dispose the cropping image still in use");
+				}
+			}
+		}
+
+		private static TempFile GetSavedOriginalImage(ImageCropper cropper)
+		{
+			return (TempFile)GetPrivateField(cropper, "_savedOriginalImage");
+		}
+
 		private static Image GetCroppingImage(ImageCropper cropper)
 		{
-			return (Image)typeof(ImageCropper)
-				.GetField("_croppingImage", BindingFlags.NonPublic | BindingFlags.Instance)
+			return (Image)GetPrivateField(cropper, "_croppingImage");
+		}
+
+		private static object GetPrivateField(ImageCropper cropper, string fieldName)
+		{
+			return typeof(ImageCropper)
+				.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance)
 				.GetValue(cropper);
 		}
 	}
