@@ -169,8 +169,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					var savedOriginalImage = GetSavedOriginalImage(cropper);
 					var croppingImage = GetCroppingImage(cropper);
 
-					// A PalasoImage whose underlying bitmap has been disposed out from under it, so
-					// the setter throws partway through.
 					var unusableBitmap = new Bitmap(100, 80);
 					unusableBitmap.Dispose();
 					var unusableImage = PalasoImage.FromImage(unusableBitmap);

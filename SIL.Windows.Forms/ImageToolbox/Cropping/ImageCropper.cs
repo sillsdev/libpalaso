@@ -148,8 +148,8 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				//other code changes the image of this palaso image, at which time the PI disposes of its copy,
 				//so we better keep our own.
 
-				// Nothing we hold for the current image is touched until the new one is ready, so
-				// that a failure here leaves us on the image we are already showing.
+				// Nothing we hold for the current image is disposed until the new one is built and
+				// every field is on it, so that a failure on either side leaves us on a usable image.
 
 				// save the original in a temp file instead of an Image object to free up memory
 				var savedOriginalImage = TempFile.CreateAndGetPathButDontMakeTheFile();
@@ -189,8 +189,6 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				_croppingImage = croppingImage;
 				_image = value;
 
-				// Let go of the previous image only once every field is on the new one, so that a
-				// failure to clean it up cannot leave us showing a disposed image.
 				DisposeImageState(previousSavedOriginalImage, previousCroppingImage);
 
 				CalculateSourceImageArea();
