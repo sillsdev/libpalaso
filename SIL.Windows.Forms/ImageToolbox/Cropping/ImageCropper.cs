@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
-using SIL.Code;
 using SIL.IO;
 using SIL.Reporting;
 
@@ -30,7 +29,6 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 		private Point _startOfDrag = default(Point);
 
 		//we will be cropping the image, so we need to keep the original lest we be cropping the crop, so to speak
-		private ImageFormat _originalFormat;
 		private TempFile _savedOriginalImage;
 		private Image _croppingImage;
 
@@ -385,16 +383,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 			try
 			{
-				//jpeg = b96b3c  *AE* -0728-11d3-9d7b-0000f81ef32e
-				//bitmap = b96b3c  *AA* -0728-11d3-9d7b-0000f81ef32e
-
-				//NB: this worked for tiff and png, but would crash with Out Of Memory for jpegs.
-				//This may be because I closed the stream? THe doc says you have to keep that stream open.
-				//Also, note that this method, too, lost our jpeg encoding:
-				//          return bmp.Clone(selection, _image.PixelFormat);
-				//So now, I first copy it, then clone with the bounds of our crop:
-
-				using (var originalImage = new Bitmap(_savedOriginalImage.Path)) //**** here we lose the jpeg rawimageformat, if it's a jpeg. Grrr.
+				using (var originalImage = new Bitmap(_savedOriginalImage.Path))
 				{
 					double z = 1.0 / GetImageToCanvasScaleFactor(originalImage);
 
@@ -416,21 +405,13 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 						selectionHeight = originalImage.Height - top;
 					var selection = new Rectangle(left, top, selectionWidth, selectionHeight);
 
-					var cropped = originalImage.Clone(selection, originalImage.PixelFormat); //do the actual cropping
-
-					if (_originalFormat.Guid == ImageFormat.Jpeg.Guid)
+					using (var cropped = originalImage.Clone(selection, originalImage.PixelFormat)) //do the actual cropping
 					{
-						//We've sadly lost our jpeg formatting, so now we encode a new image in jpeg
-						using (var stream = new MemoryStream())
-						{
-							cropped.Save(stream, ImageFormat.Jpeg);
-							var oldCropped = cropped;
-							cropped = System.Drawing.Image.FromStream(stream) as Bitmap;
-							oldCropped.Dispose();
-							Require.That(ImageFormat.Jpeg.Guid == cropped.RawFormat.Guid, "lost jpeg formatting");
-						}
+						// Copy into a fresh, stand-alone Bitmap so the result has no lazy reference to a
+						// stream or file we'd otherwise need to keep open. The caller picks the save
+						// format via file extension, so the resulting MemoryBmp format is fine.
+						return new Bitmap(cropped);
 					}
-					return cropped;
 				}
 			}
 			catch (Exception e)
@@ -449,7 +430,6 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 			}
 			else
 			{
-				_originalFormat = image.Image.RawFormat;
 				Image = image;
 			}
 		}
