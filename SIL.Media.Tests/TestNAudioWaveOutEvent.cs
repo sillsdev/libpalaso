@@ -39,11 +39,7 @@ namespace SIL.Media
 			lock (_lock)
 			{
 				_timer = new Timer(_simulatedMediaTime);
-				_timer.Elapsed += (sender, args) =>
-				{
-					lock (_lock)
-						MediaPlaybackStopped();
-				};
+				_timer.Elapsed += (sender, args) => MediaPlaybackStopped();
 				_timer.Start();
 				PlaybackState = PlaybackState.Playing;
 			}
@@ -54,21 +50,29 @@ namespace SIL.Media
 			lock (_lock)
 			{
 				if (_provider != null && PlaybackState == PlaybackState.Playing)
+				{
 					_timer.Interval = kDelayWhenStopping;
-				else
-					MediaPlaybackStopped();
+					return;
+				}
 			}
+
+			MediaPlaybackStopped();
 		}
 
 		private void MediaPlaybackStopped()
 		{
-			_timer?.Dispose();
-
-			if (PlaybackState == PlaybackState.Playing)
+			lock (_lock)
 			{
+				_timer?.Dispose();
+
+				if (PlaybackState != PlaybackState.Playing)
+					return;
 				PlaybackState = PlaybackState.Stopped;
-				PlaybackStopped?.Invoke(this, new StoppedEventArgs());
 			}
+
+			// Raised outside the lock to avoid deadlock: the session holds its own lock
+			// across Stop, and the handler takes it.
+			PlaybackStopped?.Invoke(this, new StoppedEventArgs());
 		}
 	}
 }
