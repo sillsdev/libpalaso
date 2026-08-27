@@ -380,8 +380,16 @@ namespace SIL.Media.Tests
 			// at least it has been queued to start.
 			Assert.That(session.IsPlaying, Is.True);
 			Assert.DoesNotThrow(() => session.StopPlaying());
-			Assert.That(() => session.IsPlaying, Is.False.After(10000, 20),
-				"Stop playing should have (immediately or eventually) stopped playback.");
+			if (session.IsPlaying)
+			{
+#if NET462 || NET48
+				Thread.Sleep(TestNAudioWaveOutEvent.kDelayWhenStopping * 2);
+#else
+				Thread.Sleep(1000);
+#endif
+				Assert.That(session.IsPlaying, Is.False,
+					"Stop playing should have (immediately or eventually) stopped playback.");
+			}
 		}
 
 #if NET462 || NET48 // These tests won't compile in .NET 8 because WindowsAudioSession is not
