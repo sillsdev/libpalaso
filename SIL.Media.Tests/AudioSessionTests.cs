@@ -457,14 +457,17 @@ namespace SIL.Media.Tests
 		/// </summary>
 		[Test]
 		[Platform(Exclude = "Linux", Reason = "Not sure where Linux implementation would fail")]
-		[Timeout(4000)]
 		public void Play_InvalidAudioFileThrowsBackgroundException_NonFatalErrorReported()
 		{
 			try
 			{
 				AudioFactory.PlaybackErrorMessage = "Yikes!";
 				using var e = new ErrorReport.NonFatalErrorReportExpected();
-				using var file = new TempFile("not valid audio");
+				// The extension decides which NAudio reader gets the file: .wav fails fast in
+				// managed code, whereas an unrecognized one goes to Media Foundation, whose
+				// first-use startup on a CI agent can take seconds.
+				using var file = TempFile.WithExtension(".wav");
+				RobustFile.WriteAllText(file.Path, "not valid audio");
 				using var session =
 					(ISimpleAudioWithEvents)AudioFactory.CreateAudioSession(file.Path);
 				Exception reportedExceptionInPlaybackStopped = null;
@@ -474,8 +477,10 @@ namespace SIL.Media.Tests
 				};
 				Assert.DoesNotThrow(() => session.Play(),
 					"Error should not happen in main thread");
-				while (session.IsPlaying)
-					Thread.Sleep(20);
+				// IsPlaying goes false before PlaybackStopped is raised and the error is reported,
+				// so wait for the report rather than for playback to stop.
+				Assert.That(() => e.Exception != null, Is.True.After(10000, 20),
+					"Playback failure should have been reported as a non-fatal error.");
 				Assert.That(e.Exception, Is.EqualTo(reportedExceptionInPlaybackStopped));
 				Assert.That(e.Message, Is.EqualTo("Yikes!"));
 			}
