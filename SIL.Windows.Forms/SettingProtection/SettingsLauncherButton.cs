@@ -16,7 +16,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
 			InitializeComponent();
 			_linkLabel.Click += OnLinkClicked;
-			_helper = new SettingsProtectionHelper(Container);
+			_helper = new SettingsProtectionHelper(components);
 			_helper.SetSettingsProtection(this, true);
 		}
 

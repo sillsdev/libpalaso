@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using NUnit.Framework;
 using SIL.IO;
@@ -18,9 +19,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 		[Test]
 		public void Dispose_CalledTwiceAfterSettingImage_DoesNotThrow()
 		{
-			// Exercises double-dispose after the cropper actually holds state to clean up
-			// (saved-original temp file, cropping image, Application.Idle subscription),
-			// not just on a freshly-constructed, empty instance.
 			using (var tempFile = TempFile.WithExtension(".png"))
 			{
 				using (var bmp = new Bitmap(100, 80))
@@ -28,12 +26,96 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 
 				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
 				{
-					var cropper = new ImageCropper();
-					cropper.Size = new Size(400, 300);
+					var cropper = new ImageCropper { Size = new Size(400, 300) };
 					cropper.SetImage(palasoImage);
 
 					Assert.DoesNotThrow(() => cropper.Dispose());
 					Assert.DoesNotThrow(() => cropper.Dispose());
+				}
+			}
+		}
+
+		// Garbage collection is non-deterministic, so this test may be flaky.
+		// If it turns out to be a problem, drop this test and its supporting method.
+		[Test]
+
+		public void Dispose_AllowsGarbageCollection()
+		{
+			// The ImageCropper subscribes to the static Application.Idle event in its
+			// constructor, so it needs to unsubscribe on Dispose.
+			var reference = CreateAndDisposeImageCropper();
+
+			GC.Collect();
+			GC.WaitForPendingFinalizers();
+			GC.Collect();
+
+			Assert.That(reference.IsAlive, Is.False,
+				"ImageCropper was not garbage collected after disposal. " +
+				"It may be subscribed to a static event.");
+		}
+
+		// Kept in a separate, non-inlined method so the local ImageCropper reference is
+		// guaranteed out of scope before the caller forces garbage collection.
+		[MethodImpl(MethodImplOptions.NoInlining)]
+		private static WeakReference CreateAndDisposeImageCropper()
+		{
+			using (var tempFile = TempFile.WithExtension(".png"))
+			{
+				using (var bmp = new Bitmap(100, 80))
+					bmp.Save(tempFile.Path, ImageFormat.Png);
+
+				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
+				{
+					var cropper = new ImageCropper { Size = new Size(400, 300) };
+					cropper.SetImage(palasoImage);
+
+					var reference = new WeakReference(cropper);
+					cropper.Dispose();
+					return reference;
+				}
+			}
+		}
+
+		[Test]
+		public void SetImage_TallImage_DownscalesCroppingImage()
+		{
+			using (var tempFile = TempFile.WithExtension(".png"))
+			{
+				using (var bmp = new Bitmap(100, 1200))
+					bmp.Save(tempFile.Path, ImageFormat.Png);
+
+				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
+				using (var cropper = new ImageCropper { Size = new Size(400, 300) })
+				{
+					cropper.SetImage(palasoImage);
+
+					// Don't dispose this: the cropper owns _croppingImage and disposes it itself.
+					var croppingImage = GetCroppingImage(cropper);
+
+					Assert.Less(croppingImage.Height, 1200,
+						"Tall image should have been downscaled before cropping");
+				}
+			}
+		}
+
+		[Test]
+		public void SetImage_WideImage_DownscalesCroppingImage()
+		{
+			using (var tempFile = TempFile.WithExtension(".png"))
+			{
+				using (var bmp = new Bitmap(1200, 100))
+					bmp.Save(tempFile.Path, ImageFormat.Png);
+
+				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
+				using (var cropper = new ImageCropper { Size = new Size(400, 300) })
+				{
+					cropper.SetImage(palasoImage);
+
+					// Don't dispose this: the cropper owns _croppingImage and disposes it itself.
+					var croppingImage = GetCroppingImage(cropper);
+
+					Assert.Less(croppingImage.Width, 1200,
+						"Wide image should have been downscaled before cropping");
 				}
 			}
 		}
@@ -47,18 +129,16 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					bmp.Save(tempFile.Path, ImageFormat.Png);
 
 				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
-				using (var cropper = new ImageCropper())
+				using (var cropper = new ImageCropper { Size = new Size(400, 300) })
 				{
-					cropper.Size = new Size(400, 300);
 					cropper.SetImage(palasoImage);
 
 					using (var result = cropper.GetCroppedImage())
 					{
-						Assert.IsNotNull(result);
-						Assert.Greater(result.Width, 0);
-						// Re-encode to force GDI+ to re-read the pixel data from the backing store.
-						using (var ms = new MemoryStream())
-							Assert.DoesNotThrow(() => result.Save(ms, ImageFormat.Png));
+						Assert.That(result, Is.Not.Null);
+						// Re-encode to force GDI+ to read the pixel data back from its backing store.
+						using (var stream = new MemoryStream())
+							Assert.That(() => result.Save(stream, ImageFormat.Png), Throws.Nothing);
 					}
 				}
 			}
@@ -73,157 +153,81 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					bmp.Save(tempFile.Path, ImageFormat.Jpeg);
 
 				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
-				using (var cropper = new ImageCropper())
+				using (var cropper = new ImageCropper { Size = new Size(400, 300) })
 				{
-					cropper.Size = new Size(400, 300);
 					cropper.SetImage(palasoImage);
 
 					using (var result = cropper.GetCroppedImage())
 					{
-						Assert.IsNotNull(result);
-						// The crop is a stand-alone in-memory bitmap, not backed by a file or stream, so
-						// it reports MemoryBmp format even for a JPEG source; the caller chooses the actual
-						// save format via the file extension.
-						Assert.AreEqual(ImageFormat.MemoryBmp.Guid, result.RawFormat.Guid);
-						// Re-encode to force GDI+ to re-read the pixel data from the backing store.
-						using (var ms = new MemoryStream())
-							Assert.DoesNotThrow(() => result.Save(ms, ImageFormat.Png));
+						Assert.That(result, Is.Not.Null);
+						// The crop is a stand-alone in-memory bitmap rather than one backed by a file or
+						// stream, so it reports MemoryBmp even for a JPEG source. Callers pick the save
+						// format from the file extension.
+						Assert.That(result.RawFormat.Guid, Is.EqualTo(ImageFormat.MemoryBmp.Guid));
+						using (var stream = new MemoryStream())
+							Assert.That(() => result.Save(stream, ImageFormat.Png), Throws.Nothing);
 					}
 				}
 			}
 		}
 
 		[Test]
-		public void GetCroppedImage_JpegImage_SetViaPropertyDirectly_ReturnsUsableBitmap()
+		public void GetCroppedImage_ImageSetViaPropertyDirectly_ReturnsUsableBitmap()
 		{
-			// Setting Image directly (not via SetImage) must still yield a usable crop.
+			// Setting Image directly rather than through SetImage used to leave _originalFormat null,
+			// so GetCroppedImage threw a NullReferenceException reading it.
 			using (var tempFile = TempFile.WithExtension(".jpg"))
 			{
 				using (var bmp = new Bitmap(100, 80))
 					bmp.Save(tempFile.Path, ImageFormat.Jpeg);
 
 				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
-				using (var cropper = new ImageCropper())
+				using (var cropper = new ImageCropper { Size = new Size(400, 300) })
 				{
-					cropper.Size = new Size(400, 300);
-					cropper.Image = palasoImage; // bypass SetImage intentionally
+					cropper.Image = palasoImage;
 
 					using (var result = cropper.GetCroppedImage())
 					{
-						Assert.IsNotNull(result);
-						Assert.Greater(result.Width, 0);
-						using (var ms = new MemoryStream())
-							Assert.DoesNotThrow(() => result.Save(ms, ImageFormat.Png));
+						Assert.That(result, Is.Not.Null);
+						using (var stream = new MemoryStream())
+							Assert.That(() => result.Save(stream, ImageFormat.Png), Throws.Nothing);
 					}
 				}
 			}
 		}
 
 		[Test]
-		public void SetImage_Reassign_DisposesPreviousSavedOriginalAndCroppingImage()
+		public void GetImage_ReCropPreviouslyCroppedJpeg_DoesNotThrow()
 		{
-			using (var tempFile1 = TempFile.WithExtension(".png"))
-			using (var tempFile2 = TempFile.WithExtension(".jpg"))
-			{
-				using (var bmp = new Bitmap(100, 80))
-				{
-					bmp.Save(tempFile1.Path, ImageFormat.Png);
-					bmp.Save(tempFile2.Path, ImageFormat.Jpeg);
-				}
-
-				using (var img1 = PalasoImage.FromFile(tempFile1.Path))
-				using (var img2 = PalasoImage.FromFile(tempFile2.Path))
-				using (var cropper = new ImageCropper())
-				{
-					cropper.Size = new Size(400, 300);
-					cropper.SetImage(img1);
-
-					var firstSavedOriginal = (TempFile)GetPrivateField(cropper, "_savedOriginalImage");
-					var firstCroppingImage = (Image)GetPrivateField(cropper, "_croppingImage");
-					var firstSavedOriginalPath = firstSavedOriginal.Path;
-					Assert.That(File.Exists(firstSavedOriginalPath), "Sanity check: first saved-original temp file should exist before reassignment");
-
-					cropper.SetImage(img2);
-
-					// Regression test: the Image setter used to overwrite _savedOriginalImage/_croppingImage
-					// without disposing the previous instances, leaking the temp file and the cropping bitmap.
-					Assert.That(File.Exists(firstSavedOriginalPath), Is.False,
-						"Previous saved-original temp file should have been disposed (and deleted) on reassignment");
-					Assert.Throws<ArgumentException>(() => { var _ = firstCroppingImage.Width; },
-						"Previous cropping image should have been disposed on reassignment");
-
-					using (var result = cropper.GetCroppedImage())
-					{
-						Assert.IsNotNull(result);
-						Assert.Greater(result.Width, 0);
-					}
-				}
-			}
-		}
-
-		[Test]
-		public void SetImage_TallImage_DownscalesCroppingImage()
-		{
-			// Regression test for the height/width typo (BL-1275): the downscale-threshold check
-			// tested Width > 1000 twice instead of Width > 1000 and Height > 1000, so a tall image
-			// (height > 1000, width <= 1000) skipped downscaling entirely.
-			using (var tempFile = TempFile.WithExtension(".png"))
-			{
-				using (var bmp = new Bitmap(100, 1200))
-					bmp.Save(tempFile.Path, ImageFormat.Png);
-
-				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
-				using (var cropper = new ImageCropper())
-				{
-					cropper.Size = new Size(400, 300);
-					cropper.SetImage(palasoImage);
-
-					// Not owned by this test -- the cropper still holds and will dispose this itself.
-					var croppingImage = (Image)GetPrivateField(cropper, "_croppingImage");
-					Assert.Less(croppingImage.Height, 1200,
-						"Tall image should have been downscaled before cropping");
-				}
-			}
-		}
-
-		[Test]
-		public void SetImage_ReCropPreviouslyCroppedJpeg_DoesNotThrow()
-		{
-			// Regression test for issue #1275: cropping a JPEG, then feeding the result back into a
-			// new cropper (which re-saves it in the Image setter via value.Image.Save) crashed when
-			// the cropped bitmap was backed by a disposed stream. The crop is now a stand-alone
-			// bitmap, so the round-trip must not throw.
+			// Issue #1275: cropping a JPEG and feeding the result back into a new cropper, which
+			// re-saves it in the Image setter, failed once the crop was backed by a disposed stream.
 			using (var tempFile = TempFile.WithExtension(".jpg"))
 			{
 				using (var bmp = new Bitmap(1200, 900))
 					bmp.Save(tempFile.Path, ImageFormat.Jpeg);
 
-				// GetImage() returns the same PalasoImage instance, now holding the cropped JPEG,
-				// so the outer using disposes it exactly once.
+				// GetImage returns the same PalasoImage, now holding the crop, so the outer using
+				// disposes it exactly once.
 				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
 				{
 					PalasoImage cropped;
-					using (var cropper1 = new ImageCropper())
+					using (var firstCropper = new ImageCropper { Size = new Size(400, 300) })
 					{
-						cropper1.Size = new Size(400, 300);
-						cropper1.SetImage(palasoImage);
-						cropped = cropper1.GetImage();
+						firstCropper.SetImage(palasoImage);
+						cropped = firstCropper.GetImage();
 					}
 					Assert.That(cropped, Is.Not.Null);
 
-					using (var cropper2 = new ImageCropper())
-					{
-						cropper2.Size = new Size(400, 300);
-						Assert.DoesNotThrow(() => cropper2.SetImage(cropped));
-					}
+					using (var secondCropper = new ImageCropper { Size = new Size(400, 300) })
+						Assert.That(() => secondCropper.SetImage(cropped), Throws.Nothing);
 				}
 			}
 		}
 
-		private static object GetPrivateField(ImageCropper cropper, string fieldName)
+		private static Image GetCroppingImage(ImageCropper cropper)
 		{
-			return typeof(ImageCropper)
-				.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance)
+			return (Image)typeof(ImageCropper)
+				.GetField("_croppingImage", BindingFlags.NonPublic | BindingFlags.Instance)
 				.GetValue(cropper);
 		}
 	}

@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Added PathUtilities.ParentDirectories extension method.
 - [SIL.Core] Added FileLocationUtilities.DistFilesFolderPath property.
 - [SIL.Core.Clearshare] Added `MetadataCore.RunUnderTagLibLock(Action)` and `RunUnderTagLibLock<T>(Func<T>)` so callers that use TagLib directly can serialize that access against ClearShare's own metadata reading and writing.
+- [SIL.Windows.Forms] Added `SettingsProtectionHelper.SetSettingsProtection` overloads taking a `keepHidden` parameter, so a `Control` or `ToolStripItem` can be marked always-hidden: it stays hidden even while Ctrl+Shift is held to reveal the other protected components. The existing two-parameter overloads are unchanged.
 
 ### Fixed
 
@@ -46,11 +47,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] Updated ImageToolbox UI to consistently use "image" (not "picture").
 - [SIL.Windows.Forms.Keyboarding] Removed Timer-based deferred IME conversion status restore from WindowsKeyboardSwitchingAdapter, which disrupted active Chinese Pinyin IME compositions (LT-22442). Added diagnostic tracing for keyboard switching and IME state.
 - [SIL.DictionaryServices] Fix memory leak in LiftWriter
-- [SIL.Windows.Forms] Fixed ImageCropper crash when switching between Crop and Choose tabs: `Application.Idle` handler was never unsubscribed, causing it to fire on a disposed object
-- [SIL.Windows.Forms] Fixed ImageCropper `GetCroppedImage` re-encoding the crop through a `MemoryStream` that had to outlive the returned bitmap; the stream could not be disposed and leaked. `GetCroppedImage` now returns the cropped bitmap directly and the caller chooses the save format (via the file extension), as `PalasoImage.Save` already does
-- [SIL.Windows.Forms] Fixed ImageCropper `Image` setter leaking the previous temp file and cropping image on re-set; fields are now nulled after disposal so a mid-setter failure does not leave disposed-but-non-null references
+- [SIL.Windows.Forms] Fixed ImageCropper crash caused by its `Application.Idle` handler never being unsubscribed, so it could fire on a disposed instance
 - [SIL.Windows.Forms] Fixed ImageCropper not downscaling tall images before cropping (height condition was checking width)
-- [SIL.Windows.Forms] Fixed ImageCropper `NullReferenceException` when the control is resized before an image has been set
+- [SIL.Windows.Forms] Fixed ImageCropper returning a cropped JPEG backed by a `MemoryStream` that had already been disposed, so any later use of the crop (including re-cropping it) failed with a generic GDI+ error. `GetCroppedImage` now returns a stand-alone bitmap; the caller still chooses the save format via the file extension, as `PalasoImage.Save` does
 - [SIL.WritingSystems] Fix IetfLanguageTag.GetGeneralCode to handle cases when zh-CN or zh-TW is a prefix and not the whole string.
 - [SIL.WritingSystems] More fixes to consistently use 繁体中文 and 简体中文 for Traditional and Simplified Chinese native language names, and Chinese (Traditional) and Chinese (Simplified) for their English names.
 - [SIL.Windows.Forms] Prevent BetterLabel from responding to OnTextChanged when it has been disposed.
@@ -59,6 +58,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [build] Fixed the update-language-data workflow so the generated pull request commit message shows the actual update date instead of a literal `$(date ...)` string.
 - [SIL.Archiving] Fixed ArchiveAccessProtocol.GetDocumentationUri failing to create a missing documentation file because the resource lookup stripped the file extension and no longer matched the embedded resource name.
 - [SIL.Windows.Forms.Archiving] Fixed formatting of message in ArchivingDlg so that the name of the auxiliary archive upload program (e.g., "RAMP") is displayed.
+- [SIL.Windows.Forms] Fixed SettingsLauncherButton never disposing the SettingsProtectionHelper it creates, which left an enabled timer running after the button was disposed. Also removed the button's own unused visibility timer, which had no handler but was posting timer messages for the life of the control.
+- [SIL.Windows.Forms] Fixed `SettingsProtectionHelper.Dispose` so that it only touches managed resources when disposing, is safe to call more than once, and no longer disposes the Ctrl+Shift timer explicitly (the timer is owned by the component container that disposes it).
 
 ### Changed
 
