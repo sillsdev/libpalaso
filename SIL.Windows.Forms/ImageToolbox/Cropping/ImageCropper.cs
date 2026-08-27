@@ -148,39 +148,63 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				//other code changes the image of this palaso image, at which time the PI disposes of its copy,
 				//so we better keep our own.
 
+				// Nothing we hold for the current image is disposed until the new one is built, so
+				// a failure while building leaves us on the image we are already showing.
+
 				// save the original in a temp file instead of an Image object to free up memory
-				_savedOriginalImage = TempFile.CreateAndGetPathButDontMakeTheFile();
-				value.Image.Save(_savedOriginalImage.Path, ImageFormat.Png);
-
-				// make a reasonable sized copy to crop
-				if ((value.Image.Width > 1000) || (value.Image.Height > 1000))
+				var savedOriginalImage = TempFile.CreateAndGetPathButDontMakeTheFile();
+				Image croppingImage = null;
+				try
 				{
-					_croppingImage = CreateCroppingImage(value.Image.Height, value.Image.Width);
+					value.Image.Save(savedOriginalImage.Path, ImageFormat.Png);
 
-					var srcRect = new Rectangle(0, 0, value.Image.Width, value.Image.Height);
-					var destRect = new Rectangle(0, 0, _croppingImage.Width, _croppingImage.Height);
-
-					using (var g = Graphics.FromImage(_croppingImage))
+					// make a reasonable sized copy to crop
+					if ((value.Image.Width > 1000) || (value.Image.Height > 1000))
 					{
-						g.DrawImage(value.Image, destRect, srcRect, GraphicsUnit.Pixel);
+						croppingImage = CreateCroppingImage(value.Image.Height, value.Image.Width);
+
+						var srcRect = new Rectangle(0, 0, value.Image.Width, value.Image.Height);
+						var destRect = new Rectangle(0, 0, croppingImage.Width, croppingImage.Height);
+
+						using (var g = Graphics.FromImage(croppingImage))
+						{
+							g.DrawImage(value.Image, destRect, srcRect, GraphicsUnit.Pixel);
+						}
+					}
+					else
+					{
+						croppingImage = (Image)value.Image.Clone();
 					}
 				}
-				else
+				catch
 				{
-					_croppingImage = (Image)value.Image.Clone();
+					DisposeImageState(savedOriginalImage, croppingImage);
+					throw;
 				}
 
+				var previousSavedOriginalImage = _savedOriginalImage;
+				var previousCroppingImage = _croppingImage;
+
+				_savedOriginalImage = savedOriginalImage;
+				_croppingImage = croppingImage;
 				_image = value;
 
-				CalculateSourceImageArea();
-				CreateGrips();
-
-				foreach (var grip in Grips)
+				try
 				{
-					grip.UpdateRectangle();
-				}
+					CalculateSourceImageArea();
+					CreateGrips();
 
-				Invalidate();
+					foreach (var grip in Grips)
+					{
+						grip.UpdateRectangle();
+					}
+
+					Invalidate();
+				}
+				finally
+				{
+					DisposeImageState(previousSavedOriginalImage, previousCroppingImage);
+				}
 			}
 		}
 
@@ -449,8 +473,10 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 			}
 			else
 			{
-				_originalFormat = image.Image.RawFormat;
+				var originalFormat = image.Image.RawFormat;
 				Image = image;
+				// If the Image setter throws, _originalFormat must still describe the previous image.
+				_originalFormat = originalFormat;
 			}
 		}
 
@@ -484,30 +510,28 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 				Application.Idle -= Application_Idle;
 
-				try
-				{
-					if (_savedOriginalImage != null)
-					{
-						_savedOriginalImage.Dispose();
-						_savedOriginalImage = null;
-					}
-
-					if (_croppingImage != null)
-					{
-						_croppingImage.Dispose();
-						_croppingImage = null;
-					}
-				}
-				// BL-2680, somehow user can get in a state where we CAN'T delete a temp file.
-				// I think we can afford to just ignore it. One temp file will be leaked.
-				catch (IOException)
-				{
-				}
-				catch (UnauthorizedAccessException)
-				{
-				}
+				DisposeImageState(_savedOriginalImage, _croppingImage);
+				_savedOriginalImage = null;
+				_croppingImage = null;
 			}
 			base.Dispose(disposing);
+		}
+
+		private static void DisposeImageState(TempFile savedOriginalImage, Image croppingImage)
+		{
+			// Dispose the bitmap first: unlike deleting the temp file, it cannot fail.
+			croppingImage?.Dispose();
+
+			try
+			{
+				savedOriginalImage?.Dispose();
+			}
+			// BL-2680, somehow user can get in a state where we CAN'T delete a temp file. We can
+			// afford to just ignore it; one temp file will be leaked. TempFile.Dispose already
+			// ignores an IOException, but leaves this one to us.
+			catch (UnauthorizedAccessException)
+			{
+			}
 		}
 	}
 }
