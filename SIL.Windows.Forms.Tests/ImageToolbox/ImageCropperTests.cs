@@ -2,11 +2,11 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using NUnit.Framework;
 using SIL.IO;
+using SIL.Reflection;
 using SIL.Windows.Forms.ImageToolbox;
 using SIL.Windows.Forms.ImageToolbox.Cropping;
 
@@ -191,19 +191,12 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 
 		private static TempFile GetSavedOriginalImage(ImageCropper cropper)
 		{
-			return (TempFile)GetPrivateField(cropper, "_savedOriginalImage");
+			return (TempFile)ReflectionHelper.GetField(cropper, "_savedOriginalImage");
 		}
 
 		private static Image GetCroppingImage(ImageCropper cropper)
 		{
-			return (Image)GetPrivateField(cropper, "_croppingImage");
-		}
-
-		private static object GetPrivateField(ImageCropper cropper, string fieldName)
-		{
-			return typeof(ImageCropper)
-				.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance)
-				.GetValue(cropper);
+			return (Image)ReflectionHelper.GetField(cropper, "_croppingImage");
 		}
 	}
 }
