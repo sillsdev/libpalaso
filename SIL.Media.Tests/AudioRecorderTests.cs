@@ -98,7 +98,6 @@ namespace SIL.Media.Tests
 
 					ctrl.CreateControl();
 
-					Thread.Sleep(10);
 					Assert.That(() => recorder.BeginRecording("blah.wav"), Throws.InvalidOperationException);
 
 				}
@@ -128,7 +127,6 @@ namespace SIL.Media.Tests
 
 					ctrl.CreateControl();
 
-					Thread.Sleep(10);
 					Assert.That(() => recorder.BeginMonitoring(), Throws.InvalidOperationException);
 
 				}
