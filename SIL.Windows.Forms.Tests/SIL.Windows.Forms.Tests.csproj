@@ -29,11 +29,16 @@
   <ItemGroup>
     <PackageReference Include="L10NSharp" Version="11.0.0" />
     <PackageReference Include="L10NSharp.Windows.Forms" Version="11.0.0" />
-    <PackageReference Include="Markdig.Signed" Version="0.37.0" />
+    <!-- net8.0-windows isn't one of SIL.Core/SIL.WritingSystems's own TFMs, so a
+         net8.0-windows consumer's ProjectReference falls back to their netstandard2.0
+         build, which now requires the newer Markdig.Signed (see SIL.Core.csproj). Match
+         that here so restore doesn't see a downgrade. -->
+    <PackageReference Include="Markdig.Signed" Version="0.37.0" Condition="'$(TargetFramework)' != 'net8.0-windows'" />
+    <PackageReference Include="Markdig.Signed" Version="0.41.1" Condition="'$(TargetFramework)' == 'net8.0-windows'" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     <PackageReference Include="Moq" Version="4.18.4" />
-    <PackageReference Include="NUnit" Version="3.13.3" />
+    <PackageReference Include="NUnit" Version="3.14.0" />
     <PackageReference Include="NUnit.ConsoleRunner" Version="3.22.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.3.2" PrivateAssets="All" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />

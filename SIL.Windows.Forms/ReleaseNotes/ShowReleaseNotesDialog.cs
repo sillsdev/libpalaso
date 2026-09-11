@@ -16,7 +16,8 @@ namespace SIL.Windows.Forms.ReleaseNotes
 	/// </remarks>
 	public partial class ShowReleaseNotesDialog : Form
 	{
-		private static readonly MarkdownPipeline pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+		// internal so tests can pin down Markdig's rendering behavior for our exact pipeline config
+		internal static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
 
 		private readonly string _path;
 		private TempFile _temp;
@@ -47,7 +48,7 @@ namespace SIL.Windows.Forms.ReleaseNotes
 			_temp = TempFile.WithExtension("htm");
 			if (ApplyMarkdown)
 			{
-				File.WriteAllText(_temp.Path, GetBasicHtmlFromMarkdown(Markdown.ToHtml(contents, pipeline)));
+				File.WriteAllText(_temp.Path, GetBasicHtmlFromMarkdown(Markdown.ToHtml(contents, Pipeline)));
 			}
 			else if (contents.Contains("<html>") && contents.Contains("<body"))
 			{

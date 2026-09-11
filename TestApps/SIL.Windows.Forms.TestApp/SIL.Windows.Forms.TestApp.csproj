@@ -20,9 +20,14 @@
     <PackageReference Include="Geckofx45.64" Version="45.0.34" Condition="'$(OS)'!='Unix' And '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'=='X64'" GeneratePathProperty="true" />
     <PackageReference Include="Geckofx45.32.Linux" Version="45.0.37" Condition="'$(OS)'=='Unix' And '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'!='X64'" GeneratePathProperty="true" />
     <PackageReference Include="Geckofx45.64.Linux" Version="45.0.37" Condition="'$(OS)'=='Unix' And '$([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)'=='X64'" GeneratePathProperty="true" />
-    <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.12.0" PrivateAssets="all" />
     <PackageReference Include="Icu4c.Win.Min" Version="56.1.82" />
-    <PackageReference Include="Markdig.Signed" Version="0.37.0" />
+    <!-- net8.0-windows isn't one of SIL.Core/SIL.WritingSystems's own TFMs, so a
+         net8.0-windows consumer's ProjectReference falls back to their netstandard2.0
+         build, which now requires the newer Markdig.Signed (see SIL.Core.csproj). Match
+         that here so restore doesn't see a downgrade. -->
+    <PackageReference Include="Markdig.Signed" Version="0.37.0" Condition="'$(TargetFramework)' != 'net8.0-windows'" />
+    <PackageReference Include="Markdig.Signed" Version="0.41.1" Condition="'$(TargetFramework)' == 'net8.0-windows'" />
     <PackageReference Include="SIL.libpalaso.l10ns" Version="16.1.0" GeneratePathProperty="true" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
   </ItemGroup>
