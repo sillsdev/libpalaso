@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -199,6 +200,130 @@ namespace SIL.WritingSystems.Tests
 				repo.Save();
 				Assert.That(File.GetLastWriteTime(repo.GetFilePathFromLanguageTag("en-US")), Is.Not.EqualTo(modified));
 			}
+		}
+
+		[Test]
+		public void Save_NewAndUpdatedWritingSystem_LeavesNoTemporaryFile()
+		{
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws);
+				repo.Save();
+				ws.WindowsLcid = "test";
+				repo.Save();
+				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.tmp"), Is.Empty);
+			}
+		}
+
+		/// <summary>
+		/// A definition is built beside the old one and swapped in, so a temporary file that an
+		/// interrupted save left behind must never be mistaken for a writing system.
+		/// </summary>
+		[Test]
+		public void AllWritingSystems_StrayTemporaryFile_IgnoresIt()
+		{
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws);
+				repo.Save();
+
+				File.Copy(repo.GetFilePathFromLanguageTag("en-US"),
+					Path.Combine(repo.PathToWritingSystems, "fr.ldml.99999.tmp"));
+
+				var otherRepo = new GlobalWritingSystemRepository(e.Path);
+				Assert.That(otherRepo.Count, Is.EqualTo(1));
+				Assert.That(otherRepo.AllWritingSystems.Select(w => w.Id), Is.EquivalentTo(new[] { "en-US" }));
+			}
+		}
+
+		/// <summary>
+		/// The swap is all or nothing. When the replacement cannot be put in place, the definition
+		/// already in the store survives intact instead of being left truncated or missing.
+		/// </summary>
+		[Test]
+		[Platform(Exclude = "Linux,MacOsX",
+			Reason = "a read-only file is not a reliable way to deny a write on Unix")]
+		public void Save_CannotReplaceExistingFile_LeavesItIntact()
+		{
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws);
+				repo.Save();
+
+				string filePath = repo.GetFilePathFromLanguageTag("en-US");
+				string originalContents = File.ReadAllText(filePath);
+				File.SetAttributes(filePath, FileAttributes.ReadOnly);
+				try
+				{
+					ws.WindowsLcid = "test";
+					repo.Save();
+				}
+				finally
+				{
+					File.SetAttributes(filePath, FileAttributes.Normal);
+				}
+
+				Assert.That(File.ReadAllText(filePath), Is.EqualTo(originalContents));
+				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.tmp"), Is.Empty);
+			}
+		}
+
+		/// <summary>
+		/// A shared store is only usable by a group if its definitions stay group-writable. Replacing a
+		/// file can carry the permissions of either the replacement or the file it displaces, and the
+		/// mask that makes new files group-writable applies only while they are being created, so the
+		/// permissions that survive a save have to be checked rather than assumed.
+		/// </summary>
+		[Test]
+		[Platform(Include = "Linux", Reason = "permission bits of this kind exist only on Unix")]
+		public void Save_NewAndUpdatedWritingSystem_StaysGroupWritable()
+		{
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws);
+				repo.Save();
+
+				string filePath = repo.GetFilePathFromLanguageTag("en-US");
+				Assert.That(IsGroupWritable(filePath), Is.True,
+					$"a newly created definition should be group-writable but is {FileMode(filePath)}");
+
+				ws.WindowsLcid = "test";
+				repo.Save();
+
+				Assert.That(IsGroupWritable(filePath), Is.True,
+					$"a replaced definition should stay group-writable but is {FileMode(filePath)}");
+			}
+		}
+
+		private static string FileMode(string path)
+		{
+			var startInfo = new ProcessStartInfo("stat", $"-c %a \"{path}\"")
+			{
+				RedirectStandardOutput = true,
+				UseShellExecute = false
+			};
+			using (var process = Process.Start(startInfo))
+			{
+				string mode = process.StandardOutput.ReadToEnd().Trim();
+				process.WaitForExit();
+				return mode;
+			}
+		}
+
+		private static bool IsGroupWritable(string path)
+		{
+			string mode = FileMode(path);
+			// The group's permissions are the second digit from the right, and 2 is its write bit.
+			int group = (int) char.GetNumericValue(mode[mode.Length - 2]);
+			return (group & 2) == 2;
 		}
 
 		[Test]
