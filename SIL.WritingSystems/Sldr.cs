@@ -728,8 +728,23 @@ namespace SIL.WritingSystems
 			var writerSettings = CanonicalXmlSettings.CreateXmlWriterSettings();
 			writerSettings.NewLineOnAttributes = false;
 
-			using (var writer = XmlWriter.Create(sldrCacheFilePath, writerSettings))
-				element.WriteTo(writer);
+			// Build the cache entry beside the old one and swap it in. This cache is guarded by a
+			// machine-wide mutex that a dying process can abandon, and a truncated entry here is
+			// copied over the caller's own good LDML by GetLdmlFile. The download already claims the
+			// "tmp" extension, so the replacement uses a different one.
+			string cacheTempPath = AtomicFileReplacement.GetTempPath(sldrCacheFilePath, "new");
+			try
+			{
+				using (var writer = XmlWriter.Create(cacheTempPath, writerSettings))
+					element.WriteTo(writer);
+
+				AtomicFileReplacement.SwapIntoPlace(cacheTempPath, sldrCacheFilePath);
+			}
+			catch
+			{
+				AtomicFileReplacement.DeleteIfPresent(cacheTempPath);
+				throw;
+			}
 
 			File.Delete(filePath);
 
