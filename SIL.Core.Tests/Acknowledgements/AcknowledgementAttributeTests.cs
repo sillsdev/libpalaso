@@ -1,6 +1,7 @@
 // Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
+using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
 using SIL.Acknowledgements;
@@ -45,17 +46,24 @@ namespace SIL.Tests.Acknowledgements
 		[Test]
 		public void CreateAnAcknowledgement_NoCopyright_OverriddenByFile()
 		{
-			var ack = new AcknowledgementAttribute("testKey") { Name = "testName",
-				Location = GetDllWithPathInTestAssemblyFolder("nunit.framework.dll") } ;
-			Assert.That(ack.Copyright, Is.EqualTo("Copyright (c) 2022 Charlie Poole, Rob Prouse"));
+			// Compare against the DLL's own embedded metadata rather than a hardcoded literal,
+			// so this doesn't need updating every time the referenced NUnit package is bumped
+			// and its embedded copyright year changes.
+			var dllPath = GetDllWithPathInTestAssemblyFolder("nunit.framework.dll");
+			var expectedCopyright = FileVersionInfo.GetVersionInfo(dllPath).LegalCopyright;
+			var ack = new AcknowledgementAttribute("testKey") { Name = "testName", Location = dllPath };
+			Assert.That(ack.Copyright, Is.EqualTo(expectedCopyright));
 		}
 
 		[Test]
 		public void CreateAnAcknowledgement_NoName_OverriddenByFile()
 		{
-			var ack = new AcknowledgementAttribute("testKey") { Copyright = "myCopyright",
-				Location = GetDllWithPathInTestAssemblyFolder("nunit.framework.dll") };
-			Assert.That(ack.Name, Is.EqualTo("NUnit 3"));
+			// Compare against the DLL's own embedded metadata rather than a hardcoded literal,
+			// so this doesn't need updating if a future NUnit version changes its ProductName.
+			var dllPath = GetDllWithPathInTestAssemblyFolder("nunit.framework.dll");
+			var expectedName = FileVersionInfo.GetVersionInfo(dllPath).ProductName;
+			var ack = new AcknowledgementAttribute("testKey") { Copyright = "myCopyright", Location = dllPath };
+			Assert.That(ack.Name, Is.EqualTo(expectedName));
 		}
 
 		private static string GetDllWithPathInTestAssemblyFolder(string dllName)
