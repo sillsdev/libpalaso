@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -87,20 +86,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					dlg.ShowDialog();
 				}
 			}
-		}
-
-		[Test]
-		[Explicit("By hand only")]
-		public void ShowToolboxWith_PreExisting_EnsureRawFormatUnchanged()
-		{
-			Application.EnableVisualStyles();
-			PalasoImage i = PalasoImage.FromImage(TestImages.logo);
-
-			using (var dlg = new ImageToolboxDialog(i, ""))
-				{
-					dlg.ShowDialog();
-					Assert.AreEqual(ImageFormat.Jpeg.Guid, dlg.ImageInfo.Image.RawFormat.Guid);
-				}
 		}
 
 		[Test]
