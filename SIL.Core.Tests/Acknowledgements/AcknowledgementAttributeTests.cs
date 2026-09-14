@@ -1,8 +1,7 @@
 // Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
-using System.Diagnostics;
-using System.IO;
+using System.Reflection;
 using NUnit.Framework;
 using SIL.Acknowledgements;
 
@@ -46,34 +45,23 @@ namespace SIL.Tests.Acknowledgements
 		[Test]
 		public void CreateAnAcknowledgement_NoCopyright_OverriddenByFile()
 		{
-			// Compare against the DLL's own embedded metadata rather than a hardcoded literal,
-			// so this doesn't need updating every time the referenced NUnit package is bumped
-			// and its embedded copyright year changes.
-			var dllPath = GetDllWithPathInTestAssemblyFolder("nunit.framework.dll");
-			var expectedCopyright = FileVersionInfo.GetVersionInfo(dllPath).LegalCopyright;
-			var ack = new AcknowledgementAttribute("testKey") { Name = "testName", Location = dllPath };
-			Assert.That(ack.Copyright, Is.EqualTo(expectedCopyright));
+			// Points at this test assembly itself rather than a third-party DLL: its Copyright
+			// comes from Directory.Build.props's <Copyright> property, a value we own and only
+			// change deliberately, instead of one that silently drifts on every unrelated
+			// dependency bump.
+			var ack = new AcknowledgementAttribute("testKey") { Name = "testName",
+				Location = Assembly.GetExecutingAssembly().Location };
+			Assert.That(ack.Copyright, Is.EqualTo("Copyright © 2010-2026 SIL Global"));
 		}
 
 		[Test]
 		public void CreateAnAcknowledgement_NoName_OverriddenByFile()
 		{
-			// Compare against the DLL's own embedded metadata rather than a hardcoded literal,
-			// so this doesn't need updating if a future NUnit version changes its ProductName.
-			var dllPath = GetDllWithPathInTestAssemblyFolder("nunit.framework.dll");
-			var expectedName = FileVersionInfo.GetVersionInfo(dllPath).ProductName;
-			var ack = new AcknowledgementAttribute("testKey") { Copyright = "myCopyright", Location = dllPath };
-			Assert.That(ack.Name, Is.EqualTo(expectedName));
-		}
-
-		private static string GetDllWithPathInTestAssemblyFolder(string dllName)
-		{
-			var testAssemblyFolder =
-				Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-			Assert.IsNotNull(testAssemblyFolder, "test setup problem");
-			var dllPath = Path.Combine(testAssemblyFolder, dllName);
-			Assert.True(File.Exists(dllPath), "test setup problem");
-			return dllPath;
+			// See CreateAnAcknowledgement_NoCopyright_OverriddenByFile: ProductName here comes
+			// from Directory.Build.props's <Product> property.
+			var ack = new AcknowledgementAttribute("testKey") { Copyright = "myCopyright",
+				Location = Assembly.GetExecutingAssembly().Location };
+			Assert.That(ack.Name, Is.EqualTo("libpalaso"));
 		}
 	}
 }
