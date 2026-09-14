@@ -228,8 +228,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					{
 						Assert.That(result, Is.Not.Null);
 						// The crop is taken from the PNG temp file the cropper saves the original into,
-						// so it reports Png even for a JPEG source. Callers pick the save format from the
-						// file extension.
+						// so it reports Png even for a JPEG source.
 						Assert.That(result.RawFormat.Guid, Is.EqualTo(ImageFormat.Png.Guid));
 						using (var stream = new MemoryStream())
 							Assert.That(() => result.Save(stream, ImageFormat.Png), Throws.Nothing);
@@ -262,8 +261,9 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 		[Test]
 		public void GetCroppedImage_ImageSetViaPropertyDirectly_ReturnsUsableBitmap()
 		{
-			// Setting Image directly rather than through SetImage used to leave _originalFormat null,
-			// so GetCroppedImage threw a NullReferenceException reading it.
+			// The Image setter has to leave the cropper fully usable on its own. SetImage once did
+			// extra setup that GetCroppedImage depended on, so assigning the property directly
+			// produced a crop that threw.
 			using (var tempFile = TempFile.WithExtension(".jpg"))
 			{
 				using (var bmp = new Bitmap(100, 80))

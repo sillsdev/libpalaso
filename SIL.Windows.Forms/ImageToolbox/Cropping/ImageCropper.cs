@@ -79,7 +79,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 					grip.UpdateRectangle();
 				}
 			}
-			if(!didReportThatUserCameInHere)
+			if (!didReportThatUserCameInHere)
 			{
 				didReportThatUserCameInHere = true;
 				UsageReporter.SendNavigationNotice("ImageToolbox:Cropper");
@@ -399,6 +399,13 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 //            }
 //        }
 
+		/// <summary>
+		/// Returns the cropped image, or null if there is nothing croppable.
+		/// </summary>
+		/// <remarks>The result's <see cref="Image.RawFormat"/> is <see cref="ImageFormat.Png"/>
+		/// regardless of the source format, so save it through
+		/// <see cref="PalasoImage.Save(string)"/> or pass an explicit <see cref="ImageFormat"/>
+		/// rather than relying on the encoder being inferred.</remarks>
 		public Image GetCroppedImage()
 		{
 			if (_image == null || _image.Disposed)
@@ -428,11 +435,10 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 						selectionHeight = originalImage.Height - top;
 					var selection = new Rectangle(left, top, selectionWidth, selectionHeight);
 
-					// Clone copies the pixels out, so the crop stays valid once originalImage and its
-					// temp file are gone, and it keeps the source bit depth (copying it into a new
-					// Bitmap would widen a 1-bit PNG to 32bpp). Callers pick the save format from the
-					// file extension, so the crop reporting the temp file's Png rather than Jpeg is fine.
-					return originalImage.Clone(selection, originalImage.PixelFormat); //do the actual cropping
+					// Clone already copies the pixels out, so the crop outlives originalImage and its
+					// temp file. Don't copy it into a new Bitmap to "detach" it: that widens a 1-bit
+					// PNG to 32bpp (BL-2841) and buys nothing.
+					return originalImage.Clone(selection, originalImage.PixelFormat);
 				}
 			}
 			catch (Exception e)
