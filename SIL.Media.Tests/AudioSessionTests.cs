@@ -380,16 +380,8 @@ namespace SIL.Media.Tests
 			// at least it has been queued to start.
 			Assert.That(session.IsPlaying, Is.True);
 			Assert.DoesNotThrow(() => session.StopPlaying());
-			if (session.IsPlaying)
-			{
-#if NET462 || NET48
-				Thread.Sleep(TestNAudioWaveOutEvent.kDelayWhenStopping * 2);
-#else
-				Thread.Sleep(1000);
-#endif
-				Assert.That(session.IsPlaying, Is.False,
-					"Stop playing should have (immediately or eventually) stopped playback.");
-			}
+			Assert.That(() => session.IsPlaying, Is.False.After(10000, 20),
+				"Stop playing should have (immediately or eventually) stopped playback.");
 		}
 
 #if NET462 || NET48 // These tests won't compile in .NET 8 because WindowsAudioSession is not
@@ -457,14 +449,16 @@ namespace SIL.Media.Tests
 		/// </summary>
 		[Test]
 		[Platform(Exclude = "Linux", Reason = "Not sure where Linux implementation would fail")]
-		[Timeout(4000)]
 		public void Play_InvalidAudioFileThrowsBackgroundException_NonFatalErrorReported()
 		{
 			try
 			{
 				AudioFactory.PlaybackErrorMessage = "Yikes!";
 				using var e = new ErrorReport.NonFatalErrorReportExpected();
-				using var file = new TempFile("not valid audio");
+				// .wav so NAudio rejects it in managed code rather than handing it to Media
+				// Foundation, whose first-use startup on CI can take seconds.
+				using var file = TempFile.WithExtension(".wav");
+				RobustFile.WriteAllText(file.Path, "not valid audio");
 				using var session =
 					(ISimpleAudioWithEvents)AudioFactory.CreateAudioSession(file.Path);
 				Exception reportedExceptionInPlaybackStopped = null;
@@ -474,8 +468,8 @@ namespace SIL.Media.Tests
 				};
 				Assert.DoesNotThrow(() => session.Play(),
 					"Error should not happen in main thread");
-				while (session.IsPlaying)
-					Thread.Sleep(20);
+				Assert.That(() => e.Exception != null, Is.True.After(10000, 20),
+					"Playback failure should have been reported as a non-fatal error.");
 				Assert.That(e.Exception, Is.EqualTo(reportedExceptionInPlaybackStopped));
 				Assert.That(e.Message, Is.EqualTo("Yikes!"));
 			}

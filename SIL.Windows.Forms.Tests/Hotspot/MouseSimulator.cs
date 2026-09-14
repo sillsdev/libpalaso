@@ -56,8 +56,10 @@ public static class MouseSimulator
 
 	public static void SimulateMouseClick(this Control control, int x, int y)
 	{
-		SimulateMouseDown(control, x, y);
-		SimulateMouseUp(control, x, y);
+		// Not WM_LBUTTONDOWN/UP: WinForms only synthesizes a click from those when the
+		// control is the topmost window at that screen point, which a test cannot rely on.
+		ReflectionHelper.CallMethod(control, "OnMouseClick",
+			new MouseEventArgs(MouseButtons.Left, 1, x, y, 0));
 	}
 
 	public static void SimulateMouseMove(this HotSpot hotspot)

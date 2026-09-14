@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DictionaryServices] Fix memory leak in LiftWriter
 - [SIL.Windows.Forms] Fixed ImageCropper crash caused by its `Application.Idle` handler never being unsubscribed, so it could fire on a disposed instance
 - [SIL.Windows.Forms] Fixed ImageCropper not downscaling tall images before cropping (height condition was checking width)
+- [SIL.Windows.Forms] Fixed ImageCropper leaking the temp file and cropping bitmap built for the previous image each time it is given a new one to crop
 - [SIL.Windows.Forms] Fixed ImageCropper returning a cropped JPEG backed by a `MemoryStream` that had already been disposed, so any later use of the crop (including re-cropping it) failed with a generic GDI+ error. `GetCroppedImage` now returns a stand-alone bitmap. This is a breaking change: that bitmap's `RawFormat` is `MemoryBmp` rather than `Jpeg`, so callers that read `RawFormat`, or that call `Image.Save(path)` on the result and rely on the JPEG encoder being chosen implicitly, must now pass an explicit `ImageFormat` (or go through `PalasoImage.Save(path)`, which picks the encoder from the file extension)
 - [SIL.WritingSystems] Fix IetfLanguageTag.GetGeneralCode to handle cases when zh-CN or zh-TW is a prefix and not the whole string.
 - [SIL.WritingSystems] More fixes to consistently use 繁体中文 and 简体中文 for Traditional and Simplified Chinese native language names, and Chinese (Traditional) and Chinese (Simplified) for their English names.
@@ -60,6 +61,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Archiving] Fixed formatting of message in ArchivingDlg so that the name of the auxiliary archive upload program (e.g., "RAMP") is displayed.
 - [SIL.Windows.Forms] Fixed SettingsLauncherButton never disposing the SettingsProtectionHelper it creates, which left an enabled timer running after the button was disposed. Also removed the button's own unused visibility timer, which had no handler but was posting timer messages for the life of the control.
 - [SIL.Windows.Forms] Fixed `SettingsProtectionHelper.Dispose` so that it only touches managed resources when disposing, is safe to call more than once, and no longer disposes the Ctrl+Shift timer explicitly (the timer is owned by the component container that disposes it).
+- [SIL.WritingSystems] Fixed `GlobalWritingSystemRepository.Replace` silently failing to update a writing system, after several seconds of retries, when an earlier interrupted update had left a `.localrepoupdate` file behind. It now recovers from the interruption instead of failing on every later attempt, and no longer stalls when the writing system has no file on disk yet.
 
 ### Changed
 

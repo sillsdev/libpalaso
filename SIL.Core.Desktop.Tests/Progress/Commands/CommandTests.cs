@@ -63,7 +63,6 @@ namespace SIL.Tests.Progress.Commands
 		{
 			TestCommand cmd = new TestCommand();
 			cmd.BeginInvoke();
-			Thread.Sleep(10);
 			Assert.IsFalse(cmd.Enabled);
 			cmd.Cancel();
 			Assert.IsTrue(cmd.Canceling);
