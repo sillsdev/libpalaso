@@ -1,7 +1,9 @@
 // Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
+using System;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using SIL.Acknowledgements;
 
@@ -48,10 +50,19 @@ namespace SIL.Tests.Acknowledgements
 			// Points at this test assembly itself rather than a third-party DLL: its Copyright
 			// comes from Directory.Build.props's <Copyright> property, a value we own and only
 			// change deliberately, instead of one that silently drifts on every unrelated
-			// dependency bump.
+			// dependency bump. The end year in that property gets bumped roughly annually, so
+			// rather than hardcode it (needing a matching test edit every bump) or re-derive it
+			// dynamically (weakening the assertion), pin the fixed text and require the year to
+			// be recent: not older than 3 years (catches "we forgot to bump this"), and not in
+			// the future (catches a fat-fingered edit).
 			var ack = new AcknowledgementAttribute("testKey") { Name = "testName",
 				Location = Assembly.GetExecutingAssembly().Location };
-			Assert.That(ack.Copyright, Is.EqualTo("Copyright © 2010-2026 SIL Global"));
+
+			var match = Regex.Match(ack.Copyright, @"^Copyright © 2010-(\d{4}) SIL Global$");
+			Assert.That(match.Success, Is.True, $"Unexpected copyright format: '{ack.Copyright}'");
+			var year = int.Parse(match.Groups[1].Value);
+			Assert.That(year, Is.InRange(DateTime.Now.Year - 3, DateTime.Now.Year),
+				"Copyright end year should be recent; bump it in Directory.Build.props if this is failing because it's stale.");
 		}
 
 		[Test]
