@@ -546,17 +546,33 @@ namespace SIL.WritingSystems
 
 		private class WsStasher : IDisposable
 		{
-			private string _wsFile;
+			private readonly string _wsFile;
+			private readonly string _stashFile;
+			private bool _hasStash;
 			private const string _localrepoupdate = ".localrepoupdate";
 
 			public WsStasher(string wsFile)
 			{
 				_wsFile = wsFile;
-				RobustFile.Copy(wsFile, wsFile + _localrepoupdate);
+				_stashFile = wsFile + _localrepoupdate;
+
+				// An interrupted update left the stash as the only copy of the file, so put it back.
+				if (!File.Exists(_wsFile) && File.Exists(_stashFile))
+					RobustFile.Move(_stashFile, _wsFile);
+
+				_hasStash = File.Exists(_wsFile);
+				if (_hasStash)
+					RobustFile.Copy(_wsFile, _stashFile, overwrite: true);
 			}
+
 			public void Dispose()
 			{
-				RobustFile.Move($"{_wsFile}{_localrepoupdate}", _wsFile);
+				if (!_hasStash)
+					return;
+				// base.Replace removes the writing system before adding it back, so _wsFile is
+				// normally gone by now. Overwrite rather than rely on that ordering.
+				RobustFile.Move(_stashFile, _wsFile, overWrite: true);
+				_hasStash = false;
 			}
 		}
 	}
