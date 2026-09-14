@@ -428,13 +428,11 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 						selectionHeight = originalImage.Height - top;
 					var selection = new Rectangle(left, top, selectionWidth, selectionHeight);
 
-					using (var cropped = originalImage.Clone(selection, originalImage.PixelFormat)) //do the actual cropping
-					{
-						// Copy into a fresh, stand-alone Bitmap so the result has no lazy reference to a
-						// stream or file we'd otherwise need to keep open. The caller picks the save
-						// format via file extension, so the resulting MemoryBmp format is fine.
-						return new Bitmap(cropped);
-					}
+					// Clone copies the pixels out, so the crop stays valid once originalImage and its
+					// temp file are gone, and it keeps the source bit depth (copying it into a new
+					// Bitmap would widen a 1-bit PNG to 32bpp). Callers pick the save format from the
+					// file extension, so the crop reporting the temp file's Png rather than Jpeg is fine.
+					return originalImage.Clone(selection, originalImage.PixelFormat); //do the actual cropping
 				}
 			}
 			catch (Exception e)

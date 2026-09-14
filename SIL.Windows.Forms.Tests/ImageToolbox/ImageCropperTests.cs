@@ -227,13 +227,34 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					using (var result = cropper.GetCroppedImage())
 					{
 						Assert.That(result, Is.Not.Null);
-						// The crop is a stand-alone in-memory bitmap rather than one backed by a file or
-						// stream, so it reports MemoryBmp even for a JPEG source. Callers pick the save
-						// format from the file extension.
-						Assert.That(result.RawFormat.Guid, Is.EqualTo(ImageFormat.MemoryBmp.Guid));
+						// The crop is taken from the PNG temp file the cropper saves the original into,
+						// so it reports Png even for a JPEG source. Callers pick the save format from the
+						// file extension.
+						Assert.That(result.RawFormat.Guid, Is.EqualTo(ImageFormat.Png.Guid));
 						using (var stream = new MemoryStream())
 							Assert.That(() => result.Save(stream, ImageFormat.Png), Throws.Nothing);
 					}
+				}
+			}
+		}
+
+		[Test]
+		public void GetCroppedImage_OneBitPng_PreservesPixelFormat()
+		{
+			// Copying the crop into a new Bitmap to detach it would widen this to 32bpp, undoing the
+			// bit-depth preservation PalasoImage.SaveImageSafely goes out of its way to get (BL-2841).
+			using (var tempFile = TempFile.WithExtension(".png"))
+			{
+				using (var bmp = new Bitmap(100, 80, PixelFormat.Format1bppIndexed))
+					bmp.Save(tempFile.Path, ImageFormat.Png);
+
+				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
+				using (var cropper = new ImageCropper { Size = new Size(400, 300) })
+				{
+					cropper.SetImage(palasoImage);
+
+					using (var result = cropper.GetCroppedImage())
+						Assert.That(result.PixelFormat, Is.EqualTo(PixelFormat.Format1bppIndexed));
 				}
 			}
 		}
