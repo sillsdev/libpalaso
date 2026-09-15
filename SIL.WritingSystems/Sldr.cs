@@ -502,14 +502,28 @@ namespace SIL.WritingSystems
 					if (string.IsNullOrEmpty(cachedETag) || !cachedETag.Equals(eTag)
 						|| !File.Exists(cachedAllTagsPath))
 					{
+						// Download beside the cached copy and swap it in, so an interrupted download
+						// leaves the previous tags rather than a truncated file. The ETag is recorded
+						// only once that has happened: written first, it would mark a torn file as
+						// current, and since a present file is not re-fetched while its ETag matches,
+						// nothing would ever replace it.
+						var tagsTempPath = AtomicFileReplacement.GetTempPath(cachedAllTagsPath, "new");
+						try
+						{
+							using (var input = webResponse.GetResponseStream())
+							using (var output = File.Create(tagsTempPath))
+								input.CopyTo(output);
+
+							AtomicFileReplacement.SwapIntoPlace(tagsTempPath, cachedAllTagsPath);
+						}
+						catch
+						{
+							AtomicFileReplacement.DeleteIfPresent(tagsTempPath);
+							throw;
+						}
+
 						if (!string.IsNullOrEmpty(eTag))
 							File.WriteAllText(cachedETagPath, eTag);
-
-						using var input = webResponse.GetResponseStream();
-						if (File.Exists(cachedAllTagsPath))
-							File.Delete(cachedAllTagsPath);
-						using var output = File.OpenWrite(cachedAllTagsPath);
-						input.CopyTo(output);
 					}
 				}
 				catch (WebException)

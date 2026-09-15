@@ -12,7 +12,8 @@ namespace SIL.Tests.Threading
 		private const string LocalOnlyVariable = "SIL_CORE_MAKE_GLOBAL_MUTEX_LOCAL_ONLY";
 
 		private const string NotAbandonableReason =
-			"A Monitor is released when its owning thread exits, so it cannot be abandoned.";
+			"A Monitor carries no abandonment signal, and an owner that exits without releasing " +
+			"leaves it held, so abandoning one here would hang the test rather than report anything.";
 
 		private readonly bool _localOnly;
 		private readonly string _previousLocalOnlyValue;
