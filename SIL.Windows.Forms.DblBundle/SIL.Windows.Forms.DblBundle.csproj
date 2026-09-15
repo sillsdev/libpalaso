@@ -22,7 +22,7 @@
     <PackageReference Include="Markdig.Signed" Version="0.37.0" Condition="'$(TargetFramework)' != 'net8.0-windows'" />
     <PackageReference Include="Markdig.Signed" Version="0.41.1" Condition="'$(TargetFramework)' == 'net8.0-windows'" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="3.1.1" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="3.3.1-beta0001" PrivateAssets="All" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
   </ItemGroup>
 
