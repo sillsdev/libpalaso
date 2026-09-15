@@ -479,6 +479,56 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(Directory.GetFiles(environment.FilePath, "*.new"), Is.Empty);
 		}
 
+		/// <summary>
+		/// An approved entry supersedes the uid-qualified entry it came from, and removing that one
+		/// is what leaves the cache with a complete copy either way. An update that cannot be put in
+		/// place has to leave the entry it was superseding behind.
+		/// </summary>
+		[Test]
+		[Platform(Exclude = "Linux,MacOsX",
+			Reason = "a read-only file is not a reliable way to deny a write on Unix")]
+		public void MoveTmpToCache_ApprovedUpdateCannotBePutInPlace_KeepsSupersededEntry()
+		{
+			using var environment = new TestEnvironment();
+			const string ietfLanguageTag = "en";
+			const string originalUid = "e2ccb575";
+			var content =
+				@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version number='$Revision: 11161 $'/>
+		<generation date='$Date: 2015-01-30 22:33 +0000 $'/>
+		<language type='en'/>
+		<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
+			<sil:identity source='cldr' draft='approved' revid='53d542ba498f40f437f7723e69dcf64dab6c9794' uid='e2ccb575'/>
+		</special>
+		<script type='Latn'/>
+	</identity>
+</ldml>".Replace("\'", "\"");
+
+			var supersededPath = Path.Combine(environment.FilePath,
+				$"{ietfLanguageTag}-{originalUid}.{"ldml"}");
+			File.WriteAllText(supersededPath, content);
+			var cachePath = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml");
+			File.WriteAllText(cachePath, content);
+			var tmpPath = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml.tmp");
+			File.WriteAllText(tmpPath, content);
+
+			File.SetAttributes(cachePath, FileAttributes.ReadOnly);
+			try
+			{
+				Assert.That(() => Sldr.MoveTmpToCache(tmpPath, originalUid), Throws.Exception);
+			}
+			finally
+			{
+				File.SetAttributes(cachePath, FileAttributes.Normal);
+			}
+
+			Assert.That(File.Exists(supersededPath), Is.True,
+				"an update that could not be put in place must leave the entry it supersedes");
+			Assert.That(Directory.GetFiles(environment.FilePath, "*.new"), Is.Empty);
+		}
+
 		private const string MinimalLdmlContent =
 			@"<?xml version=""1.0"" encoding=""utf-8""?>
 <ldml>

@@ -214,8 +214,48 @@ namespace SIL.WritingSystems.Tests
 				ws.WindowsLcid = "test";
 				repo.Save();
 				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.tmp"), Is.Empty);
+				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.bak"), Is.Empty);
 			}
 		}
+
+		/// <summary>
+		/// A writing system generated from a template begins as a copy of it. That copy has to reach
+		/// the store the same way any other definition does, so that a save interrupted while it is
+		/// being made cannot leave a partial definition behind.
+		/// </summary>
+		[Test]
+		public void Save_WritingSystemFromTemplate_StoresItAndLeavesNoTemporaryFile()
+		{
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			using (var templates = CreateTemporaryFolder("TemplateSource"))
+			{
+				string templatePath = Path.Combine(templates.Path, "fr.ldml");
+				File.WriteAllText(templatePath, FrenchTemplateLdml);
+
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("fr") { Template = templatePath };
+				repo.Set(ws);
+				repo.Save();
+
+				Assert.That(File.Exists(repo.GetFilePathFromLanguageTag("fr")), Is.True);
+				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.tmp"), Is.Empty);
+				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.bak"), Is.Empty);
+				Assert.That(File.Exists(templatePath), Is.True, "the template itself must be left alone");
+
+				var reread = new GlobalWritingSystemRepository(e.Path);
+				Assert.That(reread.AllWritingSystems.Select(w => w.Id), Is.EquivalentTo(new[] { "fr" }));
+			}
+		}
+
+		private const string FrenchTemplateLdml =
+			@"<?xml version=""1.0"" encoding=""utf-8""?>
+<ldml>
+	<identity>
+		<version number=""$Revision: 11161 $""/>
+		<generation date=""$Date: 2015-01-30 22:33 +0000 $""/>
+		<language type=""fr""/>
+	</identity>
+</ldml>";
 
 		/// <summary>
 		/// A definition is built beside the old one and swapped in, so a temporary file that an
