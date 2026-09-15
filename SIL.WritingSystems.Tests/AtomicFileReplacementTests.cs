@@ -1,0 +1,136 @@
+using System.Diagnostics;
+using System.IO;
+using NUnit.Framework;
+using SIL.IO;
+using SIL.TestUtilities;
+
+namespace SIL.WritingSystems.Tests
+{
+	[TestFixture]
+	public class AtomicFileReplacementTests
+	{
+		private static TemporaryFolder CreateTemporaryFolder(string testName)
+		{
+			return new TemporaryFolder($"{testName}_{Path.GetRandomFileName()}");
+		}
+
+		[Test]
+		public void GetTempPath_IsBesideTheTargetAndNamedForThisProcess()
+		{
+			string targetPath = Path.Combine("some", "where", "en.ldml");
+
+			string tempPath = AtomicFileReplacement.GetTempPath(targetPath, "tmp");
+
+			using (Process process = Process.GetCurrentProcess())
+				Assert.That(tempPath, Is.EqualTo($"{targetPath}.{process.Id}.tmp"));
+			Assert.That(Path.GetDirectoryName(tempPath), Is.EqualTo(Path.GetDirectoryName(targetPath)));
+		}
+
+		[Test]
+		public void SwapIntoPlace_TargetExists_TakesItsPlaceAndIsConsumed()
+		{
+			using (var folder = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				string targetPath = Path.Combine(folder.Path, "target.txt");
+				File.WriteAllText(targetPath, "previous contents");
+				string tempPath = AtomicFileReplacement.GetTempPath(targetPath, "tmp");
+				File.WriteAllText(tempPath, "new contents");
+
+				AtomicFileReplacement.SwapIntoPlace(tempPath, targetPath);
+
+				Assert.That(File.ReadAllText(targetPath), Is.EqualTo("new contents"));
+				Assert.That(File.Exists(tempPath), Is.False);
+			}
+		}
+
+		[Test]
+		public void SwapIntoPlace_TargetDoesNotExist_MovesIntoPlace()
+		{
+			using (var folder = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				string targetPath = Path.Combine(folder.Path, "target.txt");
+				string tempPath = AtomicFileReplacement.GetTempPath(targetPath, "tmp");
+				File.WriteAllText(tempPath, "new contents");
+
+				AtomicFileReplacement.SwapIntoPlace(tempPath, targetPath);
+
+				Assert.That(File.ReadAllText(targetPath), Is.EqualTo("new contents"));
+				Assert.That(File.Exists(tempPath), Is.False);
+			}
+		}
+
+		/// <summary>
+		/// Replacing a file can carry the permissions of either the replacement or the file it
+		/// displaces, and which one varies by file system. The replacement's are the ones the write
+		/// intended, so they are the ones that have to survive.
+		/// </summary>
+		[Test]
+		[Platform(Include = "Linux,MacOsX", Reason = "permission bits of this kind exist only on Unix")]
+		public void SwapIntoPlace_TargetExists_KeepsTheReplacementsPermissions()
+		{
+			const uint groupWritable = 0x1B4; // 0664: rw-rw-r--
+			const uint ownerOnly = 0x180;     // 0600: rw-------
+
+			using (var folder = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				string targetPath = Path.Combine(folder.Path, "target.txt");
+				File.WriteAllText(targetPath, "previous contents");
+				Assert.That(UnixFilePermissions.TrySetMode(targetPath, ownerOnly), Is.True);
+
+				string tempPath = AtomicFileReplacement.GetTempPath(targetPath, "tmp");
+				File.WriteAllText(tempPath, "new contents");
+				Assert.That(UnixFilePermissions.TrySetMode(tempPath, groupWritable), Is.True);
+
+				AtomicFileReplacement.SwapIntoPlace(tempPath, targetPath);
+
+				Assert.That(UnixFilePermissions.TryGetMode(targetPath, out uint mode), Is.True);
+				Assert.That(mode, Is.EqualTo(groupWritable));
+			}
+		}
+
+		[Test]
+		public void SwapIntoPlace_TargetExists_LeavesNoBackupBehind()
+		{
+			using (var folder = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				string targetPath = Path.Combine(folder.Path, "target.txt");
+				File.WriteAllText(targetPath, "previous contents");
+				string tempPath = AtomicFileReplacement.GetTempPath(targetPath, "tmp");
+				File.WriteAllText(tempPath, "new contents");
+
+				AtomicFileReplacement.SwapIntoPlace(tempPath, targetPath);
+
+				Assert.That(Directory.GetFiles(folder.Path), Is.EquivalentTo(new[] { targetPath }));
+			}
+		}
+
+		[Test]
+		public void DeleteIfPresent_FilePresent_RemovesIt()
+		{
+			using (var folder = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				string tempPath = Path.Combine(folder.Path, "leftover.tmp");
+				File.WriteAllText(tempPath, "abandoned part way through");
+
+				AtomicFileReplacement.DeleteIfPresent(tempPath);
+
+				Assert.That(File.Exists(tempPath), Is.False);
+			}
+		}
+
+		/// <summary>
+		/// Cleanup runs while the caller is handling a more important failure, so it must not raise one
+		/// of its own over a file that was never created.
+		/// </summary>
+		[Test]
+		public void DeleteIfPresent_FileMissing_DoesNothing()
+		{
+			using (var folder = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				string tempPath = Path.Combine(folder.Path, "never-written.tmp");
+
+				Assert.That(() => AtomicFileReplacement.DeleteIfPresent(tempPath), Throws.Nothing);
+			}
+		}
+	}
+}
