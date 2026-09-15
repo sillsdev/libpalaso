@@ -699,6 +699,10 @@ namespace SIL.WritingSystems
 			var identityElem = element.Element("identity");
 			var specialElem = identityElem?.NonAltElement("special");
 			var silIdentityElem = specialElem?.Element(Sil + "identity");
+			// An approved entry supersedes the uid-qualified entry it came from, which is removed
+			// only once the replacement is in place. Removing it first would leave an interrupted
+			// update with neither entry, where the cache had a complete one to fall back on.
+			var supersededFile = string.Empty;
 			if (silIdentityElem != null)
 			{
 				if ((string) silIdentityElem.Attribute("draft") == "approved")
@@ -707,12 +711,8 @@ namespace SIL.WritingSystems
 					uid = string.Empty;
 					silIdentityElem.SetOptionalAttributeValue("uid", uid);
 
-					// Clean out original LDML file that contains uid in cache
-					var originalFile = string.Empty;
 					if (!string.IsNullOrEmpty(originalUid) && (originalUid != DefaultUserId))
-						originalFile = sldrCacheFilePath.Replace("." + LdmlExtension, "-" + originalUid + "." + LdmlExtension);
-					if (File.Exists(originalFile))
-						File.Delete(originalFile);
+						supersededFile = sldrCacheFilePath.Replace("." + LdmlExtension, "-" + originalUid + "." + LdmlExtension);
 				}
 				else
 					uid = (string) silIdentityElem.Attribute("uid");
@@ -745,6 +745,9 @@ namespace SIL.WritingSystems
 				AtomicFileReplacement.DeleteIfPresent(cacheTempPath);
 				throw;
 			}
+
+			if (supersededFile != string.Empty && File.Exists(supersededFile))
+				File.Delete(supersededFile);
 
 			File.Delete(filePath);
 
