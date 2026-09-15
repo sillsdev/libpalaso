@@ -15,13 +15,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
-    <PackageReference Include="JetBrains.Annotations" Version="2024.3.0">
+    <PackageReference Include="GitVersion.MsBuild" Version="5.12.0" PrivateAssets="all" />
+    <PackageReference Include="JetBrains.Annotations" Version="2026.2.0">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Markdig.Signed" Version="0.37.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="3.1.1" PrivateAssets="All" />
+    <!-- net8.0-windows isn't one of SIL.Core/SIL.WritingSystems's own TFMs, so a
+         net8.0-windows consumer's ProjectReference falls back to their netstandard2.0
+         build, which now requires the newer Markdig.Signed (see SIL.Core.csproj). Match
+         that here so restore doesn't see a downgrade. -->
+    <PackageReference Include="Markdig.Signed" Version="0.37.0" Condition="'$(TargetFramework)' != 'net8.0-windows'" />
+    <PackageReference Include="Markdig.Signed" Version="0.41.1" Condition="'$(TargetFramework)' == 'net8.0-windows'" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="3.3.1-beta0001" PrivateAssets="All" />
     <PackageReference Include="System.IO.Compression" Version="4.3.0" />
     <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />

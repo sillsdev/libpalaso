@@ -8,10 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.12.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     <PackageReference Include="Mono.Unix" Version="7.1.0-final.1.21458.1" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="3.1.1" PrivateAssets="All" />
+    <!-- SIL.ReleaseTasks 3.3.0 pulls in Microsoft.Build.Tasks.Core, which has no net462/net48
+         asset and is consumed via its netstandard2.0 fallback there, which disrupts implicit
+         WindowsBase/System.IO.Packaging resolution for those TFMs (see SIL.Archiving.Tests).
+         netstandard2.0 itself is unaffected, so only it gets the newer version. Revisit once
+         SIL.ReleaseTasks/Microsoft.Build.Tasks.Core ship a net462-compatible asset, or once
+         the net462/net48 WindowsBase interaction has been tested and ruled safe. -->
+    <PackageReference Include="SIL.ReleaseTasks" Version="3.3.1-beta0001" PrivateAssets="All" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="3.3.1-beta0001" PrivateAssets="All" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
   </ItemGroup>
 
