@@ -227,7 +227,9 @@ namespace SIL.Threading
 			{
 				Unlink();
 
-				// A Monitor is released when its owning thread exits, so it is never left abandoned.
+				// A Monitor has no abandonment to report: it carries no such signal, and an owner that
+				// exits without releasing leaves it held rather than abandoned, so a later waiter
+				// blocks instead of being told anything. Local-only locking cannot recover from that.
 				wasAbandoned = false;
 
 				_lock = s_locks.GetOrAdd(_name, _ => {

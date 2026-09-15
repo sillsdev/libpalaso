@@ -24,7 +24,9 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Gets a path beside <paramref name="targetPath"/> to build a replacement in. The process ID
 		/// keeps processes sharing the directory from colliding on it even when the mutex guarding the
-		/// store has been reduced to a local-only lock.
+		/// store has been reduced to a local-only lock. It does not distinguish writers within one
+		/// process, so a caller must hold its store's lock across the whole build-and-swap rather than
+		/// letting a second write to the same target begin part way through.
 		/// </summary>
 		/// <param name="extension">
 		/// Extension for the temporary file, without a leading dot. It must be one that nothing
@@ -51,13 +53,25 @@ namespace SIL.WritingSystems
 
 			if (File.Exists(targetPath))
 			{
+				// Replacing is atomic only where the file system can do it. Where it cannot, the
+				// target is copied over and an interrupted copy leaves it partial, so keep the
+				// contents being displaced until the replacement is complete. The atomic path pays
+				// only a rename for that; the copying path pays a copy, and is the one that needs it.
+				string backupPath = GetTempPath(targetPath, "bak");
 				try
 				{
-					RobustFile.Replace(tempPath, targetPath, null);
+					try
+					{
+						RobustFile.Replace(tempPath, targetPath, backupPath);
+					}
+					catch (Exception e) when (e is IOException || e is NotSupportedException)
+					{
+						RobustFile.ReplaceByCopyDelete(tempPath, targetPath, backupPath);
+					}
 				}
-				catch (Exception e) when (e is IOException || e is NotSupportedException)
+				finally
 				{
-					RobustFile.ReplaceByCopyDelete(tempPath, targetPath, null);
+					DeleteIfPresent(backupPath);
 				}
 			}
 			else
