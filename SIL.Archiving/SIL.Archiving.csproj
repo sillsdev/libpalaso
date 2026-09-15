@@ -31,8 +31,8 @@
          netstandard2.0 itself is unaffected, so only it gets the newer version. Revisit once
          SIL.ReleaseTasks/Microsoft.Build.Tasks.Core ship a net462-compatible asset, or once
          the net462/net48 WindowsBase interaction has been tested and ruled safe. -->
-    <PackageReference Include="SIL.ReleaseTasks" Version="3.1.1" PrivateAssets="All" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="3.3.0" PrivateAssets="All" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="3.3.1-beta0001" PrivateAssets="All" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="3.3.1-beta0001" PrivateAssets="All" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
     <PackageReference Include="System.IO.Compression" Version="4.3.0" />
     <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
     <PackageReference Include="System.Memory" Version="4.6.3" />
