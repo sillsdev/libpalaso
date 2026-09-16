@@ -29,7 +29,7 @@
     <PackageReference Include="Mono.Unix" Version="7.1.0-final.1.21458.1" />
     <PackageReference Include="TagLibSharp" Version="2.3.0" />
     <PackageReference Include="GitVersion.MsBuild" Version="5.12.0" PrivateAssets="all" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="3.1.1" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="3.3.1-beta0003" PrivateAssets="All" />
     <PackageReference Include="System.Resources.Extensions" Version="10.0.12" />
     <PackageReference Include="System.Memory" Version="4.6.3" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
