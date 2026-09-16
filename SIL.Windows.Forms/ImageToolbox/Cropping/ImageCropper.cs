@@ -482,11 +482,8 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 			if (_image == null || _image.Disposed)
 				return null;
 
-			// The user opened the cropper but didn't crop, so leave the image alone. Replacing it
-			// with a copy of itself round-tripped through the PNG temp file would cost us the
-			// original's format and bit depth, and the copy would keep that temp file locked
-			// (BL-1275).
 			if (NothingCropped)
+				// GetCroppedImage would cost us the original format and bit depth (BL-1275).
 				return _image;
 
 			Image x = GetCroppedImage();

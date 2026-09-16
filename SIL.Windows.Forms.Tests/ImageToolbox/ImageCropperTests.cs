@@ -211,8 +211,9 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 			}
 		}
 
-		[Test]
-		public void GetCroppedImage_JpegImage_ReturnsUsableBitmap()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void GetCroppedImage_JpegImage_ReturnsUsableBitmap(bool moveGrip)
 		{
 			using (var tempFile = TempFile.WithExtension(".jpg"))
 			{
@@ -223,41 +224,16 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 				using (var cropper = new ImageCropper { Size = new Size(400, 300) })
 				{
 					cropper.SetImage(palasoImage);
+					if (moveGrip)
+						MoveRightGripIn(cropper);
 
 					using (var result = cropper.GetCroppedImage())
 					{
 						Assert.That(result, Is.Not.Null);
-						// The crop is read back from the PNG temp file, so it is never in the
-						// source's format. With the grips unmoved it is the whole of that file and
-						// reports Png; a real crop reports MemoryBmp.
-						Assert.That(result.RawFormat.Guid, Is.EqualTo(ImageFormat.Png.Guid));
-						using (var stream = new MemoryStream())
-							Assert.That(() => result.Save(stream, ImageFormat.Png), Throws.Nothing);
-					}
-				}
-			}
-		}
-
-		[Test]
-		public void GetCroppedImage_GripMoved_ReturnsDetachedBitmap()
-		{
-			// The whole-image case (unmoved grips) and the partial case take different paths
-			// through GDI+, so cover both.
-			using (var tempFile = TempFile.WithExtension(".jpg"))
-			{
-				using (var bmp = new Bitmap(100, 80))
-					bmp.Save(tempFile.Path, ImageFormat.Jpeg);
-
-				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
-				using (var cropper = new ImageCropper { Size = new Size(400, 300) })
-				{
-					cropper.SetImage(palasoImage);
-					MoveRightGripIn(cropper);
-
-					using (var result = cropper.GetCroppedImage())
-					{
-						Assert.That(result, Is.Not.Null);
-						Assert.That(result.RawFormat.Guid, Is.EqualTo(ImageFormat.MemoryBmp.Guid));
+						// Cropping goes via a PNG temp file, so never Jpeg: a partial selection is
+						// copied out of it (MemoryBmp), the whole image stays attached to it (Png).
+						var expectedFormat = moveGrip ? ImageFormat.MemoryBmp : ImageFormat.Png;
+						Assert.That(result.RawFormat.Guid, Is.EqualTo(expectedFormat.Guid));
 						using (var stream = new MemoryStream())
 							Assert.That(() => result.Save(stream, ImageFormat.Png), Throws.Nothing);
 					}
@@ -268,8 +244,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 		[Test]
 		public void GetImage_NothingCropped_ReturnsImageUntouched()
 		{
-			// Going in and back out of the Crop tab without cropping used to replace the image with
-			// a copy of itself round-tripped through the PNG temp file, losing the original format.
 			using (var tempFile = TempFile.WithExtension(".jpg"))
 			{
 				using (var bmp = new Bitmap(100, 80))
