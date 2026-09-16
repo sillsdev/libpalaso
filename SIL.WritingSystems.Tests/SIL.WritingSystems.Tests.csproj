@@ -18,7 +18,7 @@
 <!--    this reference is required to exhibit an issue where the icu.net version for net8.0 conflicts with the version used by SIL.WritingSystems-->
     <PackageReference Include="icu.net" Version="3.0.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.3.2" PrivateAssets="All" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="3.3.1-beta0001" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="3.3.1-beta0003" PrivateAssets="All" />
     <PackageReference Include="Spart" Version="1.0.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
   </ItemGroup>
