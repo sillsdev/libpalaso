@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SIL.IO;
 using SIL.Reporting;
@@ -402,8 +403,8 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 		/// <summary>
 		/// Returns the cropped image, or null if there is nothing croppable.
 		/// </summary>
-		/// <remarks>The result's <see cref="Image.RawFormat"/> is <see cref="ImageFormat.Png"/>
-		/// regardless of the source format, so save it through
+		/// <remarks>The result is a stand-alone bitmap, so its <see cref="Image.RawFormat"/> is
+		/// <see cref="ImageFormat.MemoryBmp"/> regardless of the source format. Save it through
 		/// <see cref="PalasoImage.Save(string)"/> or pass an explicit <see cref="ImageFormat"/>
 		/// rather than relying on the encoder being inferred.</remarks>
 		public Image GetCroppedImage()
@@ -435,9 +436,11 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 						selectionHeight = originalImage.Height - top;
 					var selection = new Rectangle(left, top, selectionWidth, selectionHeight);
 
-					// Clone already copies the pixels out, so the crop outlives originalImage and its
-					// temp file. Don't copy it into a new Bitmap to "detach" it: that widens a 1-bit
-					// PNG to 32bpp (BL-2841) and buys nothing.
+					// A partial Clone copies the pixels out, but a whole-image one (what unmoved
+					// grips give us) shares originalImage's file-backed data, keeping
+					// _savedOriginalImage locked for as long as the caller holds the crop.
+					if (selection == new Rectangle(Point.Empty, originalImage.Size))
+						return CopyDetached(originalImage);
 					return originalImage.Clone(selection, originalImage.PixelFormat);
 				}
 			}
@@ -447,6 +450,54 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				ErrorReport.NotifyUserOfProblem(e, "Sorry, there was a problem getting the image");
 				return null;
 			}
+		}
+
+		/// <summary>
+		/// Copies <paramref name="source"/> into a stand-alone bitmap of the same pixel format,
+		/// sharing nothing with the source or with the file the source was loaded from.
+		/// </summary>
+		/// <remarks>Copies the rows by hand because <c>new Bitmap(source)</c> would widen a 1-bit
+		/// PNG to 32bpp (BL-2841).</remarks>
+		private static Bitmap CopyDetached(Bitmap source)
+		{
+			var bounds = new Rectangle(Point.Empty, source.Size);
+			var copy = new Bitmap(bounds.Width, bounds.Height, source.PixelFormat);
+			try
+			{
+				if ((source.PixelFormat & PixelFormat.Indexed) != 0)
+					copy.Palette = source.Palette;
+				copy.SetResolution(source.HorizontalResolution, source.VerticalResolution);
+
+				var sourceData = source.LockBits(bounds, ImageLockMode.ReadOnly, source.PixelFormat);
+				try
+				{
+					var copyData = copy.LockBits(bounds, ImageLockMode.WriteOnly, source.PixelFormat);
+					try
+					{
+						var bytesPerRow = Math.Min(Math.Abs(sourceData.Stride), Math.Abs(copyData.Stride));
+						var row = new byte[bytesPerRow];
+						for (var y = 0; y < bounds.Height; y++)
+						{
+							Marshal.Copy(IntPtr.Add(sourceData.Scan0, y * sourceData.Stride), row, 0, bytesPerRow);
+							Marshal.Copy(row, 0, IntPtr.Add(copyData.Scan0, y * copyData.Stride), bytesPerRow);
+						}
+					}
+					finally
+					{
+						copy.UnlockBits(copyData);
+					}
+				}
+				finally
+				{
+					source.UnlockBits(sourceData);
+				}
+			}
+			catch
+			{
+				copy.Dispose();
+				throw;
+			}
+			return copy;
 		}
 
 		public void SetImage(PalasoImage image)

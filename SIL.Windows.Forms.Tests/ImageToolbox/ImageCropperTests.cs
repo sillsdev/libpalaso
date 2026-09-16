@@ -227,12 +227,70 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					using (var result = cropper.GetCroppedImage())
 					{
 						Assert.That(result, Is.Not.Null);
-						// The crop is taken from the PNG temp file the cropper saves the original into,
-						// so it reports Png even for a JPEG source.
-						Assert.That(result.RawFormat.Guid, Is.EqualTo(ImageFormat.Png.Guid));
+						// The crop is a stand-alone bitmap, not one backed by the source file, so it
+						// reports MemoryBmp whatever the source format was.
+						Assert.That(result.RawFormat.Guid, Is.EqualTo(ImageFormat.MemoryBmp.Guid));
 						using (var stream = new MemoryStream())
 							Assert.That(() => result.Save(stream, ImageFormat.Png), Throws.Nothing);
 					}
+				}
+			}
+		}
+
+		[Test]
+		public void GetCroppedImage_GripMoved_ReturnsDetachedBitmap()
+		{
+			// The whole-image case (unmoved grips) and the partial case take different paths
+			// through GDI+, so cover both.
+			using (var tempFile = TempFile.WithExtension(".jpg"))
+			{
+				using (var bmp = new Bitmap(100, 80))
+					bmp.Save(tempFile.Path, ImageFormat.Jpeg);
+
+				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
+				using (var cropper = new ImageCropper { Size = new Size(400, 300) })
+				{
+					cropper.SetImage(palasoImage);
+					MoveRightGripIn(cropper);
+
+					using (var result = cropper.GetCroppedImage())
+					{
+						Assert.That(result, Is.Not.Null);
+						Assert.That(result.RawFormat.Guid, Is.EqualTo(ImageFormat.MemoryBmp.Guid));
+						using (var stream = new MemoryStream())
+							Assert.That(() => result.Save(stream, ImageFormat.Png), Throws.Nothing);
+					}
+				}
+			}
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void GetCroppedImage_CropOutlivesCropper_SavedOriginalTempFileIsDeleted(bool moveGrip)
+		{
+			// A crop that still shares the saved-original's file-backed data keeps that temp file
+			// locked, so the delete in Dispose fails and the file is leaked.
+			using (var tempFile = TempFile.WithExtension(".jpg"))
+			{
+				using (var bmp = new Bitmap(100, 80))
+					bmp.Save(tempFile.Path, ImageFormat.Jpeg);
+
+				Image crop;
+				string savedOriginalPath;
+				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
+				{
+					using (var cropper = new ImageCropper { Size = new Size(400, 300) })
+					{
+						cropper.SetImage(palasoImage);
+						savedOriginalPath = GetSavedOriginalImage(cropper).Path;
+						if (moveGrip)
+							MoveRightGripIn(cropper);
+						crop = cropper.GetCroppedImage();
+					}
+
+					using (crop)
+						Assert.That(File.Exists(savedOriginalPath), Is.False,
+							"Saved-original temp file should have been deleted even though the crop is still alive");
 				}
 			}
 		}
@@ -310,6 +368,15 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 						Assert.That(() => secondCropper.SetImage(cropped), Throws.Nothing);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Drags the right grip inward, so the selection is no longer the whole image.
+		/// </summary>
+		private static void MoveRightGripIn(ImageCropper cropper)
+		{
+			var rightGrip = (Grip)ReflectionHelper.GetField(cropper, "_rightGrip");
+			rightGrip.Value -= 20;
 		}
 
 		private static TempFile GetSavedOriginalImage(ImageCropper cropper)
