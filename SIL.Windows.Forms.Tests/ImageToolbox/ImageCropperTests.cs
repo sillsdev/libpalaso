@@ -227,9 +227,10 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					using (var result = cropper.GetCroppedImage())
 					{
 						Assert.That(result, Is.Not.Null);
-						// The crop is a stand-alone bitmap, not one backed by the source file, so it
-						// reports MemoryBmp whatever the source format was.
-						Assert.That(result.RawFormat.Guid, Is.EqualTo(ImageFormat.MemoryBmp.Guid));
+						// The crop is read back from the PNG temp file, so it is never in the
+						// source's format. With the grips unmoved it is the whole of that file and
+						// reports Png; a real crop reports MemoryBmp.
+						Assert.That(result.RawFormat.Guid, Is.EqualTo(ImageFormat.Png.Guid));
 						using (var stream = new MemoryStream())
 							Assert.That(() => result.Save(stream, ImageFormat.Png), Throws.Nothing);
 					}
@@ -264,33 +265,57 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 			}
 		}
 
+		[Test]
+		public void GetImage_NothingCropped_ReturnsImageUntouched()
+		{
+			// Going in and back out of the Crop tab without cropping used to replace the image with
+			// a copy of itself round-tripped through the PNG temp file, losing the original format.
+			using (var tempFile = TempFile.WithExtension(".jpg"))
+			{
+				using (var bmp = new Bitmap(100, 80))
+					bmp.Save(tempFile.Path, ImageFormat.Jpeg);
+
+				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
+				using (var cropper = new ImageCropper { Size = new Size(400, 300) })
+				{
+					cropper.SetImage(palasoImage);
+					var imageBefore = palasoImage.Image;
+					var rawFormatBefore = imageBefore.RawFormat.Guid;
+
+					var result = cropper.GetImage();
+
+					Assert.That(result, Is.SameAs(palasoImage));
+					Assert.That(result.Image, Is.SameAs(imageBefore), "The image itself should not have been replaced");
+					Assert.That(result.Image.RawFormat.Guid, Is.EqualTo(rawFormatBefore));
+				}
+			}
+		}
+
 		[TestCase(true)]
 		[TestCase(false)]
-		public void GetCroppedImage_CropOutlivesCropper_SavedOriginalTempFileIsDeleted(bool moveGrip)
+		public void GetImage_ResultOutlivesCropper_SavedOriginalTempFileIsDeleted(bool moveGrip)
 		{
-			// A crop that still shares the saved-original's file-backed data keeps that temp file
+			// A result that still shares the saved-original's file-backed data keeps that temp file
 			// locked, so the delete in Dispose fails and the file is leaked.
 			using (var tempFile = TempFile.WithExtension(".jpg"))
 			{
 				using (var bmp = new Bitmap(100, 80))
 					bmp.Save(tempFile.Path, ImageFormat.Jpeg);
 
-				Image crop;
-				string savedOriginalPath;
 				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
 				{
+					string savedOriginalPath;
 					using (var cropper = new ImageCropper { Size = new Size(400, 300) })
 					{
 						cropper.SetImage(palasoImage);
 						savedOriginalPath = GetSavedOriginalImage(cropper).Path;
 						if (moveGrip)
 							MoveRightGripIn(cropper);
-						crop = cropper.GetCroppedImage();
+						Assert.That(cropper.GetImage(), Is.Not.Null);
 					}
 
-					using (crop)
-						Assert.That(File.Exists(savedOriginalPath), Is.False,
-							"Saved-original temp file should have been deleted even though the crop is still alive");
+					Assert.That(File.Exists(savedOriginalPath), Is.False,
+						"Saved-original temp file should have been deleted even though the result is still alive");
 				}
 			}
 		}
@@ -360,6 +385,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					using (var firstCropper = new ImageCropper { Size = new Size(400, 300) })
 					{
 						firstCropper.SetImage(palasoImage);
+						MoveRightGripIn(firstCropper); // otherwise GetImage has nothing to do
 						cropped = firstCropper.GetImage();
 					}
 					Assert.That(cropped, Is.Not.Null);

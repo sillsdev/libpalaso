@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SIL.IO;
 using SIL.Reporting;
@@ -364,6 +363,20 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 			get { return new Grip[] {_leftGrip, _rightGrip}; }
 		}
 
+		/// <summary>
+		/// True when every grip is still at the edge it started on, so a "crop" would just be the
+		/// whole image again.
+		/// </summary>
+		private bool NothingCropped
+		{
+			get
+			{
+				return _leftGrip.Value == 0 && _topGrip.Value == 0 &&
+					_rightGrip.Value == _sourceImageArea.Width &&
+					_bottomGrip.Value == _sourceImageArea.Height;
+			}
+		}
+
 		private void ImageCropper_MouseDown(object sender, MouseEventArgs e)
 		{
 
@@ -403,10 +416,14 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 		/// <summary>
 		/// Returns the cropped image, or null if there is nothing croppable.
 		/// </summary>
-		/// <remarks>The result is a stand-alone bitmap, so its <see cref="Image.RawFormat"/> is
-		/// <see cref="ImageFormat.MemoryBmp"/> regardless of the source format. Save it through
-		/// <see cref="PalasoImage.Save(string)"/> or pass an explicit <see cref="ImageFormat"/>
-		/// rather than relying on the encoder being inferred.</remarks>
+		/// <remarks>The crop is taken from a PNG temp file, so the result is never in the source's
+		/// format: <see cref="Image.RawFormat"/> is <see cref="ImageFormat.MemoryBmp"/> for a real
+		/// crop and <see cref="ImageFormat.Png"/> when the selection is the whole image. Save it
+		/// through <see cref="PalasoImage.Save(string)"/> or pass an explicit
+		/// <see cref="ImageFormat"/> rather than relying on the encoder being inferred.
+		/// <para>A whole-image result also shares the temp file it was read from, keeping it
+		/// locked until the result is disposed. <see cref="GetImage"/> never asks for one; it
+		/// returns the image untouched when nothing has been cropped.</para></remarks>
 		public Image GetCroppedImage()
 		{
 			if (_image == null || _image.Disposed)
@@ -436,11 +453,6 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 						selectionHeight = originalImage.Height - top;
 					var selection = new Rectangle(left, top, selectionWidth, selectionHeight);
 
-					// A partial Clone copies the pixels out, but a whole-image one (what unmoved
-					// grips give us) shares originalImage's file-backed data, keeping
-					// _savedOriginalImage locked for as long as the caller holds the crop.
-					if (selection == new Rectangle(Point.Empty, originalImage.Size))
-						return CopyDetached(originalImage);
 					return originalImage.Clone(selection, originalImage.PixelFormat);
 				}
 			}
@@ -450,54 +462,6 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				ErrorReport.NotifyUserOfProblem(e, "Sorry, there was a problem getting the image");
 				return null;
 			}
-		}
-
-		/// <summary>
-		/// Copies <paramref name="source"/> into a stand-alone bitmap of the same pixel format,
-		/// sharing nothing with the source or with the file the source was loaded from.
-		/// </summary>
-		/// <remarks>Copies the rows by hand because <c>new Bitmap(source)</c> would widen a 1-bit
-		/// PNG to 32bpp (BL-2841).</remarks>
-		private static Bitmap CopyDetached(Bitmap source)
-		{
-			var bounds = new Rectangle(Point.Empty, source.Size);
-			var copy = new Bitmap(bounds.Width, bounds.Height, source.PixelFormat);
-			try
-			{
-				if ((source.PixelFormat & PixelFormat.Indexed) != 0)
-					copy.Palette = source.Palette;
-				copy.SetResolution(source.HorizontalResolution, source.VerticalResolution);
-
-				var sourceData = source.LockBits(bounds, ImageLockMode.ReadOnly, source.PixelFormat);
-				try
-				{
-					var copyData = copy.LockBits(bounds, ImageLockMode.WriteOnly, source.PixelFormat);
-					try
-					{
-						var bytesPerRow = Math.Min(Math.Abs(sourceData.Stride), Math.Abs(copyData.Stride));
-						var row = new byte[bytesPerRow];
-						for (var y = 0; y < bounds.Height; y++)
-						{
-							Marshal.Copy(IntPtr.Add(sourceData.Scan0, y * sourceData.Stride), row, 0, bytesPerRow);
-							Marshal.Copy(row, 0, IntPtr.Add(copyData.Scan0, y * copyData.Stride), bytesPerRow);
-						}
-					}
-					finally
-					{
-						copy.UnlockBits(copyData);
-					}
-				}
-				finally
-				{
-					source.UnlockBits(sourceData);
-				}
-			}
-			catch
-			{
-				copy.Dispose();
-				throw;
-			}
-			return copy;
 		}
 
 		public void SetImage(PalasoImage image)
@@ -514,8 +478,18 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 		public PalasoImage GetImage()
 		{
-			Image x = GetCroppedImage();
 			// BL-5830 somehow user was cropping an image and this PalasoImage was already disposed
+			if (_image == null || _image.Disposed)
+				return null;
+
+			// The user opened the cropper but didn't crop, so leave the image alone. Replacing it
+			// with a copy of itself round-tripped through the PNG temp file would cost us the
+			// original's format and bit depth, and the copy would keep that temp file locked
+			// (BL-1275).
+			if (NothingCropped)
+				return _image;
+
+			Image x = GetCroppedImage();
 			if (x == null || _image.Disposed)
 				return null;
 			//we want to retain the metdata of the PalasoImage we started with; we just want to update its actual image
