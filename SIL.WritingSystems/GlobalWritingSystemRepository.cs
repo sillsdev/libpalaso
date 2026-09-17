@@ -353,24 +353,36 @@ namespace SIL.WritingSystems
 			base.Set(ws);
 
 			string writingSystemFilePath = GetFilePathFromLanguageTag(ws.Id);
-			if (!File.Exists(writingSystemFilePath) && !string.IsNullOrEmpty(ws.Template))
+			// Build the new definition beside the old one and swap it in, rather than writing over the
+			// live file, so that an interrupted save cannot leave the writing system with a truncated
+			// definition or no file at all. The store enumerates "*.ldml", which no temporary file
+			// matches, so a leftover is ignored rather than loaded as a writing system.
+			string tempFilePath = AtomicFileReplacement.GetTempPath(writingSystemFilePath, "tmp");
+
+			// A writing system generated from a template begins as a copy of it. That copy seeds the
+			// temporary file, so the template never reaches the live path part written either.
+			bool seededFromTemplate = !File.Exists(writingSystemFilePath) && !string.IsNullOrEmpty(ws.Template);
+			if (seededFromTemplate)
 			{
-				// this is a new writing system that was generated from a template, so copy the template over before saving
-				File.Copy(ws.Template, writingSystemFilePath);
+				using (new FileModeOverride())
+					File.Copy(ws.Template, tempFilePath, true);
 				ws.Template = null;
 			}
 
-			if (!ws.IsChanged && File.Exists(writingSystemFilePath) && !_addedWritingSystems.Contains(ws.Id))
+			if (!ws.IsChanged && (seededFromTemplate || File.Exists(writingSystemFilePath))
+				&& !_addedWritingSystems.Contains(ws.Id))
+			{
+				// Nothing to write, but a template copy still has to reach the store.
+				if (seededFromTemplate)
+					AtomicFileReplacement.SwapIntoPlace(tempFilePath, writingSystemFilePath);
 				return; // no need to save (better to preserve the modified date)
+			}
 
 			if (ws.IsChanged)
 				ws.DateModified = DateTime.UtcNow;
 
-			MemoryStream oldData = GetDataToMergeWithInSave(writingSystemFilePath);
-			if (File.Exists(writingSystemFilePath))
-			{
-				File.Delete(writingSystemFilePath);
-			}
+			MemoryStream oldData = GetDataToMergeWithInSave(
+				seededFromTemplate ? tempFilePath : writingSystemFilePath);
 
 			var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 			try
@@ -381,8 +393,9 @@ namespace SIL.WritingSystems
 				// configuration of the package which allows group access.
 				using (new FileModeOverride())
 				{
-					ldmlDataMapper.Write(writingSystemFilePath, ws, oldData);
+					ldmlDataMapper.Write(tempFilePath, ws, oldData);
 				}
+				AtomicFileReplacement.SwapIntoPlace(tempFilePath, writingSystemFilePath);
 				var fi = new FileInfo(writingSystemFilePath);
 				_lastFileStats[ws.Id] = Tuple.Create(fi.LastWriteTime, fi.Length);
 			}
@@ -391,6 +404,12 @@ namespace SIL.WritingSystems
 				// If we can't save the changes, too bad. Inability to save locally is typically caught
 				// when we go to open the modify dialog. If we can't make the global store consistent,
 				// as we well may not be able to in a client-server mode, too bad.
+				AtomicFileReplacement.DeleteIfPresent(tempFilePath);
+			}
+			catch
+			{
+				AtomicFileReplacement.DeleteIfPresent(tempFilePath);
+				throw;
 			}
 			ws.AcceptChanges();
 		}

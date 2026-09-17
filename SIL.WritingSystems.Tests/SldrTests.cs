@@ -432,6 +432,114 @@ namespace SIL.WritingSystems.Tests
 			AssertThatXmlIn.File(filename).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@uid='e2ccb575']", environment.NamespaceManager);
 		}
 
+		[Test]
+		public void MoveTmpToCache_LeavesNoTemporaryFile()
+		{
+			using var environment = new TestEnvironment();
+			const string ietfLanguageTag = "en";
+			var tmpFilename = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml.tmp");
+			File.WriteAllText(tmpFilename, MinimalLdmlContent);
+
+			Sldr.MoveTmpToCache(tmpFilename, string.Empty);
+
+			Assert.That(File.Exists(Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml")), Is.True);
+			Assert.That(Directory.GetFiles(environment.FilePath, "*.new"), Is.Empty);
+			Assert.That(File.Exists(tmpFilename), Is.False);
+		}
+
+		/// <summary>
+		/// The entry is built beside the old one and swapped in, so a swap that cannot complete has to
+		/// leave the cached entry as it was. A truncated entry here is copied over the caller's own
+		/// good LDML by GetLdmlFile and reported as FromCache.
+		/// </summary>
+		[Test]
+		[Platform(Exclude = "Linux,MacOsX",
+			Reason = "a read-only file is not a reliable way to deny a write on Unix")]
+		public void MoveTmpToCache_CannotReplaceExistingEntry_LeavesItIntact()
+		{
+			using var environment = new TestEnvironment();
+			const string ietfLanguageTag = "en";
+			var cacheFilename = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml");
+			File.WriteAllText(cacheFilename, MinimalLdmlContent);
+			var originalContents = File.ReadAllText(cacheFilename);
+			var tmpFilename = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml.tmp");
+			File.WriteAllText(tmpFilename, MinimalLdmlContent);
+
+			File.SetAttributes(cacheFilename, FileAttributes.ReadOnly);
+			try
+			{
+				Assert.That(() => Sldr.MoveTmpToCache(tmpFilename, string.Empty), Throws.Exception);
+			}
+			finally
+			{
+				File.SetAttributes(cacheFilename, FileAttributes.Normal);
+			}
+
+			Assert.That(File.ReadAllText(cacheFilename), Is.EqualTo(originalContents));
+			Assert.That(Directory.GetFiles(environment.FilePath, "*.new"), Is.Empty);
+		}
+
+		/// <summary>
+		/// An approved entry supersedes the uid-qualified entry it came from, and removing that one
+		/// is what leaves the cache with a complete copy either way. An update that cannot be put in
+		/// place has to leave the entry it was superseding behind.
+		/// </summary>
+		[Test]
+		[Platform(Exclude = "Linux,MacOsX",
+			Reason = "a read-only file is not a reliable way to deny a write on Unix")]
+		public void MoveTmpToCache_ApprovedUpdateCannotBePutInPlace_KeepsSupersededEntry()
+		{
+			using var environment = new TestEnvironment();
+			const string ietfLanguageTag = "en";
+			const string originalUid = "e2ccb575";
+			var content =
+				@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version number='$Revision: 11161 $'/>
+		<generation date='$Date: 2015-01-30 22:33 +0000 $'/>
+		<language type='en'/>
+		<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
+			<sil:identity source='cldr' draft='approved' revid='53d542ba498f40f437f7723e69dcf64dab6c9794' uid='e2ccb575'/>
+		</special>
+		<script type='Latn'/>
+	</identity>
+</ldml>".Replace("\'", "\"");
+
+			var supersededPath = Path.Combine(environment.FilePath,
+				$"{ietfLanguageTag}-{originalUid}.{"ldml"}");
+			File.WriteAllText(supersededPath, content);
+			var cachePath = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml");
+			File.WriteAllText(cachePath, content);
+			var tmpPath = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml.tmp");
+			File.WriteAllText(tmpPath, content);
+
+			File.SetAttributes(cachePath, FileAttributes.ReadOnly);
+			try
+			{
+				Assert.That(() => Sldr.MoveTmpToCache(tmpPath, originalUid), Throws.Exception);
+			}
+			finally
+			{
+				File.SetAttributes(cachePath, FileAttributes.Normal);
+			}
+
+			Assert.That(File.Exists(supersededPath), Is.True,
+				"an update that could not be put in place must leave the entry it supersedes");
+			Assert.That(Directory.GetFiles(environment.FilePath, "*.new"), Is.Empty);
+		}
+
+		private const string MinimalLdmlContent =
+			@"<?xml version=""1.0"" encoding=""utf-8""?>
+<ldml>
+	<identity>
+		<version number=""$Revision: 11161 $""/>
+		<generation date=""$Date: 2015-01-30 22:33 +0000 $""/>
+		<language type=""en""/>
+		<script type=""Latn""/>
+	</identity>
+</ldml>";
+
 		#endregion
 
 		/// <summary>

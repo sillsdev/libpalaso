@@ -502,14 +502,28 @@ namespace SIL.WritingSystems
 					if (string.IsNullOrEmpty(cachedETag) || !cachedETag.Equals(eTag)
 						|| !File.Exists(cachedAllTagsPath))
 					{
+						// Download beside the cached copy and swap it in, so an interrupted download
+						// leaves the previous tags rather than a truncated file. The ETag is recorded
+						// only once that has happened: written first, it would mark a torn file as
+						// current, and since a present file is not re-fetched while its ETag matches,
+						// nothing would ever replace it.
+						var tagsTempPath = AtomicFileReplacement.GetTempPath(cachedAllTagsPath, "new");
+						try
+						{
+							using (var input = webResponse.GetResponseStream())
+							using (var output = File.Create(tagsTempPath))
+								input.CopyTo(output);
+
+							AtomicFileReplacement.SwapIntoPlace(tagsTempPath, cachedAllTagsPath);
+						}
+						catch
+						{
+							AtomicFileReplacement.DeleteIfPresent(tagsTempPath);
+							throw;
+						}
+
 						if (!string.IsNullOrEmpty(eTag))
 							File.WriteAllText(cachedETagPath, eTag);
-
-						using var input = webResponse.GetResponseStream();
-						if (File.Exists(cachedAllTagsPath))
-							File.Delete(cachedAllTagsPath);
-						using var output = File.OpenWrite(cachedAllTagsPath);
-						input.CopyTo(output);
 					}
 				}
 				catch (WebException)
@@ -699,6 +713,10 @@ namespace SIL.WritingSystems
 			var identityElem = element.Element("identity");
 			var specialElem = identityElem?.NonAltElement("special");
 			var silIdentityElem = specialElem?.Element(Sil + "identity");
+			// An approved entry supersedes the uid-qualified entry it came from, which is removed
+			// only once the replacement is in place. Removing it first would leave an interrupted
+			// update with neither entry, where the cache had a complete one to fall back on.
+			var supersededFile = string.Empty;
 			if (silIdentityElem != null)
 			{
 				if ((string) silIdentityElem.Attribute("draft") == "approved")
@@ -707,12 +725,8 @@ namespace SIL.WritingSystems
 					uid = string.Empty;
 					silIdentityElem.SetOptionalAttributeValue("uid", uid);
 
-					// Clean out original LDML file that contains uid in cache
-					var originalFile = string.Empty;
 					if (!string.IsNullOrEmpty(originalUid) && (originalUid != DefaultUserId))
-						originalFile = sldrCacheFilePath.Replace("." + LdmlExtension, "-" + originalUid + "." + LdmlExtension);
-					if (File.Exists(originalFile))
-						File.Delete(originalFile);
+						supersededFile = sldrCacheFilePath.Replace("." + LdmlExtension, "-" + originalUid + "." + LdmlExtension);
 				}
 				else
 					uid = (string) silIdentityElem.Attribute("uid");
@@ -728,8 +742,26 @@ namespace SIL.WritingSystems
 			var writerSettings = CanonicalXmlSettings.CreateXmlWriterSettings();
 			writerSettings.NewLineOnAttributes = false;
 
-			using (var writer = XmlWriter.Create(sldrCacheFilePath, writerSettings))
-				element.WriteTo(writer);
+			// Build the cache entry beside the old one and swap it in. This cache is guarded by a
+			// machine-wide mutex that a dying process can abandon, and a truncated entry here is
+			// copied over the caller's own good LDML by GetLdmlFile. The download already claims the
+			// "tmp" extension, so the replacement uses a different one.
+			string cacheTempPath = AtomicFileReplacement.GetTempPath(sldrCacheFilePath, "new");
+			try
+			{
+				using (var writer = XmlWriter.Create(cacheTempPath, writerSettings))
+					element.WriteTo(writer);
+
+				AtomicFileReplacement.SwapIntoPlace(cacheTempPath, sldrCacheFilePath);
+			}
+			catch
+			{
+				AtomicFileReplacement.DeleteIfPresent(cacheTempPath);
+				throw;
+			}
+
+			if (supersededFile != string.Empty && File.Exists(supersededFile))
+				File.Delete(supersededFile);
 
 			File.Delete(filePath);
 
