@@ -1,7 +1,9 @@
 // Copyright (c) 2025 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
-using System.IO;
+using System;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using SIL.Acknowledgements;
 
@@ -45,27 +47,32 @@ namespace SIL.Tests.Acknowledgements
 		[Test]
 		public void CreateAnAcknowledgement_NoCopyright_OverriddenByFile()
 		{
+			// Points at this test assembly itself rather than a third-party DLL: its Copyright
+			// comes from Directory.Build.props's <Copyright> property, a value we own and only
+			// change deliberately, instead of one that silently drifts on every unrelated
+			// dependency bump. The end year in that property gets bumped roughly annually, so
+			// rather than hardcode it (needing a matching test edit every bump) or re-derive it
+			// dynamically (weakening the assertion), pin the fixed text and require the year to
+			// be recent: not older than 3 years (catches "we forgot to bump this"), and not in
+			// the future (catches a fat-fingered edit).
 			var ack = new AcknowledgementAttribute("testKey") { Name = "testName",
-				Location = GetDllWithPathInTestAssemblyFolder("nunit.framework.dll") } ;
-			Assert.That(ack.Copyright, Is.EqualTo("Copyright (c) 2022 Charlie Poole, Rob Prouse"));
+				Location = Assembly.GetExecutingAssembly().Location };
+
+			var match = Regex.Match(ack.Copyright, @"^Copyright © 2010-(\d{4}) SIL Global$");
+			Assert.That(match.Success, Is.True, $"Unexpected copyright format: '{ack.Copyright}'");
+			var year = int.Parse(match.Groups[1].Value);
+			Assert.That(year, Is.InRange(DateTime.Now.Year - 3, DateTime.Now.Year),
+				"Copyright end year should be recent; bump it in Directory.Build.props if this is failing because it's stale.");
 		}
 
 		[Test]
 		public void CreateAnAcknowledgement_NoName_OverriddenByFile()
 		{
+			// See CreateAnAcknowledgement_NoCopyright_OverriddenByFile: ProductName here comes
+			// from Directory.Build.props's <Product> property.
 			var ack = new AcknowledgementAttribute("testKey") { Copyright = "myCopyright",
-				Location = GetDllWithPathInTestAssemblyFolder("nunit.framework.dll") };
-			Assert.That(ack.Name, Is.EqualTo("NUnit 3"));
-		}
-
-		private static string GetDllWithPathInTestAssemblyFolder(string dllName)
-		{
-			var testAssemblyFolder =
-				Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-			Assert.IsNotNull(testAssemblyFolder, "test setup problem");
-			var dllPath = Path.Combine(testAssemblyFolder, dllName);
-			Assert.True(File.Exists(dllPath), "test setup problem");
-			return dllPath;
+				Location = Assembly.GetExecutingAssembly().Location };
+			Assert.That(ack.Name, Is.EqualTo("libpalaso"));
 		}
 	}
 }

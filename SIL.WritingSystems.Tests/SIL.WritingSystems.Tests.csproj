@@ -10,15 +10,15 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageReference Include="GitVersion.MsBuild" Version="5.11.1" PrivateAssets="all" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.12.0" PrivateAssets="all" />
     <PackageReference Include="Icu4c.Win.Min" Version="56.1.82" IncludeAssets="build" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     <PackageReference Include="NDesk.DBus" Version="0.15.0" />
-    <PackageReference Include="NUnit" Version="3.13.3" />
+    <PackageReference Include="NUnit" Version="3.14.0" />
 <!--    this reference is required to exhibit an issue where the icu.net version for net8.0 conflicts with the version used by SIL.WritingSystems-->
-    <PackageReference Include="icu.net" Version="3.0.1" />
+    <PackageReference Include="icu.net" Version="3.0.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.3.2" PrivateAssets="All" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="3.1.1" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="3.3.1-beta0003" PrivateAssets="All" />
     <PackageReference Include="Spart" Version="1.0.0" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2" />
   </ItemGroup>
