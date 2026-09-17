@@ -173,8 +173,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 					unusableBitmap.Dispose();
 					var unusableImage = PalasoImage.FromImage(unusableBitmap);
 
-					// Assign the property rather than calling SetImage: SetImage reads
-					// image.Image.RawFormat first, which would throw before the setter is entered.
 					Assert.Throws<ArgumentException>(() => cropper.Image = unusableImage);
 
 					Assert.That(GetSavedOriginalImage(cropper), Is.SameAs(savedOriginalImage),
@@ -187,6 +185,198 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 						"A failed assignment must not dispose the cropping image still in use");
 				}
 			}
+		}
+
+		[Test]
+		public void GetCroppedImage_PngImage_ReturnsUsableBitmap()
+		{
+			using (var tempFile = TempFile.WithExtension(".png"))
+			{
+				using (var bmp = new Bitmap(100, 80))
+					bmp.Save(tempFile.Path, ImageFormat.Png);
+
+				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
+				using (var cropper = new ImageCropper { Size = new Size(400, 300) })
+				{
+					cropper.SetImage(palasoImage);
+
+					using (var result = cropper.GetCroppedImage())
+					{
+						Assert.That(result, Is.Not.Null);
+						// Re-encode to force GDI+ to read the pixel data back from its backing store.
+						using (var stream = new MemoryStream())
+							Assert.That(() => result.Save(stream, ImageFormat.Png), Throws.Nothing);
+					}
+				}
+			}
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void GetCroppedImage_JpegImage_ReturnsUsableBitmap(bool moveGrip)
+		{
+			using (var tempFile = TempFile.WithExtension(".jpg"))
+			{
+				using (var bmp = new Bitmap(100, 80))
+					bmp.Save(tempFile.Path, ImageFormat.Jpeg);
+
+				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
+				using (var cropper = new ImageCropper { Size = new Size(400, 300) })
+				{
+					cropper.SetImage(palasoImage);
+					if (moveGrip)
+						MoveRightGripIn(cropper);
+
+					using (var result = cropper.GetCroppedImage())
+					{
+						Assert.That(result, Is.Not.Null);
+						// Cropping goes via a PNG temp file, so never Jpeg: a partial selection is
+						// copied out of it (MemoryBmp), the whole image stays attached to it (Png).
+						var expectedFormat = moveGrip ? ImageFormat.MemoryBmp : ImageFormat.Png;
+						Assert.That(result.RawFormat.Guid, Is.EqualTo(expectedFormat.Guid));
+						using (var stream = new MemoryStream())
+							Assert.That(() => result.Save(stream, ImageFormat.Png), Throws.Nothing);
+					}
+				}
+			}
+		}
+
+		[Test]
+		public void GetImage_NothingCropped_ReturnsImageUntouched()
+		{
+			using (var tempFile = TempFile.WithExtension(".jpg"))
+			{
+				using (var bmp = new Bitmap(100, 80))
+					bmp.Save(tempFile.Path, ImageFormat.Jpeg);
+
+				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
+				using (var cropper = new ImageCropper { Size = new Size(400, 300) })
+				{
+					cropper.SetImage(palasoImage);
+					var imageBefore = palasoImage.Image;
+					var rawFormatBefore = imageBefore.RawFormat.Guid;
+
+					var result = cropper.GetImage();
+
+					Assert.That(result, Is.SameAs(palasoImage));
+					Assert.That(result.Image, Is.SameAs(imageBefore), "The image itself should not have been replaced");
+					Assert.That(result.Image.RawFormat.Guid, Is.EqualTo(rawFormatBefore));
+				}
+			}
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void GetImage_ResultOutlivesCropper_SavedOriginalTempFileIsDeleted(bool moveGrip)
+		{
+			// A result that still shares the saved-original's file-backed data keeps that temp file
+			// locked, so the delete in Dispose fails and the file is leaked.
+			using (var tempFile = TempFile.WithExtension(".jpg"))
+			{
+				using (var bmp = new Bitmap(100, 80))
+					bmp.Save(tempFile.Path, ImageFormat.Jpeg);
+
+				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
+				{
+					string savedOriginalPath;
+					using (var cropper = new ImageCropper { Size = new Size(400, 300) })
+					{
+						cropper.SetImage(palasoImage);
+						savedOriginalPath = GetSavedOriginalImage(cropper).Path;
+						if (moveGrip)
+							MoveRightGripIn(cropper);
+						Assert.That(cropper.GetImage(), Is.Not.Null);
+					}
+
+					Assert.That(File.Exists(savedOriginalPath), Is.False,
+						"Saved-original temp file should have been deleted even though the result is still alive");
+				}
+			}
+		}
+
+		[Test]
+		public void GetCroppedImage_OneBitPng_PreservesPixelFormat()
+		{
+			// Copying the crop into a new Bitmap to detach it would widen this to 32bpp, undoing the
+			// bit-depth preservation PalasoImage.SaveImageSafely goes out of its way to get (BL-2841).
+			using (var tempFile = TempFile.WithExtension(".png"))
+			{
+				using (var bmp = new Bitmap(100, 80, PixelFormat.Format1bppIndexed))
+					bmp.Save(tempFile.Path, ImageFormat.Png);
+
+				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
+				using (var cropper = new ImageCropper { Size = new Size(400, 300) })
+				{
+					cropper.SetImage(palasoImage);
+
+					using (var result = cropper.GetCroppedImage())
+						Assert.That(result.PixelFormat, Is.EqualTo(PixelFormat.Format1bppIndexed));
+				}
+			}
+		}
+
+		[Test]
+		public void GetCroppedImage_ImageSetViaPropertyDirectly_ReturnsUsableBitmap()
+		{
+			// The Image setter has to leave the cropper fully usable on its own. SetImage once did
+			// extra setup that GetCroppedImage depended on, so assigning the property directly
+			// produced a crop that threw.
+			using (var tempFile = TempFile.WithExtension(".jpg"))
+			{
+				using (var bmp = new Bitmap(100, 80))
+					bmp.Save(tempFile.Path, ImageFormat.Jpeg);
+
+				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
+				using (var cropper = new ImageCropper { Size = new Size(400, 300) })
+				{
+					cropper.Image = palasoImage;
+
+					using (var result = cropper.GetCroppedImage())
+					{
+						Assert.That(result, Is.Not.Null);
+						using (var stream = new MemoryStream())
+							Assert.That(() => result.Save(stream, ImageFormat.Png), Throws.Nothing);
+					}
+				}
+			}
+		}
+
+		[Test]
+		public void GetImage_ReCropPreviouslyCroppedJpeg_DoesNotThrow()
+		{
+			// Issue #1275: cropping a JPEG and feeding the result back into a new cropper, which
+			// re-saves it in the Image setter, failed once the crop was backed by a disposed stream.
+			using (var tempFile = TempFile.WithExtension(".jpg"))
+			{
+				using (var bmp = new Bitmap(1200, 900))
+					bmp.Save(tempFile.Path, ImageFormat.Jpeg);
+
+				// GetImage returns the same PalasoImage, now holding the crop, so the outer using
+				// disposes it exactly once.
+				using (var palasoImage = PalasoImage.FromFile(tempFile.Path))
+				{
+					PalasoImage cropped;
+					using (var firstCropper = new ImageCropper { Size = new Size(400, 300) })
+					{
+						firstCropper.SetImage(palasoImage);
+						MoveRightGripIn(firstCropper); // otherwise GetImage has nothing to do
+						cropped = firstCropper.GetImage();
+					}
+					Assert.That(cropped, Is.Not.Null);
+
+					using (var secondCropper = new ImageCropper { Size = new Size(400, 300) })
+						Assert.That(() => secondCropper.SetImage(cropped), Throws.Nothing);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Drags the right grip inward, so the selection is no longer the whole image.
+		/// </summary>
+		private static void MoveRightGripIn(ImageCropper cropper)
+		{
+			var rightGrip = (Grip)ReflectionHelper.GetField(cropper, "_rightGrip");
+			rightGrip.Value -= 20;
 		}
 
 		private static TempFile GetSavedOriginalImage(ImageCropper cropper)

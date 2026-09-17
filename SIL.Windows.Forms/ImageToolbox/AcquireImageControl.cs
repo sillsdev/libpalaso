@@ -127,7 +127,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 							{
 								var msg = "Sorry, there was a problem loading that image.".Localize(
 									"ImageToolbox.ProblemLoadingImage");
-								if (ImageLoadingExceptionReporter!= null)
+								if (ImageLoadingExceptionReporter != null)
 								{
 									ImageLoadingExceptionReporter(dlg.FileName, err, msg);
 								}
@@ -359,48 +359,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 			get => _galleryControl.SearchLanguage;
 			set => _galleryControl.SearchLanguage = value;
 		}
-
-		/*
-		/// <summary>
-		/// Bitmaps --> PNG, JPEGs stay as JPEGs.
-		/// Will delete the incoming file if it needs to do a conversion.
-		/// </summary>
-		private string ConvertToPngOrJpegIfNotAlready(string incoming)
-		{
-			string outgoing = incoming;
-			//important to dispose of these things, they lock down the file.
-			using (var image = Image.FromFile(incoming))
-			{
-				if (!ImageFormat.Png.Equals(image.PixelFormat) && !ImageFormat.Jpeg.Equals(image.PixelFormat))
-				{
-					using (var stream = new MemoryStream())
-					{
-						incoming.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);
-						var oldCropped = cropped;
-						cropped = System.Drawing.Image.FromStream(stream) as Bitmap;
-						oldCropped.Dispose();
-						Require.That(ImageFormat.Jpeg.Guid == cropped.RawFormat.Guid, "lost jpeg formatting");
-					}
-
-					outgoing = Path.GetTempFileName();
-					image.Save(outgoing, ImageFormat.Png);
-				}
-			}
-			if (outgoing != incoming)
-			{
-				try
-				{
-					File.Delete(incoming);
-				}
-				catch (Exception e)
-				{
-					Debug.Fail(e.Message);
-					//in release, just keep going
-				}
-			}
-			return outgoing;
-		}
-		*/
 
 		private string ConvertToPngOrJpegIfNotAlready(ImageFile wiaImageFile)
 		{

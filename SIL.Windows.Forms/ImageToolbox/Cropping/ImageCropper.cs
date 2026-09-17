@@ -2,9 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Windows.Forms;
-using SIL.Code;
 using SIL.IO;
 using SIL.Reporting;
 
@@ -30,7 +28,6 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 		private Point _startOfDrag = default(Point);
 
 		//we will be cropping the image, so we need to keep the original lest we be cropping the crop, so to speak
-		private ImageFormat _originalFormat;
 		private TempFile _savedOriginalImage;
 		private Image _croppingImage;
 
@@ -82,7 +79,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 					grip.UpdateRectangle();
 				}
 			}
-			if(!didReportThatUserCameInHere)
+			if (!didReportThatUserCameInHere)
 			{
 				didReportThatUserCameInHere = true;
 				UsageReporter.SendNavigationNotice("ImageToolbox:Cropper");
@@ -366,6 +363,20 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 			get { return new Grip[] {_leftGrip, _rightGrip}; }
 		}
 
+		/// <summary>
+		/// True when every grip is still at the edge it started on, so a "crop" would just be the
+		/// whole image again.
+		/// </summary>
+		private bool NothingCropped
+		{
+			get
+			{
+				return _leftGrip.Value == 0 && _topGrip.Value == 0 &&
+					_rightGrip.Value == _sourceImageArea.Width &&
+					_bottomGrip.Value == _sourceImageArea.Height;
+			}
+		}
+
 		private void ImageCropper_MouseDown(object sender, MouseEventArgs e)
 		{
 
@@ -402,6 +413,17 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 //            }
 //        }
 
+		/// <summary>
+		/// Returns the cropped image, or null if there is nothing croppable.
+		/// </summary>
+		/// <remarks>The crop is taken from a PNG temp file, so the result is never in the source's
+		/// format: <see cref="Image.RawFormat"/> is <see cref="ImageFormat.MemoryBmp"/> for a real
+		/// crop and <see cref="ImageFormat.Png"/> when the selection is the whole image. Save it
+		/// through <see cref="PalasoImage.Save(string)"/> or pass an explicit
+		/// <see cref="ImageFormat"/> rather than relying on the encoder being inferred.
+		/// <para>A whole-image result also shares the temp file it was read from, keeping it
+		/// locked until the result is disposed. <see cref="GetImage"/> never asks for one; it
+		/// returns the image untouched when nothing has been cropped.</para></remarks>
 		public Image GetCroppedImage()
 		{
 			if (_image == null || _image.Disposed)
@@ -409,16 +431,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 			try
 			{
-				//jpeg = b96b3c  *AE* -0728-11d3-9d7b-0000f81ef32e
-				//bitmap = b96b3c  *AA* -0728-11d3-9d7b-0000f81ef32e
-
-				//NB: this worked for tiff and png, but would crash with Out Of Memory for jpegs.
-				//This may be because I closed the stream? THe doc says you have to keep that stream open.
-				//Also, note that this method, too, lost our jpeg encoding:
-				//          return bmp.Clone(selection, _image.PixelFormat);
-				//So now, I first copy it, then clone with the bounds of our crop:
-
-				using (var originalImage = new Bitmap(_savedOriginalImage.Path)) //**** here we lose the jpeg rawimageformat, if it's a jpeg. Grrr.
+				using (var originalImage = new Bitmap(_savedOriginalImage.Path))
 				{
 					double z = 1.0 / GetImageToCanvasScaleFactor(originalImage);
 
@@ -440,21 +453,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 						selectionHeight = originalImage.Height - top;
 					var selection = new Rectangle(left, top, selectionWidth, selectionHeight);
 
-					var cropped = originalImage.Clone(selection, originalImage.PixelFormat); //do the actual cropping
-
-					if (_originalFormat.Guid == ImageFormat.Jpeg.Guid)
-					{
-						//We've sadly lost our jpeg formatting, so now we encode a new image in jpeg
-						using (var stream = new MemoryStream())
-						{
-							cropped.Save(stream, ImageFormat.Jpeg);
-							var oldCropped = cropped;
-							cropped = System.Drawing.Image.FromStream(stream) as Bitmap;
-							oldCropped.Dispose();
-							Require.That(ImageFormat.Jpeg.Guid == cropped.RawFormat.Guid, "lost jpeg formatting");
-						}
-					}
-					return cropped;
+					return originalImage.Clone(selection, originalImage.PixelFormat);
 				}
 			}
 			catch (Exception e)
@@ -473,17 +472,21 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 			}
 			else
 			{
-				var originalFormat = image.Image.RawFormat;
 				Image = image;
-				// If the Image setter throws, _originalFormat must still describe the previous image.
-				_originalFormat = originalFormat;
 			}
 		}
 
 		public PalasoImage GetImage()
 		{
-			Image x = GetCroppedImage();
 			// BL-5830 somehow user was cropping an image and this PalasoImage was already disposed
+			if (_image == null || _image.Disposed)
+				return null;
+
+			if (NothingCropped)
+				// GetCroppedImage would cost us the original format and bit depth (BL-1275).
+				return _image;
+
+			Image x = GetCroppedImage();
 			if (x == null || _image.Disposed)
 				return null;
 			//we want to retain the metdata of the PalasoImage we started with; we just want to update its actual image
