@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using NUnit.Framework;
+using SIL.IO;
 using SIL.TestUtilities;
 using Is = SIL.TestUtilities.NUnitExtensions.Is;
 
@@ -244,6 +245,34 @@ namespace SIL.WritingSystems.Tests
 
 				var reread = new GlobalWritingSystemRepository(e.Path);
 				Assert.That(reread.AllWritingSystems.Select(w => w.Id), Is.EquivalentTo(new[] { "fr" }));
+			}
+		}
+
+		/// <summary>
+		/// A template comes from a per-user cache, so its own permissions are not the shared store's.
+		/// The definition seeded from it has to be as editable by the group as any other.
+		/// </summary>
+		[Test]
+		[Platform(Include = "Linux,MacOsX", Reason = "permission bits of this kind exist only on Unix")]
+		public void Save_WritingSystemFromTemplate_StaysGroupWritable()
+		{
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			using (var templates = CreateTemporaryFolder("TemplateSource"))
+			{
+				string templatePath = Path.Combine(templates.Path, "fr.ldml");
+				File.WriteAllText(templatePath, FrenchTemplateLdml);
+				// A template only its author can write, as the SLDR cache leaves it.
+				Assert.That(UnixFilePermissions.TrySetMode(templatePath, 0x180), Is.True); // 0600
+
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("fr") { Template = templatePath };
+				repo.Set(ws);
+				repo.Save();
+
+				string filePath = repo.GetFilePathFromLanguageTag("fr");
+				Assert.That(UnixFilePermissions.TryGetMode(filePath, out uint mode), Is.True);
+				Assert.That(mode & 0x10, Is.EqualTo(0x10), // group write
+					$"a definition seeded from a template should be group-writable but is {Convert.ToString(mode, 8)}");
 			}
 		}
 

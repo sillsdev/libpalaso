@@ -365,7 +365,16 @@ namespace SIL.WritingSystems
 			if (seededFromTemplate)
 			{
 				using (new FileModeOverride())
-					File.Copy(ws.Template, tempFilePath, true);
+				{
+					// Copying a file carries the source's permissions and ignores the mask just set,
+					// and the swap then puts those on the definition left in the store. Templates come
+					// from a per-user cache, so a copy would leave the shared store's definition
+					// readable only by its author. Rebuild the file instead, so it is created under
+					// the mask like everything else written here.
+					using (Stream template = RobustFile.OpenRead(ws.Template))
+					using (Stream seeded = RobustFile.Create(tempFilePath))
+						template.CopyTo(seeded);
+				}
 				ws.Template = null;
 			}
 
