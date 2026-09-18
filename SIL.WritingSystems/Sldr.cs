@@ -754,10 +754,13 @@ namespace SIL.WritingSystems
 			string cacheTempPath = AtomicFileReplacement.GetTempPath(sldrCacheFilePath, "new");
 			try
 			{
+				// Created under the shared store's mask, because the swap puts the replacement's
+				// permissions on the entry left in place and this cache is shared between users.
 				// Written through rather than buffered, for the same reason the tags download is:
 				// the swap is a rename and can complete before the data blocks reach the disk. An
 				// entry left empty by a power loss is copied over the caller's own LDML by
 				// GetLdmlFile and reported as a cache hit.
+				using (new FileModeOverride())
 				using (Stream cacheStream = RobustFile.Create(cacheTempPath))
 				using (var writer = XmlWriter.Create(cacheStream, writerSettings))
 					element.WriteTo(writer);

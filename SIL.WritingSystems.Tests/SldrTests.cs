@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using NUnit.Framework;
+using SIL.IO;
 using SIL.TestUtilities;
 using Is = SIL.TestUtilities.NUnitExtensions.Is;
 // ReSharper disable AccessToStaticMemberViaDerivedType
@@ -527,6 +528,31 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(File.Exists(supersededPath), Is.True,
 				"an update that could not be put in place must leave the entry it supersedes");
 			Assert.That(Directory.GetFiles(environment.FilePath, "*.new"), Is.Empty);
+		}
+
+		/// <summary>
+		/// The SLDR cache is shared between users, so an entry that was widened has to stay that way
+		/// when someone else refreshes it. The replacement's permissions are what the swap leaves in
+		/// place, so they have to be the shared store's rather than the refreshing user's own.
+		/// </summary>
+		[Test]
+		[Platform(Include = "Linux,MacOsX", Reason = "permission bits of this kind exist only on Unix")]
+		public void MoveTmpToCache_UpdatingAnEntry_KeepsItGroupWritable()
+		{
+			using var environment = new TestEnvironment();
+			const string ietfLanguageTag = "en";
+			var cachePath = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml");
+			File.WriteAllText(cachePath, MinimalLdmlContent);
+			// An entry somebody widened so the whole group could refresh it.
+			Assert.That(UnixFilePermissions.TrySetMode(cachePath, 0x1B4), Is.True); // 0664
+			var tmpPath = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml.tmp");
+			File.WriteAllText(tmpPath, MinimalLdmlContent);
+
+			Sldr.MoveTmpToCache(tmpPath, string.Empty);
+
+			Assert.That(UnixFilePermissions.TryGetMode(cachePath, out uint mode), Is.True);
+			Assert.That(mode & 0x10, Is.EqualTo(0x10), // group write
+				$"a refreshed cache entry should stay group-writable but is {Convert.ToString(mode, 8)}");
 		}
 
 		private const string MinimalLdmlContent =
