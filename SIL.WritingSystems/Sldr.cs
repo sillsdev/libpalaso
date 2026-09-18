@@ -510,8 +510,13 @@ namespace SIL.WritingSystems
 						var tagsTempPath = AtomicFileReplacement.GetTempPath(cachedAllTagsPath, "new");
 						try
 						{
+							// Written through rather than buffered: the swap that follows is a rename,
+							// which can complete before the OS has flushed the data blocks, leaving a
+							// file that is present but empty after a power loss. The ETag recorded
+							// afterwards would then mark that file as current and stop it being
+							// re-fetched.
 							using (var input = webResponse.GetResponseStream())
-							using (var output = File.Create(tagsTempPath))
+							using (var output = RobustFile.Create(tagsTempPath))
 								input.CopyTo(output);
 
 							AtomicFileReplacement.SwapIntoPlace(tagsTempPath, cachedAllTagsPath);
@@ -749,7 +754,12 @@ namespace SIL.WritingSystems
 			string cacheTempPath = AtomicFileReplacement.GetTempPath(sldrCacheFilePath, "new");
 			try
 			{
-				using (var writer = XmlWriter.Create(cacheTempPath, writerSettings))
+				// Written through rather than buffered, for the same reason the tags download is:
+				// the swap is a rename and can complete before the data blocks reach the disk. An
+				// entry left empty by a power loss is copied over the caller's own LDML by
+				// GetLdmlFile and reported as a cache hit.
+				using (Stream cacheStream = RobustFile.Create(cacheTempPath))
+				using (var writer = XmlWriter.Create(cacheStream, writerSettings))
 					element.WriteTo(writer);
 
 				AtomicFileReplacement.SwapIntoPlace(cacheTempPath, sldrCacheFilePath);
