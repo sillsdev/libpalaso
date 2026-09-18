@@ -22,8 +22,25 @@ namespace SIL.WritingSystems.Tests
 			string tempPath = AtomicFileReplacement.GetTempPath(targetPath, "tmp");
 
 			using (Process process = Process.GetCurrentProcess())
-				Assert.That(tempPath, Is.EqualTo($"{targetPath}.{process.Id}.tmp"));
+				Assert.That(tempPath, Does.StartWith($"{targetPath}.{process.Id}."));
+			Assert.That(tempPath, Does.EndWith(".tmp"));
 			Assert.That(Path.GetDirectoryName(tempPath), Is.EqualTo(Path.GetDirectoryName(targetPath)));
+		}
+
+		/// <summary>
+		/// A process ID is only unique within its namespace, and the lock that would otherwise keep
+		/// writers apart is reduced to a local-only one in exactly the containers that have their own:
+		/// two of them sharing a store can hold the same ID.
+		/// </summary>
+		[Test]
+		public void GetTempPath_CalledTwiceForOneTarget_DiffersEachTime()
+		{
+			string targetPath = Path.Combine("some", "where", "en.ldml");
+
+			string first = AtomicFileReplacement.GetTempPath(targetPath, "tmp");
+			string second = AtomicFileReplacement.GetTempPath(targetPath, "tmp");
+
+			Assert.That(second, Is.Not.EqualTo(first));
 		}
 
 		[Test]

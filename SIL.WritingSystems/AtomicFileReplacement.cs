@@ -22,11 +22,12 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Gets a path beside <paramref name="targetPath"/> to build a replacement in. The process ID
-		/// keeps processes sharing the directory from colliding on it even when the mutex guarding the
-		/// store has been reduced to a local-only lock. It does not distinguish writers within one
-		/// process, so a caller must hold its store's lock across the whole build-and-swap rather than
-		/// letting a second write to the same target begin part way through.
+		/// Gets a path beside <paramref name="targetPath"/> to build a replacement in. The name is
+		/// unique to the call, so writers sharing the directory cannot collide on it even where the
+		/// mutex guarding the store has been reduced to a local-only lock. A process ID alone would
+		/// not do: it is unique only within its namespace, and containers with their own are exactly
+		/// what that reduced lock is for, so two sharing a store can hold the same ID. The process ID
+		/// is still there to say which process left a file behind.
 		/// </summary>
 		/// <param name="extension">
 		/// Extension for the temporary file, without a leading dot. It must be one that nothing
@@ -34,7 +35,7 @@ namespace SIL.WritingSystems
 		/// </param>
 		internal static string GetTempPath(string targetPath, string extension)
 		{
-			return $"{targetPath}.{s_processId}.{extension}";
+			return $"{targetPath}.{s_processId}.{Guid.NewGuid():N}.{extension}";
 		}
 
 		/// <summary>
