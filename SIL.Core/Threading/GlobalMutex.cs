@@ -300,7 +300,10 @@ namespace SIL.Threading
 			public bool Init(bool initiallyOwned, out bool wasAbandoned)
 			{
 				bool result;
-				// A flock is dropped by the kernel when its holder dies, so it is never left abandoned.
+				// There is no abandonment to report here, but not because none can happen: the kernel
+				// drops the flock when its holder dies, while the Monitor taken alongside it in Wait
+				// is not released on thread death, so a dead owner leaves that held and a later
+				// waiter blocks. This adapter has no way to detect either case.
 				wasAbandoned = false;
 				_handle = Syscall.open(_name, OpenFlags.O_CREAT | OpenFlags.O_EXCL, FilePermissions.S_IWUSR | FilePermissions.S_IRUSR);
 				if (_handle != -1)

@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using NUnit.Framework;
+using SIL.PlatformUtilities;
 using SIL.Threading;
 
 namespace SIL.Tests.Threading
@@ -11,9 +12,10 @@ namespace SIL.Tests.Threading
 	{
 		private const string LocalOnlyVariable = "SIL_CORE_MAKE_GLOBAL_MUTEX_LOCAL_ONLY";
 
-		private const string NotAbandonableReason =
-			"A Monitor carries no abandonment signal, and an owner that exits without releasing " +
-			"leaves it held, so abandoning one here would hang the test rather than report anything.";
+		private const string NoAbandonmentReportedReason =
+			"This adapter cannot report an abandonment: it takes a Monitor, which the CLR does not " +
+			"release when the thread holding it exits, so abandoning one here leaves the adapter " +
+			"held by a dead thread and the test's own acquisition waits for its timeout instead.";
 
 		private readonly bool _localOnly;
 		private readonly string _previousLocalOnlyValue;
@@ -151,8 +153,8 @@ namespace SIL.Tests.Threading
 		[Test, Timeout(5000)]
 		public void Lock_PreviousOwnerAbandonedMutex_AcquiresAndReportsAbandonment()
 		{
-			if (_localOnly)
-				Assert.Ignore(NotAbandonableReason);
+			if (_localOnly || Platform.IsLinux)
+				Assert.Ignore(NoAbandonmentReportedReason);
 
 			using (var mutex = new GlobalMutex(UniqueMutexName()))
 			{
@@ -171,8 +173,8 @@ namespace SIL.Tests.Threading
 		[Test, Timeout(5000)]
 		public void InitializeAndLock_PreviousOwnerAbandonedMutex_AcquiresAndReportsAbandonment()
 		{
-			if (_localOnly)
-				Assert.Ignore(NotAbandonableReason);
+			if (_localOnly || Platform.IsLinux)
+				Assert.Ignore(NoAbandonmentReportedReason);
 
 			string name = UniqueMutexName();
 			using (var mutex = new GlobalMutex(name))
@@ -197,8 +199,8 @@ namespace SIL.Tests.Threading
 		[Test, Timeout(5000)]
 		public void Lock_PreviousOwnerAbandonedMutex_OverloadWithoutReportRecovers()
 		{
-			if (_localOnly)
-				Assert.Ignore(NotAbandonableReason);
+			if (_localOnly || Platform.IsLinux)
+				Assert.Ignore(NoAbandonmentReportedReason);
 
 			using (var mutex = new GlobalMutex(UniqueMutexName()))
 			{
@@ -216,8 +218,8 @@ namespace SIL.Tests.Threading
 		[Test, Timeout(5000)]
 		public void InitializeAndLock_PreviousOwnerAbandonedMutex_OverloadWithoutReportRecovers()
 		{
-			if (_localOnly)
-				Assert.Ignore(NotAbandonableReason);
+			if (_localOnly || Platform.IsLinux)
+				Assert.Ignore(NoAbandonmentReportedReason);
 
 			string name = UniqueMutexName();
 			using (var mutex = new GlobalMutex(name))
@@ -237,8 +239,8 @@ namespace SIL.Tests.Threading
 		[Test, Timeout(5000)]
 		public void Lock_AfterRecoveringFromAbandonment_ReportsNotAbandoned()
 		{
-			if (_localOnly)
-				Assert.Ignore(NotAbandonableReason);
+			if (_localOnly || Platform.IsLinux)
+				Assert.Ignore(NoAbandonmentReportedReason);
 
 			using (var mutex = new GlobalMutex(UniqueMutexName()))
 			{
