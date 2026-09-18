@@ -54,25 +54,53 @@ namespace SIL.WritingSystems
 			if (File.Exists(targetPath))
 			{
 				// Replacing is atomic only where the file system can do it. Where it cannot, the
-				// target is copied over and an interrupted copy leaves it partial, so keep the
-				// contents being displaced until the replacement is complete. The atomic path pays
-				// only a rename for that; the copying path pays a copy, and is the one that needs it.
+				// target has to be copied over, and copying truncates it before the first byte
+				// arrives. The copy is therefore done here rather than delegated, so that the moment
+				// the target stops being intact is known exactly: the displaced contents are put
+				// aside first, and go back if anything after that fails.
 				string backupPath = GetTempPath(targetPath, "bak");
+				bool displacedContentsSaved = false;
 				try
 				{
 					try
 					{
 						RobustFile.Replace(tempPath, targetPath, backupPath);
 					}
-					catch (Exception e) when (e is IOException || e is NotSupportedException)
+					catch (Exception e) when (e is IOException || e is NotSupportedException
+						|| e is UnauthorizedAccessException)
 					{
-						RobustFile.ReplaceByCopyDelete(tempPath, targetPath, backupPath);
+						if (File.Exists(targetPath))
+						{
+							RobustFile.Copy(targetPath, backupPath, true);
+							displacedContentsSaved = true;
+						}
+
+						RobustFile.Copy(tempPath, targetPath, true);
+						RobustFile.Delete(tempPath);
 					}
 				}
-				finally
+				catch
 				{
-					DeleteIfPresent(backupPath);
+					// Only once the backup is known to be complete: a copy that failed part way
+					// through leaves a partial backup beside a target nothing has touched yet, and
+					// restoring from that would destroy the good file.
+					if (displacedContentsSaved)
+					{
+						try
+						{
+							RobustFile.Move(backupPath, targetPath, overWrite: true);
+						}
+						catch (Exception e)
+						{
+							Trace.TraceError(
+								$"Could not put the previous contents of \"{targetPath}\" back: {e.Message}");
+						}
+					}
+
+					throw;
 				}
+
+				DeleteIfPresent(backupPath);
 			}
 			else
 			{

@@ -88,6 +88,36 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		/// <summary>
+		/// Where the file system cannot replace one file with another, the target has to be copied
+		/// over, and copying truncates it first. If anything then fails, the contents being displaced
+		/// are all that is left of the writing system, so they have to survive somewhere.
+		/// </summary>
+		[Test]
+		public void SwapIntoPlace_ReplacementCannotBeWritten_KeepsTheDisplacedContents()
+		{
+			using (var folder = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				string targetPath = Path.Combine(folder.Path, "target.txt");
+				File.WriteAllText(targetPath, "previous contents");
+				string tempPath = AtomicFileReplacement.GetTempPath(targetPath, "tmp");
+				File.WriteAllText(tempPath, "new contents");
+
+				// Hold the target open for reading only. Taking the backup reads it and succeeds;
+				// writing the replacement over it needs exclusive access, and that is what fails.
+				using (new FileStream(targetPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+				{
+					Assert.That(() => AtomicFileReplacement.SwapIntoPlace(tempPath, targetPath),
+						Throws.Exception);
+				}
+
+				string[] surviving = Directory.GetFiles(folder.Path, "*.bak");
+				Assert.That(surviving.Length, Is.EqualTo(1),
+					"the displaced contents must not be discarded when the swap fails");
+				Assert.That(File.ReadAllText(surviving[0]), Is.EqualTo("previous contents"));
+			}
+		}
+
 		[Test]
 		public void SwapIntoPlace_TargetExists_LeavesNoBackupBehind()
 		{
