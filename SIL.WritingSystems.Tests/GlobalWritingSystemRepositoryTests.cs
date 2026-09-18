@@ -340,6 +340,10 @@ namespace SIL.WritingSystems.Tests
 
 				Assert.That(File.ReadAllText(filePath), Is.EqualTo(originalContents));
 				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.tmp"), Is.Empty);
+				// The edit only ever reached memory, so it has to still look unsaved. Reporting it as
+				// stored would discard it silently and stop anything retrying.
+				Assert.That(ws.IsChanged, Is.True,
+					"a writing system that could not be written must still be reported as changed");
 			}
 		}
 

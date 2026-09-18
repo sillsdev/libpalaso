@@ -66,6 +66,7 @@ namespace SIL.WritingSystems
 		private readonly GlobalMutex _mutex;
 		private readonly Dictionary<string, Tuple<DateTime, long>> _lastFileStats;
 		private readonly HashSet<string> _addedWritingSystems;
+		private readonly HashSet<string> _unwritableWritingSystems;
 
 		private static string _defaultBasePath;
 
@@ -73,6 +74,7 @@ namespace SIL.WritingSystems
 		{
 			_lastFileStats = new Dictionary<string, Tuple<DateTime, long>>(StringComparer.OrdinalIgnoreCase);
 			_addedWritingSystems = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			_unwritableWritingSystems = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			_path = CurrentVersionPath(basePath);
 			if (!Directory.Exists(_path))
 				CreateGlobalWritingSystemRepositoryDirectory(_path);
@@ -414,12 +416,19 @@ namespace SIL.WritingSystems
 				// when we go to open the modify dialog. If we can't make the global store consistent,
 				// as we well may not be able to in a client-server mode, too bad.
 				AtomicFileReplacement.DeleteIfPresent(tempFilePath);
+				// The edit is still only in memory, so leave the writing system dirty for a later
+				// Save to retry rather than reporting it as stored. Trace once per writing system,
+				// so a permanently unwritable file does not log on every Save.
+				if (_unwritableWritingSystems.Add(ws.Id))
+					Trace.TraceWarning($"Could not write the writing system \"{ws.Id}\" to \"{writingSystemFilePath}\".");
+				return;
 			}
 			catch
 			{
 				AtomicFileReplacement.DeleteIfPresent(tempFilePath);
 				throw;
 			}
+			_unwritableWritingSystems.Remove(ws.Id);
 			ws.AcceptChanges();
 		}
 
