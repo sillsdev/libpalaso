@@ -555,6 +555,38 @@ namespace SIL.WritingSystems.Tests
 				$"a refreshed cache entry should stay group-writable but is {Convert.ToString(mode, 8)}");
 		}
 
+		/// <summary>
+		/// The cache entry is copied onto the caller's own file at the end of a fetch. The caller has
+		/// no second copy of that file anywhere, so a copy that cannot complete has to leave what was
+		/// already there rather than a partly overwritten version of it.
+		/// </summary>
+		[Test]
+		[Platform(Exclude = "Linux,MacOsX",
+			Reason = "holding a file open is not a reliable way to deny a write on Unix")]
+		public void GetLdmlFile_DestinationCannotBeWritten_LeavesItIntact()
+		{
+			using var environment = new TestEnvironment();
+			const string ietfLanguageTag = "en";
+			var cacheFilePath = Path.Combine(Sldr.SldrCachePath, ietfLanguageTag + ".ldml");
+			File.WriteAllText(cacheFilePath, MinimalLdmlContent);
+
+			var destinationPath = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml");
+			const string alreadyThere = "the caller's own definition";
+			File.WriteAllText(destinationPath, alreadyThere);
+
+			// Hold the caller's file open for reading only, so it can be read but not written over.
+			using (new FileStream(destinationPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+			{
+				Assert.That(
+					() => Sldr.GetLdmlFile(environment.FilePath, ietfLanguageTag,
+						new List<string> { "characters" }, out _),
+					Throws.Exception);
+			}
+
+			Assert.That(File.ReadAllText(destinationPath), Is.EqualTo(alreadyThere),
+				"a fetch that could not be delivered must leave the caller's file as it was");
+		}
+
 		private const string MinimalLdmlContent =
 			@"<?xml version=""1.0"" encoding=""utf-8""?>
 <ldml>

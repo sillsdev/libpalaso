@@ -373,8 +373,24 @@ namespace SIL.WritingSystems
 
 				if (destinationPath != SldrCachePath)
 				{
-					// Copy from Cache to destination (w/o uid in filename), overwriting whatever used to be there
-					File.Copy(sldrCacheFilePath, Path.Combine(destinationPath, filename), true);
+					// Deliver the entry the same way it was built: beside the caller's file, then
+					// swapped in. Copying straight onto their file truncates it first, and they have
+					// no second copy of it anywhere. The replacement is built beside the destination
+					// rather than beside the cache, because replacing a file cannot cross volumes and
+					// the cache and the caller's repository can be on different mounts.
+					string destinationFilePath = Path.Combine(destinationPath, filename);
+					string destinationTempPath =
+						AtomicFileReplacement.GetTempPath(destinationFilePath, "new");
+					try
+					{
+						RobustFile.Copy(sldrCacheFilePath, destinationTempPath, true);
+						AtomicFileReplacement.SwapIntoPlace(destinationTempPath, destinationFilePath);
+					}
+					catch
+					{
+						AtomicFileReplacement.DeleteIfPresent(destinationTempPath);
+						throw;
+					}
 				}
 
 				return status;
