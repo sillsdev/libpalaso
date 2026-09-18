@@ -13,10 +13,6 @@ namespace SIL.Tests.IO
 		private const uint GroupWritable = 0x1B4; // 0664: rw-rw-r--
 		private const uint OwnerOnly = 0x180;     // 0600: rw-------
 
-		private static TemporaryFolder CreateTemporaryFolder(string testName)
-		{
-			return new TemporaryFolder($"{testName}_{Path.GetRandomFileName()}");
-		}
 
 		/// <summary>
 		/// Callers use the return value to decide whether to apply anything, so a platform without
@@ -26,7 +22,7 @@ namespace SIL.Tests.IO
 		[Platform(Exclude = "Linux,MacOsX", Reason = "this is the behavior off Unix")]
 		public void TryGetMode_PlatformHasNoPermissionBits_ReturnsFalse()
 		{
-			using (var folder = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			using (var folder = TemporaryFolder.Create(TestContext.CurrentContext))
 			{
 				string path = Path.Combine(folder.Path, "file.txt");
 				File.WriteAllText(path, "contents");
@@ -41,7 +37,7 @@ namespace SIL.Tests.IO
 		[Platform(Include = "Linux,MacOsX", Reason = "permission bits of this kind exist only on Unix")]
 		public void TrySetMode_ModeApplied_TryGetModeReadsItBack()
 		{
-			using (var folder = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			using (var folder = TemporaryFolder.Create(TestContext.CurrentContext))
 			{
 				string path = Path.Combine(folder.Path, "file.txt");
 				File.WriteAllText(path, "contents");
@@ -60,7 +56,7 @@ namespace SIL.Tests.IO
 		[Platform(Include = "Linux,MacOsX", Reason = "permission bits of this kind exist only on Unix")]
 		public void TryGetMode_FileDoesNotExist_ReturnsFalse()
 		{
-			using (var folder = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			using (var folder = TemporaryFolder.Create(TestContext.CurrentContext))
 			{
 				string path = Path.Combine(folder.Path, "never-written.txt");
 

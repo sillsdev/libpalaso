@@ -9,10 +9,6 @@ namespace SIL.WritingSystems.Tests
 	[TestFixture]
 	public class AtomicFileReplacementTests
 	{
-		private static TemporaryFolder CreateTemporaryFolder(string testName)
-		{
-			return new TemporaryFolder($"{testName}_{Path.GetRandomFileName()}");
-		}
 
 		[Test]
 		public void GetTempPath_IsBesideTheTargetAndNamedForThisProcess()
@@ -46,7 +42,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void SwapIntoPlace_TargetExists_TakesItsPlaceAndIsConsumed()
 		{
-			using (var folder = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			using (var folder = TemporaryFolder.Create(TestContext.CurrentContext))
 			{
 				string targetPath = Path.Combine(folder.Path, "target.txt");
 				File.WriteAllText(targetPath, "previous contents");
@@ -63,7 +59,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void SwapIntoPlace_TargetDoesNotExist_MovesIntoPlace()
 		{
-			using (var folder = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			using (var folder = TemporaryFolder.Create(TestContext.CurrentContext))
 			{
 				string targetPath = Path.Combine(folder.Path, "target.txt");
 				string tempPath = AtomicFileReplacement.GetTempPath(targetPath, "tmp");
@@ -88,7 +84,7 @@ namespace SIL.WritingSystems.Tests
 			const uint groupWritable = 0x1B4; // 0664: rw-rw-r--
 			const uint ownerOnly = 0x180;     // 0600: rw-------
 
-			using (var folder = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			using (var folder = TemporaryFolder.Create(TestContext.CurrentContext))
 			{
 				string targetPath = Path.Combine(folder.Path, "target.txt");
 				File.WriteAllText(targetPath, "previous contents");
@@ -113,7 +109,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void SwapIntoPlace_ReplacementCannotBeWritten_KeepsTheDisplacedContents()
 		{
-			using (var folder = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			using (var folder = TemporaryFolder.Create(TestContext.CurrentContext))
 			{
 				string targetPath = Path.Combine(folder.Path, "target.txt");
 				File.WriteAllText(targetPath, "previous contents");
@@ -138,7 +134,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void SwapIntoPlace_TargetExists_LeavesNoBackupBehind()
 		{
-			using (var folder = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			using (var folder = TemporaryFolder.Create(TestContext.CurrentContext))
 			{
 				string targetPath = Path.Combine(folder.Path, "target.txt");
 				File.WriteAllText(targetPath, "previous contents");
@@ -154,7 +150,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void DeleteIfPresent_FilePresent_RemovesIt()
 		{
-			using (var folder = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			using (var folder = TemporaryFolder.Create(TestContext.CurrentContext))
 			{
 				string tempPath = Path.Combine(folder.Path, "leftover.tmp");
 				File.WriteAllText(tempPath, "abandoned part way through");
@@ -172,7 +168,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void DeleteIfPresent_FileMissing_DoesNothing()
 		{
-			using (var folder = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			using (var folder = TemporaryFolder.Create(TestContext.CurrentContext))
 			{
 				string tempPath = Path.Combine(folder.Path, "never-written.tmp");
 
