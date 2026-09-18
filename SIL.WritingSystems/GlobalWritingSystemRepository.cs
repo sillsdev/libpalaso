@@ -385,7 +385,19 @@ namespace SIL.WritingSystems
 			{
 				// Nothing to write, but a template copy still has to reach the store.
 				if (seededFromTemplate)
-					AtomicFileReplacement.SwapIntoPlace(tempFilePath, writingSystemFilePath);
+				{
+					try
+					{
+						AtomicFileReplacement.SwapIntoPlace(tempFilePath, writingSystemFilePath);
+						var seeded = new FileInfo(writingSystemFilePath);
+						_lastFileStats[ws.Id] = Tuple.Create(seeded.LastWriteTime, seeded.Length);
+					}
+					catch
+					{
+						AtomicFileReplacement.DeleteIfPresent(tempFilePath);
+						throw;
+					}
+				}
 				return; // no need to save (better to preserve the modified date)
 			}
 

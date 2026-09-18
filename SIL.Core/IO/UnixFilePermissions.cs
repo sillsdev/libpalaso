@@ -1,5 +1,6 @@
 // Copyright (c) 2026 SIL Global
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+using System;
 using System.Diagnostics;
 using JetBrains.Annotations;
 using Mono.Unix.Native;
@@ -18,9 +19,11 @@ namespace SIL.IO
 			FilePermissions.S_IRWXU | FilePermissions.S_IRWXG | FilePermissions.S_IRWXO;
 
 		/// <summary>
-		/// Gets the owner, group and other permission bits of a file. Returns false without setting
-		/// <paramref name="mode"/> on a platform that has no such bits, or if the file cannot be read.
+		/// Gets the owner, group and other permission bits of a file. Returns false, with
+		/// <paramref name="mode"/> set to 0, on a platform that has no such bits or if the file
+		/// cannot be read.
 		/// </summary>
+		[CLSCompliant(false)]
 		public static bool TryGetMode(string path, out uint mode)
 		{
 			mode = 0;
@@ -42,6 +45,7 @@ namespace SIL.IO
 		/// Applies owner, group and other permission bits to a file, returning whether they were
 		/// applied. Does nothing on a platform that has no such bits.
 		/// </summary>
+		[CLSCompliant(false)]
 		public static bool TrySetMode(string path, uint mode)
 		{
 			if (!Platform.IsUnix)

@@ -790,7 +790,20 @@ namespace SIL.WritingSystems
 			}
 
 			if (supersededFile != string.Empty && File.Exists(supersededFile))
-				File.Delete(supersededFile);
+			{
+				try
+				{
+					File.Delete(supersededFile);
+				}
+				catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
+				{
+					// The replacement is already in place, so the update succeeded. What is left is a
+					// stale duplicate the next update will try again to remove, and reporting a
+					// failure here would deny the caller an entry that was written correctly.
+					Trace.TraceInformation(
+						$"Could not remove the superseded cache entry \"{supersededFile}\": {e.Message}");
+				}
+			}
 
 			File.Delete(filePath);
 

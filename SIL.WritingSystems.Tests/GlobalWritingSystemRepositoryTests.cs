@@ -216,6 +216,7 @@ namespace SIL.WritingSystems.Tests
 				repo.Save();
 				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.tmp"), Is.Empty);
 				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.bak"), Is.Empty);
+				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.bak"), Is.Empty);
 			}
 		}
 
@@ -340,6 +341,11 @@ namespace SIL.WritingSystems.Tests
 
 				Assert.That(File.ReadAllText(filePath), Is.EqualTo(originalContents));
 				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.tmp"), Is.Empty);
+				// A backup is left on purpose. Putting it back failed too, so at that point it cannot
+				// be known whether the definition still standing is intact, and it is the only other
+				// copy of what was there.
+				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.bak").Length, Is.EqualTo(1),
+					"the displaced contents must be kept when they could not be put back");
 				// The edit only ever reached memory, so it has to still look unsaved. Reporting it as
 				// stored would discard it silently and stop anything retrying.
 				Assert.That(ws.IsChanged, Is.True,
@@ -354,7 +360,7 @@ namespace SIL.WritingSystems.Tests
 		/// permissions that survive a save have to be checked rather than assumed.
 		/// </summary>
 		[Test]
-		[Platform(Include = "Linux", Reason = "permission bits of this kind exist only on Unix")]
+		[Platform(Include = "Linux,MacOsX", Reason = "permission bits of this kind exist only on Unix")]
 		public void Save_NewAndUpdatedWritingSystem_StaysGroupWritable()
 		{
 			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
@@ -365,39 +371,19 @@ namespace SIL.WritingSystems.Tests
 				repo.Save();
 
 				string filePath = repo.GetFilePathFromLanguageTag("en-US");
-				Assert.That(IsGroupWritable(filePath), Is.True,
-					$"a newly created definition should be group-writable but is {FileMode(filePath)}");
+				Assert.That(UnixFilePermissions.TryGetMode(filePath, out uint created), Is.True);
+				Assert.That(created & 0x10, Is.EqualTo(0x10), // group write
+					$"a newly created definition should be group-writable but is {Convert.ToString(created, 8)}");
 
 				ws.WindowsLcid = "test";
 				repo.Save();
 
-				Assert.That(IsGroupWritable(filePath), Is.True,
-					$"a replaced definition should stay group-writable but is {FileMode(filePath)}");
+				Assert.That(UnixFilePermissions.TryGetMode(filePath, out uint replaced), Is.True);
+				Assert.That(replaced & 0x10, Is.EqualTo(0x10),
+					$"a replaced definition should stay group-writable but is {Convert.ToString(replaced, 8)}");
 			}
 		}
 
-		private static string FileMode(string path)
-		{
-			var startInfo = new ProcessStartInfo("stat", $"-c %a \"{path}\"")
-			{
-				RedirectStandardOutput = true,
-				UseShellExecute = false
-			};
-			using (var process = Process.Start(startInfo))
-			{
-				string mode = process.StandardOutput.ReadToEnd().Trim();
-				process.WaitForExit();
-				return mode;
-			}
-		}
-
-		private static bool IsGroupWritable(string path)
-		{
-			string mode = FileMode(path);
-			// The group's permissions are the second digit from the right, and 2 is its write bit.
-			int group = (int) char.GetNumericValue(mode[mode.Length - 2]);
-			return (group & 2) == 2;
-		}
 
 		[Test]
 		public void Save_ChangingIcuSort_DoesNotDuplicateInLdmlFile()

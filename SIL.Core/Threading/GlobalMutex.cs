@@ -152,6 +152,10 @@ namespace SIL.Threading
 		/// owner exited without releasing it. The lock is held either way; an abandoned mutex means the data it
 		/// protects may have been left partially written, so callers that cannot tolerate torn state should
 		/// revalidate or repair it before proceeding.
+		/// <para>A <c>false</c> result says no abandonment was reported, not that none happened. A named mutex
+		/// exists only while a handle to it is open, so a process that died holding the last one takes the mutex
+		/// with it, and the next caller creates a new one with nothing to report. Only the Windows and macOS
+		/// adapters report abandonment at all; the others always return <c>false</c>.</para>
 		/// </summary>
 		public IDisposable Lock(out bool wasAbandoned)
 		{
