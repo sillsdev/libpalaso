@@ -54,62 +54,82 @@ namespace SIL.WritingSystems
 
 			if (File.Exists(targetPath))
 			{
-				// Replacing is atomic only where the file system can do it. Where it cannot, the
-				// target has to be copied over, and copying truncates it before the first byte
-				// arrives. The copy is therefore done here rather than delegated, so that the moment
-				// the target stops being intact is known exactly: the displaced contents are put
-				// aside first, and go back if anything after that fails.
-				string backupPath = GetTempPath(targetPath, "bak");
-				bool displacedContentsSaved = false;
-				try
-				{
-					try
-					{
-						RobustFile.Replace(tempPath, targetPath, backupPath);
-					}
-					catch (Exception e) when (e is IOException || e is NotSupportedException
-						|| e is UnauthorizedAccessException)
-					{
-						if (File.Exists(targetPath))
-						{
-							RobustFile.Copy(targetPath, backupPath, true);
-							displacedContentsSaved = true;
-						}
-
-						RobustFile.Copy(tempPath, targetPath, true);
-						RobustFile.Delete(tempPath);
-					}
-				}
-				catch
-				{
-					// Only once the backup is known to be complete: a copy that failed part way
-					// through leaves a partial backup beside a target nothing has touched yet, and
-					// restoring from that would destroy the good file.
-					if (displacedContentsSaved)
-					{
-						try
-						{
-							RobustFile.Move(backupPath, targetPath, overWrite: true);
-						}
-						catch (Exception e)
-						{
-							Trace.TraceError(
-								$"Could not put the previous contents of \"{targetPath}\" back: {e.Message}");
-						}
-					}
-
-					throw;
-				}
-
-				DeleteIfPresent(backupPath);
+				ReplaceExisting(tempPath, targetPath);
 			}
 			else
 			{
-				RobustFile.Move(tempPath, targetPath);
+				try
+				{
+					RobustFile.Move(tempPath, targetPath);
+				}
+				catch (IOException) when (File.Exists(targetPath))
+				{
+					// Whether the target existed was decided a moment ago, and where the lock guarding
+					// the store synchronises only threads within one process, another can create it in
+					// between. Replace what is there now rather than throwing: the caller is part way
+					// through a run of writes, and abandoning it would leave the rest unwritten.
+					ReplaceExisting(tempPath, targetPath);
+				}
 			}
 
 			if (replacementMode)
 				UnixFilePermissions.TrySetMode(targetPath, mode);
+		}
+
+		/// <summary>
+		/// Puts a replacement in place of a file that is already there, keeping what it displaces
+		/// until that has succeeded.
+		/// </summary>
+		private static void ReplaceExisting(string tempPath, string targetPath)
+		{
+			// Replacing is atomic only where the file system can do it. Where it cannot, the target
+			// has to be copied over, and copying truncates it before the first byte arrives. The copy
+			// is therefore done here rather than delegated, so that the moment the target stops being
+			// intact is known exactly: the displaced contents are put aside first, and go back if
+			// anything after that fails.
+			string backupPath = GetTempPath(targetPath, "bak");
+			bool displacedContentsSaved = false;
+			try
+			{
+				try
+				{
+					RobustFile.Replace(tempPath, targetPath, backupPath);
+				}
+				catch (Exception e) when (e is IOException || e is NotSupportedException
+					|| e is UnauthorizedAccessException)
+				{
+					if (File.Exists(targetPath))
+					{
+						RobustFile.Copy(targetPath, backupPath, true);
+						displacedContentsSaved = true;
+					}
+
+					RobustFile.Copy(tempPath, targetPath, true);
+					RobustFile.Delete(tempPath);
+				}
+			}
+			catch
+			{
+				// Only once the backup is known to be complete: a copy that failed part way through
+				// leaves a partial backup beside a target nothing has touched yet, and restoring from
+				// that would destroy the good file.
+				if (displacedContentsSaved)
+				{
+					try
+					{
+						RobustFile.Move(backupPath, targetPath, overWrite: true);
+					}
+					catch (Exception e)
+					{
+						Trace.TraceError(
+							$"Could not put the previous contents of \"{targetPath}\" back: {e.Message}");
+					}
+				}
+
+				throw;
+			}
+
+			DeleteIfPresent(backupPath);
 		}
 
 		/// <summary>
