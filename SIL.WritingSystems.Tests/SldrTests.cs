@@ -24,6 +24,10 @@ namespace SIL.WritingSystems.Tests
 
 				Sldr.Cleanup();
 				Sldr.Initialize(sldrOffline, sldrCachePath);
+				// Tests here seed the cache directly, before anything in Sldr has had a reason to create
+				// it, and Initialize does not. On a machine where the default cache has never been used
+				// that leaves whichever test runs first failing on a missing directory.
+				Directory.CreateDirectory(sldrCachePath);
 				FolderContainingLdml = new TemporaryFolder("SldrTests");
 				NamespaceManager = new XmlNamespaceManager(new NameTable());
 				NamespaceManager.AddNamespace("sil", "urn://www.sil.org/ldml/0.1");
