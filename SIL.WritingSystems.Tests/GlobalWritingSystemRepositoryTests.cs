@@ -216,7 +216,6 @@ namespace SIL.WritingSystems.Tests
 				repo.Save();
 				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.tmp"), Is.Empty);
 				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.bak"), Is.Empty);
-				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.bak"), Is.Empty);
 			}
 		}
 
