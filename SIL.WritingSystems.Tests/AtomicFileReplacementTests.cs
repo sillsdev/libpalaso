@@ -107,6 +107,8 @@ namespace SIL.WritingSystems.Tests
 		/// are all that is left of the writing system, so they have to survive somewhere.
 		/// </summary>
 		[Test]
+		[Platform(Exclude = "Linux,MacOsX",
+			Reason = "an open handle does not stop a file being replaced on Unix")]
 		public void SwapIntoPlace_ReplacementCannotBeWritten_KeepsTheDisplacedContents()
 		{
 			using (var folder = TemporaryFolder.Create(TestContext.CurrentContext))
