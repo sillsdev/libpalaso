@@ -331,6 +331,10 @@ namespace SIL.WritingSystems.Tests
 				try
 				{
 					ws.WindowsLcid = "test";
+					// Twice, because a definition that could not be written stays changed and is
+					// retried on every save. Each attempt takes a backup under a name of its own, so
+					// anything left behind accumulates in the shared store rather than being replaced.
+					repo.Save();
 					repo.Save();
 				}
 				finally
@@ -340,11 +344,9 @@ namespace SIL.WritingSystems.Tests
 
 				Assert.That(File.ReadAllText(filePath), Is.EqualTo(originalContents));
 				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.tmp"), Is.Empty);
-				// A backup is left on purpose. Putting it back failed too, so at that point it cannot
-				// be known whether the definition still standing is intact, and it is the only other
-				// copy of what was there.
-				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.bak").Length, Is.EqualTo(1),
-					"the displaced contents must be kept when they could not be put back");
+				// The write was refused before it began, so the definition still standing is the one
+				// the backup was taken from and nothing was lost by dropping it.
+				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.bak"), Is.Empty);
 				// The edit only ever reached memory, so it has to still look unsaved. Reporting it as
 				// stored would discard it silently and stop anything retrying.
 				Assert.That(ws.IsChanged, Is.True,

@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using SIL.IO;
 
 namespace SIL.WritingSystems
@@ -114,22 +115,37 @@ namespace SIL.WritingSystems
 				// leaves a partial backup beside a target nothing has touched yet, and restoring from
 				// that would destroy the good file.
 				if (displacedContentsSaved)
-				{
-					try
-					{
-						RobustFile.Move(backupPath, targetPath, overWrite: true);
-					}
-					catch (Exception e)
-					{
-						Trace.TraceError(
-							$"Could not put the previous contents of \"{targetPath}\" back: {e.Message}");
-					}
-				}
+					RestoreDisplacedContents(backupPath, targetPath);
 
 				throw;
 			}
 
 			DeleteIfPresent(backupPath);
+		}
+
+		/// <summary>
+		/// Puts back the contents a failed swap displaced. A backup that survives this means the
+		/// target was changed and could not be put back, so it is the only remaining copy of what was
+		/// there; every other outcome leaves none behind.
+		/// </summary>
+		internal static void RestoreDisplacedContents(string backupPath, string targetPath)
+		{
+			try
+			{
+				// A copy refused before it wrote anything leaves the target as it was, and the backup
+				// is then only a duplicate. Keeping it would leave another one behind on every retry,
+				// and a definition that cannot be written is retried on every save.
+				if (File.Exists(targetPath)
+					&& File.ReadAllBytes(targetPath).SequenceEqual(File.ReadAllBytes(backupPath)))
+					RobustFile.Delete(backupPath);
+				else
+					RobustFile.Move(backupPath, targetPath, overWrite: true);
+			}
+			catch (Exception e)
+			{
+				Trace.TraceError(
+					$"Could not put the previous contents of \"{targetPath}\" back: {e.Message}");
+			}
 		}
 
 		/// <summary>

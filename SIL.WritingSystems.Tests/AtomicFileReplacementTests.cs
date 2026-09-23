@@ -103,8 +103,9 @@ namespace SIL.WritingSystems.Tests
 
 		/// <summary>
 		/// Where the file system cannot replace one file with another, the target has to be copied
-		/// over, and copying truncates it first. If anything then fails, the contents being displaced
-		/// are all that is left of the writing system, so they have to survive somewhere.
+		/// over, and copying truncates it first. The copy here is refused when it opens the target,
+		/// before anything is written, so what was there survives and the backup taken beside it is
+		/// only a duplicate.
 		/// </summary>
 		[Test]
 		[Platform(Exclude = "Linux,MacOsX",
@@ -126,10 +127,8 @@ namespace SIL.WritingSystems.Tests
 						Throws.Exception);
 				}
 
-				string[] surviving = Directory.GetFiles(folder.Path, "*.bak");
-				Assert.That(surviving.Length, Is.EqualTo(1),
-					"the displaced contents must not be discarded when the swap fails");
-				Assert.That(File.ReadAllText(surviving[0]), Is.EqualTo("previous contents"));
+				Assert.That(File.ReadAllText(targetPath), Is.EqualTo("previous contents"));
+				Assert.That(Directory.GetFiles(folder.Path, "*.bak"), Is.Empty);
 			}
 		}
 
@@ -146,6 +145,68 @@ namespace SIL.WritingSystems.Tests
 				AtomicFileReplacement.SwapIntoPlace(tempPath, targetPath);
 
 				Assert.That(Directory.GetFiles(folder.Path), Is.EquivalentTo(new[] { targetPath }));
+			}
+		}
+
+		/// <summary>
+		/// A backup is only worth keeping when it holds something the target no longer does. Where
+		/// the write was refused before it began, keeping one leaves another behind on every retry,
+		/// and a definition that cannot be written is retried on every save.
+		/// </summary>
+		[Test]
+		[Platform(Exclude = "Linux,MacOsX",
+			Reason = "a read-only file is not a reliable way to deny a write on Unix")]
+		public void RestoreDisplacedContents_TargetUnchangedAndUnwritable_DeletesTheBackup()
+		{
+			using (var folder = TemporaryFolder.Create(TestContext.CurrentContext))
+			{
+				string targetPath = Path.Combine(folder.Path, "target.txt");
+				string backupPath = AtomicFileReplacement.GetTempPath(targetPath, "bak");
+				File.WriteAllText(targetPath, "previous contents");
+				File.WriteAllText(backupPath, "previous contents");
+				File.SetAttributes(targetPath, FileAttributes.ReadOnly);
+				try
+				{
+					AtomicFileReplacement.RestoreDisplacedContents(backupPath, targetPath);
+				}
+				finally
+				{
+					File.SetAttributes(targetPath, FileAttributes.Normal);
+				}
+
+				Assert.That(File.ReadAllText(targetPath), Is.EqualTo("previous contents"));
+				Assert.That(File.Exists(backupPath), Is.False,
+					"a backup identical to the target it was taken from is only a duplicate");
+			}
+		}
+
+		/// <summary>
+		/// Where the target no longer holds what it did and cannot be put back, the backup is the
+		/// only remaining copy, so it stays whatever else happens.
+		/// </summary>
+		[Test]
+		[Platform(Exclude = "Linux,MacOsX",
+			Reason = "a read-only file is not a reliable way to deny a write on Unix")]
+		public void RestoreDisplacedContents_TargetChangedAndUnwritable_KeepsTheBackup()
+		{
+			using (var folder = TemporaryFolder.Create(TestContext.CurrentContext))
+			{
+				string targetPath = Path.Combine(folder.Path, "target.txt");
+				string backupPath = AtomicFileReplacement.GetTempPath(targetPath, "bak");
+				File.WriteAllText(targetPath, "trunc");
+				File.WriteAllText(backupPath, "previous contents");
+				File.SetAttributes(targetPath, FileAttributes.ReadOnly);
+				try
+				{
+					AtomicFileReplacement.RestoreDisplacedContents(backupPath, targetPath);
+				}
+				finally
+				{
+					File.SetAttributes(targetPath, FileAttributes.Normal);
+				}
+
+				Assert.That(File.ReadAllText(backupPath), Is.EqualTo("previous contents"),
+					"the displaced contents must be kept when they could not be put back");
 			}
 		}
 
