@@ -66,6 +66,7 @@ namespace SIL.WritingSystems
 		private readonly GlobalMutex _mutex;
 		private readonly Dictionary<string, Tuple<DateTime, long>> _lastFileStats;
 		private readonly HashSet<string> _addedWritingSystems;
+		private readonly HashSet<string> _unwritableWritingSystems;
 
 		private static string _defaultBasePath;
 
@@ -73,6 +74,7 @@ namespace SIL.WritingSystems
 		{
 			_lastFileStats = new Dictionary<string, Tuple<DateTime, long>>(StringComparer.OrdinalIgnoreCase);
 			_addedWritingSystems = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+			_unwritableWritingSystems = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			_path = CurrentVersionPath(basePath);
 			if (!Directory.Exists(_path))
 				CreateGlobalWritingSystemRepositoryDirectory(_path);
@@ -353,24 +355,57 @@ namespace SIL.WritingSystems
 			base.Set(ws);
 
 			string writingSystemFilePath = GetFilePathFromLanguageTag(ws.Id);
-			if (!File.Exists(writingSystemFilePath) && !string.IsNullOrEmpty(ws.Template))
+			// Build the new definition beside the old one and swap it in, rather than writing over the
+			// live file, so that an interrupted save cannot leave the writing system with a truncated
+			// definition or no file at all. The store enumerates "*.ldml", which no temporary file
+			// matches, so a leftover is ignored rather than loaded as a writing system.
+			string tempFilePath = AtomicFileReplacement.GetTempPath(writingSystemFilePath, "tmp");
+
+			// A writing system generated from a template begins as a copy of it. That copy seeds the
+			// temporary file, so the template never reaches the live path part written either.
+			bool seededFromTemplate = !File.Exists(writingSystemFilePath) && !string.IsNullOrEmpty(ws.Template);
+			if (seededFromTemplate)
 			{
-				// this is a new writing system that was generated from a template, so copy the template over before saving
-				File.Copy(ws.Template, writingSystemFilePath);
+				using (new FileModeOverride())
+				{
+					// Copying a file carries the source's permissions and ignores the mask just set,
+					// and the swap then puts those on the definition left in the store. Templates come
+					// from a per-user cache, so a copy would leave the shared store's definition
+					// readable only by its author. Rebuild the file instead, so it is created under
+					// the mask like everything else written here.
+					using (Stream template = RobustFile.OpenRead(ws.Template))
+					using (Stream seeded = RobustFile.Create(tempFilePath))
+						template.CopyTo(seeded);
+				}
 				ws.Template = null;
 			}
 
-			if (!ws.IsChanged && File.Exists(writingSystemFilePath) && !_addedWritingSystems.Contains(ws.Id))
+			if (!ws.IsChanged && (seededFromTemplate || File.Exists(writingSystemFilePath))
+				&& !_addedWritingSystems.Contains(ws.Id))
+			{
+				// Nothing to write, but a template copy still has to reach the store.
+				if (seededFromTemplate)
+				{
+					try
+					{
+						AtomicFileReplacement.SwapIntoPlace(tempFilePath, writingSystemFilePath);
+						var seeded = new FileInfo(writingSystemFilePath);
+						_lastFileStats[ws.Id] = Tuple.Create(seeded.LastWriteTime, seeded.Length);
+					}
+					catch
+					{
+						AtomicFileReplacement.DeleteIfPresent(tempFilePath);
+						throw;
+					}
+				}
 				return; // no need to save (better to preserve the modified date)
+			}
 
 			if (ws.IsChanged)
 				ws.DateModified = DateTime.UtcNow;
 
-			MemoryStream oldData = GetDataToMergeWithInSave(writingSystemFilePath);
-			if (File.Exists(writingSystemFilePath))
-			{
-				File.Delete(writingSystemFilePath);
-			}
+			MemoryStream oldData = GetDataToMergeWithInSave(
+				seededFromTemplate ? tempFilePath : writingSystemFilePath);
 
 			var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 			try
@@ -381,8 +416,9 @@ namespace SIL.WritingSystems
 				// configuration of the package which allows group access.
 				using (new FileModeOverride())
 				{
-					ldmlDataMapper.Write(writingSystemFilePath, ws, oldData);
+					ldmlDataMapper.Write(tempFilePath, ws, oldData);
 				}
+				AtomicFileReplacement.SwapIntoPlace(tempFilePath, writingSystemFilePath);
 				var fi = new FileInfo(writingSystemFilePath);
 				_lastFileStats[ws.Id] = Tuple.Create(fi.LastWriteTime, fi.Length);
 			}
@@ -391,7 +427,20 @@ namespace SIL.WritingSystems
 				// If we can't save the changes, too bad. Inability to save locally is typically caught
 				// when we go to open the modify dialog. If we can't make the global store consistent,
 				// as we well may not be able to in a client-server mode, too bad.
+				AtomicFileReplacement.DeleteIfPresent(tempFilePath);
+				// The edit is still only in memory, so leave the writing system dirty for a later
+				// Save to retry rather than reporting it as stored. Trace once per writing system,
+				// so a permanently unwritable file does not log on every Save.
+				if (_unwritableWritingSystems.Add(ws.Id))
+					Trace.TraceWarning($"Could not write the writing system \"{ws.Id}\" to \"{writingSystemFilePath}\".");
+				return;
 			}
+			catch
+			{
+				AtomicFileReplacement.DeleteIfPresent(tempFilePath);
+				throw;
+			}
+			_unwritableWritingSystems.Remove(ws.Id);
 			ws.AcceptChanges();
 		}
 

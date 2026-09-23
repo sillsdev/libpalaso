@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using NUnit.Framework;
+using SIL.IO;
 using SIL.TestUtilities;
 using Is = SIL.TestUtilities.NUnitExtensions.Is;
 
@@ -200,6 +202,189 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(File.GetLastWriteTime(repo.GetFilePathFromLanguageTag("en-US")), Is.Not.EqualTo(modified));
 			}
 		}
+
+		[Test]
+		public void Save_NewAndUpdatedWritingSystem_LeavesNoTemporaryFile()
+		{
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws);
+				repo.Save();
+				ws.WindowsLcid = "test";
+				repo.Save();
+				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.tmp"), Is.Empty);
+				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.bak"), Is.Empty);
+			}
+		}
+
+		/// <summary>
+		/// A writing system generated from a template begins as a copy of it. That copy has to reach
+		/// the store the same way any other definition does, so that a save interrupted while it is
+		/// being made cannot leave a partial definition behind.
+		/// </summary>
+		[Test]
+		public void Save_WritingSystemFromTemplate_StoresItAndLeavesNoTemporaryFile()
+		{
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			using (var templates = CreateTemporaryFolder("TemplateSource"))
+			{
+				string templatePath = Path.Combine(templates.Path, "fr.ldml");
+				File.WriteAllText(templatePath, FrenchTemplateLdml);
+
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("fr") { Template = templatePath };
+				repo.Set(ws);
+				repo.Save();
+
+				Assert.That(File.Exists(repo.GetFilePathFromLanguageTag("fr")), Is.True);
+				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.tmp"), Is.Empty);
+				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.bak"), Is.Empty);
+				Assert.That(File.Exists(templatePath), Is.True, "the template itself must be left alone");
+
+				var reread = new GlobalWritingSystemRepository(e.Path);
+				Assert.That(reread.AllWritingSystems.Select(w => w.Id), Is.EquivalentTo(new[] { "fr" }));
+			}
+		}
+
+		/// <summary>
+		/// A template comes from a per-user cache, so its own permissions are not the shared store's.
+		/// The definition seeded from it has to be as editable by the group as any other.
+		/// </summary>
+		[Test]
+		[Platform(Include = "Linux,MacOsX", Reason = "permission bits of this kind exist only on Unix")]
+		public void Save_WritingSystemFromTemplate_StaysGroupWritable()
+		{
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			using (var templates = CreateTemporaryFolder("TemplateSource"))
+			{
+				string templatePath = Path.Combine(templates.Path, "fr.ldml");
+				File.WriteAllText(templatePath, FrenchTemplateLdml);
+				// A template only its author can write, as the SLDR cache leaves it.
+				Assert.That(UnixFilePermissions.TrySetMode(templatePath, 0x180), Is.True); // 0600
+
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("fr") { Template = templatePath };
+				repo.Set(ws);
+				repo.Save();
+
+				string filePath = repo.GetFilePathFromLanguageTag("fr");
+				Assert.That(UnixFilePermissions.TryGetMode(filePath, out uint mode), Is.True);
+				Assert.That(mode & 0x10, Is.EqualTo(0x10), // group write
+					$"a definition seeded from a template should be group-writable but is {Convert.ToString(mode, 8)}");
+			}
+		}
+
+		private const string FrenchTemplateLdml =
+			@"<?xml version=""1.0"" encoding=""utf-8""?>
+<ldml>
+	<identity>
+		<version number=""$Revision: 11161 $""/>
+		<generation date=""$Date: 2015-01-30 22:33 +0000 $""/>
+		<language type=""fr""/>
+	</identity>
+</ldml>";
+
+		/// <summary>
+		/// A definition is built beside the old one and swapped in, so a temporary file that an
+		/// interrupted save left behind must never be mistaken for a writing system.
+		/// </summary>
+		[Test]
+		public void AllWritingSystems_StrayTemporaryFile_IgnoresIt()
+		{
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws);
+				repo.Save();
+
+				File.Copy(repo.GetFilePathFromLanguageTag("en-US"),
+					Path.Combine(repo.PathToWritingSystems, "fr.ldml.99999.tmp"));
+
+				var otherRepo = new GlobalWritingSystemRepository(e.Path);
+				Assert.That(otherRepo.Count, Is.EqualTo(1));
+				Assert.That(otherRepo.AllWritingSystems.Select(w => w.Id), Is.EquivalentTo(new[] { "en-US" }));
+			}
+		}
+
+		/// <summary>
+		/// The swap is all or nothing. When the replacement cannot be put in place, the definition
+		/// already in the store survives intact instead of being left truncated or missing.
+		/// </summary>
+		[Test]
+		[Platform(Exclude = "Linux,MacOsX",
+			Reason = "a read-only file is not a reliable way to deny a write on Unix")]
+		public void Save_CannotReplaceExistingFile_LeavesItIntact()
+		{
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws);
+				repo.Save();
+
+				string filePath = repo.GetFilePathFromLanguageTag("en-US");
+				string originalContents = File.ReadAllText(filePath);
+				File.SetAttributes(filePath, FileAttributes.ReadOnly);
+				try
+				{
+					ws.WindowsLcid = "test";
+					// Twice, because a definition that could not be written stays changed and is
+					// retried on every save. Each attempt takes a backup under a name of its own, so
+					// anything left behind accumulates in the shared store rather than being replaced.
+					repo.Save();
+					repo.Save();
+				}
+				finally
+				{
+					File.SetAttributes(filePath, FileAttributes.Normal);
+				}
+
+				Assert.That(File.ReadAllText(filePath), Is.EqualTo(originalContents));
+				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.tmp"), Is.Empty);
+				// The write was refused before it began, so the definition still standing is the one
+				// the backup was taken from and nothing was lost by dropping it.
+				Assert.That(Directory.GetFiles(repo.PathToWritingSystems, "*.bak"), Is.Empty);
+				// The edit only ever reached memory, so it has to still look unsaved. Reporting it as
+				// stored would discard it silently and stop anything retrying.
+				Assert.That(ws.IsChanged, Is.True,
+					"a writing system that could not be written must still be reported as changed");
+			}
+		}
+
+		/// <summary>
+		/// A shared store is only usable by a group if its definitions stay group-writable. Replacing a
+		/// file can carry the permissions of either the replacement or the file it displaces, and the
+		/// mask that makes new files group-writable applies only while they are being created, so the
+		/// permissions that survive a save have to be checked rather than assumed.
+		/// </summary>
+		[Test]
+		[Platform(Include = "Linux,MacOsX", Reason = "permission bits of this kind exist only on Unix")]
+		public void Save_NewAndUpdatedWritingSystem_StaysGroupWritable()
+		{
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws);
+				repo.Save();
+
+				string filePath = repo.GetFilePathFromLanguageTag("en-US");
+				Assert.That(UnixFilePermissions.TryGetMode(filePath, out uint created), Is.True);
+				Assert.That(created & 0x10, Is.EqualTo(0x10), // group write
+					$"a newly created definition should be group-writable but is {Convert.ToString(created, 8)}");
+
+				ws.WindowsLcid = "test";
+				repo.Save();
+
+				Assert.That(UnixFilePermissions.TryGetMode(filePath, out uint replaced), Is.True);
+				Assert.That(replaced & 0x10, Is.EqualTo(0x10),
+					$"a replaced definition should stay group-writable but is {Convert.ToString(replaced, 8)}");
+			}
+		}
+
 
 		[Test]
 		public void Save_ChangingIcuSort_DoesNotDuplicateInLdmlFile()

@@ -102,7 +102,7 @@ namespace SIL.Threading
 		{
 			CheckDisposed();
 
-			bool res = _adapter.Init(false);
+			bool res = _adapter.Init(false, out _);
 			_initialized = true;
 			return res;
 		}
@@ -114,9 +114,18 @@ namespace SIL.Threading
 		/// </summary>
 		public IDisposable InitializeAndLock(out bool createdNew)
 		{
+			return InitializeAndLock(out createdNew, out _);
+		}
+
+		/// <summary>
+		/// Initializes and locks this mutex, additionally reporting through <paramref name="wasAbandoned"/>
+		/// whether the previous owner exited without releasing it. See <see cref="Lock(out bool)"/>.
+		/// </summary>
+		public IDisposable InitializeAndLock(out bool createdNew, out bool wasAbandoned)
+		{
 			CheckDisposed();
 
-			createdNew = _adapter.Init(true);
+			createdNew = _adapter.Init(true, out wasAbandoned);
 			return new ReleaseDisposable(_adapter);
 		}
 
@@ -135,9 +144,24 @@ namespace SIL.Threading
 		/// </summary>
 		public IDisposable Lock()
 		{
+			return Lock(out _);
+		}
+
+		/// <summary>
+		/// Locks this mutex, additionally reporting through <paramref name="wasAbandoned"/> whether the previous
+		/// owner exited without releasing it. The lock is held either way; an abandoned mutex means the data it
+		/// protects may have been left partially written, so callers that cannot tolerate torn state should
+		/// revalidate or repair it before proceeding.
+		/// <para>A <c>false</c> result says no abandonment was reported, not that none happened. A named mutex
+		/// exists only while a handle to it is open, so a process that died holding the last one takes the mutex
+		/// with it, and the next caller creates a new one with nothing to report. Only the Windows and macOS
+		/// adapters report abandonment at all; the others always return <c>false</c>.</para>
+		/// </summary>
+		public IDisposable Lock(out bool wasAbandoned)
+		{
 			CheckDisposed();
 
-			_adapter.Wait();
+			wasAbandoned = _adapter.Wait();
 			return new ReleaseDisposable(_adapter);
 		}
 
@@ -169,8 +193,17 @@ namespace SIL.Threading
 
 		private interface IGlobalMutexAdapter : IDisposable
 		{
-			bool Init(bool initiallyOwned);
-			void Wait();
+			/// <summary>
+			/// Initializes the mutex, optionally acquiring it. Returns whether the mutex was newly created.
+			/// <paramref name="wasAbandoned"/> reports that the previous owner died without releasing it.
+			/// </summary>
+			bool Init(bool initiallyOwned, out bool wasAbandoned);
+
+			/// <summary>
+			/// Acquires the mutex, returning whether the previous owner died without releasing it.
+			/// </summary>
+			bool Wait();
+
 			void Release();
 			bool Unlink();
 		}
@@ -194,9 +227,14 @@ namespace SIL.Threading
 				_name = name;
 			}
 
-			public bool Init(bool initiallyOwned)
+			public bool Init(bool initiallyOwned, out bool wasAbandoned)
 			{
 				Unlink();
+
+				// A Monitor has no abandonment to report: it carries no such signal, and an owner that
+				// exits without releasing leaves it held rather than abandoned, so a later waiter
+				// blocks instead of being told anything. Local-only locking cannot recover from that.
+				wasAbandoned = false;
 
 				_lock = s_locks.GetOrAdd(_name, _ => {
 					var retVal = new object();
@@ -215,9 +253,10 @@ namespace SIL.Threading
 				return previousLinkCount == 0;
 			}
 
-			public void Wait()
+			public bool Wait()
 			{
 				Monitor.Enter(_lock);
+				return false;
 			}
 
 			public void Release()
@@ -262,9 +301,14 @@ namespace SIL.Threading
 				_name = Path.Combine("/var/lock", name);
 			}
 
-			public bool Init(bool initiallyOwned)
+			public bool Init(bool initiallyOwned, out bool wasAbandoned)
 			{
 				bool result;
+				// There is no abandonment to report here, but not because none can happen: the kernel
+				// drops the flock when its holder dies, while the Monitor taken alongside it in Wait
+				// is not released on thread death, so a dead owner leaves that held and a later
+				// waiter blocks. This adapter has no way to detect either case.
+				wasAbandoned = false;
 				_handle = Syscall.open(_name, OpenFlags.O_CREAT | OpenFlags.O_EXCL, FilePermissions.S_IWUSR | FilePermissions.S_IRUSR);
 				if (_handle != -1)
 				{
@@ -285,7 +329,7 @@ namespace SIL.Threading
 				return result;
 			}
 
-			public void Wait()
+			public bool Wait()
 			{
 				if (_waitCount.Value == 0)
 				{
@@ -294,6 +338,7 @@ namespace SIL.Threading
 						throw new NativeException(Marshal.GetLastWin32Error());
 				}
 				_waitCount.Value++;
+				return false;
 			}
 
 			public void Release()
@@ -346,18 +391,34 @@ namespace SIL.Threading
 				_name = name;
 			}
 
-			public bool Init(bool initiallyOwned)
+			public bool Init(bool initiallyOwned, out bool wasAbandoned)
 			{
 				bool createdNew;
+				wasAbandoned = false;
 				_mutex = new Mutex(initiallyOwned, _name, out createdNew);
 				if (initiallyOwned && !createdNew)
-					Wait();
+					wasAbandoned = Wait();
 				return createdNew;
 			}
 
-			public void Wait()
+			public bool Wait()
 			{
-				_mutex.WaitOne();
+				try
+				{
+					_mutex.WaitOne();
+					return false;
+				}
+				catch (AbandonedMutexException)
+				{
+					// The previous owner exited without releasing the mutex. Per the Mutex contract the wait
+					// still succeeded and this thread now owns it, so propagating the exception would abort a
+					// caller that in fact holds the lock. Worse, a caller that dies on this exception abandons
+					// the mutex again, making every later acquisition fail the same way. Recover instead, and
+					// report the abandonment so callers can revalidate whatever the mutex protects.
+					Trace.TraceWarning($"Global mutex \"{_name}\" was abandoned by a process or thread that " +
+						"exited without releasing it. The lock was acquired; data it protects may be incomplete.");
+					return true;
+				}
 			}
 
 			public void Release()

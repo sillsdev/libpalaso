@@ -373,8 +373,24 @@ namespace SIL.WritingSystems
 
 				if (destinationPath != SldrCachePath)
 				{
-					// Copy from Cache to destination (w/o uid in filename), overwriting whatever used to be there
-					File.Copy(sldrCacheFilePath, Path.Combine(destinationPath, filename), true);
+					// Deliver the entry the same way it was built: beside the caller's file, then
+					// swapped in. Copying straight onto their file truncates it first, and they have
+					// no second copy of it anywhere. The replacement is built beside the destination
+					// rather than beside the cache, because replacing a file cannot cross volumes and
+					// the cache and the caller's repository can be on different mounts.
+					string destinationFilePath = Path.Combine(destinationPath, filename);
+					string destinationTempPath =
+						AtomicFileReplacement.GetTempPath(destinationFilePath, "new");
+					try
+					{
+						RobustFile.Copy(sldrCacheFilePath, destinationTempPath, true);
+						AtomicFileReplacement.SwapIntoPlace(destinationTempPath, destinationFilePath);
+					}
+					catch
+					{
+						AtomicFileReplacement.DeleteIfPresent(destinationTempPath);
+						throw;
+					}
 				}
 
 				return status;
@@ -502,14 +518,33 @@ namespace SIL.WritingSystems
 					if (string.IsNullOrEmpty(cachedETag) || !cachedETag.Equals(eTag)
 						|| !File.Exists(cachedAllTagsPath))
 					{
+						// Download beside the cached copy and swap it in, so an interrupted download
+						// leaves the previous tags rather than a truncated file. The ETag is recorded
+						// only once that has happened: written first, it would mark a torn file as
+						// current, and since a present file is not re-fetched while its ETag matches,
+						// nothing would ever replace it.
+						var tagsTempPath = AtomicFileReplacement.GetTempPath(cachedAllTagsPath, "new");
+						try
+						{
+							// Written through rather than buffered: the swap that follows is a rename,
+							// which can complete before the OS has flushed the data blocks, leaving a
+							// file that is present but empty after a power loss. The ETag recorded
+							// afterwards would then mark that file as current and stop it being
+							// re-fetched.
+							using (var input = webResponse.GetResponseStream())
+							using (var output = RobustFile.Create(tagsTempPath))
+								input.CopyTo(output);
+
+							AtomicFileReplacement.SwapIntoPlace(tagsTempPath, cachedAllTagsPath);
+						}
+						catch
+						{
+							AtomicFileReplacement.DeleteIfPresent(tagsTempPath);
+							throw;
+						}
+
 						if (!string.IsNullOrEmpty(eTag))
 							File.WriteAllText(cachedETagPath, eTag);
-
-						using var input = webResponse.GetResponseStream();
-						if (File.Exists(cachedAllTagsPath))
-							File.Delete(cachedAllTagsPath);
-						using var output = File.OpenWrite(cachedAllTagsPath);
-						input.CopyTo(output);
 					}
 				}
 				catch (WebException)
@@ -699,6 +734,10 @@ namespace SIL.WritingSystems
 			var identityElem = element.Element("identity");
 			var specialElem = identityElem?.NonAltElement("special");
 			var silIdentityElem = specialElem?.Element(Sil + "identity");
+			// An approved entry supersedes the uid-qualified entry it came from, which is removed
+			// only once the replacement is in place. Removing it first would leave an interrupted
+			// update with neither entry, where the cache had a complete one to fall back on.
+			var supersededFile = string.Empty;
 			if (silIdentityElem != null)
 			{
 				if ((string) silIdentityElem.Attribute("draft") == "approved")
@@ -707,12 +746,8 @@ namespace SIL.WritingSystems
 					uid = string.Empty;
 					silIdentityElem.SetOptionalAttributeValue("uid", uid);
 
-					// Clean out original LDML file that contains uid in cache
-					var originalFile = string.Empty;
 					if (!string.IsNullOrEmpty(originalUid) && (originalUid != DefaultUserId))
-						originalFile = sldrCacheFilePath.Replace("." + LdmlExtension, "-" + originalUid + "." + LdmlExtension);
-					if (File.Exists(originalFile))
-						File.Delete(originalFile);
+						supersededFile = sldrCacheFilePath.Replace("." + LdmlExtension, "-" + originalUid + "." + LdmlExtension);
 				}
 				else
 					uid = (string) silIdentityElem.Attribute("uid");
@@ -728,8 +763,47 @@ namespace SIL.WritingSystems
 			var writerSettings = CanonicalXmlSettings.CreateXmlWriterSettings();
 			writerSettings.NewLineOnAttributes = false;
 
-			using (var writer = XmlWriter.Create(sldrCacheFilePath, writerSettings))
-				element.WriteTo(writer);
+			// Build the cache entry beside the old one and swap it in. This cache is guarded by a
+			// machine-wide mutex that a dying process can abandon, and a truncated entry here is
+			// copied over the caller's own good LDML by GetLdmlFile. The download already claims the
+			// "tmp" extension, so the replacement uses a different one.
+			string cacheTempPath = AtomicFileReplacement.GetTempPath(sldrCacheFilePath, "new");
+			try
+			{
+				// Created under the shared store's mask, because the swap puts the replacement's
+				// permissions on the entry left in place and this cache is shared between users.
+				// Written through rather than buffered, for the same reason the tags download is:
+				// the swap is a rename and can complete before the data blocks reach the disk. An
+				// entry left empty by a power loss is copied over the caller's own LDML by
+				// GetLdmlFile and reported as a cache hit.
+				using (new FileModeOverride())
+				using (Stream cacheStream = RobustFile.Create(cacheTempPath))
+				using (var writer = XmlWriter.Create(cacheStream, writerSettings))
+					element.WriteTo(writer);
+
+				AtomicFileReplacement.SwapIntoPlace(cacheTempPath, sldrCacheFilePath);
+			}
+			catch
+			{
+				AtomicFileReplacement.DeleteIfPresent(cacheTempPath);
+				throw;
+			}
+
+			if (supersededFile != string.Empty && File.Exists(supersededFile))
+			{
+				try
+				{
+					File.Delete(supersededFile);
+				}
+				catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
+				{
+					// The replacement is already in place, so the update succeeded. What is left is a
+					// stale duplicate the next update will try again to remove, and reporting a
+					// failure here would deny the caller an entry that was written correctly.
+					Trace.TraceInformation(
+						$"Could not remove the superseded cache entry \"{supersededFile}\": {e.Message}");
+				}
+			}
 
 			File.Delete(filePath);
 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using NUnit.Framework;
+using SIL.IO;
 using SIL.TestUtilities;
 using Is = SIL.TestUtilities.NUnitExtensions.Is;
 // ReSharper disable AccessToStaticMemberViaDerivedType
@@ -23,6 +24,10 @@ namespace SIL.WritingSystems.Tests
 
 				Sldr.Cleanup();
 				Sldr.Initialize(sldrOffline, sldrCachePath);
+				// Tests here seed the cache directly, before anything in Sldr has had a reason to create
+				// it, and Initialize does not. On a machine where the default cache has never been used
+				// that leaves whichever test runs first failing on a missing directory.
+				Directory.CreateDirectory(sldrCachePath);
 				FolderContainingLdml = new TemporaryFolder("SldrTests");
 				NamespaceManager = new XmlNamespaceManager(new NameTable());
 				NamespaceManager.AddNamespace("sil", "urn://www.sil.org/ldml/0.1");
@@ -431,6 +436,171 @@ namespace SIL.WritingSystems.Tests
 			AssertThatXmlIn.File(filename).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@revid='53d542ba498f40f437f7723e69dcf64dab6c9794']", environment.NamespaceManager);
 			AssertThatXmlIn.File(filename).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@uid='e2ccb575']", environment.NamespaceManager);
 		}
+
+		[Test]
+		public void MoveTmpToCache_LeavesNoTemporaryFile()
+		{
+			using var environment = new TestEnvironment();
+			const string ietfLanguageTag = "en";
+			var tmpFilename = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml.tmp");
+			File.WriteAllText(tmpFilename, MinimalLdmlContent);
+
+			Sldr.MoveTmpToCache(tmpFilename, string.Empty);
+
+			Assert.That(File.Exists(Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml")), Is.True);
+			Assert.That(Directory.GetFiles(environment.FilePath, "*.new"), Is.Empty);
+			Assert.That(File.Exists(tmpFilename), Is.False);
+		}
+
+		/// <summary>
+		/// The entry is built beside the old one and swapped in, so a swap that cannot complete has to
+		/// leave the cached entry as it was. A truncated entry here is copied over the caller's own
+		/// good LDML by GetLdmlFile and reported as FromCache.
+		/// </summary>
+		[Test]
+		[Platform(Exclude = "Linux,MacOsX",
+			Reason = "a read-only file is not a reliable way to deny a write on Unix")]
+		public void MoveTmpToCache_CannotReplaceExistingEntry_LeavesItIntact()
+		{
+			using var environment = new TestEnvironment();
+			const string ietfLanguageTag = "en";
+			var cacheFilename = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml");
+			File.WriteAllText(cacheFilename, MinimalLdmlContent);
+			var originalContents = File.ReadAllText(cacheFilename);
+			var tmpFilename = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml.tmp");
+			File.WriteAllText(tmpFilename, MinimalLdmlContent);
+
+			File.SetAttributes(cacheFilename, FileAttributes.ReadOnly);
+			try
+			{
+				Assert.That(() => Sldr.MoveTmpToCache(tmpFilename, string.Empty), Throws.Exception);
+			}
+			finally
+			{
+				File.SetAttributes(cacheFilename, FileAttributes.Normal);
+			}
+
+			Assert.That(File.ReadAllText(cacheFilename), Is.EqualTo(originalContents));
+			Assert.That(Directory.GetFiles(environment.FilePath, "*.new"), Is.Empty);
+		}
+
+		/// <summary>
+		/// An approved entry supersedes the uid-qualified entry it came from, and removing that one
+		/// is what leaves the cache with a complete copy either way. An update that cannot be put in
+		/// place has to leave the entry it was superseding behind.
+		/// </summary>
+		[Test]
+		[Platform(Exclude = "Linux,MacOsX",
+			Reason = "a read-only file is not a reliable way to deny a write on Unix")]
+		public void MoveTmpToCache_ApprovedUpdateCannotBePutInPlace_KeepsSupersededEntry()
+		{
+			using var environment = new TestEnvironment();
+			const string ietfLanguageTag = "en";
+			const string originalUid = "e2ccb575";
+			var content =
+				@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version number='$Revision: 11161 $'/>
+		<generation date='$Date: 2015-01-30 22:33 +0000 $'/>
+		<language type='en'/>
+		<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
+			<sil:identity source='cldr' draft='approved' revid='53d542ba498f40f437f7723e69dcf64dab6c9794' uid='e2ccb575'/>
+		</special>
+		<script type='Latn'/>
+	</identity>
+</ldml>".Replace("\'", "\"");
+
+			var supersededPath = Path.Combine(environment.FilePath,
+				$"{ietfLanguageTag}-{originalUid}.{"ldml"}");
+			File.WriteAllText(supersededPath, content);
+			var cachePath = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml");
+			File.WriteAllText(cachePath, content);
+			var tmpPath = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml.tmp");
+			File.WriteAllText(tmpPath, content);
+
+			File.SetAttributes(cachePath, FileAttributes.ReadOnly);
+			try
+			{
+				Assert.That(() => Sldr.MoveTmpToCache(tmpPath, originalUid), Throws.Exception);
+			}
+			finally
+			{
+				File.SetAttributes(cachePath, FileAttributes.Normal);
+			}
+
+			Assert.That(File.Exists(supersededPath), Is.True,
+				"an update that could not be put in place must leave the entry it supersedes");
+			Assert.That(Directory.GetFiles(environment.FilePath, "*.new"), Is.Empty);
+		}
+
+		/// <summary>
+		/// The SLDR cache is shared between users, so an entry that was widened has to stay that way
+		/// when someone else refreshes it. The replacement's permissions are what the swap leaves in
+		/// place, so they have to be the shared store's rather than the refreshing user's own.
+		/// </summary>
+		[Test]
+		[Platform(Include = "Linux,MacOsX", Reason = "permission bits of this kind exist only on Unix")]
+		public void MoveTmpToCache_UpdatingAnEntry_KeepsItGroupWritable()
+		{
+			using var environment = new TestEnvironment();
+			const string ietfLanguageTag = "en";
+			var cachePath = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml");
+			File.WriteAllText(cachePath, MinimalLdmlContent);
+			// An entry somebody widened so the whole group could refresh it.
+			Assert.That(UnixFilePermissions.TrySetMode(cachePath, 0x1B4), Is.True); // 0664
+			var tmpPath = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml.tmp");
+			File.WriteAllText(tmpPath, MinimalLdmlContent);
+
+			Sldr.MoveTmpToCache(tmpPath, string.Empty);
+
+			Assert.That(UnixFilePermissions.TryGetMode(cachePath, out uint mode), Is.True);
+			Assert.That(mode & 0x10, Is.EqualTo(0x10), // group write
+				$"a refreshed cache entry should stay group-writable but is {Convert.ToString(mode, 8)}");
+		}
+
+		/// <summary>
+		/// The cache entry is copied onto the caller's own file at the end of a fetch. The caller has
+		/// no second copy of that file anywhere, so a copy that cannot complete has to leave what was
+		/// already there rather than a partly overwritten version of it.
+		/// </summary>
+		[Test]
+		[Platform(Exclude = "Linux,MacOsX",
+			Reason = "holding a file open is not a reliable way to deny a write on Unix")]
+		public void GetLdmlFile_DestinationCannotBeWritten_LeavesItIntact()
+		{
+			using var environment = new TestEnvironment();
+			const string ietfLanguageTag = "en";
+			var cacheFilePath = Path.Combine(Sldr.SldrCachePath, ietfLanguageTag + ".ldml");
+			File.WriteAllText(cacheFilePath, MinimalLdmlContent);
+
+			var destinationPath = Path.Combine(environment.FilePath, ietfLanguageTag + ".ldml");
+			const string alreadyThere = "the caller's own definition";
+			File.WriteAllText(destinationPath, alreadyThere);
+
+			// Hold the caller's file open for reading only, so it can be read but not written over.
+			using (new FileStream(destinationPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+			{
+				Assert.That(
+					() => Sldr.GetLdmlFile(environment.FilePath, ietfLanguageTag,
+						new List<string> { "characters" }, out _),
+					Throws.Exception);
+			}
+
+			Assert.That(File.ReadAllText(destinationPath), Is.EqualTo(alreadyThere),
+				"a fetch that could not be delivered must leave the caller's file as it was");
+		}
+
+		private const string MinimalLdmlContent =
+			@"<?xml version=""1.0"" encoding=""utf-8""?>
+<ldml>
+	<identity>
+		<version number=""$Revision: 11161 $""/>
+		<generation date=""$Date: 2015-01-30 22:33 +0000 $""/>
+		<language type=""en""/>
+		<script type=""Latn""/>
+	</identity>
+</ldml>";
 
 		#endregion
 
