@@ -98,11 +98,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] In the event of an audio playback error in Windows, the non-fatal exception reported will also include an accompanying (localizable/customizable) user-friendly message.
 - [SIL.WritingSystems] Updated embedded langtags.json (api 1.4, 2026-06-09)
 - [SIL.WritingSystems] Updated embedded ianaSubtagRegistry.txt (2026-06-14)
+- [build] Bump SIL.BuildTasks to 3.3.0 in `build/Palaso.proj`, `l10n/l10n.proj`, and the `SIL.Windows.Forms.TestApp.Installer` build tooling.
+- [build] Bump SIL.ReleaseTasks to 3.3.0 for the `netstandard2.0` target only, in SIL.Archiving, SIL.Core, SIL.Core.Desktop, SIL.DblBundle, SIL.DictionaryServices, SIL.Lexicon, SIL.Lift, SIL.Linux.Logging, SIL.Scripture, SIL.TestUtilities, and SIL.WritingSystems; `net462`/`net48` stay on 3.1.1. 3.3.0 pulls in `Microsoft.Build.Tasks.Core`, which has no `net462`/`net48` asset and, when consumed via its `netstandard2.0` fallback there, disrupts implicit `WindowsBase`/`System.IO.Packaging` resolution for those TFMs (see SIL.Archiving.Tests).
+- [SIL.Core, SIL.Core.Desktop, SIL.WritingSystems] Bump Markdig.Signed to 0.41.1 for the `netstandard2.0` target only, to satisfy SIL.ReleaseTasks 3.3.0's own floor there; `net462`/`net48` stay on 0.37.0.
+- [SIL.Windows.Forms, SIL.Windows.Forms.Archiving, SIL.Windows.Forms.DblBundle, SIL.Windows.Forms.WritingSystems, SIL.Windows.Forms.Tests, SIL.Windows.Forms.WritingSystems.Tests] Bump Markdig.Signed to 0.41.1 for the `net8.0-windows` target only, since it consumes SIL.Core/SIL.WritingSystems's `netstandard2.0` build (see above) rather than a native `net462`/`net48` build.
+- [SIL.Windows.Forms.Keyboarding, SIL.WritingSystems, SIL.WritingSystems.Tests] Bump icu.net from 3.0.1 to 3.0.2 for version alignment across the dependency graph.
+- [SIL.Archiving, SIL.Media, SIL.Media.Tests, SIL.WritingSystems] Bump System.Memory to 4.6.3 for version alignment across the dependency graph (separate from the System.Memory bump in the Security section below, which is required specifically by the L10NSharp 11.0.0 upgrade).
 
 ### Removed
 
 - [SIL.Windows.Forms] In .NET 8 builds, removed Scanner and Camera options from the Image Toolbox.
 
+### Security
+
+- [SIL.Core.Desktop, SIL.Core.Desktop.Tests, SIL.Windows.Forms, SIL.Windows.Forms.Tests, SIL.Windows.Forms.Keyboarding, SIL.Windows.Forms.Keyboarding.Tests] Bump L10NSharp and L10NSharp.Windows.Forms to 11.0.0, and bump System.Memory/System.Resources.Extensions references to the versions L10NSharp 11.0.0 now requires, to remove a vulnerable transitive dependency chain (`System.ServiceModel.Primitives` → `System.Security.Cryptography.Pkcs`/`System.Formats.Asn1`, both High severity) pulled in by the old `L10NSharp.Windows.Forms` 10.0.0-beta0004.
+- [SIL.Media, SIL.Media.Tests] Bump FFMpegCore from 5.0.0 to 5.4.0 to remove a vulnerable transitive `System.Text.Json` 7.0.1 dependency (High severity, [GHSA-hh2w-p6rv-4g7w](https://github.com/advisories/GHSA-hh2w-p6rv-4g7w)).
 
 ## [16.2.0] - 2025-09-24
 
