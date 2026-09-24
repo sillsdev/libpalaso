@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [SIL.Core] Added `UnixFilePermissions`, which reads and applies the Unix permission bits of a file and does nothing on platforms that have no such bits, so callers need no platform test of their own.
 - [SIL.Windows.Forms.Archiving, SIL.Windows.Forms.DblBundle] Added `net8.0-windows` target.
+- [SIL.WritingSystems] Added `net8.0` target. On this target, the library's fixed regular expressions are built at compile time by the `[GeneratedRegex]` source generator. The .NET Framework and .NET Standard targets use cached `Regex` instances created with `RegexOptions.Compiled`.
 - [SIL.Core.Clearshare] Added new classes MetadataCore, CreativeCommonsLicenseInfo, and CustomLicenseInfo; these are Winforms-free base versions of the classes Metadata, CreativeCommonsLicense, and CustomLicense.
 - [SIL.Core.Clearshare and SIL.Windows.Forms.Clearshare] Added LicenseUtils and LicenseWithImageUtils to handle the FromXmp method for creating a license. LicenseUtils constructs a bare license object that is Winforms-independent; LicenseWithImageUtils constructs a Winforms-dependent license object with access to license images.
 - [SIL.Core.Clearshare] New methods "GetIsStringAvailableForLangId" and "GetDynamicStringOrEnglish" were added to Localizer for use in LicenseInfo's "GetBestLicenseTranslation" method, to remove LicenseInfo's L10NSharp dependency.
