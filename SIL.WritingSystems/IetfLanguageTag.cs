@@ -19,7 +19,7 @@ namespace SIL.WritingSystems
 	/// This static utility class contains various methods for processing IETF language tags. Currently,
 	/// there are no methods for accessing extended language and extension subtags.
 	/// </summary>
-	public static class IetfLanguageTag
+	public static partial class IetfLanguageTag
 	{
 		private const string kInvalidTagMsg = "The IETF language tag is invalid.";
 
@@ -62,24 +62,48 @@ namespace SIL.WritingSystems
 			+ "(-(?'extension'" + ExtensionExpr + "))?"
 			+ "(-(?'privateuse'" + PrivateUseExpr + "))?\\z)";
 
-		private static readonly Regex IcuTagPattern;
-		private static readonly Regex LangTagPattern;
-		private static readonly Regex LangPattern;
-		private static readonly Regex SignLangPattern;
-		private static readonly Regex ScriptPattern;
-		private static readonly Regex RegionPattern;
-		private static readonly Regex PrivateUsePattern;
+		private const string LangPatternExpr = "\\A(" + LanguageExpr + ")\\z";
+		private const string SignLangPatternExpr = "\\A(" + SignLanguageExpr + ")\\z";
+		private const string ScriptPatternExpr = "\\A(" + ScriptExpr + ")\\z";
+		private const string RegionPatternExpr = "\\A(" + RegionExpr + ")\\z";
+		private const string PrivateUsePatternExpr = "\\A(" + PrivateUseSubExpr + ")\\z";
+
+#if NET7_0_OR_GREATER
+		[GeneratedRegex(IcuTagExpr, RegexOptions.ExplicitCapture)]
+		private static partial Regex IcuTagPattern();
+		[GeneratedRegex(LangTagExpr, RegexOptions.ExplicitCapture)]
+		private static partial Regex LangTagPattern();
+		[GeneratedRegex(LangPatternExpr, RegexOptions.ExplicitCapture)]
+		private static partial Regex LangPattern();
+		[GeneratedRegex(SignLangPatternExpr, RegexOptions.ExplicitCapture)]
+		private static partial Regex SignLangPattern();
+		[GeneratedRegex(ScriptPatternExpr, RegexOptions.ExplicitCapture)]
+		private static partial Regex ScriptPattern();
+		[GeneratedRegex(RegionPatternExpr, RegexOptions.ExplicitCapture)]
+		private static partial Regex RegionPattern();
+		[GeneratedRegex(PrivateUsePatternExpr, RegexOptions.ExplicitCapture)]
+		private static partial Regex PrivateUsePattern();
+#else
+		private static readonly Regex IcuTagRegex = new Regex(IcuTagExpr, RegexOptions.ExplicitCapture | RegexOptions.Compiled);
+		private static readonly Regex LangTagRegex = new Regex(LangTagExpr, RegexOptions.ExplicitCapture | RegexOptions.Compiled);
+		private static readonly Regex LangRegex = new Regex(LangPatternExpr, RegexOptions.ExplicitCapture | RegexOptions.Compiled);
+		private static readonly Regex SignLangRegex = new Regex(SignLangPatternExpr, RegexOptions.ExplicitCapture | RegexOptions.Compiled);
+		private static readonly Regex ScriptRegex = new Regex(ScriptPatternExpr, RegexOptions.ExplicitCapture | RegexOptions.Compiled);
+		private static readonly Regex RegionRegex = new Regex(RegionPatternExpr, RegexOptions.ExplicitCapture | RegexOptions.Compiled);
+		private static readonly Regex PrivateUseRegex = new Regex(PrivateUsePatternExpr, RegexOptions.ExplicitCapture | RegexOptions.Compiled);
+		private static Regex IcuTagPattern() => IcuTagRegex;
+		private static Regex LangTagPattern() => LangTagRegex;
+		private static Regex LangPattern() => LangRegex;
+		private static Regex SignLangPattern() => SignLangRegex;
+		private static Regex ScriptPattern() => ScriptRegex;
+		private static Regex RegionPattern() => RegionRegex;
+		private static Regex PrivateUsePattern() => PrivateUseRegex;
+#endif
+
 		private static readonly bool UseICUForLanguageNames;
 
 		static IetfLanguageTag()
 		{
-			IcuTagPattern = new Regex(IcuTagExpr, RegexOptions.ExplicitCapture);
-			LangTagPattern = new Regex(LangTagExpr, RegexOptions.ExplicitCapture);
-			LangPattern = new Regex("\\A(" + LanguageExpr + ")\\z", RegexOptions.ExplicitCapture);
-			SignLangPattern = new Regex("\\A(" + SignLanguageExpr + ")\\z", RegexOptions.ExplicitCapture);
-			ScriptPattern = new Regex("\\A(" + ScriptExpr + ")\\z", RegexOptions.ExplicitCapture);
-			RegionPattern = new Regex("\\A(" + RegionExpr + ")\\z", RegexOptions.ExplicitCapture);
-			PrivateUsePattern = new Regex("\\A(" + PrivateUseSubExpr + ")\\z", RegexOptions.ExplicitCapture);
 			try
 			{
 				UseICUForLanguageNames = GetLocalizedLanguageNameFromIcu("en", "es") == "inglés";
@@ -136,7 +160,7 @@ namespace SIL.WritingSystems
 			{
 				if (!StandardSubtags.CommonPrivateUseVariants.TryGet(privateUseCode, out var variantSubtag))
 				{
-					if (!PrivateUsePattern.IsMatch(privateUseCode))
+					if (!PrivateUsePattern().IsMatch(privateUseCode))
 					{
 						variantSubtags = null;
 						return false;
@@ -170,25 +194,25 @@ namespace SIL.WritingSystems
 		[PublicAPI]
 		public static bool IsValidLanguageCode(string code)
 		{
-			return LangPattern.IsMatch(code) || SignLangPattern.IsMatch(code);
+			return LangPattern().IsMatch(code) || SignLangPattern().IsMatch(code);
 		}
 
 		[PublicAPI]
 		public static bool IsValidScriptCode(string code)
 		{
-			return ScriptPattern.IsMatch(code);
+			return ScriptPattern().IsMatch(code);
 		}
 
 		[PublicAPI]
 		public static bool IsValidRegionCode(string code)
 		{
-			return RegionPattern.IsMatch(code);
+			return RegionPattern().IsMatch(code);
 		}
 
 		[PublicAPI]
 		public static bool IsValidPrivateUseCode(string code)
 		{
-			return PrivateUsePattern.IsMatch(code);
+			return PrivateUsePattern().IsMatch(code);
 		}
 
 		/// <summary>
@@ -204,7 +228,7 @@ namespace SIL.WritingSystems
 
 			if (icuLocale.Contains("-"))
 			{
-				Match match = IcuTagPattern.Match(icuLocale);
+				Match match = IcuTagPattern().Match(icuLocale);
 				if (match.Success)
 				{
 					// We need to check for mixed case in the language code portion.  This has been
@@ -452,7 +476,7 @@ namespace SIL.WritingSystems
 				// Insert non-custom language, script, region into main part of code.
 				if (languageSubtag.IsPrivateUse && languageSubtag.Code != WellKnownSubtags.UnlistedLanguage)
 				{
-					if (!LangPattern.IsMatch(languageSubtag.Code) && !SignLangPattern.IsMatch((languageSubtag.Code)))
+					if (!LangPattern().IsMatch(languageSubtag.Code) && !SignLangPattern().IsMatch((languageSubtag.Code)))
 					{
 						message = "The private use language code is invalid.";
 						paramName = "languageSubtag";
@@ -475,7 +499,7 @@ namespace SIL.WritingSystems
 				// so we don't confuse some other private-use tag with a custom script.
 				if (scriptSubtag.IsPrivateUse && !StandardSubtags.IsPrivateUseScriptCode(scriptSubtag.Code))
 				{
-					if (message == null && !ScriptPattern.IsMatch(scriptSubtag.Code))
+					if (message == null && !ScriptPattern().IsMatch(scriptSubtag.Code))
 					{
 						message = "The private use script code is invalid.";
 						paramName = "scriptSubtag";
@@ -498,7 +522,7 @@ namespace SIL.WritingSystems
 				// so we don't confuse some other private-use tag with a custom region.
 				if (regionSubtag.IsPrivateUse && !StandardSubtags.IsPrivateUseRegionCode(regionSubtag.Code))
 				{
-					if (message == null && !RegionPattern.IsMatch(regionSubtag.Code))
+					if (message == null && !RegionPattern().IsMatch(regionSubtag.Code))
 					{
 						message = "The private use region code is invalid.";
 						paramName = "regionSubtag";
@@ -564,7 +588,7 @@ namespace SIL.WritingSystems
 			variants.Clear();
 			foreach (VariantSubtag variantSubtag in variantSubtagsArray.Where(vs => vs.IsPrivateUse))
 			{
-				if (message == null && !PrivateUsePattern.IsMatch(variantSubtag.Code))
+				if (message == null && !PrivateUsePattern().IsMatch(variantSubtag.Code))
 				{
 					message = "The private use subtags contains an invalid subtag.";
 					paramName = "variantSubtags";
@@ -708,7 +732,7 @@ namespace SIL.WritingSystems
 							paramName = "variantCodes";
 							break;
 						}
-						if (inPrivateUse && !PrivateUsePattern.IsMatch(variantCode))
+						if (inPrivateUse && !PrivateUsePattern().IsMatch(variantCode))
 						{
 							message = $"A private use code [{variantCode}] is invalid.";
 							paramName = "variantCodes";
@@ -803,7 +827,7 @@ namespace SIL.WritingSystems
 			region = null;
 			variant = null;
 
-			Match match = LangTagPattern.Match(langTag);
+			Match match = LangTagPattern().Match(langTag);
 			if (!match.Success)
 				return false;
 
@@ -870,7 +894,7 @@ namespace SIL.WritingSystems
 			{
 				foreach (string privateUseCode in privateUseGroup.Value.Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries).Skip(1))
 				{
-					if (variants.Contains(privateUseCode) || privateUseCode.Equals("x", StringComparison.InvariantCultureIgnoreCase) || !PrivateUsePattern.IsMatch(privateUseCode))
+					if (variants.Contains(privateUseCode) || privateUseCode.Equals("x", StringComparison.InvariantCultureIgnoreCase) || !PrivateUsePattern().IsMatch(privateUseCode))
 					{
 						language = null;
 						script = null;
@@ -914,7 +938,7 @@ namespace SIL.WritingSystems
 			regionSubtag = null;
 			variantSubtags = null;
 
-			Match match = LangTagPattern.Match(langTag);
+			Match match = LangTagPattern().Match(langTag);
 			if (!match.Success)
 				return false;
 
@@ -936,7 +960,7 @@ namespace SIL.WritingSystems
 					// program. Treating it as a language code will fail if we try to create such a writing system,
 					// since we will detect the invalid language code. So only interpret the first element
 					// after the x as a language code if it is a valid one. Otherwise, we just let qaa be the language.
-					if (privateUseCodes.Count > 0 && LangPattern.IsMatch(privateUseCodes[0])
+					if (privateUseCodes.Count > 0 && LangPattern().IsMatch(privateUseCodes[0])
 						&& !StandardSubtags.CommonPrivateUseVariants.Contains(privateUseCodes[0]))
 					{
 						languageSubtag = new LanguageSubtag(privateUseCodes[0]);
@@ -963,7 +987,7 @@ namespace SIL.WritingSystems
 				string scriptCode = scriptGroup.Value;
 				// Qaaa triggers convention looking for a privateUse abbreviation
 				if (scriptCode.Equals("Qaaa", StringComparison.OrdinalIgnoreCase) && privateUseCodes.Count > 0
-					&& ScriptPattern.IsMatch(privateUseCodes[0]))
+					&& ScriptPattern().IsMatch(privateUseCodes[0]))
 				{
 					scriptSubtag = new ScriptSubtag(privateUseCodes[0]);
 					privateUseCodes.RemoveAt(0);
@@ -983,7 +1007,7 @@ namespace SIL.WritingSystems
 				string regionCode = regionGroup.Value;
 				// QM triggers convention looking for a privateUse abbreviation
 				if (regionCode.Equals("QM", StringComparison.OrdinalIgnoreCase) && privateUseCodes.Count > 0
-					&& RegionPattern.IsMatch(privateUseCodes[0]))
+					&& RegionPattern().IsMatch(privateUseCodes[0]))
 				{
 					regionSubtag = new RegionSubtag(privateUseCodes[0]);
 					privateUseCodes.RemoveAt(0);

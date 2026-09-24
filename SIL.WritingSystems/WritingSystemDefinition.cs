@@ -54,8 +54,17 @@ namespace SIL.WritingSystems
 	/// Likewise "audio" marks a writing system as audio and must always be used in conjunction with script "Zxxx". Convenience methods
 	/// are provided for Ipa and Audio properties as IpaStatus and IsVoice respectively.
 	/// </summary>
-	public class WritingSystemDefinition : DefinitionBase<WritingSystemDefinition>
+	public partial class WritingSystemDefinition : DefinitionBase<WritingSystemDefinition>
 	{
+		private const string TrailingDigitsExpr = @"\d*$";
+#if NET7_0_OR_GREATER
+		[GeneratedRegex(TrailingDigitsExpr)]
+		private static partial Regex TrailingDigitsPattern();
+#else
+		private static readonly Regex TrailingDigitsRegex = new Regex(TrailingDigitsExpr, RegexOptions.Compiled);
+		private static Regex TrailingDigitsPattern() => TrailingDigitsRegex;
+#endif
+
 		private const int MinimumFontSize = 7;
 		private const int DefaultSizeIfWeDontKnow = 10;
 
@@ -653,7 +662,7 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				return _variants.Where(v => v.Code.StartsWith("dupl")).Select(v => Regex.Match(v.Code, @"\d*$").Value);
+				return _variants.Where(v => v.Code.StartsWith("dupl")).Select(v => TrailingDigitsPattern().Match(v.Code).Value);
 			}
 		}
 

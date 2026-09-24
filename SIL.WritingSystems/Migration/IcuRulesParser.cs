@@ -12,8 +12,17 @@ using Debugger = Spart.Debug.Debugger;
 
 namespace SIL.WritingSystems.Migration
 {
-	public class IcuRulesParser
+	public partial class IcuRulesParser
 	{
+		private const string OptionNormalExpr = "(\\S+)\\s+(\\S+)";
+#if NET7_0_OR_GREATER
+		[GeneratedRegex(OptionNormalExpr)]
+		private static partial Regex OptionNormalPattern();
+#else
+		private static readonly Regex OptionNormalRegex = new Regex(OptionNormalExpr, RegexOptions.Compiled);
+		private static Regex OptionNormalPattern() => OptionNormalRegex;
+#endif
+
 		private XmlWriter _writer;
 		private Debugger _debugger;
 		private bool _useDebugger;
@@ -706,8 +715,7 @@ namespace SIL.WritingSystems.Migration
 
 		private void OnOptionNormal(object sender, ActionEventArgs args)
 		{
-			Regex regex = new Regex("(\\S+)\\s+(\\S+)");
-			Match match = regex.Match(args.Value);
+			Match match = OptionNormalPattern().Match(args.Value);
 			Debug.Assert(match.Success);
 			IcuDataObject attr = IcuDataObject.CreateAttribute(match.Groups[1].Value, match.Groups[2].Value);
 			AddSettingsAttribute(attr);
