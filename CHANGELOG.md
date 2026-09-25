@@ -20,11 +20,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [SIL.Core] Added `UnixFilePermissions`, which reads and applies the Unix permission bits of a file and does nothing on platforms that have no such bits, so callers need no platform test of their own.
 - [SIL.Windows.Forms.Archiving, SIL.Windows.Forms.DblBundle] Added `net8.0-windows` target.
-- [SIL.Core.Clearshare] Added new classes MetadataCore, CreativeCommonsLicenseInfo, and CustomLicenseInfo; these are Winforms-free base versions of the classes Metadata, CreativeCommonsLicense, and CustomLicense.
-- [SIL.Core.Clearshare and SIL.Windows.Forms.Clearshare] Added LicenseUtils and LicenseWithImageUtils to handle the FromXmp method for creating a license. LicenseUtils constructs a bare license object that is Winforms-independent; LicenseWithImageUtils constructs a Winforms-dependent license object with access to license images.
-- [SIL.Core.Clearshare] New methods "GetIsStringAvailableForLangId" and "GetDynamicStringOrEnglish" were added to Localizer for use in LicenseInfo's "GetBestLicenseTranslation" method, to remove LicenseInfo's L10NSharp dependency.
-- [SIL.Windows.Forms.Clearshare] New ILicenseWithImage interface handles "GetImage" method for Winforms-dependent licenses, implemented in CreativeCommonsLicense and CustomLicense, and formerly included in LicenseInfo.
-- [SIL.Core.Clearshare] New tests MetadataBareTests are based on previous MetadataTests in SIL.Windows.Forms.Clearshare. The tests were updated to use ImageSharp instead of Winforms for handling images.
 - [SIL.Core.Desktop] Added a constant (kBrowserCompatibleUserAgent) to RobustNetworkOperation: a browser-like User Agent string that can be used when making HTTP requests to strict servers.
 - [SIL.Core] Added an Exception property to NonFatalErrorReportExpected to return the previous reported non-fatal exception.
 - [SIL.Media] Added a static PlaybackErrorMessage property to AudioFactory and a public const, kDefaultPlaybackErrorMessage, that will be used as the default message if the client does not set PlaybackErrorMessage.
@@ -54,15 +49,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.WritingSystems] WritingSystemFromWindowsLocaleProvider no longer crashes when an installed input language has a corrupt Windows installation; it now skips languages whose keyboard layout name cannot be read instead of throwing.
 - [SIL.Windows.Forms] Updated ImageToolbox UI to consistently use "image" (not "picture").
 - [SIL.Windows.Forms.Keyboarding] Removed Timer-based deferred IME conversion status restore from WindowsKeyboardSwitchingAdapter, which disrupted active Chinese Pinyin IME compositions (LT-22442). Added diagnostic tracing for keyboard switching and IME state.
-- [SIL.DictionaryServices] Fix memory leak in LiftWriter
 - [SIL.Windows.Forms] Fixed ImageCropper crash caused by its `Application.Idle` handler never being unsubscribed, so it could fire on a disposed instance
 - [SIL.Windows.Forms] Fixed ImageCropper not downscaling tall images before cropping (height condition was checking width)
 - [SIL.Windows.Forms] Fixed ImageCropper leaking the temp file and cropping bitmap built for the previous image each time it is given a new one to crop
 - [SIL.Windows.Forms] BREAKING CHANGE: Fixed ImageCropper returning a cropped JPEG backed by a `MemoryStream` that had already been disposed, so any later use of the crop (including re-cropping it) failed with a generic GDI+ error. `GetCroppedImage` now returns the cropped bitmap directly, so its `RawFormat` is `MemoryBmp` rather than `Jpeg` and callers that read `RawFormat`, or that call `Image.Save(path)` on the result and rely on the JPEG encoder being chosen implicitly, must now pass an explicit `ImageFormat` (or go through `PalasoImage.Save(path)`, which picks the encoder from the file extension). `GetImage` is unaffected when nothing has been cropped: it now returns the image untouched instead of replacing it with a copy of itself round-tripped through a PNG temp file, so an uncropped image keeps its original format, bit depth and resolution
-- [SIL.WritingSystems] Fix IetfLanguageTag.GetGeneralCode to handle cases when zh-CN or zh-TW is a prefix and not the whole string.
-- [SIL.WritingSystems] More fixes to consistently use 繁体中文 and 简体中文 for Traditional and Simplified Chinese native language names, and Chinese (Traditional) and Chinese (Simplified) for their English names.
-- [SIL.Windows.Forms] Prevent BetterLabel from responding to OnTextChanged when it has been disposed.
-- [SIL.Windows.Forms] Prevent ContributorsListControl.GetContributionFromRow from throwing an exception when the DataGridView has no valid rows selected.
 - [SIL.Media] BREAKING CHANGE (subtle and unlikely): WindowsAudioSession.OnPlaybackStopped now passes itself as the sender instead of a private implementation object, making the event arguments correct.
 - [build] Fixed the update-language-data workflow so the generated pull request commit message shows the actual update date instead of a literal `$(date ...)` string.
 - [SIL.Archiving] Fixed ArchiveAccessProtocol.GetDocumentationUri failing to create a missing documentation file because the resource lookup stripped the file extension and no longer matched the embedded resource name.
@@ -76,6 +66,36 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms] PalasoImage robust load/save helpers now accept additional retry exception types without replacing the built-in retry defaults, and the built-in retry lists were expanded for additional read/save exceptions seen in the wild.
 - [SIL.Windows.Forms.TestApp] Restored the Image Toolbox button in the test app dialog.
 - [SIL.Core.Desktop, SIL.Windows.Forms, SIL.Windows.Forms.Keyboarding] Bump L10NSharp to 10.0.0-beta0004 to support SIL.Core.Desktop with target `netstandard2.0`; also updated the copyright to 2026 in each `AssemblyInfo.cs`.
+- [SIL.Windows.Forms] BREAKING CHANGE: Removed optional moreSelected parameter from ToolStripExtensions.InitializeWithAvailableUILocales method. This parameter was no longer being used. Clients that want to have a More menu item that performs a custom action will now need to add it themselves.
+- [SIL.Windows.Forms] BREAKING CHANGE: LocalizationIncompleteDlg's EmailAddressForLocalizationRequests is no longer autopopulated from LocalizationManager. A new optional constructor parameter, emailAddressForLocalizationRequests, can be used instead. If not supplied, the "More information" controls will be hidden.
+- [SIL.Core.Desktop] Added an optional userAgentHeader parameter to DoHttpGetAndGetProxyInfo to allow a client to mimic a real browser if necessary.
+- [SIL.Media] ISimpleAudioWithEvents now extends ISimpleAudioSession. Technically a breaking change, but the only class in this library that implements it already implemented ISimpleAudioSession. Any custom implementations by clients would very likely have implemented both as well.
+- [SIL.Core] Changed the Message property on NonFatalErrorReportExpected (presumably intended for use only in tests) to return the message of the previous reported non-fatal exception if no ordninary non-fatal message has been reported.
+- [SIL.Media] In the event of an audio playback error in Windows, the non-fatal exception reported will also include an accompanying (localizable/customizable) user-friendly message.
+- [SIL.WritingSystems] Updated embedded langtags.json (api 1.4, 2026-06-09)
+- [SIL.WritingSystems] Updated embedded ianaSubtagRegistry.txt (2026-06-14)
+
+
+## [17.0.0] - 2026-02-02
+
+### Added
+
+- [SIL.Core.Clearshare] Added new classes MetadataCore, CreativeCommonsLicenseInfo, and CustomLicenseInfo; these are Winforms-free base versions of the classes Metadata, CreativeCommonsLicense, and CustomLicense.
+- [SIL.Core.Clearshare and SIL.Windows.Forms.Clearshare] Added LicenseUtils and LicenseWithImageUtils to handle the FromXmp method for creating a license. LicenseUtils constructs a bare license object that is Winforms-independent; LicenseWithImageUtils constructs a Winforms-dependent license object with access to license images.
+- [SIL.Core.Clearshare] New methods "GetIsStringAvailableForLangId" and "GetDynamicStringOrEnglish" were added to Localizer for use in LicenseInfo's "GetBestLicenseTranslation" method, to remove LicenseInfo's L10NSharp dependency.
+- [SIL.Windows.Forms.Clearshare] New ILicenseWithImage interface handles "GetImage" method for Winforms-dependent licenses, implemented in CreativeCommonsLicense and CustomLicense, and formerly included in LicenseInfo.
+- [SIL.Core.Clearshare] New tests MetadataBareTests are based on previous MetadataTests in SIL.Windows.Forms.Clearshare. The tests were updated to use ImageSharp instead of Winforms for handling images.
+
+### Fixed
+
+- [SIL.DictionaryServices] Fix memory leak in LiftWriter
+- [SIL.WritingSystems] Fix IetfLanguageTag.GetGeneralCode to handle cases when zh-CN or zh-TW is a prefix and not the whole string.
+- [SIL.WritingSystems] More fixes to consistently use 繁体中文 and 简体中文 for Traditional and Simplified Chinese native language names, and Chinese (Traditional) and Chinese (Simplified) for their English names.
+- [SIL.Windows.Forms] Prevent BetterLabel from responding to OnTextChanged when it has been disposed.
+- [SIL.Windows.Forms] Prevent ContributorsListControl.GetContributionFromRow from throwing an exception when the DataGridView has no valid rows selected.
+
+### Changed
+
 - [SIL.Windows.Forms.i18n, SIL.Core.Desktop.i18n] BREAKING CHANGE: Move L10NSharpLocalizer from Windows.Forms to Core.Desktop so it can be accessed without Winforms dependency.
 - [SIL.Windows.Forms.Clearshare] BREAKING CHANGE: Made LicenseInfo class independent of Windows Forms and moved it from SIL.Windows.Forms.Clearshare to SIL.Core.Clearshare.
 	- The FromXmp method was moved to LicenseUtils and LicenseWithImageUtils to construct Winforms-independent and Winforms-dependent license types respectively.
@@ -90,14 +110,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Keyboarding] BREAKING CHANGE: Upgraded to L10nSharp v9. Any clients which also use L10nSharp must also upgrade to v9.
 - [SIL.Windows.Forms.Keyboarding] Add a reference to L10nSharp.Windows.Forms v9.
 - [SIL.Windows.Forms] BREAKING CHANGE: ToolStripExtensions.InitializeWithAvailableUILocales() removed the ILocalizationManager parameter. This method no longer provides functionality to display the localization dialog box in response to the user clicking More.
-- [SIL.Windows.Forms] BREAKING CHANGE: Removed optional moreSelected parameter from ToolStripExtensions.InitializeWithAvailableUILocales method. This parameter was no longer being used. Clients that want to have a More menu item that performs a custom action will now need to add it themselves.
-- [SIL.Windows.Forms] BREAKING CHANGE: LocalizationIncompleteDlg's EmailAddressForLocalizationRequests is no longer autopopulated from LocalizationManager. A new optional constructor parameter, emailAddressForLocalizationRequests, can be used instead. If not supplied, the "More information" controls will be hidden.
-- [SIL.Core.Desktop] Added an optional userAgentHeader parameter to DoHttpGetAndGetProxyInfo to allow a client to mimic a real browser if necessary.
-- [SIL.Media] ISimpleAudioWithEvents now extends ISimpleAudioSession. Technically a breaking change, but the only class in this library that implements it already implemented ISimpleAudioSession. Any custom implementations by clients would very likely have implemented both as well.
-- [SIL.Core] Changed the Message property on NonFatalErrorReportExpected (presumably intended for use only in tests) to return the message of the previous reported non-fatal exception if no ordninary non-fatal message has been reported.
-- [SIL.Media] In the event of an audio playback error in Windows, the non-fatal exception reported will also include an accompanying (localizable/customizable) user-friendly message.
-- [SIL.WritingSystems] Updated embedded langtags.json (api 1.4, 2026-06-09)
-- [SIL.WritingSystems] Updated embedded ianaSubtagRegistry.txt (2026-06-14)
 
 ### Removed
 
@@ -702,7 +714,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
   projects
 
-[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v16.2.0...master
+[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v17.0.0...master
+[17.0.0]: https://github.com/sillsdev/libpalaso/compare/v16.2.0...v17.0.0
 [16.2.0]: https://github.com/sillsdev/libpalaso/compare/v16.1.0...v16.2.0
 [16.1.0]: https://github.com/sillsdev/libpalaso/compare/v16.0.0...v16.1.0
 [16.0.0]: https://github.com/sillsdev/libpalaso/compare/v15.0.0...v16.0.0
