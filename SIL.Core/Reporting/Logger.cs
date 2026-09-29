@@ -498,7 +498,7 @@ namespace SIL.Reporting
 					if (m_minorEvents.Length > 5000)
 					{
 						int roughlyHowMuchToCut = 500;
-						int cutoff = m_minorEvents.ToString().IndexOf(System.Environment.NewLine, roughlyHowMuchToCut);
+						int cutoff = m_minorEvents.ToString().IndexOf(System.Environment.NewLine, roughlyHowMuchToCut, StringComparison.Ordinal);
 						m_minorEvents.Remove(0, cutoff);
 					}
 					m_minorEvents.Append(DateTime.Now.ToLongTimeString() + "\t");

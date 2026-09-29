@@ -163,7 +163,7 @@ namespace SIL.Lift.Options
 				throw new ArgumentException($"Can not compare to anything but {nameof(OptionRef)}s.");
 			}
 			OptionRef other = (OptionRef) obj;
-			int order = Key.CompareTo(other.Key);
+			int order = string.Compare(Key, other.Key, StringComparison.InvariantCulture);
 			return order;
 		}
 

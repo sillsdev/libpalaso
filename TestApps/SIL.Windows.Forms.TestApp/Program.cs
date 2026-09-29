@@ -34,7 +34,7 @@ namespace SIL.Windows.Forms.TestApp
 
 			foreach (var path in GetEntryAssembly().Location.ParentDirectories())
 			{
-				if (path.EndsWith("TestApps"))
+				if (path.EndsWith("TestApps", StringComparison.Ordinal))
 				{
 					FileLocationUtilities.DistFilesFolderPath = Path.Combine(
 						Path.GetDirectoryName(path),

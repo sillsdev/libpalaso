@@ -310,7 +310,7 @@ namespace SIL.Windows.Forms.FileDialogExtender
 				NativeMethods.GetWindowInfo(new HandleRef(this,hwnd), out windowInfo);
 
 				// Dialog Window
-				if (className.ToString().StartsWith("#32770"))
+				if (className.ToString().StartsWith("#32770", StringComparison.Ordinal))
 				{
 					_BaseDialogNative = new MSFileDialogWrapper(_CustomControl);
 					_BaseDialogNative.AssignHandle(hwnd);

@@ -307,7 +307,7 @@ namespace SIL.Windows.Forms.HtmlBrowser
 				catch (Exception)
 				{
 					bool localPathWorked = false;
-					if (e.Url.AbsoluteUri.StartsWith("file:"))
+					if (e.Url.AbsoluteUri.StartsWith("file:", StringComparison.Ordinal))
 					{
 						try
 						{

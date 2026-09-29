@@ -270,7 +270,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				_testSortResult.ForeColor = Color.Red;
 				return false;
 			}
-			if (_testSortResult.Text.StartsWith(prefixToMessage))
+			if (_testSortResult.Text.StartsWith(prefixToMessage, StringComparison.Ordinal))
 			{
 				_testSortResult.Text = String.Empty;
 				_testSortResult.ForeColor = Color.Black;

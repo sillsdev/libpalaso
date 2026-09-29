@@ -63,7 +63,7 @@ namespace SIL.i18n
 						switch (state)
 						{
 							case State.Reset:
-								if (line.StartsWith("msgid"))
+								if (line.StartsWith("msgid", StringComparison.Ordinal))
 								{
 									state = State.InMsgId;
 									id = GetStringBetweenQuotes(line);
@@ -71,12 +71,12 @@ namespace SIL.i18n
 								break;
 
 							case State.InMsgId:
-								if (line.StartsWith("msgstr"))
+								if (line.StartsWith("msgstr", StringComparison.Ordinal))
 								{
 									state = State.InMsgStr;
 									message = GetStringBetweenQuotes(line);
 								}
-								else if (line.StartsWith("\""))
+								else if (line.StartsWith("\"", StringComparison.Ordinal))
 								{
 									id += GetStringBetweenQuotes(line);
 								}
@@ -93,7 +93,7 @@ namespace SIL.i18n
 									id = "";
 									message = "";
 								}
-								else if (line.StartsWith("\""))
+								else if (line.StartsWith("\"", StringComparison.Ordinal))
 								{
 									message += GetStringBetweenQuotes(line);
 								}

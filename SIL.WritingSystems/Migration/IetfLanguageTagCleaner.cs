@@ -225,7 +225,7 @@ namespace SIL.WritingSystems.Migration
 
 			public bool Contains(string partToFind)
 			{
-				if (partToFind.StartsWith("x-")) // special case for well-known private use subtags that have an x- in front of them
+				if (partToFind.StartsWith("x-", StringComparison.Ordinal)) // special case for well-known private use subtags that have an x- in front of them
 				{
 					partToFind = partToFind.Substring(2);
 				}
@@ -334,8 +334,8 @@ namespace SIL.WritingSystems.Migration
 				//if it looks like we moved a custom script set the subtag to mark that we've moved it
 				if(_scriptSubTag.IsEmpty
 					&& part.Length == 4 //potential custom script tag
-					&& !WellKnownSubtags.IpaPhonemicPrivateUse.EndsWith(part)
-					&& !WellKnownSubtags.IpaPhoneticPrivateUse.EndsWith(part))
+					&& !WellKnownSubtags.IpaPhonemicPrivateUse.EndsWith(part, StringComparison.Ordinal)
+					&& !WellKnownSubtags.IpaPhoneticPrivateUse.EndsWith(part, StringComparison.Ordinal))
 				{
 					_scriptSubTag = new SubTag("Qaaa");
 				}

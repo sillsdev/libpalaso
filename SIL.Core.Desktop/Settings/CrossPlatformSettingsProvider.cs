@@ -314,7 +314,7 @@ namespace SIL.Settings
 					var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
 					directoryList.Sort(VersionDirectoryComparison);
 					var previousDirectory = directoryList[0];
-					if(previousDirectory.EndsWith(assembly.GetName().Version.ToString()))
+					if(previousDirectory.EndsWith(assembly.GetName().Version.ToString(), StringComparison.Ordinal))
 					{
 						if (directoryList.Count == 1)
 						{
@@ -364,7 +364,7 @@ namespace SIL.Settings
 			{
 				if (File.Exists(secondConfigPath))
 					return 1; // second is 'less' (comes first)
-				return first.CompareTo(second); // arbitrary since neither is any use, but give a consistent result.
+				return string.Compare(first, second, StringComparison.Ordinal); // arbitrary since neither is any use, but give a consistent result.
 			}
 			if (!File.Exists(secondConfigPath))
 				return -1; // first is less (comes first).

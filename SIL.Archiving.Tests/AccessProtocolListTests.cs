@@ -44,7 +44,7 @@ namespace SIL.Archiving.Tests
 			{
 				var uri = protocol.GetDocumentationUri();
 				Assert.True(Uri.IsWellFormedUriString(uri, UriKind.Absolute));
-				Assert.That(uri.IndexOf(uriFilePrefix), Is.EqualTo(0));
+				Assert.That(uri.IndexOf(uriFilePrefix, StringComparison.Ordinal), Is.EqualTo(0));
 				var filename = uri.Substring(uriFilePrefix.Length);
 				Assert.True(File.Exists(filename));
 				Assert.That(Path.GetFileName(uri), Is.EqualTo(protocol.DocumentationFile));

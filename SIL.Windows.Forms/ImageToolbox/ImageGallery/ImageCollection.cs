@@ -247,7 +247,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 					p += ".png";
 				}
 				var f = Path.GetFileName(p);
-				if (!f.ToLowerInvariant().StartsWith("aor_"))
+				if (!f.ToLowerInvariant().StartsWith("aor_", StringComparison.Ordinal))
 				{
 					p = Path.Combine(Path.GetDirectoryName(p), "AOR_" + f);
 				}
@@ -290,7 +290,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 			if (Path.GetFileName(directory) == "Mexico")
 			{
 				var filename = Path.GetFileName(path);
-				if (String.Compare(filename.ToLowerInvariant(), "aor_og") < 0)
+				if (String.Compare(filename.ToLowerInvariant(), "aor_og", StringComparison.Ordinal) < 0)
 				{
 					return Path.Combine(directory, "A-OF", filename);
 				}

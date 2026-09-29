@@ -122,7 +122,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 					// If it's an unlisted language, use the private use area language subtag.
 					if (Language == WellKnownSubtags.UnlistedLanguage)
 					{
-						int idx = Id.IndexOf("-x-");
+						int idx = Id.IndexOf("-x-", StringComparison.Ordinal);
 						if (idx > 0 && Id.Length > idx + 3)
 						{
 							var abbr = Id.Substring(idx + 3);

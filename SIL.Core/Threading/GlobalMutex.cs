@@ -448,7 +448,7 @@ namespace SIL.Threading
 		{
 			private const string GLOBAL = "Global\\";
 
-			public ExplicitGlobalMutexAdapter(string name) : base(name.StartsWith(GLOBAL) ? name : $"{GLOBAL}{name}") {}
+			public ExplicitGlobalMutexAdapter(string name) : base(name.StartsWith(GLOBAL, StringComparison.Ordinal) ? name : $"{GLOBAL}{name}") {}
 		}
 	}
 }

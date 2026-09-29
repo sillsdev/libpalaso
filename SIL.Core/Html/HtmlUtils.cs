@@ -160,7 +160,7 @@ If you do nothing, then a reasonable effort will be made to tweak the HTML to fo
 			// control will happily open that in the current window, displaying a
 			// Windows-Explorer-like view, but then the user has no way to get back, so that's
 			// probably not what we want.
-			if (href.Length == 0 || href.StartsWith("www."))
+			if (href.Length == 0 || href.StartsWith("www.", StringComparison.Ordinal))
 				return true;
 
 			// Strip off any path

@@ -525,7 +525,7 @@ namespace SIL.Windows.Forms.Scripture
 			// make sure that the book is valid
 			if (newScRef.Book == 0)
 			{
-				int spacePos = Reference.IndexOf(" ");
+				int spacePos = Reference.IndexOf(" ", StringComparison.Ordinal);
 				if (spacePos != -1)
 					txtScrRef.Select(0, spacePos);
 				SystemSounds.Beep.Play();
@@ -737,7 +737,7 @@ namespace SIL.Windows.Forms.Scripture
 
 			// Select the chapter portion of the reference in the text box.
 			int space = Reference.LastIndexOf(' ');
-			int sepr = Reference.LastIndexOf(ChapterVerseSepr);
+			int sepr = Reference.LastIndexOf(ChapterVerseSepr, StringComparison.Ordinal);
 
 			if (space >= 0 && sepr >= 0 && sepr > space)
 			{
@@ -761,7 +761,7 @@ namespace SIL.Windows.Forms.Scripture
 			}
 
 			// Select the verse portion of the reference in the text box.
-			int sepr = Reference.LastIndexOf(ChapterVerseSepr);
+			int sepr = Reference.LastIndexOf(ChapterVerseSepr, StringComparison.Ordinal);
 
 			if (sepr >= 0)
 			{
