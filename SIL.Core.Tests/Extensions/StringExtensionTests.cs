@@ -254,7 +254,7 @@ namespace SIL.Tests.Extensions
 				GetInvalidFilenameCharacters().First();
 			var validFileName = invalidFilename.SanitizeFilename(errorChar);
 			Assert.IsFalse(validFileName.Any(c => GetInvalidFilenameCharacters().Contains(c)));
-			Assert.IsTrue(validFileName.EndsWith("funny"));
+			Assert.IsTrue(validFileName.EndsWith("funny", StringComparison.Ordinal));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -270,7 +270,7 @@ namespace SIL.Tests.Extensions
 			var invalidFilename = someInvalidCharacters.First() + @"My?|File>Dude\.'[];funny()" +
 				someInvalidCharacters;
 			var sanitized = invalidFilename.SanitizeFilename(errorChar);
-			Assert.That(sanitized.EndsWith(".'[];funny()"));
+			Assert.That(sanitized.EndsWith(".'[];funny()", StringComparison.Ordinal));
 			return sanitized.Substring(0, 2);
 		}
 
@@ -292,8 +292,8 @@ namespace SIL.Tests.Extensions
 			var filenameWithLeadingAndTrailingJunk = leading +
 				@"My?|File<>Dude\?*:/.'[];funny()" + GetInvalidFilenameCharacters().Last() + trailing;
 			var sanitizedFilename = filenameWithLeadingAndTrailingJunk.SanitizeFilename('_');
-			Assert.That(sanitizedFilename.StartsWith("My"));
-			Assert.That(sanitizedFilename.EndsWith("funny()_"));
+			Assert.That(sanitizedFilename.StartsWith("My", StringComparison.Ordinal));
+			Assert.That(sanitizedFilename.EndsWith("funny()_", StringComparison.Ordinal));
 			Assert.IsFalse(sanitizedFilename.Any(c => GetInvalidFilenameCharacters().Contains(c)));
 		}
 

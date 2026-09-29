@@ -182,13 +182,13 @@ namespace SIL.Windows.Forms.ImageToolbox
 				if (part == "*.*" || part == "*")
 					return true;
 				var filter = part.Trim();
-				if (filter.StartsWith("*"))
+				if (filter.StartsWith("*", StringComparison.Ordinal))
 				{
 					filter = filter.Substring(1);
 					if (fileName.EndsWith(filter, StringComparison.InvariantCultureIgnoreCase))
 						return true;
 				}
-				else if (filter.EndsWith("*"))
+				else if (filter.EndsWith("*", StringComparison.Ordinal))
 				{
 					filter = filter.Substring(0, filter.Length - 1);
 					if (fileName.StartsWith(filter, StringComparison.InvariantCultureIgnoreCase))

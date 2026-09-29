@@ -23,7 +23,7 @@ namespace SIL.PlatformUtilities
 		public static bool IsFlatpak => IsUnix && !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("FLATPAK_ID"));
 
 		public static bool IsCinnamon => IsUnix &&
-			(SessionManager.StartsWith("/usr/bin/cinnamon-session") ||
+			(SessionManager.StartsWith("/usr/bin/cinnamon-session", StringComparison.Ordinal) ||
 			Environment.GetEnvironmentVariable("GDMSESSION") == "cinnamon");
 
 		public static bool IsMono
@@ -152,7 +152,7 @@ namespace SIL.PlatformUtilities
 					additionalInfo = " [display server: Mir]";
 
 				var gdmSession = Environment.GetEnvironmentVariable("GDMSESSION") ?? "not set";
-				if (gdmSession.ToLowerInvariant().EndsWith("-wayland"))
+				if (gdmSession.ToLowerInvariant().EndsWith("-wayland", StringComparison.Ordinal))
 					return $"{currentDesktop} ({gdmSession.Split('-')[0]} [display server: Wayland])";
 
 				return $"{currentDesktop} ({gdmSession}{additionalInfo})";

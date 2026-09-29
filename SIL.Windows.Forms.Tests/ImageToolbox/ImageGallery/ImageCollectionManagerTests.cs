@@ -221,7 +221,7 @@ RainbowWater.png\tSydney	bridge,opera,sydney,rainbow,harbor");
 		{
 			var path = subpathInWindowsOrLinux.Replace('/', Path.DirectorySeparatorChar)
 				.Replace('\\', Path.DirectorySeparatorChar);
-			var hassubPath = paths.Any(p => p.EndsWith(path));
+			var hassubPath = paths.Any(p => p.EndsWith(path, StringComparison.Ordinal));
 			var nl = Environment.NewLine;
 			Assert.True(hassubPath, "expected something ending in:" + nl + path + " but got {" + nl + paths.Aggregate((a, b) => a + nl + b).Trim(new[] { ',' }) + "}");
 		}

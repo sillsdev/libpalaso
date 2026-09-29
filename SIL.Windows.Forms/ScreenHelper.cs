@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -23,7 +24,7 @@ namespace SIL.Windows.Forms
 			// We're really looking for a string containing DISPLAYV, but something is *goofy*
 			// in the DeviceName string. It will not compare correctly despite all common sense.
 			// Best we can do is test for "ISPLAYV".
-			return (scrn.DeviceName.ToUpper().IndexOf("ISPLAYV") >= 0);
+			return (scrn.DeviceName.IndexOf("ISPLAYV", StringComparison.OrdinalIgnoreCase) >= 0);
 		}
 
 		/// ------------------------------------------------------------------------------------

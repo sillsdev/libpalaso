@@ -403,7 +403,7 @@ namespace SIL.DictionaryServices.Lift
 				OptionRef o = extensible.GetOrCreateProperty<OptionRef>(trait.Name);
 				o.Value = trait.Value.Trim();
 			}
-			else if (trait.Name.StartsWith("flag-"))
+			else if (trait.Name.StartsWith("flag-", StringComparison.Ordinal))
 			{
 				extensible.SetFlag(trait.Name);
 			}
@@ -417,7 +417,7 @@ namespace SIL.DictionaryServices.Lift
 				{
 					if (_semanticDomainsList!=null && _semanticDomainsList.GetOptionFromKey(key) == null)
 					{
-						var match =_semanticDomainsList.Options.FirstOrDefault(option => option.Key.StartsWith(key));
+						var match =_semanticDomainsList.Options.FirstOrDefault(option => option.Key.StartsWith(key, StringComparison.Ordinal));
 						if(match !=null)
 						{
 							refs.Add(match.Key);

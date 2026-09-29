@@ -126,7 +126,7 @@ namespace SIL.ExtractCopyright
 				// The closing line of an entry in the changelog looks like this:
 				// " -- Stephen McConnel <stephen_mcconnel@sil.org>  Wed, 18 Jan 2017 11:38:31 -0600"
 				// the two spaces following the <email@address> are significant
-				else if (IsNullOrEmpty(contactEmail) && lines[i].StartsWith(" -- ") && lines[i].Contains("@"))
+				else if (IsNullOrEmpty(contactEmail) && lines[i].StartsWith(" -- ", StringComparison.Ordinal) && lines[i].Contains("@"))
 				{
 					var line = lines[i].Substring(4).Trim();
 					var idx = line.IndexOf("  ", StringComparison.Ordinal);
@@ -176,7 +176,7 @@ namespace SIL.ExtractCopyright
 			if (!IsNullOrEmpty(ack.Location))
 			{
 				fileSpec = ack.Location;
-				if (!fileSpec.StartsWith("/"))
+				if (!fileSpec.StartsWith("/", StringComparison.Ordinal))
 					fileSpec = Path.GetFileName(fileSpec);
 			}
 			else
@@ -266,7 +266,7 @@ namespace SIL.ExtractCopyright
 			if (copyrightField != null)
 			{
 				ExtractCopyrightInformation(copyrightField.Value, out var prevYear, out _);
-				if (prevYear == "????" || prevYear.CompareTo(year) < 0)
+				if (prevYear == "????" || string.Compare(prevYear, year, StringComparison.Ordinal) < 0)
 				{
 					copyrightField.Value = year + " " + person;
 				}

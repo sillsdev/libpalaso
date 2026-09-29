@@ -129,10 +129,10 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 				var textVerbose = progress.Text;
 				Assert.AreEqual(progress.MaxLength, textVerbose.Length);
 				Assert.IsTrue(textTerse.Length < textVerbose.Length);
-				var iFirst = textTerse.IndexOf(progress.MaxLengthErrorMessage);
+				var iFirst = textTerse.IndexOf(progress.MaxLengthErrorMessage, StringComparison.Ordinal);
 				int iEndOfErrorMessageInTerseBox = iFirst + progress.MaxLengthErrorMessage.Length;
 				Assert.IsTrue(textTerse.Length > iEndOfErrorMessageInTerseBox);
-				Assert.AreEqual(-1, textTerse.IndexOf(progress.MaxLengthErrorMessage, iEndOfErrorMessageInTerseBox));
+				Assert.AreEqual(-1, textTerse.IndexOf(progress.MaxLengthErrorMessage, iEndOfErrorMessageInTerseBox, StringComparison.Ordinal));
 			}
 		}
 
@@ -153,10 +153,10 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 				progress.WriteVerbose($"{partThatWillFit}~will fit!");
 				Assert.IsTrue(progress.ErrorEncountered);
 				Assert.AreEqual(progress.MaxLength, progress.Text.Length);
-				var iTruncatedMessage = progress.Rtf.IndexOf(partThatWillFit);
+				var iTruncatedMessage = progress.Rtf.IndexOf(partThatWillFit, StringComparison.Ordinal);
 				Assert.IsTrue(iTruncatedMessage > 83);
 				Assert.AreNotEqual("~", progress.Rtf[iTruncatedMessage + partThatWillFit.Length]);
-				Assert.IsTrue(iTruncatedMessage < progress.Rtf.IndexOf(progress.MaxLengthErrorMessage));
+				Assert.IsTrue(iTruncatedMessage < progress.Rtf.IndexOf(progress.MaxLengthErrorMessage, StringComparison.Ordinal));
 			}
 		}
 
@@ -175,13 +175,13 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 				const string partThatWillFit = "Only this much.";
 				progress.WriteMessage($"{partThatWillFit}~will fit!");
 				Assert.IsTrue(progress.ErrorEncountered);
-				Assert.IsTrue(progress.Text.EndsWith(progress.MaxLengthErrorMessage));
+				Assert.IsTrue(progress.Text.EndsWith(progress.MaxLengthErrorMessage, StringComparison.Ordinal));
 				progress.ShowVerbose = true;
 				Assert.AreEqual(progress.MaxLength, progress.Text.Length);
-				var iTruncatedMessage = progress.Rtf.IndexOf(partThatWillFit);
+				var iTruncatedMessage = progress.Rtf.IndexOf(partThatWillFit, StringComparison.Ordinal);
 				Assert.IsTrue(iTruncatedMessage > 83);
 				Assert.AreNotEqual("~", progress.Rtf[iTruncatedMessage + partThatWillFit.Length]);
-				Assert.IsTrue(iTruncatedMessage < progress.Rtf.IndexOf(progress.MaxLengthErrorMessage));
+				Assert.IsTrue(iTruncatedMessage < progress.Rtf.IndexOf(progress.MaxLengthErrorMessage, StringComparison.Ordinal));
 			}
 		}
 	}

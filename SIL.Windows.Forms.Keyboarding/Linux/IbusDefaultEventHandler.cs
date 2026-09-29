@@ -93,7 +93,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			const char backSpace = '\b'; // 0x0008
 
-			if (!text.StartsWith(backSpace.ToString()))
+			if (!text.StartsWith(backSpace.ToString(), StringComparison.Ordinal))
 				return 0;
 
 			var count = text.Length - text.TrimStart(backSpace).Length;

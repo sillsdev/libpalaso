@@ -614,7 +614,7 @@ namespace SIL.WritingSystems
 					if (variantSubtag == WellKnownSubtags.AudioPrivateUse
 						|| variantSubtag == WellKnownSubtags.IpaPhonemicPrivateUse
 						|| variantSubtag == WellKnownSubtags.IpaPhoneticPrivateUse
-						|| variantSubtag.Code.StartsWith("dupl"))
+						|| variantSubtag.Code.StartsWith("dupl", StringComparison.Ordinal))
 					{
 						continue;
 					}
@@ -643,7 +643,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		private bool IsDuplicate
 		{
-			get { return _variants.Any(v => v.Code.StartsWith("dupl")); }
+			get { return _variants.Any(v => v.Code.StartsWith("dupl", StringComparison.Ordinal)); }
 		}
 
 		/// <summary>
@@ -653,7 +653,7 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				return _variants.Where(v => v.Code.StartsWith("dupl")).Select(v => Regex.Match(v.Code, @"\d*$").Value);
+				return _variants.Where(v => v.Code.StartsWith("dupl", StringComparison.Ordinal)).Select(v => Regex.Match(v.Code, @"\d*$").Value);
 			}
 		}
 

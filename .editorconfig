@@ -16,6 +16,10 @@ max_line_length = 98
 [*.cs]
 indent_style = tab
 tab_width = 4
+# Culture-sensitive string searches (IndexOf, StartsWith, EndsWith, Compare, ...) give wrong
+# answers in some cultures; e.g. Thai collation ignores punctuation, so "abc".IndexOf("/") is 0
+# under th-TH (BL-16932, BL-16947). Always pass a StringComparison.
+dotnet_diagnostic.CA1310.severity = error
 
 # Disable trimming for designer-generated files to avoid churn
 [*.{Designer.cs,resx}]

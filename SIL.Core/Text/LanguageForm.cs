@@ -106,12 +106,13 @@ namespace SIL.Text
 			{
 				return 1;
 			}
-			int writingSystemOrder = this.WritingSystemId.CompareTo(other.WritingSystemId);
+			int writingSystemOrder = string.Compare(WritingSystemId, other.WritingSystemId,
+				StringComparison.InvariantCulture);
 			if (writingSystemOrder != 0)
 			{
 				return writingSystemOrder;
 			}
-			int formOrder = this.Form.CompareTo(other.Form);
+			int formOrder = string.Compare(Form, other.Form, StringComparison.InvariantCulture);
 			return formOrder;
 		}
 
