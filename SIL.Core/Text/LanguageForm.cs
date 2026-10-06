@@ -102,17 +102,29 @@ namespace SIL.Text
 
 		public int CompareTo(LanguageForm other)
 		{
+			return CompareTo(other, null);
+		}
+
+		/// <summary>
+		/// Compare by writing system id, then by form. The forms are compared with
+		/// <paramref name="comparer"/>, or with the invariant culture if it is null.
+		/// </summary>
+		public int CompareTo(LanguageForm other, IComparer<string> comparer)
+		{
 			if(other == null)
 			{
 				return 1;
 			}
-			int writingSystemOrder = string.Compare(WritingSystemId, other.WritingSystemId,
-				StringComparison.InvariantCulture);
+			// Writing system Ids are ASCII, so we use InvariantCulture for them.
+			int writingSystemOrder = StringComparer.InvariantCulture.Compare(WritingSystemId, other.WritingSystemId);
 			if (writingSystemOrder != 0)
 			{
 				return writingSystemOrder;
 			}
-			int formOrder = string.Compare(Form, other.Form, StringComparison.InvariantCulture);
+			// The form itself may be in any language.  It's hard to say what the default should be,
+			// so we use the invariant culture, which ensures consistent results across machines.
+			// The programmer can override this by passing in a comparer if they want to use some other culture.
+			int formOrder = (comparer ?? StringComparer.InvariantCulture).Compare(Form, other.Form);
 			return formOrder;
 		}
 

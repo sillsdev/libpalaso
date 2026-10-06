@@ -250,7 +250,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 			if (result == 0)
 			{
-				result = string.Compare(x.Value, y.Value, StringComparison.InvariantCulture);
+				// CurrentCulture preserves the long-standing behavior; see LdmlNodeComparer.CompareAttributeValues.
+				result = string.Compare(x.Value, y.Value, StringComparison.CurrentCulture);
 			}
 			return result;
 		}

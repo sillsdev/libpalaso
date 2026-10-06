@@ -519,7 +519,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		protected string GetSpecialValue(XmlReader reader, string ns, string field)
 		{
 			if (!XmlHelpersV0.FindNextElementInSequence(reader, ns + ":" + field, _nameSpaceManager.LookupNamespace(ns),
-				(x, y) => string.Compare(x, y, StringComparison.InvariantCulture)))
+				// CurrentCulture preserves the long-standing behavior; see LdmlNodeComparer.CompareAttributeValues.
+				(x, y) => string.Compare(x, y, StringComparison.CurrentCulture)))
 			{
 				return string.Empty;
 			}

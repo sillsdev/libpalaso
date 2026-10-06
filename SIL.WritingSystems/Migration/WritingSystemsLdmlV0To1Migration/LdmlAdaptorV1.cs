@@ -664,7 +664,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		protected string GetSpecialValue(XmlReader reader, string ns, string field, string nameSpaceUri)
 		{
 			if(!XmlHelpers.FindNextElementInSequence(reader, ns + ":" + field, nameSpaceUri,
-				(x, y) => string.Compare(x, y, StringComparison.InvariantCulture)))
+				// CurrentCulture preserves the long-standing behavior; see LdmlNodeComparer.CompareAttributeValues.
+				(x, y) => string.Compare(x, y, StringComparison.CurrentCulture)))
 			{
 				return string.Empty;
 			}

@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- [SIL.Core] Added a `LanguageForm.CompareTo(LanguageForm, IComparer<string>)` overload, so a caller can choose how the forms are compared (for example with a writing system's collation). The existing `CompareTo(LanguageForm)` still uses the invariant culture.
 - [SIL.Core] Added `UnixFilePermissions`, which reads and applies the Unix permission bits of a file and does nothing on platforms that have no such bits, so callers need no platform test of their own.
 - [SIL.Windows.Forms.Archiving, SIL.Windows.Forms.DblBundle] Added `net8.0-windows` target.
 - [SIL.Core.Desktop] Added a constant (kBrowserCompatibleUserAgent) to RobustNetworkOperation: a browser-like User Agent string that can be used when making HTTP requests to strict servers.
@@ -65,7 +66,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - [All] The CA1310 analyzer rule ("Specify StringComparison for correctness") is now an error, and the .NET analyzers now also run for the net462, net48 and netstandard2.0 targets, so a culture-sensitive string comparison can no longer be added unnoticed.
-- [SIL.Core, SIL.Lift, SIL.WritingSystems] `LanguageForm.CompareTo`, `OptionRef.CompareTo`, `RecordToken<T>.CompareTo` the LDML node-value ordering in `LdmlNodeComparer`, and the element ordering the LDML migration readers use to find special elements now sort with `StringComparison.InvariantCulture` instead of the current culture, so their order (and the order of LDML elements written to disk) no longer varies with the user's culture. The invariant culture sorts like English, so for users running under an English culture the order is unchanged.
+- [SIL.Core, SIL.Lift] `LanguageForm.CompareTo`, `OptionRef.CompareTo` and `RecordToken<T>.CompareTo` now sort with `StringComparison.InvariantCulture` instead of the current culture, so their order no longer varies with the user's culture. The invariant culture sorts like English, so for users running under an English culture the order is unchanged. (The LDML comparisons in SIL.WritingSystems keep sorting with the current culture, now stated explicitly.)
 - [SIL.Windows.Forms] PalasoImage robust load/save helpers now accept additional retry exception types without replacing the built-in retry defaults, and the built-in retry lists were expanded for additional read/save exceptions seen in the wild.
 - [SIL.Windows.Forms.TestApp] Restored the Image Toolbox button in the test app dialog.
 - [SIL.Core.Desktop, SIL.Windows.Forms, SIL.Windows.Forms.Keyboarding] Bump L10NSharp to 10.0.0-beta0004 to support SIL.Core.Desktop with target `netstandard2.0`; also updated the copyright to 2026 in each `AssemblyInfo.cs`.
