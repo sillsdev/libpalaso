@@ -205,7 +205,7 @@ namespace SIL.IO
 		private static bool UnsafeForFileReplaceMethod(string path)
 		{
 			if (Platform.IsWindows)
-				return path.StartsWith("//") || path.StartsWith("\\\\");
+				return path.StartsWith("//", StringComparison.Ordinal) || path.StartsWith("\\\\", StringComparison.Ordinal);
 
 			return false; // we will soon be requesting some testing with networks on Linux;
 			//as a result of that, we might need to do something here, too. Or maybe not.

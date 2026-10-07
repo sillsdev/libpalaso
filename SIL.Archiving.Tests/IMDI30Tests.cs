@@ -116,7 +116,7 @@ namespace SIL.Archiving.Tests
 			var additionalLanguageFound = false;
 			foreach (var lang in actrOut.Languages.Language)
 			{
-				if (lang.Id.EndsWith(additionalLanguageIso3))
+				if (lang.Id.EndsWith(additionalLanguageIso3, StringComparison.Ordinal))
 					additionalLanguageFound = true;
 			}
 

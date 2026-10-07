@@ -225,7 +225,7 @@ namespace SIL.Archiving.Tests
 				{
 					Assert.NotNull(node.Attributes);
 					var lang = node.Attributes.GetNamedItem("LanguageId").Value;
-					Assert.IsTrue(lang.StartsWith("ISO639-3:"));
+					Assert.IsTrue(lang.StartsWith("ISO639-3:", StringComparison.Ordinal));
 					lang = lang.Substring("ISO639-3:".Length);
 					Assert.AreEqual(descriptions[lang], node.InnerText);
 					descriptions.Remove(lang);

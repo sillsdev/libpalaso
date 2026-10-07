@@ -180,7 +180,7 @@ namespace SIL.Core.ClearShare
 			}
 
 			var url = token + "/";
-			if (token.StartsWith("cc-"))
+			if (token.StartsWith("cc-", StringComparison.Ordinal))
 				url = url.Substring("cc-".Length); // don't want this as part of URL.
 
 			if (!string.IsNullOrEmpty(version))

@@ -581,7 +581,7 @@ namespace SIL.Archiving.Generic
 			if (extension == null)
 				throw new ArgumentNullException("extension");
 
-			if (!extension.StartsWith("."))
+			if (!extension.StartsWith(".", StringComparison.Ordinal))
 				extension = "." + extension;
 
 			string mime;

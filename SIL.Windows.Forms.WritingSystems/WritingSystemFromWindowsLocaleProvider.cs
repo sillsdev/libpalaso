@@ -104,7 +104,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				{
 					continue;
 				}
-				if (culture.EnglishName.StartsWith("Invariant"))
+				if (culture.EnglishName.StartsWith("Invariant", StringComparison.Ordinal))
 				{
 					continue;
 				}

@@ -92,7 +92,7 @@ namespace SIL.Media.AlsaAudio
 					{
 						var pcmPieces = pcm.Split(new char[] { ':' });
 						var num = pcmPieces[0];
-						if (num.StartsWith("0"))
+						if (num.StartsWith("0", StringComparison.Ordinal))
 							num = num.Substring(1);
 						var idx = num.IndexOf('-');
 						if (idx > 0)
@@ -100,13 +100,13 @@ namespace SIL.Media.AlsaAudio
 						var idNum = String.Format(" {0} ", num);
 						for (int i = 0; i < cardsLines.Length; ++i)
 						{
-							if (cardsLines[i].StartsWith(idNum))
+							if (cardsLines[i].StartsWith(idNum, StringComparison.Ordinal))
 							{
 								var desc = cardsLines[i];
-								idx = desc.IndexOf("]: ");
+								idx = desc.IndexOf("]: ", StringComparison.Ordinal);
 								if (idx > 0)
 									desc = desc.Substring(idx + 3);
-								idx = desc.IndexOf(" - ");
+								idx = desc.IndexOf(" - ", StringComparison.Ordinal);
 								if (idx > 0)
 									desc = desc.Substring(idx + 3);
 								var dev = new RecordingDevice()
@@ -184,9 +184,9 @@ assigned as the default (preferred) input device.
 				int subdeviceAvail = 0;
 				foreach (var line in infoLines)
 				{
-					if (line.StartsWith("subdevices_count: "))
+					if (line.StartsWith("subdevices_count: ", StringComparison.Ordinal))
 						subdeviceCount = Int32.Parse(line.Substring(18));
-					else if (line.StartsWith("subdevices_avail: "))
+					else if (line.StartsWith("subdevices_avail: ", StringComparison.Ordinal))
 						subdeviceAvail = Int32.Parse(line.Substring(18));
 				}
 				return subdeviceAvail < subdeviceCount;
@@ -273,7 +273,7 @@ assigned as the default (preferred) input device.
 					{
 						if (CheckMicrophoneValuesForOn(elem))
 						{
-							var idx = str.IndexOf("name=");
+							var idx = str.IndexOf("name=", StringComparison.Ordinal);
 							if (idx > 0)
 							{
 								str = str.Substring(idx + 5);

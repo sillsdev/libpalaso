@@ -787,7 +787,7 @@ namespace SIL.Lift.Parsing
 		/// </summary>
 		private void ReadExternalRange(string pathToRangeFile, string rangeId)
 		{
-			if (pathToRangeFile.StartsWith("file://"))
+			if (pathToRangeFile.StartsWith("file://", StringComparison.Ordinal))
 				pathToRangeFile = pathToRangeFile.Substring(7);
 			if (!File.Exists(pathToRangeFile))
 			{

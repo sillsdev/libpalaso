@@ -226,13 +226,13 @@ namespace SIL.WritingSystems
 			var locale = GetLocale(icuLocale);
 			string icuLanguageCode = locale.Language;
 			string languageCode;
-			if (icuLanguageCode.Length == 4 && icuLanguageCode.StartsWith("x"))
+			if (icuLanguageCode.Length == 4 && icuLanguageCode.StartsWith("x", StringComparison.Ordinal))
 				languageCode = icuLanguageCode.Substring(1);
 			else
 				languageCode = icuLanguageCode;
 			// Some very old projects may have codes with over-long identifiers. In desperation, we truncate these.
 			// 4-letter codes starting with 'e' are a special case.
-			if (languageCode.Length > 3 && !(languageCode.Length == 4 && languageCode.StartsWith("e")))
+			if (languageCode.Length > 3 && !(languageCode.Length == 4 && languageCode.StartsWith("e", StringComparison.Ordinal)))
 				languageCode = languageCode.Substring(0, 3);
 			// The ICU locale strings in FW 6.0 allowed numbers in the language tag.  The
 			// standard doesn't allow this. Map numbers to letters deterministically, even
@@ -261,7 +261,7 @@ namespace SIL.WritingSystems
 			LanguageSubtag languageSubtag;
 			if (languageCode == icuLanguageCode)
 			{
-				languageSubtag = (languageCode.Length == 4 && languageCode.StartsWith("e"))
+				languageSubtag = (languageCode.Length == 4 && languageCode.StartsWith("e", StringComparison.Ordinal))
 					? languageCode.Substring(1) : languageCode;
 			}
 			else
@@ -1532,11 +1532,11 @@ namespace SIL.WritingSystems
 			// Though you might be tempted to simplify this by using GetLanguagePart, don't: this
 			// methods works with three-letter codes even if there is a valid 2-letter code that
 			// should be used instead.
-			if (code.StartsWith(ChineseSimplifiedTag))
+			if (code.StartsWith(ChineseSimplifiedTag, StringComparison.Ordinal))
 				return ChineseSimplifiedTag;
-			if (code.StartsWith(ChineseTraditionalTag))
+			if (code.StartsWith(ChineseTraditionalTag, StringComparison.Ordinal))
 				return ChineseTraditionalTag;
-			var idxCountry = code.IndexOf("-");
+			var idxCountry = code.IndexOf("-", StringComparison.Ordinal);
 			return idxCountry == -1 ? code : code.Substring(0, idxCountry);
 		}
 

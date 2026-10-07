@@ -94,7 +94,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				// even when running under a different user or installed globally/locally.
 				var id = $"{ibusKeyboard.Language}_{ibusKeyboard.LongName}";
 
-				if (ibusKeyboard.LongName.StartsWith("xkb"))
+				if (ibusKeyboard.LongName.StartsWith("xkb", StringComparison.Ordinal))
 				{
 					type = typeof(IbusXkbKeyboardDescription);
 					layout = string.IsNullOrEmpty(ibusKeyboard.LayoutVariant)

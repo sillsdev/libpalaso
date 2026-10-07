@@ -634,7 +634,7 @@ namespace SIL.WritingSystems
 
 				// Tags starting with x- have undefined structure so ignoring them.
 				// Tags starting with _ showed up in buggy data so we'll drop them also.
-				if (tag.StartsWith("x-") || tag.StartsWith("_"))
+				if (tag.StartsWith("x-", StringComparison.Ordinal) || tag.StartsWith("_", StringComparison.Ordinal))
 					continue;
 
 				if (!entry.deprecated)
@@ -816,7 +816,7 @@ namespace SIL.WritingSystems
 				return;
 
 			var di = Directory.CreateDirectory(SldrCachePath);
-			if (Platform.IsUnix || SldrCachePath.StartsWith(Path.GetTempPath()))
+			if (Platform.IsUnix || SldrCachePath.StartsWith(Path.GetTempPath(), StringComparison.Ordinal))
 				return;
 
 			// NOTE: GetAccessControl/ModifyAccessRule/SetAccessControl is not implemented in Mono

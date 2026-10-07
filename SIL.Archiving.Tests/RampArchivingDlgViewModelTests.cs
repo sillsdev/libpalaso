@@ -716,11 +716,11 @@ namespace SIL.Archiving.Tests
 		{
 			var description = (key == string.Empty ? "MyApp Session File" : "MyApp Contributor File");
 
-			if (file.ToLower().EndsWith(".session"))
+			if (file.EndsWith(".session", StringComparison.OrdinalIgnoreCase))
 				description = "MyApp Session Metadata (XML)";
-			else if (file.ToLower().EndsWith(".person"))
+			else if (file.EndsWith(".person", StringComparison.OrdinalIgnoreCase))
 				description = "MyApp Contributor Metadata (XML)";
-			else if (file.ToLower().EndsWith(".meta"))
+			else if (file.EndsWith(".meta", StringComparison.OrdinalIgnoreCase))
 				description = "MyApp File Metadata (XML)";
 
 			return description;

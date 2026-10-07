@@ -118,7 +118,7 @@ namespace SIL.WritingSystems
 				while (i + 1 < tagList.Count)
 				{
 					var tagNext = tagList[i + 1];
-					if (tagNext.StartsWith(language + "-"))
+					if (tagNext.StartsWith(language + "-", StringComparison.Ordinal))
 					{
 						++i;
 						var langInfoNext = _codeToLanguageIndex[tagNext];
