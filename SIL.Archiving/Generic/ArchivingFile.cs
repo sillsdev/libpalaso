@@ -120,7 +120,7 @@ namespace SIL.Archiving.Generic
 				// make sure the extension is the same
 				var extension = (new FileInfo(_fullName)).Extension;
 				_fileName = value;
-				if (!_fileName.EndsWith(extension))
+				if (!_fileName.EndsWith(extension, StringComparison.Ordinal))
 					_fileName += extension;
 			}
 		}

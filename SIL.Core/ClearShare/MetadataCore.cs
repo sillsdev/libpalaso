@@ -314,7 +314,7 @@ namespace SIL.Core.ClearShare
 		{
 			if (IsNullOrEmpty(value))
 				return Empty;
-			var startOfProblem = value.IndexOf("This work");
+			var startOfProblem = value.IndexOf("This work", StringComparison.Ordinal);
 			if (startOfProblem == -1)
 				return value;
 			return value.Substring(0, startOfProblem);

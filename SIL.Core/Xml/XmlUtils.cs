@@ -860,7 +860,7 @@ namespace SIL.Xml
 				sOutput = sOutput.Replace("&amp;", "&");
 			}
 
-			for (int idx = sOutput.IndexOf("&#"); idx >= 0; idx = sOutput.IndexOf("&#"))
+			for (int idx = sOutput.IndexOf("&#", StringComparison.Ordinal); idx >= 0; idx = sOutput.IndexOf("&#", StringComparison.Ordinal))
 			{
 				int idxEnd = sOutput.IndexOf(';', idx);
 				if (idxEnd < 0)

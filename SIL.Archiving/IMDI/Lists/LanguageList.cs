@@ -37,7 +37,7 @@ namespace SIL.Archiving.IMDI.Lists
 			var langName = Text;
 
 			// check for "und" code
-			if (Id.EndsWith("und") && !string.IsNullOrEmpty(OtherName))
+			if (Id.EndsWith("und", StringComparison.Ordinal) && !string.IsNullOrEmpty(OtherName))
 				langName = OtherName;
 
 			return new LanguageType
@@ -137,7 +137,7 @@ namespace SIL.Archiving.IMDI.Lists
 			if (iso3Code == "und") return new LanguageItem("Undetermined", "ISO639-3:und");
 
 			// look on the official list
-			var item = GetList().FirstOrDefault(i => i.Value.EndsWith(":" + iso3Code));
+			var item = GetList().FirstOrDefault(i => i.Value.EndsWith(":" + iso3Code, StringComparison.Ordinal));
 
 			// return language item if found
 			if (item != null) return (LanguageItem)item;

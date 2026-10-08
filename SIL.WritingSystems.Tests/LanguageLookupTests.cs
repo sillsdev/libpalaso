@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -655,13 +656,13 @@ namespace SIL.WritingSystems.Tests
 		private void CheckLanguageTagCounts(LanguageLookup lookup, string tag, int startWith, int startWithPlusHyphen,
 			int equal, int startWithFiltered)
 		{
-			var languages = lookup.SuggestLanguages(tag).Where(li => li.LanguageTag.StartsWith(tag)).ToArray();
+			var languages = lookup.SuggestLanguages(tag).Where(li => li.LanguageTag.StartsWith(tag, StringComparison.Ordinal)).ToArray();
 			Assert.AreEqual(startWith, languages.Length);
-			languages = lookup.SuggestLanguages(tag).Where(li => li.LanguageTag.StartsWith(tag + "-")).ToArray();
+			languages = lookup.SuggestLanguages(tag).Where(li => li.LanguageTag.StartsWith(tag + "-", StringComparison.Ordinal)).ToArray();
 			Assert.AreEqual(startWithPlusHyphen, languages.Length);
 			languages = lookup.SuggestLanguages(tag).Where(li => li.LanguageTag == tag).ToArray();
 			Assert.AreEqual(equal, languages.Length);
-			languages = lookup.SuggestLanguages(tag).Where(li => li.LanguageTag.StartsWith(tag) && ScriptMarkerFilter(li)).ToArray();
+			languages = lookup.SuggestLanguages(tag).Where(li => li.LanguageTag.StartsWith(tag, StringComparison.Ordinal) && ScriptMarkerFilter(li)).ToArray();
 			Assert.AreEqual(startWithFiltered, languages.Length);
 		}
 
@@ -678,7 +679,7 @@ namespace SIL.WritingSystems.Tests
 
 		private void CheckUnmodifiedEntries(LanguageLookup lookup, string tag, string[] unchangedTags)
 		{
-			var languages = lookup.SuggestLanguages(tag).Where(li => li.LanguageTag.StartsWith(tag + "-")).ToList();
+			var languages = lookup.SuggestLanguages(tag).Where(li => li.LanguageTag.StartsWith(tag + "-", StringComparison.Ordinal)).ToList();
 			Assert.AreEqual(unchangedTags.Length, languages.Count);
 			foreach (var unchanged in unchangedTags)
 				Assert.IsTrue(languages.Count(li => li.LanguageTag == unchanged) == 1);

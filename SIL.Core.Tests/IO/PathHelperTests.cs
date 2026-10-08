@@ -323,11 +323,11 @@ namespace SIL.Tests.IO
 		{
 			var prefix = Uri.UriSchemeFile + ":";
 			const string fullPathname = "file:///C:/Users/source/";
-			Assert.IsTrue(fullPathname.StartsWith(prefix));
+			Assert.IsTrue(fullPathname.StartsWith(prefix, StringComparison.Ordinal));
 
 			var reducedPathname = PathHelper.StripFilePrefix(fullPathname);
-			Assert.IsFalse(reducedPathname.StartsWith(prefix));
-			Assert.IsFalse(reducedPathname.StartsWith("/"));
+			Assert.IsFalse(reducedPathname.StartsWith(prefix, StringComparison.Ordinal));
+			Assert.IsFalse(reducedPathname.StartsWith("/", StringComparison.Ordinal));
 		}
 
 		[Test]
@@ -336,11 +336,11 @@ namespace SIL.Tests.IO
 		{
 			var prefix = Uri.UriSchemeFile + ":";
 			const string fullPathname = "file:///usr/local/bin/";
-			Assert.IsTrue(fullPathname.StartsWith(prefix));
+			Assert.IsTrue(fullPathname.StartsWith(prefix, StringComparison.Ordinal));
 
 			var reducedPathname = PathHelper.StripFilePrefix(fullPathname);
-			Assert.IsFalse(reducedPathname.StartsWith(prefix));
-			Assert.IsTrue(reducedPathname.StartsWith("/"));
+			Assert.IsFalse(reducedPathname.StartsWith(prefix, StringComparison.Ordinal));
+			Assert.IsTrue(reducedPathname.StartsWith("/", StringComparison.Ordinal));
 		}
 	}
 }

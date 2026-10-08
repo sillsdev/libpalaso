@@ -47,7 +47,7 @@ namespace SIL.Xml
 		private static void AddSheet(this XmlDocument dom, XmlNode head, string cssFilePath, string namespaceIfDesired)
 		{
 			// don't modify http paths
-			if (!cssFilePath.StartsWith("http"))
+			if (!cssFilePath.StartsWith("http", StringComparison.Ordinal))
 			{
 				// we're going to add file:// later
 				cssFilePath = cssFilePath.Replace("file:///", "").Replace("file://", "");

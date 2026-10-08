@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SIL.WritingSystems
@@ -56,7 +57,7 @@ namespace SIL.WritingSystems
 			if (_prefixes.Count == 0)
 				return true;
 
-			return _prefixes.Any(langTag.StartsWith);
+			return _prefixes.Any(p => langTag.StartsWith(p, StringComparison.Ordinal));
 		}
 
 		/// <summary>

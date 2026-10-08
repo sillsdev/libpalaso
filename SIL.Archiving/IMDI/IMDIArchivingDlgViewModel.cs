@@ -161,7 +161,7 @@ namespace SIL.Archiving.IMDI
 				return;
 
 			// if it is a .jar file, open with java
-			var exePath = PathToProgramToLaunch.EndsWith(".jar") ? "java" : PathToProgramToLaunch;
+			var exePath = PathToProgramToLaunch.EndsWith(".jar", StringComparison.Ordinal) ? "java" : PathToProgramToLaunch;
 			var args = Empty;
 			if (exePath == "java")
 			{

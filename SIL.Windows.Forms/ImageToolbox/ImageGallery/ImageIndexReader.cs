@@ -76,7 +76,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 			var csv = GetFieldOrEmpty(languageId, fields).Trim();
 
 			// When you export a cell in Excel that has items separated by a comma, it sticks quotes around it. We want to ignore those quotes.
-			if (csv.StartsWith("\"") && csv.EndsWith("\""))
+			if (csv.StartsWith("\"", StringComparison.Ordinal) && csv.EndsWith("\"", StringComparison.Ordinal))
 				csv = csv.Trim('"');
 
 			return csv;

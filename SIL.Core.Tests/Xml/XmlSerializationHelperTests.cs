@@ -422,10 +422,10 @@ namespace SIL.Tests.Xml
 		{
 			var result = SerializeToString(new TestObject("Fred"));
 			var lines = result.SplitLines().ToList();
-			Assert.IsTrue(lines[0].StartsWith("<?xml"));
+			Assert.IsTrue(lines[0].StartsWith("<?xml", StringComparison.Ordinal));
 			Assert.That(lines[0].Contains("encoding=\"utf-16\""));
-			Assert.IsTrue(lines[1].StartsWith("<MyRoot"));
-			Assert.IsTrue(lines.Last().EndsWith("MyRoot>"));
+			Assert.IsTrue(lines[1].StartsWith("<MyRoot", StringComparison.Ordinal));
+			Assert.IsTrue(lines.Last().EndsWith("MyRoot>", StringComparison.Ordinal));
 		}
 
 		[Test]
@@ -434,10 +434,10 @@ namespace SIL.Tests.Xml
 			var result = SerializeToString(new TestObject("Fred"),
 				Encoding.UTF8);
 			var lines = result.SplitLines().ToList();
-			Assert.IsTrue(lines[0].StartsWith("<?xml"));
+			Assert.IsTrue(lines[0].StartsWith("<?xml", StringComparison.Ordinal));
 			Assert.That(lines[0].Contains("encoding=\"utf-8\""));
-			Assert.IsTrue(lines[1].StartsWith("<MyRoot"));
-			Assert.IsTrue(lines.Last().EndsWith("MyRoot>"));
+			Assert.IsTrue(lines[1].StartsWith("<MyRoot", StringComparison.Ordinal));
+			Assert.IsTrue(lines.Last().EndsWith("MyRoot>", StringComparison.Ordinal));
 		}
 
 		[Test]
@@ -445,10 +445,10 @@ namespace SIL.Tests.Xml
 		{
 			var result = SerializeToString(new TestObject("Fred"),
 				true);
-			Assert.IsFalse(result.StartsWith("<?xml"));
+			Assert.IsFalse(result.StartsWith("<?xml", StringComparison.Ordinal));
 			var lines = result.SplitLines().ToList();
-			Assert.IsTrue(lines.First().StartsWith("<MyRoot"));
-			Assert.IsTrue(lines.Last().EndsWith("MyRoot>"));
+			Assert.IsTrue(lines.First().StartsWith("<MyRoot", StringComparison.Ordinal));
+			Assert.IsTrue(lines.Last().EndsWith("MyRoot>", StringComparison.Ordinal));
 		}
 
 		[Test]

@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using System;
+using System.Xml.Serialization;
 
 namespace SIL.DblBundle
 {
@@ -46,7 +47,7 @@ namespace SIL.DblBundle
 			{
 				if (!IsPublishable || IsVerseText)
 					return false;
-				if (Id.StartsWith("h") || Id.StartsWith("toc") || Id.StartsWith("mt")) 
+				if (Id.StartsWith("h", StringComparison.Ordinal) || Id.StartsWith("toc", StringComparison.Ordinal) || Id.StartsWith("mt", StringComparison.Ordinal)) 
 					return true;
 				return false;
 			}

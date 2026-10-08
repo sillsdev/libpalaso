@@ -69,7 +69,35 @@ namespace SIL.WritingSystems
 		private static readonly Regex ScriptPattern;
 		private static readonly Regex RegionPattern;
 		private static readonly Regex PrivateUsePattern;
-		private static readonly bool UseICUForLanguageNames;
+		/// <summary>
+		/// Whether <see cref="GetLocalizedLanguageName"/> may ask ICU for a language's name.
+		/// </summary>
+		/// <remarks>
+		/// Defaults to whether a native ICU library could be loaded, which is decided once per
+		/// process. That makes the name depend on what happens to be installed: with ICU,
+		/// GetLocalizedLanguageName honours the requested UI language and names Spanish in French
+		/// as "espagnol"; without it, the name comes from <see cref="CultureInfo.DisplayName"/>
+		/// instead, which on an English machine gives the autonym "español". An application that
+		/// must show the same name to every user can set this to false at startup to take the
+		/// second path always.
+		/// <para>Note what the second path does and does not promise. It removes the dependence on
+		/// whether ICU is installed, which is the point of the switch. It does not make the name a
+		/// pure function of the arguments: <c>CultureInfo.DisplayName</c> is rendered in the
+		/// process's <see cref="CultureInfo.CurrentUICulture"/>, so callers should set that to match
+		/// the UI language they ask about. When they do not, the ambient culture shows through:
+		/// asking for Spanish "in English", or indeed "in German", under a French CurrentUICulture
+		/// returns "espagnol". The autonym fallback does not generally prevent this, because it
+		/// applies only when DisplayName comes back equal to the English name -- that is, when the
+		/// ambient culture failed to localize it at all. Results are cached per language/UI-language
+		/// pair and not per CurrentUICulture, so a process that changes its UI culture keeps the
+		/// names it already looked up.</para>
+		/// <para>Setting it to true where no native ICU library can be loaded does not make one
+		/// appear: the ICU call will throw when a name is next requested.</para>
+		/// <para>Changing it mid-process is safe. Names that came from ICU are returned directly
+		/// and never enter the lookup cache, so turning ICU off cannot leave ICU-derived names
+		/// behind.</para>
+		/// </remarks>
+		public static bool UseICUForLanguageNames { get; set; }
 
 		static IetfLanguageTag()
 		{
@@ -226,13 +254,13 @@ namespace SIL.WritingSystems
 			var locale = GetLocale(icuLocale);
 			string icuLanguageCode = locale.Language;
 			string languageCode;
-			if (icuLanguageCode.Length == 4 && icuLanguageCode.StartsWith("x"))
+			if (icuLanguageCode.Length == 4 && icuLanguageCode.StartsWith("x", StringComparison.Ordinal))
 				languageCode = icuLanguageCode.Substring(1);
 			else
 				languageCode = icuLanguageCode;
 			// Some very old projects may have codes with over-long identifiers. In desperation, we truncate these.
 			// 4-letter codes starting with 'e' are a special case.
-			if (languageCode.Length > 3 && !(languageCode.Length == 4 && languageCode.StartsWith("e")))
+			if (languageCode.Length > 3 && !(languageCode.Length == 4 && languageCode.StartsWith("e", StringComparison.Ordinal)))
 				languageCode = languageCode.Substring(0, 3);
 			// The ICU locale strings in FW 6.0 allowed numbers in the language tag.  The
 			// standard doesn't allow this. Map numbers to letters deterministically, even
@@ -261,7 +289,7 @@ namespace SIL.WritingSystems
 			LanguageSubtag languageSubtag;
 			if (languageCode == icuLanguageCode)
 			{
-				languageSubtag = (languageCode.Length == 4 && languageCode.StartsWith("e"))
+				languageSubtag = (languageCode.Length == 4 && languageCode.StartsWith("e", StringComparison.Ordinal))
 					? languageCode.Substring(1) : languageCode;
 			}
 			else
@@ -1532,11 +1560,11 @@ namespace SIL.WritingSystems
 			// Though you might be tempted to simplify this by using GetLanguagePart, don't: this
 			// methods works with three-letter codes even if there is a valid 2-letter code that
 			// should be used instead.
-			if (code.StartsWith(ChineseSimplifiedTag))
+			if (code.StartsWith(ChineseSimplifiedTag, StringComparison.Ordinal))
 				return ChineseSimplifiedTag;
-			if (code.StartsWith(ChineseTraditionalTag))
+			if (code.StartsWith(ChineseTraditionalTag, StringComparison.Ordinal))
 				return ChineseTraditionalTag;
-			var idxCountry = code.IndexOf("-");
+			var idxCountry = code.IndexOf("-", StringComparison.Ordinal);
 			return idxCountry == -1 ? code : code.Substring(0, idxCountry);
 		}
 

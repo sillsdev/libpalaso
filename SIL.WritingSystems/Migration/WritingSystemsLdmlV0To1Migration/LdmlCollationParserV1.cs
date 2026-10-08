@@ -209,8 +209,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				return;
 			}
 			inGroup = true;
-			int lastIndexOfNewLine = rules.LastIndexOf(NewLine) + NewLine.Length;
-			int lastIndexOfSpace = rules.LastIndexOf(" ") + " ".Length;
+			int lastIndexOfNewLine = rules.LastIndexOf(NewLine, StringComparison.Ordinal) + NewLine.Length;
+			int lastIndexOfSpace = rules.LastIndexOf(" ", StringComparison.Ordinal) + " ".Length;
 			int mostRecentPossiblepositionForABracket = Math.Max(lastIndexOfNewLine, lastIndexOfSpace);
 			rules = rules.Insert(mostRecentPossiblepositionForABracket, "(");
 			return;

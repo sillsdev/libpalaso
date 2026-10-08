@@ -49,7 +49,7 @@ namespace SIL.Archiving.Generic
 				{
 					// If the default location on a Unix system doesn't have write permissions we try again in the ApplicationData folder
 					var unixRoot = Platform.IsMac ? MacFolderRoot : LinuxFolderRoot;
-					if (Platform.IsUnix && folderName.StartsWith(Path.Combine(unixRoot, "SIL")))
+					if (Platform.IsUnix && folderName.StartsWith(Path.Combine(unixRoot, "SIL"), StringComparison.Ordinal))
 					{
 						folderName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
 								folderName.Replace(unixRoot, "").TrimStart(Path.DirectorySeparatorChar));

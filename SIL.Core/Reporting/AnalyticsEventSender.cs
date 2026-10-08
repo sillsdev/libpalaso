@@ -100,7 +100,7 @@ namespace SIL.Reporting
 			}
 
 			pagePath = pagePath.TrimStart(new char[] {'/'});
-			if (!pagePath.StartsWith("application/"))
+			if (!pagePath.StartsWith("application/", StringComparison.Ordinal))
 			{
 				pagePath = "application/"+pagePath;
 			}

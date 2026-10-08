@@ -173,7 +173,7 @@ namespace SIL.WritingSystems
 		{
 			foreach (string line in subTagComponents)
 			{
-				if (line.StartsWith("Prefix: "))
+				if (line.StartsWith("Prefix: ", StringComparison.Ordinal))
 					yield return line.Substring("Prefix: ".Length).Trim();
 			}
 		}

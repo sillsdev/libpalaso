@@ -763,7 +763,7 @@ namespace SIL.WritingSystems.Migration
 		private void OnOptionHiraganaQ(object sender, ActionEventArgs args)
 		{
 			IcuDataObject attr = IcuDataObject.CreateAttribute("hiraganaQuaternary");
-			attr.Value = args.Value.EndsWith("on") ? "on" : "off";
+			attr.Value = args.Value.EndsWith("on", StringComparison.Ordinal) ? "on" : "off";
 			AddSettingsAttribute(attr);
 		}
 
