@@ -1022,6 +1022,27 @@ namespace SIL.WritingSystems.Tests
 			var resultWhenUiLanguageMatchesTag = IetfLanguageTag.GetLocalizedLanguageName(tag, tag);
 			Assert.That(resultWithoutGivingUiLanguage, Is.EqualTo(resultWhenUiLanguageMatchesTag));
 		}
+
+		[Test]
+		public void GetLocalizedLanguageName_IcuTurnedOff_IgnoresTheRequestedUiLanguage()
+		{
+			// The point of the switch: with ICU the requested UI language is honoured, so English
+			// named in Spanish and in French differ ("inglés" vs "anglais"). Without it the request
+			// is ignored, so the two must agree. Asserting that they agree therefore proves the
+			// switch works on a machine that HAS ICU, and still passes on one that has not.
+			var originalSetting = IetfLanguageTag.UseICUForLanguageNames;
+			try
+			{
+				IetfLanguageTag.UseICUForLanguageNames = false;
+				Assert.That(
+					IetfLanguageTag.GetLocalizedLanguageName("en", "es"),
+					Is.EqualTo(IetfLanguageTag.GetLocalizedLanguageName("en", "fr")));
+			}
+			finally
+			{
+				IetfLanguageTag.UseICUForLanguageNames = originalSetting;
+			}
+		}
 		#endregion
 
 		#region GetNativeLanguageNameWithEnglishSubtitle
