@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
+- [SIL.WritingSystems] Added `IetfLanguageTag.UseICUForLanguageNames`, so an application can stop `GetLocalizedLanguageName` consulting ICU. It still defaults to whether a native ICU library could be loaded; setting it false makes the name the same whether or not one is installed.
 - [SIL.Core] Added a `LanguageForm.CompareTo(LanguageForm, IComparer<string>)` overload, so a caller can choose how the forms are compared (for example with a writing system's collation). The existing `CompareTo(LanguageForm)` still uses the invariant culture.
 - [SIL.Core] Added `UnixFilePermissions`, which reads and applies the Unix permission bits of a file and does nothing on platforms that have no such bits, so callers need no platform test of their own.
 - [SIL.Windows.Forms.Archiving, SIL.Windows.Forms.DblBundle] Added `net8.0-windows` target.
