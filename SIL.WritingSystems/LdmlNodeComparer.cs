@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Xml;
@@ -253,7 +254,10 @@ namespace SIL.WritingSystems
 			}
 			if (result == 0)
 			{
-				result = x.Value.CompareTo(y.Value);
+				// This should perhaps use the InvariantCulture, but nobody has complained about it and
+				// the default CurrentCulture has been used for a long time, so I'm not going to change it now.
+				// It may not matter that much in practice.
+				result = string.Compare(x.Value, y.Value, StringComparison.CurrentCulture);
 			}
 			return result;
 		}

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI.Lists;
@@ -33,13 +34,13 @@ namespace SIL.Archiving.IMDI
 					_generalType = "document";
 				else if (mime.Contains("x-eaf+xml"))
 					_generalType = "annotation";
-				else if (mime.StartsWith("image"))
+				else if (mime.StartsWith("image", StringComparison.Ordinal))
 					_generalType = "image";
-				else if (mime.StartsWith("audio"))
+				else if (mime.StartsWith("audio", StringComparison.Ordinal))
 					_generalType = "audio";
-				else if (mime.StartsWith("video"))
+				else if (mime.StartsWith("video", StringComparison.Ordinal))
 					_generalType = "video";
-				else if (mime.StartsWith("text"))
+				else if (mime.StartsWith("text", StringComparison.Ordinal))
 					_generalType = "text";
 				else
 					_generalType = "unspecified";

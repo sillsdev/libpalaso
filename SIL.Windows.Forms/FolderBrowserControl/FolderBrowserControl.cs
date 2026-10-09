@@ -888,7 +888,7 @@ namespace SIL.Windows.Forms.FolderBrowserControl
 
 				foreach (string server in servers)
 				{
-					if (server.EndsWith("-share"))
+					if (server.EndsWith("-share", StringComparison.Ordinal))
 						continue;
 
 					var serverNode = new TreeNode
@@ -901,13 +901,13 @@ namespace SIL.Windows.Forms.FolderBrowserControl
 					microsoftWindowsNetworkChildNode.Nodes.Add(serverNode);
 
 					// Look for child (share) servers:
-					foreach (var shareServer in servers.Cast<string>().Where(shareServer => shareServer.EndsWith("-share")))
+					foreach (var shareServer in servers.Cast<string>().Where(shareServer => shareServer.EndsWith("-share", StringComparison.Ordinal)))
 					{
 						if (server.Length <= shareServer.Length)
 						{
 							try
 							{
-								if (shareServer.StartsWith(server + Path.DirectorySeparatorChar))
+								if (shareServer.StartsWith(server + Path.DirectorySeparatorChar, StringComparison.Ordinal))
 								{
 									var childServerNode = new TreeNode
 															{
@@ -947,9 +947,9 @@ namespace SIL.Windows.Forms.FolderBrowserControl
 
 			foreach (string server in servers)
 			{
-				var serverNameBeforeBar = server.Substring(0, server.IndexOf("|", 1));
+				var serverNameBeforeBar = server.Substring(0, server.IndexOf("|", 1, StringComparison.Ordinal));
 
-				if (server.IndexOf("NETWORK", 1) > 0)
+				if (server.IndexOf("NETWORK", 1, StringComparison.Ordinal) > 0)
 				{
 					var networkNode = new TreeNode
 										{
@@ -1113,14 +1113,14 @@ namespace SIL.Windows.Forms.FolderBrowserControl
 				// If we haven't gotten all the way along lowerCasePath, make a copy of
 				// subfolderPath with a trailing backslash:
 				string subfolderPathBackslash = subfolderPath;
-				if (!subfolderPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
+				if (!subfolderPath.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal))
 				{
 					if (usefulPath.Length > subfolderPathBackslash.Length)
 						subfolderPathBackslash = subfolderPath + Path.DirectorySeparatorChar;
 				}
 
 				// See if the current path is matched by the current subfolder (as far as it goes):
-				if (usefulPath.StartsWith(subfolderPathBackslash))
+				if (usefulPath.StartsWith(subfolderPathBackslash, StringComparison.Ordinal))
 				{
 					subfolderNode.Expand();
 					if (focusTree)
@@ -1142,7 +1142,7 @@ namespace SIL.Windows.Forms.FolderBrowserControl
 					}
 
 					// Sanity check: have we already gone too far?
-					if (subfolderPathBackslash.StartsWith(usefulPath))
+					if (subfolderPathBackslash.StartsWith(usefulPath, StringComparison.Ordinal))
 					{
 						// Base case:
 						return;
@@ -1620,13 +1620,14 @@ namespace SIL.Windows.Forms.FolderBrowserControl
 			// To avoid the possibility of adding a path ending with a backslash when the
 			// current history entry is the same but without a backslash, we will remove trailing
 			// backslashes first:
-			while (path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+			while (path.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal))
 				path = path.Substring(0, path.Length - 1);
 
 			// Don't add a path if it is the same (case-insensitive) as the current entry in the history list:
 			// TODO: case-insentive search won't do for Linux (but case-sensitive search won't do for Windows).
 			if (_selectionHistoryIndex >= 0 && _selectionHistoryIndex < _selectionHistory.Count)
-				if (string.Compare(_selectionHistory[_selectionHistoryIndex], path, true) == 0)
+				if (string.Compare(_selectionHistory[_selectionHistoryIndex], path,
+					StringComparison.OrdinalIgnoreCase) == 0)
 					return;
 
 			// Guard against an empty list or when we're pointing at the last item:
@@ -1797,7 +1798,8 @@ namespace SIL.Windows.Forms.FolderBrowserControl
 							else
 								serverenum = false;
 
-							if ((kPath.IndexOf(pRsrc.lpRemoteName) >= 0) || (String.Compare(pRsrc.lpRemoteName, "Microsoft Windows Network") == 0))
+							if ((kPath.IndexOf(pRsrc.lpRemoteName, StringComparison.Ordinal) >= 0) ||
+								(pRsrc.lpRemoteName == "Microsoft Windows Network"))
 								EnumerateServers(pRsrc, scope, type, usage, displayType, kPath);
 						}
 					}

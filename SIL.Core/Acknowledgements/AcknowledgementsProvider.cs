@@ -46,8 +46,8 @@ namespace SIL.Acknowledgements
 				var components = Directory.EnumerateFiles(codeBase).Where(
 					file => Path.HasExtension(file) &&
 					(Path.GetExtension(file).ToLowerInvariant() == ".exe" || Path.GetExtension(file).ToLowerInvariant() == ".dll") &&
-					file != assemblyName && !Exclusions.Any(file.EndsWith) &&
-					(includeSystemLibraries || !Path.GetFileName(file).StartsWith("System.")));
+					file != assemblyName && !Exclusions.Any(e => file.EndsWith(e, StringComparison.Ordinal)) &&
+					(includeSystemLibraries || !Path.GetFileName(file).StartsWith("System.", StringComparison.Ordinal)));
 
 				foreach (var execFile in components)
 				{

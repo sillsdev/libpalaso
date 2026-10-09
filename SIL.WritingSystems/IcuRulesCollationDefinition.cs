@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using SIL.ObjectModel;
@@ -70,7 +71,7 @@ namespace SIL.WritingSystems
 			{
 				bool importSuccessful = false;
 				WritingSystemDefinition ws = null;
-				if (OwningWritingSystemDefinition != null && OwningWritingSystemDefinition.LanguageTag.StartsWith(import.LanguageTag) && OwningWritingSystemDefinition.Collations.Contains(import.Type))
+				if (OwningWritingSystemDefinition != null && OwningWritingSystemDefinition.LanguageTag.StartsWith(import.LanguageTag, StringComparison.Ordinal) && OwningWritingSystemDefinition.Collations.Contains(import.Type))
 					ws = OwningWritingSystemDefinition;
 				else if (WritingSystemFactory != null && (OwningWritingSystemDefinition == null || OwningWritingSystemDefinition.LanguageTag != import.LanguageTag))
 					WritingSystemFactory.Create(import.LanguageTag, out ws);

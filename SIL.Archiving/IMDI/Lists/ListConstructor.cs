@@ -101,7 +101,7 @@ namespace SIL.Archiving.IMDI.Lists
 		/// ---------------------------------------------------------------------------------------
 		internal static string ListNameWithXmlExtension(string listName)
 		{
-			if (!listName.EndsWith(".xml"))
+			if (!listName.EndsWith(".xml", StringComparison.Ordinal))
 				listName += ".xml";
 			return listName;
 		}

@@ -107,7 +107,7 @@ namespace SIL.IO
 
 			var expectedExtensionNormalized = string.IsNullOrWhiteSpace(expectedExtension)
 								? null
-								: expectedExtension.StartsWith(".") ? expectedExtension : "." + expectedExtension;
+								: expectedExtension.StartsWith(".", StringComparison.Ordinal) ? expectedExtension : "." + expectedExtension;
 
 			var actualExtension = Path.GetExtension(pathToFile);
 			if (actualExtension == string.Empty)
@@ -168,7 +168,7 @@ namespace SIL.IO
 
 			var prefix = Uri.UriSchemeFile + ":";
 
-			if (!fileString.StartsWith(prefix))
+			if (!fileString.StartsWith(prefix, StringComparison.Ordinal))
 				return fileString;
 
 			var path = fileString.Substring(prefix.Length);

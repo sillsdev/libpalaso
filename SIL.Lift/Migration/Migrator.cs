@@ -132,7 +132,7 @@ namespace SIL.Lift.Migration
 			string xslName = null;
 			foreach (string name in resources)
 			{
-				if (name.EndsWith(".xsl") && name.StartsWith("SIL.Lift.Migration.LIFT-" + sourceVersion + "-"))
+				if (name.EndsWith(".xsl", StringComparison.Ordinal) && name.StartsWith("SIL.Lift.Migration.LIFT-" + sourceVersion + "-", StringComparison.Ordinal))
 				{
 					xslName = name;
 					break;

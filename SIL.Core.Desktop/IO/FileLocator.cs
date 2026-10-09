@@ -163,7 +163,7 @@ namespace SIL.IO
 		/// ------------------------------------------------------------------------------------
 		public static string GetDefaultProgramForFileType(string fileExtension)
 		{
-			if (!fileExtension.StartsWith("."))
+			if (!fileExtension.StartsWith(".", StringComparison.Ordinal))
 				fileExtension = "." + fileExtension;
 
 			if (Platform.IsWindows)

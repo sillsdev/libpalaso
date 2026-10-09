@@ -114,7 +114,7 @@ namespace SIL.IO.FileLock
 			// If the name of the process is not "mono" or does not start with "mono-", this is not
 			// a mono application, and therefore this is not the process we are looking for.
 			var lowername = GetProcessNameSafely(process).ToLowerInvariant();
-			if (lowername != "mono" && !lowername.StartsWith("mono-"))
+			if (lowername != "mono" && !lowername.StartsWith("mono-", StringComparison.Ordinal))
 				return false;
 
 			// The mono application will have a module with the same name as the process, with ".exe" added.

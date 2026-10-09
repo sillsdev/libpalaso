@@ -425,7 +425,7 @@ namespace SIL.Windows.Forms.Scripture
 					string charPressed = ((char)e.KeyValue).ToString();
 					for (int iButton = m_currButton < Controls.Count - 1 ? m_currButton + 1 : 0; iButton != m_currButton; iButton++)
 					{
-						if (m_buttons[iButton].Text.StartsWith(charPressed))
+						if (m_buttons[iButton].Text.StartsWith(charPressed, StringComparison.Ordinal))
 						{
 							buttonToGoTo = iButton;
 							break;

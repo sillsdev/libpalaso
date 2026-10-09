@@ -149,7 +149,7 @@ namespace SIL.DblBundle.Tests.Text
 		{
 			using (var reader = _bundle.GetVersification())
 			{
-				Assert.IsTrue(reader.ReadLine().StartsWith("#"));
+				Assert.IsTrue(reader.ReadLine().StartsWith("#", StringComparison.Ordinal));
 			}
 		}
 
@@ -188,7 +188,7 @@ namespace SIL.DblBundle.Tests.Text
 			using (var reader = _bundle.GetLdml())
 			{
 				reader.ReadLine(); // Skip past ?xml element
-				Assert.IsTrue(reader.ReadLine().StartsWith("<ldml"));
+				Assert.IsTrue(reader.ReadLine().StartsWith("<ldml", StringComparison.Ordinal));
 			}
 		}
 

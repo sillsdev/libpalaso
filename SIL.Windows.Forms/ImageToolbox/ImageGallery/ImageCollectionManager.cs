@@ -317,7 +317,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 			// One thing that is important is that in versions of AOR that have both
 			// ArtOfReadingMultilingualIndex.txt and index.txt, the former must be found first.
 			return Directory.EnumerateFiles(directory, "*ndex.txt")
-				.Where(x => x.ToLowerInvariant().EndsWith("index.txt"))
+				.Where(x => x.ToLowerInvariant().EndsWith("index.txt", StringComparison.Ordinal))
 				// no way to enumerate [iI]ndex.txt on Linux, and we need both
 				.OrderBy(x => x.ToLowerInvariant())
 				.FirstOrDefault();

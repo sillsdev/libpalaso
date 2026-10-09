@@ -185,7 +185,7 @@ namespace SIL.Archiving.IMDI.Lists
 		/// <param name="removeUnknown">Specify which values of "unknown" to remove</param>
 		internal IMDIItemList(string listName, bool uppercaseFirstCharacter, ListConstructor.RemoveUnknown removeUnknown)
 		{
-			Debug.Assert(listName.EndsWith(".xml"));
+			Debug.Assert(listName.EndsWith(".xml", StringComparison.Ordinal));
 			_listname = listName.Substring(0, listName.Length - 4);
 
 			if (listName == "MPI-Languages.xml")

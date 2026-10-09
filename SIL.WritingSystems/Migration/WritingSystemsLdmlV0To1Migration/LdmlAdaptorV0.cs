@@ -493,7 +493,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		{
 			while (reader.MoveToNextAttribute())
 			{
-				if (reader.Name.StartsWith("xmlns:") && _nameSpaceManager.HasNamespace(reader.Name.Substring(6, reader.Name.Length - 6)))
+				if (reader.Name.StartsWith("xmlns:", StringComparison.Ordinal) && _nameSpaceManager.HasNamespace(reader.Name.Substring(6, reader.Name.Length - 6)))
 					return true;
 			}
 			return false;
@@ -518,7 +518,9 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		protected string GetSpecialValue(XmlReader reader, string ns, string field)
 		{
-			if (!XmlHelpersV0.FindNextElementInSequence(reader, ns + ":" + field, _nameSpaceManager.LookupNamespace(ns), string.Compare))
+			if (!XmlHelpersV0.FindNextElementInSequence(reader, ns + ":" + field, _nameSpaceManager.LookupNamespace(ns),
+				// CurrentCulture preserves the long-standing behavior; see LdmlNodeComparer.CompareAttributeValues.
+				(x, y) => string.Compare(x, y, StringComparison.CurrentCulture)))
 			{
 				return string.Empty;
 			}

@@ -163,7 +163,7 @@ namespace SIL.Data
 			int i = 0;
 			foreach (string key in _queryResults.Keys)
 			{
-				order = key.CompareTo(theirKeys[i]);
+				order = string.Compare(key, theirKeys[i], StringComparison.InvariantCulture);
 				if (order != 0)
 				{
 					return order;

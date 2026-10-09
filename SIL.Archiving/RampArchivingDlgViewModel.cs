@@ -1782,7 +1782,7 @@ namespace SIL.Archiving
 				var langFile = GetLanguageFileLocation();
 				if (File.Exists(langFile))
 				{
-					foreach (var fileLine in File.ReadLines(langFile).Where(l => l.StartsWith("  code: \"")))
+					foreach (var fileLine in File.ReadLines(langFile).Where(l => l.StartsWith("  code: \"", StringComparison.Ordinal)))
 					{
 						const int start = 9;
 						var end = fileLine.IndexOf('"', start);

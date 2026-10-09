@@ -1230,7 +1230,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 				session.LiftWriter.Add(entry);
 				session.LiftWriter.End();
 
-				Assert.IsTrue(session.StringBuilder.ToString().StartsWith("<entry"));
+				Assert.IsTrue(session.StringBuilder.ToString().StartsWith("<entry", StringComparison.Ordinal));
 			}
 		}
 
@@ -1277,7 +1277,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 				var sense = new LexSense();
 				session.LiftWriter.Add(sense);
 				session.LiftWriter.End();
-				Assert.IsTrue(session.StringBuilder.ToString().StartsWith("<sense"));
+				Assert.IsTrue(session.StringBuilder.ToString().StartsWith("<sense", StringComparison.Ordinal));
 			}
 		}
 

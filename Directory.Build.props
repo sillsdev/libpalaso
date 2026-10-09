@@ -10,6 +10,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>8</LangVersion>
+    <!-- The .NET analyzers run by default only for net5.0+ targets; turn them on for net462,
+    net48 and netstandard2.0 too so that the rules set in .editorconfig (e.g. CA1310) apply to
+    every build. -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/sillsdev/libpalaso</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
