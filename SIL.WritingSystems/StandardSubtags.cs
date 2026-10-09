@@ -13,8 +13,17 @@ namespace SIL.WritingSystems
 	///
 	/// Languages and scripts that are newer than the subtag registry may be added with AddScript and AddLanguage
 	/// </summary>
-	public static class StandardSubtags
+	public static partial class StandardSubtags
 	{
+		private const string NonWordCharExpr = @"[^\w]";
+#if NET7_0_OR_GREATER
+		[GeneratedRegex(NonWordCharExpr)]
+		private static partial Regex NonWordCharPattern();
+#else
+		private static readonly Regex NonWordCharRegex = new Regex(NonWordCharExpr, RegexOptions.Compiled);
+		private static Regex NonWordCharPattern() => NonWordCharRegex;
+#endif
+
 		static StandardSubtags()
 		{	
 			InitialiseIanaSubtags(LanguageRegistryResources.TwoToThreeCodes, LanguageRegistryResources.ianaSubtagRegistry);
@@ -143,7 +152,7 @@ namespace SIL.WritingSystems
 				}
 			}
 
-			IEnumerable<LanguageSubtag> sortedLanguages = languages.OrderBy(l => Regex.Replace(l.Name, @"[^\w]", ""))
+			IEnumerable<LanguageSubtag> sortedLanguages = languages.OrderBy(l => NonWordCharPattern().Replace(l.Name, ""))
 				.Concat(new[] {new LanguageSubtag(WellKnownSubtags.UnlistedLanguage, "Language Not Listed", true, string.Empty)});
 			RegisteredLanguages = new KeyedList<string, LanguageSubtag>(sortedLanguages, l => l.Code, StringComparer.InvariantCultureIgnoreCase);
 			RegisteredScripts = new KeyedList<string, ScriptSubtag>(scripts.OrderBy(s => s.Name), s => s.Code, StringComparer.InvariantCultureIgnoreCase);
@@ -195,14 +204,14 @@ namespace SIL.WritingSystems
 		internal static string SubTagComponentDescription(string component)
 		{
 			string description = component.Substring(component.IndexOf(" ", StringComparison.Ordinal) + 1);
-			description = Regex.Replace(description, @"\(alias for ", "(");
-			description = Regex.Replace(description, @" \(individual language\)", "");
+			description = description.Replace("(alias for ", "(");
+			description = description.Replace(" (individual language)", "");
 			if (description[0] == '(')
 			{
 				// remove parens if the description begins with an open parenthesis
-				description = Regex.Replace(description, @"[\(\)]", "");
+				description = description.Replace("(", "").Replace(")", "");
 			}
-			description = Regex.Replace(description, @"/", "|");
+			description = description.Replace("/", "|");
 			return description;
 		}
 
