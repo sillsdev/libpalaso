@@ -6,9 +6,6 @@ using NUnit.Framework;
 using SIL.IO;
 using SIL.TestUtilities;
 using SIL.Core.ClearShare;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Formats.Png;
 using TagLib.Xmp;
 
 namespace SIL.Tests.ClearShare
@@ -16,16 +13,18 @@ namespace SIL.Tests.ClearShare
 	[TestFixture]
 	public class MetadataCoreTests
 	{
-		private Image<Rgba32> _mediaFile;
+		// Minimal valid 1x1 RGBA PNG; these tests exercise metadata, not pixels.
+		private static readonly byte[] BlankPng = Convert.FromBase64String(
+			"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==");
+
 		private TempFile _tempFile;
 		private MetadataCore _outgoing;
 
 		[SetUp]
 		public void Setup()
 		{
-			_mediaFile = new Image<Rgba32>(10, 10);
 			_tempFile = TempFile.WithExtension("png");
-			_mediaFile.Save(_tempFile.Path, new PngEncoder());
+			File.WriteAllBytes(_tempFile.Path, BlankPng);
 			_outgoing = MetadataCore.CreateMetadataCoreFromFile(_tempFile.Path);
 		}
 
@@ -33,7 +32,6 @@ namespace SIL.Tests.ClearShare
 		public void TearDown()
 		{
 			_tempFile.Dispose();
-			_mediaFile.Dispose();
 		}
 
 		[Test]
@@ -156,36 +154,30 @@ namespace SIL.Tests.ClearShare
 		[Test]
 		public void RoundTripPng_FileNameHasNonAsciiCharacters()
 		{
-			using (var mediaFile = new Image<Rgba32>(10, 10))
+			using (var folder = new TemporaryFolder("LibPalaso exiftool Test"))
 			{
-				using (var folder = new TemporaryFolder("LibPalaso exiftool Test"))
-				{
-					var path = folder.Combine("Love these non-áscii chárácters.png");
-					mediaFile.Save(path, new PngEncoder());
-					var outgoing = MetadataCore.CreateMetadataCoreFromFile(path);
+				var path = folder.Combine("Love these non-áscii chárácters.png");
+				File.WriteAllBytes(path, BlankPng);
+				var outgoing = MetadataCore.CreateMetadataCoreFromFile(path);
 
-					outgoing.Creator = "joe shmo";
-					outgoing.Write();
-					Assert.AreEqual("joe shmo", MetadataCore.CreateMetadataCoreFromFile(path).Creator);
-				}
+				outgoing.Creator = "joe shmo";
+				outgoing.Write();
+				Assert.AreEqual("joe shmo", MetadataCore.CreateMetadataCoreFromFile(path).Creator);
 			}
 		}
 		[Test]
 		public void RoundTripPng_InPathWithNonAsciiCharacters()
 		{
-			using (var mediaFile = new Image<Rgba32>(10, 10))
+			using (var folder =
+				new TemporaryFolder("LibPalaso exiftool Test with non-áscii chárácters"))
 			{
-				using (var folder =
-					new TemporaryFolder("LibPalaso exiftool Test with non-áscii chárácters"))
-				{
-					var path = folder.Combine("test.png");
-					mediaFile.Save(path, new PngEncoder());
-					var outgoing = MetadataCore.CreateMetadataCoreFromFile(path);
+				var path = folder.Combine("test.png");
+				File.WriteAllBytes(path, BlankPng);
+				var outgoing = MetadataCore.CreateMetadataCoreFromFile(path);
 
-					outgoing.Creator = "joe shmo";
-					outgoing.Write();
-					Assert.AreEqual("joe shmo", MetadataCore.CreateMetadataCoreFromFile(path).Creator);
-				}
+				outgoing.Creator = "joe shmo";
+				outgoing.Write();
+				Assert.AreEqual("joe shmo", MetadataCore.CreateMetadataCoreFromFile(path).Creator);
 			}
 		}
 
