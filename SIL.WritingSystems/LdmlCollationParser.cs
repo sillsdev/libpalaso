@@ -14,14 +14,14 @@ namespace SIL.WritingSystems
 		private const string UnicodeEscape8DigitExpr = @"\\[U]([0-9A-F]{8})";
 #if NET7_0_OR_GREATER
 		[GeneratedRegex(UnicodeEscape4DigitExpr, RegexOptions.IgnoreCase)]
-		private static partial Regex UnicodeEscape4Digit();
+		internal static partial Regex UnicodeEscape4Digit();
 		[GeneratedRegex(UnicodeEscape8DigitExpr, RegexOptions.IgnoreCase)]
-		private static partial Regex UnicodeEscape8Digit();
+		internal static partial Regex UnicodeEscape8Digit();
 #else
 		private static readonly Regex UnicodeEscape4DigitRegex = new Regex(UnicodeEscape4DigitExpr, RegexOptions.IgnoreCase | RegexOptions.Compiled);
 		private static readonly Regex UnicodeEscape8DigitRegex = new Regex(UnicodeEscape8DigitExpr, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-		private static Regex UnicodeEscape4Digit() => UnicodeEscape4DigitRegex;
-		private static Regex UnicodeEscape8Digit() => UnicodeEscape8DigitRegex;
+		internal static Regex UnicodeEscape4Digit() => UnicodeEscape4DigitRegex;
+		internal static Regex UnicodeEscape8Digit() => UnicodeEscape8DigitRegex;
 #endif
 		private static readonly Dictionary<string, string> StrengthValues = new Dictionary<string, string>
 		{
