@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Xml;
 using System.Text;
 using SIL.Xml;
@@ -13,8 +12,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 	internal class LdmlCollationParserV1
 	{
 		private const string NewLine = "\r\n";
-		private static readonly Regex UnicodeEscape4Digit = new Regex(@"\\[u]([0-9A-F]{4})", RegexOptions.IgnoreCase);
-		private static readonly Regex UnicodeEscape8Digit = new Regex(@"\\[U]([0-9A-F]{8})", RegexOptions.IgnoreCase);
 
 		/// <summary>
 		/// This method will replace any unicode escapes in rules with their actual unicode characters
@@ -27,9 +24,9 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			if (!string.IsNullOrEmpty(rules))
 			{
 				//replace all unicode escapes in the rules string with the unicode character they represent.
-				rules = UnicodeEscape8Digit.Replace(rules, match => ((char) int.Parse(match.Groups[1].Value,
+				rules = LdmlCollationParser.UnicodeEscape8Digit().Replace(rules, match => ((char) int.Parse(match.Groups[1].Value,
 																					  NumberStyles.HexNumber)).ToString());
-				rules = UnicodeEscape4Digit.Replace(rules, match => ((char) int.Parse(match.Groups[1].Value,
+				rules = LdmlCollationParser.UnicodeEscape4Digit().Replace(rules, match => ((char) int.Parse(match.Groups[1].Value,
 																					  NumberStyles.HexNumber)).ToString());
 			}
 			return rules;
@@ -239,13 +236,13 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 					result += unescapedData[i]; //add the already escaped character
 				} //handle long unicode escapes
 				else if (i + longEscapeLen <= unescapedData.Length &&
-						 UnicodeEscape8Digit.IsMatch(unescapedData.Substring(i, longEscapeLen)))
+						 LdmlCollationParser.UnicodeEscape8Digit().IsMatch(unescapedData.Substring(i, longEscapeLen)))
 				{
 					result += unescapedData.Substring(i, longEscapeLen);
 					i += longEscapeLen - 1;
 				} //handle short unicode escapes
 				else if (i + shortEscLen <= unescapedData.Length &&
-						 UnicodeEscape4Digit.IsMatch(unescapedData.Substring(i, shortEscLen)))
+						 LdmlCollationParser.UnicodeEscape4Digit().IsMatch(unescapedData.Substring(i, shortEscLen)))
 				{
 					result += unescapedData.Substring(i, shortEscLen);
 					i += shortEscLen - 1;

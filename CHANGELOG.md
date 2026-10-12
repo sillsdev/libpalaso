@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Added a `LanguageForm.CompareTo(LanguageForm, IComparer<string>)` overload, so a caller can choose how the forms are compared (for example with a writing system's collation). The existing `CompareTo(LanguageForm)` still uses the invariant culture.
 - [SIL.Core] Added `UnixFilePermissions`, which reads and applies the Unix permission bits of a file and does nothing on platforms that have no such bits, so callers need no platform test of their own.
 - [SIL.Windows.Forms.Archiving, SIL.Windows.Forms.DblBundle] Added `net8.0-windows` target.
+- [SIL.WritingSystems] Added `net8.0` target. On this target, the library's fixed regular expressions are built at compile time by the `[GeneratedRegex]` source generator. The .NET Framework and .NET Standard targets use cached `Regex` instances created with `RegexOptions.Compiled`.
 - [SIL.Core.Desktop] Added a constant (kBrowserCompatibleUserAgent) to RobustNetworkOperation: a browser-like User Agent string that can be used when making HTTP requests to strict servers.
 - [SIL.Core] Added an Exception property to NonFatalErrorReportExpected to return the previous reported non-fatal exception.
 - [SIL.Media] Added a static PlaybackErrorMessage property to AudioFactory and a public const, kDefaultPlaybackErrorMessage, that will be used as the default message if the client does not set PlaybackErrorMessage.

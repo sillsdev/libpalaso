@@ -33,8 +33,17 @@ namespace SIL.WritingSystems
 	/// <remarks>
 	/// LDML reference: https://www.unicode.org/reports/tr35/tr35-37/
 	/// </remarks>
-	public class LdmlDataMapper
+	public partial class LdmlDataMapper
 	{
+		private const string CustomNumberingSystemExpr = "other\\((.*)\\)";
+#if NET7_0_OR_GREATER
+		[GeneratedRegex(CustomNumberingSystemExpr)]
+		private static partial Regex CustomNumberingSystemPattern();
+#else
+		private static readonly Regex CustomNumberingSystemRegex = new Regex(CustomNumberingSystemExpr, RegexOptions.Compiled);
+		private static Regex CustomNumberingSystemPattern() => CustomNumberingSystemRegex;
+#endif
+
 		/// <summary>
 		/// This is the current version of the LDML data and is mostly used for migration purposes.
 		/// This should not be confused with the version of the locale data contained in this writing system.
@@ -780,8 +789,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		private static bool ParseCustomNumberingSystem(string id, out string digits)
 		{
-			var regex = new Regex("other\\((.*)\\)");
-			var match = regex.Match(id.Trim());
+			var match = CustomNumberingSystemPattern().Match(id.Trim());
 			if (match.Success)
 			{
 				digits = match.Groups[1].Value;
