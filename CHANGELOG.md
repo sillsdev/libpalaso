@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [18.0.0] - 2026-10-12
+
 ### Added
 
 - [SIL.WritingSystems] Added `IetfLanguageTag.UseICUForLanguageNames`, so an application can stop `GetLocalizedLanguageName` consulting ICU. It still defaults to whether a native ICU library could be loaded; setting it false makes the name the same whether or not one is installed.
@@ -734,7 +736,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
   projects
 
-[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v17.0.0...master
+[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v18.0.0...master
+[18.0.0]: https://github.com/sillsdev/libpalaso/compare/v17.0.0...v18.0.0
 [17.0.0]: https://github.com/sillsdev/libpalaso/compare/v16.2.0...v17.0.0
 [16.2.0]: https://github.com/sillsdev/libpalaso/compare/v16.1.0...v16.2.0
 [16.1.0]: https://github.com/sillsdev/libpalaso/compare/v16.0.0...v16.1.0
