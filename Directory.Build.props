@@ -33,7 +33,7 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/master/CHANGELO
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
   </PropertyGroup>
   <ItemGroup>
-    <!-- Without this line some projects fail to build on TC with "error : SourceRoot items
+    <!-- Without this line some projects fail to build with "error : SourceRoot items
     must include at least one top-level (not nested) item when DeterministicSourcePaths is
     true". See https://github.com/dotnet/roslyn/issues/37379#issuecomment-513371985 -->
     <SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
