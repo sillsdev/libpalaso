@@ -61,6 +61,17 @@ namespace SIL.WritingSystems
 		[JsonConverter(typeof(SingleStringToListOfStringConverter))]
 		public List<string> iana { get; set; }
 		public string regionName { get; set; }
+
+		/// <summary>Reads the langtags JSON. Newtonsoft.Json builds AllTagEntry (and the iana converter) by reflection,
+		/// so under trimming and NativeAOT the dependencies below keep what it needs.</summary>
+#if NET8_0_OR_GREATER
+		[System.Diagnostics.CodeAnalysis.DynamicDependency(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicParameterlessConstructor | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties, typeof(AllTagEntry))]
+		[System.Diagnostics.CodeAnalysis.DynamicDependency(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicParameterlessConstructor, typeof(SingleStringToListOfStringConverter))]
+#endif
+		internal static List<AllTagEntry> ParseList(string json)
+		{
+			return JsonConvert.DeserializeObject<List<AllTagEntry>>(json);
+		}
 	}
 
 	/// <summary>
@@ -587,7 +598,7 @@ namespace SIL.WritingSystems
 			{
 				if (cachedAllTagsPath != null && File.Exists(cachedAllTagsPath))
 				{
-					rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(File.ReadAllText(cachedAllTagsPath));
+					rootObject = AllTagEntry.ParseList(File.ReadAllText(cachedAllTagsPath));
 					return DeriveTagsFromJsonEntries(rootObject);
 				}
 			}
@@ -611,7 +622,7 @@ namespace SIL.WritingSystems
 				Debug.Fail($"Invalid data in cached json file {cachedAllTagsPath}{Environment.NewLine}{ex.Message}");
 			}
 			// Either we couldn't get the data from the network or it came back invalid.
-			rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(LanguageRegistryResources.langTags);
+			rootObject = AllTagEntry.ParseList(LanguageRegistryResources.langTags);
 			return DeriveTagsFromJsonEntries(rootObject);
 		}
 

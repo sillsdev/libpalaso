@@ -64,7 +64,7 @@ namespace SIL.WritingSystems
 			catch (IOException)
 			{
 			}
-			List<AllTagEntry> rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(langTagsContent);
+			List<AllTagEntry> rootObject = AllTagEntry.ParseList(langTagsContent);
 
 			foreach (AllTagEntry entry in rootObject)
 			{
