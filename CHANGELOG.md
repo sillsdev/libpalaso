@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- [SIL.WritingSystems] `Sldr` and `LanguageLookup` can read the langtags JSON when an application is published with NativeAOT or trimmed: the members Newtonsoft.Json reflects over (`AllTagEntry` and its converter) are now kept.
+
 ## [18.0.0] - 2026-10-12
 
 ### Added
