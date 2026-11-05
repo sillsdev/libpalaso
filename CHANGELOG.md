@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- [SIL.Windows.Forms] `PortableClipboard.GetImageFromClipboard` no longer leaves an image file locked after getting it from a copied path to that file (on Windows). It now also picks up the file's metadata, as it already did for a copied file.
+
 ## [18.0.0] - 2026-10-12
 
 ### Added
