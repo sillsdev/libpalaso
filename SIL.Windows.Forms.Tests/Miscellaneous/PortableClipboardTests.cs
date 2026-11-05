@@ -120,11 +120,15 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 				}
 				finally
 				{
-					if (File.Exists(tempPath))
+					try
 					{
-						GC.Collect(); // release any leaked stream so the file can be cleaned up
-						GC.WaitForPendingFinalizers();
-						File.Delete(tempPath);
+						if (File.Exists(tempPath))
+							File.Delete(tempPath);
+					}
+					catch (IOException)
+					{
+						// The test has already failed because the file is still locked; leave the
+						// stray temp file rather than hide that failure behind a cleanup error.
 					}
 				}
 			}
