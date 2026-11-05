@@ -1,3 +1,4 @@
+using System.IO;
 using System.Threading;
 using SIL.IO;
 using SIL.Windows.Forms.ImageToolbox;
@@ -87,6 +88,47 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 						Assert.AreEqual(preCopyLicense, resultingImage.Metadata.License.Token);
 						Assert.AreEqual(preCopyCollectionUri, resultingImage.Metadata.CollectionUri);
 						Assert.AreEqual(image.Image.Flags, resultingImage.Image.Flags);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Pasting from the text of a copied path to an image file gets the image, and does not
+		/// leave the file locked: the user may well want to move or delete it afterwards.
+		/// </summary>
+		[Test]
+		[Platform(Exclude = "Linux", Reason = "This requires a GTK message loop to run or something like this")]
+		public void GetImageFromClipboard_TextPathToImage_GetsImageAndDoesNotLockFile()
+		{
+			lock (_lock)
+			{
+				var tempPath = Path.Combine(Path.GetTempPath(), "PortableClipboardTests_" + Guid.NewGuid() + ".png");
+				RobustFile.Copy(GetPathToImage("LineSpacing.png"), tempPath);
+				try
+				{
+					PortableClipboard.SetText(tempPath);
+					Assert.That(PortableClipboard.GetText(), Is.EqualTo(tempPath), "setup: the path should be on the clipboard");
+					using (var resultingImage = PortableClipboard.GetImageFromClipboard())
+					{
+						Assert.That(resultingImage, Is.Not.Null);
+						Assert.That(resultingImage.Image.Width, Is.GreaterThan(0));
+					}
+
+					Assert.DoesNotThrow(() => File.Delete(tempPath), "the pasted file should not still be locked");
+					Assert.That(File.Exists(tempPath), Is.False);
+				}
+				finally
+				{
+					try
+					{
+						if (File.Exists(tempPath))
+							File.Delete(tempPath);
+					}
+					catch (IOException)
+					{
+						// The test has already failed because the file is still locked; leave the
+						// stray temp file rather than hide that failure behind a cleanup error.
 					}
 				}
 			}
