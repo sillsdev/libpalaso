@@ -197,8 +197,10 @@ namespace SIL.Windows.Forms.Clipboarding
 				return files?.Where(RobustFile.Exists).Select(path => PalasoImage.FromFileRobustly(path)).FirstOrDefault();
 			}
 
+			// Load the file the same way as a copied file (above), which neither locks it nor
+			// leaves a stream open after the image is disposed, and also picks up its metadata.
 			if (Clipboard.ContainsText() && RobustFile.Exists(Clipboard.GetText()))
-				return PalasoImage.FromImage(Image.FromStream(new FileStream(Clipboard.GetText(), FileMode.Open)));
+				return PalasoImage.FromFileRobustly(Clipboard.GetText());
 
 			if (ex != null)
 				throw ex;
