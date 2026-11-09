@@ -243,15 +243,17 @@ namespace SIL.Media
 				Debug.Assert(primaryAudio != null);
 				Duration = primaryAudio.Duration;
 				Encoding = primaryAudio.CodecName;
-				ChannelCount = primaryAudio.Channels;
+				ChannelCount = primaryAudio.Channels ?? default;
 				BitDepth = primaryAudio.BitDepth ?? default;
 				SamplesPerSecond = mediaAnalysis.PrimaryAudioStream?.SampleRateHz ?? default;
 			}
 
 			/// <summary>
-			/// Note that since a media file might contain multiple audio and video tracks
-			/// which might start and stop at different times, the total duration reported
-			/// by <see cref="AnalysisData"/> could be greater than this duration.
+			/// Note that since a media file might contain multiple audio, video, and subtitle
+			/// tracks which might start and stop at different times, the total duration reported
+			/// by <see cref="AnalysisData"/> could be greater than this duration. (As of
+			/// FFMpegCore 6.0, <see cref="AnalysisData"/>'s duration is the longest of all such
+			/// tracks and the container's own reported duration.)
 			/// </summary>
 			[PublicAPI]
 			public TimeSpan Duration { get; }
@@ -273,22 +275,24 @@ namespace SIL.Media
 				Debug.Assert(primaryVideo != null);
 				Duration = primaryVideo.Duration;
 				Encoding = primaryVideo.CodecName;
-				FrameRate = primaryVideo.AvgFrameRate;
+				FrameRate = primaryVideo.AverageFrameRate;
 				Resolution = $"{primaryVideo.Width}x{primaryVideo.Height}";
 			}
 
 			/// <summary>
-			/// Note that since a media file might contain multiple audio and video tracks
-			/// which might start and stop at different times, the total duration reported
-			/// by <see cref="AnalysisData"/> could be greater than this duration.
+			/// Note that since a media file might contain multiple audio, video, and subtitle
+			/// tracks which might start and stop at different times, the total duration reported
+			/// by <see cref="AnalysisData"/> could be greater than this duration. (As of
+			/// FFMpegCore 6.0, <see cref="AnalysisData"/>'s duration is the longest of all such
+			/// tracks and the container's own reported duration.)
 			/// </summary>
 			[PublicAPI]
 			public TimeSpan Duration { get; }
 			// For backward compatibility, we want to support FramesPerSecond as an integer value,
 			// but in case clients want the real rate, we supply that as well. Note that while
-			// this is the average frame rate, the detailed analysis data can be used to access the
-			// time base, real (tbr), aka, the target frame rate (which can be slightly different
-			// from the actual average).
+			// this is the average frame rate, the detailed analysis data's RealFrameRate property
+			// can be used to access the time base, real (tbr), aka, the target frame rate (which
+			// can be slightly different from the actual average).
 			// See https://www.hdhead.com/?p=108
 			[PublicAPI]
 			public double FrameRate { get; }
