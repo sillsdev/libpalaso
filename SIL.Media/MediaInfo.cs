@@ -242,10 +242,15 @@ namespace SIL.Media
 				var primaryAudio = mediaAnalysis.PrimaryAudioStream;
 				Debug.Assert(primaryAudio != null);
 				Duration = primaryAudio.Duration;
-				Encoding = primaryAudio.CodecName;
+				// CodecName is null when ffprobe doesn't report a codec (e.g., for some
+				// unrecognized or data streams).
+				Encoding = primaryAudio.CodecName ?? Empty;
+				// Channels is null when ffprobe can't determine a channel count. A genuine
+				// zero-channel reading would itself indicate a broken stream, so there's no
+				// useful distinction to preserve between "unknown" and "zero" here.
 				ChannelCount = primaryAudio.Channels ?? default;
 				BitDepth = primaryAudio.BitDepth ?? default;
-				SamplesPerSecond = mediaAnalysis.PrimaryAudioStream?.SampleRateHz ?? default;
+				SamplesPerSecond = primaryAudio.SampleRateHz ?? default;
 			}
 
 			/// <summary>
@@ -274,9 +279,17 @@ namespace SIL.Media
 				var primaryVideo = mediaAnalysis.PrimaryVideoStream;
 				Debug.Assert(primaryVideo != null);
 				Duration = primaryVideo.Duration;
-				Encoding = primaryVideo.CodecName;
+				// CodecName is null when ffprobe doesn't report a codec (e.g., for some
+				// unrecognized or data streams).
+				Encoding = primaryVideo.CodecName ?? Empty;
 				FrameRate = primaryVideo.AverageFrameRate;
-				Resolution = $"{primaryVideo.Width}x{primaryVideo.Height}";
+				// Width/Height are null when ffprobe can't determine a stream's dimensions
+				// (e.g., a corrupted file or an attached-picture stream misidentified as
+				// video). Report an empty Resolution rather than a malformed "x123"/"123x"
+				// string in that case.
+				Resolution = primaryVideo.Width.HasValue && primaryVideo.Height.HasValue
+					? $"{primaryVideo.Width}x{primaryVideo.Height}"
+					: Empty;
 			}
 
 			/// <summary>

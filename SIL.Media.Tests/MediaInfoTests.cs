@@ -1,5 +1,8 @@
 using System;
 using System.IO;
+using System.Reflection;
+using FFMpegCore;
+using Moq;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.Media.Tests.Properties;
@@ -63,6 +66,9 @@ namespace SIL.Media.Tests
 			{
 				var info = MediaInfo.GetInfo(file.Path);
 				Assert.That(info.Video.Duration.TotalMilliseconds, Is.EqualTo(3069).Within(0.1));
+				// This equality holds for this single-video/single-audio fixture, but is not
+				// guaranteed in general; see the remarks on VideoInfo/AudioInfo.Duration about
+				// how AnalysisData.Duration is computed across all tracks as of FFMpegCore 6.0.
 				Assert.That(info.Video.Duration, Is.EqualTo(info.AnalysisData.Duration).Within(1).Milliseconds);
 				Assert.That(info.Audio.Duration.TotalMilliseconds, Is.EqualTo(3029).Within(0.1));
 			}
@@ -160,5 +166,103 @@ namespace SIL.Media.Tests
 			}
 		}
 
+	}
+
+	/// <summary>
+	/// Covers the cases where ffprobe doesn't report certain stream properties (surfaced as
+	/// nullable properties on FFMpegCore's VideoStream/AudioStream as of FFMpegCore 6.0), which
+	/// can't be exercised using a real media fixture. These construct AudioInfo/VideoInfo
+	/// directly against a mocked IMediaAnalysis, bypassing FFprobe entirely, so (unlike
+	/// MediaInfoTests above) they don't require FFprobe to be installed.
+	/// </summary>
+	[TestFixture]
+	public class MediaInfoNullableStreamDataTests
+	{
+		private static T CreateStream<T>() where T : MediaStream =>
+			(T)Activator.CreateInstance(typeof(T), nonPublic: true);
+
+		private static void SetProperty(object target, string propertyName, object value)
+		{
+			target.GetType().GetProperty(propertyName)?.SetValue(target, value);
+		}
+
+		[Test]
+		public void VideoInfo_WidthAndHeightNull_ResolutionIsEmpty()
+		{
+			var videoStream = CreateStream<VideoStream>();
+			SetProperty(videoStream, nameof(VideoStream.Width), null);
+			SetProperty(videoStream, nameof(VideoStream.Height), null);
+			SetProperty(videoStream, nameof(VideoStream.CodecName), "mpeg4");
+
+			var analysis = new Mock<IMediaAnalysis>();
+			analysis.SetupGet(a => a.PrimaryVideoStream).Returns(videoStream);
+
+			var videoInfo = new MediaInfo.VideoInfo(analysis.Object);
+
+			Assert.That(videoInfo.Resolution, Is.Empty);
+		}
+
+		[Test]
+		public void VideoInfo_WidthAndHeightSet_ResolutionIsFormatted()
+		{
+			var videoStream = CreateStream<VideoStream>();
+			SetProperty(videoStream, nameof(VideoStream.Width), 160);
+			SetProperty(videoStream, nameof(VideoStream.Height), 120);
+			SetProperty(videoStream, nameof(VideoStream.CodecName), "mpeg4");
+
+			var analysis = new Mock<IMediaAnalysis>();
+			analysis.SetupGet(a => a.PrimaryVideoStream).Returns(videoStream);
+
+			var videoInfo = new MediaInfo.VideoInfo(analysis.Object);
+
+			Assert.That(videoInfo.Resolution, Is.EqualTo("160x120"));
+		}
+
+		[Test]
+		public void VideoInfo_CodecNameNull_EncodingIsEmpty()
+		{
+			var videoStream = CreateStream<VideoStream>();
+			SetProperty(videoStream, nameof(VideoStream.Width), 160);
+			SetProperty(videoStream, nameof(VideoStream.Height), 120);
+			SetProperty(videoStream, nameof(VideoStream.CodecName), null);
+
+			var analysis = new Mock<IMediaAnalysis>();
+			analysis.SetupGet(a => a.PrimaryVideoStream).Returns(videoStream);
+
+			var videoInfo = new MediaInfo.VideoInfo(analysis.Object);
+
+			Assert.That(videoInfo.Encoding, Is.Empty);
+		}
+
+		[Test]
+		public void AudioInfo_CodecNameNull_EncodingIsEmpty()
+		{
+			var audioStream = CreateStream<AudioStream>();
+			SetProperty(audioStream, nameof(AudioStream.CodecName), null);
+			SetProperty(audioStream, nameof(AudioStream.Channels), 2);
+			SetProperty(audioStream, nameof(AudioStream.SampleRateHz), 44100);
+
+			var analysis = new Mock<IMediaAnalysis>();
+			analysis.SetupGet(a => a.PrimaryAudioStream).Returns(audioStream);
+
+			var audioInfo = new MediaInfo.AudioInfo(analysis.Object);
+
+			Assert.That(audioInfo.Encoding, Is.Empty);
+		}
+
+		[Test]
+		public void AudioInfo_ChannelsNull_ChannelCountIsZero()
+		{
+			var audioStream = CreateStream<AudioStream>();
+			SetProperty(audioStream, nameof(AudioStream.CodecName), "pcm_s16le");
+			SetProperty(audioStream, nameof(AudioStream.Channels), null);
+
+			var analysis = new Mock<IMediaAnalysis>();
+			analysis.SetupGet(a => a.PrimaryAudioStream).Returns(audioStream);
+
+			var audioInfo = new MediaInfo.AudioInfo(analysis.Object);
+
+			Assert.That(audioInfo.ChannelCount, Is.EqualTo(0));
+		}
 	}
 }
