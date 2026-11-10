@@ -242,16 +242,23 @@ namespace SIL.Media
 				var primaryAudio = mediaAnalysis.PrimaryAudioStream;
 				Debug.Assert(primaryAudio != null);
 				Duration = primaryAudio.Duration;
-				Encoding = primaryAudio.CodecName;
-				ChannelCount = primaryAudio.Channels;
+				// CodecName is null when ffprobe doesn't report a codec (e.g., for some
+				// unrecognized or data streams).
+				Encoding = primaryAudio.CodecName ?? Empty;
+				// Channels is null when ffprobe can't determine a channel count. A genuine
+				// zero-channel reading would itself indicate a broken stream, so there's no
+				// useful distinction to preserve between "unknown" and "zero" here.
+				ChannelCount = primaryAudio.Channels ?? default;
 				BitDepth = primaryAudio.BitDepth ?? default;
-				SamplesPerSecond = mediaAnalysis.PrimaryAudioStream?.SampleRateHz ?? default;
+				SamplesPerSecond = primaryAudio.SampleRateHz ?? default;
 			}
 
 			/// <summary>
-			/// Note that since a media file might contain multiple audio and video tracks
-			/// which might start and stop at different times, the total duration reported
-			/// by <see cref="AnalysisData"/> could be greater than this duration.
+			/// Note that since a media file might contain multiple audio, video, and subtitle
+			/// tracks which might start and stop at different times, the total duration reported
+			/// by <see cref="AnalysisData"/> could be greater than this duration. (As of
+			/// FFMpegCore 6.0, <see cref="AnalysisData"/>'s duration is the longest of all such
+			/// tracks and the container's own reported duration.)
 			/// </summary>
 			[PublicAPI]
 			public TimeSpan Duration { get; }
@@ -272,23 +279,33 @@ namespace SIL.Media
 				var primaryVideo = mediaAnalysis.PrimaryVideoStream;
 				Debug.Assert(primaryVideo != null);
 				Duration = primaryVideo.Duration;
-				Encoding = primaryVideo.CodecName;
-				FrameRate = primaryVideo.AvgFrameRate;
-				Resolution = $"{primaryVideo.Width}x{primaryVideo.Height}";
+				// CodecName is null when ffprobe doesn't report a codec (e.g., for some
+				// unrecognized or data streams).
+				Encoding = primaryVideo.CodecName ?? Empty;
+				FrameRate = primaryVideo.AverageFrameRate;
+				// Width/Height are null when ffprobe can't determine a stream's dimensions
+				// (e.g., a corrupted file or an attached-picture stream misidentified as
+				// video). Report an empty Resolution rather than a malformed "x123"/"123x"
+				// string in that case.
+				Resolution = primaryVideo.Width.HasValue && primaryVideo.Height.HasValue
+					? $"{primaryVideo.Width}x{primaryVideo.Height}"
+					: Empty;
 			}
 
 			/// <summary>
-			/// Note that since a media file might contain multiple audio and video tracks
-			/// which might start and stop at different times, the total duration reported
-			/// by <see cref="AnalysisData"/> could be greater than this duration.
+			/// Note that since a media file might contain multiple audio, video, and subtitle
+			/// tracks which might start and stop at different times, the total duration reported
+			/// by <see cref="AnalysisData"/> could be greater than this duration. (As of
+			/// FFMpegCore 6.0, <see cref="AnalysisData"/>'s duration is the longest of all such
+			/// tracks and the container's own reported duration.)
 			/// </summary>
 			[PublicAPI]
 			public TimeSpan Duration { get; }
 			// For backward compatibility, we want to support FramesPerSecond as an integer value,
 			// but in case clients want the real rate, we supply that as well. Note that while
-			// this is the average frame rate, the detailed analysis data can be used to access the
-			// time base, real (tbr), aka, the target frame rate (which can be slightly different
-			// from the actual average).
+			// this is the average frame rate, the detailed analysis data's RealFrameRate property
+			// can be used to access the time base, real (tbr), aka, the target frame rate (which
+			// can be slightly different from the actual average).
 			// See https://www.hdhead.com/?p=108
 			[PublicAPI]
 			public double FrameRate { get; }

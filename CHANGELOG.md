@@ -16,6 +16,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- [SIL.Media] `MediaInfo.Audio`/`.Video` now treat the audio/video stream flagged `default` as the "primary" stream (falling back to the lowest index when none is flagged), instead of always using the lowest-index stream regardless of its flags. (Upstream fix for [rosenbjerg/FFMpegCore#360](https://github.com/rosenbjerg/FFMpegCore/issues/360), picked up via the FFMpegCore bump below.)
+- [SIL.Media] `MediaInfo.AnalysisData.Duration` now reflects the longest of every audio, video, and subtitle track plus the container's own duration, rather than just the primary audio/video streams. (Upstream fix for [rosenbjerg/FFMpegCore#361](https://github.com/rosenbjerg/FFMpegCore/issues/361), picked up via the FFMpegCore bump below.)
+- [SIL.Media] `MediaInfo.Video.Resolution` is now an empty string (rather than a malformed value like `"x144"`) when ffprobe can't determine a stream's width or height.
+- [SIL.Media] `MediaInfo.Audio`/`.Video.Encoding` is now an empty string (rather than `null`) when ffprobe doesn't report a codec name for the stream.
+
+### Changed
+
+- [SIL.Media] BREAKING CHANGE: Bumped FFMpegCore from 5.5.0 to 6.0.0. `MediaInfo.AnalysisData` exposes FFMpegCore's `IMediaAnalysis` directly, and in 6.0 its stream/chapter/tag collections became read-only (`IReadOnlyList<T>`/`IReadOnlyDictionary<string, string>` instead of mutable `List<T>`/`Dictionary<string, string>`), `ErrorData` was renamed to `StandardError`, and several numeric/string properties on the underlying `MediaStream`/`MediaFormat` types (e.g. `Width`, `Height`, `Channels`, `BitRate`, `CodecName`) became nullable or changed type. Code that uses only `MediaInfo.Audio`/`.Video` is unaffected; code that consumes `MediaInfo.AnalysisData` directly may need updating.
+
 ## [18.0.0] - 2026-10-12
 
 ### Added
