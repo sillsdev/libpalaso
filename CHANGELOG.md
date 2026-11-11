@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- [SIL.Windows.Forms] `SILAboutBox`'s left-column controls (version, build date, "Check for Updates" button, "Release Notes" link) now wrap at a width derived from the logo, so long localized text wraps instead of overflowing the column, and the button auto-sizes to its text instead of using a fixed size. Also corrected "Check For Updates" to standard title case ("Check for Updates").
 - [SIL.Media] BREAKING CHANGE: Bumped FFMpegCore from 5.5.0 to 6.0.0. `MediaInfo.AnalysisData` exposes FFMpegCore's `IMediaAnalysis` directly, and in 6.0 its stream/chapter/tag collections became read-only (`IReadOnlyList<T>`/`IReadOnlyDictionary<string, string>` instead of mutable `List<T>`/`Dictionary<string, string>`), `ErrorData` was renamed to `StandardError`, and several numeric/string properties on the underlying `MediaStream`/`MediaFormat` types (e.g. `Width`, `Height`, `Channels`, `BitRate`, `CodecName`) became nullable or changed type. Code that uses only `MediaInfo.Audio`/`.Video` is unaffected; code that consumes `MediaInfo.AnalysisData` directly may need updating.
 
 ## [18.0.0] - 2026-10-12

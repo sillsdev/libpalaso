@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -104,6 +105,15 @@ namespace SIL.Windows.Forms.Miscellaneous
 					? uri.LocalPath
 					: pathToAboutBoxHtml;
 			InitializeComponent();
+			// The logo is what should dictate the width of the table's left-hand column. The
+			// height of the buttons and labels in that column is unconstrained since there is
+			// enough extra vertical space to allow for a reasonable amount of text wrapping.
+			var sharedMargin = _checkForUpdates.Margin.Horizontal;
+			var leftColumnMinWidth = logo.Width - sharedMargin;
+			var leftColumnMaxWidth = logo.Width + sharedMargin;
+			foreach (var control in new Control[] { _buildDate, _versionNumber, _checkForUpdates, _releaseNotesLabel })
+				control.MaximumSize = new Size(leftColumnMaxWidth, 0);
+			_checkForUpdates.MinimumSize = new Size(leftColumnMinWidth, _checkForUpdates.Height);
 			_versionNumber.Text = useFullVersionNumber ? Application.ProductVersion :
 				GetShortVersionInfo();
 			_buildDate.Text = GetBuiltOnDate();
@@ -263,7 +273,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			Debug.Assert(aboutBoxHtml.Contains(" charset"), "At a minimum, the About Box html should contain a meta charset='UTF-8' tag.");
 
 			string newHtmlContents = null;
-			
+
 			if (aboutBoxHtml.Contains(DependencyMarker))
 			{
 				var insertableAcknowledgements = AcknowledgementsProvider.AssembleAcknowledgements();
