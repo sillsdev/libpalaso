@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using SIL.Xml;
@@ -337,6 +338,43 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(VerseRef.ValidStatusType.OutOfRange, new VerseRef("GEN 1:100,3-6", ScrVers.English).ValidStatus);
 			Assert.AreEqual(VerseRef.ValidStatusType.OutOfRange, new VerseRef("GEN 1:1,300-6", ScrVers.English).ValidStatus);
 			Assert.AreEqual(VerseRef.ValidStatusType.OutOfRange, new VerseRef("GEN 1:1,3-600", ScrVers.English).ValidStatus);
+		}
+
+		/// <summary>
+		/// Extra (non-canonical) books allow any chapter/verse unless the versification lists the book
+		/// (e.g. in a project's custom.vrs), in which case those limits apply.
+		/// </summary>
+		[Test]
+		public void ValidStatus_NonCanonicalBook()
+		{
+			// No limits in a built-in versification
+			Assert.AreEqual(VerseRef.ValidStatusType.Valid, new VerseRef("XXC 1:21", ScrVers.English).ValidStatus);
+			Assert.AreEqual(VerseRef.ValidStatusType.Valid, new VerseRef("XXC 500:500", ScrVers.English).ValidStatus);
+
+			try
+			{
+				ScrVers customVers;
+				using (TextReader reader = new StringReader("XXC 1:20 2:10"))
+					customVers = Versification.Table.Implementation.Load(reader, "custom.vrs", ScrVers.English, "English-ExtraBookTest");
+
+				Assert.AreEqual(VerseRef.ValidStatusType.Valid, new VerseRef("XXC 1:20", customVers).ValidStatus);
+				Assert.AreEqual(VerseRef.ValidStatusType.Valid, new VerseRef("XXC 2:10", customVers).ValidStatus);
+				Assert.AreEqual(VerseRef.ValidStatusType.OutOfRange, new VerseRef("XXC 1:21", customVers).ValidStatus);
+				Assert.AreEqual(VerseRef.ValidStatusType.OutOfRange, new VerseRef("XXC 2:11", customVers).ValidStatus);
+				Assert.AreEqual(VerseRef.ValidStatusType.OutOfRange, new VerseRef("XXC 3:1", customVers).ValidStatus);
+
+				// Extra books that aren't listed are still unlimited
+				Assert.AreEqual(VerseRef.ValidStatusType.Valid, new VerseRef("XXA 500:500", customVers).ValidStatus);
+
+				// Navigating past the last verse moves to the next chapter
+				VerseRef vref = new VerseRef("XXC 1:20", customVers);
+				Assert.IsTrue(vref.NextVerse());
+				Assert.AreEqual(new VerseRef("XXC 2:1", customVers), vref);
+			}
+			finally
+			{
+				Versification.Table.Implementation.RemoveAllUnknownVersifications();
+			}
 		}
 
 		/// <summary>

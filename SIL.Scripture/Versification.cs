@@ -170,8 +170,8 @@ namespace SIL.Scripture
 		/// </summary>
 		internal int LastChapter(int bookNum)
 		{
-			// Non-scripture books have 998 chapters
-			if (!Canon.IsCanonical(bookNum))
+			// Non-scripture books have 998 chapters unless the versification defines them (e.g. in a custom.vrs)
+			if (!Canon.IsCanonical(bookNum) && !DefinesChaptersAndVerses(bookNum))
 				return NonCanonicalLastChapterOrVerse; // Use 998 so the VerseRef.BBBCCCVVV value is computed properly
 
 			// Anything else not in .vrs file has 1 chapter
@@ -187,8 +187,8 @@ namespace SIL.Scripture
 		/// </summary>
 		internal int LastVerse(int bookNum, int chapterNum)
 		{
-			// Non-scripture books have 998 verses in each chapter
-			if (!Canon.IsCanonical(bookNum))
+			// Non-scripture books have 998 verses in each chapter unless the versification defines them (e.g. in a custom.vrs)
+			if (!Canon.IsCanonical(bookNum) && !DefinesChaptersAndVerses(bookNum))
 				return NonCanonicalLastChapterOrVerse; // Use 998 so the VerseRef.BBBCCCVVV value is computed properly
 
 			// Anything else not in .vrs file has 1 chapter
@@ -200,6 +200,21 @@ namespace SIL.Scripture
 				return 1;
 
 			return chapters[chapterNum - 1];
+		}
+
+		/// <summary>
+		/// Gets whether this versification has a chapter/verse line for the specified book (e.g. "XXA 1:20 2:10").
+		/// Books that come before the last book in the versification file but aren't listed in it are filled in
+		/// with a single chapter that has one verse, so that is treated as not defined (the same rule that
+		/// <see cref="ScriptureBooks"/> uses).
+		/// </summary>
+		internal bool DefinesChaptersAndVerses(int bookNum)
+		{
+			if (bookNum < 1 || bookNum > bookList.Count)
+				return false;
+
+			int[] chapters = bookList[bookNum - 1];
+			return chapters.Length > 1 || (chapters.Length == 1 && chapters[0] != 1);
 		}
 
 		/// <summary>

@@ -579,8 +579,9 @@ namespace SIL.Scripture
 				if (bookNum <= 0 || bookNum > Canon.LastBook)
 					return ValidStatusType.OutOfRange;
 
-				// If non-biblical book, any chapter/verse is valid
-				if (!Canon.IsCanonical(bookNum))
+				// If non-biblical book, any chapter/verse is valid unless the versification defines its
+				// chapters and verses (e.g. in a custom.vrs)
+				if (!Canon.IsCanonical(bookNum) && !versification.VersInfo.DefinesChaptersAndVerses(bookNum))
 					return ValidStatusType.Valid;
 
 				if (bookNum > versification.GetLastBook() || chapterNum <= 0 ||

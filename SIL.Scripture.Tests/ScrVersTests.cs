@@ -599,6 +599,38 @@ namespace SIL.Scripture.Tests
 		}
 
 		/// <summary>
+		/// Customize a versification scheme with chapters/verses for an extra (non-canonical) book.
+		/// The limits from the file should be used instead of the 998 chapters/verses extra books normally get.
+		/// </summary>
+		[Test]
+		public void ProcessVersLine_Custom_NonCanonicalBook()
+		{
+			versification.ProcessVersLine("XXC 1:20 2:10");
+
+			int bookId = Canon.BookIdToNumber("XXC");
+			Assert.AreEqual(2, versification.GetLastChapter(bookId));
+			Assert.AreEqual(20, versification.GetLastVerse(bookId, 1));
+			Assert.AreEqual(10, versification.GetLastVerse(bookId, 2));
+			Assert.AreEqual(1, versification.GetLastVerse(bookId, 3), "Chapters past the end have one verse, same as canonical books");
+		}
+
+		/// <summary>
+		/// Extra (non-canonical) books that aren't listed in the versification should still have 998 chapters/verses,
+		/// including ones before a listed extra book (those get filled in with a single chapter of one verse).
+		/// </summary>
+		[TestCase("XXA")]
+		[TestCase("XXD")]
+		[TestCase("FRT")]
+		public void ProcessVersLine_Custom_NonCanonicalBookNotListed(string bookId)
+		{
+			versification.ProcessVersLine("XXC 1:20 2:10");
+
+			int bookNum = Canon.BookIdToNumber(bookId);
+			Assert.AreEqual(Versification.NonCanonicalLastChapterOrVerse, versification.GetLastChapter(bookNum));
+			Assert.AreEqual(Versification.NonCanonicalLastChapterOrVerse, versification.GetLastVerse(bookNum, 1));
+		}
+
+		/// <summary>
 		/// Customize a versification scheme when the chapters/verses for a book is updated.
 		/// </summary>
 		[Test]
