@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using SIL.Xml;
@@ -337,6 +338,52 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(VerseRef.ValidStatusType.OutOfRange, new VerseRef("GEN 1:100,3-6", ScrVers.English).ValidStatus);
 			Assert.AreEqual(VerseRef.ValidStatusType.OutOfRange, new VerseRef("GEN 1:1,300-6", ScrVers.English).ValidStatus);
 			Assert.AreEqual(VerseRef.ValidStatusType.OutOfRange, new VerseRef("GEN 1:1,3-600", ScrVers.English).ValidStatus);
+		}
+
+		/// <summary>
+		/// Extra (non-canonical) books that a versification doesn't list allow any chapter/verse, both in a built-in
+		/// versification and in a custom one that lists a different extra book.
+		/// </summary>
+		[Test]
+		public void ValidStatus_NonCanonicalBookNotListed_AnyChapterAndVerseIsValid()
+		{
+			Assert.AreEqual(VerseRef.ValidStatusType.Valid, new VerseRef("XXC 1:21", ScrVers.English).ValidStatus);
+			Assert.AreEqual(VerseRef.ValidStatusType.Valid, new VerseRef("XXC 500:500", ScrVers.English).ValidStatus);
+
+			WithCustomVersification("XXC 1:20 2:10", customVers =>
+			{
+				Assert.AreEqual(VerseRef.ValidStatusType.Valid, new VerseRef("XXA 500:500", customVers).ValidStatus);
+			});
+		}
+
+		/// <summary>
+		/// Extra (non-canonical) books that a versification lists (e.g. in a project's custom.vrs) use those limits.
+		/// </summary>
+		[Test]
+		public void ValidStatus_NonCanonicalBookListed_UsesListedLimits()
+		{
+			WithCustomVersification("XXC 1:20 2:10", customVers =>
+			{
+				Assert.AreEqual(VerseRef.ValidStatusType.Valid, new VerseRef("XXC 1:20", customVers).ValidStatus);
+				Assert.AreEqual(VerseRef.ValidStatusType.Valid, new VerseRef("XXC 2:10", customVers).ValidStatus);
+				Assert.AreEqual(VerseRef.ValidStatusType.OutOfRange, new VerseRef("XXC 1:21", customVers).ValidStatus);
+				Assert.AreEqual(VerseRef.ValidStatusType.OutOfRange, new VerseRef("XXC 2:11", customVers).ValidStatus);
+				Assert.AreEqual(VerseRef.ValidStatusType.OutOfRange, new VerseRef("XXC 3:1", customVers).ValidStatus);
+			});
+		}
+
+		/// <summary>
+		/// An extra (non-canonical) book listed as exactly one chapter with one verse can't be told apart from an
+		/// unlisted book (see Versification.DefinesChaptersAndVerses), so it still allows any chapter/verse.
+		/// </summary>
+		[Test]
+		public void ValidStatus_NonCanonicalBookListedAsOneVerse_AnyChapterAndVerseIsValid()
+		{
+			WithCustomVersification("XXC 1:1", customVers =>
+			{
+				Assert.AreEqual(VerseRef.ValidStatusType.Valid, new VerseRef("XXC 1:2", customVers).ValidStatus);
+				Assert.AreEqual(VerseRef.ValidStatusType.Valid, new VerseRef("XXC 2:1", customVers).ValidStatus);
+			});
 		}
 
 		/// <summary>
@@ -1356,6 +1403,21 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual("34", vref.Chapter);
 			Assert.AreEqual("12", vref.Verse);
 		}
+
+		/// <summary>
+		/// Tests NextVerse at the last verse of a chapter of an extra (non-canonical) book whose chapters/verses
+		/// are listed in the versification (e.g. in a project's custom.vrs).
+		/// </summary>
+		[Test]
+		public void NextVerse_LastListedVerseOfNonCanonicalBook_MovesToNextChapter()
+		{
+			WithCustomVersification("XXC 1:20 2:10", customVers =>
+			{
+				VerseRef vref = new VerseRef("XXC 1:20", customVers);
+				Assert.IsTrue(vref.NextVerse());
+				Assert.AreEqual(new VerseRef("XXC 2:1", customVers), vref);
+			});
+		}
 		#endregion
 
 		#region PreviousVerse tests
@@ -2125,6 +2187,28 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(expectedResult, levC6V2to3.InRange(levC24V2to3, levC24V2to3, true));
 		}
 
+		#endregion
+
+		#region Private helper methods
+		/// <summary>
+		/// Loads a custom versification based on English (like a project's custom.vrs) from the specified lines,
+		/// runs the test with it, and then removes it again.
+		/// </summary>
+		private static void WithCustomVersification(string customVrs, Action<ScrVers> test)
+		{
+			try
+			{
+				ScrVers customVers;
+				using (TextReader reader = new StringReader(customVrs))
+					customVers = Versification.Table.Implementation.Load(reader, "custom.vrs", ScrVers.English, "English-CustomTest");
+
+				test(customVers);
+			}
+			finally
+			{
+				Versification.Table.Implementation.RemoveAllUnknownVersifications();
+			}
+		}
 		#endregion
 	}
 }

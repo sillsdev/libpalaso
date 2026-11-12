@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] `MediaInfo.AnalysisData.Duration` now reflects the longest of every audio, video, and subtitle track plus the container's own duration, rather than just the primary audio/video streams. (Upstream fix for [rosenbjerg/FFMpegCore#361](https://github.com/rosenbjerg/FFMpegCore/issues/361), picked up via the FFMpegCore bump below.)
 - [SIL.Media] `MediaInfo.Video.Resolution` is now an empty string (rather than a malformed value like `"x144"`) when ffprobe can't determine a stream's width or height.
 - [SIL.Media] `MediaInfo.Audio`/`.Video.Encoding` is now an empty string (rather than `null`) when ffprobe doesn't report a codec name for the stream.
+- [SIL.Scripture] A versification that lists chapters and verses for a non-canonical book (e.g. `XXA 1:20 2:10` in a project's custom.vrs) now uses those limits for `ScrVers.GetLastChapter`/`GetLastVerse`, `VerseRef.Valid`/`ValidStatus` and verse navigation, instead of always allowing 998 chapters of 998 verses. Non-canonical books it doesn't list are unchanged. A non-canonical book listed as exactly one chapter with one verse (e.g. `XXA 1:1`) is still treated as unlisted, because saved versification files already use that line for books they don't list.
 
 ### Changed
 
