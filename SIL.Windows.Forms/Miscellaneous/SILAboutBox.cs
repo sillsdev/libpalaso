@@ -21,6 +21,10 @@ namespace SIL.Windows.Forms.Miscellaneous
 	{
 		private readonly Assembly _assembly;
 		private readonly string _pathToAboutBoxHtml;
+
+		private readonly bool _updatesButtonWasAutosized;
+		private readonly Size _updatesButtonOrigSize;
+
 		private TempFile _tempAboutBoxHtmlFile; // after update by AcknowledgementsProvider
 		private WebBrowserNavigatingEventHandler _navigatingHandlers;
 
@@ -105,20 +109,98 @@ namespace SIL.Windows.Forms.Miscellaneous
 					? uri.LocalPath
 					: pathToAboutBoxHtml;
 			InitializeComponent();
-			// The logo is what should dictate the width of the table's left-hand column. The
-			// height of the buttons and labels in that column is unconstrained since there is
-			// enough extra vertical space to allow for a reasonable amount of text wrapping.
-			var sharedMargin = _checkForUpdates.Margin.Horizontal;
-			var leftColumnMinWidth = logo.Width - sharedMargin;
-			var leftColumnMaxWidth = logo.Width + sharedMargin;
-			foreach (var control in new Control[] { _buildDate, _versionNumber, _checkForUpdates, _releaseNotesLabel })
-				control.MaximumSize = new Size(leftColumnMaxWidth, 0);
-			_checkForUpdates.MinimumSize = new Size(leftColumnMinWidth, _checkForUpdates.Height);
+			// The logo is used to set the floor for the width of the table's left-hand
+			// column, since it's the one control in this column with a fixed size, rather than
+			// sizing to its content. The height of the buttons and labels in that column is
+			// unconstrained (beyond any explicit Designer-based sizing), since there is enough
+			// extra vertical space to allow for a reasonable amount of text wrapping.
+			tableLayoutPanelMain.SuspendLayout();
+			var column0ControlsToConstrain = tableLayoutPanelMain.Controls.OfType<Control>()
+				.Where(c => c != logo && tableLayoutPanelMain.GetColumn(c) == 0);
+			foreach (var control in column0ControlsToConstrain)
+			{
+				// Allow a little slack beyond the logo's width for longer localizations or
+				// custom scaling. We treat our calculated width as a "minimum maximum": if the
+				// Designer already specifies a larger MaximumSize.Width, that is respected
+				// rather than shrunk, and an existing MaximumSize.Height, if any, is
+				// preserved rather than cleared.
+				var calculatedMaxWidth = logo.Width + logo.Margin.Horizontal + control.Margin.Horizontal;
+				control.MaximumSize = new Size(Math.Max(control.MaximumSize.Width, calculatedMaxWidth),
+					control.MaximumSize.Height);
+			}
+			var updateButtonMinWidth = Math.Max(logo.Width - _checkForUpdates.Margin.Horizontal,
+				 _checkForUpdates.MinimumSize.Width);
+			var updateButtonMinHeight = Math.Max(_checkForUpdates.MinimumSize.Height, _checkForUpdates.Height);
+			_checkForUpdates.MinimumSize = new Size(updateButtonMinWidth, updateButtonMinHeight);
+			// Unlike Label, Button's AutoSize doesn't take MaximumSize into account when
+			// deciding how big it needs to be: it measures its text as a single line and grows
+			// to fit, so a long localized string just pushes the button wider instead of
+			// wrapping. The button still wraps whatever text it's given fine once it's painted
+			// into a fixed-size box, so if a maximum width was specified (in Designer or above),
+			// we take over sizing it ourselves instead of relying on AutoSize.
+			if (_checkForUpdates.MaximumSize.Width > 0)
+			{
+				_updatesButtonWasAutosized = _checkForUpdates.AutoSize;
+				_updatesButtonOrigSize = _checkForUpdates.Size;
+				_checkForUpdates.AutoSize = false;
+				_checkForUpdates.TextChanged += (sender, args) => SizeCheckForUpdatesButton();
+				_checkForUpdates.FontChanged += (sender, args) => SizeCheckForUpdatesButton();
+				SizeCheckForUpdatesButton();
+			}
+			tableLayoutPanelMain.ResumeLayout(true);
 			_versionNumber.Text = useFullVersionNumber ? Application.ProductVersion :
 				GetShortVersionInfo();
 			_buildDate.Text = GetBuiltOnDate();
 			Text = string.Format(Text, GetApplicationTitle());
 			logo.Image = SilResources.GetLogo(logoVariant);
+		}
+
+		private void SizeCheckForUpdatesButton()
+		{
+			var maxWidth = _checkForUpdates.MaximumSize.Width;
+			// The button's own preferred-size calculation already knows this control's/theme's
+			// border and padding correctly for single-line text, so it can be used to derive the
+			// "chrome" for the button's text. GetPreferredSize clamps its result to MaximumSize
+			// internally, though, so it can never actually report a wider width. So we temporarily
+			// lift the cap to find the button's true, unclamped single-line size, which is what
+			// tells us whether it would overflow and needs to wrap.
+			var savedMaxSize = _checkForUpdates.MaximumSize;
+			_checkForUpdates.MaximumSize = Size.Empty;
+			var preferredSize = _checkForUpdates.GetPreferredSize(Size.Empty);
+			_checkForUpdates.MaximumSize = savedMaxSize;
+			Size neededSize;
+			if (preferredSize.Width <= maxWidth)
+			{
+				// Fits on one line within the max width: this is exactly what AutoSize would
+				// have produced.
+				neededSize = preferredSize;
+			}
+			else
+			{
+				// Doesn't fit on one line: derive the chrome for the current text (the
+				// difference between the button's own preferred size and the text's raw,
+				// unwrapped measurement) instead of hard-coding it, then apply that same
+				// chrome to a word-wrapped measurement constrained to the max width, so the
+				// button grows taller instead of wider.
+				var rawTextSize = TextRenderer.MeasureText(_checkForUpdates.Text, _checkForUpdates.Font);
+				var chromeWidth = preferredSize.Width - rawTextSize.Width;
+				var chromeHeight = preferredSize.Height - rawTextSize.Height;
+				var wrappedTextSize = TextRenderer.MeasureText(_checkForUpdates.Text, _checkForUpdates.Font,
+					new Size(maxWidth - chromeWidth, int.MaxValue), TextFormatFlags.WordBreak);
+				neededSize = new Size(wrappedTextSize.Width + chromeWidth, wrappedTextSize.Height + chromeHeight);
+			}
+
+			// Mimic AutoSize's default GrowOnly behavior for a button that was auto-sized
+			// before we took over sizing, so it never shrinks below the size it would
+			// naturally have had; always respect the explicit MinimumSize floor and the
+			// column's max width ceiling.
+			var minWidth = Math.Max(_checkForUpdates.MinimumSize.Width,
+				_updatesButtonWasAutosized ? _updatesButtonOrigSize.Width : 0);
+			var minHeight = Math.Max(_checkForUpdates.MinimumSize.Height,
+				_updatesButtonWasAutosized ? _updatesButtonOrigSize.Height : 0);
+			_checkForUpdates.Size = new Size(
+				Math.Min(maxWidth, Math.Max(minWidth, neededSize.Width)),
+				Math.Max(minHeight, neededSize.Height));
 		}
 
 		protected override void OnLoad(EventArgs e)

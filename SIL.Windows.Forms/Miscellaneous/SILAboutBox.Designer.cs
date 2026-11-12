@@ -124,12 +124,12 @@ namespace SIL.Windows.Forms.Miscellaneous
             // 
             // _checkForUpdates
             // 
-            this._checkForUpdates.AutoSize = true;
             this._L10NSharpExtender.SetLocalizableToolTip(this._checkForUpdates, null);
             this._L10NSharpExtender.SetLocalizationComment(this._checkForUpdates, null);
             this._L10NSharpExtender.SetLocalizingId(this._checkForUpdates, "AboutDialog._checkForUpdates");
             this._checkForUpdates.Location = new System.Drawing.Point(3, 246);
             this._checkForUpdates.Margin = new System.Windows.Forms.Padding(3, 3, 3, 10);
+            this._checkForUpdates.MinimumSize = new System.Drawing.Size(128, 23);
             this._checkForUpdates.Name = "_checkForUpdates";
             this._checkForUpdates.Size = new System.Drawing.Size(128, 23);
             this._checkForUpdates.TabIndex = 10;

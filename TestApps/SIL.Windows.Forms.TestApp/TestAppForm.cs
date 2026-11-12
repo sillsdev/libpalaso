@@ -273,6 +273,9 @@ namespace SIL.Windows.Forms.TestApp
 				var uri = new Uri(tempFile.Path);
 				using (var dlg = new SILAboutBox(uri.AbsoluteUri, useFullVersionNumber))
 				{
+					if (Control.ModifierKeys.HasFlag(Keys.Shift))
+						dlg.CheckForUpdatesClicked += (sender, e) => { dlg.NotifyNoUpdatesAvailable(); };
+
 					bool firstNav = true;
 					if (handleNavigation)
 						dlg.Navigating += (sender, args) =>
