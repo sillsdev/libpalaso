@@ -73,7 +73,7 @@
          default for a bare MSI run, or any bootstrapper that doesn't set it — leaves
          today's LicenseAgreementDlg -> [PrivacyDlg ->] VerifyReadyDlg flow unchanged.
          Not Secure: used only in the UI sequence, like PRODUCT_ANALYTICS_ENABLED_UI
-         above. Must never be written to the registry or otherwise persisted. -->
+         below. Must never be written to the registry or otherwise persisted. -->
     <Property Id="LAUNCHED_VIA_BOOTSTRAPPER" />
 
 	<!-- UI property for the privacy dialog checkboxes. These are *not* secure since they are
