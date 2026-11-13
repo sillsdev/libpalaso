@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - [SIL.Windows.Forms.Scripture] Added `net8.0-windows` target.
+- [SIL.Installer] Added an opt-in `LAUNCHED_VIA_BOOTSTRAPPER` MSI property that `AnalyticsNavigation.wxs` honors to skip `LicenseAgreementDlg`, for products whose Burn bootstrapper already displays its own EULA before chaining the MSI (avoids showing the license twice). See `build/README.md` for how to wire it from your bootstrapper's `.wxs`.
 
 ### Fixed
 
@@ -26,6 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] `MediaInfo.AnalysisData.Duration` now reflects the longest of every audio, video, and subtitle track plus the container's own duration, rather than just the primary audio/video streams. (Upstream fix for [rosenbjerg/FFMpegCore#361](https://github.com/rosenbjerg/FFMpegCore/issues/361), picked up via the FFMpegCore bump below.)
 - [SIL.Media] `MediaInfo.Video.Resolution` is now an empty string (rather than a malformed value like `"x144"`) when ffprobe can't determine a stream's width or height.
 - [SIL.Media] `MediaInfo.Audio`/`.Video.Encoding` is now an empty string (rather than `null`) when ffprobe doesn't report a codec name for the stream.
+- [SIL.Installer] Fixed `AnalyticsNavigation.wxs`'s header comment, which incorrectly listed `WixUI_Advanced` as a compatible UI set; it has no `LicenseAgreementDlg` (it uses a combined `AdvancedWelcomeEulaDlg`), so the navigation fragment cannot hook it.
 
 ### Changed
 
