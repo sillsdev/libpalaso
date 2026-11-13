@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- [SIL.Windows.Forms.Scripture] Added `net8.0-windows` target.
+
 ### Fixed
 
 - [SIL.Media] `MediaInfo.Audio`/`.Video` now treat the audio/video stream flagged `default` as the "primary" stream (falling back to the lowest index when none is flagged), instead of always using the lowest-index stream regardless of its flags. (Upstream fix for [rosenbjerg/FFMpegCore#360](https://github.com/rosenbjerg/FFMpegCore/issues/360), picked up via the FFMpegCore bump below.)
@@ -25,6 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- [SIL.Windows.Forms.Scripture] `VerseControl`'s copy/paste right-click menu is now a `ContextMenuStrip` on every target (the legacy `ContextMenu` does not exist in .NET 8 WinForms), so it renders in the ToolStrip style. `SetContextMenuLabels` is unchanged.
 - [SIL.Media] BREAKING CHANGE: Bumped FFMpegCore from 5.5.0 to 6.0.0. `MediaInfo.AnalysisData` exposes FFMpegCore's `IMediaAnalysis` directly, and in 6.0 its stream/chapter/tag collections became read-only (`IReadOnlyList<T>`/`IReadOnlyDictionary<string, string>` instead of mutable `List<T>`/`Dictionary<string, string>`), `ErrorData` was renamed to `StandardError`, and several numeric/string properties on the underlying `MediaStream`/`MediaFormat` types (e.g. `Width`, `Height`, `Channels`, `BitRate`, `CodecName`) became nullable or changed type. Code that uses only `MediaInfo.Audio`/`.Video` is unaffected; code that consumes `MediaInfo.AnalysisData` directly may need updating.
 
 ## [18.0.0] - 2026-10-12
