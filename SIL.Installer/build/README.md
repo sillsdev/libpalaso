@@ -77,6 +77,29 @@ navigation and add your own `<Publish>` elements connecting to `PrivacyDlg`:
 <SilAnalyticsIncludeNavigation>false</SilAnalyticsIncludeNavigation>
 ```
 
+### 6. Avoid double-displaying the license behind a Burn bootstrapper (optional)
+
+If your product's installer is a WiX Burn bootstrapper (`WixStandardBootstrapperApplication`
+with `LicenseFile`/`LicenseUrl`) that chains this MSI, the license would otherwise be shown
+twice: once by the bootstrapper's own chrome, once by this MSI's `LicenseAgreementDlg`. To
+show it only once, pass `LAUNCHED_VIA_BOOTSTRAPPER` from your bootstrapper's `.wxs`:
+
+```xml
+<MsiPackage SourceFile="...\YourProduct.msi" DisplayInternalUI="yes">
+  <MsiProperty Name="LAUNCHED_VIA_BOOTSTRAPPER" Value="1" />
+</MsiPackage>
+```
+
+`DisplayInternalUI="yes"` is required regardless — without it Burn suppresses this MSI's UI
+sequence entirely, including the Privacy dialog itself, not just the license screen.
+
+This only takes effect with the standard navigation fragment (`AnalyticsNavigation.wxs`); if
+you set `SilAnalyticsIncludeNavigation=false` and wire navigation yourself, add the equivalent
+`WelcomeDlg`/`PrivacyDlg`/`VerifyReadyDlg` overrides to your own `.wxs` if you want this.
+
+`LAUNCHED_VIA_BOOTSTRAPPER` is a reserved property name once this package is referenced — don't
+reuse it for anything else in your installer.
+
 ## Build Requirements
 
 - **WiX Toolset v3.14** must be installed on the build machine.
