@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  No-op dog-food bootstrapper for SIL.Windows.Forms.TestApp.
+  Purpose: exercise the LAUNCHED_VIA_BOOTSTRAPPER license-skip path (see Analytics.wxs /
+  AnalyticsNavigation.wxs) without needing a real product's installer. Chains the exact
+  same MSI that SIL.Windows.Forms.TestAppInstaller.wixproj already produces for testing
+  the pre-existing bare-MSI path, so this dog-food project now covers both entry points.
+-->
+<?define UpgradeCode = "{B925CB4A-4877-40E6-ACDC-A8319F6FD77F}" ?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
+
+  <Bundle Name="SIL.Windows.Forms.TestApp Bootstrapper" Version="1.0.0"
+          Manufacturer="SIL Global"
+          UpgradeCode="$(var.UpgradeCode)">
+
+    <BootstrapperApplicationRef Id="WixStandardBootstrapperApplication.RtfLicense">
+      <!-- LicenseFile is required by this BootstrapperApplicationRef variant (CNDL0010). -->
+      <bal:WixStandardBootstrapperApplication
+        LicenseFile="..\License.rtf"
+        ShowVersion="yes"
+        SuppressOptionsUI="yes" />
+    </BootstrapperApplicationRef>
+
+    <Chain>
+      <!-- DisplayInternalUI: without this, Burn suppresses the MSI's own UI sequence
+           entirely, hiding PrivacyDlg regardless of LAUNCHED_VIA_BOOTSTRAPPER. -->
+      <MsiPackage SourceFile="..\output\SIL.Windows.Forms.TestAppInstaller.msi" DisplayInternalUI="yes">
+        <MsiProperty Name="LAUNCHED_VIA_BOOTSTRAPPER" Value="1" />
+      </MsiPackage>
+    </Chain>
+  </Bundle>
+
+</Wix>

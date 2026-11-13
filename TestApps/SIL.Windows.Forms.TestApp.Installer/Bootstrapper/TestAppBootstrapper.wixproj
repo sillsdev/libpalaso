@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <Platform Condition="'$(Platform)' == ''">x64</Platform>
+    <ProductVersion>3.10</ProductVersion>
+    <ProjectGuid>{AB8FA338-A8D6-4074-BC9E-44401B027DE3}</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputName>TestAppBootstrapper</OutputName>
+    <OutputType>Bundle</OutputType>
+    <OutputPath>output\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="TestAppBootstrapper.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <WixExtension Include="WixBalExtension">
+      <HintPath>$(WixExtDir)\WixBalExtension.dll</HintPath>
+      <Name>WixBalExtension</Name>
+    </WixExtension>
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Build-order dependency only — TestAppBootstrapper.wxs references the built MSI by its
+         literal output path below, the same way Glyssen Bootstrap Installer.wxs does. -->
+    <ProjectReference Include="..\SIL.Windows.Forms.TestAppInstaller.wixproj">
+      <Name>SIL.Windows.Forms.TestAppInstaller</Name>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(WixTargetsPath)" Condition="'$(WixTargetsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition="'$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets')" />
+</Project>
