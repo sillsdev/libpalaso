@@ -719,8 +719,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 			do
 			{
 				Application.DoEvents();
-				if (spc.DropDownWindow != null && spc.DropDownWindow.Menu != null &&
-					spc.DropDownWindow.Menu.MenuItems.Count == expectedCount)
+				if (spc.DropDownWindow != null && spc.DropDownWindow.ButtonsShowing == expectedCount)
 					break;
 				i++;
 			}

@@ -870,7 +870,7 @@ namespace SIL.Windows.Forms.Scripture
 			verse = match.Groups["verse"].Value;
 			// chapter and verse is optional in regex, make it 1 if not given
 			if (string.IsNullOrEmpty(chapter))
-				chapter ="1";
+				chapter = "1";
 			else if (chapter.Length > 3)
 				return false;
 			if (string.IsNullOrEmpty(verse))
@@ -1301,18 +1301,20 @@ namespace SIL.Windows.Forms.Scripture
 		/// <summary>
 		/// ContextMenu with internationalized copy and paste menu items.
 		/// </summary>
-		private class CopyPasteContextMenu : ContextMenu
+		private sealed class CopyPasteContextMenu : ContextMenuStrip
 		{
 			private const int kCopy = 0;
 			private const int kPaste = 1;
 
 			public CopyPasteContextMenu(EventHandler copyHandler, EventHandler pasteHandler)
 			{
-				MenuItems.Add(new MenuItem(GetLocalizedMenuText(kCopy), copyHandler));
-				MenuItems.Add(new MenuItem(GetLocalizedMenuText(kPaste), pasteHandler));
+				Items.Add(new ToolStripMenuItem(GetLocalizedMenuText(kCopy), null, copyHandler));
+				Items.Add(new ToolStripMenuItem(GetLocalizedMenuText(kPaste), null, pasteHandler));
 			}
 
-			public MenuItem PasteMenu => MenuItems[kPaste];
+			public ToolStripItem CopyMenu => Items[kCopy];
+
+			public ToolStripItem PasteMenu => Items[kPaste];
 
 			private static string GetLocalizedMenuText(int menu)
 			{
@@ -1351,7 +1353,7 @@ namespace SIL.Windows.Forms.Scripture
 			/// </summary>
 			public void SetMenuLabels(string copyLabel, string pasteLabel)
 			{
-				MenuItems[kCopy].Text = copyLabel;
+				CopyMenu.Text = copyLabel;
 				PasteMenu.Text = pasteLabel;
 			}
 		}
@@ -1374,14 +1376,14 @@ namespace SIL.Windows.Forms.Scripture
 			{
 				_contextMenu = new CopyPasteContextMenu((s, e) => CopyEvent?.Invoke(),
 					(s, e) => PasteEvent?.Invoke());
-				_contextMenu.Popup += PopUpContextMenu;
-				_contextMenu.Collapse += (s, e) => CollapseEvent?.Invoke();
+				_contextMenu.Opening += PopUpContextMenu;
+				_contextMenu.Closed += (s, e) => CollapseEvent?.Invoke();
 			}
 
 			protected override void OnHandleCreated(EventArgs e)
 			{
 				base.OnHandleCreated(e);
-				ContextMenu = _contextMenu;
+				ContextMenuStrip = _contextMenu;
 			}
 
 			private void PopUpContextMenu(Object s, EventArgs e)
@@ -1424,14 +1426,14 @@ namespace SIL.Windows.Forms.Scripture
 			{
 				_contextMenu = new CopyPasteContextMenu((s, e) => CopyEvent?.Invoke(),
 					(s, e) => PasteEvent?.Invoke());
-				_contextMenu.Popup += PopUpContextMenu;
-				_contextMenu.Collapse += (s, e) => CollapseEvent?.Invoke();
+				_contextMenu.Opening += PopUpContextMenu;
+				_contextMenu.Closed += (s, e) => CollapseEvent?.Invoke();
 			}
 
 			protected override void OnHandleCreated(EventArgs e)
 			{
 				base.OnHandleCreated(e);
-				ContextMenu = _contextMenu;
+				ContextMenuStrip = _contextMenu;
 			}
 
 
