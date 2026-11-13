@@ -268,12 +268,19 @@ namespace SIL.Windows.Forms.TestApp
 					");
 			}
 
+			// Capture this before constructing the dialog below, rather than after: creating a
+			// GeckoFx-backed browser control is slow enough (spinning up the XULRunner engine)
+			// that a normal quick Shift-press-and-release could be over before a check made
+			// after construction would see it, making the Gecko about box unreliable to test
+			// this way even though the WinForms-backed one (construction is near-instant) is
+			// consistently fine.
+			var enableCheckForUpdates = Control.ModifierKeys.HasFlag(Keys.Shift);
 			try
 			{
 				var uri = new Uri(tempFile.Path);
 				using (var dlg = new SILAboutBox(uri.AbsoluteUri, useFullVersionNumber))
 				{
-					if (Control.ModifierKeys.HasFlag(Keys.Shift))
+					if (enableCheckForUpdates)
 						dlg.CheckForUpdatesClicked += (sender, e) => { dlg.NotifyNoUpdatesAvailable(); };
 
 					bool firstNav = true;

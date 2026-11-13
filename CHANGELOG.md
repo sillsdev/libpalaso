@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- [SIL.Windows.Forms.Widgets] Added WrappingButton: A button that, when its text doesn't fit within MaximumSize.Width, wraps onto additional lines and grows taller instead of growing wider or clipping.
+
 ### Fixed
 
 - [SIL.Media] `MediaInfo.Audio`/`.Video` now treat the audio/video stream flagged `default` as the "primary" stream (falling back to the lowest index when none is flagged), instead of always using the lowest-index stream regardless of its flags. (Upstream fix for [rosenbjerg/FFMpegCore#360](https://github.com/rosenbjerg/FFMpegCore/issues/360), picked up via the FFMpegCore bump below.)
