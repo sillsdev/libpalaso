@@ -78,9 +78,14 @@
          needing a <Property> declaration here. A <Property Id="LAUNCHED_VIA_BOOTSTRAPPER" />
          element with no Value/Secure/Admin/Hidden attribute is silently dropped by candle
          (warning CNDL1006, "the Property element is being ignored") and would achieve
-         nothing — this property needs none of those attributes, since it is not Secure
-         (used only in the UI sequence) and must never be written to the registry or
-         otherwise persisted, so it is deliberately left undeclared instead. -->
+         nothing, so it is deliberately left undeclared instead — an undeclared public
+         property works identically for this property's purpose, since it is used only
+         in the UI sequence and is never queried from InstallExecuteSequence.
+
+         Separately, and regardless of whether it were declared: this property must never
+         be written to the registry or otherwise persisted. Nothing in this package writes
+         arbitrary properties to the registry automatically, so this is simply a constraint
+         on any future change here, not a consequence of leaving it undeclared. -->
 
 	<!-- UI property for the privacy dialog checkboxes. These are *not* secure since they are
 		used only in the UI. This allows the UI to display the correct state for the checkboxes

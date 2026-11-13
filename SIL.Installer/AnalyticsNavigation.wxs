@@ -47,7 +47,7 @@
                Event="NewDialog"
                Value="PrivacyDlg"
                Order="2">
-        NOT Installed AND LAUNCHED_VIA_BOOTSTRAPPER
+        NOT Installed AND LAUNCHED_VIA_BOOTSTRAPPER = "1"
         AND NOT PRODUCT_ANALYTICS_SETTING AND NOT GLOBAL_ANALYTICS_SETTING
       </Publish>
 
@@ -57,7 +57,7 @@
                Event="NewDialog"
                Value="VerifyReadyDlg"
                Order="3">
-        NOT Installed AND LAUNCHED_VIA_BOOTSTRAPPER
+        NOT Installed AND LAUNCHED_VIA_BOOTSTRAPPER = "1"
         AND (PRODUCT_ANALYTICS_SETTING OR GLOBAL_ANALYTICS_SETTING)
       </Publish>
 
@@ -171,7 +171,7 @@
                Event="NewDialog"
                Value="WelcomeDlg"
                Order="3">
-        NOT Installed AND LAUNCHED_VIA_BOOTSTRAPPER
+        NOT Installed AND LAUNCHED_VIA_BOOTSTRAPPER = "1"
       </Publish>
 
       <!-- ── Repair flow: VerifyReadyDlg Back ──────────────────────────────────
@@ -198,7 +198,7 @@
                Event="NewDialog"
                Value="WelcomeDlg"
                Order="5">
-        NOT Installed AND LAUNCHED_VIA_BOOTSTRAPPER
+        NOT Installed AND LAUNCHED_VIA_BOOTSTRAPPER = "1"
         AND (PRODUCT_ANALYTICS_SETTING OR GLOBAL_ANALYTICS_SETTING)
       </Publish>
 
