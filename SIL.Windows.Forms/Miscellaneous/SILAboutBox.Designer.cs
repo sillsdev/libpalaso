@@ -46,7 +46,7 @@ namespace SIL.Windows.Forms.Miscellaneous
             this._versionNumber = new System.Windows.Forms.Label();
             this.logo = new System.Windows.Forms.PictureBox();
             this._browser = new SIL.Windows.Forms.HtmlBrowser.XWebBrowser();
-            this._checkForUpdates = new System.Windows.Forms.Button();
+            this._checkForUpdates = new SIL.Windows.Forms.Widgets.WrappingButton();
             this._releaseNotesLabel = new System.Windows.Forms.LinkLabel();
             this.tableLayoutPanelMain = new System.Windows.Forms.TableLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
@@ -129,10 +129,11 @@ namespace SIL.Windows.Forms.Miscellaneous
             this._L10NSharpExtender.SetLocalizingId(this._checkForUpdates, "AboutDialog._checkForUpdates");
             this._checkForUpdates.Location = new System.Drawing.Point(3, 246);
             this._checkForUpdates.Margin = new System.Windows.Forms.Padding(3, 3, 3, 10);
+            this._checkForUpdates.MinimumSize = new System.Drawing.Size(128, 23);
             this._checkForUpdates.Name = "_checkForUpdates";
             this._checkForUpdates.Size = new System.Drawing.Size(128, 23);
             this._checkForUpdates.TabIndex = 10;
-            this._checkForUpdates.Text = "Check For Updates";
+            this._checkForUpdates.Text = "Check for Updates";
             this._checkForUpdates.UseVisualStyleBackColor = true;
             // 
             // _releaseNotesLabel
@@ -213,7 +214,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		private PictureBox logo;
 		private TableLayoutPanel tableLayoutPanelMain;
 		private XWebBrowser _browser;
-		private Button _checkForUpdates;
+		private SIL.Windows.Forms.Widgets.WrappingButton _checkForUpdates;
 		private LinkLabel _releaseNotesLabel;
 
 	}
