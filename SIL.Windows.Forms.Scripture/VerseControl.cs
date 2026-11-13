@@ -870,7 +870,7 @@ namespace SIL.Windows.Forms.Scripture
 			verse = match.Groups["verse"].Value;
 			// chapter and verse is optional in regex, make it 1 if not given
 			if (string.IsNullOrEmpty(chapter))
-				chapter ="1";
+				chapter = "1";
 			else if (chapter.Length > 3)
 				return false;
 			if (string.IsNullOrEmpty(verse))
@@ -1301,7 +1301,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// <summary>
 		/// ContextMenu with internationalized copy and paste menu items.
 		/// </summary>
-		private class CopyPasteContextMenu : ContextMenuStrip
+		private sealed class CopyPasteContextMenu : ContextMenuStrip
 		{
 			private const int kCopy = 0;
 			private const int kPaste = 1;
