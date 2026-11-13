@@ -65,6 +65,17 @@
                       Win64="$(var.AnalyticsComponentWin64)" />
     </Property>
 
+    <!-- Set by the consuming product's Burn bootstrapper (via
+         <MsiProperty Name="LAUNCHED_VIA_BOOTSTRAPPER" Value="1" /> on its chained
+         <MsiPackage>) to indicate the bootstrapper's own EULA screen already obtained
+         license acceptance, so AnalyticsNavigation.wxs can skip this MSI's
+         LicenseAgreementDlg and avoid showing the license twice. Empty/unset — the
+         default for a bare MSI run, or any bootstrapper that doesn't set it — leaves
+         today's LicenseAgreementDlg -> [PrivacyDlg ->] VerifyReadyDlg flow unchanged.
+         Not Secure: used only in the UI sequence, like PRODUCT_ANALYTICS_ENABLED_UI
+         above. Must never be written to the registry or otherwise persisted. -->
+    <Property Id="LAUNCHED_VIA_BOOTSTRAPPER" />
+
 	<!-- UI property for the privacy dialog checkboxes. These are *not* secure since they are
 		used only in the UI. This allows the UI to display the correct state for the checkboxes
 		even if the user clicks Back to revisit the dialog (because MSI may treat any non-empty
