@@ -14,6 +14,12 @@
   preference already exists in the registry — e.g. on reinstall/repair, or when another
   SIL product has already set the global preference.
 
+  Optional license-skip: when the consuming product's Burn bootstrapper sets
+  LAUNCHED_VIA_BOOTSTRAPPER="1" (see Analytics.wxs), WelcomeDlg.Next routes straight to
+  PrivacyDlg/VerifyReadyDlg instead of LicenseAgreementDlg, and the matching Back buttons
+  return straight to WelcomeDlg — avoiding a second license display when the bootstrapper
+  already showed its own EULA. Unset (the default), this has no effect.
+
   Compatible with any WiX 3 UI set that includes LicenseAgreementDlg in its navigation
   flow: WixUI_FeatureTree, WixUI_InstallDir, WixUI_Mondo.
   Not compatible with WixUI_Minimal (which does not route through LicenseAgreementDlg) or
@@ -27,6 +33,33 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Fragment>
     <UI Id="SilAnalyticsNavigation">
+
+      <!-- ── Bootstrapper license-skip: WelcomeDlg Next ──────────────────────────
+           Standard WiX UI sets wire WelcomeDlg Next -> LicenseAgreementDlg at
+           unset Order (effectively 1), guarded by "NOT Installed". We fire at
+           Order=2 and 3, with the same NOT Installed guard, so a maintenance/patch
+           run is never affected — only a fresh install launched via a bootstrapper
+           that has set LAUNCHED_VIA_BOOTSTRAPPER. -->
+
+      <!-- No prior preference: show the privacy dialog -->
+      <Publish Dialog="WelcomeDlg"
+               Control="Next"
+               Event="NewDialog"
+               Value="PrivacyDlg"
+               Order="2">
+        NOT Installed AND LAUNCHED_VIA_BOOTSTRAPPER
+        AND NOT PRODUCT_ANALYTICS_SETTING AND NOT GLOBAL_ANALYTICS_SETTING
+      </Publish>
+
+      <!-- Prior preference exists: skip the privacy dialog too -->
+      <Publish Dialog="WelcomeDlg"
+               Control="Next"
+               Event="NewDialog"
+               Value="VerifyReadyDlg"
+               Order="3">
+        NOT Installed AND LAUNCHED_VIA_BOOTSTRAPPER
+        AND (PRODUCT_ANALYTICS_SETTING OR GLOBAL_ANALYTICS_SETTING)
+      </Publish>
 
       <!-- ── Forward: LicenseAgreementDlg Next ───────────────────────────────────
            Standard WiX UI sets wire LicenseAgreementDlg Next at Order=2 (to their
@@ -127,6 +160,20 @@
         Installed
       </Publish>
 
+      <!-- ── Bootstrapper license-skip: PrivacyDlg Back ───────────────────────────
+           Analytics.wxs wires PrivacyDlg Back -> LicenseAgreementDlg unconditionally
+           at unset Order (effectively 1). When PrivacyDlg was reached directly from
+           WelcomeDlg (license skipped), Back should return to WelcomeDlg instead.
+           NOT Installed keeps this from ever firing during the repair flow, which
+           Order=2 above already owns. -->
+      <Publish Dialog="PrivacyDlg"
+               Control="Back"
+               Event="NewDialog"
+               Value="WelcomeDlg"
+               Order="3">
+        NOT Installed AND LAUNCHED_VIA_BOOTSTRAPPER
+      </Publish>
+
       <!-- ── Repair flow: VerifyReadyDlg Back ──────────────────────────────────
            During repair with a prior analytics preference, Back should return to
            MaintenanceTypeDlg rather than LicenseAgreementDlg. Order=4 overrides
@@ -137,6 +184,22 @@
                Value="MaintenanceTypeDlg"
                Order="4">
         Installed AND (PRODUCT_ANALYTICS_SETTING OR GLOBAL_ANALYTICS_SETTING)
+      </Publish>
+
+      <!-- ── Bootstrapper license-skip: VerifyReadyDlg Back ───────────────────────
+           When VerifyReadyDlg was reached directly from WelcomeDlg (both License and
+           Privacy skipped, because a prior preference was already recorded), Back
+           should return to WelcomeDlg rather than LicenseAgreementDlg. Order=5 is
+           above every other Order used for this Dialog/Control/Event today (the
+           highest existing is 4, shared by WixUI_Mondo's own repair/remove branch
+           and the fresh-install override above) so this is never shadowed. -->
+      <Publish Dialog="VerifyReadyDlg"
+               Control="Back"
+               Event="NewDialog"
+               Value="WelcomeDlg"
+               Order="5">
+        NOT Installed AND LAUNCHED_VIA_BOOTSTRAPPER
+        AND (PRODUCT_ANALYTICS_SETTING OR GLOBAL_ANALYTICS_SETTING)
       </Publish>
 
     </UI>
