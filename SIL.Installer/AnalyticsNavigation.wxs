@@ -15,8 +15,10 @@
   SIL product has already set the global preference.
 
   Compatible with any WiX 3 UI set that includes LicenseAgreementDlg in its navigation
-  flow: WixUI_FeatureTree, WixUI_InstallDir, WixUI_Mondo, WixUI_Advanced.
-  Not compatible with WixUI_Minimal (which does not route through LicenseAgreementDlg).
+  flow: WixUI_FeatureTree, WixUI_InstallDir, WixUI_Mondo.
+  Not compatible with WixUI_Minimal (which does not route through LicenseAgreementDlg) or
+  WixUI_Advanced (which combines the license and welcome screens into a single
+  AdvancedWelcomeEulaDlg, with no separate LicenseAgreementDlg to hook).
 
   This file is included automatically when the SIL.Installer NuGet package is referenced.
   To wire navigation manually instead, set in your .wixproj before importing the package:
