@@ -9,7 +9,10 @@
     <WarningsAsErrors>NU1605;CS8002</WarningsAsErrors>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>8</LangVersion>
+    <!-- Pinned rather than "latest": C# 14's first-class span conversions change overload
+    resolution (e.g. array.Reverse() binds to the in-place MemoryExtensions.Reverse), which
+    breaks existing code. -->
+    <LangVersion>13</LangVersion>
     <!-- The .NET analyzers run by default only for net5.0+ targets; turn them on for net462,
     net48 and netstandard2.0 too so that the rules set in .editorconfig (e.g. CA1310) apply to
     every build. -->
