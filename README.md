@@ -28,42 +28,27 @@ To get the source code, you'll need Git. Then from a command line, give this com
 
 #### Windows
 
-- Building libpalaso requires .NET 5 or later. You might want to
-  install Visual Studio 2019 >= 16.8, or JetBrains Rider.
+- Building libpalaso requires the .NET 9 SDK or later (the code uses C# 13).
+  You might want to install Visual Studio 2022 >= 17.12, or JetBrains Rider >= 2024.3.
 
 #### Ubuntu Linux
 
-These libraries cannot currently be built on Linux releases later than Focal without some additional steps/dependencies (because dotnet-sdk-5.0 is no longer supported and does not have a package installer for more recent versions and ).
-##### To build on Ubuntu 22.04 (Jammy), you have to:
-- Use mono-devel from Focal
-- Use dotnet-sdk-6.0
-- To get unit tests to pass, you have to install libcanberra-gtk-module (libcanberra-gtk-module/jammy,now 0.30-10ubuntu1 amd64). Not sure what is the correct way to get that dependency installed.
+On Ubuntu 24.04 (Noble), install the .NET 10 SDK, plus the .NET 8 runtime for
+running the `net8.0` unit tests:
 
-##### The rest of the stuff:
-- Add access to packages.microsoft.com repo for dotnet sdk:
+```bash
+sudo apt update
+sudo apt install dotnet-sdk-10.0 dotnet-runtime-8.0 libicu-dev
+```
 
-  ```bash
-  wget https://packages.microsoft.com/config/ubuntu/$(lsb_release -s -r)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-  sudo dpkg -i packages-microsoft-prod.deb
-  rm packages-microsoft-prod.deb
-  ```
+Alternatively, install .NET by following
+<https://learn.microsoft.com/dotnet/core/install/linux-ubuntu>.
 
-- Add access to download.mono-project.com for mono 6 by following
-  instructions at <https://www.mono-project.com/download/stable>.
+Running the .NET Framework (`net462`/`net48`) unit tests additionally needs Mono:
 
-- To get unit tests to pass, you have to install libcanberra-gtk-module
-
-- Install the dependencies with:
-
-  ```bash
-  sudo apt update
-  sudo apt install libicu-dev dotnet-sdk-6.0 mono-devel msbuild libcanberra-gtk-module
-  ```
-
-**Note:** Newer Ubuntu versions have .NET 6+ and Mono 6 in their package
-repos. However, those packages are missing some required files so that
-building libpalaso won't succeed. Therefore it's recommended to install
-.NET 6+ and Mono from Microsoft's/Mono's package repos.
+```bash
+sudo apt install mono-complete libcanberra-gtk-module
+```
 
 ### Develop
 
@@ -83,10 +68,11 @@ building libpalaso won't succeed. Therefore it's recommended to install
   #### Linux
 
   Open and build `Palaso.sln` in JetBrains Rider.
-  Or use the commandline. `environ` is not needed if you installed mono-complete version 6.
+  Or use the command line. `EnableWindowsTargeting` lets the `net8.0-windows`
+  projects build on Linux.
 
   ```bash
-  build/build
+  dotnet build Palaso.sln -p:EnableWindowsTargeting=true
   ```
 
 - Verify that there were no new unit test failures:
@@ -99,9 +85,15 @@ building libpalaso won't succeed. Therefore it's recommended to install
 
   #### Linux
 
+  Run the `net8.0` tests one test project at a time (the WinForms test projects
+  have no `net8.0` target), with the same filter CI uses:
+
   ```bash
-  build/TestBuild Debug Test
+  dotnet test SIL.Core.Tests -f net8.0 -p:EnableWindowsTargeting=true \
+    --filter "(TestCategory != SkipOnTeamCity) & (TestCategory != RequiresAudioInputDevice)"
   ```
+
+  Some tests already fail on Linux (see #1565), so compare against a run on `master`.
 
 - Test in client projects (as applicable):
 
