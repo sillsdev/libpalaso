@@ -65,16 +65,22 @@
                       Win64="$(var.AnalyticsComponentWin64)" />
     </Property>
 
-    <!-- Set by the consuming product's Burn bootstrapper (via
-         <MsiProperty Name="LAUNCHED_VIA_BOOTSTRAPPER" Value="1" /> on its chained
+    <!-- LAUNCHED_VIA_BOOTSTRAPPER (referenced by AnalyticsNavigation.wxs's Publish
+         conditions, not declared here): set by the consuming product's Burn bootstrapper
+         (via <MsiProperty Name="LAUNCHED_VIA_BOOTSTRAPPER" Value="1" /> on its chained
          <MsiPackage>) to indicate the bootstrapper's own EULA screen already obtained
          license acceptance, so AnalyticsNavigation.wxs can skip this MSI's
          LicenseAgreementDlg and avoid showing the license twice. Empty/unset — the
          default for a bare MSI run, or any bootstrapper that doesn't set it — leaves
          today's LicenseAgreementDlg -> [PrivacyDlg ->] VerifyReadyDlg flow unchanged.
-         Not Secure: used only in the UI sequence, like PRODUCT_ANALYTICS_ENABLED_UI
-         below. Must never be written to the registry or otherwise persisted. -->
-    <Property Id="LAUNCHED_VIA_BOOTSTRAPPER" />
+         Windows Installer treats any all-uppercase property name as "public" (settable
+         from the command line or, equivalently, via Burn's MsiProperty) without it
+         needing a <Property> declaration here. A <Property Id="LAUNCHED_VIA_BOOTSTRAPPER" />
+         element with no Value/Secure/Admin/Hidden attribute is silently dropped by candle
+         (warning CNDL1006, "the Property element is being ignored") and would achieve
+         nothing — this property needs none of those attributes, since it is not Secure
+         (used only in the UI sequence) and must never be written to the registry or
+         otherwise persisted, so it is deliberately left undeclared instead. -->
 
 	<!-- UI property for the privacy dialog checkboxes. These are *not* secure since they are
 		used only in the UI. This allows the UI to display the correct state for the checkboxes
