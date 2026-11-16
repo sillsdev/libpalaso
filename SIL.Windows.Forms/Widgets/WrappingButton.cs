@@ -88,6 +88,16 @@ namespace SIL.Windows.Forms.Widgets
 
 		private void ResizeToFitTextCore()
 		{
+			// With no maximum width set, there's nothing to wrap against, so leave
+			// AutoSize (and ordinary Button sizing) alone rather than taking over - and
+			// don't capture _originalSize/_wasAutoSized yet, since a button that never
+			// gets a MaximumSize should keep behaving like a normal auto-sized Button, and
+			// one that gets a MaximumSize later should have its pre-wrapping size captured
+			// then, not now.
+			var maxWidth = MaximumSize.Width;
+			if (maxWidth <= 0)
+				return;
+
 			if (!_originalSizeCaptured)
 			{
 				// AutoSize defaults to GrowOnly: a button that was auto-sized should never
@@ -100,10 +110,6 @@ namespace SIL.Windows.Forms.Widgets
 				AutoSize = false;
 				_originalSizeCaptured = true;
 			}
-
-			var maxWidth = MaximumSize.Width;
-			if (maxWidth <= 0)
-				return;
 
 			// The button's own preferred-size calculation already knows this control's/
 			// theme's border and padding correctly for single-line text, so there's no need
