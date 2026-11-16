@@ -50,5 +50,28 @@ namespace SIL.Windows.Forms.Tests.Widgets
 					"text should have wrapped onto more than one line");
 			}
 		}
+
+		[Test]
+		public void AutoSize_SetTrueAfterMaximumSize_StaysWithinMaximumAfterParentLayout()
+		{
+			using (var form = new Form())
+			using (var button = new WrappingButton { MaximumSize = new Size(140, 0) })
+			{
+				form.Controls.Add(button);
+				button.AutoSize = true;
+				button.Text = "A substantially longer caption than the original";
+
+				var handle = form.Handle; // force a real parent layout pass
+				form.PerformLayout();
+
+				// Native AutoSize stays off while MaximumSize.Width requires wrapping - this
+				// class takes over sizing instead - so the getter reports False here even though
+				// AutoSize was set True; that's what keeps native single-line sizing from
+				// re-asserting itself and overflowing MaximumSize on the next layout pass.
+				Assert.That(button.AutoSize, Is.False);
+				Assert.That(button.Width, Is.LessThanOrEqualTo(140),
+					$"width={button.Width} should not exceed MaximumSize.Width=140 after layout");
+			}
+		}
 	}
 }

@@ -15,7 +15,7 @@ namespace SIL.Windows.Forms.Widgets
 	public class WrappingButton : Button
 	{
 		private bool _originalSizeCaptured;
-		private bool _wasAutoSized;
+		private bool _desiredAutoSize;
 		private Size _originalSize;
 		private bool _isResizing;
 
@@ -60,6 +60,27 @@ namespace SIL.Windows.Forms.Widgets
 		}
 
 		/// <summary>
+		/// Button's own AutoSize, when on, ignores MaximumSize/wrapping and re-asserts a
+		/// single-line size on every layout pass, which would undo the wrapping this class
+		/// computes. So whenever there's a maximum width to wrap against, keep native AutoSize
+		/// off - ResizeToFitTextCore acts as this control's auto-sizing instead. Remember the
+		/// caller's intent in _desiredAutoSize regardless, so the GrowOnly floor it drives still
+		/// applies, and so native AutoSize can be restored if the maximum width is later removed.
+		/// With no maximum width, there's nothing to wrap against, so defer to ordinary Button
+		/// auto-sizing and leave native AutoSize matching what was just set.
+		/// </summary>
+		public override bool AutoSize
+		{
+			get => base.AutoSize;
+			set
+			{
+				_desiredAutoSize = value;
+				base.AutoSize = value && MaximumSize.Width <= 0;
+				ResizeToFitText();
+			}
+		}
+
+		/// <summary>
 		/// Recomputes the button's size for its current text, wrapping onto additional
 		/// lines (growing taller) instead of growing wider or clipping if the text doesn't
 		/// fit within MaximumSize.Width. Called automatically whenever Text, Font,
@@ -88,26 +109,34 @@ namespace SIL.Windows.Forms.Widgets
 
 		private void ResizeToFitTextCore()
 		{
-			// With no maximum width set, there's nothing to wrap against, so leave
-			// AutoSize (and ordinary Button sizing) alone rather than taking over - and
-			// don't capture _originalSize/_wasAutoSized yet, since a button that never
-			// gets a MaximumSize should keep behaving like a normal auto-sized Button, and
-			// one that gets a MaximumSize later should have its pre-wrapping size captured
-			// then, not now.
+			// With no maximum width set, there's nothing to wrap against, so defer to ordinary
+			// Button auto-sizing instead of taking over - and don't capture _originalSize yet,
+			// since a button that never gets a MaximumSize should keep behaving like a normal
+			// auto-sized Button, and one that gets a MaximumSize later should have its
+			// pre-wrapping size captured then, not now.
 			var maxWidth = MaximumSize.Width;
 			if (maxWidth <= 0)
+			{
+				// No longer (or not yet) wrapping: restore whatever native AutoSize the caller
+				// last asked for via the AutoSize override, in case an earlier maximum width had
+				// forced it off.
+				base.AutoSize = _desiredAutoSize;
 				return;
+			}
+
+			// Native AutoSize ignores wrapping, so it must stay off the whole time we're taking
+			// over sizing. The AutoSize override above already keeps it off when the caller sets
+			// AutoSize while a maximum width is already in force; this also covers the reverse
+			// order, where AutoSize was turned on natively before a maximum width existed.
+			base.AutoSize = false;
 
 			if (!_originalSizeCaptured)
 			{
 				// AutoSize defaults to GrowOnly: a button that was auto-sized should never
-				// shrink below the size it would naturally have had. Capture that size (and
-				// whether AutoSize was even on) before we take over, the first time we're
-				// asked to resize - by then, Designer-generated code will already have set
-				// both, so this reflects its original intent.
-				_wasAutoSized = AutoSize;
+				// shrink below the size it would naturally have had. Capture that size before we
+				// take over, the first time we're asked to resize - by then, Designer-generated
+				// code will already have set it, so this reflects its original intent.
 				_originalSize = Size;
-				AutoSize = false;
 				_originalSizeCaptured = true;
 			}
 
@@ -148,8 +177,8 @@ namespace SIL.Windows.Forms.Widgets
 
 			// Always respect the explicit MinimumSize floor and the max width ceiling, on
 			// top of the GrowOnly floor captured above.
-			var minWidth = Math.Max(MinimumSize.Width, _wasAutoSized ? _originalSize.Width : 0);
-			var minHeight = Math.Max(MinimumSize.Height, _wasAutoSized ? _originalSize.Height : 0);
+			var minWidth = Math.Max(MinimumSize.Width, _desiredAutoSize ? _originalSize.Width : 0);
+			var minHeight = Math.Max(MinimumSize.Height, _desiredAutoSize ? _originalSize.Height : 0);
 			Size = new Size(
 				Math.Min(maxWidth, Math.Max(minWidth, neededSize.Width)),
 				Math.Max(minHeight, neededSize.Height));
