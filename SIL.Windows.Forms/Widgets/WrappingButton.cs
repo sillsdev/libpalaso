@@ -29,16 +29,6 @@ namespace SIL.Windows.Forms.Widgets
 			}
 		}
 
-		public override Font Font
-		{
-			get => base.Font;
-			set
-			{
-				base.Font = value;
-				ResizeToFitText();
-			}
-		}
-
 		public override Size MaximumSize
 		{
 			get => base.MaximumSize;
@@ -78,6 +68,19 @@ namespace SIL.Windows.Forms.Widgets
 				base.AutoSize = value && MaximumSize.Width <= 0;
 				ResizeToFitText();
 			}
+		}
+
+		/// <summary>
+		/// Catches every way the effective Font can change - both a direct assignment
+		/// (Control's own Font setter raises this) and an inherited font changing because
+		/// the parent's Font was reassigned (OnParentFontChanged raises this too, when this
+		/// control has no font of its own) - so wrapping stays in sync with the current font
+		/// either way.
+		/// </summary>
+		protected override void OnFontChanged(EventArgs e)
+		{
+			base.OnFontChanged(e);
+			ResizeToFitText();
 		}
 
 		/// <summary>
