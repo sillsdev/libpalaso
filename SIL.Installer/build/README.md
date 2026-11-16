@@ -79,21 +79,25 @@ navigation and add your own `<Publish>` elements connecting to `PrivacyDlg`:
 <SilAnalyticsIncludeNavigation>false</SilAnalyticsIncludeNavigation>
 ```
 
-### 6. Avoid double-displaying the license behind a Burn bootstrapper (optional)
+### 6. Launching the installer from a Burn bootstrapper (optional)
 
-If your product's installer is a WiX Burn bootstrapper (`WixStandardBootstrapperApplication`
-with `LicenseFile`/`LicenseUrl`) that chains this MSI, the license would otherwise be shown
-twice: once by the bootstrapper's own chrome, once by this MSI's `LicenseAgreementDlg`. To
-show it only once, pass `LAUNCHED_VIA_BOOTSTRAPPER` from your bootstrapper's `.wxs`:
+There are two additional steps if your product's installer is a WiX Burn bootstrapper (`WixStandardBootstrapperApplication`).
+
+#### Ensure the MSI UI is displayed
+In the `MsiPackage` set `DisplayInternalUI="yes"`. Without it Burn suppresses this MSI's UI
+sequence entirely, including the Privacy dialog itself.
+
+#### Avoid displaying the license file twice
+If your bootstrapper is configured to show its own license (`LicenseFile`/`LicenseUrl` set on
+`WixStandardBootstrapperApplication`), the license would otherwise be shown twice: once by the
+bootstrapper, once by this MSI's `LicenseAgreementDlg`. To show it only once, pass
+`LAUNCHED_VIA_BOOTSTRAPPER` from your bootstrapper's `.wxs`:
 
 ```xml
 <MsiPackage SourceFile="...\YourProduct.msi" DisplayInternalUI="yes">
   <MsiProperty Name="LAUNCHED_VIA_BOOTSTRAPPER" Value="1" />
 </MsiPackage>
 ```
-
-`DisplayInternalUI="yes"` is required regardless — without it Burn suppresses this MSI's UI
-sequence entirely, including the Privacy dialog itself, not just the license screen.
 
 This only takes effect with the standard navigation fragment (`AnalyticsNavigation.wxs`); if
 you set `SilAnalyticsIncludeNavigation=false` and wire navigation yourself, add the equivalent
