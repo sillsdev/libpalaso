@@ -15,7 +15,7 @@ namespace SIL.Windows.Forms.Tests.Widgets
 			using (var button = new WrappingButton { AutoSize = true, Text = "Short" })
 			{
 				form.Controls.Add(button);
-				var handle = form.Handle; // force handle/layout so AutoSize takes effect
+				_ = form.Handle; // force handle/layout so AutoSize takes effect
 				var widthAfterShortText = button.Width;
 
 				button.Text = "A substantially longer caption than the original";
@@ -37,8 +37,9 @@ namespace SIL.Windows.Forms.Tests.Widgets
 			})
 			{
 				form.Controls.Add(button);
-				var handle = form.Handle; // force handle/layout so AutoSize takes effect
+				_ = form.Handle; // force handle/layout so AutoSize takes effect
 				var widthBeforeMax = button.Width;
+				var heightBeforeMax = button.Height;
 
 				button.MaximumSize = new Size(100, 0);
 
@@ -46,7 +47,7 @@ namespace SIL.Windows.Forms.Tests.Widgets
 					"button should have wrapped to respect the newly-set MaximumSize");
 				Assert.That(button.Width, Is.LessThan(widthBeforeMax),
 					$"before={widthBeforeMax} after={button.Width}");
-				Assert.That(button.Height, Is.GreaterThan(button.Font.Height),
+				Assert.That(button.Height, Is.GreaterThan(heightBeforeMax),
 					"text should have wrapped onto more than one line");
 			}
 		}
@@ -61,7 +62,7 @@ namespace SIL.Windows.Forms.Tests.Widgets
 				button.AutoSize = true;
 				button.Text = "A substantially longer caption than the original";
 
-				var handle = form.Handle; // force a real parent layout pass
+				_ = form.Handle; // force a real parent layout pass
 				form.PerformLayout();
 
 				// Native AutoSize stays off while MaximumSize.Width requires wrapping - this
