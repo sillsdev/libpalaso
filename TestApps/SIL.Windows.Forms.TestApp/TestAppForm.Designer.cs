@@ -60,6 +60,10 @@ namespace SIL.Windows.Forms.TestApp
             SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo superToolTipInfo1 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo();
             SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper superToolTipInfoWrapper2 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper();
             SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo superToolTipInfo2 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo();
+            SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper superToolTipInfoWrapper3 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper();
+            SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo superToolTipInfo3 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo();
+            SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper superToolTipInfoWrapper4 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper();
+            SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo superToolTipInfo4 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TestAppForm));
             this._cboAboutHTML = new System.Windows.Forms.ComboBox();
             this.btnRefRange = new System.Windows.Forms.Button();
@@ -296,6 +300,13 @@ namespace SIL.Windows.Forms.TestApp
             this._silAboutBoxGecko.TabIndex = 2;
             this._silAboutBoxGecko.Text = "SIL AboutBox (Gecko)";
             this._silAboutBoxGecko.UseVisualStyleBackColor = true;
+            superToolTipInfo3.BodyText = "Hold Shift while clicking to enable the \"Check for Updates\" button (simulates " +
+    "no updates available).";
+            superToolTipInfo3.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
+            superToolTipInfo3.ShowHeader = false;
+            superToolTipInfoWrapper3.SuperToolTipInfo = superToolTipInfo3;
+            superToolTipInfoWrapper3.UseSuperToolTip = true;
+            this.superToolTip1.SetSuperStuff(this._silAboutBoxGecko, superToolTipInfoWrapper3);
             this._silAboutBoxGecko.Click += new System.EventHandler(this.OnSilAboutBoxGeckoClicked);
             // 
             // btnSelectFile
@@ -337,6 +348,13 @@ namespace SIL.Windows.Forms.TestApp
             this.btnSilAboutBox.TabIndex = 0;
             this.btnSilAboutBox.Text = "SIL AboutBox";
             this.btnSilAboutBox.UseVisualStyleBackColor = true;
+            superToolTipInfo4.BodyText = "Hold Shift while clicking to enable the \"Check for Updates\" button (simulates " +
+    "no updates available).";
+            superToolTipInfo4.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
+            superToolTipInfo4.ShowHeader = false;
+            superToolTipInfoWrapper4.SuperToolTipInfo = superToolTipInfo4;
+            superToolTipInfoWrapper4.UseSuperToolTip = true;
+            this.superToolTip1.SetSuperStuff(this.btnSilAboutBox, superToolTipInfoWrapper4);
             this.btnSilAboutBox.Click += new System.EventHandler(this.OnSilAboutBoxClicked);
             // 
             // btnImageToolbox
