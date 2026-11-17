@@ -7,10 +7,6 @@
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'net48' ">
     <DefineConstants>$(DefineConstants);NETFRAMEWORK</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
-    <!-- [GeneratedRegex] source generator requires C# 11 -->
-    <LangVersion>11</LangVersion>
-  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.12.0" PrivateAssets="all" />
