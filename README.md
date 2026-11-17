@@ -93,8 +93,6 @@ sudo apt install mono-complete libcanberra-gtk-module
     --filter "(TestCategory != SkipOnTeamCity) & (TestCategory != RequiresAudioInputDevice)"
   ```
 
-  Some tests already fail on Linux (see #1565), so compare against a run on `master`.
-
 - Test in client projects (as applicable):
 
   * Set an environment variable `LOCAL_NUGET_REPO` with the path to a folder on your computer (or local network) to publish locally-built packages
