@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] `MediaInfo.Video.Resolution` is now an empty string (rather than a malformed value like `"x144"`) when ffprobe can't determine a stream's width or height.
 - [SIL.Media] `MediaInfo.Audio`/`.Video.Encoding` is now an empty string (rather than `null`) when ffprobe doesn't report a codec name for the stream.
 - [SIL.Installer] Fixed `AnalyticsNavigation.wxs`'s header comment, which incorrectly listed `WixUI_Advanced` as a compatible UI set; it has no `LicenseAgreementDlg` (it uses a combined `AdvancedWelcomeEulaDlg`), so the navigation fragment cannot hook it.
+- [SIL.Installer] Fixed an `Order` collision in `AnalyticsNavigation.wxs`: the `VerifyReadyDlg`/`Back` "no prior analytics preference" rule fired at the same `Order` as native rows in `WixUI_FeatureTree` and `WixUI_Mondo` that target a different dialog, leaving MSI's tie-break to decide which dialog `Back` actually showed during a repair or update. Verified against the WiX 3.14 SDK's `WixUI_FeatureTree.wxs`/`WixUI_InstallDir.wxs`/`WixUI_Mondo.wxs` sources and renumbered above every native and own `Order` used on that `(Dialog, Control, Event)` triple.
 
 ### Changed
 

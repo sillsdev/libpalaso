@@ -61,9 +61,12 @@ In your product's `Feature` element:
 ### 4. Choose a compatible WiX UI set
 
 `AnalyticsNavigation.wxs` is included automatically and wires `LicenseAgreementDlg →
-[PrivacyDlg →] VerifyReadyDlg`. It requires a UI set that routes through
-`LicenseAgreementDlg`; `WixUI_Minimal` is not supported. `WixUI_Advanced` is also not
-supported, since it combines the license and welcome screens into a single
+[PrivacyDlg →] VerifyReadyDlg`. It requires a UI set whose flow includes a distinct
+`LicenseAgreementDlg` dialog to hook — of the standard WiX 3 UI sets, that's currently
+`WixUI_FeatureTree`, `WixUI_InstallDir`, and `WixUI_Mondo`.
+
+`WixUI_Minimal` doesn't qualify: it has no `LicenseAgreementDlg` at all. Neither does
+`WixUI_Advanced`: it combines the license and welcome screens into a single
 `AdvancedWelcomeEulaDlg`, with no separate `LicenseAgreementDlg` to hook.
 
 ### 5. Customize dialog navigation (optional)

@@ -65,27 +65,15 @@
                       Win64="$(var.AnalyticsComponentWin64)" />
     </Property>
 
-    <!-- LAUNCHED_VIA_BOOTSTRAPPER (referenced by AnalyticsNavigation.wxs's Publish
-         conditions, not declared here): set by the consuming product's Burn bootstrapper
-         (via <MsiProperty Name="LAUNCHED_VIA_BOOTSTRAPPER" Value="1" /> on its chained
-         <MsiPackage>) to indicate the bootstrapper's own EULA screen already obtained
-         license acceptance, so AnalyticsNavigation.wxs can skip this MSI's
-         LicenseAgreementDlg and avoid showing the license twice. Empty/unset — the
-         default for a bare MSI run, or any bootstrapper that doesn't set it — leaves
-         today's LicenseAgreementDlg -> [PrivacyDlg ->] VerifyReadyDlg flow unchanged.
-         Windows Installer treats any all-uppercase property name as "public" (settable
-         from the command line or, equivalently, via Burn's MsiProperty) without it
-         needing a <Property> declaration here. A <Property Id="LAUNCHED_VIA_BOOTSTRAPPER" />
-         element with no Value/Secure/Admin/Hidden attribute is silently dropped by candle
-         (warning CNDL1006, "the Property element is being ignored") and would achieve
-         nothing, so it is deliberately left undeclared instead — an undeclared public
-         property works identically for this property's purpose, since it is used only
-         in the UI sequence and is never queried from InstallExecuteSequence.
-
-         Separately, and regardless of whether it were declared: this property must never
-         be written to the registry or otherwise persisted. Nothing in this package writes
-         arbitrary properties to the registry automatically, so this is simply a constraint
-         on any future change here, not a consequence of leaving it undeclared. -->
+    <!-- LAUNCHED_VIA_BOOTSTRAPPER (not declared here): referenced in `AnalyticsNavigation.wxs`.
+         See that file's header comment for what it does and `build/README.md` for how a consuming
+		 bootstrapper sets it.
+         Windows Installer treats any all-uppercase property name as "public" (settable from the
+		 command line or via Burn's MsiProperty) without requiring a <Property> declaration here. A
+		 <Property Id="LAUNCHED_VIA_BOOTSTRAPPER" /> element with no Value/Secure/Admin/Hidden
+		 attribute is dropped by candle (warning CNDL1006, "the Property element is being ignored")
+		 and is deliberately left undeclared since it is used only in the UI sequence and is never
+		 queried from InstallExecuteSequence. -->
 
 	<!-- UI property for the privacy dialog checkboxes. These are *not* secure since they are
 		used only in the UI. This allows the UI to display the correct state for the checkboxes

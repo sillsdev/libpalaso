@@ -6,11 +6,13 @@
   same MSI that SIL.Windows.Forms.TestAppInstaller.wixproj already produces for testing
   the pre-existing bare-MSI path, so this dog-food project now covers both entry points.
 
-  CAUTION (manual verification): the Bundle below has a fixed Version="1.0.0" and the
-  chained MSI uses Product Id="*" (a new product code every rebuild), so neither one
-  changes in a way that triggers a clean upgrade. Fully uninstall the previous test
-  install (Control Panel, or `msiexec /x`) before rebuilding and rerunning this
-  bootstrapper, or it may install alongside the old one instead of replacing it.
+  CAUTION (manual verification): the chained MSI uses Product Id="*" (a new product code
+  every rebuild), but the Bundle below keeps the same fixed UpgradeCode and Version="1.0.0"
+  across rebuilds too — and it's the Bundle's (UpgradeCode, Version), not the MSI's product
+  code, that Burn uses to detect a related/prior install. So re-running a freshly rebuilt
+  bootstrapper without first uninstalling may route to Burn's modify/repair/uninstall page
+  instead of a fresh install. Fully uninstall the previous test install (Control Panel, or
+  `msiexec /x`) before rebuilding and rerunning this bootstrapper.
 -->
 <?define UpgradeCode = "{B925CB4A-4877-40E6-ACDC-A8319F6FD77F}" ?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:bal="http://schemas.microsoft.com/wix/BalExtension">
