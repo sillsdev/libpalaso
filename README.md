@@ -86,12 +86,17 @@ sudo apt install mono-complete libcanberra-gtk-module
   #### Linux
 
   Run the `net8.0` tests one test project at a time (the WinForms test projects
-  have no `net8.0` target), with the same filter CI uses:
+  have no `net8.0` target), with the same filter the Linux CI job uses:
 
   ```bash
   dotnet test SIL.Core.Tests -f net8.0 -p:EnableWindowsTargeting=true \
-    --filter "(TestCategory != SkipOnTeamCity) & (TestCategory != RequiresAudioInputDevice)"
+    --filter "(TestCategory != SkipOnTeamCity) & (TestCategory != RequiresAudioInputDevice) & (TestCategory != KnownLinuxIssue)"
   ```
+
+  Tests in the `KnownLinuxIssue` category are known to fail on Linux; each one has a
+  comment explaining why. When a test fails only on Linux, fix it, guard it with
+  `[Platform]` if it tests platform-specific behavior, or, as a last resort, add it to
+  `KnownLinuxIssue` with an explanatory comment.
 
 - Test in client projects (as applicable):
 

@@ -52,6 +52,8 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		[Platform(Include = "Win", Reason = "Expects Windows NLS collation (the test project sets " +
+			"UseNls); ICU, the only option on Linux and macOS, sorts \"-c\" before \"a\"")]
 		public void System_WithDashCBA_ABCDash()
 		{
 			var list = new List<string> { "-c", "c", "b", "a" };

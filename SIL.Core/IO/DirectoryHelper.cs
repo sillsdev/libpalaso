@@ -83,12 +83,11 @@ namespace SIL.IO
 		{
 			var comparison = Platform.IsWindows ? StringComparison.InvariantCultureIgnoreCase
 				: StringComparison.InvariantCulture;
-			var backslash = new[]
-			{
-				'\\', '/', '.'
-			}; // added this step because mono does not implicitly convert from char to char[]
-			return string.Compare(dirInfo1.FullName.TrimEnd(backslash),
-				dirInfo2.FullName.TrimEnd(backslash), comparison) == 0;
+			// Windows ignores trailing dots in a folder name, but on Unix "foo." and "foo" are
+			// different folders and a backslash is an ordinary file-name character.
+			var trailingCharsToIgnore = Platform.IsWindows ? new[] { '\\', '/', '.' } : new[] { '/' };
+			return string.Compare(dirInfo1.FullName.TrimEnd(trailingCharsToIgnore),
+				dirInfo2.FullName.TrimEnd(trailingCharsToIgnore), comparison) == 0;
 		}
 
 		/// <summary>

@@ -27,6 +27,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] `MediaInfo.AnalysisData.Duration` now reflects the longest of every audio, video, and subtitle track plus the container's own duration, rather than just the primary audio/video streams. (Upstream fix for [rosenbjerg/FFMpegCore#361](https://github.com/rosenbjerg/FFMpegCore/issues/361), picked up via the FFMpegCore bump below.)
 - [SIL.Media] `MediaInfo.Video.Resolution` is now an empty string (rather than a malformed value like `"x144"`) when ffprobe can't determine a stream's width or height.
 - [SIL.Media] `MediaInfo.Audio`/`.Video.Encoding` is now an empty string (rather than `null`) when ffprobe doesn't report a codec name for the stream.
+- [SIL.Core] `XmlUtils.ConvertMultiParagraphToSafeXml` converts `"\r\n"` to a single U+2028 line separator on every platform. On Linux and macOS it used to produce two, and on Windows a `"\r\n"` at the very start of the string also produced two.
+- [SIL.Core] `DirectoryHelper.AreEquivalent` no longer ignores trailing dots and backslashes on Linux and macOS, where `foo.` and `foo` are different folders and a backslash is an ordinary file-name character. Trailing slashes are still ignored. Windows behavior is unchanged.
+- [SIL.Core] `FileLocationUtilities.LocateInProgramFiles` (and `LocateExecutable`, which falls back to it) no longer calls `Debug.Fail` when a folder it searches can't be read. It logs a minor event and keeps searching, so a Debug build no longer fails or shows an assertion dialog (for example on WSL, where `PATH` includes unreadable Windows folders).
 
 ### Changed
 

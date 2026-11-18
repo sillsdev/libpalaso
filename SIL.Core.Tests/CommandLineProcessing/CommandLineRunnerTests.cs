@@ -2,6 +2,7 @@ using System.IO;
 using System.Text;
 using NUnit.Framework;
 using SIL.CommandLineProcessing;
+using SIL.PlatformUtilities;
 using SIL.Progress;
 
 namespace SIL.Tests.CommandLineProcessing
@@ -14,12 +15,15 @@ namespace SIL.Tests.CommandLineProcessing
 		[OneTimeSetUp]
 		public void TestFixtureSetup()
 		{
-			const string kTestApp = "SIL.CommandLineProcessing.TestApp.exe";
+			// A .NET (Core) build on Linux or macOS names the app host without an extension.
+			var testApp = Platform.IsWindows || Platform.IsMono
+				? "SIL.CommandLineProcessing.TestApp.exe"
+				: "SIL.CommandLineProcessing.TestApp";
 
 			var testAssemblyFolder =
 				Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 			Assert.IsNotNull(testAssemblyFolder, "test setup problem");
-			var appPath = Path.Combine(testAssemblyFolder, kTestApp);
+			var appPath = Path.Combine(testAssemblyFolder, testApp);
 			Assert.True(File.Exists(appPath), "test setup problem");
 			App = appPath;
 		}

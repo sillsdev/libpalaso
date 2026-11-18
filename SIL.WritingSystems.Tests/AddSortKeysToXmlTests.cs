@@ -10,6 +10,10 @@ namespace SIL.WritingSystems.Tests
 	[TestFixture]
 	public class AddSortKeysToXmlTests
 	{
+		private const string NlsSortKeysReason = "The expected sort keys come from Windows NLS " +
+			"collation (the test project sets UseNls); on Linux and macOS, .NET uses ICU, whose " +
+			"sort keys differ";
+
 		private XPathNavigator _document;
 		private string _xpathSortKeySource;
 		private string _xpathElementToPutSortKeyAttributeIn;
@@ -42,6 +46,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		[Platform(Include = "Win", Reason = NlsSortKeysReason)]
 		public void VerifySortKeyGenerator()
 		{
 			var sortKey = _sortKeyGenerator("z");
@@ -52,6 +57,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		[Platform(Include = "Win", Reason = NlsSortKeysReason)]
 		public void AddSortKeys()
 		{
 			AddSortKeysToXml.AddSortKeys(_document,
@@ -227,6 +233,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		[Platform(Include = "Win", Reason = NlsSortKeysReason)]
 		public void AddSortKeysWithNamespace()
 		{
 			AddSortKeysToXml.AddSortKeys(_document,
@@ -247,6 +254,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 	  [Test]
+	  [Platform(Include = "Win", Reason = NlsSortKeysReason)]
 	  public void AddSortKeys_AlreadyHasSortKeys()
 	  {
 		AddSortKeysToXml.AddSortKeys(_document,
