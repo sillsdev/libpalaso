@@ -546,6 +546,8 @@ namespace SIL.Tests.Xml
 			ExpectedResult = "Line1\u2028Line2\u2028Line3\u2028Line4")]
 		[TestCase("<tag>\n & \r \" ' \r\n</tag>",
 			ExpectedResult = "&lt;tag&gt;\u2028 &amp; \u2028 \" ' \u2028&lt;/tag&gt;")]
+		[TestCase("\r\nLine1\n\rLine2\r\n",
+			ExpectedResult = "\u2028Line1\u2028\u2028Line2\u2028")]
 		public string ConvertMultiParagraphToSafeXml_NewLines_ReturnsEscapedString(string input)
 		{
 			return XmlUtils.ConvertMultiParagraphToSafeXml(input);
