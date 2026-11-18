@@ -15,7 +15,7 @@ namespace SIL.Tests.IO
 		private string WindowsProgramFileThatShouldExist => "msinfo32.exe";
 
 		private string SystemProgramFileThatShouldExist =>
-			Platform.IsMono ? "bash" : WindowsProgramFileThatShouldExist;
+			Platform.IsUnix ? "bash" : WindowsProgramFileThatShouldExist;
 
 		[Test]
 		public void GetFileDistributedWithApplication_MultipleParts_FindsCorrectly()
