@@ -84,8 +84,8 @@ namespace SIL.IO
 			var comparison = Platform.IsWindows ? StringComparison.InvariantCultureIgnoreCase
 				: StringComparison.InvariantCulture;
 			// Windows ignores trailing dots in a folder name, but on Unix "foo." and "foo" are
-			// different folders and a backslash is an ordinary file-name character.
-			var trailingCharsToIgnore = Platform.IsWindows ? new[] { '\\', '/', '.' } : new[] { '/' };
+			// different folders.
+			var trailingCharsToIgnore = Platform.IsWindows ? new[] { '\\', '/', '.' } : new[] { '\\', '/' };
 			return string.Compare(dirInfo1.FullName.TrimEnd(trailingCharsToIgnore),
 				dirInfo2.FullName.TrimEnd(trailingCharsToIgnore), comparison) == 0;
 		}

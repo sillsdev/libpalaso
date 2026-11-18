@@ -12,10 +12,13 @@ namespace SIL.Tests.CommandLineProcessing
 	{
 		private string App { get; set; }
 
+		// On Linux and macOS, a .NET Framework .exe has to be run with Mono, but a .NET (Core)
+		// build produces a native app host, without an extension, that runs on its own.
+		private static bool IsManagedProcess => Platform.IsMono;
+
 		[OneTimeSetUp]
 		public void TestFixtureSetup()
 		{
-			// A .NET (Core) build on Linux or macOS names the app host without an extension.
 			var testApp = Platform.IsWindows || Platform.IsMono
 				? "SIL.CommandLineProcessing.TestApp.exe"
 				: "SIL.CommandLineProcessing.TestApp";
@@ -33,7 +36,7 @@ namespace SIL.Tests.CommandLineProcessing
 		{
 			var progress = new StringBuilderProgress();
 			var result = CommandLineRunner.Run(App, "CommandLineRunnerTest", null, string.Empty, 100,
-				progress, null, null, true);
+				progress, null, null, IsManagedProcess);
 			Assert.IsTrue(result.StandardOutput.Contains("0"));
 			Assert.IsTrue(result.StandardOutput.Contains("9"));
 		}
@@ -43,7 +46,7 @@ namespace SIL.Tests.CommandLineProcessing
 		{
 			var progress = new StringBuilderProgress();
 			var result = CommandLineRunner.Run(App, "CommandLineRunnerTest", null, string.Empty, 3,
-				progress, null, null, true);
+				progress, null, null, IsManagedProcess);
 			Assert.That(result.DidTimeOut, Is.True);
 			Assert.That(result.StandardOutput, Is.Null);
 			Assert.That(result.StandardError, Contains.Substring("Timed Out after waiting 3 seconds."));
@@ -56,7 +59,7 @@ namespace SIL.Tests.CommandLineProcessing
 			var linesReceivedAsynchronously = 0;
 			var bldr = new StringBuilder();
 			CommandLineRunner.Run(App, "CommandLineRunnerTest", null, string.Empty, 100,
-				progress, s => bldr.AppendLine($"{++linesReceivedAsynchronously}: '{s}'"), null, true);
+				progress, s => bldr.AppendLine($"{++linesReceivedAsynchronously}: '{s}'"), null, IsManagedProcess);
 			Assert.AreEqual(10, linesReceivedAsynchronously, bldr.ToString());
 		}
 
@@ -66,7 +69,7 @@ namespace SIL.Tests.CommandLineProcessing
 			var progress = new StringBuilderProgress();
 			int linesReceivedAsynchronously = 0;
 			var result = CommandLineRunner.Run(App, "CommandLineRunnerTest", null, string.Empty, 3,
-				progress, s => ++linesReceivedAsynchronously, null, true);
+				progress, s => ++linesReceivedAsynchronously, null, IsManagedProcess);
 			Assert.That(result.DidTimeOut, Is.True);
 			Assert.That(result.StandardOutput, Is.Null);
 			Assert.That(result.StandardError, Contains.Substring("Timed Out after waiting 3 seconds."));
