@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
 using SIL.IO;
+using SIL.PlatformUtilities;
 using SIL.TestUtilities;
 
 namespace SIL.Tests.IO
@@ -184,7 +185,9 @@ namespace SIL.Tests.IO
 			string[] logicalDrives = null;
 			try
 			{
-				logicalDrives = Directory.GetLogicalDrives();
+				// On Unix, GetLogicalDrives returns every mount point, but a path that starts
+				// with the separator is relative only to "/".
+				logicalDrives = Platform.IsUnix ? new[] { "/" } : Directory.GetLogicalDrives();
 			}
 			catch
 			{

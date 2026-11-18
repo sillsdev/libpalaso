@@ -28,7 +28,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] `MediaInfo.Video.Resolution` is now an empty string (rather than a malformed value like `"x144"`) when ffprobe can't determine a stream's width or height.
 - [SIL.Media] `MediaInfo.Audio`/`.Video.Encoding` is now an empty string (rather than `null`) when ffprobe doesn't report a codec name for the stream.
 - [SIL.Core] `DirectoryHelper.AreEquivalent` no longer ignores trailing dots on Linux and macOS, where `foo.` and `foo` are different folders. Windows behavior is unchanged.
-- [SIL.Core] `FileLocationUtilities.LocateInProgramFiles` (and `LocateExecutable`, which falls back to it) no longer calls `Debug.Fail` when a folder it searches can't be read. It logs a minor event and keeps searching, so a Debug build no longer fails or shows an assertion dialog (for example on WSL, where `PATH` includes unreadable Windows folders).
 
 ### Changed
 
