@@ -145,13 +145,71 @@ jobs:
         name: binary-logs (${{ matrix.framework }})
         path: build.binlog
 
+  # Runs the cross-platform (net8.0) tests on Linux. Testing net462/net48 here would need Mono.
+  build-linux:
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-linux
+      cancel-in-progress: true
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      with:
+        fetch-depth: '0'
+
+    # See the build job for why GitVersion runs as a separate step.
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@51d325634925d7d9ce0a7efc2c586c0bc2b9eee6 # v3.2.1
+      with:
+        versionSpec: '5.x'
+
+    - name: Run GitVersion
+      uses: gittools/actions/gitversion/execute@51d325634925d7d9ce0a7efc2c586c0bc2b9eee6 # v3.2.1
+
+    - name: Build project
+      run: dotnet build -bl:build.binlog -c Release -p:WriteVersionInfoToBuildLog=false -p:EnableWindowsTargeting=true
+
+    - name: Get Path to Tests
+      run: echo "TEST_PATH=$(dotnet msbuild SIL.Core.Tests/ --getProperty:OutputPath -p:TargetFramework=net8.0 -p:Configuration=Release)" >> $GITHUB_ENV
+
+    - name: Test project
+      id: test
+      run: dotnet test "$TEST_PATH"/SIL*Tests.dll --filter "(TestCategory != SkipOnTeamCity) & (TestCategory != RequiresAudioInputDevice) & (TestCategory != KnownLinuxIssue)" --blame-hang-timeout 5m --logger:"trx;LogFilePrefix=results" --results-directory ./test-results
+
+    - name: Upload hang dump (if any)
+      if: always()
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: Hang dumps (linux net8.0)
+        path: |
+          **/testhost_*.dmp
+          **/sequence.xml
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: Test results (linux net8.0)
+        path: ./test-results
+
+    - name: Publish logs on failure
+      if: failure()
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      with:
+        name: binary-logs (linux net8.0)
+        path: build.binlog
+
   publish-test-results:
     permissions:
       checks: write
       contents: read
       pull-requests: write
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, build-linux]
     if: always()
     steps:
       - name: Download test results

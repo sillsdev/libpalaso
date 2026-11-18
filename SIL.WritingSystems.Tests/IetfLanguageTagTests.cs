@@ -145,7 +145,13 @@ namespace SIL.WritingSystems.Tests
 		/// <summary>
 		/// Tests the ToLanguageTag() method which converts an ICU locale to a language tag.
 		/// </summary>
+		/// <remarks>
+		/// KnownLinuxIssue: newer ICU versions than the ICU 56 that Icu4c.Win.Min provides on
+		/// Windows (e.g., Ubuntu 24.04's ICU 74) parse "en_Latn_US_X_ETIC" as
+		/// "en_Latn_US@x=etic", so the ICU variant is lost.
+		/// </remarks>
 		[Test]
+		[Category("KnownLinuxIssue")]
 		public void ToLanguageTag_EnglishIcuLocales_ReturnsEnglishLanguageTags()
 		{
 			// language
@@ -161,6 +167,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		[Category("KnownLinuxIssue")] // See ToLanguageTag_EnglishIcuLocales_ReturnsEnglishLanguageTags
 		public void ToLanguageTag_ChinesePinyinIcuLocale_ReturnsChineseLanguageTag()
 		{
 			// language, region, ICU variant
@@ -923,6 +930,10 @@ namespace SIL.WritingSystems.Tests
 		#region GetLocalizedLanguageName
 		const string kIetfLanguageCodeWhichWindowsDoesntKnowAbout = "tlh"; // Happens to be Klingon
 
+		// The KnownLinuxIssue cases expect ICU 56's names (the version Icu4c.Win.Min provides
+		// on Windows). With a newer ICU, such as Ubuntu 24.04's ICU 74, "pbu" is named "Pashto"
+		// instead of its autonym, and a UI language ICU has no data for gives the English name.
+
 		[TestCase("en", "en", ExpectedResult = "English")]
 		[TestCase("en-Latn-US", "en", ExpectedResult = "English")]
 		[TestCase("en-x-etic", "en-GB", ExpectedResult = "English")]
@@ -933,13 +944,13 @@ namespace SIL.WritingSystems.Tests
 		[TestCase("fr", "fr", ExpectedResult = "français")]
 		[TestCase("es-419", "es-ES", ExpectedResult = "español")]
 		[TestCase("zh-CN", "en", ExpectedResult = "Chinese (Simplified)")]
-		[TestCase("pbu", "pbu", ExpectedResult = "پښتو")]
-		[TestCase("pbu", "tpi", ExpectedResult = "پښتو")]
-		[TestCase("pbu", kIetfLanguageCodeWhichWindowsDoesntKnowAbout, ExpectedResult = "پښتو")]
+		[TestCase("pbu", "pbu", ExpectedResult = "پښتو", Category = "KnownLinuxIssue")]
+		[TestCase("pbu", "tpi", ExpectedResult = "پښتو", Category = "KnownLinuxIssue")]
+		[TestCase("pbu", kIetfLanguageCodeWhichWindowsDoesntKnowAbout, ExpectedResult = "پښتو", Category = "KnownLinuxIssue")]
 		[TestCase("prs", "en", ExpectedResult = "Dari")]
 		[TestCase("tpi", "tpi", ExpectedResult = "Tok Pisin")]
 		[TestCase("tpi", kIetfLanguageCodeWhichWindowsDoesntKnowAbout, ExpectedResult = "Tok Pisin")]
-		[TestCase("es", "tpi", ExpectedResult = "español")]
+		[TestCase("es", "tpi", ExpectedResult = "español", Category = "KnownLinuxIssue")]
 		[TestCase("es", "fr", "español", ExpectedResult = "espagnol")]
 		[TestCase("es", "de", "español", ExpectedResult = "Spanisch")]
 		[TestCase("pt-BR", "en-US", ExpectedResult = "Portuguese")]
