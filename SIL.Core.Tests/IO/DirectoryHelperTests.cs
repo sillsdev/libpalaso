@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
 using SIL.IO;
+using SIL.PlatformUtilities;
 using SIL.TestUtilities;
 
 namespace SIL.Tests.IO
@@ -96,22 +97,22 @@ namespace SIL.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Exclude = "Linux", Reason = "This test tests Windows behaviour")]
+		[Platform(Include = "Win", Reason = "This test tests Windows behaviour")]
 		public void AreEquivalent_DifferByTrailingDot_Windows()
 		{
 			Assert.IsTrue(DirectoryHelper.AreEquivalent(@"C:\temp.", @"C:\temp"));
 		}
 
 		[Test]
-		[Platform(Include = "Linux", Reason = "This test tests Linux behaviour")]
-		public void AreEquivalent_DifferByTrailingDot_Linux()
+		[Platform(Exclude = "Win", Reason = "This test tests Unix behaviour")]
+		public void AreEquivalent_DifferByTrailingDot_Unix()
 		{
 			Assert.IsFalse(DirectoryHelper.AreEquivalent(@"C:\temp.", @"C:\temp"));
 		}
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Exclude = "Linux", Reason = "This test tests Windows behaviour")]
+		[Platform(Include = "Win", Reason = "This test tests Windows behaviour")]
 		public void AreEquivalent_DifferByTrailingDotsAndBackslash_Windows()
 		{
 			Assert.IsTrue(DirectoryHelper.AreEquivalent(@"C:\temp...\", @"C:\temp"));
@@ -119,8 +120,8 @@ namespace SIL.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Include = "Linux", Reason = "This test tests Linux behaviour")]
-		public void AreEquivalent_DifferByTrailingDotsAndBackslash_Linux()
+		[Platform(Exclude = "Win", Reason = "This test tests Unix behaviour")]
+		public void AreEquivalent_DifferByTrailingDotsAndBackslash_Unix()
 		{
 			Assert.IsFalse(DirectoryHelper.AreEquivalent(@"C:\temp...\", @"C:\temp"));
 		}
@@ -184,7 +185,9 @@ namespace SIL.Tests.IO
 			string[] logicalDrives = null;
 			try
 			{
-				logicalDrives = Directory.GetLogicalDrives();
+				// On Unix, GetLogicalDrives returns every mount point, but a path that starts
+				// with the separator is relative only to "/".
+				logicalDrives = Platform.IsUnix ? new[] { "/" } : Directory.GetLogicalDrives();
 			}
 			catch
 			{
