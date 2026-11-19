@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] `MediaInfo.AnalysisData.Duration` now reflects the longest of every audio, video, and subtitle track plus the container's own duration, rather than just the primary audio/video streams. (Upstream fix for [rosenbjerg/FFMpegCore#361](https://github.com/rosenbjerg/FFMpegCore/issues/361), picked up via the FFMpegCore bump below.)
 - [SIL.Media] `MediaInfo.Video.Resolution` is now an empty string (rather than a malformed value like `"x144"`) when ffprobe can't determine a stream's width or height.
 - [SIL.Media] `MediaInfo.Audio`/`.Video.Encoding` is now an empty string (rather than `null`) when ffprobe doesn't report a codec name for the stream.
+- [SIL.Core] `XmlUtils.ConvertMultiParagraphToSafeXml` converts `"\r\n"` to a single U+2028 line separator on every platform. On Linux and macOS it used to produce two, and on Windows a `"\r\n"` at the very start of the string also produced two.
 - [SIL.Core] `DirectoryHelper.AreEquivalent` no longer ignores trailing dots on Linux and macOS, where `foo.` and `foo` are different folders. Windows behavior is unchanged.
 
 ### Changed
