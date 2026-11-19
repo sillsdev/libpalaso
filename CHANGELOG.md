@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] `MediaInfo.Audio`/`.Video.Encoding` is now an empty string (rather than `null`) when ffprobe doesn't report a codec name for the stream.
 - [SIL.Core] `XmlUtils.ConvertMultiParagraphToSafeXml` converts `"\r\n"` to a single U+2028 line separator on every platform. On Linux and macOS it used to produce two, and on Windows a `"\r\n"` at the very start of the string also produced two.
 - [SIL.Core] `DirectoryHelper.AreEquivalent` no longer ignores trailing dots on Linux and macOS, where `foo.` and `foo` are different folders. Windows behavior is unchanged.
+- [SIL.Scripture] A versification that lists chapters and verses for a non-canonical book (e.g. `XXA 1:20 2:10` in a project's custom.vrs) now uses those limits for `ScrVers.GetLastChapter`/`GetLastVerse`, `VerseRef.Valid`/`ValidStatus` and verse navigation, instead of always allowing 998 chapters of 998 verses. Non-canonical books it doesn't list are unchanged. A non-canonical book listed as exactly one chapter with one verse (e.g. `XXA 1:1`) is still treated as unlisted, because saved versification files already use that line for books they don't list.
 
 ### Changed
 
