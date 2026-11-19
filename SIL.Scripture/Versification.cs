@@ -170,8 +170,8 @@ namespace SIL.Scripture
 		/// </summary>
 		internal int LastChapter(int bookNum)
 		{
-			// Non-scripture books have 998 chapters
-			if (!Canon.IsCanonical(bookNum))
+			// Non-scripture books have 998 chapters unless the versification defines them (e.g. in a custom.vrs)
+			if (!Canon.IsCanonical(bookNum) && !DefinesChaptersAndVerses(bookNum))
 				return NonCanonicalLastChapterOrVerse; // Use 998 so the VerseRef.BBBCCCVVV value is computed properly
 
 			// Anything else not in .vrs file has 1 chapter
@@ -187,8 +187,8 @@ namespace SIL.Scripture
 		/// </summary>
 		internal int LastVerse(int bookNum, int chapterNum)
 		{
-			// Non-scripture books have 998 verses in each chapter
-			if (!Canon.IsCanonical(bookNum))
+			// Non-scripture books have 998 verses in each chapter unless the versification defines them (e.g. in a custom.vrs)
+			if (!Canon.IsCanonical(bookNum) && !DefinesChaptersAndVerses(bookNum))
 				return NonCanonicalLastChapterOrVerse; // Use 998 so the VerseRef.BBBCCCVVV value is computed properly
 
 			// Anything else not in .vrs file has 1 chapter
@@ -200,6 +200,26 @@ namespace SIL.Scripture
 				return 1;
 
 			return chapters[chapterNum - 1];
+		}
+
+		/// <summary>
+		/// Gets whether this versification has a chapter/verse line for the specified book (e.g. "XXA 1:20 2:10").
+		/// <para>A book stored as a single chapter with one verse counts as not listed (the same rule that
+		/// <see cref="ScriptureBooks"/> uses). That is what the parser fills in for every book it skips before the
+		/// last book in the file. Every built-in versification lists books numbered after the non-canonical books,
+		/// so XXA-XXG, FRT, GLO, etc. are all stored that way, and <see cref="WriteToStream"/> writes them out as
+		/// "XXA 1:1" lines. Existing versification files (e.g. the ones in DBL bundles) therefore contain those lines
+		/// for books they don't list.</para>
+		/// <para>As a result, a book that really is listed as "XXA 1:1" can't be told apart from one that isn't, and
+		/// it keeps the default of 998 chapters with 998 verses each.</para>
+		/// </summary>
+		internal bool DefinesChaptersAndVerses(int bookNum)
+		{
+			if (bookNum < 1 || bookNum > bookList.Count)
+				return false;
+
+			int[] chapters = bookList[bookNum - 1];
+			return chapters.Length > 1 || (chapters.Length == 1 && chapters[0] != 1);
 		}
 
 		/// <summary>
