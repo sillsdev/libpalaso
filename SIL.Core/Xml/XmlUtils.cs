@@ -797,8 +797,8 @@ namespace SIL.Xml
 					case '\n':
 						if (!multiPara)
 							goto default;
-						if (i > 1 && Environment.NewLine.Length > 1 &&
-						    Environment.NewLine[0] == sInput[i - 1])
+						// "\r\n" is one paragraph break, whatever the platform's NewLine is.
+						if (i > 0 && sInput[i - 1] == '\r')
 							break;
 						AddToBuilder("\u2028");
 						break;
