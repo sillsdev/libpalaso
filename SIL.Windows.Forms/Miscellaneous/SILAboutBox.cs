@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -20,6 +21,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 	{
 		private readonly Assembly _assembly;
 		private readonly string _pathToAboutBoxHtml;
+
 		private TempFile _tempAboutBoxHtmlFile; // after update by AcknowledgementsProvider
 		private WebBrowserNavigatingEventHandler _navigatingHandlers;
 
@@ -104,6 +106,31 @@ namespace SIL.Windows.Forms.Miscellaneous
 					? uri.LocalPath
 					: pathToAboutBoxHtml;
 			InitializeComponent();
+			// The logo is used to set the floor for the width of the table's left-hand
+			// column, since it's the one control in this column with a fixed size, rather than
+			// sizing to its content. The height of the buttons and labels in that column is
+			// unconstrained (beyond any explicit Designer-based sizing), since there is enough
+			// extra vertical space to allow for a reasonable amount of text wrapping.
+			tableLayoutPanelMain.SuspendLayout();
+			var column0ControlsToConstrain = tableLayoutPanelMain.Controls.OfType<Control>()
+				.Where(c => c != logo && tableLayoutPanelMain.GetColumn(c) == 0);
+			foreach (var control in column0ControlsToConstrain)
+			{
+				// Allow a little slack beyond the logo's width for longer localizations or
+				// custom scaling. We treat our calculated width as a "minimum maximum": if the
+				// Designer already specifies a larger MaximumSize.Width, that is respected
+				// rather than shrunk, and an existing MaximumSize.Height, if any, is
+				// preserved rather than cleared.
+				var calculatedMaxWidth = logo.Width + logo.Margin.Horizontal + control.Margin.Horizontal;
+				control.MaximumSize = new Size(Math.Max(control.MaximumSize.Width, calculatedMaxWidth),
+					control.MaximumSize.Height);
+			}
+			var updateButtonMinWidth = Math.Max(logo.Width - _checkForUpdates.Margin.Horizontal,
+				 _checkForUpdates.MinimumSize.Width);
+			var updateButtonMinHeight = Math.Max(_checkForUpdates.MinimumSize.Height, _checkForUpdates.Height);
+			// Setting MinimumSize triggers the button to resize itself to fit its text.
+			_checkForUpdates.MinimumSize = new Size(updateButtonMinWidth, updateButtonMinHeight);
+			tableLayoutPanelMain.ResumeLayout(true);
 			_versionNumber.Text = useFullVersionNumber ? Application.ProductVersion :
 				GetShortVersionInfo();
 			_buildDate.Text = GetBuiltOnDate();
@@ -263,7 +290,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			Debug.Assert(aboutBoxHtml.Contains(" charset"), "At a minimum, the About Box html should contain a meta charset='UTF-8' tag.");
 
 			string newHtmlContents = null;
-			
+
 			if (aboutBoxHtml.Contains(DependencyMarker))
 			{
 				var insertableAcknowledgements = AcknowledgementsProvider.AssembleAcknowledgements();

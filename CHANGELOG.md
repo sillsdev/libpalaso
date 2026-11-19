@@ -16,16 +16,26 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- [SIL.Windows.Forms.Scripture] Added `net8.0-windows` target.
+- [SIL.Windows.Forms.Widgets] Added WrappingButton: A button that, when its text doesn't fit within MaximumSize.Width, wraps onto additional lines and grows taller instead of growing wider or clipping.
+
 ### Fixed
 
 - [SIL.Media] `MediaInfo.Audio`/`.Video` now treat the audio/video stream flagged `default` as the "primary" stream (falling back to the lowest index when none is flagged), instead of always using the lowest-index stream regardless of its flags. (Upstream fix for [rosenbjerg/FFMpegCore#360](https://github.com/rosenbjerg/FFMpegCore/issues/360), picked up via the FFMpegCore bump below.)
 - [SIL.Media] `MediaInfo.AnalysisData.Duration` now reflects the longest of every audio, video, and subtitle track plus the container's own duration, rather than just the primary audio/video streams. (Upstream fix for [rosenbjerg/FFMpegCore#361](https://github.com/rosenbjerg/FFMpegCore/issues/361), picked up via the FFMpegCore bump below.)
 - [SIL.Media] `MediaInfo.Video.Resolution` is now an empty string (rather than a malformed value like `"x144"`) when ffprobe can't determine a stream's width or height.
 - [SIL.Media] `MediaInfo.Audio`/`.Video.Encoding` is now an empty string (rather than `null`) when ffprobe doesn't report a codec name for the stream.
+- [SIL.Core] `XmlUtils.ConvertMultiParagraphToSafeXml` converts `"\r\n"` to a single U+2028 line separator on every platform. On Linux and macOS it used to produce two, and on Windows a `"\r\n"` at the very start of the string also produced two.
+- [SIL.Core] `DirectoryHelper.AreEquivalent` no longer ignores trailing dots on Linux and macOS, where `foo.` and `foo` are different folders. Windows behavior is unchanged.
 - [SIL.Scripture] A versification that lists chapters and verses for a non-canonical book (e.g. `XXA 1:20 2:10` in a project's custom.vrs) now uses those limits for `ScrVers.GetLastChapter`/`GetLastVerse`, `VerseRef.Valid`/`ValidStatus` and verse navigation, instead of always allowing 998 chapters of 998 verses. Non-canonical books it doesn't list are unchanged. A non-canonical book listed as exactly one chapter with one verse (e.g. `XXA 1:1`) is still treated as unlisted, because saved versification files already use that line for books they don't list.
 
 ### Changed
 
+- [All] Raised the C# language version from 8 to 13. Building libpalaso now requires a compiler that supports C# 13 (.NET 9 SDK, Visual Studio 2022 17.12+, or Rider 2024.3+). Target frameworks and public API are unchanged, but the compiled assemblies differ (for example, a module-level `RefSafetyRulesAttribute` marker).
+- [SIL.Windows.Forms.Scripture] `VerseControl`'s copy/paste right-click menu is now a `ContextMenuStrip` on every target (the legacy `ContextMenu` does not exist in .NET 8 WinForms), so it renders in the ToolStrip style. `SetContextMenuLabels` is unchanged.
+- [SIL.Windows.Forms] `SILAboutBox`'s left-column controls (version, build date, "Check for Updates" button, "Release Notes" link) now wrap at a width derived from the logo, so long localized text wraps instead of overflowing the column. The "Check for Updates" button grows to fit multi-line text instead of overflowing sideways (unlike `Label`, `Button`'s `AutoSize` doesn't wrap text to a maximum width on its own). Also corrected "Check For Updates" to standard title case ("Check for Updates").
 - [SIL.Media] BREAKING CHANGE: Bumped FFMpegCore from 5.5.0 to 6.0.0. `MediaInfo.AnalysisData` exposes FFMpegCore's `IMediaAnalysis` directly, and in 6.0 its stream/chapter/tag collections became read-only (`IReadOnlyList<T>`/`IReadOnlyDictionary<string, string>` instead of mutable `List<T>`/`Dictionary<string, string>`), `ErrorData` was renamed to `StandardError`, and several numeric/string properties on the underlying `MediaStream`/`MediaFormat` types (e.g. `Width`, `Height`, `Channels`, `BitRate`, `CodecName`) became nullable or changed type. Code that uses only `MediaInfo.Audio`/`.Video` is unaffected; code that consumes `MediaInfo.AnalysisData` directly may need updating.
 
 ## [18.0.0] - 2026-10-12
