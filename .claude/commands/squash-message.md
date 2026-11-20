@@ -24,11 +24,28 @@ Parse `$ARGUMENTS` to extract:
 ```bash
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 PR=${PR:-$(gh pr list --head "$BRANCH" --state all --json number --jq '.[0].number' --repo "$REPO")}
-MERGE_BASE=$(git merge-base origin/main HEAD)
-git log --reverse --format='%s%n%n%b%n----' "$MERGE_BASE..HEAD"
+
+if [ -n "$PR" ]; then
+  # Resolve refs and metadata from the PR itself (not the local checkout), so the
+  # history matches the selected PR even if a different branch is checked out locally.
+  PR_JSON=$(gh pr view "$PR" --repo "$REPO" --json baseRefName,headRefName,title,body)
+  BASE_REF=$(jq -r '.baseRefName' <<<"$PR_JSON")
+  HEAD_REF=$(jq -r '.headRefName' <<<"$PR_JSON")
+  PR_TITLE=$(jq -r '.title' <<<"$PR_JSON")
+  PR_BODY=$(jq -r '.body' <<<"$PR_JSON")
+
+  git fetch origin "$BASE_REF" "$HEAD_REF"
+  MERGE_BASE=$(git merge-base "origin/$BASE_REF" "origin/$HEAD_REF")
+  git log --reverse --format='%s%n%n%b%n----' "$MERGE_BASE..origin/$HEAD_REF"
+else
+  # No PR exists yet — fall back to the local branch against the repo's actual default branch.
+  DEFAULT_BRANCH=$(gh repo view "$REPO" --json defaultBranchRef -q .defaultBranchRef.name)
+  MERGE_BASE=$(git merge-base "origin/$DEFAULT_BRANCH" HEAD)
+  git log --reverse --format='%s%n%n%b%n----' "$MERGE_BASE..HEAD"
+fi
 ```
 
-Also fetch the PR title and body (`gh pr view "$PR" --json title,body`) — the PR body (especially a review summary, if present) often states the change's intent better than any single commit.
+When `PR_TITLE`/`PR_BODY` were resolved above, use them as source material — the PR body (especially a review summary, if present) often states the change's intent better than any single commit. If there's no PR yet, draft from the commit history alone.
 
 ## Step 2: Classify the commits
 
