@@ -14,16 +14,21 @@ namespace SIL.Tests.Extensions
 	[TestFixture]
 	public class StringExtensionTests
 	{
+		private Func<string, int, UnicodeCategory> _savedAltImplGetUnicodeCategory;
+
+		// Other fixtures (e.g., any that initialize the SLDR) can leave an ICU-based
+		// implementation installed, but these tests exercise the default one.
 		[SetUp]
 		public void Setup()
 		{
-			Assert.That(StringExtensions.AltImplGetUnicodeCategory, Is.Null);
+			_savedAltImplGetUnicodeCategory = StringExtensions.AltImplGetUnicodeCategory;
+			StringExtensions.AltImplGetUnicodeCategory = null;
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
-			StringExtensions.AltImplGetUnicodeCategory = null;
+			StringExtensions.AltImplGetUnicodeCategory = _savedAltImplGetUnicodeCategory;
 		}
 
 		[Test]

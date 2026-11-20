@@ -183,15 +183,15 @@ namespace SIL.Tests.PlatformUtilities
 		}
 
 		[Test]
-		[Platform(Include = "Linux", Reason = "Linux specific test")]
-		public void MonoPlatform_Linux()
+		[Platform(Exclude = "Net,NetCore")]
+		public void MonoVersion_Mono()
 		{
 			Assert.That(Platform.MonoVersion, Is.Not.Empty);
 		}
 
 		[Test]
-		[Platform(Exclude = "Linux", Reason = "Windows specific test")]
-		public void MonoPlatform_Windows()
+		[Platform(Include = "Net,NetCore")]
+		public void MonoVersion_Net()
 		{
 			Assert.That(Platform.MonoVersion, Is.Empty);
 		}
