@@ -14,9 +14,14 @@
   preference already exists in the registry — e.g. on reinstall/repair, or when another
   SIL product has already set the global preference.
 
-  Compatible with any WiX 3 UI set that includes LicenseAgreementDlg in its navigation
-  flow: WixUI_FeatureTree, WixUI_InstallDir, WixUI_Mondo, WixUI_Advanced.
-  Not compatible with WixUI_Minimal (which does not route through LicenseAgreementDlg).
+  Optional license-skip: when the consuming product's Burn bootstrapper sets
+  LAUNCHED_VIA_BOOTSTRAPPER="1" (see Analytics.wxs), WelcomeDlg.Next routes straight to
+  PrivacyDlg/VerifyReadyDlg instead of LicenseAgreementDlg, and the matching Back buttons
+  return straight to WelcomeDlg — avoiding a second license display when the bootstrapper
+  already showed its own EULA. Unset (the default), this has no effect.
+
+  Requires a UI set with a distinct LicenseAgreementDlg in its navigation flow — see
+  build/README.md for which standard WiX 3 UI sets qualify and why.
 
   This file is included automatically when the SIL.Installer NuGet package is referenced.
   To wire navigation manually instead, set in your .wixproj before importing the package:
@@ -24,12 +29,56 @@
 -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Fragment>
+
+    <!-- Shared conditions for the bootstrapper license-skip rules below. -->
+    <?define BootstrapperSkipNoPriorPref = 'NOT Installed AND LAUNCHED_VIA_BOOTSTRAPPER = "1" AND NOT PRODUCT_ANALYTICS_SETTING AND NOT GLOBAL_ANALYTICS_SETTING' ?>
+    <?define BootstrapperSkipPriorPrefExists = 'NOT Installed AND LAUNCHED_VIA_BOOTSTRAPPER = "1" AND (PRODUCT_ANALYTICS_SETTING OR GLOBAL_ANALYTICS_SETTING)' ?>
+
     <UI Id="SilAnalyticsNavigation">
 
+      <!-- ── Verified native Order usage (WiX Toolset v3.14 SDK, SDK\wixui\WixUI_*.wxs) ──
+           Audited directly against the native WixUI_FeatureTree.wxs, WixUI_InstallDir.wxs
+           and WixUI_Mondo.wxs sources — the three UI sets this fragment supports — to
+           establish a safe floor for every Order value used below. Re-run this audit
+           before adding a new override on one of these triples, or before claiming
+           support for another UI set:
+             WelcomeDlg/Next           -> no explicit Order in any of the three sets (~1)
+             LicenseAgreementDlg/Next  -> no explicit Order in FeatureTree/InstallDir;
+                                          Order=2 in Mondo (-> SetupTypeDlg)
+             VerifyReadyDlg/Back       -> max Order=4 across all three (FeatureTree's own
+                                          max is 3; InstallDir's is 2; Mondo's is 4, on its
+                                          Repair/Remove branch -> MaintenanceTypeDlg)
+             MaintenanceTypeDlg/ChangeButton, RepairButton -> no explicit Order in any set
+      -->
+
+      <!-- ── Bootstrapper license-skip: WelcomeDlg Next ──────────────────────────
+           Order=2 and 3 clear the verified ceiling above (no explicit native Order on
+           this triple) and carry their own NOT Installed guard, so a maintenance/patch
+           run is never affected — only a fresh install launched via a bootstrapper
+           that has set LAUNCHED_VIA_BOOTSTRAPPER. -->
+
+      <!-- No prior preference: show the privacy dialog -->
+      <Publish Dialog="WelcomeDlg"
+               Control="Next"
+               Event="NewDialog"
+               Value="PrivacyDlg"
+               Order="2">
+        $(var.BootstrapperSkipNoPriorPref)
+      </Publish>
+
+      <!-- Prior preference exists: skip the privacy dialog too -->
+      <Publish Dialog="WelcomeDlg"
+               Control="Next"
+               Event="NewDialog"
+               Value="VerifyReadyDlg"
+               Order="3">
+        $(var.BootstrapperSkipPriorPrefExists)
+      </Publish>
+
       <!-- ── Forward: LicenseAgreementDlg Next ───────────────────────────────────
-           Standard WiX UI sets wire LicenseAgreementDlg Next at Order=2 (to their
-           intermediate dialog, e.g. CustomizeDlg). We fire at Order=3 and 4 so our
-           events run last and take precedence (last NewDialog fired wins). -->
+           Order=3 and 4 clear the verified ceiling above (no explicit native Order in
+           FeatureTree/InstallDir; Order=2 in Mondo) so our events run last and take
+           precedence (last NewDialog fired wins). -->
 
       <!-- No prior preference: show the privacy dialog -->
       <Publish Dialog="LicenseAgreementDlg"
@@ -53,18 +102,8 @@
       </Publish>
 
       <!-- ── Back: VerifyReadyDlg Back ────────────────────────────────────────────
-           Standard WiX UI sets wire VerifyReadyDlg Back to their intermediate dialog
-           (e.g. CustomizeDlg) at Order=1. We fire at Order=2 and 3 to override that,
-           returning to whichever dialog the user actually came from. -->
-
-      <!-- No prior preference: privacy dialog was shown → return to it -->
-      <Publish Dialog="VerifyReadyDlg"
-               Control="Back"
-               Event="NewDialog"
-               Value="PrivacyDlg"
-               Order="2">
-        NOT PRODUCT_ANALYTICS_SETTING AND NOT GLOBAL_ANALYTICS_SETTING
-      </Publish>
+           Order=3 clears the verified ceiling above for the fresh-install case; the
+           "no prior preference" counterpart needs Order=6 instead — see below. -->
 
       <!-- Prior preference exists: privacy dialog was skipped → return to LicenseAgreementDlg -->
       <Publish Dialog="VerifyReadyDlg"
@@ -77,9 +116,9 @@
 
       <!-- ── Repair flow: MaintenanceTypeDlg forward navigation ─────────────
            During repair the flow bypasses LicenseAgreementDlg and routes through
-           MaintenanceTypeDlg instead. We override ChangeButton (standard Order=1
-           wires it to CustomizeDlg) and RepairButton (standard Order=1 wires it
-           directly to VerifyReadyDlg) so both follow the same logic as the
+           MaintenanceTypeDlg instead. We override ChangeButton (no explicit native
+           Order wires it to CustomizeDlg) and RepairButton (no explicit native Order
+           wires it directly to VerifyReadyDlg) so both follow the same logic as the
            fresh-install path: show PrivacyDlg if no prior preference exists,
            skip straight to VerifyReadyDlg otherwise. -->
 
@@ -102,8 +141,8 @@
       </Publish>
 
       <!-- No prior preference: show the privacy dialog (Repair path).
-           Standard wires RepairButton → VerifyReadyDlg at Order=1; we fire at
-           Order=2 to intercept only when analytics has not been configured yet. -->
+           Standard wires RepairButton → VerifyReadyDlg at no explicit Order; we fire
+           at Order=2 to intercept only when analytics has not been configured yet. -->
       <Publish Dialog="MaintenanceTypeDlg"
                Control="RepairButton"
                Event="NewDialog"
@@ -115,14 +154,29 @@
       <!-- ── Repair flow: PrivacyDlg Back ─────────────────────────────────────
            When PrivacyDlg is reached from MaintenanceTypeDlg (repair path),
            Back should return to MaintenanceTypeDlg rather than LicenseAgreementDlg.
-           Order=2 overrides the hardcoded Order=1 target in Analytics.wxs when
-           the product is already installed. -->
+           Order=2 overrides Analytics.wxs's own unset-Order (effectively 1) target
+           when the product is already installed. -->
       <Publish Dialog="PrivacyDlg"
                Control="Back"
                Event="NewDialog"
                Value="MaintenanceTypeDlg"
                Order="2">
         Installed
+      </Publish>
+
+      <!-- ── Bootstrapper license-skip: PrivacyDlg Back ───────────────────────────
+           Analytics.wxs wires PrivacyDlg Back -> LicenseAgreementDlg unconditionally
+           at unset Order (effectively 1). When PrivacyDlg was reached directly from
+           WelcomeDlg (license skipped), Back should return to WelcomeDlg instead.
+           NOT Installed keeps this from ever firing during the repair flow, which
+           Order=2 above already owns. Uses the same condition as WelcomeDlg/Next's
+           "no prior preference" rule above. -->
+      <Publish Dialog="PrivacyDlg"
+               Control="Back"
+               Event="NewDialog"
+               Value="WelcomeDlg"
+               Order="3">
+        $(var.BootstrapperSkipNoPriorPref)
       </Publish>
 
       <!-- ── Repair flow: VerifyReadyDlg Back ──────────────────────────────────
@@ -135,6 +189,39 @@
                Value="MaintenanceTypeDlg"
                Order="4">
         Installed AND (PRODUCT_ANALYTICS_SETTING OR GLOBAL_ANALYTICS_SETTING)
+      </Publish>
+
+      <!-- ── Bootstrapper license-skip: VerifyReadyDlg Back ───────────────────────
+           When VerifyReadyDlg was reached directly from WelcomeDlg (both License and
+           Privacy skipped, because a prior preference was already recorded), Back
+           should return to WelcomeDlg rather than LicenseAgreementDlg. Order=5 clears
+           the verified native ceiling above (max 4, on Mondo's Repair/Remove branch)
+           and our own Order=4 rule — though the NOT Installed guard already makes the
+           two conditions mutually exclusive, so their relative order doesn't actually
+           matter either. -->
+      <Publish Dialog="VerifyReadyDlg"
+               Control="Back"
+               Event="NewDialog"
+               Value="WelcomeDlg"
+               Order="5">
+        $(var.BootstrapperSkipPriorPrefExists)
+      </Publish>
+
+      <!-- ── Back: VerifyReadyDlg Back (no prior preference) ──────────────────────
+           Privacy dialog was shown → return to it. Order=6 is required, not just
+           anything above Order=3: WixUI_FeatureTree's "Installed AND NOT PATCH" ->
+           MaintenanceTypeDlg and WixUI_Mondo's "Update" -> WelcomeDlg both sit at
+           Order=2, so any Order at or below theirs would leave MSI's tie-break to
+           decide whether Back goes to PrivacyDlg or one of those dialogs instead.
+           Order=6 clears the verified ceiling (4) and our own Order=5 rule — though
+           "no prior preference" and "prior preference exists" can never both be true,
+           so their relative order doesn't actually matter either. -->
+      <Publish Dialog="VerifyReadyDlg"
+               Control="Back"
+               Event="NewDialog"
+               Value="PrivacyDlg"
+               Order="6">
+        NOT PRODUCT_ANALYTICS_SETTING AND NOT GLOBAL_ANALYTICS_SETTING
       </Publish>
 
     </UI>

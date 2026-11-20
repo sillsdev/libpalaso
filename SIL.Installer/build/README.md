@@ -61,8 +61,13 @@ In your product's `Feature` element:
 ### 4. Choose a compatible WiX UI set
 
 `AnalyticsNavigation.wxs` is included automatically and wires `LicenseAgreementDlg →
-[PrivacyDlg →] VerifyReadyDlg`. It requires a UI set that routes through
-`LicenseAgreementDlg`; `WixUI_Minimal` is not supported.
+[PrivacyDlg →] VerifyReadyDlg`. It requires a UI set whose flow includes a distinct
+`LicenseAgreementDlg` dialog to hook — of the standard WiX 3 UI sets, that's currently
+`WixUI_FeatureTree`, `WixUI_InstallDir`, and `WixUI_Mondo`.
+
+`WixUI_Minimal` doesn't qualify: it has no `LicenseAgreementDlg` at all. Neither does
+`WixUI_Advanced`: it combines the license and welcome screens into a single
+`AdvancedWelcomeEulaDlg`, with no separate `LicenseAgreementDlg` to hook.
 
 ### 5. Customize dialog navigation (optional)
 
@@ -76,6 +81,33 @@ navigation and add your own `<Publish>` elements connecting to `PrivacyDlg`:
 <!-- in your .wixproj -->
 <SilAnalyticsIncludeNavigation>false</SilAnalyticsIncludeNavigation>
 ```
+
+### 6. Launching the installer from a Burn bootstrapper (optional)
+
+There are two additional steps if your product's installer is a WiX Burn bootstrapper (`WixStandardBootstrapperApplication`).
+
+#### Ensure the MSI UI is displayed
+In the `MsiPackage` set `DisplayInternalUI="yes"`. Without it Burn suppresses this MSI's UI
+sequence entirely, including the Privacy dialog itself.
+
+#### Avoid displaying the license file twice
+If your bootstrapper is configured to show its own license (`LicenseFile`/`LicenseUrl` set on
+`WixStandardBootstrapperApplication`), the license would otherwise be shown twice: once by the
+bootstrapper, once by this MSI's `LicenseAgreementDlg`. To show it only once, pass
+`LAUNCHED_VIA_BOOTSTRAPPER` from your bootstrapper's `.wxs`:
+
+```xml
+<MsiPackage SourceFile="...\YourProduct.msi" DisplayInternalUI="yes">
+  <MsiProperty Name="LAUNCHED_VIA_BOOTSTRAPPER" Value="1" />
+</MsiPackage>
+```
+
+This only takes effect with the standard navigation fragment (`AnalyticsNavigation.wxs`); if
+you set `SilAnalyticsIncludeNavigation=false` and wire navigation yourself, add the equivalent
+`WelcomeDlg`/`PrivacyDlg`/`VerifyReadyDlg` overrides to your own `.wxs` if you want this.
+
+`LAUNCHED_VIA_BOOTSTRAPPER` is a reserved property name once this package is referenced — don't
+reuse it for anything else in your installer.
 
 ## Build Requirements
 

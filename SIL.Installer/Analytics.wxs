@@ -65,6 +65,16 @@
                       Win64="$(var.AnalyticsComponentWin64)" />
     </Property>
 
+    <!-- LAUNCHED_VIA_BOOTSTRAPPER (not declared here): referenced in `AnalyticsNavigation.wxs`.
+         See that file's header comment for what it does and `build/README.md` for how a consuming
+		 bootstrapper sets it.
+         Windows Installer treats any all-uppercase property name as "public" (settable from the
+		 command line or via Burn's MsiProperty) without requiring a <Property> declaration here. A
+		 <Property Id="LAUNCHED_VIA_BOOTSTRAPPER" /> element with no Value/Secure/Admin/Hidden
+		 attribute is dropped by candle (warning CNDL1006, "the Property element is being ignored")
+		 and is deliberately left undeclared since it is used only in the UI sequence and is never
+		 queried from InstallExecuteSequence. -->
+
 	<!-- UI property for the privacy dialog checkboxes. These are *not* secure since they are
 		used only in the UI. This allows the UI to display the correct state for the checkboxes
 		even if the user clicks Back to revisit the dialog (because MSI may treat any non-empty

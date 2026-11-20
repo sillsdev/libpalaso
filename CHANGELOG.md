@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - [SIL.Windows.Forms.Scripture] Added `net8.0-windows` target.
+- [SIL.Installer] Added an opt-in `LAUNCHED_VIA_BOOTSTRAPPER` MSI property that `AnalyticsNavigation.wxs` honors to skip `LicenseAgreementDlg`, for products whose Burn bootstrapper already displays its own EULA before chaining the MSI (avoids showing the license twice). See `build/README.md` for how to wire it from your bootstrapper's `.wxs`.
 - [SIL.Windows.Forms.Widgets] Added WrappingButton: A button that, when its text doesn't fit within MaximumSize.Width, wraps onto additional lines and grows taller instead of growing wider or clipping.
 
 ### Fixed
@@ -27,6 +28,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Media] `MediaInfo.AnalysisData.Duration` now reflects the longest of every audio, video, and subtitle track plus the container's own duration, rather than just the primary audio/video streams. (Upstream fix for [rosenbjerg/FFMpegCore#361](https://github.com/rosenbjerg/FFMpegCore/issues/361), picked up via the FFMpegCore bump below.)
 - [SIL.Media] `MediaInfo.Video.Resolution` is now an empty string (rather than a malformed value like `"x144"`) when ffprobe can't determine a stream's width or height.
 - [SIL.Media] `MediaInfo.Audio`/`.Video.Encoding` is now an empty string (rather than `null`) when ffprobe doesn't report a codec name for the stream.
+- [SIL.Installer] Fixed `AnalyticsNavigation.wxs`'s header comment, which incorrectly listed `WixUI_Advanced` as a compatible UI set; it has no `LicenseAgreementDlg` (it uses a combined `AdvancedWelcomeEulaDlg`), so the navigation fragment cannot hook it.
+- [SIL.Installer] Fixed an `Order` collision in `AnalyticsNavigation.wxs`: the `VerifyReadyDlg`/`Back` "no prior analytics preference" rule fired at the same `Order` as native rows in `WixUI_FeatureTree` and `WixUI_Mondo` that target a different dialog, leaving MSI's tie-break to decide which dialog `Back` actually showed during a repair or update. Verified against the WiX 3.14 SDK's `WixUI_FeatureTree.wxs`/`WixUI_InstallDir.wxs`/`WixUI_Mondo.wxs` sources and renumbered above every native and own `Order` used on that `(Dialog, Control, Event)` triple.
 - [SIL.Core] `XmlUtils.ConvertMultiParagraphToSafeXml` converts `"\r\n"` to a single U+2028 line separator on every platform. On Linux and macOS it used to produce two, and on Windows a `"\r\n"` at the very start of the string also produced two.
 - [SIL.Core] `DirectoryHelper.AreEquivalent` no longer ignores trailing dots on Linux and macOS, where `foo.` and `foo` are different folders. Windows behavior is unchanged.
 - [SIL.Scripture] A versification that lists chapters and verses for a non-canonical book (e.g. `XXA 1:20 2:10` in a project's custom.vrs) now uses those limits for `ScrVers.GetLastChapter`/`GetLastVerse`, `VerseRef.Valid`/`ValidStatus` and verse navigation, instead of always allowing 998 chapters of 998 verses. Non-canonical books it doesn't list are unchanged. A non-canonical book listed as exactly one chapter with one verse (e.g. `XXA 1:1`) is still treated as unlisted, because saved versification files already use that line for books they don't list.
