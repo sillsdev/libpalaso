@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [19.0.0] - 2026-11-20
+
 ### Added
 
 - [SIL.Windows.Forms.Scripture] Added `net8.0-windows` target.
@@ -762,7 +764,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
   projects
 
-[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v18.0.0...master
+[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v19.0.0...master
+[19.0.0]: https://github.com/sillsdev/libpalaso/compare/v18.0.0...v19.0.0
 [18.0.0]: https://github.com/sillsdev/libpalaso/compare/v17.0.0...v18.0.0
 [17.0.0]: https://github.com/sillsdev/libpalaso/compare/v16.2.0...v17.0.0
 [16.2.0]: https://github.com/sillsdev/libpalaso/compare/v16.1.0...v16.2.0
