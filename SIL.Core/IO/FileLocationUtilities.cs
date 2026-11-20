@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -367,9 +368,12 @@ namespace SIL.IO
 			}
 			catch (Exception e)
 			{
-				// Swallow. Some paths, we aren't allowed to look in (like Google Chrome crash
-				// reports, or on Linux any unreadable directory below a PATH entry).
+				// Swallow. Some paths, we aren't allowed to look in (like Google Chrome crash reports).
 				Logger.WriteMinorEvent("Skipped searching {0} for {1}: {2}", subDir, exeName, e.Message);
+				// On Unix the search covers everything below each PATH entry, where unreadable
+				// directories are routine, so only Windows treats this as worth an assertion.
+				if (Platform.IsWindows)
+					Debug.Fail(e.Message);
 			}
 			return null;
 		}
