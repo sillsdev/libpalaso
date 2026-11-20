@@ -93,6 +93,15 @@ sudo apt install mono-complete libcanberra-gtk-module
     --filter "(TestCategory != SkipOnTeamCity) & (TestCategory != RequiresAudioInputDevice)"
   ```
 
+  On WSL, first remove the Windows folders (`/mnt/c/...`) from `PATH`. On Linux,
+  `FileLocationUtilities` searches every `PATH` folder and its subfolders for programs,
+  and searching the Windows drive from WSL is slow enough that the
+  `FileLocationUtilitiesTests` take more than 15 minutes:
+
+  ```bash
+  export PATH=$(echo "$PATH" | tr ':' '\n' | grep -v '^/mnt/' | paste -sd:)
+  ```
+
 - Test in client projects (as applicable):
 
   * Set an environment variable `LOCAL_NUGET_REPO` with the path to a folder on your computer (or local network) to publish locally-built packages
