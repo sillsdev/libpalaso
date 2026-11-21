@@ -17,8 +17,8 @@
   <ItemGroup>
     <PackageReference Include="Enchant.Net" Version="1.4.2" />
     <PackageReference Include="JetBrains.Annotations" Version="2026.2.0" PrivateAssets="All" />
-    <PackageReference Include="L10NSharp" Version="11.0.1" />
-    <PackageReference Include="L10NSharp.Windows.Forms" Version="11.0.1" />
+    <PackageReference Include="L10NSharp" Version="12.0.0" />
+    <PackageReference Include="L10NSharp.Windows.Forms" Version="12.0.0" />
     <PackageReference Include="Markdig.Signed" Version="1.4.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.401" PrivateAssets="All" />
     <PackageReference Include="Mono.Unix" Version="7.1.0-final.1.21458.1" />
