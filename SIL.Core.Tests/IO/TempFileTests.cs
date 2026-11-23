@@ -80,9 +80,7 @@ namespace SIL.Tests.IO
 		[Test]
 		public void InFolderOf_WorksProperly()
 		{
-			string codeBase = System.Reflection.Assembly.GetExecutingAssembly().Location;
-			UriBuilder uri = new UriBuilder(codeBase);
-			string originalPath = Uri.UnescapeDataString(uri.Path);
+			string originalPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
 			string filePath, filePath2;
 			using (var file1 = TempFile.InFolderOf(originalPath))
 			using (var file2 = TempFile.InFolderOf(originalPath))

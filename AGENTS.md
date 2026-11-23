@@ -31,6 +31,7 @@ However, existing platform checks (such as `Platform.IsMono` or `#if __MonoCS__`
     - If the subsections do not exist under `[Unreleased]`, create them as needed.
     - Format: `- [Scope] Description of the change.` (where Scope is the affected library/namespace)
     - For breaking changes, prefix with `BREAKING CHANGE:` in the description.
+    - Skip the changelog for changes confined to unpublished test projects (`*.Tests`, test apps): the changelog is for consumers of the published packages. `SIL.TestUtilities` is published, so changes to it still need an entry.
 
 - **Commit Message Format:** Follow semantic versioning guidelines in commit messages:
   - Include semantic version tags to indicate the impact of changes:
