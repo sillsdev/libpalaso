@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [19.0.0] - 2026-11-23
+
 ### Added
 
 - [SIL.Windows.Forms.Scripture] Added `net8.0-windows` target.
@@ -41,6 +43,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Scripture] `VerseControl`'s copy/paste right-click menu is now a `ContextMenuStrip` on every target (the legacy `ContextMenu` does not exist in .NET 8 WinForms), so it renders in the ToolStrip style. `SetContextMenuLabels` is unchanged.
 - [SIL.Windows.Forms] `SILAboutBox`'s left-column controls (version, build date, "Check for Updates" button, "Release Notes" link) now wrap at a width derived from the logo, so long localized text wraps instead of overflowing the column. The "Check for Updates" button grows to fit multi-line text instead of overflowing sideways (unlike `Label`, `Button`'s `AutoSize` doesn't wrap text to a maximum width on its own). Also corrected "Check For Updates" to standard title case ("Check for Updates").
 - [SIL.Media] BREAKING CHANGE: Bumped FFMpegCore from 5.5.0 to 6.0.0. `MediaInfo.AnalysisData` exposes FFMpegCore's `IMediaAnalysis` directly, and in 6.0 its stream/chapter/tag collections became read-only (`IReadOnlyList<T>`/`IReadOnlyDictionary<string, string>` instead of mutable `List<T>`/`Dictionary<string, string>`), `ErrorData` was renamed to `StandardError`, and several numeric/string properties on the underlying `MediaStream`/`MediaFormat` types (e.g. `Width`, `Height`, `Channels`, `BitRate`, `CodecName`) became nullable or changed type. Code that uses only `MediaInfo.Audio`/`.Video` is unaffected; code that consumes `MediaInfo.AnalysisData` directly may need updating.
+- [SIL.Core.Desktop, SIL.Windows.Forms, SIL.Windows.Forms.Keyboarding] Bumped `L10NSharp`/`L10NSharp.Windows.Forms` from 11.0.1 to 12.0.0, which fixes `XliffLocalizationManagerWinforms.ReapplyLocalizationsToAllComponents`/`RefreshToolTips` aborting a UI language switch after a registered control had been disposed.
 
 ## [18.0.0] - 2026-10-12
 
@@ -762,7 +765,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
   projects
 
-[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v18.0.0...master
+[Unreleased]: https://github.com/sillsdev/libpalaso/compare/v19.0.0...master
+[19.0.0]: https://github.com/sillsdev/libpalaso/compare/v18.0.0...v19.0.0
 [18.0.0]: https://github.com/sillsdev/libpalaso/compare/v17.0.0...v18.0.0
 [17.0.0]: https://github.com/sillsdev/libpalaso/compare/v16.2.0...v17.0.0
 [16.2.0]: https://github.com/sillsdev/libpalaso/compare/v16.1.0...v16.2.0
