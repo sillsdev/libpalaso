@@ -15,6 +15,19 @@ namespace SIL.WritingSystems.Tests
 	[TestFixture]
 	public class SldrTests
 	{
+		[Test]
+		public void AllTagEntryParseList_ReadsPropertiesAndSingleStringIana()
+		{
+			var entries = AllTagEntry.ParseList(
+				"[{\"tag\":\"aa\",\"full\":\"aa-Latn-ET\",\"sldr\":true,\"regions\":[\"ET\"],\"iana\":\"aa\"}]");
+			Assert.That(entries.Count, Is.EqualTo(1));
+			Assert.That(entries[0].tag, Is.EqualTo("aa"));
+			Assert.That(entries[0].full, Is.EqualTo("aa-Latn-ET"));
+			Assert.That(entries[0].sldr, Is.True);
+			Assert.That(entries[0].regions, Is.EqualTo(new List<string> { "ET" }));
+			Assert.That(entries[0].iana, Is.EqualTo(new List<string> { "aa" }));
+		}
+
 		private class TestEnvironment : IDisposable
 		{
 			public TestEnvironment(bool sldrOffline = true, string sldrCachePath = null)

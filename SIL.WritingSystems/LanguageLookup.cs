@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
 using SIL.Code;
 using SIL.Extensions;
 using SIL.IO;
@@ -64,7 +63,7 @@ namespace SIL.WritingSystems
 			catch (IOException)
 			{
 			}
-			List<AllTagEntry> rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(langTagsContent);
+			List<AllTagEntry> rootObject = AllTagEntry.ParseList(langTagsContent);
 
 			foreach (AllTagEntry entry in rootObject)
 			{
