@@ -5,6 +5,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Net;
 using System.Security.AccessControl;
@@ -63,10 +64,11 @@ namespace SIL.WritingSystems
 		public string regionName { get; set; }
 
 		/// <summary>Reads the langtags JSON. Newtonsoft.Json builds AllTagEntry (and the iana converter) by reflection,
-		/// so under trimming and NativeAOT the dependencies below keep what it needs.</summary>
+		/// so under trimming and NativeAOT the dependencies below keep what it needs. No test catches a trimming
+		/// regression: a new member or converter on AllTagEntry that Newtonsoft needs must be added to them.</summary>
 #if NET8_0_OR_GREATER
-		[System.Diagnostics.CodeAnalysis.DynamicDependency(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicParameterlessConstructor | System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicProperties, typeof(AllTagEntry))]
-		[System.Diagnostics.CodeAnalysis.DynamicDependency(System.Diagnostics.CodeAnalysis.DynamicallyAccessedMemberTypes.PublicParameterlessConstructor, typeof(SingleStringToListOfStringConverter))]
+		[DynamicDependency(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor | DynamicallyAccessedMemberTypes.PublicProperties, typeof(AllTagEntry))]
+		[DynamicDependency(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor, typeof(SingleStringToListOfStringConverter))]
 #endif
 		internal static List<AllTagEntry> ParseList(string json)
 		{
